@@ -742,7 +742,7 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 		apps = append(apps, ftypes.Application{
 			Type:     ftypes.LangType(rpcApp.Type),
 			FilePath: rpcApp.FilePath,
-			Packages: ConvertFromRPCPkgs(rpcApp.Libraries),
+			Packages: ConvertFromRPCPkgs(rpcApp.Packages),
 		})
 	}
 	return apps
@@ -865,9 +865,9 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	var applications []*common.Application
 	for _, app := range blobInfo.Applications {
 		applications = append(applications, &common.Application{
-			Type:      string(app.Type),
-			FilePath:  app.FilePath,
-			Libraries: ConvertToRPCPkgs(app.Packages),
+			Type:     string(app.Type),
+			FilePath: app.FilePath,
+			Packages: ConvertToRPCPkgs(app.Packages),
 		})
 	}
 

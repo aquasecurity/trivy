@@ -2,7 +2,7 @@
   {
     "Type": "bundler",
     "FilePath": "ruby-app/Gemfile.lock",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "dotenv@2.7.2",
         "Name": "dotenv",
@@ -1107,7 +1107,7 @@
   {
     "Type": "cargo",
     "FilePath": "rust-app/Cargo.lock",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "ammonia@1.9.0",
         "Name": "ammonia",
@@ -2519,7 +2519,7 @@
   {
     "Type": "composer",
     "FilePath": "php-app/composer.lock",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "guzzlehttp/guzzle@6.2.0",
         "Name": "guzzlehttp/guzzle",
@@ -2815,7 +2815,7 @@
   {
     "Type": "npm",
     "FilePath": "node-app/package-lock.json",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "asap@2.0.6",
         "Name": "asap",
@@ -3054,7 +3054,7 @@
   {
     "Type": "pipenv",
     "FilePath": "python-app/Pipfile.lock",
-    "Libraries": [
+    "Packages": [
       {
         "Name": "amqp",
         "Identifier": {
