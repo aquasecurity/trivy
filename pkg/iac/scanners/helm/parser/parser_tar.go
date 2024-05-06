@@ -52,18 +52,22 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 			return nil, fmt.Errorf("failed to get next entry: %w", err)
 		}
 
+		name := filepath.ToSlash(header.Name)
+
 		if checkExistedChart {
 			// Do not add archive files to FS if the chart already exists
 			// This can happen when the source chart is located next to an archived chart (with the `helm package` command)
 			// The first level folder in the archive is equal to the Chart name
-			if _, err := tarFS.Stat(filepath.Dir(archivePath) + "/" + filepath.Dir(header.Name)); err == nil {
+			if _, err := tarFS.Stat(path.Dir(archivePath) + "/" + path.Dir(name)); err == nil {
 				return nil, errSkipFS
 			}
 			checkExistedChart = false
 		}
 
 		// get the individual path and extract to the current directory
-		targetPath := path.Join(filepath.Dir(archivePath), filepath.Clean(header.Name))
+		targetPath := path.Join(path.Dir(archivePath), path.Clean(name))
+
+		link := filepath.ToSlash(header.Linkname)
 
 		switch header.Typeflag {
 		case tar.TypeDir:
@@ -76,12 +80,12 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 				return nil, err
 			}
 		case tar.TypeSymlink:
-			if filepath.IsAbs(header.Linkname) {
-				p.debug.Log("Symlink %s is absolute, skipping", header.Linkname)
+			if path.IsAbs(link) {
+				p.debug.Log("Symlink %s is absolute, skipping", link)
 				continue
 			}
 
-			symlinks[targetPath] = path.Join(filepath.Dir(targetPath), header.Linkname) // nolint:gosec // virtual file system is used
+			symlinks[targetPath] = path.Join(path.Dir(targetPath), link) // nolint:gosec // virtual file system is used
 		default:
 			return nil, fmt.Errorf("header type %q is not supported", header.Typeflag)
 		}
@@ -126,7 +130,7 @@ func copySymlink(fsys *memoryfs.FS, src, dst string) error {
 }
 
 func copyFile(fsys *memoryfs.FS, src io.Reader, dst string) error {
-	if err := fsys.MkdirAll(filepath.Dir(dst), fs.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+	if err := fsys.MkdirAll(path.Dir(dst), fs.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
 		return fmt.Errorf("mkdir error: %w", err)
 	}
 
