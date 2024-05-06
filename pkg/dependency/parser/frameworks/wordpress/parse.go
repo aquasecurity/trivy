@@ -7,10 +7,10 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func Parse(r io.Reader) (lib types.Library, err error) {
+func Parse(r io.Reader) (lib ftypes.Package, err error) {
 
 	// If wordpress file, open file and
 	// find line with content
@@ -68,10 +68,10 @@ func Parse(r io.Reader) (lib types.Library, err error) {
 	}
 
 	if err = scanner.Err(); err != nil || version == "" {
-		return types.Library{}, xerrors.New("version.php could not be parsed")
+		return ftypes.Package{}, xerrors.New("version.php could not be parsed")
 	}
 
-	return types.Library{
+	return ftypes.Package{
 		Name:    "wordpress",
 		Version: version,
 	}, nil

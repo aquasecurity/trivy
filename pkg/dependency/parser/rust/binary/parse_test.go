@@ -8,28 +8,28 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/rust/binary"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 // Test binaries generated from cargo-auditable test fixture
 // https://github.com/rust-secure-code/cargo-auditable/tree/6b77151/cargo-auditable/tests/fixtures/workspace
 var (
-	libs = []types.Library{
+	libs = []ftypes.Package{
 		{
 			ID:           "crate_with_features@0.1.0",
 			Name:         "crate_with_features",
 			Version:      "0.1.0",
-			Relationship: types.RelationshipRoot,
+			Relationship: ftypes.RelationshipRoot,
 		},
 		{
 			ID:           "library_crate@0.1.0",
 			Name:         "library_crate",
 			Version:      "0.1.0",
-			Relationship: types.RelationshipUnknown,
+			Relationship: ftypes.RelationshipUnknown,
 		},
 	}
 
-	deps = []types.Dependency{
+	deps = []ftypes.Dependency{
 		{
 			ID:        "crate_with_features@0.1.0",
 			DependsOn: []string{"library_crate@0.1.0"},
@@ -41,8 +41,8 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
-		wantDeps  []types.Dependency
+		want      []ftypes.Package
+		wantDeps  []ftypes.Dependency
 		wantErr   string
 	}{
 		{

@@ -20,7 +20,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -44,7 +43,7 @@ var fragmentRegexp = regexp.MustCompile(`(\S+):(@?.*?)(@(.*?)|)$`)
 type yarnAnalyzer struct {
 	logger            *log.Logger
 	packageJsonParser *packagejson.Parser
-	lockParser        godeptypes.Parser
+	lockParser        language.Parser
 	comparer          npm.Comparer
 	license           *license.License
 }

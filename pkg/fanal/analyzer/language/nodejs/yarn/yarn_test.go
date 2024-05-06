@@ -40,6 +40,40 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
+								ID:           "prop-types@15.7.2",
+								Name:         "prop-types",
+								Version:      "15.7.2",
+								Dev:          true,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 27,
+										EndLine:   34,
+									},
+								},
+								DependsOn: []string{
+									"loose-envify@1.4.0",
+									"object-assign@4.1.1",
+									"react-is@16.13.1",
+								},
+							},
+							{
+								ID:           "scheduler@0.13.6",
+								Name:         "scheduler",
+								Version:      "0.13.6",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 41,
+										EndLine:   47,
+									},
+								},
+								DependsOn: []string{
+									"loose-envify@1.4.0",
+									"object-assign@4.1.1",
+								},
+							},
+							{
 								ID:           "js-tokens@4.0.0",
 								Name:         "js-tokens",
 								Version:      "4.0.0",
@@ -82,24 +116,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:           "prop-types@15.7.2",
-								Name:         "prop-types",
-								Version:      "15.7.2",
-								Dev:          true,
-								Relationship: types.RelationshipDirect,
-								Locations: []types.Location{
-									{
-										StartLine: 27,
-										EndLine:   34,
-									},
-								},
-								DependsOn: []string{
-									"loose-envify@1.4.0",
-									"object-assign@4.1.1",
-									"react-is@16.13.1",
-								},
-							},
-							{
 								ID:           "react-is@16.13.1",
 								Name:         "react-is",
 								Version:      "16.13.1",
@@ -111,22 +127,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										StartLine: 36,
 										EndLine:   39,
 									},
-								},
-							},
-							{
-								ID:           "scheduler@0.13.6",
-								Name:         "scheduler",
-								Version:      "0.13.6",
-								Relationship: types.RelationshipDirect,
-								Locations: []types.Location{
-									{
-										StartLine: 41,
-										EndLine:   47,
-									},
-								},
-								DependsOn: []string{
-									"loose-envify@1.4.0",
-									"object-assign@4.1.1",
 								},
 							},
 						},
@@ -322,20 +322,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:           "is-number@6.0.0",
-								Name:         "is-number",
-								Version:      "6.0.0",
-								Licenses:     []string{"MIT"},
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Locations: []types.Location{
-									{
-										StartLine: 15,
-										EndLine:   20,
-									},
-								},
-							},
-							{
 								ID:           "is-odd@3.0.1",
 								Name:         "is-odd",
 								Version:      "3.0.1",
@@ -346,6 +332,20 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 22,
 										EndLine:   29,
+									},
+								},
+							},
+							{
+								ID:           "is-number@6.0.0",
+								Name:         "is-number",
+								Version:      "6.0.0",
+								Licenses:     []string{"MIT"},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 15,
+										EndLine:   20,
 									},
 								},
 							},
@@ -381,23 +381,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:           "@types/node@20.10.5",
-								Name:         "@types/node",
-								Version:      "20.10.5",
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Dev:          true,
-								Locations: []types.Location{
-									{
-										StartLine: 5,
-										EndLine:   10,
-									},
-								},
-								DependsOn: []string{
-									"undici-types@5.26.5",
-								},
-							},
-							{
 								ID:           "foo-uuid@9.0.7",
 								Name:         "@types/uuid",
 								Version:      "9.0.7",
@@ -428,19 +411,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:           "ms@2.1.2",
-								Name:         "ms",
-								Version:      "2.1.2",
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Locations: []types.Location{
-									{
-										StartLine: 36,
-										EndLine:   39,
-									},
-								},
-							},
-							{
 								ID:           "foo-ms@2.1.3",
 								Name:         "ms",
 								Version:      "2.1.3",
@@ -450,6 +420,36 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 26,
 										EndLine:   29,
+									},
+								},
+							},
+							{
+								ID:           "@types/node@20.10.5",
+								Name:         "@types/node",
+								Version:      "20.10.5",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+								},
+								DependsOn: []string{
+									"undici-types@5.26.5",
+								},
+							},
+							{
+								ID:           "ms@2.1.2",
+								Name:         "ms",
+								Version:      "2.1.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 36,
+										EndLine:   39,
 									},
 								},
 							},
@@ -482,19 +482,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: types.Packages{
 							{
-								ID:           "is-number@6.0.0",
-								Name:         "is-number",
-								Version:      "6.0.0",
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Locations: []types.Location{
-									{
-										StartLine: 16,
-										EndLine:   21,
-									},
-								},
-							},
-							{
 								ID:           "is-number@7.0.0",
 								Name:         "is-number",
 								Version:      "7.0.0",
@@ -520,19 +507,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:           "js-tokens@4.0.0",
-								Name:         "js-tokens",
-								Version:      "4.0.0",
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Locations: []types.Location{
-									{
-										StartLine: 39,
-										EndLine:   44,
-									},
-								},
-							},
-							{
 								ID:           "js-tokens@8.0.1",
 								Name:         "js-tokens",
 								Version:      "8.0.1",
@@ -541,34 +515,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 46,
 										EndLine:   51,
-									},
-								},
-							},
-							{
-								ID:           "loose-envify@1.4.0",
-								Name:         "loose-envify",
-								Version:      "1.4.0",
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								DependsOn:    []string{"js-tokens@4.0.0"},
-								Locations: []types.Location{
-									{
-										StartLine: 53,
-										EndLine:   62,
-									},
-								},
-							},
-							{
-								ID:           "object-assign@4.1.1",
-								Name:         "object-assign",
-								Version:      "4.1.1",
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Dev:          true,
-								Locations: []types.Location{
-									{
-										StartLine: 64,
-										EndLine:   69,
 									},
 								},
 							},
@@ -604,6 +550,73 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
+								ID:           "scheduler@0.23.0",
+								Name:         "scheduler",
+								Version:      "0.23.0",
+								Relationship: types.RelationshipDirect,
+								DependsOn:    []string{"loose-envify@1.4.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 114,
+										EndLine:   121,
+									},
+								},
+							},
+							{
+								ID:           "is-number@6.0.0",
+								Name:         "is-number",
+								Version:      "6.0.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 16,
+										EndLine:   21,
+									},
+								},
+							},
+							{
+								ID:           "js-tokens@4.0.0",
+								Name:         "js-tokens",
+								Version:      "4.0.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 39,
+										EndLine:   44,
+									},
+								},
+							},
+							{
+								ID:           "loose-envify@1.4.0",
+								Name:         "loose-envify",
+								Version:      "1.4.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn:    []string{"js-tokens@4.0.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 53,
+										EndLine:   62,
+									},
+								},
+							},
+							{
+								ID:           "object-assign@4.1.1",
+								Name:         "object-assign",
+								Version:      "4.1.1",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+								Locations: []types.Location{
+									{
+										StartLine: 64,
+										EndLine:   69,
+									},
+								},
+							},
+							{
 								ID:           "react-is@16.13.1",
 								Name:         "react-is",
 								Version:      "16.13.1",
@@ -614,19 +627,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 107,
 										EndLine:   112,
-									},
-								},
-							},
-							{
-								ID:           "scheduler@0.23.0",
-								Name:         "scheduler",
-								Version:      "0.23.0",
-								Relationship: types.RelationshipDirect,
-								DependsOn:    []string{"loose-envify@1.4.0"},
-								Locations: []types.Location{
-									{
-										StartLine: 114,
-										EndLine:   121,
 									},
 								},
 							},
@@ -649,20 +649,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: []types.Package{
 							{
-								ID:           "@babel/parser@7.22.7",
-								Name:         "@babel/parser",
-								Version:      "7.22.7",
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Locations: []types.Location{
-									{
-										StartLine: 5,
-										EndLine:   8,
-									},
-								},
-								Licenses: []string{"MIT"},
-							},
-							{
 								ID:           "@vue/compiler-sfc@2.7.14",
 								Name:         "@vue/compiler-sfc",
 								Version:      "2.7.14",
@@ -680,6 +666,20 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 									"postcss@8.4.27",
 									"source-map@0.6.1",
 								},
+							},
+							{
+								ID:           "@babel/parser@7.22.7",
+								Name:         "@babel/parser",
+								Version:      "7.22.7",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   8,
+									},
+								},
+								Licenses: []string{"MIT"},
 							},
 							{
 								ID:           "nanoid@3.3.6",

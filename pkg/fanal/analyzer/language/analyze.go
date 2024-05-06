@@ -1,14 +1,16 @@
 package language
 
 import (
+	"io"
+
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
-	"golang.org/x/xerrors"
-	"io"
 )
 
 type Parser interface {

@@ -2,13 +2,13 @@ package types
 
 import (
 	"encoding/json"
-	"golang.org/x/xerrors"
 	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"

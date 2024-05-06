@@ -14,7 +14,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/config"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/lock"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -31,11 +30,14 @@ const (
 	configFile = types.NuGetPkgsConfig
 )
 
-var requiredFiles = []string{lockFile, configFile}
+var requiredFiles = []string{
+	lockFile,
+	configFile,
+}
 
 type nugetLibraryAnalyzer struct {
-	lockParser    godeptypes.Parser
-	configParser  godeptypes.Parser
+	lockParser    language.Parser
+	configParser  language.Parser
 	licenseParser nuspecParser
 }
 

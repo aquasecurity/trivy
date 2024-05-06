@@ -9,15 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string // Test input file
-		want     []types.Library
-		wantDeps []types.Dependency
+		want     []ftypes.Package
+		wantDeps []ftypes.Dependency
 	}{
 		{
 			name:     "normal",
@@ -78,7 +78,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func sortDeps(deps []types.Dependency) {
+func sortDeps(deps []ftypes.Dependency) {
 	sort.Slice(deps, func(i, j int) bool {
 		return strings.Compare(deps[i].ID, deps[j].ID) < 0
 	})
@@ -88,7 +88,7 @@ func sortDeps(deps []types.Dependency) {
 	}
 }
 
-func sortLibs(libs []types.Library) {
+func sortLibs(libs []ftypes.Package) {
 	sort.Slice(libs, func(i, j int) bool {
 		ret := strings.Compare(libs[i].Name, libs[j].Name)
 		if ret == 0 {

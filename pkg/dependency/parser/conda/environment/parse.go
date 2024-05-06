@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/go-version/pkg/version"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -28,44 +28,44 @@ type Parser struct {
 	once   sync.Once
 }
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{
 		logger: log.WithPrefix("conda"),
 		once:   sync.Once{},
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var env environment
 	if err := yaml.NewDecoder(r).Decode(&env); err != nil {
 		return nil, nil, xerrors.Errorf("unable to decode conda environment.yml file: %w", err)
 	}
 
-	var libs []types.Library
+	var pkgs ftypes.Packages
 	for _, dep := range env.Dependencies {
 		lib := p.toLibrary(dep)
 		// Skip empty libs
 		if lib.Name == "" {
 			continue
 		}
-		libs = append(libs, lib)
+		pkgs = append(pkgs, lib)
 	}
 
-	sort.Sort(types.Libraries(libs))
-	return libs, nil, nil
+	sort.Sort(pkgs)
+	return pkgs, nil, nil
 }
 
-func (p *Parser) toLibrary(dep Dependency) types.Library {
+func (p *Parser) toLibrary(dep Dependency) ftypes.Package {
 	name, ver := p.parseDependency(dep.Value)
 	if ver == "" {
 		p.once.Do(func() {
 			p.logger.Warn("Unable to detect the dependency versions from `environment.yml` as those versions are not pinned. Use `conda env export` to pin versions.")
 		})
 	}
-	return types.Library{
+	return ftypes.Package{
 		Name:    name,
 		Version: ver,
-		Locations: types.Locations{
+		Locations: ftypes.Locations{
 			{
 				StartLine: dep.Line,
 				EndLine:   dep.Line,

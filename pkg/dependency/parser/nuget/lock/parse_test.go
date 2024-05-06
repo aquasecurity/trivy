@@ -10,14 +10,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
 		file     string // Test input file
-		want     []types.Library
-		wantDeps []types.Dependency
+		want     []ftypes.Package
+		wantDeps []ftypes.Dependency
 	}{
 		{
 			file:     "testdata/packages_lock_simple.json",
@@ -76,7 +76,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func sortDeps(deps []types.Dependency) {
+func sortDeps(deps []ftypes.Dependency) {
 	sort.Slice(deps, func(i, j int) bool {
 		return strings.Compare(deps[i].ID, deps[j].ID) < 0
 	})

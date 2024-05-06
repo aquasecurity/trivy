@@ -19,7 +19,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -45,11 +44,11 @@ var (
 
 type gomodAnalyzer struct {
 	// root go.mod/go.sum
-	modParser godeptypes.Parser
-	sumParser godeptypes.Parser
+	modParser language.Parser
+	sumParser language.Parser
 
 	// go.mod/go.sum in dependencies
-	leafModParser godeptypes.Parser
+	leafModParser language.Parser
 
 	licenseClassifierConfidenceLevel float64
 
@@ -184,37 +183,37 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	return nil
 }
 
-func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (godeptypes.Dependency, error) {
+func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, error) {
 	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/go.mod
 	modPath := filepath.Join(modDir, "go.mod")
 	f, err := os.Open(modPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		a.logger.Debug("Unable to identify dependencies as it doesn't support Go modules",
 			log.String("module", pkgID))
-		return godeptypes.Dependency{}, nil
+		return types.Dependency{}, nil
 	} else if err != nil {
-		return godeptypes.Dependency{}, xerrors.Errorf("file open error: %w", err)
+		return types.Dependency{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	// Parse go.mod under $GOPATH/pkg/mod
 	libs, _, err := a.leafModParser.Parse(f)
 	if err != nil {
-		return godeptypes.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
+		return types.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
 	}
 
 	// Filter out indirect dependencies
-	dependsOn := lo.FilterMap(libs, func(lib godeptypes.Library, index int) (string, bool) {
+	dependsOn := lo.FilterMap(libs, func(lib types.Package, index int) (string, bool) {
 		return lib.Name, lib.Relationship == types.RelationshipDirect
 	})
 
-	return godeptypes.Dependency{
+	return types.Dependency{
 		ID:        pkgID,
 		DependsOn: dependsOn,
 	}, nil
 }
 
-func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Application, error) {
+func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
 	f, err := fsys.Open(path)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)

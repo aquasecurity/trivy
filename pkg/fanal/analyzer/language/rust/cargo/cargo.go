@@ -20,7 +20,6 @@ import (
 	"github.com/aquasecurity/go-version/pkg/semver"
 	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/rust/cargo"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -42,7 +41,7 @@ var requiredFiles = []string{
 
 type cargoAnalyzer struct {
 	logger     *log.Logger
-	lockParser godeptypes.Parser
+	lockParser language.Parser
 	comparer   compare.GenericComparer
 }
 

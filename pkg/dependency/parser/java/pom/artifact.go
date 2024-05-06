@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -26,9 +26,9 @@ type artifact struct {
 	Exclusions map[string]struct{}
 
 	Module       bool
-	Relationship types.Relationship
+	Relationship ftypes.Relationship
 
-	Locations types.Locations
+	Locations ftypes.Locations
 }
 
 func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {
@@ -37,7 +37,7 @@ func newArtifact(groupID, artifactID, version string, licenses []string, props m
 		ArtifactID:   evaluateVariable(artifactID, props, nil),
 		Version:      newVersion(evaluateVariable(version, props, nil)),
 		Licenses:     licenses,
-		Relationship: types.RelationshipIndirect, // default
+		Relationship: ftypes.RelationshipIndirect, // default
 	}
 }
 
@@ -47,10 +47,6 @@ func (a artifact) IsEmpty() bool {
 
 func (a artifact) Equal(o artifact) bool {
 	return a.GroupID == o.GroupID || a.ArtifactID == o.ArtifactID || a.Version.String() == o.Version.String()
-}
-
-func (a artifact) JoinLicenses() string {
-	return strings.Join(a.Licenses, ", ")
 }
 
 func (a artifact) ToPOMLicenses() pomLicenses {

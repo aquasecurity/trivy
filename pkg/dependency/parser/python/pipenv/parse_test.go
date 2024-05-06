@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
 		file string // Test input file
-		want []types.Library
+		want []ftypes.Package
 	}{
 		{
 			file: "testdata/Pipfile_normal.lock",

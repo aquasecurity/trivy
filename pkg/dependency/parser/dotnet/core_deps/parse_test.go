@@ -10,19 +10,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
 		file    string // Test input file
-		want    []types.Library
+		want    []ftypes.Package
 		wantErr string
 	}{
 		{
 			file: "testdata/ExampleApp1.deps.json",
-			want: []types.Library{
-				{Name: "Newtonsoft.Json", Version: "13.0.1", Locations: []types.Location{{StartLine: 33, EndLine: 39}}},
+			want: []ftypes.Package{
+				{Name: "Newtonsoft.Json", Version: "13.0.1", Locations: []ftypes.Location{{StartLine: 33, EndLine: 39}}},
 			},
 		},
 		{

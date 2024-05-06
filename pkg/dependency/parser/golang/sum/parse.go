@@ -7,20 +7,19 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
 // Parse parses a go.sum file
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	var libs []types.Library
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	var pkgs []ftypes.Package
 	uniqueLibs := make(map[string]string)
 
 	scanner := bufio.NewScanner(r)
@@ -40,12 +39,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	for k, v := range uniqueLibs {
-		libs = append(libs, types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			ID:      dependency.ID(ftypes.GoModule, k, v),
 			Name:    k,
 			Version: v,
 		})
 	}
 
-	return libs, nil, nil
+	return pkgs, nil, nil
 }

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,17 +14,17 @@ func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
+		want      []ftypes.Package
 	}{
 		{
 			name:      "happy path",
 			inputFile: "testdata/happy.lockfile",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
 					ID:      "cglib:cglib-nodep:2.1.2",
 					Name:    "cglib:cglib-nodep",
 					Version: "2.1.2",
-					Locations: []types.Location{
+					Locations: []ftypes.Location{
 						{
 							StartLine: 4,
 							EndLine:   4,
@@ -35,7 +35,7 @@ func TestParser_Parse(t *testing.T) {
 					ID:      "org.springframework:spring-asm:3.1.3.RELEASE",
 					Name:    "org.springframework:spring-asm",
 					Version: "3.1.3.RELEASE",
-					Locations: []types.Location{
+					Locations: []ftypes.Location{
 						{
 							StartLine: 5,
 							EndLine:   5,
@@ -46,7 +46,7 @@ func TestParser_Parse(t *testing.T) {
 					ID:      "org.springframework:spring-beans:5.0.5.RELEASE",
 					Name:    "org.springframework:spring-beans",
 					Version: "5.0.5.RELEASE",
-					Locations: []types.Location{
+					Locations: []ftypes.Location{
 						{
 							StartLine: 6,
 							EndLine:   6,
@@ -75,7 +75,7 @@ func TestParser_Parse(t *testing.T) {
 	}
 }
 
-func sortLibs(libs []types.Library) {
+func sortLibs(libs []ftypes.Package) {
 	sort.Slice(libs, func(i, j int) bool {
 		ret := strings.Compare(libs[i].Name, libs[j].Name)
 		if ret == 0 {

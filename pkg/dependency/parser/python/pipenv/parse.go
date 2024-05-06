@@ -7,7 +7,7 @@ import (
 	"github.com/liamg/jfather"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -22,11 +22,11 @@ type dependency struct {
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile lockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
@@ -36,20 +36,20 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to decode Pipenv.lock: %w", err)
 	}
 
-	var libs []types.Library
-	for pkgName, dependency := range lockFile.Default {
-		libs = append(libs, types.Library{
+	var pkgs []ftypes.Package
+	for pkgName, dep := range lockFile.Default {
+		pkgs = append(pkgs, ftypes.Package{
 			Name:    pkgName,
-			Version: strings.TrimLeft(dependency.Version, "="),
-			Locations: []types.Location{
+			Version: strings.TrimLeft(dep.Version, "="),
+			Locations: []ftypes.Location{
 				{
-					StartLine: dependency.StartLine,
-					EndLine:   dependency.EndLine,
+					StartLine: dep.StartLine,
+					EndLine:   dep.EndLine,
 				},
 			},
 		})
 	}
-	return libs, nil, nil
+	return pkgs, nil, nil
 }
 
 // UnmarshalJSONWithMetadata needed to detect start and end lines of deps

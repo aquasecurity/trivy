@@ -7,15 +7,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string // Test input file
-		want     []types.Library
-		wantDeps []types.Dependency
+		want     []ftypes.Package
+		wantDeps []ftypes.Dependency
 	}{
 		{
 			name:     "lock version v1",

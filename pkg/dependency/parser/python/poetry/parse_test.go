@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string
-		wantLibs []types.Library
-		wantDeps []types.Dependency
+		wantLibs []ftypes.Package
+		wantDeps []ftypes.Dependency
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{

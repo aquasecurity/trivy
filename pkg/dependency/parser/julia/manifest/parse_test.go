@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string // Test input file
-		want     []types.Library
-		wantDeps []types.Dependency
+		want     []ftypes.Package
+		wantDeps []ftypes.Dependency
 	}{
 		{
 			name:     "Manifest v1.6",
@@ -64,10 +64,10 @@ func TestParse(t *testing.T) {
 			gotLibs, gotDeps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			sort.Sort(types.Libraries(tt.want))
+			sort.Sort(ftypes.Packages(tt.want))
 			assert.Equal(t, tt.want, gotLibs)
 			if tt.wantDeps != nil {
-				sort.Sort(types.Dependencies(tt.wantDeps))
+				sort.Sort(ftypes.Dependencies(tt.wantDeps))
 				assert.Equal(t, tt.wantDeps, gotDeps)
 			}
 		})

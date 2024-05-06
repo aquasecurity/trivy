@@ -10,37 +10,37 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/dart/pub"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
+		want      []ftypes.Package
 		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
 			name:      "happy path",
 			inputFile: "testdata/happy.lock",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
 					ID:           "crypto@3.0.2",
 					Name:         "crypto",
 					Version:      "3.0.2",
-					Relationship: types.RelationshipDirect,
+					Relationship: ftypes.RelationshipDirect,
 				},
 				{
 					ID:           "flutter_test@0.0.0",
 					Name:         "flutter_test",
 					Version:      "0.0.0",
-					Relationship: types.RelationshipDirect,
+					Relationship: ftypes.RelationshipDirect,
 				},
 				{
 					ID:           "uuid@3.0.6",
 					Name:         "uuid",
 					Version:      "3.0.6",
-					Relationship: types.RelationshipIndirect,
+					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
 			wantErr: assert.NoError,
@@ -68,7 +68,7 @@ func TestParser_Parse(t *testing.T) {
 				return
 			}
 
-			sort.Sort(types.Libraries(gotLibs))
+			sort.Sort(ftypes.Packages(gotLibs))
 			assert.Equal(t, tt.want, gotLibs)
 		})
 	}
