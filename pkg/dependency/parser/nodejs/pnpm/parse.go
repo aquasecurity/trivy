@@ -2,12 +2,12 @@ package pnpm
 
 import (
 	"fmt"
+	"golang.org/x/exp/maps"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -147,46 +147,61 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 
 func (p *Parser) parseV9(lockFile LockFile) ([]types.Library, []types.Dependency) {
 	resolvedLibs := make(map[string]types.Library)
-	resolvedDeps := make(map[string][]string)
+	resolvedDeps := make(map[string]types.Dependency)
 
 	directDeps := make(map[string]any)
 	for n, d := range lo.Assign(lockFile.Importers.Root.DevDependencies, lockFile.Importers.Root.Dependencies) {
-		name, version := p.parseDepPath(packageID(n, d.Version), v6VersionSep)
-		directDeps[packageID(name, version)] = struct{}{}
+		directDeps[packageID(n, d.Version)] = struct{}{}
 	}
 
-	// Check all snapshots to get a list of resolved libraries and dependencies.
+	// Check all snapshots and save with resolved versions
+	resolvedSnapshots := make(map[string][]string)
 	for depPath, snapshot := range lockFile.Snapshots {
-		// snapshots use unresolved strings
-		// e.g. `debug@4.3.4(supports-color@8.1.1):`
-		resolvedSnapshotName, resolvedSnapshotVersion := p.parseDepPath(depPath, v6VersionSep)
-
-		id := packageID(resolvedSnapshotName, resolvedSnapshotVersion)
-		resolvedLibs[id] = types.Library{
-			ID:           id,
-			Name:         resolvedSnapshotName,
-			Version:      resolvedSnapshotVersion,
-			Relationship: lo.Ternary(isDirectLib(id, directDeps), types.RelationshipDirect, types.RelationshipIndirect),
-			Dev:          true, // Mark all libs as Dev. We will update this later.
-		}
+		name, version := p.parseDepPath(depPath, v6VersionSep)
 
 		var dependsOn []string
-		for name, ver := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
-			// Dependency can be unresolved
-			// e.g. dependencies:
-			//        debug: 4.3.4(supports-color@8.1.1)
-			snapshotID := packageID(name, ver)
-			resolvedDepName, resolvedDepVersion := p.parseDepPath(snapshotID, v6VersionSep)
-			// Don't include dependencies if `snapshots` don't contain them.
-			// e.g. `snapshots` contain optional deps.
-			// But peer deps are also marked as optional, but `snapshots` don't contain them.
-			if _, ok := lockFile.Snapshots[snapshotID]; ok {
-				dependsOn = append(dependsOn, packageID(resolvedDepName, resolvedDepVersion))
+		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
+			resolvedDepName, resolvedDepVer := p.parseDepPath(packageID(depName, depVer), v6VersionSep)
+			id := packageID(resolvedDepName, resolvedDepVer)
+			if _, ok := lockFile.Packages[id]; ok {
+				dependsOn = append(dependsOn, id)
 			}
 		}
 		if dependsOn != nil {
 			sort.Strings(dependsOn)
-			resolvedDeps[id] = dependsOn
+			resolvedSnapshots[packageID(name, version)] = dependsOn
+		}
+
+	}
+
+	for depPath, pkgInfo := range lockFile.Packages {
+		name, version, _ := strings.Cut(depPath, v6VersionSep)
+
+		// Remove versions for local packages/archives
+		if strings.HasPrefix(version, "file:") {
+			version = ""
+		}
+
+		if pkgInfo.Version != "" {
+			version = pkgInfo.Version
+		}
+
+		// Save lib
+		id := packageID(name, version)
+		resolvedLibs[id] = types.Library{
+			ID:           id,
+			Name:         name,
+			Version:      version,
+			Relationship: lo.Ternary(isDirectLib(id, directDeps), types.RelationshipDirect, types.RelationshipIndirect),
+			Dev:          true, // Mark all libs as Dev. We will update this later.
+		}
+
+		//Check child deps
+		if dependsOn, ok := resolvedSnapshots[id]; ok {
+			resolvedDeps[id] = types.Dependency{
+				ID:        id,
+				DependsOn: dependsOn,
+			}
 		}
 	}
 
@@ -195,19 +210,11 @@ func (p *Parser) parseV9(lockFile LockFile) ([]types.Library, []types.Dependency
 		p.markRootLibs(packageID(n, d.Version), resolvedLibs, resolvedDeps)
 	}
 
-	deps := lo.MapToSlice(resolvedDeps, func(id string, dependsOn []string) types.Dependency {
-		return types.Dependency{
-			ID:        id,
-			DependsOn: dependsOn,
-		}
-	})
-
-	libs := maps.Values(resolvedLibs)
-	return libs, deps
+	return maps.Values(resolvedLibs), maps.Values(resolvedDeps)
 }
 
 // markRootLibs sets `Dev` to false for non dev dependency.
-func (p *Parser) markRootLibs(id string, libs map[string]types.Library, deps map[string][]string) {
+func (p *Parser) markRootLibs(id string, libs map[string]types.Library, deps map[string]types.Dependency) {
 	lib, ok := libs[id]
 	if !ok {
 		return
@@ -217,7 +224,7 @@ func (p *Parser) markRootLibs(id string, libs map[string]types.Library, deps map
 	libs[id] = lib
 
 	// Update child deps
-	for _, depID := range deps[id] {
+	for _, depID := range deps[id].DependsOn {
 		p.markRootLibs(depID, libs, deps)
 	}
 	return
@@ -292,7 +299,7 @@ func (p *Parser) parseDepPath(depPath, versionSep string) (string, string) {
 	if _, err := semver.Parse(version); err != nil {
 		p.logger.Debug("Skip non-semver package", log.String("pkg_path", depPath),
 			log.String("version", version), log.Err(err))
-		return "", ""
+		return name, ""
 	}
 	return name, version
 }
