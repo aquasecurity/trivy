@@ -149,6 +149,10 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 	var excludedFiles []string
 
 	for _, e := range compiler.Errors {
+		if e.Location == nil {
+			continue
+		}
+
 		loc := e.Location.File
 
 		if lo.Contains(excludedFiles, loc) {
