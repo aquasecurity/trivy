@@ -41,7 +41,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			continue
 		}
 
-		lib := ftypes.Package{
+		pkg := ftypes.Package{
 			Name:    pkg.ID,
 			Version: pkg.Version,
 		}
