@@ -116,7 +116,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 }
 
 func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application) error {
-	for i, lib := range app.Packages {
+	for i, pkg := range app.Packages {
 		var licenses []string
 		for _, lic := range lib.Licenses {
 			// Parser adds `file://` prefix to filepath from `License-File` field
