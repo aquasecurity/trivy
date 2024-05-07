@@ -1,6 +1,6 @@
 package sum
 
-import "github.com/aquasecurity/trivy/pkg/dependency/types"
+import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
 	// docker run --name gomod --rm -it golang:1.15 bash
@@ -10,12 +10,12 @@ var (
 	// go mod init github.com/org/repo
 	// go get golang.org/x/xerrors
 	// go list -m all | awk 'NR>1 {sub(/^v/, "", $2); printf("{\""$1"\", \""$2"\", },\n")}'
-	GoModNormal = []types.Library{
+	GoModNormal = []ftypes.Package{
 		{Name: "golang.org/x/xerrors", Version: "0.0.0-20200804184101-5ec99f83aff1"},
 	}
 
 	// https://github.com/uudashr/gopkgs/blob/616744904701ef01d868da4b66aad0e6856c361d/v2/go.sum
-	GoModEmptyLine = []types.Library{
+	GoModEmptyLine = []ftypes.Package{
 		{Name: "github.com/karrick/godirwalk", Version: "1.12.0"},
 		{Name: "github.com/pkg/errors", Version: "0.8.1"},
 	}
@@ -30,7 +30,7 @@ var (
 	// go get github.com/stretchr/testify
 	// go get github.com/BurntSushi/toml
 	// go list -m all | awk 'NR>1 {sub(/^v/, "", $2); printf("{\""$1"\", \""$2"\", },\n")}'
-	GoModMany = []types.Library{
+	GoModMany = []ftypes.Package{
 		{Name: "github.com/BurntSushi/toml", Version: "0.3.1"},
 		{Name: "github.com/cpuguy83/go-md2man/v2", Version: "2.0.0-20190314233015-f79a8a8ca69d"},
 		{Name: "github.com/davecgh/go-spew", Version: "1.1.0"},
@@ -53,7 +53,7 @@ var (
 	// go mod init github.com/org/repo
 	// go get github.com/aquasecurity/trivy
 	// go list -m all | awk 'NR>1 {sub(/^v/, "", $2); printf("{\""$1"\", \""$2"\", },\n")}'
-	GoModTrivy = []types.Library{
+	GoModTrivy = []ftypes.Package{
 		{Name: "cloud.google.com/go", Version: "0.65.0"},
 		{Name: "cloud.google.com/go/bigquery", Version: "1.8.0"},
 		{Name: "cloud.google.com/go/datastore", Version: "1.1.0"},

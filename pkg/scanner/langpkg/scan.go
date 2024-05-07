@@ -37,7 +37,7 @@ func NewScanner() Scanner {
 func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.Results {
 	var results types.Results
 	for _, app := range target.Applications {
-		if len(app.Libraries) == 0 {
+		if len(app.Packages) == 0 {
 			continue
 		}
 
@@ -45,7 +45,7 @@ func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.R
 			Target:   targetName(app.Type, app.FilePath),
 			Class:    types.ClassLangPkg,
 			Type:     app.Type,
-			Packages: app.Libraries,
+			Packages: app.Packages,
 		})
 	}
 	return results
@@ -61,7 +61,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.Sca
 	var results types.Results
 	printedTypes := make(map[ftypes.LangType]struct{})
 	for _, app := range apps {
-		if len(app.Libraries) == 0 {
+		if len(app.Packages) == 0 {
 			continue
 		}
 
@@ -74,9 +74,9 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.Sca
 		}
 
 		log.DebugContext(ctx, "Scanning packages from the file", log.String("file_path", app.FilePath))
-		vulns, err := library.Detect(ctx, app.Type, app.Libraries)
+		vulns, err := library.Detect(ctx, app.Type, app.Packages)
 		if err != nil {
-			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
+			return nil, xerrors.Errorf("failed vulnerability detection of packages: %w", err)
 		} else if len(vulns) == 0 {
 			continue
 		}

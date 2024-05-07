@@ -111,7 +111,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -200,7 +200,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
@@ -623,7 +623,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -672,7 +672,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
@@ -833,7 +833,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -885,7 +885,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
@@ -980,7 +980,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 
 			sort.Sort(got.Packages)
 			for _, app := range got.Applications {
-				sort.Sort(app.Libraries)
+				sort.Sort(app.Packages)
 			}
 
 			sort.Slice(got.CustomResources, func(i, j int) bool {

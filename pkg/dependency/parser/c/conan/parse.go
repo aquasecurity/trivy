@@ -10,7 +10,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -44,27 +43,27 @@ type Parser struct {
 	logger *log.Logger
 }
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{
 		logger: log.WithPrefix("conan"),
 	}
 }
 
-func (p *Parser) parseV1(lock LockFile) ([]types.Library, []types.Dependency, error) {
-	var libs []types.Library
-	var deps []types.Dependency
+func (p *Parser) parseV1(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, error) {
+	var pkgs []ftypes.Package
+	var deps []ftypes.Dependency
 	var directDeps []string
 	if root, ok := lock.GraphLock.Nodes["0"]; ok {
 		directDeps = root.Requires
 	}
 
 	// Parse packages
-	parsed := make(map[string]types.Library)
+	parsed := make(map[string]ftypes.Package)
 	for i, node := range lock.GraphLock.Nodes {
 		if node.Ref == "" {
 			continue
 		}
-		lib, err := toLibrary(node.Ref, node.StartLine, node.EndLine)
+		pkg, err := toPackage(node.Ref, node.StartLine, node.EndLine)
 		if err != nil {
 			p.logger.Debug("Parse ref error", log.Err(err))
 			continue
@@ -72,14 +71,14 @@ func (p *Parser) parseV1(lock LockFile) ([]types.Library, []types.Dependency, er
 
 		// Determine if the package is a direct dependency or not
 		direct := slices.Contains(directDeps, i)
-		lib.Relationship = lo.Ternary(direct, types.RelationshipDirect, types.RelationshipIndirect)
+		pkg.Relationship = lo.Ternary(direct, ftypes.RelationshipDirect, ftypes.RelationshipIndirect)
 
-		parsed[i] = lib
+		parsed[i] = pkg
 	}
 
 	// Parse dependency graph
 	for i, node := range lock.GraphLock.Nodes {
-		lib, ok := parsed[i]
+		pkg, ok := parsed[i]
 		if !ok {
 			continue
 		}
@@ -91,33 +90,33 @@ func (p *Parser) parseV1(lock LockFile) ([]types.Library, []types.Dependency, er
 			}
 		}
 		if len(childDeps) != 0 {
-			deps = append(deps, types.Dependency{
-				ID:        lib.ID,
+			deps = append(deps, ftypes.Dependency{
+				ID:        pkg.ID,
 				DependsOn: childDeps,
 			})
 		}
 
-		libs = append(libs, lib)
+		pkgs = append(pkgs, pkg)
 	}
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
-func (p *Parser) parseV2(lock LockFile) ([]types.Library, []types.Dependency, error) {
-	var libs []types.Library
+func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, error) {
+	var pkgs []ftypes.Package
 
 	for _, req := range lock.Requires {
-		lib, err := toLibrary(req.Dependency, req.StartLine, req.EndLine)
+		pkg, err := toPackage(req.Dependency, req.StartLine, req.EndLine)
 		if err != nil {
-			p.logger.Debug("Creating library entry from requirement failed", err)
+			p.logger.Debug("Creating package entry from requirement failed", err)
 			continue
 		}
 
-		libs = append(libs, lib)
+		pkgs = append(pkgs, pkg)
 	}
-	return libs, []types.Dependency{}, nil
+	return pkgs, []ftypes.Dependency{}, nil
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lock LockFile
 
 	input, err := io.ReadAll(r)
@@ -153,16 +152,16 @@ func parsePackage(text string) (string, string, error) {
 	return ss[0], ss[1], nil
 }
 
-func toLibrary(pkg string, startLine, endLine int) (types.Library, error) {
+func toPackage(pkg string, startLine, endLine int) (ftypes.Package, error) {
 	name, version, err := parsePackage(pkg)
 	if err != nil {
-		return types.Library{}, err
+		return ftypes.Package{}, err
 	}
-	return types.Library{
+	return ftypes.Package{
 		ID:      dependency.ID(ftypes.Conan, name, version),
 		Name:    name,
 		Version: version,
-		Locations: []types.Location{
+		Locations: []ftypes.Location{
 			{
 				StartLine: startLine,
 				EndLine:   endLine,

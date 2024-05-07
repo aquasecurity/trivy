@@ -27,7 +27,7 @@ message PackageInfo {
 message Application {
   string           type      = 1;
   string           file_path = 2;
-  repeated Package libraries = 3;
+  repeated Package packages  = 3;
 }
 
 message Package {

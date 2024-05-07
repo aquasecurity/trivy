@@ -25,7 +25,7 @@ func Test_environmentAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.CondaEnv,
 						FilePath: "testdata/environment.yaml",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name: "_libgcc_mutex",
 								Locations: []types.Location{

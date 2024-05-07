@@ -36,6 +36,17 @@
           "Layer": {}
         },
         {
+          "ID": "werkzeug@0.14",
+          "Name": "werkzeug",
+          "Identifier": {
+            "PURL": "pkg:pypi/werkzeug@0.14",
+            "UID": "4176be111ad01070"
+          },
+          "Version": "0.14",
+          "Relationship": "direct",
+          "Layer": {}
+        },
+        {
           "ID": "colorama@0.4.6",
           "Name": "colorama",
           "Identifier": {
@@ -45,17 +56,6 @@
           "Version": "0.4.6",
           "Indirect": true,
           "Relationship": "indirect",
-          "Layer": {}
-        },
-        {
-          "ID": "werkzeug@0.14",
-          "Name": "werkzeug",
-          "Identifier": {
-            "PURL": "pkg:pypi/werkzeug@0.14",
-            "UID": "4176be111ad01070"
-          },
-          "Version": "0.14",
-          "Relationship": "direct",
           "Layer": {}
         }
       ],

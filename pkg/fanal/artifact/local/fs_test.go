@@ -174,14 +174,14 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					BlobID: "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: types.Packages{
+								Packages: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
@@ -196,9 +196,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+				ID:   "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				BlobIDs: []string{
-					"sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					"sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				},
 			},
 		},
@@ -209,14 +209,14 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					BlobID: "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: types.Packages{
+								Packages: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
@@ -231,9 +231,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+				ID:   "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				BlobIDs: []string{
-					"sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					"sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				},
 			},
 		},

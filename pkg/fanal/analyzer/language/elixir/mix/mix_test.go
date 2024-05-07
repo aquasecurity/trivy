@@ -25,7 +25,7 @@ func Test_mixLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Hex,
 						FilePath: "testdata/happy.mix.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "bunt@0.2.0",
 								Name:    "bunt",

@@ -20,7 +20,6 @@ import (
 	"github.com/aquasecurity/go-version/pkg/semver"
 	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/rust/cargo"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -42,7 +41,7 @@ var requiredFiles = []string{
 
 type cargoAnalyzer struct {
 	logger     *log.Logger
-	lockParser godeptypes.Parser
+	lockParser language.Parser
 	comparer   compare.GenericComparer
 }
 
@@ -75,7 +74,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 			a.logger.Warn("Unable to parse Cargo.toml q to identify direct dependencies",
 				log.String("path", path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
 		}
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 
 		return nil
@@ -116,16 +115,16 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
-	// Cargo.toml file can contain same libraries with different versions.
+	// Cargo.toml file can contain same packages with different versions.
 	// Save versions separately for version comparison by comparator
-	pkgIDs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
 	// Identify direct dependencies
 	pkgs := make(map[string]types.Package)
 	for name, constraint := range directDeps {
-		for _, pkg := range app.Libraries {
+		for _, pkg := range app.Packages {
 			if pkg.Name != name {
 				continue
 			}
@@ -152,8 +151,8 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	pkgSlice := maps.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
-	// Save only prod libraries
-	app.Libraries = pkgSlice
+	// Save only prod packages
+	app.Packages = pkgSlice
 	return nil
 }
 
