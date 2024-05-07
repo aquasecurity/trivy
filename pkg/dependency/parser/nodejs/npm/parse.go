@@ -83,7 +83,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 }
 
 func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftypes.Dependency) {
-	libs := make(map[string]ftypes.Package, len(packages)-1)
+	pkgs := make(map[string]ftypes.Package, len(packages)-1)
 	var deps []ftypes.Dependency
 
 	// Resolve links first
