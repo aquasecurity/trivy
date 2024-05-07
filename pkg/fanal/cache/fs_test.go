@@ -189,7 +189,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "php-app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "guzzlehttp/guzzle",
 									Version: "6.2.0",
@@ -235,7 +235,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				    {
 				      "Type": "composer",
 				      "FilePath": "php-app/composer.lock",
-				      "Libraries": [
+				      "Packages": [
                         {
                            "Name":"guzzlehttp/guzzle",
                            "Version":"6.2.0",

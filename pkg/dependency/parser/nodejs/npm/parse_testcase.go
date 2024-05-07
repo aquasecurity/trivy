@@ -1,6 +1,6 @@
 package npm
 
-import "github.com/aquasecurity/trivy/pkg/dependency/types"
+import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
 	// docker run --name node --rm -it node@sha256:51dd437f31812df71108b81385e2945071ec813d5815fa3403855669c8f3432b sh
@@ -10,22 +10,22 @@ var (
 	// npm install --save-dev debug@2.5.2
 	// npm install --save-optional promise
 	// npm i --lockfile-version 1
-	// libraries are filled manually
+	// packages are filled manually
 
-	npmV1Libs = []types.Library{
+	npmV1Pkgs = []ftypes.Package{
 		{
 			ID:           "@babel/helper-string-parser@7.19.4",
 			Name:         "@babel/helper-string-parser",
 			Version:      "7.19.4",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/@babel/helper-string-parser/-/helper-string-parser-7.19.4.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 7,
 					EndLine:   11,
@@ -37,14 +37,14 @@ var (
 			Name:         "asap",
 			Version:      "2.0.6",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 12,
 					EndLine:   17,
@@ -56,14 +56,14 @@ var (
 			Name:         "body-parser",
 			Version:      "1.18.3",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/body-parser/-/body-parser-1.18.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 18,
 					EndLine:   49,
@@ -75,14 +75,14 @@ var (
 			Name:         "bytes",
 			Version:      "3.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/bytes/-/bytes-3.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 50,
 					EndLine:   54,
@@ -94,14 +94,14 @@ var (
 			Name:         "content-type",
 			Version:      "1.0.5",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 55,
 					EndLine:   59,
@@ -113,14 +113,14 @@ var (
 			Name:         "debug",
 			Version:      "2.5.2",
 			Dev:          true,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/debug/-/debug-2.5.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 60,
 					EndLine:   76,
@@ -132,14 +132,14 @@ var (
 			Name:         "debug",
 			Version:      "2.6.9",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 35,
 					EndLine:   42,
@@ -155,14 +155,14 @@ var (
 			Name:         "depd",
 			Version:      "1.1.2",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 77,
 					EndLine:   81,
@@ -174,14 +174,14 @@ var (
 			Name:         "ee-first",
 			Version:      "1.1.1",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 82,
 					EndLine:   86,
@@ -193,14 +193,14 @@ var (
 			Name:         "encodeurl",
 			Version:      "1.0.2",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 87,
 					EndLine:   91,
@@ -212,14 +212,14 @@ var (
 			Name:         "escape-html",
 			Version:      "1.0.3",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 92,
 					EndLine:   96,
@@ -231,14 +231,14 @@ var (
 			Name:         "finalhandler",
 			Version:      "1.1.1",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/finalhandler/-/finalhandler-1.1.1.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 97,
 					EndLine:   125,
@@ -250,14 +250,14 @@ var (
 			Name:         "http-errors",
 			Version:      "1.6.3",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/http-errors/-/http-errors-1.6.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 126,
 					EndLine:   136,
@@ -269,14 +269,14 @@ var (
 			Name:         "iconv-lite",
 			Version:      "0.4.23",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.23.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 137,
 					EndLine:   144,
@@ -288,14 +288,14 @@ var (
 			Name:         "inherits",
 			Version:      "2.0.3",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 145,
 					EndLine:   149,
@@ -307,14 +307,14 @@ var (
 			Name:         "media-typer",
 			Version:      "0.3.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 150,
 					EndLine:   154,
@@ -326,14 +326,14 @@ var (
 			Name:         "mime-db",
 			Version:      "1.52.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 155,
 					EndLine:   159,
@@ -345,14 +345,14 @@ var (
 			Name:         "mime-types",
 			Version:      "2.1.35",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 160,
 					EndLine:   167,
@@ -364,14 +364,14 @@ var (
 			Name:         "ms",
 			Version:      "0.7.2",
 			Dev:          true,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 69,
 					EndLine:   74,
@@ -383,14 +383,14 @@ var (
 			Name:         "ms",
 			Version:      "1.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-1.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 168,
 					EndLine:   172,
@@ -402,14 +402,14 @@ var (
 			Name:         "ms",
 			Version:      "2.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 43,
 					EndLine:   47,
@@ -425,14 +425,14 @@ var (
 			Name:         "on-finished",
 			Version:      "2.3.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/on-finished/-/on-finished-2.3.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 173,
 					EndLine:   180,
@@ -444,14 +444,14 @@ var (
 			Name:         "parseurl",
 			Version:      "1.3.3",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 181,
 					EndLine:   185,
@@ -463,14 +463,14 @@ var (
 			Name:         "promise",
 			Version:      "8.3.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/promise/-/promise-8.3.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 186,
 					EndLine:   194,
@@ -482,14 +482,14 @@ var (
 			Name:         "qs",
 			Version:      "6.5.2",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/qs/-/qs-6.5.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 195,
 					EndLine:   199,
@@ -501,14 +501,14 @@ var (
 			Name:         "raw-body",
 			Version:      "2.3.3",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/raw-body/-/raw-body-2.3.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 200,
 					EndLine:   210,
@@ -520,14 +520,14 @@ var (
 			Name:         "safer-buffer",
 			Version:      "2.1.2",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 211,
 					EndLine:   215,
@@ -539,14 +539,14 @@ var (
 			Name:         "setprototypeof",
 			Version:      "1.1.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.1.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 216,
 					EndLine:   220,
@@ -558,14 +558,14 @@ var (
 			Name:         "statuses",
 			Version:      "1.4.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/statuses/-/statuses-1.4.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 221,
 					EndLine:   225,
@@ -577,14 +577,14 @@ var (
 			Name:         "type-is",
 			Version:      "1.6.18",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 226,
 					EndLine:   234,
@@ -596,14 +596,14 @@ var (
 			Name:         "unpipe",
 			Version:      "1.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipUnknown,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipUnknown,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 235,
 					EndLine:   239,
@@ -613,7 +613,7 @@ var (
 	}
 
 	// dependencies are filled manually
-	npmDeps = []types.Dependency{
+	npmDeps = []ftypes.Dependency{
 		{
 			ID: "body-parser@1.18.3",
 			DependsOn: []string{
@@ -694,25 +694,25 @@ var (
 
 	// ... and
 	// npm i --lockfile-version 2
-	// same as npmV1Libs but change `Indirect` field to false for `body-parser@1.18.3`, `finalhandler@1.1.1`, `@babel/helper-string-parser@7.19.4`, `promise@8.3.0` and `ms@1.0.0`  libraries.
+	// same as npmV1Pkgs but change `Indirect` field to false for `body-parser@1.18.3`, `finalhandler@1.1.1`, `@babel/helper-string-parser@7.19.4`, `promise@8.3.0` and `ms@1.0.0`  packages.
 	// also need to get locations from `packages` struct
 	// --- lockfile version 3 ---
 	// npm i --lockfile-version 3
-	// same as npmV2Libs.
-	npmV2Libs = []types.Library{
+	// same as npmV2Pkgs.
+	npmV2Pkgs = []ftypes.Package{
 		{
 			ID:           "@babel/helper-string-parser@7.19.4",
 			Name:         "@babel/helper-string-parser",
 			Version:      "7.19.4",
 			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/@babel/helper-string-parser/-/helper-string-parser-7.19.4.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 24,
 					EndLine:   31,
@@ -724,14 +724,14 @@ var (
 			Name:         "body-parser",
 			Version:      "1.18.3",
 			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/body-parser/-/body-parser-1.18.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 38,
 					EndLine:   57,
@@ -743,14 +743,14 @@ var (
 			Name:         "debug",
 			Version:      "2.5.2",
 			Dev:          true,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/debug/-/debug-2.5.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 87,
 					EndLine:   95,
@@ -762,14 +762,14 @@ var (
 			Name:         "finalhandler",
 			Version:      "1.1.1",
 			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/finalhandler/-/finalhandler-1.1.1.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 128,
 					EndLine:   144,
@@ -781,14 +781,14 @@ var (
 			Name:         "ms",
 			Version:      "1.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-1.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 215,
 					EndLine:   219,
@@ -800,14 +800,14 @@ var (
 			Name:         "promise",
 			Version:      "8.3.0",
 			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/promise/-/promise-8.3.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 239,
 					EndLine:   247,
@@ -819,14 +819,14 @@ var (
 			Name:         "asap",
 			Version:      "2.0.6",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 32,
 					EndLine:   37,
@@ -838,14 +838,14 @@ var (
 			Name:         "bytes",
 			Version:      "3.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/bytes/-/bytes-3.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 71,
 					EndLine:   78,
@@ -857,14 +857,14 @@ var (
 			Name:         "content-type",
 			Version:      "1.0.5",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 79,
 					EndLine:   86,
@@ -876,14 +876,14 @@ var (
 			Name:         "debug",
 			Version:      "2.6.9",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 58,
 					EndLine:   65,
@@ -899,14 +899,14 @@ var (
 			Name:         "depd",
 			Version:      "1.1.2",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 102,
 					EndLine:   109,
@@ -918,14 +918,14 @@ var (
 			Name:         "ee-first",
 			Version:      "1.1.1",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 110,
 					EndLine:   114,
@@ -937,14 +937,14 @@ var (
 			Name:         "encodeurl",
 			Version:      "1.0.2",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 115,
 					EndLine:   122,
@@ -956,14 +956,14 @@ var (
 			Name:         "escape-html",
 			Version:      "1.0.3",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 123,
 					EndLine:   127,
@@ -975,14 +975,14 @@ var (
 			Name:         "http-errors",
 			Version:      "1.6.3",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/http-errors/-/http-errors-1.6.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 158,
 					EndLine:   171,
@@ -994,14 +994,14 @@ var (
 			Name:         "iconv-lite",
 			Version:      "0.4.23",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.23.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 172,
 					EndLine:   182,
@@ -1013,14 +1013,14 @@ var (
 			Name:         "inherits",
 			Version:      "2.0.3",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 183,
 					EndLine:   187,
@@ -1032,14 +1032,14 @@ var (
 			Name:         "media-typer",
 			Version:      "0.3.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 188,
 					EndLine:   195,
@@ -1051,14 +1051,14 @@ var (
 			Name:         "mime-db",
 			Version:      "1.52.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 196,
 					EndLine:   203,
@@ -1070,14 +1070,14 @@ var (
 			Name:         "mime-types",
 			Version:      "2.1.35",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 204,
 					EndLine:   214,
@@ -1089,14 +1089,14 @@ var (
 			Name:         "ms",
 			Version:      "0.7.2",
 			Dev:          true,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 96,
 					EndLine:   101,
@@ -1108,14 +1108,14 @@ var (
 			Name:         "ms",
 			Version:      "2.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 66,
 					EndLine:   70,
@@ -1131,14 +1131,14 @@ var (
 			Name:         "on-finished",
 			Version:      "2.3.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/on-finished/-/on-finished-2.3.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 220,
 					EndLine:   230,
@@ -1150,14 +1150,14 @@ var (
 			Name:         "parseurl",
 			Version:      "1.3.3",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 231,
 					EndLine:   238,
@@ -1169,14 +1169,14 @@ var (
 			Name:         "qs",
 			Version:      "6.5.2",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/qs/-/qs-6.5.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 248,
 					EndLine:   255,
@@ -1188,14 +1188,14 @@ var (
 			Name:         "raw-body",
 			Version:      "2.3.3",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/raw-body/-/raw-body-2.3.3.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 256,
 					EndLine:   269,
@@ -1207,14 +1207,14 @@ var (
 			Name:         "safer-buffer",
 			Version:      "2.1.2",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 270,
 					EndLine:   274,
@@ -1226,14 +1226,14 @@ var (
 			Name:         "setprototypeof",
 			Version:      "1.1.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.1.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 275,
 					EndLine:   279,
@@ -1245,14 +1245,14 @@ var (
 			Name:         "statuses",
 			Version:      "1.4.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/statuses/-/statuses-1.4.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 280,
 					EndLine:   287,
@@ -1264,14 +1264,14 @@ var (
 			Name:         "type-is",
 			Version:      "1.6.18",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 288,
 					EndLine:   299,
@@ -1283,14 +1283,14 @@ var (
 			Name:         "unpipe",
 			Version:      "1.0.0",
 			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 300,
 					EndLine:   307,
@@ -1312,20 +1312,20 @@ var (
 	// grep -v "functions/func1" ./package.json > tmpfile && mv tmpfile ./package.json
 	// sed -i 's/functions\/nested_func/functions\/*/g' package.json
 	// npm update
-	// libraries are filled manually
-	npmV3WithWorkspaceLibs = []types.Library{
+	// packages are filled manually
+	npmV3WithWorkspacePkgs = []ftypes.Package{
 		{
 			ID:           "debug@2.5.2",
 			Name:         "debug",
 			Version:      "2.5.2",
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/debug/-/debug-2.5.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 39,
 					EndLine:   46,
@@ -1336,14 +1336,14 @@ var (
 			ID:           "function1",
 			Name:         "function1",
 			Version:      "",
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "functions/func1",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 18,
 					EndLine:   23,
@@ -1354,14 +1354,14 @@ var (
 			ID:           "nested_func@1.0.0",
 			Name:         "nested_func",
 			Version:      "1.0.0",
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "functions/nested_func",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 24,
 					EndLine:   30,
@@ -1372,14 +1372,14 @@ var (
 			ID:           "debug@2.6.9",
 			Name:         "debug",
 			Version:      "2.6.9",
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 31,
 					EndLine:   38,
@@ -1390,14 +1390,14 @@ var (
 			ID:           "ms@0.7.2",
 			Name:         "ms",
 			Version:      "0.7.2",
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 47,
 					EndLine:   51,
@@ -1408,14 +1408,14 @@ var (
 			ID:           "ms@2.0.0",
 			Name:         "ms",
 			Version:      "2.0.0",
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 56,
 					EndLine:   60,
@@ -1424,7 +1424,7 @@ var (
 		},
 	}
 
-	npmV3WithWorkspaceDeps = []types.Dependency{
+	npmV3WithWorkspaceDeps = []ftypes.Dependency{
 		{
 			ID:        "debug@2.5.2",
 			DependsOn: []string{"ms@0.7.2"},
@@ -1448,20 +1448,20 @@ var (
 	// npm init --force
 	// npm init -w ./functions/func1 --force
 	// npm install --save debug@2.6.9 -w func1
-	// libraries are filled manually
-	npmV3WithoutRootDepsField = []types.Library{
+	// packages are filled manually
+	npmV3WithoutRootDepsField = []ftypes.Package{
 		{
 			ID:           "func1@1.0.0",
 			Name:         "func1",
 			Version:      "1.0.0",
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "functions/func1",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 15,
 					EndLine:   21,
@@ -1472,14 +1472,14 @@ var (
 			ID:           "debug@2.6.9",
 			Name:         "debug",
 			Version:      "2.6.9",
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 22,
 					EndLine:   29,
@@ -1490,14 +1490,14 @@ var (
 			ID:           "ms@2.0.0",
 			Name:         "ms",
 			Version:      "2.0.0",
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 34,
 					EndLine:   38,
@@ -1506,7 +1506,7 @@ var (
 		},
 	}
 
-	npmV3WithoutRootDepsFieldDeps = []types.Dependency{
+	npmV3WithoutRootDepsFieldDeps = []ftypes.Dependency{
 		{
 			ID:        "debug@2.6.9",
 			DependsOn: []string{"ms@2.0.0"},
@@ -1517,20 +1517,20 @@ var (
 		},
 	}
 
-	npmV3WithSameDevAndNonDevLibs = []types.Library{
+	npmV3WithSameDevAndNonDevPkgs = []ftypes.Package{
 		{
 			ID:           "fsevents@1.2.9",
 			Name:         "fsevents",
 			Version:      "1.2.9",
-			Relationship: types.RelationshipDirect,
+			Relationship: ftypes.RelationshipDirect,
 			Dev:          true,
-			ExternalReferences: []types.ExternalRef{
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/fsevents/-/fsevents-1.2.9.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 18,
 					EndLine:   37,
@@ -1541,15 +1541,15 @@ var (
 			ID:           "minimist@0.0.8",
 			Name:         "minimist",
 			Version:      "0.0.8",
-			Relationship: types.RelationshipDirect,
+			Relationship: ftypes.RelationshipDirect,
 			Dev:          false,
-			ExternalReferences: []types.ExternalRef{
+			ExternalReferences: []ftypes.ExternalRef{
 				{
-					Type: types.RefOther,
+					Type: ftypes.RefOther,
 					URL:  "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz",
 				},
 			},
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 38,
 					EndLine:   43,
@@ -1564,9 +1564,9 @@ var (
 			ID:           "mkdirp@0.5.1",
 			Name:         "mkdirp",
 			Version:      "0.5.1",
-			Relationship: types.RelationshipIndirect,
+			Relationship: ftypes.RelationshipIndirect,
 			Dev:          true,
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 44,
 					EndLine:   55,
@@ -1577,9 +1577,9 @@ var (
 			ID:           "node-pre-gyp@0.12.0",
 			Name:         "node-pre-gyp",
 			Version:      "0.12.0",
-			Relationship: types.RelationshipIndirect,
+			Relationship: ftypes.RelationshipIndirect,
 			Dev:          true,
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 56,
 					EndLine:   67,
@@ -1588,7 +1588,7 @@ var (
 		},
 	}
 
-	npmV3WithSameDevAndNonDevDeps = []types.Dependency{
+	npmV3WithSameDevAndNonDevDeps = []ftypes.Dependency{
 		{
 			ID:        "fsevents@1.2.9",
 			DependsOn: []string{"node-pre-gyp@0.12.0"},

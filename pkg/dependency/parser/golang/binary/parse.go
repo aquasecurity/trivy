@@ -11,7 +11,7 @@ import (
 	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -39,22 +39,22 @@ type Parser struct {
 	logger *log.Logger
 }
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{
 		logger: log.WithPrefix("gobinary"),
 	}
 }
 
 // Parse scans file to try to report the Go and module versions.
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	info, err := buildinfo.Read(r)
 	if err != nil {
 		return nil, nil, convertError(err)
 	}
 
 	ldflags := p.ldFlags(info.Settings)
-	libs := make([]types.Library, 0, len(info.Deps)+2)
-	libs = append(libs, []types.Library{
+	pkgs := make(ftypes.Packages, 0, len(info.Deps)+2)
+	pkgs = append(pkgs, []ftypes.Package{
 		{
 			// Add main module
 			Name: info.Main.Path,
@@ -64,13 +64,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			// as a secondary source.
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
 			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.ParseLDFlags(info.Main.Path, ldflags)),
-			Relationship: types.RelationshipRoot,
+			Relationship: ftypes.RelationshipRoot,
 		},
 		{
 			// Add the Go version used to build this binary.
 			Name:         "stdlib",
 			Version:      strings.TrimPrefix(info.GoVersion, "go"),
-			Relationship: types.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+			Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 		},
 	}...)
 
@@ -87,14 +87,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			mod = dep.Replace
 		}
 
-		libs = append(libs, types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			Name:    mod.Path,
 			Version: p.checkVersion(mod.Path, mod.Version),
 		})
 	}
 
-	sort.Sort(types.Libraries(libs))
-	return libs, nil, nil
+	sort.Sort(pkgs)
+	return pkgs, nil, nil
 }
 
 // checkVersion detects `(devel)` versions, removes them and adds a debug message about it.

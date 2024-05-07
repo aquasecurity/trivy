@@ -8,23 +8,23 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/conda/environment"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    []types.Library
+		want    []ftypes.Package
 		wantErr string
 	}{
 		{
 			name:  "happy path",
 			input: "testdata/happy.yaml",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
 					Name: "_openmp_mutex",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 6,
 							EndLine:   6,
@@ -34,7 +34,7 @@ func TestParse(t *testing.T) {
 				{
 					Name:    "blas",
 					Version: "1.0",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 5,
 							EndLine:   5,
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 				{
 					Name:    "bzip2",
 					Version: "1.0.8",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 19,
 							EndLine:   19,
@@ -54,7 +54,7 @@ func TestParse(t *testing.T) {
 				{
 					Name:    "ca-certificates",
 					Version: "2024.2",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 7,
 							EndLine:   7,
@@ -63,7 +63,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name: "ld_impl_linux-aarch64",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 8,
 							EndLine:   8,
@@ -72,7 +72,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name: "libblas",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 9,
 							EndLine:   9,
@@ -81,7 +81,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name: "libcblas",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 10,
 							EndLine:   10,
@@ -91,7 +91,7 @@ func TestParse(t *testing.T) {
 				{
 					Name:    "libexpat",
 					Version: "2.6.2",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 11,
 							EndLine:   11,
@@ -101,7 +101,7 @@ func TestParse(t *testing.T) {
 				{
 					Name:    "libffi",
 					Version: "3.4.2",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 12,
 							EndLine:   12,
@@ -110,7 +110,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name: "libgcc-ng",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 13,
 							EndLine:   13,
@@ -119,7 +119,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name: "libgfortran-ng",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 14,
 							EndLine:   14,
@@ -128,7 +128,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name: "libgfortran5",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 15,
 							EndLine:   15,
@@ -138,7 +138,7 @@ func TestParse(t *testing.T) {
 				{
 					Name:    "libgomp",
 					Version: "13.2.0",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 16,
 							EndLine:   16,
@@ -147,7 +147,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name: "liblapack",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 17,
 							EndLine:   17,
@@ -157,7 +157,7 @@ func TestParse(t *testing.T) {
 				{
 					Name:    "libnsl",
 					Version: "2.0.1",
-					Locations: types.Locations{
+					Locations: ftypes.Locations{
 						{
 							StartLine: 18,
 							EndLine:   18,

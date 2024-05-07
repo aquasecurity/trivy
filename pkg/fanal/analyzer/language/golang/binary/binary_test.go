@@ -28,7 +28,7 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "testdata/executable_gobinary",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:         "github.com/aquasecurity/test",
 								Version:      "",

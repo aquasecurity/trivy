@@ -1,6 +1,6 @@
 package lock
 
-import "github.com/aquasecurity/trivy/pkg/dependency/types"
+import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
 	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:latest
@@ -11,13 +11,13 @@ var (
 	// dotnet add package NuGet.Frameworks
 	// dotnet restore --use-lock-file
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"'
-	nuGetSimple = []types.Library{
+	nuGetSimple = []ftypes.Package{
 		{
 			ID:           "Newtonsoft.Json@12.0.3",
 			Name:         "Newtonsoft.Json",
 			Version:      "12.0.3",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 5,
 					EndLine:   10,
@@ -28,8 +28,8 @@ var (
 			ID:           "NuGet.Frameworks@5.7.0",
 			Name:         "NuGet.Frameworks",
 			Version:      "5.7.0",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 11,
 					EndLine:   16,
@@ -37,7 +37,7 @@ var (
 			},
 		},
 	}
-	nuGetSimpleDeps []types.Dependency
+	nuGetSimpleDeps []ftypes.Dependency
 
 	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:latest
 	// apt -y update && apt -y install jq
@@ -47,13 +47,13 @@ var (
 	// dotnet add package NuGet.Frameworks
 	// dotnet restore --use-lock-file
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"'
-	nuGetSubDependencies = []types.Library{
+	nuGetSubDependencies = []ftypes.Package{
 		{
 			ID:           "Microsoft.Extensions.ApiDescription.Server@3.0.0",
 			Name:         "Microsoft.Extensions.ApiDescription.Server",
 			Version:      "3.0.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 29,
 					EndLine:   33,
@@ -64,8 +64,8 @@ var (
 			ID:           "Microsoft.OpenApi@1.1.4",
 			Name:         "Microsoft.OpenApi",
 			Version:      "1.1.4",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 34,
 					EndLine:   38,
@@ -76,8 +76,8 @@ var (
 			ID:           "Newtonsoft.Json@12.0.3",
 			Name:         "Newtonsoft.Json",
 			Version:      "12.0.3",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 5,
 					EndLine:   10,
@@ -88,8 +88,8 @@ var (
 			ID:           "NuGet.Frameworks@5.7.0",
 			Name:         "NuGet.Frameworks",
 			Version:      "5.7.0",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 11,
 					EndLine:   16,
@@ -100,8 +100,8 @@ var (
 			ID:           "Swashbuckle.AspNetCore@5.5.1",
 			Name:         "Swashbuckle.AspNetCore",
 			Version:      "5.5.1",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 17,
 					EndLine:   28,
@@ -112,8 +112,8 @@ var (
 			ID:           "Swashbuckle.AspNetCore.Swagger@5.5.1",
 			Name:         "Swashbuckle.AspNetCore.Swagger",
 			Version:      "5.5.1",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 39,
 					EndLine:   46,
@@ -124,8 +124,8 @@ var (
 			ID:           "Swashbuckle.AspNetCore.SwaggerGen@5.5.1",
 			Name:         "Swashbuckle.AspNetCore.SwaggerGen",
 			Version:      "5.5.1",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 47,
 					EndLine:   54,
@@ -136,8 +136,8 @@ var (
 			ID:           "Swashbuckle.AspNetCore.SwaggerUI@5.5.1",
 			Name:         "Swashbuckle.AspNetCore.SwaggerUI",
 			Version:      "5.5.1",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 55,
 					EndLine:   59,
@@ -145,7 +145,7 @@ var (
 			},
 		},
 	}
-	nuGetSubDependenciesDeps = []types.Dependency{
+	nuGetSubDependenciesDeps = []ftypes.Dependency{
 		{
 			ID:        "Swashbuckle.AspNetCore.Swagger@5.5.1",
 			DependsOn: []string{"Microsoft.OpenApi@1.1.4"},
@@ -173,13 +173,13 @@ var (
 	// dotnet add package AWSSDK.Core
 	// dotnet restore --use-lock-file
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"'
-	nuGetLegacy = []types.Library{
+	nuGetLegacy = []ftypes.Package{
 		{
 			ID:           "AWSSDK.Core@3.5.1.30",
 			Name:         "AWSSDK.Core",
 			Version:      "3.5.1.30",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 5,
 					EndLine:   10,
@@ -190,8 +190,8 @@ var (
 			ID:           "Newtonsoft.Json@12.0.3",
 			Name:         "Newtonsoft.Json",
 			Version:      "12.0.3",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 11,
 					EndLine:   16,
@@ -199,7 +199,7 @@ var (
 			},
 		},
 	}
-	nuGetLegacyDeps []types.Dependency
+	nuGetLegacyDeps []ftypes.Dependency
 
 	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:latest
 	// apt -y update && apt -y install jq
@@ -210,13 +210,13 @@ var (
 	// dotnet restore --use-lock-file
 	// dotnet add package AWSSDK.Core
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"' | sort -u
-	nuGetMultiTarget = []types.Library{
+	nuGetMultiTarget = []ftypes.Package{
 		{
 			ID:           "AWSSDK.Core@3.5.1.30",
 			Name:         "AWSSDK.Core",
 			Version:      "3.5.1.30",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 5,
 					EndLine:   10,
@@ -243,8 +243,8 @@ var (
 			ID:           "Microsoft.Bcl.AsyncInterfaces@1.1.0",
 			Name:         "Microsoft.Bcl.AsyncInterfaces",
 			Version:      "1.1.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 460,
 					EndLine:   467,
@@ -255,8 +255,8 @@ var (
 			ID:           "Microsoft.CSharp@4.3.0",
 			Name:         "Microsoft.CSharp",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 138,
 					EndLine:   147,
@@ -267,8 +267,8 @@ var (
 			ID:           "Microsoft.NETCore.Platforms@1.1.0",
 			Name:         "Microsoft.NETCore.Platforms",
 			Version:      "1.1.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 148,
 					EndLine:   152,
@@ -283,8 +283,8 @@ var (
 			ID:           "Microsoft.NETCore.Targets@1.1.0",
 			Name:         "Microsoft.NETCore.Targets",
 			Version:      "1.1.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 153,
 					EndLine:   157,
@@ -295,8 +295,8 @@ var (
 			ID:           "Microsoft.NETFramework.ReferenceAssemblies@1.0.0",
 			Name:         "Microsoft.NETFramework.ReferenceAssemblies",
 			Version:      "1.0.0",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 11,
 					EndLine:   19,
@@ -315,8 +315,8 @@ var (
 			ID:           "Microsoft.NETFramework.ReferenceAssemblies.net20@1.0.0",
 			Name:         "Microsoft.NETFramework.ReferenceAssemblies.net20",
 			Version:      "1.0.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 26,
 					EndLine:   30,
@@ -331,8 +331,8 @@ var (
 			ID:           "Microsoft.NETFramework.ReferenceAssemblies.net40@1.0.0",
 			Name:         "Microsoft.NETFramework.ReferenceAssemblies.net40",
 			Version:      "1.0.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 82,
 					EndLine:   86,
@@ -343,8 +343,8 @@ var (
 			ID:           "NETStandard.Library@1.6.1",
 			Name:         "NETStandard.Library",
 			Version:      "1.6.1",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 95,
 					EndLine:   125,
@@ -355,8 +355,8 @@ var (
 			ID:           "NETStandard.Library@2.0.3",
 			Name:         "NETStandard.Library",
 			Version:      "2.0.3",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 445,
 					EndLine:   453,
@@ -367,8 +367,8 @@ var (
 			ID:           "Newtonsoft.Json@12.0.3",
 			Name:         "Newtonsoft.Json",
 			Version:      "12.0.3",
-			Relationship: types.RelationshipDirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 20,
 					EndLine:   25,
@@ -395,8 +395,8 @@ var (
 			ID:           "System.Collections@4.3.0",
 			Name:         "System.Collections",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 158,
 					EndLine:   167,
@@ -407,8 +407,8 @@ var (
 			ID:           "System.ComponentModel@4.3.0",
 			Name:         "System.ComponentModel",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 168,
 					EndLine:   175,
@@ -418,9 +418,9 @@ var (
 		{
 			ID:           "System.ComponentModel.Primitives@4.3.0",
 			Name:         "System.ComponentModel.Primitives",
-			Relationship: types.RelationshipIndirect,
+			Relationship: ftypes.RelationshipIndirect,
 			Version:      "4.3.0",
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 176,
 					EndLine:   185,
@@ -430,9 +430,9 @@ var (
 		{
 			ID:           "System.ComponentModel.TypeConverter@4.3.0",
 			Name:         "System.ComponentModel.TypeConverter",
-			Relationship: types.RelationshipIndirect,
+			Relationship: ftypes.RelationshipIndirect,
 			Version:      "4.3.0",
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 186,
 					EndLine:   203,
@@ -443,8 +443,8 @@ var (
 			ID:           "System.Diagnostics.Debug@4.3.0",
 			Name:         "System.Diagnostics.Debug",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 204,
 					EndLine:   213,
@@ -455,8 +455,8 @@ var (
 			ID:           "System.Diagnostics.Tools@4.3.0",
 			Name:         "System.Diagnostics.Tools",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 214,
 					EndLine:   223,
@@ -467,8 +467,8 @@ var (
 			ID:           "System.Dynamic.Runtime@4.3.0",
 			Name:         "System.Dynamic.Runtime",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 224,
 					EndLine:   234,
@@ -479,8 +479,8 @@ var (
 			ID:           "System.Globalization@4.3.0",
 			Name:         "System.Globalization",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 235,
 					EndLine:   244,
@@ -491,8 +491,8 @@ var (
 			ID:           "System.IO@4.3.0",
 			Name:         "System.IO",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 245,
 					EndLine:   256,
@@ -503,8 +503,8 @@ var (
 			ID:           "System.Linq@4.3.0",
 			Name:         "System.Linq",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 257,
 					EndLine:   265,
@@ -515,8 +515,8 @@ var (
 			ID:           "System.Linq.Expressions@4.3.0",
 			Name:         "System.Linq.Expressions",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 266,
 					EndLine:   274,
@@ -527,8 +527,8 @@ var (
 			ID:           "System.Net.Primitives@4.3.0",
 			Name:         "System.Net.Primitives",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 275,
 					EndLine:   284,
@@ -539,8 +539,8 @@ var (
 			ID:           "System.ObjectModel@4.3.0",
 			Name:         "System.ObjectModel",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 285,
 					EndLine:   292,
@@ -551,8 +551,8 @@ var (
 			ID:           "System.Reflection@4.3.0",
 			Name:         "System.Reflection",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 293,
 					EndLine:   304,
@@ -562,9 +562,9 @@ var (
 		{
 			ID:           "System.Reflection.Extensions@4.3.0",
 			Name:         "System.Reflection.Extensions",
-			Relationship: types.RelationshipIndirect,
+			Relationship: ftypes.RelationshipIndirect,
 			Version:      "4.3.0",
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 305,
 					EndLine:   315,
@@ -574,9 +574,9 @@ var (
 		{
 			ID:           "System.Reflection.Primitives@4.3.0",
 			Name:         "System.Reflection.Primitives",
-			Relationship: types.RelationshipIndirect,
+			Relationship: ftypes.RelationshipIndirect,
 			Version:      "4.3.0",
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 316,
 					EndLine:   325,
@@ -586,9 +586,9 @@ var (
 		{
 			ID:           "System.Resources.ResourceManager@4.3.0",
 			Name:         "System.Resources.ResourceManager",
-			Relationship: types.RelationshipIndirect,
+			Relationship: ftypes.RelationshipIndirect,
 			Version:      "4.3.0",
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: 326,
 					EndLine:   337,
@@ -599,8 +599,8 @@ var (
 			ID:           "System.Runtime@4.3.0",
 			Name:         "System.Runtime",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 338,
 					EndLine:   346,
@@ -611,8 +611,8 @@ var (
 			ID:           "System.Runtime.CompilerServices.Unsafe@4.5.2",
 			Name:         "System.Runtime.CompilerServices.Unsafe",
 			Version:      "4.5.2",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 473,
 					EndLine:   477,
@@ -623,8 +623,8 @@ var (
 			ID:           "System.Runtime.Extensions@4.3.0",
 			Name:         "System.Runtime.Extensions",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 347,
 					EndLine:   356,
@@ -635,8 +635,8 @@ var (
 			ID:           "System.Runtime.Serialization.Primitives@4.3.0",
 			Name:         "System.Runtime.Serialization.Primitives",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 357,
 					EndLine:   364,
@@ -647,8 +647,8 @@ var (
 			ID:           "System.Text.Encoding@4.3.0",
 			Name:         "System.Text.Encoding",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 365,
 					EndLine:   374,
@@ -659,8 +659,8 @@ var (
 			ID:           "System.Text.Encoding.Extensions@4.3.0",
 			Name:         "System.Text.Encoding.Extensions",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 375,
 					EndLine:   385,
@@ -671,8 +671,8 @@ var (
 			ID:           "System.Text.RegularExpressions@4.3.0",
 			Name:         "System.Text.RegularExpressions",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 386,
 					EndLine:   393,
@@ -683,8 +683,8 @@ var (
 			ID:           "System.Threading@4.3.0",
 			Name:         "System.Threading",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 394,
 					EndLine:   402,
@@ -695,8 +695,8 @@ var (
 			ID:           "System.Threading.Tasks@4.3.0",
 			Name:         "System.Threading.Tasks",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 403,
 					EndLine:   412,
@@ -707,8 +707,8 @@ var (
 			ID:           "System.Threading.Tasks.Extensions@4.5.2",
 			Name:         "System.Threading.Tasks.Extensions",
 			Version:      "4.5.2",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 478,
 					EndLine:   485,
@@ -719,8 +719,8 @@ var (
 			ID:           "System.Xml.ReaderWriter@4.3.0",
 			Name:         "System.Xml.ReaderWriter",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 413,
 					EndLine:   423,
@@ -731,8 +731,8 @@ var (
 			ID:           "System.Xml.XDocument@4.3.0",
 			Name:         "System.Xml.XDocument",
 			Version:      "4.3.0",
-			Relationship: types.RelationshipIndirect,
-			Locations: []types.Location{
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
 				{
 					StartLine: 424,
 					EndLine:   433,
@@ -740,7 +740,7 @@ var (
 			},
 		},
 	}
-	nuGetMultiTargetDeps = []types.Dependency{
+	nuGetMultiTargetDeps = []ftypes.Dependency{
 		{
 			ID:        "AWSSDK.Core@3.5.1.30",
 			DependsOn: []string{"Microsoft.Bcl.AsyncInterfaces@1.1.0"},

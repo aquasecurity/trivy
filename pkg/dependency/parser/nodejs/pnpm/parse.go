@@ -11,7 +11,6 @@ import (
 
 	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -47,7 +46,7 @@ func NewParser() *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
 	if err := yaml.NewDecoder(r).Decode(&lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
@@ -58,14 +57,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, nil
 	}
 
-	libs, deps := p.parse(lockVer, lockFile)
+	pkgs, deps := p.parse(lockVer, lockFile)
 
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
-func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []types.Dependency) {
-	var libs []types.Library
-	var deps []types.Dependency
+func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []ftypes.Dependency) {
+	var pkgs []ftypes.Package
+	var deps []ftypes.Dependency
 
 	// Dependency path is a path to a dependency with a specific set of resolved subdependencies.
 	// cf. https://github.com/pnpm/spec/blob/ad27a225f81d9215becadfa540ef05fa4ad6dd60/dependency-path.md
@@ -90,22 +89,22 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 			dependencies = append(dependencies, packageID(depName, depVer))
 		}
 
-		libs = append(libs, types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			ID:           pkgID,
 			Name:         name,
 			Version:      version,
-			Relationship: lo.Ternary(isDirectLib(name, lockFile.Dependencies), types.RelationshipDirect, types.RelationshipIndirect),
+			Relationship: lo.Ternary(isDirectPkg(name, lockFile.Dependencies), ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
 		})
 
 		if len(dependencies) > 0 {
-			deps = append(deps, types.Dependency{
+			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependencies,
 			})
 		}
 	}
 
-	return libs, deps
+	return pkgs, deps
 }
 
 func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
@@ -179,7 +178,7 @@ func (p *Parser) parseDepPath(depPath, versionSep string) (string, string) {
 	return name, version
 }
 
-func isDirectLib(name string, directDeps map[string]interface{}) bool {
+func isDirectPkg(name string, directDeps map[string]interface{}) bool {
 	_, ok := directDeps[name]
 	return ok
 }

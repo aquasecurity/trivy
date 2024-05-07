@@ -2,7 +2,138 @@
   {
     "Type": "bundler",
     "FilePath": "ruby-app/Gemfile.lock",
-    "Libraries": [
+    "Packages": [
+      {
+        "ID": "dotenv@2.7.2",
+        "Name": "dotenv",
+        "Identifier": {
+          "PURL": "pkg:gem/dotenv@2.7.2",
+          "UID": "bf323ef200ea177a"
+        },
+        "Version": "2.7.2",
+        "Relationship": "direct",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 51,
+            "EndLine": 51
+          }
+        ]
+      },
+      {
+        "ID": "faker@1.9.3",
+        "Name": "faker",
+        "Identifier": {
+          "PURL": "pkg:gem/faker@1.9.3",
+          "UID": "b5ac01b24ab4ed39"
+        },
+        "Version": "1.9.3",
+        "Relationship": "direct",
+        "DependsOn": [
+          "i18n@1.6.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 53,
+            "EndLine": 53
+          }
+        ]
+      },
+      {
+        "ID": "json@2.2.0",
+        "Name": "json",
+        "Identifier": {
+          "PURL": "pkg:gem/json@2.2.0",
+          "UID": "cb6c1eb54f8c6e9d"
+        },
+        "Version": "2.2.0",
+        "Relationship": "direct",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 60,
+            "EndLine": 60
+          }
+        ]
+      },
+      {
+        "ID": "pry@0.12.2",
+        "Name": "pry",
+        "Identifier": {
+          "PURL": "pkg:gem/pry@0.12.2",
+          "UID": "1349a1afdbbc80bc"
+        },
+        "Version": "0.12.2",
+        "Relationship": "direct",
+        "DependsOn": [
+          "coderay@1.1.2",
+          "method_source@0.9.2"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 79,
+            "EndLine": 79
+          }
+        ]
+      },
+      {
+        "ID": "rails@5.2.0",
+        "Name": "rails",
+        "Identifier": {
+          "PURL": "pkg:gem/rails@5.2.0",
+          "UID": "edef417a0d4c73e"
+        },
+        "Version": "5.2.0",
+        "Relationship": "direct",
+        "DependsOn": [
+          "actioncable@5.2.3",
+          "actionmailer@5.2.3",
+          "actionpack@5.2.3",
+          "actionview@5.2.3",
+          "activejob@5.2.3",
+          "activemodel@5.2.3",
+          "activerecord@5.2.3",
+          "activestorage@5.2.3",
+          "activesupport@5.2.3",
+          "railties@5.2.3",
+          "sprockets-rails@3.2.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 86,
+            "EndLine": 86
+          }
+        ]
+      },
+      {
+        "ID": "rubocop@0.67.2",
+        "Name": "rubocop",
+        "Identifier": {
+          "PURL": "pkg:gem/rubocop@0.67.2",
+          "UID": "68a7b25b67dfb858"
+        },
+        "Version": "0.67.2",
+        "Relationship": "direct",
+        "DependsOn": [
+          "jaro_winkler@1.5.2",
+          "parallel@1.17.0",
+          "parser@2.6.3.0",
+          "psych@3.1.0",
+          "rainbow@3.0.0",
+          "ruby-progressbar@1.10.0",
+          "unicode-display_width@1.5.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 112,
+            "EndLine": 112
+          }
+        ]
+      },
       {
         "ID": "actioncable@5.2.3",
         "Name": "actioncable",
@@ -324,23 +455,6 @@
         ]
       },
       {
-        "ID": "dotenv@2.7.2",
-        "Name": "dotenv",
-        "Identifier": {
-          "PURL": "pkg:gem/dotenv@2.7.2",
-          "UID": "bf323ef200ea177a"
-        },
-        "Version": "2.7.2",
-        "Relationship": "direct",
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 51,
-            "EndLine": 51
-          }
-        ]
-      },
-      {
         "ID": "erubi@1.8.0",
         "Name": "erubi",
         "Identifier": {
@@ -355,26 +469,6 @@
           {
             "StartLine": 52,
             "EndLine": 52
-          }
-        ]
-      },
-      {
-        "ID": "faker@1.9.3",
-        "Name": "faker",
-        "Identifier": {
-          "PURL": "pkg:gem/faker@1.9.3",
-          "UID": "b5ac01b24ab4ed39"
-        },
-        "Version": "1.9.3",
-        "Relationship": "direct",
-        "DependsOn": [
-          "i18n@1.6.0"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 53,
-            "EndLine": 53
           }
         ]
       },
@@ -435,23 +529,6 @@
           {
             "StartLine": 59,
             "EndLine": 59
-          }
-        ]
-      },
-      {
-        "ID": "json@2.2.0",
-        "Name": "json",
-        "Identifier": {
-          "PURL": "pkg:gem/json@2.2.0",
-          "UID": "cb6c1eb54f8c6e9d"
-        },
-        "Version": "2.2.0",
-        "Relationship": "direct",
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 60,
-            "EndLine": 60
           }
         ]
       },
@@ -688,27 +765,6 @@
         ]
       },
       {
-        "ID": "pry@0.12.2",
-        "Name": "pry",
-        "Identifier": {
-          "PURL": "pkg:gem/pry@0.12.2",
-          "UID": "1349a1afdbbc80bc"
-        },
-        "Version": "0.12.2",
-        "Relationship": "direct",
-        "DependsOn": [
-          "coderay@1.1.2",
-          "method_source@0.9.2"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 79,
-            "EndLine": 79
-          }
-        ]
-      },
-      {
         "ID": "psych@3.1.0",
         "Name": "psych",
         "Identifier": {
@@ -762,36 +818,6 @@
           {
             "StartLine": 84,
             "EndLine": 84
-          }
-        ]
-      },
-      {
-        "ID": "rails@5.2.0",
-        "Name": "rails",
-        "Identifier": {
-          "PURL": "pkg:gem/rails@5.2.0",
-          "UID": "edef417a0d4c73e"
-        },
-        "Version": "5.2.0",
-        "Relationship": "direct",
-        "DependsOn": [
-          "actioncable@5.2.3",
-          "actionmailer@5.2.3",
-          "actionpack@5.2.3",
-          "actionview@5.2.3",
-          "activejob@5.2.3",
-          "activemodel@5.2.3",
-          "activerecord@5.2.3",
-          "activestorage@5.2.3",
-          "activesupport@5.2.3",
-          "railties@5.2.3",
-          "sprockets-rails@3.2.1"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 86,
-            "EndLine": 86
           }
         ]
       },
@@ -896,32 +922,6 @@
           {
             "StartLine": 111,
             "EndLine": 111
-          }
-        ]
-      },
-      {
-        "ID": "rubocop@0.67.2",
-        "Name": "rubocop",
-        "Identifier": {
-          "PURL": "pkg:gem/rubocop@0.67.2",
-          "UID": "68a7b25b67dfb858"
-        },
-        "Version": "0.67.2",
-        "Relationship": "direct",
-        "DependsOn": [
-          "jaro_winkler@1.5.2",
-          "parallel@1.17.0",
-          "parser@2.6.3.0",
-          "psych@3.1.0",
-          "rainbow@3.0.0",
-          "ruby-progressbar@1.10.0",
-          "unicode-display_width@1.5.0"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 112,
-            "EndLine": 112
           }
         ]
       },
@@ -1107,7 +1107,7 @@
   {
     "Type": "cargo",
     "FilePath": "rust-app/Cargo.lock",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "ammonia@1.9.0",
         "Name": "ammonia",
@@ -2519,7 +2519,7 @@
   {
     "Type": "composer",
     "FilePath": "php-app/composer.lock",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "guzzlehttp/guzzle@6.2.0",
         "Name": "guzzlehttp/guzzle",
@@ -2815,7 +2815,7 @@
   {
     "Type": "npm",
     "FilePath": "node-app/package-lock.json",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "asap@2.0.6",
         "Name": "asap",
@@ -3054,7 +3054,7 @@
   {
     "Type": "pipenv",
     "FilePath": "python-app/Pipfile.lock",
-    "Libraries": [
+    "Packages": [
       {
         "Name": "amqp",
         "Identifier": {

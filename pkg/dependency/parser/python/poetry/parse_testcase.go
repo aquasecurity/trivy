@@ -1,6 +1,6 @@
 package poetry
 
-import "github.com/aquasecurity/trivy/pkg/dependency/types"
+import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
 	// docker run --name pipenv --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
@@ -10,7 +10,7 @@ var (
 	// poetry new normal && cd normal
 	// poetry add pypi@2.1
 	// poetry show -a | awk '{gsub(/\(!\)/, ""); printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\"},\n") }'
-	poetryNormal = []types.Library{
+	poetryNormal = []ftypes.Package{
 		{ID: "pypi@2.1", Name: "pypi", Version: "2.1"},
 	}
 
@@ -24,7 +24,7 @@ var (
 	// poetry show -a | awk '{gsub(/\(!\)/, ""); printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\"},\n") }'
 	// `--no-dev` flag uncorrected returns deps. Then need to remove `dev` deps manually
 	// list of dev deps - cat poetry.lock | grep 'category = "dev"' -B 3
-	poetryMany = []types.Library{
+	poetryMany = []ftypes.Package{
 		{ID: "attrs@22.2.0", Name: "attrs", Version: "22.2.0"},
 		{ID: "backports-cached-property@1.0.2", Name: "backports-cached-property", Version: "1.0.2"},
 		{ID: "build@0.10.0", Name: "build", Version: "0.10.0"},
@@ -82,7 +82,7 @@ var (
 	}
 
 	// cat poetry.lock | grep "\[package.dependencies\]" -B 3 -A 8 - it might help to complete this slice
-	poetryManyDeps = []types.Dependency{
+	poetryManyDeps = []ftypes.Dependency{
 		{ID: "build@0.10.0", DependsOn: []string{"colorama@0.4.6", "importlib-metadata@6.0.0", "packaging@23.0", "pyproject-hooks@1.0.0", "tomli@2.0.1"}},
 		{ID: "cachecontrol@0.12.11", DependsOn: []string{"lockfile@0.12.2", "msgpack@1.0.4", "requests@2.28.2"}},
 		{ID: "cffi@1.15.1", DependsOn: []string{"pycparser@2.21"}},
@@ -115,7 +115,7 @@ var (
 	// poetry new web && cd web
 	// poetry add flask@1.0.3
 	// poetry show -a | awk '{gsub(/\(!\)/, ""); printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\"},\n") }'
-	poetryFlask = []types.Library{
+	poetryFlask = []ftypes.Package{
 		{ID: "click@8.1.3", Name: "click", Version: "8.1.3"},
 		{ID: "colorama@0.4.6", Name: "colorama", Version: "0.4.6"},
 		{ID: "flask@1.0.3", Name: "flask", Version: "1.0.3"},
@@ -126,7 +126,7 @@ var (
 	}
 
 	// cat poetry.lock | grep "\[package.dependencies\]" -B 3 -A 8 - it might help to complete this slice
-	poetryFlaskDeps = []types.Dependency{
+	poetryFlaskDeps = []ftypes.Dependency{
 		{ID: "click@8.1.3", DependsOn: []string{"colorama@0.4.6"}},
 		{ID: "flask@1.0.3", DependsOn: []string{"click@8.1.3", "itsdangerous@2.1.2", "jinja2@3.1.2", "werkzeug@2.2.3"}},
 		{ID: "jinja2@3.1.2", DependsOn: []string{"markupsafe@2.1.2"}},

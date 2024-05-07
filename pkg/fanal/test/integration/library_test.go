@@ -326,16 +326,16 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 		})
 
 		for _, app := range detail.Applications {
-			sort.Sort(app.Libraries)
-			for i := range app.Libraries {
-				sort.Strings(app.Libraries[i].DependsOn)
+			sort.Sort(app.Packages)
+			for i := range app.Packages {
+				sort.Strings(app.Packages[i].DependsOn)
 			}
 		}
 
 		// Do not compare layers
 		for _, app := range detail.Applications {
-			for i := range app.Libraries {
-				app.Libraries[i].Layer = types.Layer{}
+			for i := range app.Packages {
+				app.Packages[i].Layer = types.Layer{}
 			}
 		}
 
