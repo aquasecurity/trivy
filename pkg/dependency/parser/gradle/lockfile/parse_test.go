@@ -3,7 +3,6 @@ package lockfile
 import (
 	"os"
 	"sort"
-	"strings"
 	"testing"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -68,19 +67,9 @@ func TestParser_Parse(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			assert.NoError(t, err)
 
-			libs, _, _ := parser.Parse(f)
-			sortLibs(libs)
-			assert.Equal(t, tt.want, libs)
+			pkgs, _, _ := parser.Parse(f)
+			sort.Sort(ftypes.Packages(pkgs))
+			assert.Equal(t, tt.want, pkgs)
 		})
 	}
-}
-
-func sortLibs(libs []ftypes.Package) {
-	sort.Slice(libs, func(i, j int) bool {
-		ret := strings.Compare(libs[i].Name, libs[j].Name)
-		if ret == 0 {
-			return libs[i].Version < libs[j].Version
-		}
-		return ret < 0
-	})
 }
