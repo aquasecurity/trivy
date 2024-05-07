@@ -111,16 +111,14 @@ func Test_tar_is_chart(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
-		t.Logf("Running test: %s", test.testName)
-		testPath := filepath.Join("testdata", test.archiveFile)
-		func() {
+		t.Run(test.testName, func(t *testing.T) {
+			testPath := filepath.Join("testdata", test.archiveFile)
 			file, err := os.Open(testPath)
 			require.NoError(t, err)
 			defer file.Close()
 
 			assert.Equal(t, test.isHelmChart, detection.IsHelmChartArchive(test.archiveFile, file))
-		}()
+		})
 	}
 }
 
