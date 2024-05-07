@@ -3,10 +3,9 @@ package core
 import (
 	"sort"
 
-	"github.com/package-url/packageurl-go"
-
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
@@ -124,14 +123,14 @@ type Component struct {
 	// SPDX: package.licenseConcluded, package.licenseDeclared
 	Licenses []string
 
-	// PkgID has PURL and BOMRef for the component
+	// PkgIdentifier has PURL and BOMRef for the component
 	// PURL:
 	//   CycloneDX: component.purl
 	//   SPDX: package.externalRefs.referenceLocator
 	// BOMRef:
 	//   CycloneDX: component.bom-ref
 	//   SPDX: N/A
-	PkgID PkgID
+	PkgIdentifier ftypes.PkgIdentifier
 
 	// Supplier is the name of the supplier of the component
 	// CycloneDX: component.supplier
@@ -188,11 +187,6 @@ type Relationship struct {
 	Type       RelationshipType
 }
 
-type PkgID struct {
-	PURL   *packageurl.PackageURL
-	BOMRef string
-}
-
 type Vulnerability struct {
 	dtypes.Vulnerability
 	ID               string
@@ -222,8 +216,8 @@ func (b *BOM) setupComponent(c *Component) {
 	if c.id == uuid.Nil {
 		c.id = uuid.New()
 	}
-	if c.PkgID.PURL != nil {
-		p := c.PkgID.PURL.String()
+	if c.PkgIdentifier.PURL != nil {
+		p := c.PkgIdentifier.PURL.String()
 		b.purls[p] = append(b.purls[p], c.id)
 	}
 	sort.Sort(c.Properties)
@@ -281,7 +275,7 @@ func (b *BOM) Root() *Component {
 		return nil
 	}
 	if b.opts.GenerateBOMRef {
-		root.PkgID.BOMRef = b.bomRef(root)
+		root.PkgIdentifier.BOMRef = b.bomRef(root)
 	}
 	return root
 }
@@ -290,7 +284,7 @@ func (b *BOM) Components() map[uuid.UUID]*Component {
 	// Fill in BOMRefs for components
 	if b.opts.GenerateBOMRef {
 		for id, c := range b.components {
-			b.components[id].PkgID.BOMRef = b.bomRef(c)
+			b.components[id].PkgIdentifier.BOMRef = b.bomRef(c)
 		}
 	}
 	return b.components
@@ -312,14 +306,14 @@ func (b *BOM) NumComponents() int {
 // When multiple lock files have the same dependency with the same name and version, PURL in the BOM can conflict.
 // In that case, PURL cannot be used as a unique identifier, and UUIDv4 be used for BOMRef.
 func (b *BOM) bomRef(c *Component) string {
-	if c.PkgID.BOMRef != "" {
-		return c.PkgID.BOMRef
+	if c.PkgIdentifier.BOMRef != "" {
+		return c.PkgIdentifier.BOMRef
 	}
 	// Return the UUID of the component if the PURL is not present.
-	if c.PkgID.PURL == nil {
+	if c.PkgIdentifier.PURL == nil {
 		return c.id.String()
 	}
-	p := c.PkgID.PURL.String()
+	p := c.PkgIdentifier.PURL.String()
 
 	// Return the UUID of the component if the PURL is not unique in the BOM.
 	if len(b.purls[p]) > 1 {

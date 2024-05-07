@@ -12,12 +12,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 )
 
 func setupGitServer() (*httptest.Server, error) {
@@ -186,15 +184,15 @@ func TestArtifact_Inspect(t *testing.T) {
 	tests := []struct {
 		name    string
 		rawurl  string
-		want    types.ArtifactReference
+		want    artifact.Reference
 		wantErr bool
 	}{
 		{
 			name:   "happy path",
 			rawurl: ts.URL + "/test.git",
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: ts.URL + "/test.git",
-				Type: types.ArtifactRepository,
+				Type: artifact.TypeRepository,
 				ID:   "sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
 				BlobIDs: []string{
 					"sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",

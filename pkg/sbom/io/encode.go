@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -61,7 +62,7 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	}
 
 	switch r.ArtifactType {
-	case ftypes.ArtifactContainerImage:
+	case artifact.TypeContainerImage:
 		root.Type = core.TypeContainerImage
 		props = append(props, core.Property{
 			Name:  core.PropertyImageID,
@@ -73,16 +74,16 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
 		}
 		if p != nil {
-			root.PkgID.PURL = p.Unwrap()
+			root.PkgIdentifier.PURL = p.Unwrap()
 		}
 
-	case ftypes.ArtifactVM:
+	case artifact.TypeVM:
 		root.Type = core.TypeVM
-	case ftypes.ArtifactFilesystem:
+	case artifact.TypeFilesystem:
 		root.Type = core.TypeFilesystem
-	case ftypes.ArtifactRepository:
+	case artifact.TypeRepository:
 		root.Type = core.TypeRepository
-	case ftypes.ArtifactCycloneDX:
+	case artifact.TypeCycloneDX:
 		return r.BOM.Root(), nil
 	}
 
@@ -346,7 +347,7 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		SrcName:    pkg.SrcName,
 		SrcVersion: utils.FormatSrcVersion(pkg),
 		SrcFile:    srcFile,
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			PURL: pkg.Identifier.PURL,
 		},
 		Supplier:   pkg.Maintainer,

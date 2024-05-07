@@ -2,6 +2,7 @@ package io_test
 
 import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -27,7 +28,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,
@@ -116,7 +117,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Type: core.TypeContainerImage,
 					Name: "debian:12",
 					Root: true,
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeOCI,
 							Name:    "debian",
@@ -163,7 +164,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "debian",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
@@ -181,7 +182,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "debian",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeDebian,
 							Name:    "libc6",
@@ -204,7 +205,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "debian",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeDebian,
 							Name:    "curl",
@@ -237,7 +238,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "jar",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:      packageurl.TypeMaven,
 							Namespace: "org.apache.xmlgraphics",
@@ -298,7 +299,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "gobinary",
-				ArtifactType:  ftypes.ArtifactFilesystem,
+				ArtifactType:  artifact.TypeFilesystem,
 				Results: []types.Result{
 					{
 						Target: "test",
@@ -379,7 +380,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "2",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
 					},
 				},
@@ -396,7 +397,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "gobinary",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
@@ -414,7 +415,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "gobinary",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:      packageurl.TypeGolang,
 							Namespace: "github.com/org",
@@ -438,7 +439,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "gobinary",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:      packageurl.TypeGolang,
 							Namespace: "github.com/org",
@@ -463,7 +464,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "gobinary",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:      packageurl.TypeGolang,
 							Namespace: "github.com/org",
@@ -488,7 +489,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "gobinary",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeGolang,
 							Name:    "stdlib",
@@ -537,7 +538,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,

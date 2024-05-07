@@ -112,7 +112,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		missingBlobsExpectation cache.ArtifactCacheMissingBlobsExpectation
 		putBlobExpectation      cache.ArtifactCachePutBlobExpectation
 		putArtifactExpectations []cache.ArtifactCachePutArtifactExpectation
-		want                    types.ArtifactReference
+		want                    artifact.Reference
 		wantErr                 string
 	}{
 		{
@@ -136,9 +136,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "rawdata.img",
-				Type: types.ArtifactVM,
+				Type: artifact.TypeVM,
 				ID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 				BlobIDs: []string{
 					"sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
@@ -172,9 +172,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "ebs-012345",
-				Type: types.ArtifactVM,
+				Type: artifact.TypeVM,
 				ID:   "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
 				BlobIDs: []string{
 					"sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
