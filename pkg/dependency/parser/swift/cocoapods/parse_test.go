@@ -14,7 +14,7 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string // Test input file
-		wantLibs  []ftypes.Package
+		wantPkgs  []ftypes.Package
 		wantDeps  []ftypes.Dependency
 	}{
 		{
