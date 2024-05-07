@@ -70,7 +70,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	return pkgs, nil, nil
 }
 
-func libraryName(pin Pin, lockVersion int) string {
+func pkgName(pin Pin, lockVersion int) string {
 	// Package.resolved v1 uses `RepositoryURL`
 	// v2 uses `Location`
 	name := pin.RepositoryURL
