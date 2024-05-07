@@ -115,8 +115,10 @@ func LayerIDs(img v1.Image) ([]string, error) {
 func GuessBaseImageIndex(histories []v1.History) int {
 	var entrypointIndexFound bool
 	baseImageIndex := -1
+	baseImageIndexOutliers := -1
 	var foundNonEmpty bool
-	for i := len(histories) - 1; i >= 0; i-- {
+	imageHistoryLength := len(histories)
+	for i := imageHistoryLength - 1; i >= 0; i-- {
 		h := histories[i]
 
 		// Skip the last CMD, ENTRYPOINT, etc.
@@ -138,18 +140,19 @@ func GuessBaseImageIndex(histories []v1.History) int {
 			WORKDIR $GOPATH
 		*/
 		// We are looking for an occurence of the same
-		if i != len(histories)-1 && (strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop) WORKDIR ") ||
+		if i != imageHistoryLength-1 && (strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop) WORKDIR ") ||
 			strings.HasPrefix(h.CreatedBy, "WORKDIR ")) {
 
 			// check if we have a subset of 5 layers available since WORKDIR is encountered
-			if (i-4) >= 0 && i+1 < len(histories) {
+			if (i-4) >= 0 && i+1 < imageHistoryLength {
 				golangBaseLayer := ""
 				for _, cmd := range histories[i-4 : i+1] {
 					golangBaseLayer = golangBaseLayer + cmd.CreatedBy + " "
 				}
-				if match, _ := regexp.MatchString(golangBaseLayersRegex, golangBaseLayer); match {
-					baseImageIndex = i
-					break
+				match, _ := regexp.MatchString(golangBaseLayersRegex, golangBaseLayer)
+				if match {
+					baseImageIndexOutliers = i
+
 				}
 			}
 		}
@@ -184,19 +187,18 @@ func GuessBaseImageIndex(histories []v1.History) int {
 			    rustc --version;
 		*/
 		// We are looking for an occurence of the same
-		if i != len(histories)-1 && (strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop) RUN ") ||
+		if i != imageHistoryLength-1 && (strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop) RUN ") ||
 			strings.HasPrefix(h.CreatedBy, "RUN ") && strings.Contains(h.CreatedBy, "RUST")) {
 
 			// check if we have a subset of 2 layers available since RUN is encountered
-			if (i-1) >= 0 && i+1 < len(histories) {
+			if (i-1) >= 0 && i+1 < imageHistoryLength {
 				rustBaseImageLayer := ""
 				for _, cmd := range histories[i-1 : i+1] {
 					rustBaseImageLayer = rustBaseImageLayer + cmd.CreatedBy + " "
 				}
 
 				if match, _ := regexp.MatchString(rustBaseImageLayerRegex, rustBaseImageLayer); match {
-					baseImageIndex = i
-					break
+					baseImageIndexOutliers = i
 				}
 			}
 		}
@@ -227,6 +229,10 @@ func GuessBaseImageIndex(histories []v1.History) int {
 			entrypointIndexFound = true
 			baseImageIndex = i
 		}
+	}
+	// Give priority to the outliers, if we find a golang or rust base image consider it as the result and not the baseImageIndex since we are not breaking when we find a golang/rust base image
+	if baseImageIndexOutliers != -1 {
+		return baseImageIndexOutliers
 	}
 	return baseImageIndex
 }
