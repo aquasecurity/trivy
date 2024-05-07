@@ -52,19 +52,19 @@ func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser)
 	if err != nil {
 		return nil, xerrors.Errorf("reader error: %w", err)
 	}
-	parsedLibs, parsedDependencies, err := parser.Parse(rr)
+	parsedPkgs, parsedDependencies, err := parser.Parse(rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return toApplication(fileType, filePath, "", nil, parsedLibs, parsedDependencies), nil
+	return toApplication(fileType, filePath, "", nil, parsedPkgs, parsedDependencies), nil
 }
 
 // ParsePackage returns a parsed result of the package file
 func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
-	parsedLibs, parsedDependencies, err := parser.Parse(r)
+	parsedPkgs, parsedDependencies, err := parser.Parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -76,7 +76,7 @@ func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, 
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return toApplication(fileType, filePath, filePath, r, parsedLibs, parsedDependencies), nil
+	return toApplication(fileType, filePath, filePath, r, parsedPkgs, parsedDependencies), nil
 }
 
 func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.ReadSeekerAt, pkgs []types.Package, depGraph []types.Dependency) *types.Application {

@@ -17,13 +17,13 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string // Test input file
-		wantLibs  []ftypes.Package
+		wantPkgs  []ftypes.Package
 		wantDeps  []ftypes.Dependency
 	}{
 		{
 			name:      "happy path",
 			inputFile: "testdata/happy_v1_case1.lock",
-			wantLibs: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
 					ID:           "pkga/0.0.1",
 					Name:         "pkga",
@@ -73,7 +73,7 @@ func TestParse(t *testing.T) {
 		{
 			name:      "happy path. lock file with revisions support",
 			inputFile: "testdata/happy_v1_case2.lock",
-			wantLibs: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
 					ID:           "openssl/3.0.3",
 					Name:         "openssl",
@@ -111,7 +111,7 @@ func TestParse(t *testing.T) {
 		{
 			name:      "happy path conan v2",
 			inputFile: "testdata/happy_v2.lock",
-			wantLibs: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
 					ID:      "matrix/1.3",
 					Name:    "matrix",
@@ -153,18 +153,18 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotLibs, gotDeps, err := conan.NewParser().Parse(f)
+			gotPkgs, gotDeps, err := conan.NewParser().Parse(f)
 			require.NoError(t, err)
 
-			sort.Slice(gotLibs, func(i, j int) bool {
-				ret := strings.Compare(gotLibs[i].Name, gotLibs[j].Name)
+			sort.Slice(gotPkgs, func(i, j int) bool {
+				ret := strings.Compare(gotPkgs[i].Name, gotPkgs[j].Name)
 				if ret != 0 {
 					return ret < 0
 				}
-				return gotLibs[i].Version < gotLibs[j].Version
+				return gotPkgs[i].Version < gotPkgs[j].Version
 			})
 
-			assert.Equal(t, tt.wantLibs, gotLibs)
+			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}

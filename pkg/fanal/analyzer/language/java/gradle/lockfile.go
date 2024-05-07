@@ -64,7 +64,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			return nil
 		}
 
-		libs := lo.SliceToMap(app.Packages, func(lib types.Package) (string, struct{}) {
+		pkgs := lo.SliceToMap(app.Packages, func(lib types.Package) (string, struct{}) {
 			return lib.ID, struct{}{}
 		})
 
@@ -82,7 +82,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			var deps []string
 			for _, dep := range pom.Dependencies.Dependency {
 				id := packageID(dep.GroupID, dep.ArtifactID, dep.Version)
-				if _, ok := libs[id]; ok {
+				if _, ok := pkgs[id]; ok {
 					deps = append(deps, id)
 				}
 			}

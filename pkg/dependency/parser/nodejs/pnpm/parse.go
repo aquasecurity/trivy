@@ -57,9 +57,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, nil
 	}
 
-	libs, deps := p.parse(lockVer, lockFile)
+	pkgs, deps := p.parse(lockVer, lockFile)
 
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
 func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []ftypes.Dependency) {

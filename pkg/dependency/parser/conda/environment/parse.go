@@ -44,7 +44,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var pkgs ftypes.Packages
 	for _, dep := range env.Dependencies {
 		pkg := p.toPackage(dep)
-		// Skip empty libs
+		// Skip empty pkgs
 		if pkg.Name == "" {
 			continue
 		}

@@ -3,7 +3,7 @@ package julia
 import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
-	juliaV1_6Libs = []ftypes.Package{
+	juliaV1_6Pkgs = []ftypes.Package{
 		{ID: "ade2ca70-3891-5945-98fb-dc099432e06a", Name: "Dates", Version: "unknown", Locations: []ftypes.Location{{StartLine: 3, EndLine: 5}}},
 		{ID: "682c06a0-de6a-54ab-a142-c8b1cf79cde6", Name: "JSON", Version: "0.21.4", Locations: []ftypes.Location{{StartLine: 7, EndLine: 11}}},
 		{ID: "a63ad114-7e13-5084-954f-fe012c677804", Name: "Mmap", Version: "unknown", Locations: []ftypes.Location{{StartLine: 13, EndLine: 14}}},
@@ -24,7 +24,7 @@ var (
 		{ID: "de0858da-6303-5e67-8744-51eddeeeb8d7", DependsOn: []string{"4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"}},
 	}
 
-	juliaV1_8Libs = []ftypes.Package{
+	juliaV1_8Pkgs = []ftypes.Package{
 		{ID: "ade2ca70-3891-5945-98fb-dc099432e06a", Name: "Dates", Version: "1.8.5", Locations: []ftypes.Location{{StartLine: 7, EndLine: 9}}},
 		{ID: "682c06a0-de6a-54ab-a142-c8b1cf79cde6", Name: "JSON", Version: "0.21.4", Locations: []ftypes.Location{{StartLine: 11, EndLine: 15}}},
 		{ID: "a63ad114-7e13-5084-954f-fe012c677804", Name: "Mmap", Version: "1.8.5", Locations: []ftypes.Location{{StartLine: 17, EndLine: 18}}},
@@ -61,11 +61,11 @@ var (
 		{ID: "cf7118a7-6976-5b1a-9a39-7adc72f591a4", DependsOn: []string{"9a3f8284-a2c9-5f02-9a11-845980a1fd5c", "ea8e919c-243c-51af-8825-aaa63cd721ce"}},
 	}
 
-	juliaV1_9DepExtLibs = []ftypes.Package{
+	juliaV1_9DepExtPkgs = []ftypes.Package{
 		{ID: "621f4979-c628-5d54-868e-fcf4e3e8185c", Name: "AbstractFFTs", Version: "1.3.1", Locations: []ftypes.Location{{StartLine: 7, EndLine: 10}}},
 	}
 
-	juliaV1_9ShadowedDepLibs = []ftypes.Package{
+	juliaV1_9ShadowedDepPkgs = []ftypes.Package{
 		{ID: "ead4f63c-334e-11e9-00e6-e7f0a5f21b60", Name: "A", Version: "1.9.0", Locations: []ftypes.Location{{StartLine: 7, EndLine: 8}}},
 		{ID: "f41f7b98-334e-11e9-1257-49272045fb24", Name: "B", Version: "1.9.0", Locations: []ftypes.Location{{StartLine: 13, EndLine: 14}}},
 		{ID: "edca9bc6-334e-11e9-3554-9595dbb4349c", Name: "B", Version: "1.9.0", Locations: []ftypes.Location{{StartLine: 15, EndLine: 16}}},

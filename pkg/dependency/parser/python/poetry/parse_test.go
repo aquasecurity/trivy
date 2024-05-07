@@ -47,11 +47,11 @@ func TestParser_Parse(t *testing.T) {
 			defer f.Close()
 
 			p := NewParser()
-			gotLibs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
 				return
 			}
-			assert.Equalf(t, tt.wantPkgs, gotLibs, "Parse(%v)", tt.file)
+			assert.Equalf(t, tt.wantPkgs, gotPkgs, "Parse(%v)", tt.file)
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}
@@ -62,7 +62,7 @@ func TestParseDependency(t *testing.T) {
 		name         string
 		packageName  string
 		versionRange interface{}
-		libsVersions map[string][]string
+		pkgsVersions map[string][]string
 		want         string
 		wantErr      string
 	}{
@@ -70,7 +70,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "handle package name",
 			packageName:  "Test_project.Name",
 			versionRange: "*",
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test-project-name": {"1.0.0"},
 			},
 			want: "test-project-name@1.0.0",
@@ -79,7 +79,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "version range as string",
 			packageName:  "test",
 			versionRange: ">=1.0.0",
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test": {"2.0.0"},
 			},
 			want: "test@2.0.0",
@@ -88,7 +88,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "version range == *",
 			packageName:  "test",
 			versionRange: "*",
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test": {"3.0.0"},
 			},
 			want: "test@3.0.0",
@@ -100,23 +100,23 @@ func TestParseDependency(t *testing.T) {
 				"version": ">=4.8.3",
 				"markers": "python_version < \"3.8\"",
 			},
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test": {"5.0.0"},
 			},
 			want: "test@5.0.0",
 		},
 		{
-			name:         "libsVersions doesn't contain required version",
+			name:         "pkgsVersions doesn't contain required version",
 			packageName:  "test",
 			versionRange: ">=1.0.0",
-			libsVersions: map[string][]string{},
+			pkgsVersions: map[string][]string{},
 			wantErr:      "no version found",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewParser().parseDependency(tt.packageName, tt.versionRange, tt.libsVersions)
+			got, err := NewParser().parseDependency(tt.packageName, tt.versionRange, tt.pkgsVersions)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

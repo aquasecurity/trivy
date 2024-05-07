@@ -269,11 +269,11 @@ func TestParser_Parse(t *testing.T) {
 			defer f.Close()
 
 			p := &bundler.Parser{}
-			gotLibs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
 				return
 			}
-			assert.Equalf(t, tt.wantPkgs, gotLibs, "Parse(%v)", tt.file)
+			assert.Equalf(t, tt.wantPkgs, gotPkgs, "Parse(%v)", tt.file)
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}

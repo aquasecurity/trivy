@@ -78,7 +78,7 @@ func (p *Parser) parseV1(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 
 	// Parse dependency graph
 	for i, node := range lock.GraphLock.Nodes {
-		lib, ok := parsed[i]
+		pkg, ok := parsed[i]
 		if !ok {
 			continue
 		}
@@ -91,12 +91,12 @@ func (p *Parser) parseV1(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 		}
 		if len(childDeps) != 0 {
 			deps = append(deps, ftypes.Dependency{
-				ID:        lib.ID,
+				ID:        pkg.ID,
 				DependsOn: childDeps,
 			})
 		}
 
-		pkgs = append(pkgs, lib)
+		pkgs = append(pkgs, pkg)
 	}
 	return pkgs, deps, nil
 }
@@ -107,7 +107,7 @@ func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 	for _, req := range lock.Requires {
 		pkg, err := toPackage(req.Dependency, req.StartLine, req.EndLine)
 		if err != nil {
-			p.logger.Debug("Creating library entry from requirement failed", err)
+			p.logger.Debug("Creating package entry from requirement failed", err)
 			continue
 		}
 

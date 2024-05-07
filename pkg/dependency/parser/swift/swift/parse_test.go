@@ -92,9 +92,9 @@ func TestParser_Parse(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			assert.NoError(t, err)
 
-			libs, _, err := parser.Parse(f)
+			gotPkgs, _, err := parser.Parse(f)
 			assert.NoError(t, err)
-			assert.Equal(t, tt.want, libs)
+			assert.Equal(t, tt.want, gotPkgs)
 		})
 	}
 }

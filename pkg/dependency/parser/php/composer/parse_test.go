@@ -161,10 +161,10 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotLibs, gotDeps, err := NewParser().Parse(f)
+			gotPkgs, gotDeps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.wantPkgs, gotLibs)
+			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}

@@ -128,9 +128,9 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			}
 		}
 
-		pkgIndirect := isIndirectLib(pkgPath, directDeps)
+		pkgIndirect := isIndirectPkg(pkgPath, directDeps)
 
-		// There are cases when similar libraries use same dependencies
+		// There are cases when similar packages use same dependencies
 		// we need to add location for each these dependencies
 		if savedPkg, ok := pkgs[pkgID]; ok {
 			savedPkg.Dev = savedPkg.Dev && pkg.Dev
@@ -150,7 +150,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			continue
 		}
 
-		lib := ftypes.Package{
+		newPkg := ftypes.Package{
 			ID:                 pkgID,
 			Name:               pkgName,
 			Version:            pkg.Version,
@@ -159,7 +159,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			ExternalReferences: lo.Ternary(ref.URL != "", []ftypes.ExternalRef{ref}, nil),
 			Locations:          []ftypes.Location{location},
 		}
-		pkgs[pkgID] = lib
+		pkgs[pkgID] = newPkg
 
 		// npm builds graph using optional deps. e.g.:
 		// └─┬ watchpack@1.7.5
@@ -179,7 +179,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 
 		if len(dependsOn) > 0 {
 			deps = append(deps, ftypes.Dependency{
-				ID:        lib.ID,
+				ID:        newPkg.ID,
 				DependsOn: dependsOn,
 			})
 		}
@@ -302,23 +302,23 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 		pkgs = append(pkgs, pkg)
 
 		dependsOn := make([]string, 0, len(dep.Requires))
-		for libName, requiredVer := range dep.Requires {
+		for pName, requiredVer := range dep.Requires {
 			// Try to resolve the version with nested dependencies first
-			if resolvedDep, ok := dep.Dependencies[libName]; ok {
-				libID := packageID(libName, resolvedDep.Version)
-				dependsOn = append(dependsOn, libID)
+			if resolvedDep, ok := dep.Dependencies[pName]; ok {
+				pkgID := packageID(pName, resolvedDep.Version)
+				dependsOn = append(dependsOn, pkgID)
 				continue
 			}
 
 			// Try to resolve the version with the higher level dependencies
-			if ver, ok := versions[libName]; ok {
-				dependsOn = append(dependsOn, packageID(libName, ver))
+			if ver, ok := versions[pName]; ok {
+				dependsOn = append(dependsOn, packageID(pName, ver))
 				continue
 			}
 
 			// It should not reach here.
 			p.logger.Warn("Unable to resolve the version",
-				log.String("name", libName), log.String("version", requiredVer))
+				log.String("name", pName), log.String("version", requiredVer))
 		}
 
 		if len(dependsOn) > 0 {
@@ -370,10 +370,10 @@ func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {
 	return uniqDeps
 }
 
-func isIndirectLib(pkgPath string, directDeps map[string]struct{}) bool {
+func isIndirectPkg(pkgPath string, directDeps map[string]struct{}) bool {
 	// A project can contain 2 different versions of the same dependency.
 	// e.g. `node_modules/string-width/node_modules/strip-ansi` and `node_modules/string-ansi`
-	// direct dependencies always have root path (`node_modules/<lib_name>`)
+	// direct dependencies always have root path (`node_modules/<pkg_name>`)
 	if _, ok := directDeps[pkgPath]; ok {
 		return false
 	}

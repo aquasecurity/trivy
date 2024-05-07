@@ -12,7 +12,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	wantLibs := []ftypes.Package{
+	wantPkgs := []ftypes.Package{
 		{
 			Name:         "github.com/aquasecurity/test",
 			Version:      "",
@@ -46,17 +46,17 @@ func TestParse(t *testing.T) {
 		{
 			name:      "ELF",
 			inputFile: "testdata/test.elf",
-			want:      wantLibs,
+			want:      wantPkgs,
 		},
 		{
 			name:      "PE",
 			inputFile: "testdata/test.exe",
-			want:      wantLibs,
+			want:      wantPkgs,
 		},
 		{
 			name:      "Mach-O",
 			inputFile: "testdata/test.macho",
-			want:      wantLibs,
+			want:      wantPkgs,
 		},
 		{
 			name:      "with replace directive",

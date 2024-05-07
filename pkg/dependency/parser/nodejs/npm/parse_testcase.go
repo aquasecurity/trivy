@@ -10,7 +10,7 @@ var (
 	// npm install --save-dev debug@2.5.2
 	// npm install --save-optional promise
 	// npm i --lockfile-version 1
-	// libraries are filled manually
+	// packages are filled manually
 
 	npmV1Pkgs = []ftypes.Package{
 		{
@@ -694,7 +694,7 @@ var (
 
 	// ... and
 	// npm i --lockfile-version 2
-	// same as npmV1Pkgs but change `Indirect` field to false for `body-parser@1.18.3`, `finalhandler@1.1.1`, `@babel/helper-string-parser@7.19.4`, `promise@8.3.0` and `ms@1.0.0`  libraries.
+	// same as npmV1Pkgs but change `Indirect` field to false for `body-parser@1.18.3`, `finalhandler@1.1.1`, `@babel/helper-string-parser@7.19.4`, `promise@8.3.0` and `ms@1.0.0`  packages.
 	// also need to get locations from `packages` struct
 	// --- lockfile version 3 ---
 	// npm i --lockfile-version 3
@@ -1312,7 +1312,7 @@ var (
 	// grep -v "functions/func1" ./package.json > tmpfile && mv tmpfile ./package.json
 	// sed -i 's/functions\/nested_func/functions\/*/g' package.json
 	// npm update
-	// libraries are filled manually
+	// packages are filled manually
 	npmV3WithWorkspacePkgs = []ftypes.Package{
 		{
 			ID:           "debug@2.5.2",
@@ -1448,7 +1448,7 @@ var (
 	// npm init --force
 	// npm init -w ./functions/func1 --force
 	// npm install --save debug@2.6.9 -w func1
-	// libraries are filled manually
+	// packages are filled manually
 	npmV3WithoutRootDepsField = []ftypes.Package{
 		{
 			ID:           "func1@1.0.0",

@@ -138,7 +138,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	licenses := make(map[string][]string)
 	for i, app := range apps {
 		// Actually used dependencies
-		usedLibs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
+		usedPkgs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 			return pkg.Name, pkg
 		})
 		for j, lib := range app.Packages {
@@ -171,7 +171,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			} else {
 				// Filter out unused dependencies and convert module names to module IDs
 				apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
-					if m, ok := usedLibs[modName]; !ok {
+					if m, ok := usedPkgs[modName]; !ok {
 						return "", false
 					} else {
 						return m.ID, true
@@ -197,13 +197,13 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, err
 	defer f.Close()
 
 	// Parse go.mod under $GOPATH/pkg/mod
-	libs, _, err := a.leafModParser.Parse(f)
+	pkgs, _, err := a.leafModParser.Parse(f)
 	if err != nil {
 		return types.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
 	}
 
 	// Filter out indirect dependencies
-	dependsOn := lo.FilterMap(libs, func(lib types.Package, index int) (string, bool) {
+	dependsOn := lo.FilterMap(pkgs, func(lib types.Package, index int) (string, bool) {
 		return lib.Name, lib.Relationship == types.RelationshipDirect
 	})
 

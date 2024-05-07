@@ -63,13 +63,13 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotLibs, _, err := pub.NewParser().Parse(f)
+			gotPkgs, _, err := pub.NewParser().Parse(f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.inputFile)) {
 				return
 			}
 
-			sort.Sort(ftypes.Packages(gotLibs))
-			assert.Equal(t, tt.want, gotLibs)
+			sort.Sort(ftypes.Packages(gotPkgs))
+			assert.Equal(t, tt.want, gotPkgs)
 		})
 	}
 }

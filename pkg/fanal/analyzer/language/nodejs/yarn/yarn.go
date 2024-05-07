@@ -194,12 +194,12 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	return nil
 }
 
-func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]types.Package,
+func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]types.Package,
 	directDeps map[string]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
-	pkgs := make(map[string]types.Package)
-	for _, pkg := range libs {
+	directPkgs := make(map[string]types.Package)
+	for _, pkg := range pkgs {
 		constraint, ok := directDeps[pkg.Name]
 		if !ok {
 			continue
@@ -223,16 +223,16 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 		pkg.Indirect = false
 		pkg.Relationship = types.RelationshipDirect
 		pkg.Dev = dev
-		pkgs[pkg.ID] = pkg
+		directPkgs[pkg.ID] = pkg
 
 	}
 
 	// Walk indirect dependencies
-	for _, pkg := range pkgs {
-		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
+	for _, pkg := range directPkgs {
+		a.walkIndirectDependencies(pkg, pkgIDs, directPkgs)
 	}
 
-	return pkgs, nil
+	return directPkgs, nil
 }
 
 func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {

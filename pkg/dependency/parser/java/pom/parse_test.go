@@ -541,7 +541,7 @@ func TestPom_Parse(t *testing.T) {
 			// [INFO] com.example:soft:jar:1.0.0
 			// [INFO] +- org.example:example-api:jar:1.7.30:compile
 			// [INFO] \- org.example:example-dependency:jar:1.2.3:compile
-			// Save DependsOn for each library - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
+			// Save DependsOn for each package - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
 			name:      "soft requirement",
 			inputFile: filepath.Join("testdata", "soft-requirement", "pom.xml"),
 			local:     true,
@@ -601,7 +601,7 @@ func TestPom_Parse(t *testing.T) {
 			// [INFO] +- org.example:example-dependency:jar:1.2.3:compile
 			// [INFO] |  \- org.example:example-api:jar:2.0.0:compile
 			// [INFO] \- org.example:example-dependency2:jar:2.3.4:compile
-			// Save DependsOn for each library - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
+			// Save DependsOn for each package - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
 			name:      "soft requirement with transitive dependencies",
 			inputFile: filepath.Join("testdata", "soft-requirement-with-transitive-dependencies", "pom.xml"),
 			local:     true,
@@ -672,7 +672,7 @@ func TestPom_Parse(t *testing.T) {
 			//[INFO] +- org.example:example-nested:jar:3.3.4:compile
 			//[INFO] \- org.example:example-dependency:jar:1.2.3:compile
 			//[INFO]    \- org.example:example-api:jar:2.0.0:compile
-			// Save DependsOn for each library - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
+			// Save DependsOn for each package - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
 			name:      "hard requirement for the specified version",
 			inputFile: filepath.Join("testdata", "hard-requirement", "pom.xml"),
 			local:     true,
@@ -1406,7 +1406,7 @@ func TestPom_Parse(t *testing.T) {
 
 			p := pom.NewParser(tt.inputFile, pom.WithReleaseRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
 
-			gotLibs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -1414,7 +1414,7 @@ func TestPom_Parse(t *testing.T) {
 			}
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.want, gotLibs)
+			assert.Equal(t, tt.want, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
