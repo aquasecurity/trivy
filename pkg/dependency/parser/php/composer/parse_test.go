@@ -15,7 +15,7 @@ var (
 	// composer require pear/log:1.13.3 --dev
 	// composer show -i --no-dev -f json | jq --sort-keys -rc '.installed[] | "{ID: \"\(.name)@\(.version)\", Name: \"\(.name)\", Version: \"\(.version)\", License: \"MIT\", Locations: []ftypes.Location{{StartLine: , EndLine: }}},"'
 	// locations are filled manually
-	composerLibs = []ftypes.Package{
+	composerPkgs = []ftypes.Package{
 		{
 			ID:       "guzzlehttp/guzzle@6.5.8",
 			Name:     "guzzlehttp/guzzle",
