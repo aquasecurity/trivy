@@ -116,13 +116,7 @@ func copySymlink(fsys *memoryfs.FS, src, dst string) error {
 		return nil
 	}
 
-	f, err := fsys.Open(src)
-	if err != nil {
-		return fmt.Errorf("open symlink error: %w", err)
-	}
-	defer f.Close()
-
-	if err := copyFile(fsys, f, dst); err != nil {
+	if err := copyFileLazy(fsys, src, dst); err != nil {
 		return fmt.Errorf("copy file error: %w", err)
 	}
 
@@ -158,16 +152,24 @@ func copyDir(fsys *memoryfs.FS, src, dst string) error {
 
 		dst := path.Join(dst, filePath[len(src):])
 
-		f, err := fsys.Open(filePath)
-		if err != nil {
-			return err
-		}
-
-		if err := copyFile(fsys, f, dst); err != nil {
+		if err := copyFileLazy(fsys, filePath, dst); err != nil {
 			return fmt.Errorf("copy file error: %w", err)
 		}
 		return nil
 	}
 
 	return fs.WalkDir(fsys, src, walkFn)
+}
+
+func copyFileLazy(fsys *memoryfs.FS, src, dst string) error {
+	if err := fsys.MkdirAll(path.Dir(dst), fs.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+		return fmt.Errorf("mkdir error: %w", err)
+	}
+	return fsys.WriteLazyFile(dst, func() (io.Reader, error) {
+		f, err := fsys.Open(src)
+		if err != nil {
+			return nil, err
+		}
+		return f, nil
+	}, fs.ModePerm)
 }
