@@ -3,7 +3,6 @@ package conan_test
 import (
 	"os"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,18 +36,6 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "pkgb/system",
-					Name:         "pkgb",
-					Version:      "system",
-					Relationship: ftypes.RelationshipIndirect,
-					Locations: []ftypes.Location{
-						{
-							StartLine: 23,
-							EndLine:   29,
-						},
-					},
-				},
-				{
 					ID:           "pkgc/0.1.1",
 					Name:         "pkgc",
 					Version:      "0.1.1",
@@ -57,6 +44,18 @@ func TestParse(t *testing.T) {
 						{
 							StartLine: 30,
 							EndLine:   35,
+						},
+					},
+				},
+				{
+					ID:           "pkgb/system",
+					Name:         "pkgb",
+					Version:      "system",
+					Relationship: ftypes.RelationshipIndirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 23,
+							EndLine:   29,
 						},
 					},
 				},
@@ -156,13 +155,7 @@ func TestParse(t *testing.T) {
 			gotPkgs, gotDeps, err := conan.NewParser().Parse(f)
 			require.NoError(t, err)
 
-			sort.Slice(gotPkgs, func(i, j int) bool {
-				ret := strings.Compare(gotPkgs[i].Name, gotPkgs[j].Name)
-				if ret != 0 {
-					return ret < 0
-				}
-				return gotPkgs[i].Version < gotPkgs[j].Version
-			})
+			sort.Sort(ftypes.Packages(gotPkgs))
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)

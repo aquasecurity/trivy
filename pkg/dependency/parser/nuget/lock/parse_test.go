@@ -49,21 +49,8 @@ func TestParse(t *testing.T) {
 			got, deps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			sort.Slice(got, func(i, j int) bool {
-				ret := strings.Compare(got[i].Name, got[j].Name)
-				if ret == 0 {
-					return got[i].Version < got[j].Version
-				}
-				return ret < 0
-			})
-
-			sort.Slice(v.want, func(i, j int) bool {
-				ret := strings.Compare(v.want[i].Name, v.want[j].Name)
-				if ret == 0 {
-					return v.want[i].Version < v.want[j].Version
-				}
-				return ret < 0
-			})
+			sort.Sort(ftypes.Packages(got))
+			sort.Sort(ftypes.Packages(v.want))
 
 			assert.Equal(t, v.want, got)
 

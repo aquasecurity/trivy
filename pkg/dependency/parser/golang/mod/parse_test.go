@@ -88,12 +88,8 @@ func TestParse(t *testing.T) {
 			got, _, err := NewParser(tt.replace).Parse(f)
 			require.NoError(t, err)
 
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].Name < got[j].Name
-			})
-			sort.Slice(tt.want, func(i, j int) bool {
-				return tt.want[i].Name < tt.want[j].Name
-			})
+			sort.Sort(ftypes.Packages(got))
+			sort.Sort(ftypes.Packages(tt.want))
 
 			assert.Equal(t, tt.want, got)
 		})

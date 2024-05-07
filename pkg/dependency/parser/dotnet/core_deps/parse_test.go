@@ -4,7 +4,6 @@ import (
 	"os"
 	"path"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,21 +46,8 @@ func TestParse(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 
-				sort.Slice(got, func(i, j int) bool {
-					ret := strings.Compare(got[i].Name, got[j].Name)
-					if ret == 0 {
-						return got[i].Version < got[j].Version
-					}
-					return ret < 0
-				})
-
-				sort.Slice(tt.want, func(i, j int) bool {
-					ret := strings.Compare(tt.want[i].Name, tt.want[j].Name)
-					if ret == 0 {
-						return tt.want[i].Version < tt.want[j].Version
-					}
-					return ret < 0
-				})
+				sort.Sort(ftypes.Packages(got))
+				sort.Sort(ftypes.Packages(tt.want))
 
 				assert.Equal(t, tt.want, got)
 			}

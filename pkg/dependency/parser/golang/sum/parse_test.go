@@ -48,12 +48,8 @@ func TestParse(t *testing.T) {
 				got[i].ID = "" // Not compare IDs, tested in mod.TestModuleID()
 			}
 
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].Name < got[j].Name
-			})
-			sort.Slice(v.want, func(i, j int) bool {
-				return v.want[i].Name < v.want[j].Name
-			})
+			sort.Sort(ftypes.Packages(got))
+			sort.Sort(ftypes.Packages(v.want))
 
 			assert.Equal(t, v.want, got)
 		})
