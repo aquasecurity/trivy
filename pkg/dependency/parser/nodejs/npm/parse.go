@@ -132,7 +132,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 
 		// There are cases when similar libraries use same dependencies
 		// we need to add location for each these dependencies
-		if savedLib, ok := libs[pkgID]; ok {
+		if savedPkgs, ok := libs[pkgID]; ok {
 			savedLib.Dev = savedLib.Dev && pkg.Dev
 			if savedLib.Relationship == ftypes.RelationshipIndirect && !pkgIndirect {
 				savedLib.Relationship = ftypes.RelationshipDirect
