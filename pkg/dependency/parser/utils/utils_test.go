@@ -9,8 +9,8 @@ import (
 func TestUniqueLibraries(t *testing.T) {
 	tests := []struct {
 		name     string
-		libs     []ftypes.Package
-		wantLibs []ftypes.Package
+		pkgs     []ftypes.Package
+		wantPkgs []ftypes.Package
 	}{
 		{
 			name: "happy path merge locations",
