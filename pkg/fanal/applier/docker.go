@@ -230,7 +230,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	}
 
 	for _, app := range mergedLayer.Applications {
-		for i, lib := range app.Packages {
+		for i, pkg := range app.Packages {
 			// Skip lookup for SBOM
 			if lo.IsEmpty(lib.Layer) {
 				originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
