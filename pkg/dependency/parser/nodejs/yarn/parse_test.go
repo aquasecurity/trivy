@@ -3,7 +3,6 @@ package yarn
 import (
 	"os"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -305,10 +304,10 @@ func TestParse(t *testing.T) {
 			got, deps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			sortLibs(got)
-			sortLibs(tt.want)
-
+			sortPkgs(got)
+			sortPkgs(tt.want)
 			assert.Equal(t, tt.want, got)
+
 			if tt.wantDeps != nil {
 				sortDeps(deps)
 				sortDeps(tt.wantDeps)
@@ -318,31 +317,16 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func sortDeps(deps []ftypes.Dependency) {
-	sort.Slice(deps, func(i, j int) bool {
-		return strings.Compare(deps[i].ID, deps[j].ID) < 0
-	})
-
-	for i := range deps {
-		sort.Strings(deps[i].DependsOn)
+func sortPkgs(pkgs ftypes.Packages) {
+	sort.Sort(pkgs)
+	for _, pkg := range pkgs {
+		sort.Sort(pkg.Locations)
 	}
 }
 
-func sortLibs(libs []ftypes.Package) {
-	sort.Slice(libs, func(i, j int) bool {
-		ret := strings.Compare(libs[i].Name, libs[j].Name)
-		if ret == 0 {
-			return libs[i].Version < libs[j].Version
-		}
-		return ret < 0
-	})
-	for _, lib := range libs {
-		sortLocations(lib.Locations)
+func sortDeps(deps ftypes.Dependencies) {
+	sort.Sort(deps)
+	for _, dep := range deps {
+		sort.Strings(dep.DependsOn)
 	}
-}
-
-func sortLocations(locs []ftypes.Location) {
-	sort.Slice(locs, func(i, j int) bool {
-		return locs[i].StartLine < locs[j].StartLine
-	})
 }
