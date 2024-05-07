@@ -20,7 +20,7 @@ func NewParser() *Parser {
 // Parse parses a go.sum file
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var pkgs []ftypes.Package
-	uniqueLibs := make(map[string]string)
+	uniquePkgs := make(map[string]string)
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
