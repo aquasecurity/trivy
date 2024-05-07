@@ -15,7 +15,7 @@ func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string
-		wantLibs []ftypes.Package
+		wantPkgs []ftypes.Package
 		wantDeps []ftypes.Dependency
 		wantErr  assert.ErrorAssertionFunc
 	}{
