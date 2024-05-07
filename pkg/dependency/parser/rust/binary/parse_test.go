@@ -14,7 +14,7 @@ import (
 // Test binaries generated from cargo-auditable test fixture
 // https://github.com/rust-secure-code/cargo-auditable/tree/6b77151/cargo-auditable/tests/fixtures/workspace
 var (
-	libs = []ftypes.Package{
+	pkgs = []ftypes.Package{
 		{
 			ID:           "crate_with_features@0.1.0",
 			Name:         "crate_with_features",
