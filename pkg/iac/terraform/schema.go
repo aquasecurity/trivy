@@ -48,5 +48,8 @@ var Schema = &hcl.BodySchema{
 		{
 			Type: "import",
 		},
+		{
+			Type: "removed",
+		},
 	},
 }
