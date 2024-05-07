@@ -280,7 +280,7 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 	var pkgs []ftypes.Package
 	var deps []ftypes.Dependency
 	for pkgName, dep := range dependencies {
-		lib := ftypes.Package{
+		pkg := ftypes.Package{
 			ID:           packageID(pkgName, dep.Version),
 			Name:         pkgName,
 			Version:      dep.Version,
