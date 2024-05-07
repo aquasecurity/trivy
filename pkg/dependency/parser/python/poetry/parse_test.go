@@ -22,20 +22,20 @@ func TestParser_Parse(t *testing.T) {
 		{
 			name:     "normal",
 			file:     "testdata/poetry_normal.lock",
-			wantLibs: poetryNormal,
+			wantPkgs: poetryNormal,
 			wantErr:  assert.NoError,
 		},
 		{
 			name:     "many",
 			file:     "testdata/poetry_many.lock",
-			wantLibs: poetryMany,
+			wantPkgs: poetryMany,
 			wantDeps: poetryManyDeps,
 			wantErr:  assert.NoError,
 		},
 		{
 			name:     "flask",
 			file:     "testdata/poetry_flask.lock",
-			wantLibs: poetryFlask,
+			wantPkgs: poetryFlask,
 			wantDeps: poetryFlaskDeps,
 			wantErr:  assert.NoError,
 		},
@@ -51,7 +51,7 @@ func TestParser_Parse(t *testing.T) {
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
 				return
 			}
-			assert.Equalf(t, tt.wantLibs, gotLibs, "Parse(%v)", tt.file)
+			assert.Equalf(t, tt.wantPkgs, gotLibs, "Parse(%v)", tt.file)
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}

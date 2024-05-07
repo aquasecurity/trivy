@@ -118,7 +118,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application) error {
 	for i, pkg := range app.Packages {
 		var licenses []string
-		for _, lic := range lib.Licenses {
+		for _, lic := range pkg.Licenses {
 			// Parser adds `file://` prefix to filepath from `License-File` field
 			// We need to read this file to find licenses
 			// Otherwise, this is the name of the license

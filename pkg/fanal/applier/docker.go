@@ -232,17 +232,17 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	for _, app := range mergedLayer.Applications {
 		for i, pkg := range app.Packages {
 			// Skip lookup for SBOM
-			if lo.IsEmpty(lib.Layer) {
-				originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
+			if lo.IsEmpty(pkg.Layer) {
+				originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, pkg, layers)
 				app.Packages[i].Layer = ftypes.Layer{
 					Digest: originLayerDigest,
 					DiffID: originLayerDiffID,
 				}
 			}
-			if lib.Identifier.PURL == nil {
-				app.Packages[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, lib)
+			if pkg.Identifier.PURL == nil {
+				app.Packages[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, pkg)
 			}
-			app.Packages[i].Identifier.UID = calcPkgUID(app.FilePath, lib)
+			app.Packages[i].Identifier.UID = calcPkgUID(app.FilePath, pkg)
 		}
 	}
 

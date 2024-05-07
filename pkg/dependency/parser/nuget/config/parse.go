@@ -41,12 +41,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			continue
 		}
 
-		pkg := ftypes.Package{
+		pkgs = append(pkgs, ftypes.Package{
 			Name:    pkg.ID,
 			Version: pkg.Version,
-		}
-
-		pkgs = append(pkgs, lib)
+		})
 	}
 
 	return utils.UniquePackages(pkgs), nil, nil

@@ -71,9 +71,9 @@ func (p *Parser) parseV1(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 
 		// Determine if the package is a direct dependency or not
 		direct := slices.Contains(directDeps, i)
-		lib.Relationship = lo.Ternary(direct, ftypes.RelationshipDirect, ftypes.RelationshipIndirect)
+		pkg.Relationship = lo.Ternary(direct, ftypes.RelationshipDirect, ftypes.RelationshipIndirect)
 
-		parsed[i] = lib
+		parsed[i] = pkg
 	}
 
 	// Parse dependency graph

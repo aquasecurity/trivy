@@ -132,21 +132,21 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 
 		// There are cases when similar libraries use same dependencies
 		// we need to add location for each these dependencies
-		if savedPkgs, ok := libs[pkgID]; ok {
-			savedLib.Dev = savedLib.Dev && pkg.Dev
-			if savedLib.Relationship == ftypes.RelationshipIndirect && !pkgIndirect {
-				savedLib.Relationship = ftypes.RelationshipDirect
+		if savedPkg, ok := pkgs[pkgID]; ok {
+			savedPkg.Dev = savedPkg.Dev && pkg.Dev
+			if savedPkg.Relationship == ftypes.RelationshipIndirect && !pkgIndirect {
+				savedPkg.Relationship = ftypes.RelationshipDirect
 			}
 
-			if ref.URL != "" && !slices.Contains(savedLib.ExternalReferences, ref) {
-				savedLib.ExternalReferences = append(savedLib.ExternalReferences, ref)
-				sortExternalReferences(savedLib.ExternalReferences)
+			if ref.URL != "" && !slices.Contains(savedPkg.ExternalReferences, ref) {
+				savedPkg.ExternalReferences = append(savedPkg.ExternalReferences, ref)
+				sortExternalReferences(savedPkg.ExternalReferences)
 			}
 
-			savedLib.Locations = append(savedLib.Locations, location)
-			sort.Sort(savedLib.Locations)
+			savedPkg.Locations = append(savedPkg.Locations, location)
+			sort.Sort(savedPkg.Locations)
 
-			libs[pkgID] = savedLib
+			pkgs[pkgID] = savedPkg
 			continue
 		}
 
@@ -159,7 +159,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			ExternalReferences: lo.Ternary(ref.URL != "", []ftypes.ExternalRef{ref}, nil),
 			Locations:          []ftypes.Location{location},
 		}
-		libs[pkgID] = lib
+		pkgs[pkgID] = lib
 
 		// npm builds graph using optional deps. e.g.:
 		// └─┬ watchpack@1.7.5
@@ -186,7 +186,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 
 	}
 
-	return maps.Values(libs), deps
+	return maps.Values(pkgs), deps
 }
 
 // for local package npm uses links. e.g.:
@@ -299,7 +299,7 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 				},
 			},
 		}
-		pkgs = append(pkgs, lib)
+		pkgs = append(pkgs, pkg)
 
 		dependsOn := make([]string, 0, len(dep.Requires))
 		for libName, requiredVer := range dep.Requires {
@@ -323,15 +323,15 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 
 		if len(dependsOn) > 0 {
 			deps = append(deps, ftypes.Dependency{
-				ID:        packageID(lib.Name, lib.Version),
+				ID:        packageID(pkg.Name, pkg.Version),
 				DependsOn: dependsOn,
 			})
 		}
 
 		if dep.Dependencies != nil {
 			// Recursion
-			childLibs, childDeps := p.parseV1(dep.Dependencies, maps.Clone(versions))
-			pkgs = append(pkgs, childLibs...)
+			childpkgs, childDeps := p.parseV1(dep.Dependencies, maps.Clone(versions))
+			pkgs = append(pkgs, childpkgs...)
 			deps = append(deps, childDeps...)
 		}
 	}

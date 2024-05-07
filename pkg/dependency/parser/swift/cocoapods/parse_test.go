@@ -20,7 +20,7 @@ func TestParse(t *testing.T) {
 		{
 			name:      "happy path",
 			inputFile: "testdata/happy.lock",
-			wantLibs: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
 					ID:      "AppCenter@4.2.0",
 					Name:    "AppCenter",
@@ -88,7 +88,7 @@ func TestParse(t *testing.T) {
 			gotLibs, gotDeps, err := cocoapods.NewParser().Parse(f)
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.wantLibs, gotLibs)
+			assert.Equal(t, tt.wantPkgs, gotLibs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}

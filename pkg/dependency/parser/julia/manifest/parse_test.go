@@ -65,7 +65,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 
 			sort.Sort(ftypes.Packages(tt.want))
-			assert.Equal(t, tt.want, gotLibs)
+			assert.Equal(t, tt.want, gotPkgs)
 			if tt.wantDeps != nil {
 				sort.Sort(ftypes.Dependencies(tt.wantDeps))
 				assert.Equal(t, tt.wantDeps, gotDeps)

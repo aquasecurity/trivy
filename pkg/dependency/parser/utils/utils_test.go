@@ -14,7 +14,7 @@ func TestUniqueLibraries(t *testing.T) {
 	}{
 		{
 			name: "happy path merge locations",
-			libs: []ftypes.Package{
+			pkgs: []ftypes.Package{
 				{
 					ID:      "asn1@0.2.6",
 					Name:    "asn1",
@@ -38,7 +38,7 @@ func TestUniqueLibraries(t *testing.T) {
 					},
 				},
 			},
-			wantLibs: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
 					ID:      "asn1@0.2.6",
 					Name:    "asn1",
@@ -58,7 +58,7 @@ func TestUniqueLibraries(t *testing.T) {
 		},
 		{
 			name: "happy path Dev and Root deps",
-			libs: []ftypes.Package{
+			pkgs: []ftypes.Package{
 				{
 					ID:      "asn1@0.2.6",
 					Name:    "asn1",
@@ -72,7 +72,7 @@ func TestUniqueLibraries(t *testing.T) {
 					Dev:     false,
 				},
 			},
-			wantLibs: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
 					ID:      "asn1@0.2.6",
 					Name:    "asn1",
@@ -83,7 +83,7 @@ func TestUniqueLibraries(t *testing.T) {
 		},
 		{
 			name: "happy path Root and Dev deps",
-			libs: []ftypes.Package{
+			pkgs: []ftypes.Package{
 				{
 					ID:      "asn1@0.2.6",
 					Name:    "asn1",
@@ -97,7 +97,7 @@ func TestUniqueLibraries(t *testing.T) {
 					Dev:     true,
 				},
 			},
-			wantLibs: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
 					ID:      "asn1@0.2.6",
 					Name:    "asn1",
@@ -110,8 +110,8 @@ func TestUniqueLibraries(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotLibs := UniquePackages(tt.libs)
-			require.Equal(t, tt.wantLibs, gotLibs)
+			gotLibs := UniquePackages(tt.pkgs)
+			require.Equal(t, tt.wantPkgs, gotLibs)
 		})
 	}
 }

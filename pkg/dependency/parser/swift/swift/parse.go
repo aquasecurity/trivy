@@ -42,7 +42,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		pins = lockFile.Pins
 	}
 	for _, pin := range pins {
-		name := libraryName(pin, lockFile.Version)
+		name := pkgName(pin, lockFile.Version)
 
 		// Skip packages for which we cannot resolve the version
 		if pin.State.Version == "" && pin.State.Branch == "" {

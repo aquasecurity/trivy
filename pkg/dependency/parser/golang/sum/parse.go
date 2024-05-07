@@ -32,13 +32,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 		// go.sum records and sorts all non-major versions
 		// with the latest version as last entry
-		uniqueLibs[s[0]] = strings.TrimSuffix(strings.TrimPrefix(s[1], "v"), "/go.mod")
+		uniquePkgs[s[0]] = strings.TrimSuffix(strings.TrimPrefix(s[1], "v"), "/go.mod")
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	for k, v := range uniqueLibs {
+	for k, v := range uniquePkgs {
 		pkgs = append(pkgs, ftypes.Package{
 			ID:      dependency.ID(ftypes.GoModule, k, v),
 			Name:    k,

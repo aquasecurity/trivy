@@ -48,19 +48,19 @@ func TestParse(t *testing.T) {
 		{
 			name:      "ELF",
 			inputFile: "testdata/test.elf",
-			want:      libs,
+			want:      pkgs,
 			wantDeps:  deps,
 		},
 		{
 			name:      "PE",
 			inputFile: "testdata/test.exe",
-			want:      libs,
+			want:      pkgs,
 			wantDeps:  deps,
 		},
 		{
 			name:      "Mach-O",
 			inputFile: "testdata/test.macho",
-			want:      libs,
+			want:      pkgs,
 			wantDeps:  deps,
 		},
 		{

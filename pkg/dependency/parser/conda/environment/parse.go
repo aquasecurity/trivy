@@ -45,17 +45,17 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	for _, dep := range env.Dependencies {
 		pkg := p.toPackage(dep)
 		// Skip empty libs
-		if lib.Name == "" {
+		if pkg.Name == "" {
 			continue
 		}
-		pkgs = append(pkgs, lib)
+		pkgs = append(pkgs, pkg)
 	}
 
 	sort.Sort(pkgs)
 	return pkgs, nil, nil
 }
 
-func (p *Parser) toLibrary(dep Dependency) ftypes.Package {
+func (p *Parser) toPackage(dep Dependency) ftypes.Package {
 	name, ver := p.parseDependency(dep.Value)
 	if ver == "" {
 		p.once.Do(func() {

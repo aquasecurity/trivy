@@ -479,8 +479,8 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 				// The analysis result could contain packages listed in SBOM.
 				// The files of those packages don't have to be analyzed.
 				// This is especially helpful for expensive post-analyzers such as the JAR analyzer.
-				if lib.FilePath != "" {
-					skippedFiles = append(skippedFiles, lib.FilePath)
+				if pkg.FilePath != "" {
+					skippedFiles = append(skippedFiles, pkg.FilePath)
 				}
 			}
 		}

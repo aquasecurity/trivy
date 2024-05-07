@@ -150,7 +150,7 @@ func TestParse(t *testing.T) {
 		{
 			name:     "happy path",
 			file:     "testdata/composer_happy.lock",
-			wantLibs: composerLibs,
+			wantPkgs: composerPkgs,
 			wantDeps: composerDeps,
 		},
 	}
@@ -164,7 +164,7 @@ func TestParse(t *testing.T) {
 			gotLibs, gotDeps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.wantLibs, gotLibs)
+			assert.Equal(t, tt.wantPkgs, gotLibs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
