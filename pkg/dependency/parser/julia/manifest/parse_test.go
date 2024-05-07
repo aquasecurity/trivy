@@ -61,7 +61,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			gotLibs, gotDeps, err := NewParser().Parse(f)
+			gotPkgs, gotDeps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
 			sort.Sort(ftypes.Packages(tt.want))
