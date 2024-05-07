@@ -63,7 +63,7 @@ func (p *Parser) parseV1(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 		if node.Ref == "" {
 			continue
 		}
-		lib, err := toPackage(node.Ref, node.StartLine, node.EndLine)
+		pkg, err := toPackage(node.Ref, node.StartLine, node.EndLine)
 		if err != nil {
 			p.logger.Debug("Parse ref error", log.Err(err))
 			continue
