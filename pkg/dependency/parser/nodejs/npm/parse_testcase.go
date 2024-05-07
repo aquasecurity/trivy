@@ -12,7 +12,7 @@ var (
 	// npm i --lockfile-version 1
 	// libraries are filled manually
 
-	npmV1Libs = []ftypes.Package{
+	npmV1Pkgs = []ftypes.Package{
 		{
 			ID:           "@babel/helper-string-parser@7.19.4",
 			Name:         "@babel/helper-string-parser",
@@ -694,12 +694,12 @@ var (
 
 	// ... and
 	// npm i --lockfile-version 2
-	// same as npmV1Libs but change `Indirect` field to false for `body-parser@1.18.3`, `finalhandler@1.1.1`, `@babel/helper-string-parser@7.19.4`, `promise@8.3.0` and `ms@1.0.0`  libraries.
+	// same as npmV1Pkgs but change `Indirect` field to false for `body-parser@1.18.3`, `finalhandler@1.1.1`, `@babel/helper-string-parser@7.19.4`, `promise@8.3.0` and `ms@1.0.0`  libraries.
 	// also need to get locations from `packages` struct
 	// --- lockfile version 3 ---
 	// npm i --lockfile-version 3
-	// same as npmV2Libs.
-	npmV2Libs = []ftypes.Package{
+	// same as npmV2Pkgs.
+	npmV2Pkgs = []ftypes.Package{
 		{
 			ID:           "@babel/helper-string-parser@7.19.4",
 			Name:         "@babel/helper-string-parser",
@@ -1313,7 +1313,7 @@ var (
 	// sed -i 's/functions\/nested_func/functions\/*/g' package.json
 	// npm update
 	// libraries are filled manually
-	npmV3WithWorkspaceLibs = []ftypes.Package{
+	npmV3WithWorkspacePkgs = []ftypes.Package{
 		{
 			ID:           "debug@2.5.2",
 			Name:         "debug",
@@ -1517,7 +1517,7 @@ var (
 		},
 	}
 
-	npmV3WithSameDevAndNonDevLibs = []ftypes.Package{
+	npmV3WithSameDevAndNonDevPkgs = []ftypes.Package{
 		{
 			ID:           "fsevents@1.2.9",
 			Name:         "fsevents",
