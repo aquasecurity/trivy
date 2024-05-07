@@ -29,6 +29,8 @@ func TestParseFS(t *testing.T) {
 		// mkdir -p dir && cp -p Chart.yaml dir/Chart.yaml
 		// mkdir -p sym-to-file && ln -s ../Chart.yaml sym-to-file/Chart.yaml
 		// ln -s dir sym-to-dir
+		// mkdir rec-sym && touch rec-sym/Chart.yaml
+		// ln -s . ./rec-sym/a
 		// cd .. && tar -czvf chart.tar.gz chart && rm -rf chart
 		p, err := New(".")
 		require.NoError(t, err)
@@ -39,6 +41,8 @@ func TestParseFS(t *testing.T) {
 		expectedFiles := []string{
 			"chart/Chart.yaml",
 			"chart/dir/Chart.yaml",
+			"chart/rec-sym/Chart.yaml",
+			"chart/rec-sym/a/Chart.yaml",
 			"chart/sym-to-dir/Chart.yaml",
 			"chart/sym-to-file/Chart.yaml",
 		}
