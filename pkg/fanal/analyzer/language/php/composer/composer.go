@@ -115,7 +115,7 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	for i, lib := range app.Packages {
+	for i, pkg := range app.Packages {
 		// Identify the direct/transitive dependencies
 		if _, ok := p[lib.Name]; ok {
 			app.Packages[i].Relationship = types.RelationshipDirect
