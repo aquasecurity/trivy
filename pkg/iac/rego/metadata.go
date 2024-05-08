@@ -20,6 +20,7 @@ import (
 const annotationScopePackage = "package"
 
 type StaticMetadata struct {
+	Deprecated         bool
 	ID                 string
 	AVDID              string
 	Title              string
@@ -69,6 +70,12 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 	upd(&sm.Provider, "provider")
 	upd(&sm.RecommendedActions, "recommended_actions")
 	upd(&sm.RecommendedActions, "recommended_action")
+
+	if raw, ok := meta["deprecated"]; ok {
+		if dep, ok := raw.(bool); ok {
+			sm.Deprecated = dep
+		}
+	}
 
 	if raw, ok := meta["severity"]; ok {
 		sm.Severity = strings.ToUpper(fmt.Sprintf("%s", raw))
@@ -208,6 +215,7 @@ func (m StaticMetadata) ToRule() scan.Rule {
 	}
 
 	return scan.Rule{
+		Deprecated:     m.Deprecated,
 		AVDID:          m.AVDID,
 		Aliases:        append(m.Aliases, m.ID),
 		ShortCode:      m.ShortCode,

@@ -117,6 +117,23 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 
 		assert.Equal(t, expected, sm)
 	})
+
+	t.Run("check is deprecated", func(t *testing.T) {
+		sm := StaticMetadata{
+			Deprecated: false,
+		}
+		require.NoError(t, sm.Update(map[string]any{
+			"deprecated": true,
+		}))
+
+		expected := StaticMetadata{
+			Deprecated:     true,
+			CloudFormation: &scan.EngineMetadata{},
+			Terraform:      &scan.EngineMetadata{},
+		}
+
+		assert.Equal(t, expected, sm)
+	})
 }
 
 func Test_getEngineMetadata(t *testing.T) {
