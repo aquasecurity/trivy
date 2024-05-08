@@ -27,7 +27,7 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.DotNetCore,
 						FilePath: "testdata/datacollector.deps.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",

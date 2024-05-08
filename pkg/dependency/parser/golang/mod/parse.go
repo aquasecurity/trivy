@@ -12,7 +12,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -34,17 +33,17 @@ type Parser struct {
 	replace bool // 'replace' represents if the 'replace' directive should be taken into account.
 }
 
-func NewParser(replace bool) types.Parser {
+func NewParser(replace bool) *Parser {
 	return &Parser{
 		replace: replace,
 	}
 }
 
-func (p *Parser) GetExternalRefs(path string) []types.ExternalRef {
+func (p *Parser) GetExternalRefs(path string) []ftypes.ExternalRef {
 	if url := resolveVCSUrl(path); url != "" {
-		return []types.ExternalRef{
+		return []ftypes.ExternalRef{
 			{
-				Type: types.RefVCS,
+				Type: ftypes.RefVCS,
 				URL:  url,
 			},
 		}
@@ -67,8 +66,8 @@ func resolveVCSUrl(modulePath string) string {
 }
 
 // Parse parses a go.mod file
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	libs := make(map[string]types.Library)
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	pkgs := make(map[string]ftypes.Package)
 
 	goModData, err := io.ReadAll(r)
 	if err != nil {
@@ -88,12 +87,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// Main module
 	if m := modFileParsed.Module; m != nil {
 		ver := strings.TrimPrefix(m.Mod.Version, "v")
-		libs[m.Mod.Path] = types.Library{
+		pkgs[m.Mod.Path] = ftypes.Package{
 			ID:                 packageID(m.Mod.Path, ver),
 			Name:               m.Mod.Path,
 			Version:            ver,
 			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
-			Relationship:       types.RelationshipRoot,
+			Relationship:       ftypes.RelationshipRoot,
 		}
 	}
 
@@ -104,11 +103,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 		ver := strings.TrimPrefix(require.Mod.Version, "v")
-		libs[require.Mod.Path] = types.Library{
+		pkgs[require.Mod.Path] = ftypes.Package{
 			ID:                 packageID(require.Mod.Path, ver),
 			Name:               require.Mod.Path,
 			Version:            ver,
-			Relationship:       lo.Ternary(require.Indirect, types.RelationshipIndirect, types.RelationshipDirect),
+			Relationship:       lo.Ternary(require.Indirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			ExternalReferences: p.GetExternalRefs(require.Mod.Path),
 		}
 	}
@@ -116,8 +115,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// No need to evaluate the 'replace' directive for indirect dependencies
 	if p.replace {
 		for _, rep := range modFileParsed.Replace {
-			// Check if replaced path is actually in our libs.
-			old, ok := libs[rep.Old.Path]
+			// Check if replaced path is actually in our pkgs.
+			old, ok := pkgs[rep.Old.Path]
 			if !ok {
 				continue
 			}
@@ -130,16 +129,16 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			// Only support replace directive with version on the right side.
 			// Directive without version is a local path.
 			if rep.New.Version == "" {
-				// Delete old lib, since it's a local path now.
-				delete(libs, rep.Old.Path)
+				// Delete old pkg, since it's a local path now.
+				delete(pkgs, rep.Old.Path)
 				continue
 			}
 
-			// Delete old lib, in case the path has changed.
-			delete(libs, rep.Old.Path)
+			// Delete old pkg, in case the path has changed.
+			delete(pkgs, rep.Old.Path)
 
-			// Add replaced library to library register.
-			libs[rep.New.Path] = types.Library{
+			// Add replaced package to package register.
+			pkgs[rep.New.Path] = ftypes.Package{
 				ID:                 packageID(rep.New.Path, rep.New.Version[1:]),
 				Name:               rep.New.Path,
 				Version:            rep.New.Version[1:],
@@ -149,7 +148,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 	}
 
-	return maps.Values(libs), nil, nil
+	return maps.Values(pkgs), nil, nil
 }
 
 // Check if the Go version is less than 1.17

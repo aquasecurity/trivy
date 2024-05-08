@@ -334,7 +334,7 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 			if !ok {
 				continue
 			}
-			app.Libraries = append(app.Libraries, *pkg)
+			app.Packages = append(app.Packages, *pkg)
 			delete(m.pkgs, rel.Dependency) // Delete the added package
 		}
 		sbom.Applications = append(sbom.Applications, *app)
@@ -380,8 +380,8 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	for pkgType, pkgs := range langPkgMap {
 		sort.Sort(pkgs)
 		sbom.Applications = append(sbom.Applications, ftypes.Application{
-			Type:      pkgType,
-			Libraries: pkgs,
+			Type:     pkgType,
+			Packages: pkgs,
 		})
 	}
 	return nil

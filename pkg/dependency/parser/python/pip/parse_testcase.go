@@ -1,9 +1,9 @@
 package pip
 
-import "github.com/aquasecurity/trivy/pkg/dependency/types"
+import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
-	requirementsFlask = []types.Library{
+	requirementsFlask = []ftypes.Package{
 		{Name: "click", Version: "8.0.0"},
 		{Name: "Flask", Version: "2.0.0"},
 		{Name: "itsdangerous", Version: "2.0.0"},
@@ -12,45 +12,45 @@ var (
 		{Name: "Werkzeug", Version: "2.0.0"},
 	}
 
-	requirementsComments = []types.Library{
+	requirementsComments = []ftypes.Package{
 		{Name: "click", Version: "8.0.0"},
 		{Name: "Flask", Version: "2.0.0"},
 		{Name: "Jinja2", Version: "3.0.0"},
 		{Name: "MarkupSafe", Version: "2.0.0"},
 	}
 
-	requirementsSpaces = []types.Library{
+	requirementsSpaces = []ftypes.Package{
 		{Name: "click", Version: "8.0.0"},
 		{Name: "Flask", Version: "2.0.0"},
 		{Name: "itsdangerous", Version: "2.0.0"},
 		{Name: "Jinja2", Version: "3.0.0"},
 	}
 
-	requirementsNoVersion = []types.Library{
+	requirementsNoVersion = []ftypes.Package{
 		{Name: "Flask", Version: "2.0.0"},
 	}
 
-	requirementsOperator = []types.Library{
+	requirementsOperator = []ftypes.Package{
 		{Name: "Django", Version: "2.3.4"},
 		{Name: "SomeProject", Version: "5.4"},
 	}
 
-	requirementsHash = []types.Library{
+	requirementsHash = []ftypes.Package{
 		{Name: "FooProject", Version: "1.2"},
 		{Name: "Jinja2", Version: "3.0.0"},
 	}
 
-	requirementsHyphens = []types.Library{
+	requirementsHyphens = []ftypes.Package{
 		{Name: "oauth2-client", Version: "4.0.0"},
 		{Name: "python-gitlab", Version: "2.0.0"},
 	}
 
-	requirementsExtras = []types.Library{
+	requirementsExtras = []ftypes.Package{
 		{Name: "pyjwt", Version: "2.1.0"},
 		{Name: "celery", Version: "4.4.7"},
 	}
 
-	requirementsUtf16le = []types.Library{
+	requirementsUtf16le = []ftypes.Package{
 		{Name: "attrs", Version: "20.3.0"},
 	}
 )

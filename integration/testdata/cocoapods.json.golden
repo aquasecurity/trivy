@@ -25,7 +25,8 @@
           "ID": "_NIODataStructures@2.41.0",
           "Name": "_NIODataStructures",
           "Identifier": {
-            "PURL": "pkg:cocoapods/_NIODataStructures@2.41.0"
+            "PURL": "pkg:cocoapods/_NIODataStructures@2.41.0",
+            "UID": "ddc948d6b5e15241"
           },
           "Version": "2.41.0",
           "Layer": {}
@@ -37,7 +38,8 @@
           "PkgID": "_NIODataStructures@2.41.0",
           "PkgName": "_NIODataStructures",
           "PkgIdentifier": {
-            "PURL": "pkg:cocoapods/_NIODataStructures@2.41.0"
+            "PURL": "pkg:cocoapods/_NIODataStructures@2.41.0",
+            "UID": "ddc948d6b5e15241"
           },
           "InstalledVersion": "2.41.0",
           "FixedVersion": "2.29.1, 2.39.1, 2.42.0",

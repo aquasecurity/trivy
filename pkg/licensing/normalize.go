@@ -180,6 +180,7 @@ var pythonLicenseExceptions = map[string]string{
 var licenseSplitRegexp = regexp.MustCompile("(,?[_ ]+(?:or|and)[_ ]+)|(,[ ]*)")
 
 func Normalize(name string) string {
+	name = strings.TrimSpace(name)
 	if l, ok := mapping[strings.ToUpper(name)]; ok {
 		return l
 	}
@@ -187,6 +188,9 @@ func Normalize(name string) string {
 }
 
 func SplitLicenses(str string) []string {
+	if str == "" {
+		return nil
+	}
 	var licenses []string
 	for _, maybeLic := range licenseSplitRegexp.Split(str, -1) {
 		lower := strings.ToLower(maybeLic)

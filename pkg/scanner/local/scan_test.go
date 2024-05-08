@@ -75,7 +75,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "4.0.2",
@@ -184,7 +184,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     ftypes.GoModule,
 								FilePath: "/app/go.mod",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:     "github.com/google/uuid",
 										Version:  "1.6.0",
@@ -199,7 +199,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     ftypes.PythonPkg,
 								FilePath: "",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:     "urllib3",
 										Version:  "3.2.1",
@@ -318,7 +318,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "4.0.2",
@@ -470,7 +470,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "4.0.2",
@@ -556,7 +556,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "innocent", // no vulnerability
 										Version: "1.2.3",
@@ -569,7 +569,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails", // one vulnerability
 										Version: "4.0.2",
@@ -637,7 +637,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "4.0.2",
@@ -647,7 +647,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "laravel/framework",
 										Version: "6.0.0",
@@ -740,7 +740,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "4.0.2",
@@ -824,7 +824,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "4.0.2",
@@ -930,7 +930,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "4.0.2",
@@ -943,7 +943,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "/app/composer-lock.json",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "laravel/framework",
 										Version: "6.0.0",
@@ -1216,7 +1216,7 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.Package{
+								Packages: []ftypes.Package{
 									{
 										Name:    "rails",
 										Version: "6.0",

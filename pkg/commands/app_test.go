@@ -172,6 +172,7 @@ func TestFlags(t *testing.T) {
 	type want struct {
 		format     types.Format
 		severities []dbTypes.Severity
+		scanners   types.Scanners
 	}
 	tests := []struct {
 		name      string
@@ -193,6 +194,10 @@ func TestFlags(t *testing.T) {
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityCritical,
 				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
+				},
 			},
 		},
 		{
@@ -207,6 +212,10 @@ func TestFlags(t *testing.T) {
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityLow,
 					dbTypes.SeverityMedium,
+				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
 				},
 			},
 		},
@@ -225,6 +234,10 @@ func TestFlags(t *testing.T) {
 					dbTypes.SeverityLow,
 					dbTypes.SeverityHigh,
 				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
+				},
 			},
 		},
 		{
@@ -240,6 +253,33 @@ func TestFlags(t *testing.T) {
 				format: types.FormatJSON,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityCritical,
+				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
+				},
+			},
+		},
+		{
+			name: "happy path with scanners for compliance report",
+			arguments: []string{
+				"test",
+				"--scanners",
+				"license",
+				"--compliance",
+				"docker-cis",
+			},
+			want: want{
+				format: types.FormatTable,
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityUnknown,
+					dbTypes.SeverityLow,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityCritical,
+				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
 				},
 			},
 		},
@@ -264,6 +304,7 @@ func TestFlags(t *testing.T) {
 			flags := &flag.Flags{
 				GlobalFlagGroup: globalFlags,
 				ReportFlagGroup: flag.NewReportFlagGroup(),
+				ScanFlagGroup:   flag.NewScanFlagGroup(),
 			}
 			cmd := &cobra.Command{
 				Use: "test",
@@ -280,6 +321,7 @@ func TestFlags(t *testing.T) {
 
 					assert.Equal(t, tt.want.format, options.Format)
 					assert.Equal(t, tt.want.severities, options.Severities)
+					assert.Equal(t, tt.want.scanners, options.Scanners)
 					return nil
 				},
 			}

@@ -14,7 +14,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/c/conan"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -33,7 +32,7 @@ const (
 // conanLockAnalyzer analyzes conan.lock
 type conanLockAnalyzer struct {
 	logger *log.Logger
-	parser godeptypes.Parser
+	parser language.Parser
 }
 
 func newConanLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -65,15 +64,15 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		}
 
 		// Fill licenses
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			if license, ok := licenses[lib.Name]; ok {
-				app.Libraries[i].Licenses = []string{
+				app.Packages[i].Licenses = []string{
 					license,
 				}
 			}
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	}); err != nil {

@@ -9,7 +9,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -26,7 +25,7 @@ type packageJSON struct {
 }
 
 type Package struct {
-	types.Library
+	ftypes.Package
 	Dependencies         map[string]string
 	OptionalDependencies map[string]string
 	DevDependencies      map[string]string
@@ -57,11 +56,11 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}
 
 	return Package{
-		Library: types.Library{
-			ID:      id,
-			Name:    pkgJSON.Name,
-			Version: pkgJSON.Version,
-			License: parseLicense(pkgJSON.License),
+		Package: ftypes.Package{
+			ID:       id,
+			Name:     pkgJSON.Name,
+			Version:  pkgJSON.Version,
+			Licenses: parseLicense(pkgJSON.License),
 		},
 		Dependencies:         pkgJSON.Dependencies,
 		OptionalDependencies: pkgJSON.OptionalDependencies,
@@ -70,17 +69,21 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}, nil
 }
 
-func parseLicense(val interface{}) string {
+func parseLicense(val interface{}) []string {
 	// the license isn't always a string, check for legacy struct if not string
 	switch v := val.(type) {
 	case string:
-		return v
+		if v != "" {
+			return []string{v}
+		}
 	case map[string]interface{}:
 		if license, ok := v["type"]; ok {
-			return license.(string)
+			if s, ok := license.(string); ok && s != "" {
+				return []string{s}
+			}
 		}
 	}
-	return ""
+	return nil
 }
 
 // parseWorkspaces returns slice of workspaces

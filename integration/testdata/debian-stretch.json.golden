@@ -58,7 +58,8 @@
           "PkgID": "bash@4.4-5",
           "PkgName": "bash",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/bash@4.4-5?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/bash@4.4-5?arch=amd64\u0026distro=debian-9.9",
+            "UID": "6100d09336f565a0"
           },
           "InstalledVersion": "4.4-5",
           "Status": "end_of_life",
@@ -124,7 +125,8 @@
           "PkgID": "e2fslibs@1.43.4-2",
           "PkgName": "e2fslibs",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/e2fslibs@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/e2fslibs@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "656652ce5818f7b6"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -197,7 +199,8 @@
           "PkgID": "e2fsprogs@1.43.4-2",
           "PkgName": "e2fsprogs",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/e2fsprogs@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/e2fsprogs@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "3d19fd957338dc06"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -270,7 +273,8 @@
           "PkgID": "libcomerr2@1.43.4-2",
           "PkgName": "libcomerr2",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/libcomerr2@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/libcomerr2@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "6ba1fac685a0c068"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -343,7 +347,8 @@
           "PkgID": "libss2@1.43.4-2",
           "PkgName": "libss2",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/libss2@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/libss2@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "e507c185f61cd2e8"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",

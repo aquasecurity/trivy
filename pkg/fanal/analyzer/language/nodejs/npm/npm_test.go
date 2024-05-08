@@ -33,7 +33,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:       "@babel/parser@7.23.6",
 								Name:     "@babel/parser",
@@ -43,6 +43,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 6,
 										EndLine:   10,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/@babel/parser/-/parser-7.23.6.tgz",
 									},
 								},
 							},
@@ -57,6 +63,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   16,
 									},
 								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ansi-colors/-/ansi-colors-3.2.3.tgz",
+									},
+								},
 							},
 							{
 								ID:      "array-flatten@1.1.1",
@@ -66,6 +78,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 17,
 										EndLine:   21,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/array-flatten/-/array-flatten-1.1.1.tgz",
 									},
 								},
 							},
@@ -79,6 +97,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 22,
 										EndLine:   44,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/body-parser/-/body-parser-1.18.3.tgz",
 									},
 								},
 							},
@@ -98,6 +122,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   60,
 									},
 								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+									},
+								},
 							},
 							{
 								ID:        "express@4.16.4",
@@ -109,6 +139,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 45,
 										EndLine:   67,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/express/-/express-4.16.4.tgz",
 									},
 								},
 							},
@@ -127,6 +163,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   65,
 									},
 								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+									},
+								},
 							},
 							{
 								ID:       "ms@2.1.1",
@@ -137,6 +179,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 68,
 										EndLine:   72,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz",
 									},
 								},
 							},
@@ -153,7 +201,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "ms@2.1.1",
 								Name:    "ms",
@@ -162,6 +210,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 6,
 										EndLine:   10,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz",
 									},
 								},
 							},
@@ -187,7 +241,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 
 			assert.NoError(t, err)
 			if len(got.Applications) > 0 {
-				sort.Sort(got.Applications[0].Libraries)
+				sort.Sort(got.Applications[0].Packages)
 			}
 			assert.Equal(t, tt.want, got)
 		})

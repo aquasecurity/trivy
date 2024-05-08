@@ -39,7 +39,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	defer func() {
 		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.WarnContext(ctx, "Increase --timeout value")
+			log.WarnContext(ctx, "Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
 		}
 	}()
 	opts.K8sVersion = cluster.GetClusterVersion()

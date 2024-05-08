@@ -27,7 +27,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Conan,
 						FilePath: "conan.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "openssl/3.0.5",
 								Name:         "openssl",
@@ -70,7 +70,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Conan,
 						FilePath: "conan.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "openssl/3.0.5",
 								Name:    "openssl",
