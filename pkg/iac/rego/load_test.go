@@ -3,12 +3,14 @@ package rego_test
 import (
 	"bytes"
 	"embed"
+	"fmt"
 	"io"
 	"strings"
 	"testing"
 	"testing/fstest"
 
 	checks "github.com/aquasecurity/trivy-checks"
+	"github.com/open-policy-agent/opa/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -207,4 +209,41 @@ deny {
 			}
 		})
 	}
+}
+
+func Test_FallbackErrorWithoutLocation(t *testing.T) {
+	fsys := fstest.MapFS{
+		"schemas/fooschema.json": {
+			Data: []byte(`{
+					"$schema": "http://json-schema.org/draft-07/schema#",
+					"type": "object",
+					"properties": {
+						"foo": {
+							"type": "string"
+						}
+					}
+				}`),
+		},
+	}
+
+	for i := 0; i < ast.CompileErrorLimitDefault+1; i++ {
+		src := `# METADATA
+# schemas:
+# - input: schema["fooschema"]
+package builtin.test%d
+
+deny {
+	input.evil == "foo bar"
+}`
+		fsys[fmt.Sprintf("policies/my-check%d.rego", i)] = &fstest.MapFile{
+			Data: []byte(fmt.Sprintf(src, i)),
+		}
+	}
+
+	scanner := rego.NewScanner(
+		types.SourceDockerfile,
+		options.ScannerWithEmbeddedPolicies(false),
+	)
+	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
+	assert.Error(t, err)
 }
