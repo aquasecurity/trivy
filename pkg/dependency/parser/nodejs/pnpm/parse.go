@@ -2,12 +2,12 @@ package pnpm
 
 import (
 	"fmt"
-	"golang.org/x/exp/maps"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -16,11 +16,6 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
-)
-
-const (
-	v5VersionSep = "/"
-	v6VersionSep = "@"
 )
 
 type PackageResolution struct {
@@ -135,6 +130,7 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 		})
 
 		if len(dependencies) > 0 {
+			sort.Strings(dependencies)
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependencies,
@@ -165,7 +161,6 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 			}
 		}
 		if dependsOn != nil {
-			sort.Strings(dependsOn)
 			resolvedSnapshots[packageID(name, version)] = dependsOn
 		}
 
@@ -202,6 +197,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 
 		// Save child deps
 		if dependsOn, ok := resolvedSnapshots[depPath]; ok {
+			sort.Strings(dependsOn)
 			resolvedDeps[id] = ftypes.Dependency{
 				ID:        id,
 				DependsOn: dependsOn, // Deps from dependsOn has been resolved when parsing snapshots
