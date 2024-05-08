@@ -6,7 +6,7 @@ import (
 )
 
 type FlatResult struct {
-	Deprecated      bool
+	Deprecated      bool               `json:"deprecated,omitempty"`
 	RuleID          string             `json:"rule_id"`
 	LongID          string             `json:"long_id"`
 	RuleSummary     string             `json:"rule_description"`
