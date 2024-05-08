@@ -117,7 +117,8 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 		version := info.Version
 
 		if name == "" {
-			name, version = p.parsePackage(depPath, lockVer)
+			name, version = p.parseDepPath(depPath, lockVer)
+			version = p.parseVersion(depPath, version, lockVer)
 		}
 		pkgID := packageID(name, version)
 
@@ -145,23 +146,20 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 }
 
 func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependency) {
+	lockVer := 9.0
 	resolvedPkgs := make(map[string]ftypes.Package)
 	resolvedDeps := make(map[string]ftypes.Dependency)
-
-	directDeps := make(map[string]any)
-	for n, d := range lo.Assign(lockFile.Importers.Root.DevDependencies, lockFile.Importers.Root.Dependencies) {
-		directDeps[packageID(n, d.Version)] = struct{}{}
-	}
 
 	// Check all snapshots and save with resolved versions
 	resolvedSnapshots := make(map[string][]string)
 	for depPath, snapshot := range lockFile.Snapshots {
-		name, version := p.parseDepPath(depPath, v6VersionSep)
+		name, version := p.parseDepPath(depPath, lockVer)
 
 		var dependsOn []string
 		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
-			resolvedDepName, resolvedDepVer := p.parseDepPath(packageID(depName, depVer), v6VersionSep)
-			id := packageID(resolvedDepName, resolvedDepVer)
+			depVer = p.trimPeerDeps(depVer, lockVer) // pnpm has already separated dep name. therefore, we only need to separate peer deps.
+			depVer = p.parseVersion(depPath, depVer, lockVer)
+			id := packageID(depName, depVer)
 			if _, ok := lockFile.Packages[id]; ok {
 				dependsOn = append(dependsOn, id)
 			}
@@ -174,39 +172,48 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	}
 
 	for depPath, pkgInfo := range lockFile.Packages {
-		name, version, _ := strings.Cut(depPath, v6VersionSep)
-
-		// Remove versions for local packages/archives
-		if strings.HasPrefix(version, "file:") {
-			version = ""
-		}
+		name, ver := p.parseDepPath(depPath, lockVer)
+		parsedVer := p.parseVersion(depPath, ver, lockVer)
 
 		if pkgInfo.Version != "" {
-			version = pkgInfo.Version
+			parsedVer = pkgInfo.Version
 		}
 
-		// Save pkg
-		id := packageID(name, version)
+		// By default, pkg is dev pkg.
+		// We will update `Dev` field later.
+		dev := true
+		relationship := ftypes.RelationshipIndirect
+		if dep, ok := lockFile.Importers.Root.DevDependencies[name]; ok && dep.Version == ver {
+			relationship = ftypes.RelationshipDirect
+		}
+		if dep, ok := lockFile.Importers.Root.Dependencies[name]; ok && dep.Version == ver {
+			relationship = ftypes.RelationshipDirect
+			dev = false // mark root direct deps to update `dev` field of their child deps.
+		}
+
+		id := packageID(name, parsedVer)
 		resolvedPkgs[id] = ftypes.Package{
 			ID:           id,
 			Name:         name,
-			Version:      version,
-			Relationship: lo.Ternary(isDirectPkg(id, directDeps), ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
-			Dev:          true, // Mark all libs as Dev. We will update this later.
+			Version:      parsedVer,
+			Relationship: relationship,
+			Dev:          dev,
 		}
 
-		//Check child deps
-		if dependsOn, ok := resolvedSnapshots[id]; ok {
+		// Save child deps
+		if dependsOn, ok := resolvedSnapshots[depPath]; ok {
 			resolvedDeps[id] = ftypes.Dependency{
 				ID:        id,
-				DependsOn: dependsOn,
+				DependsOn: dependsOn, // Deps from dependsOn has been resolved when parsing snapshots
 			}
 		}
 	}
 
-	// Overwrite the Dev field for root and their child dependencies.
-	for n, d := range lockFile.Importers.Root.Dependencies {
-		p.markRootPkgs(packageID(n, d.Version), resolvedPkgs, resolvedDeps)
+	// Overwrite the `Dev` field for dev deps and their child dependencies.
+	for _, pkg := range resolvedPkgs {
+		if !pkg.Dev {
+			p.markRootPkgs(pkg.ID, resolvedPkgs, resolvedDeps)
+		}
 	}
 
 	return maps.Values(resolvedPkgs), maps.Values(resolvedDeps)
@@ -249,58 +256,102 @@ func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 	}
 }
 
-// parsePackage parses a `package` from a v6 or earlier lock file.
-// cf. https://github.com/pnpm/pnpm/blob/ce61f8d3c29eee46cee38d56ced45aea8a439a53/packages/dependency-path/src/index.ts#L112-L163
-func (p *Parser) parsePackage(depPath string, lockFileVersion float64) (string, string) {
-	// The version separator is different between v5 and v6+.
-	versionSep := v6VersionSep
-	if lockFileVersion < 6 {
-		versionSep = v5VersionSep
+func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string) {
+	dPath := p.trimRegistry(depPath, lockVer)
+
+	var scope string
+	scope, dPath = p.separateScope(dPath)
+
+	var name string
+	name, dPath = p.separateName(dPath, lockVer)
+
+	// add scope to pkg name
+	if scope != "" {
+		name = fmt.Sprintf("%s/%s", scope, name)
 	}
 
-	// Skip registry
-	// e.g.
-	//    - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10"
-	//    - "registry.npmjs.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9"
-	//    - "/lodash/4.17.10" => "lodash/4.17.10"
-	// 	  - "/asap@2.0.6" => "asap@2.0.6"
-	_, depPath, _ = strings.Cut(depPath, "/")
+	ver := p.trimPeerDeps(dPath, lockVer)
 
-	return p.parseDepPath(depPath, versionSep)
+	return name, ver
 }
 
-func (p *Parser) parseDepPath(depPath, versionSep string) (string, string) {
-	// Parse scope
-	// e.g.
-	//    - v5:  "@babel/generator/7.21.9" => {"babel", "generator/7.21.9"}
-	//    - v6+: "@babel/helper-annotate-as-pure@7.18.6" => "{"babel", "helper-annotate-as-pure@7.18.6"}
+// trimRegistry trims registry (or `/` prefix) for depPath.
+// e.g.
+//   - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10"
+//   - "registry.npmjs.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9"
+//   - "/lodash/4.17.10" => "lodash/4.17.10"
+//   - "/asap@2.0.6" => "asap@2.0.6"
+func (p *Parser) trimRegistry(depPath string, lockVer float64) string {
+	// lock file v9 doesn't use registry prefix
+	if lockVer < 9 {
+		_, depPath, _ = strings.Cut(depPath, "/")
+	}
+	return depPath
+}
+
+// separateScope separates the scope (if set) from the rest of the depPath.
+// e.g.
+//   - v5:  "@babel/generator/7.21.9" => {"babel", "generator/7.21.9"}
+//   - v6+: "@babel/helper-annotate-as-pure@7.18.6" => "{"babel", "helper-annotate-as-pure@7.18.6"}
+func (p *Parser) separateScope(depPath string) (string, string) {
 	var scope string
 	if strings.HasPrefix(depPath, "@") {
 		scope, depPath, _ = strings.Cut(depPath, "/")
 	}
+	return scope, depPath
+}
 
-	// Parse package name
-	// e.g.
-	//    - v5:  "generator/7.21.9" => {"generator", "7.21.9"}
-	//    - v6+: "helper-annotate-as-pure@7.18.6" => {"helper-annotate-as-pure", "7.18.6"}
-	var name, version string
-	name, version, _ = strings.Cut(depPath, versionSep)
-	if scope != "" {
-		name = fmt.Sprintf("%s/%s", scope, name)
+// separateName separates pkg name and version.
+// e.g.
+//   - v5:  "generator/7.21.9" => {"generator", "7.21.9"}
+//   - v6+: "7.21.5(@babel/core@7.20.7)" => "7.21.5"
+//
+// for v9+ version can be filePath or link:
+//   - "package1@file:package1:"
+//   - "is-negative@https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5"
+//
+// Also version can contain peer deps:
+//   - "debug@4.3.4(supports-color@8.1.1)"
+func (p *Parser) separateName(depPath string, lockVer float64) (string, string) {
+	sep := "@"
+	if lockVer < 6 {
+		sep = "/"
 	}
-	// Trim peer deps
-	// e.g.
-	//    - v5:  "7.21.5_@babel+core@7.21.8" => "7.21.5"
-	//    - v6+: "7.21.5(@babel/core@7.20.7)" => "7.21.5"
-	if idx := strings.IndexAny(version, "_("); idx != -1 {
-		version = version[:idx]
-	}
-	if _, err := semver.Parse(version); err != nil {
-		p.logger.Debug("Skip non-semver package", log.String("pkg_path", depPath),
-			log.String("version", version), log.Err(err))
-		return name, ""
-	}
+	name, version, _ := strings.Cut(depPath, sep)
 	return name, version
+}
+
+// Trim peer deps
+// e.g.
+//   - v5:  "7.21.5_@babel+core@7.21.8" => "7.21.5"
+//   - v6+: "7.21.5(@babel/core@7.20.7)" => "7.21.5"
+func (p *Parser) trimPeerDeps(depPath string, lockVer float64) string {
+	sep := "("
+	if lockVer < 6 {
+		sep = "_"
+	}
+	version, _, _ := strings.Cut(depPath, sep)
+	return version
+}
+
+// parseVersion parses version.
+// v9 can use filePath or link as version - we need to clear these versions.
+// e.g.
+//   - "package1@file:package1:"
+//   - "is-negative@https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5"
+//
+// Other versions should be semver valid.
+func (p *Parser) parseVersion(depPath, ver string, lockVer float64) string {
+	if lockVer < 9 && (strings.HasPrefix(ver, "file:") || strings.HasPrefix(ver, "http")) {
+		return ""
+	}
+	if _, err := semver.Parse(ver); err != nil {
+		p.logger.Debug("Skip non-semver package", log.String("pkg_path", depPath),
+			log.String("version", ver), log.Err(err))
+		return ""
+	}
+
+	return ver
 }
 
 func isDirectPkg(name string, directDeps map[string]interface{}) bool {

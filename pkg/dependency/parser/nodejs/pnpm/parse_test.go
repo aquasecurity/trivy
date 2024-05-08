@@ -89,7 +89,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func Test_parsePackage(t *testing.T) {
+func Test_parseDepPath(t *testing.T) {
 	tests := []struct {
 		name        string
 		lockFileVer float64
@@ -147,13 +147,6 @@ func Test_parsePackage(t *testing.T) {
 			wantVersion: "7.21.5",
 		},
 		{
-			name:        "v5 - relative path with wrong version",
-			lockFileVer: 5.0,
-			pkg:         "/lodash/4-wrong",
-			wantName:    "",
-			wantVersion: "",
-		},
-		{
 			name:        "v6 - relative path",
 			lockFileVer: 6.0,
 			pkg:         "/update-browserslist-db@1.0.11",
@@ -196,20 +189,76 @@ func Test_parsePackage(t *testing.T) {
 			wantVersion: "7.21.5",
 		},
 		{
-			name:        "v6 - relative path with wrong version",
-			lockFileVer: 6.0,
-			pkg:         "/lodash@4-wrong",
-			wantName:    "",
-			wantVersion: "",
+			name:        "v9 - scope and peer deps",
+			lockFileVer: 9.0,
+			pkg:         "@babel/helper-compilation-targets@7.21.5(@babel/core@7.20.7)",
+			wantName:    "@babel/helper-compilation-targets",
+			wantVersion: "7.21.5",
+		},
+		{
+			name:        "v9 - filePath as version",
+			lockFileVer: 9.0,
+			pkg:         "lodash@file:foo/bar/lodash.tgz",
+			wantName:    "lodash",
+			wantVersion: "file:foo/bar/lodash.tgz",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := NewParser()
-			gotName, gotVersion := p.parsePackage(tt.pkg, tt.lockFileVer)
+			gotName, gotVersion := p.parseDepPath(tt.pkg, tt.lockFileVer)
 			assert.Equal(t, tt.wantName, gotName)
 			assert.Equal(t, tt.wantVersion, gotVersion)
+		})
+
+	}
+}
+
+func Test_parseVersion(t *testing.T) {
+	tests := []struct {
+		name    string
+		ver     string
+		lockVer float64
+		wantVer string
+	}{
+		{
+			name:    "happy path",
+			ver:     "0.0.1",
+			lockVer: 5.0,
+			wantVer: "0.0.1",
+		},
+		{
+			name:    "v6 version is file",
+			ver:     "file:foo/bar/lodash.tgz",
+			lockVer: 6.0,
+			wantVer: "",
+		},
+		{
+			name:    "v9 version is file",
+			ver:     "file:foo/bar/lodash.tgz",
+			lockVer: 9.0,
+			wantVer: "",
+		},
+		{
+			name:    "v6 version is url",
+			ver:     "https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5",
+			lockVer: 6.0,
+			wantVer: "",
+		},
+		{
+			name:    "v9 version is url",
+			ver:     "https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5",
+			lockVer: 9.0,
+			wantVer: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := NewParser()
+			gotVer := p.parseVersion("depPath", tt.ver, tt.lockVer)
+			assert.Equal(t, tt.wantVer, gotVer)
 		})
 
 	}
