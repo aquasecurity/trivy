@@ -481,15 +481,15 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 // e.g. Remove a vulnerability, change severity, etc.
 func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
 	// Find custom resources
-	var custom serialize.Result
+	var custom types.Result
 	for _, result := range results {
 		if result.Class == types.ClassCustom {
-			custom = serialize.Result(result)
+			custom = result
 			break
 		}
 	}
 
-	arg := serialize.Results{custom}
+	arg := types.Results{custom}
 	switch m.postScanSpec.Action {
 	case tapi.ActionUpdate, tapi.ActionDelete:
 		// Pass the relevant results to the module
@@ -529,8 +529,8 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 	return results, nil
 }
 
-func findIDs(ids []string, results types.Results) serialize.Results {
-	var filtered serialize.Results
+func findIDs(ids []string, results types.Results) types.Results {
+	var filtered types.Results
 	for _, result := range results {
 		if result.Class == types.ClassCustom {
 			continue
@@ -542,7 +542,7 @@ func findIDs(ids []string, results types.Results) serialize.Results {
 			return slices.Contains(ids, m.ID)
 		})
 		if len(vulns) > 0 || len(misconfs) > 0 {
-			filtered = append(filtered, serialize.Result{
+			filtered = append(filtered, types.Result{
 				Target:            result.Target,
 				Class:             result.Class,
 				Type:              result.Type,
