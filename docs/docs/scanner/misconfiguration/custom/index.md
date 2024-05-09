@@ -1,8 +1,8 @@
-# Custom Policies
+# Custom Checks
 
 ## Overview
-You can write custom policies in [Rego][rego].
-Once you finish writing custom policies, you can pass the policy files or the directory where those policies are stored with `--policy` option.
+You can write custom checks in [Rego][rego].
+Once you finish writing custom checks, you can pass the policy files or the directory where those policies are stored with `--policy` option.
 
 ``` bash
 trivy conf --policy /path/to/policy.rego --policy /path/to/custom_policies --namespaces user /path/to/config_dir
@@ -120,7 +120,7 @@ Trivy supports extra fields in the `custom` section as described below.
     ```
   
 All fields are optional. The `schemas` field should be used to enable policy validation using a built-in schema. The 
-schema that will be used is based on the input document type. It is recommended to use this to ensure your policies are 
+schema that will be used is based on the input document type. It is recommended to use this to ensure your checks are 
 correct and do not reference incorrect properties/values.
 
 | Field name                 | Allowed values                                                    |        Default value         |     In table     |     In JSON      |
