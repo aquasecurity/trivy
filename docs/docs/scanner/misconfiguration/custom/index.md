@@ -90,7 +90,7 @@ A package name must be unique per policy.
     ```
 
 By default, only `builtin.*` packages will be evaluated.
-If you define custom packages, you have to specify the package prefix via `--namespaces` option. 
+If you define custom packages, you have to specify the package prefix via `--namespaces` option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be `user` as in this example. It could be anything user-defined.
 
 ``` bash
 trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
