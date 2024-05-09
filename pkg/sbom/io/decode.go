@@ -5,6 +5,7 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"sync"
 
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
@@ -32,13 +33,16 @@ type Decoder struct {
 	osID uuid.UUID
 	pkgs map[uuid.UUID]*ftypes.Package
 	apps map[uuid.UUID]*ftypes.Application
+
+	logger *log.Logger
 }
 
 func NewDecoder(bom *core.BOM) *Decoder {
 	return &Decoder{
-		bom:  bom,
-		pkgs: make(map[uuid.UUID]*ftypes.Package),
-		apps: make(map[uuid.UUID]*ftypes.Application),
+		bom:    bom,
+		pkgs:   make(map[uuid.UUID]*ftypes.Package),
+		apps:   make(map[uuid.UUID]*ftypes.Application),
+		logger: log.WithPrefix("sbom"),
 	}
 }
 
@@ -106,11 +110,16 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 }
 
 func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
+	onceMultiOSWarn := sync.OnceFunc(func() {
+		m.logger.Warn("Multiple OS components are not supported, taking the first one and ignoring the rest")
+	})
+
 	for id, c := range m.bom.Components() {
 		switch c.Type {
 		case core.TypeOS:
 			if m.osID != uuid.Nil {
-				return xerrors.New("multiple OS components are not supported")
+				onceMultiOSWarn()
+				continue
 			}
 			m.osID = id
 			sbom.Metadata.OS = &ftypes.OS{
@@ -325,7 +334,7 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 			if !ok {
 				continue
 			}
-			app.Libraries = append(app.Libraries, *pkg)
+			app.Packages = append(app.Packages, *pkg)
 			delete(m.pkgs, rel.Dependency) // Delete the added package
 		}
 		sbom.Applications = append(sbom.Applications, *app)
@@ -371,8 +380,8 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	for pkgType, pkgs := range langPkgMap {
 		sort.Sort(pkgs)
 		sbom.Applications = append(sbom.Applications, ftypes.Application{
-			Type:      pkgType,
-			Libraries: pkgs,
+			Type:     pkgType,
+			Packages: pkgs,
 		})
 	}
 	return nil

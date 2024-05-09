@@ -18,7 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-policies/checks/cloud/aws/iam"
+	"github.com/aquasecurity/trivy-checks/checks/cloud/aws/iam"
 )
 
 var badRule = scan.Rule{

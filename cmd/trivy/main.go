@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"golang.org/x/xerrors"
@@ -9,12 +10,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	_ "modernc.org/sqlite" // sqlite driver for RPM DB and Java DB
 )
 
 func main() {
 	if err := run(); err != nil {
+		var exitError *types.ExitError
+		if errors.As(err, &exitError) {
+			os.Exit(exitError.Code)
+		}
 		log.Fatal("Fatal error", log.Err(err))
 	}
 }

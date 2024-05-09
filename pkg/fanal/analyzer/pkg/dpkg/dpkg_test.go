@@ -1423,7 +1423,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				SystemInstalledFiles: []string{
 					"/bin/tar",
-					"/etc",
+					"/etc/rmt",
 					"/usr/lib/mime/packages/tar",
 					"/usr/sbin/rmt-tar",
 					"/usr/sbin/tarcat",
@@ -1436,7 +1436,6 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 					"/usr/share/man/man1/tar.1.gz",
 					"/usr/share/man/man1/tarcat.1.gz",
 					"/usr/share/man/man8/rmt-tar.8.gz",
-					"/etc/rmt",
 				},
 			},
 		},

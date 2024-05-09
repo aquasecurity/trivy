@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
@@ -185,7 +186,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	}
 
 	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
-		vulns, err := s.langPkgScanner.Scan(target, options)
+		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
@@ -310,7 +311,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	// License - language-specific packages
 	for _, app := range target.Applications {
 		var langLicenses []types.DetectedLicense
-		for _, lib := range app.Libraries {
+		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
 				langLicenses = append(langLicenses, types.DetectedLicense{
@@ -383,7 +384,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 
 	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
 	// this ensures we don't generate bad links for custom policies
-	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
+	if res.Namespace == "" || rego.IsBuiltinNamespace(res.Namespace) {
 		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
 	}
@@ -434,7 +435,7 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
 	})
 	for i := range apps {
-		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+		apps[i].Packages = lo.Filter(apps[i].Packages, func(lib ftypes.Package, index int) bool {
 			if lib.Dev {
 				onceInfo()
 			}

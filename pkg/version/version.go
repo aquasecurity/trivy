@@ -22,7 +22,7 @@ type VersionInfo struct {
 	Version         string             `json:",omitempty"`
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
 	JavaDB          *metadata.Metadata `json:",omitempty"`
-	PolicyBundle    *policy.Metadata   `json:",omitempty"`
+	CheckBundle     *policy.Metadata   `json:",omitempty"`
 }
 
 func formatDBMetadata(title string, meta metadata.Metadata) string {
@@ -42,8 +42,8 @@ func (v *VersionInfo) String() string {
 	if v.JavaDB != nil {
 		output += formatDBMetadata("Java DB", *v.JavaDB)
 	}
-	if v.PolicyBundle != nil {
-		output += v.PolicyBundle.String()
+	if v.CheckBundle != nil {
+		output += v.CheckBundle.String()
 	}
 	return output
 }
@@ -102,6 +102,6 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 		Version:         ver,
 		VulnerabilityDB: dbMeta,
 		JavaDB:          javadbMeta,
-		PolicyBundle:    pbMeta,
+		CheckBundle:     pbMeta,
 	}
 }

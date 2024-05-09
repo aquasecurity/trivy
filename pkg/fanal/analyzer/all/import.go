@@ -8,6 +8,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/dockerfile"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/secret"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/c/conan"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/conda/environment"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/conda/meta"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dart/pub"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/deps"

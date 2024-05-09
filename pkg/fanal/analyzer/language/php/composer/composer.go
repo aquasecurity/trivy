@@ -15,7 +15,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/php/composer"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -35,7 +34,7 @@ var requiredFiles = []string{
 }
 
 type composerAnalyzer struct {
-	lockParser godeptypes.Parser
+	lockParser language.Parser
 }
 
 func newComposerAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -65,7 +64,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 			log.Warn("Unable to parse composer.json to identify direct dependencies",
 				log.String("path", filepath.Join(filepath.Dir(path), types.ComposerJson)), log.Err(err))
 		}
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 
 		return nil
@@ -116,10 +115,13 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	for i, lib := range app.Libraries {
+	for i, pkg := range app.Packages {
 		// Identify the direct/transitive dependencies
-		if _, ok := p[lib.Name]; !ok {
-			app.Libraries[i].Indirect = true
+		if _, ok := p[pkg.Name]; ok {
+			app.Packages[i].Relationship = types.RelationshipDirect
+		} else {
+			app.Packages[i].Indirect = true
+			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
 

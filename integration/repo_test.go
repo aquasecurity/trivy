@@ -37,7 +37,7 @@ func TestRepository(t *testing.T) {
 		name     string
 		args     args
 		golden   string
-		override func(want, got *types.Report)
+		override func(t *testing.T, want, got *types.Report)
 	}{
 		{
 			name: "gomod",
@@ -342,6 +342,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/conda-cyclonedx.json.golden",
 		},
 		{
+			name: "conda environment.yaml generating CycloneDX SBOM",
+			args: args{
+				command: "fs",
+				format:  "cyclonedx",
+				input:   "testdata/fixtures/repo/conda-environment",
+			},
+			golden: "testdata/conda-environment-cyclonedx.json.golden",
+		},
+		{
 			name: "pom.xml generating CycloneDX SBOM (with vulnerabilities)",
 			args: args{
 				command: "fs",
@@ -369,7 +378,7 @@ func TestRepository(t *testing.T) {
 				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
-			override: func(want, _ *types.Report) {
+			override: func(_ *testing.T, want, _ *types.Report) {
 				want.ArtifactType = ftypes.ArtifactFilesystem
 			},
 		},
@@ -383,7 +392,7 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/custom-policy",
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
-			override: func(want, got *types.Report) {
+			override: func(_ *testing.T, want, got *types.Report) {
 				want.ArtifactType = ftypes.ArtifactFilesystem
 			},
 		},

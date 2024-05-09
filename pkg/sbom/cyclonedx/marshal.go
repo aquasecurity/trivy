@@ -298,7 +298,7 @@ func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
 	cdxProps := make([]cdx.Property, 0, len(properties))
 	for _, property := range properties {
 		namespace := Namespace
-		if len(property.Namespace) > 0 {
+		if property.Namespace != "" {
 			namespace = property.Namespace
 		}
 

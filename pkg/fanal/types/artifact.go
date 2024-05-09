@@ -8,6 +8,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -65,25 +66,69 @@ type Layer struct {
 	CreatedBy string `json:",omitempty"`
 }
 
+type Relationship int
+
+const (
+	RelationshipUnknown Relationship = iota
+	RelationshipRoot
+	RelationshipDirect
+	RelationshipIndirect
+)
+
+var relationshipNames = [...]string{
+	"unknown",
+	"root",
+	"direct",
+	"indirect",
+}
+
+func (r Relationship) String() string {
+	if r <= RelationshipUnknown || int(r) >= len(relationshipNames) {
+		return "unknown"
+	}
+	return relationshipNames[r]
+}
+
+func (r Relationship) MarshalJSON() ([]byte, error) {
+	return json.Marshal(r.String())
+}
+
+func (r *Relationship) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	for i, name := range relationshipNames {
+		if s == name {
+			*r = Relationship(i)
+			return nil
+		}
+	}
+	return xerrors.Errorf("invalid relationship (%s)", s)
+}
+
 type Package struct {
-	ID         string        `json:",omitempty"`
-	Name       string        `json:",omitempty"`
-	Identifier PkgIdentifier `json:",omitempty"`
-	Version    string        `json:",omitempty"`
-	Release    string        `json:",omitempty"`
-	Epoch      int           `json:",omitempty"`
-	Arch       string        `json:",omitempty"`
-	Dev        bool          `json:",omitempty"`
-	SrcName    string        `json:",omitempty"`
-	SrcVersion string        `json:",omitempty"`
-	SrcRelease string        `json:",omitempty"`
-	SrcEpoch   int           `json:",omitempty"`
-	Licenses   []string      `json:",omitempty"`
-	Maintainer string        `json:",omitempty"`
+	ID                 string        `json:",omitempty"`
+	Name               string        `json:",omitempty"`
+	Identifier         PkgIdentifier `json:",omitempty"`
+	Version            string        `json:",omitempty"`
+	Release            string        `json:",omitempty"`
+	Epoch              int           `json:",omitempty"`
+	Arch               string        `json:",omitempty"`
+	Dev                bool          `json:",omitempty"`
+	SrcName            string        `json:",omitempty"`
+	SrcVersion         string        `json:",omitempty"`
+	SrcRelease         string        `json:",omitempty"`
+	SrcEpoch           int           `json:",omitempty"`
+	Licenses           []string      `json:",omitempty"`
+	Maintainer         string        `json:",omitempty"`
+	ExternalReferences []ExternalRef `json:"-"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
-	Indirect        bool       `json:",omitempty"` // this package is direct dependency of the project or not
+
+	Indirect     bool         `json:",omitempty"` // Deprecated: Use relationship. Kept for backward compatibility.
+	Relationship Relationship `json:",omitempty"`
 
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.
@@ -98,7 +143,7 @@ type Package struct {
 	Digest digest.Digest `json:",omitempty"`
 
 	// lines from the lock file where the dependency is written
-	Locations []Location `json:",omitempty"`
+	Locations Locations `json:",omitempty"`
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
@@ -106,6 +151,7 @@ type Package struct {
 
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.
 type PkgIdentifier struct {
+	UID    string                 `json:",omitempty"` // Calculated by the package struct
 	PURL   *packageurl.PackageURL `json:"-"`
 	BOMRef string                 `json:",omitempty"` // For CycloneDX
 }
@@ -154,7 +200,7 @@ func (id *PkgIdentifier) UnmarshalJSON(data []byte) error {
 }
 
 func (id *PkgIdentifier) Empty() bool {
-	return id.PURL == nil && id.BOMRef == ""
+	return id.UID == "" && id.PURL == nil && id.BOMRef == ""
 }
 
 func (id *PkgIdentifier) Match(s string) bool {
@@ -174,10 +220,43 @@ func (id *PkgIdentifier) Match(s string) bool {
 	return false
 }
 
+type Dependency struct {
+	ID        string
+	DependsOn []string
+}
+
+type Dependencies []Dependency
+
+func (deps Dependencies) Len() int { return len(deps) }
+func (deps Dependencies) Less(i, j int) bool {
+	return deps[i].ID < deps[j].ID
+}
+func (deps Dependencies) Swap(i, j int) { deps[i], deps[j] = deps[j], deps[i] }
+
 type Location struct {
 	StartLine int `json:",omitempty"`
 	EndLine   int `json:",omitempty"`
 }
+
+type Locations []Location
+
+func (locs Locations) Len() int { return len(locs) }
+func (locs Locations) Less(i, j int) bool {
+	return locs[i].StartLine < locs[j].StartLine
+}
+func (locs Locations) Swap(i, j int) { locs[i], locs[j] = locs[j], locs[i] }
+
+type ExternalRef struct {
+	Type RefType
+	URL  string
+}
+
+type RefType string
+
+const (
+	RefVCS   RefType = "vcs"
+	RefOther RefType = "other"
+)
 
 // BuildInfo represents information under /root/buildinfo in RHEL
 type BuildInfo struct {
@@ -202,6 +281,13 @@ func (pkgs Packages) Swap(i, j int) {
 
 func (pkgs Packages) Less(i, j int) bool {
 	switch {
+	case pkgs[i].Relationship != pkgs[j].Relationship:
+		if pkgs[i].Relationship == RelationshipUnknown {
+			return false
+		} else if pkgs[j].Relationship == RelationshipUnknown {
+			return true
+		}
+		return pkgs[i].Relationship < pkgs[j].Relationship
 	case pkgs[i].Name != pkgs[j].Name:
 		return pkgs[i].Name < pkgs[j].Name
 	case pkgs[i].Version != pkgs[j].Version:
@@ -246,8 +332,8 @@ type Application struct {
 	// Lock files have the file path here, while each package metadata do not have
 	FilePath string `json:",omitempty"`
 
-	// Libraries is a list of lang-specific packages
-	Libraries Packages
+	// Packages is a list of lang-specific packages
+	Packages Packages
 }
 
 type File struct {

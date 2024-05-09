@@ -61,7 +61,7 @@ func (Tool) Wire() error {
 
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
-	const version = "v1.54.2"
+	const version = "v1.57.2"
 	if exists(filepath.Join(GOBIN, "golangci-lint")) {
 		return nil
 	}
@@ -420,16 +420,19 @@ func installed(cmd string) bool {
 
 type Schema mg.Namespace
 
+// Generate generates Cloud Schema for misconfiguration scanning
 func (Schema) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "generate")
 }
 
+// Verify verifies Cloud Schema for misconfiguration scanning
 func (Schema) Verify() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "verify")
 }
 
 type CloudActions mg.Namespace
 
+// Generate generates the list of possible cloud actions with AWS
 func (CloudActions) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
 }

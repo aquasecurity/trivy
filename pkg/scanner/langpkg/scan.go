@@ -1,6 +1,7 @@
 package langpkg
 
 import (
+	"context"
 	"sort"
 
 	"golang.org/x/xerrors"
@@ -24,7 +25,7 @@ var (
 
 type Scanner interface {
 	Packages(target types.ScanTarget, options types.ScanOptions) types.Results
-	Scan(target types.ScanTarget, options types.ScanOptions) (types.Results, error)
+	Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, error)
 }
 
 type scanner struct{}
@@ -36,7 +37,7 @@ func NewScanner() Scanner {
 func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.Results {
 	var results types.Results
 	for _, app := range target.Applications {
-		if len(app.Libraries) == 0 {
+		if len(app.Packages) == 0 {
 			continue
 		}
 
@@ -44,13 +45,13 @@ func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.R
 			Target:   targetName(app.Type, app.FilePath),
 			Class:    types.ClassLangPkg,
 			Type:     app.Type,
-			Packages: app.Libraries,
+			Packages: app.Packages,
 		})
 	}
 	return results
 }
 
-func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Results, error) {
+func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.ScanOptions) (types.Results, error) {
 	apps := target.Applications
 	log.Info("Number of language-specific files", log.Int("num", len(apps)))
 	if len(apps) == 0 {
@@ -60,22 +61,22 @@ func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Resu
 	var results types.Results
 	printedTypes := make(map[ftypes.LangType]struct{})
 	for _, app := range apps {
-		if len(app.Libraries) == 0 {
+		if len(app.Packages) == 0 {
 			continue
 		}
 
-		logger := log.WithPrefix(string(app.Type))
+		ctx = log.WithContextPrefix(ctx, string(app.Type))
 
 		// Prevent the same log messages from being displayed many times for the same type.
 		if _, ok := printedTypes[app.Type]; !ok {
-			logger.Info("Detecting vulnerabilities...")
+			log.InfoContext(ctx, "Detecting vulnerabilities...")
 			printedTypes[app.Type] = struct{}{}
 		}
 
-		logger.Debug("Scanning packages from the file", log.String("file_path", app.FilePath))
-		vulns, err := library.Detect(app.Type, app.Libraries)
+		log.DebugContext(ctx, "Scanning packages from the file", log.String("file_path", app.FilePath))
+		vulns, err := library.Detect(ctx, app.Type, app.Packages)
 		if err != nil {
-			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
+			return nil, xerrors.Errorf("failed vulnerability detection of packages: %w", err)
 		} else if len(vulns) == 0 {
 			continue
 		}

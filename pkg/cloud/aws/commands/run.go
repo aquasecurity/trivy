@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"sort"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/sts"
@@ -18,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
@@ -138,7 +140,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	var err error
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Increase --timeout value")
+			log.Warn("Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
 		}
 	}()
 
@@ -160,6 +162,10 @@ func Run(ctx context.Context, opt flag.Options) error {
 
 	log.DebugContext(ctx, "Writing report to output...")
 
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Rule().AVDID < results[j].Rule().AVDID
+	})
+
 	res := results.GetFailed()
 	if opt.MisconfOptions.IncludeNonFailures {
 		res = results
@@ -170,6 +176,5 @@ func Run(ctx context.Context, opt flag.Options) error {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.Exit(opt, r.Failed())
-	return nil
+	return operation.Exit(opt, r.Failed(), types.Metadata{})
 }

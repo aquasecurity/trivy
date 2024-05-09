@@ -130,6 +130,8 @@ func loadPluginCommands() []*cobra.Command {
 				return nil
 			},
 			DisableFlagParsing: true,
+			SilenceUsage:       true,
+			SilenceErrors:      true,
 		}
 		commands = append(commands, cmd)
 	}
@@ -934,22 +936,21 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 	cmd := &cobra.Command{
-		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
+		Use:     "kubernetes [flags] [CONTEXT]",
 		Aliases: []string{"k8s"},
 		GroupID: groupScanning,
 		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
+		Long:    `Default context in kube configuration will be used unless specified`,
 		Example: `  # cluster scanning
-  $ trivy k8s --report summary cluster
+  $ trivy k8s --report summary
 
-  # namespace scanning:
-  $ trivy k8s -n kube-system --report summary all
+  # cluster scanning with specific namespace:
+  $ trivy k8s --include-namespaces kube-system --report summary 
 
-  # resources scanning:
-  $ trivy k8s --report=summary deploy
-  $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
-
-  # resource scanning:
-  $ trivy k8s deployment/orion
+  # cluster with specific context:
+  $ trivy k8s kind-kind --report summary 
+  
+  
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := k8sFlags.Bind(cmd); err != nil {
@@ -1229,14 +1230,14 @@ func showVersion(cacheDir, outputFormat string, w io.Writer) error {
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
-	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset' and '--generate-default-config' don't conduct the subsequent scanning
+	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset', '--reset-checks-bundle' and '--generate-default-config' don't conduct the subsequent scanning
 	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
 		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
-		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetPolicyBundleFlag.ConfigName) {
+		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetChecksBundleFlag.ConfigName) {
 		return nil
 	}
 
-	if len(args) == 0 && viper.GetString(flag.InputFlag.ConfigName) == "" {
+	if len(args) == 0 && viper.GetString(flag.InputFlag.ConfigName) == "" && cmd.Name() != "kubernetes" {
 		if err := cmd.Help(); err != nil {
 			return err
 		}

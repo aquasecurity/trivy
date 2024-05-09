@@ -129,7 +129,7 @@ func (h *ColorHandler) appendAttr(buf []byte, a slog.Attr, groups []string) []by
 		buf = append(buf, key...)
 		buf = append(buf, '=')
 		if err, ok := a.Value.Any().(error); ok {
-			buf = strconv.AppendQuote(buf, color.HiRedString(err.Error()))
+			buf = append(buf, color.HiRedString(strconv.Quote(err.Error()))...)
 		} else {
 			buf = append(buf, a.Value.String()...)
 		}

@@ -42,7 +42,19 @@ Trivy parses your `pom.xml` file and tries to find files with dependencies from 
 - relativePath field[^5]
 - local repository directory[^6].
 
-If your machine doesn't have the necessary files - Trivy tries to find the information about these dependencies in the [maven repository](https://repo.maven.apache.org/maven2/).
+### remote repositories
+If your machine doesn't have the necessary files - Trivy tries to find the information about these dependencies in the remote repositories:
+
+- [repositories from pom files][maven-pom-repos]
+- [maven central repository][maven-central]
+
+Trivy reproduces Maven's repository selection and priority:
+
+- for snapshot artifacts:
+    - check only snapshot repositories from pom files (if exists)
+- for other artifacts:
+    - check release repositories from pom files (if exists)
+    - check [maven central][maven-central]
 
 !!! Note
     Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the `maven repository`.
@@ -93,3 +105,5 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
+[maven-central]: https://repo.maven.apache.org/maven2/
+[maven-pom-repos]: https://maven.apache.org/settings.html#repositories

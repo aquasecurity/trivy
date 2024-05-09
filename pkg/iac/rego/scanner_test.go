@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -975,4 +976,38 @@ deny {
 	assert.Equal(t, 1, len(results.GetFailed()))
 	assert.Equal(t, 0, len(results.GetPassed()))
 	assert.Equal(t, 0, len(results.GetIgnored()))
+}
+
+func Test_NoErrorsWhenUsingBadRegoCheck(t *testing.T) {
+
+	// this check cause eval_conflict_error
+	// https://www.openpolicyagent.org/docs/latest/policy-language/#functions
+	fsys := fstest.MapFS{
+		"checks/bad.rego": {
+			Data: []byte(`package defsec.test
+
+p(x) = y {
+    y := x[_]
+}
+
+deny {
+	p([1, 2, 3])
+}
+`),
+		},
+	}
+
+	var buf bytes.Buffer
+	scanner := NewScanner(
+		types.SourceYAML,
+		options.ScannerWithDebug(&buf),
+	)
+	require.NoError(
+		t,
+		scanner.LoadPolicies(false, false, fsys, []string{"checks"}, nil),
+	)
+	_, err := scanner.ScanInput(context.TODO(), Input{})
+	assert.NoError(t, err)
+	assert.Contains(t, buf.String(),
+		`Error occurred while applying rule "deny" from check "checks/bad.rego"`)
 }

@@ -27,6 +27,14 @@ type Attribute struct {
 }
 
 func (a *Attribute) DecodeVarType() (cty.Type, *typeexpr.Defaults, error) {
+	// Special-case the shortcuts for list(any) and map(any) which aren't hcl.
+	switch hcl.ExprAsKeyword(a.hclAttribute.Expr) {
+	case "list":
+		return cty.List(cty.DynamicPseudoType), nil, nil
+	case "map":
+		return cty.Map(cty.DynamicPseudoType), nil, nil
+	}
+
 	t, def, diag := typeexpr.TypeConstraintWithDefaults(a.hclAttribute.Expr)
 	if diag.HasErrors() {
 		return cty.NilType, nil, diag
@@ -68,7 +76,7 @@ func (a *Attribute) GetRawValue() interface{} {
 		return float
 	default:
 		switch {
-		case typ.IsTupleType(), typ.IsListType():
+		case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
 			values := a.Value().AsValueSlice()
 			if len(values) == 0 {
 				return []string{}

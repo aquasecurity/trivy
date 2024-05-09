@@ -55,6 +55,9 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						},
 						Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 						Indirect: true,
+						Identifier: ftypes.PkgIdentifier{
+							UID: "01",
+						},
 					},
 				},
 			},
@@ -86,6 +89,9 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					},
 					Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Indirect: true,
+					Identifier: &common.PkgIdentifier{
+						Uid: "01",
+					},
 				},
 			},
 		},
@@ -137,6 +143,9 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						},
 						Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 						Indirect: true,
+						Identifier: &common.PkgIdentifier{
+							Uid: "01",
+						},
 					},
 				},
 			},
@@ -168,6 +177,9 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					},
 					Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Indirect: true,
+					Identifier: ftypes.PkgIdentifier{
+						UID: "01",
+					},
 				},
 			},
 		},

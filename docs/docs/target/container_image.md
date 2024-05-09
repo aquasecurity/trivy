@@ -107,10 +107,10 @@ The image config is converted into Dockerfile and Trivy handles it as Dockerfile
 See [here](../scanner/misconfiguration/index.md) for the detail of Dockerfile scanning.
 
 It is disabled by default.
-You can enable it with `--image-config-scanners config`.
+You can enable it with `--image-config-scanners misconfig`.
 
 ```
-$ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
+$ trivy image --image-config-scanners misconfig [YOUR_IMAGE_NAME]
 ```
 
 <details>

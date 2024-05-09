@@ -33,7 +33,6 @@ type Option struct {
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
 	Scanners      types.Scanners
-	Components    []string
 	APIVersion    string
 }
 
@@ -134,12 +133,12 @@ type reports struct {
 // - misconfiguration report
 // - rbac report
 // - infra checks report
-func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, components []string) []reports {
+func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners) []reports {
 
 	var workloadMisconfig, infraMisconfig, rbacAssessment, workloadVulnerabilities, infraVulnerabilities, workloadResource []Resource
 	for _, resource := range k8sReport.Resources {
 		switch {
-		case vulnerabilitiesOrSecretResource(resource):
+		case vulnerabilitiesOrSecretResource(resource) && !infraResource(resource):
 			if resource.Namespace == infraNamespace || nodeInfoResource(resource) {
 				infraVulnerabilities = append(infraVulnerabilities, nodeKind(resource))
 			} else {
@@ -150,8 +149,7 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 		case infraResource(resource):
 			infraMisconfig = append(infraMisconfig, nodeKind(resource))
 		case scanners.Enabled(types.MisconfigScanner) &&
-			!rbacResource(resource) &&
-			slices.Contains(components, workloadComponent):
+			!rbacResource(resource):
 			workloadMisconfig = append(workloadMisconfig, resource)
 		}
 	}
@@ -159,22 +157,21 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 	var r []reports
 	workloadResource = append(workloadResource, workloadVulnerabilities...)
 	workloadResource = append(workloadResource, workloadMisconfig...)
-	if shouldAddToReport(scanners, components, workloadComponent) {
+	if shouldAddToReport(scanners) {
 		workloadReport := Report{
 			SchemaVersion: 0,
 			ClusterName:   k8sReport.ClusterName,
 			Resources:     workloadResource,
 			name:          "Workload Assessment",
 		}
-		if slices.Contains(components, workloadComponent) {
-			r = append(r, reports{
-				Report:  workloadReport,
-				Columns: WorkloadColumns(),
-			})
-		}
+		r = append(r, reports{
+			Report:  workloadReport,
+			Columns: WorkloadColumns(),
+		})
+
 	}
 	infraMisconfig = append(infraMisconfig, infraVulnerabilities...)
-	if shouldAddToReport(scanners, components, infraComponent) {
+	if shouldAddToReport(scanners) {
 		r = append(r, reports{
 			Report: Report{
 				SchemaVersion: 0,
@@ -266,12 +263,11 @@ func (r Report) PrintErrors() {
 	}
 }
 
-func shouldAddToReport(scanners types.Scanners, components []string, componentType string) bool {
+func shouldAddToReport(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(
 		types.MisconfigScanner,
 		types.VulnerabilityScanner,
-		types.SecretScanner) &&
-		slices.Contains(components, componentType)
+		types.SecretScanner)
 }
 
 func vulnerabilitiesOrSecretResource(resource Resource) bool {

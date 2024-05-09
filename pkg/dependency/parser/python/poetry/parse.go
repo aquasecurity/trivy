@@ -9,7 +9,6 @@ import (
 
 	version "github.com/aquasecurity/go-pep440-version"
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -39,61 +38,61 @@ func NewParser() *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockfile Lockfile
 	if _, err := toml.NewDecoder(r).Decode(&lockfile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode poetry.lock: %w", err)
 	}
 
 	// Keep all installed versions
-	libVersions := p.parseVersions(lockfile)
+	pkgVersions := p.parseVersions(lockfile)
 
-	var libs []types.Library
-	var deps []types.Dependency
+	var pkgs []ftypes.Package
+	var deps []ftypes.Dependency
 	for _, pkg := range lockfile.Packages {
 		if pkg.Category == "dev" {
 			continue
 		}
 
 		pkgID := packageID(pkg.Name, pkg.Version)
-		libs = append(libs, types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			ID:      pkgID,
 			Name:    pkg.Name,
 			Version: pkg.Version,
 		})
 
-		dependsOn := p.parseDependencies(pkg.Dependencies, libVersions)
+		dependsOn := p.parseDependencies(pkg.Dependencies, pkgVersions)
 		if len(dependsOn) != 0 {
-			deps = append(deps, types.Dependency{
+			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependsOn,
 			})
 		}
 	}
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
-// parseVersions stores all installed versions of libraries for use in dependsOn
-// as the dependencies of libraries use version range.
+// parseVersions stores all installed versions of packages for use in dependsOn
+// as the dependencies of packages use version range.
 func (p *Parser) parseVersions(lockfile Lockfile) map[string][]string {
-	libVersions := make(map[string][]string)
+	pkgVersions := make(map[string][]string)
 	for _, pkg := range lockfile.Packages {
 		if pkg.Category == "dev" {
 			continue
 		}
-		if vers, ok := libVersions[pkg.Name]; ok {
-			libVersions[pkg.Name] = append(vers, pkg.Version)
+		if vers, ok := pkgVersions[pkg.Name]; ok {
+			pkgVersions[pkg.Name] = append(vers, pkg.Version)
 		} else {
-			libVersions[pkg.Name] = []string{pkg.Version}
+			pkgVersions[pkg.Name] = []string{pkg.Version}
 		}
 	}
-	return libVersions
+	return pkgVersions
 }
 
-func (p *Parser) parseDependencies(deps map[string]any, libVersions map[string][]string) []string {
+func (p *Parser) parseDependencies(deps map[string]any, pkgVersions map[string][]string) []string {
 	var dependsOn []string
 	for name, versRange := range deps {
-		if dep, err := p.parseDependency(name, versRange, libVersions); err != nil {
+		if dep, err := p.parseDependency(name, versRange, pkgVersions); err != nil {
 			p.logger.Debug("Failed to parse poetry dependency", log.Err(err))
 		} else if dep != "" {
 			dependsOn = append(dependsOn, dep)
@@ -105,9 +104,9 @@ func (p *Parser) parseDependencies(deps map[string]any, libVersions map[string][
 	return dependsOn
 }
 
-func (p *Parser) parseDependency(name string, versRange any, libVersions map[string][]string) (string, error) {
+func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[string][]string) (string, error) {
 	name = normalizePkgName(name)
-	vers, ok := libVersions[name]
+	vers, ok := pkgVersions[name]
 	if !ok {
 		return "", xerrors.Errorf("no version found for %q", name)
 	}

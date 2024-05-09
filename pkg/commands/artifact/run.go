@@ -19,7 +19,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
@@ -49,11 +51,6 @@ const (
 )
 
 var (
-	defaultPolicyNamespaces = []string{
-		"appshield",
-		"defsec",
-		"builtin",
-	}
 	SkipScan = errors.New("skip subsequent processes")
 )
 
@@ -370,10 +367,10 @@ func (r *runner) initCache(opts flag.Options) error {
 		return SkipScan
 	}
 
-	if opts.ResetPolicyBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.PolicyBundleRepository)
+	if opts.ResetChecksBundle {
+		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.ChecksBundleRepository)
 		if err != nil {
-			return xerrors.Errorf("failed to instantiate policy client: %w", err)
+			return xerrors.Errorf("failed to instantiate check client: %w", err)
 		}
 		if err := c.Clear(); err != nil {
 			return xerrors.Errorf("failed to remove the cache: %w", err)
@@ -400,7 +397,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Increase --timeout value")
+			log.Warn("Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
 		}
 	}()
 
@@ -455,10 +452,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("report error: %w", err)
 	}
 
-	operation.ExitOnEOL(opts, report.Metadata)
-	operation.Exit(opts, report.Results.Failed())
-
-	return nil
+	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
 }
 
 func disabledAnalyzers(opts flag.Options) []analyzer.Type {
@@ -539,25 +533,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		target = opts.Input
 	}
 
-	if opts.Compliance.Spec.ID != "" {
-		// set scanners types by spec
-		scanners, err := opts.Compliance.Scanners()
-		if err != nil {
-			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("scanner error: %w", err)
-		}
-
-		opts.Scanners = scanners
-		opts.ImageConfigScanners = nil
-		// TODO: define image-config-scanners in the spec
-		if opts.Compliance.Spec.ID == "docker-cis" {
-			opts.Scanners = types.Scanners{types.VulnerabilityScanner}
-			opts.ImageConfigScanners = types.Scanners{
-				types.MisconfigScanner,
-				types.SecretScanner,
-			}
-		}
-	}
-
 	scanOptions := types.ScanOptions{
 		VulnType:            opts.VulnType,
 		Scanners:            opts.Scanners,
@@ -585,10 +560,11 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, opts.MisconfOptions.PolicyBundleRepository, opts.RegistryOpts())
+
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 		if err != nil {
-			if !opts.SkipPolicyUpdate {
-				log.Error("Falling back to embedded policies", log.Err(err))
+			if !opts.SkipCheckUpdate {
+				log.Error("Falling back to embedded checks", log.Err(err))
 			}
 		} else {
 			log.Debug("Policies successfully loaded from disk")
@@ -597,8 +573,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		configScannerOptions = misconf.ScannerOption{
 			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
-			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
+			Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
+			PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
 			DataPaths:                opts.DataPaths,
 			HelmValues:               opts.HelmValues,
 			HelmValueFiles:           opts.HelmValueFiles,
@@ -650,9 +626,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		},
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
-			SkipFiles:         opts.SkipFiles,
-			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
+			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			Insecure:          opts.Insecure,
@@ -662,7 +637,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			//Platform:          opts.Platform,
-			Parallel:     opts.Parallel,
 			AWSRegion:    opts.Region,
 			AWSEndpoint:  opts.Endpoint,
 			FileChecksum: fileChecksum,
@@ -691,6 +665,12 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			LicenseScannerOption: analyzer.LicenseScannerOption{
 				Full:                      opts.LicenseFull,
 				ClassifierConfidenceLevel: opts.LicenseConfidenceLevel,
+			},
+
+			// For file walking
+			WalkerOption: walker.Option{
+				SkipFiles: opts.SkipFiles,
+				SkipDirs:  opts.SkipDirs,
 			},
 		},
 	}, scanOptions, nil

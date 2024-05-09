@@ -72,7 +72,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
 		ecosystem = vulnerability.Cocoapods
 		comparer = rubygems.Comparer{}
-	case ftypes.CondaPkg:
+	case ftypes.CondaPkg, ftypes.CondaEnv:
 		log.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
 	case ftypes.Bitnami:

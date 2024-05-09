@@ -390,7 +390,7 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 		}
 	}
 
-	// policy paths are no longer needed as fs.FS contains only needed files now.
+	// check paths are no longer needed as fs.FS contains only needed files now.
 	policyPaths = []string{"."}
 
 	return mfs, policyPaths, nil
@@ -503,20 +503,26 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 			},
 		})
 	}
-	if code, err := underlying.GetCode(); err == nil {
-		cause.Code = types.Code{
-			Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
-				return types.Line{
-					Number:      l.Number,
-					Content:     l.Content,
-					IsCause:     l.IsCause,
-					Annotation:  l.Annotation,
-					Truncated:   l.Truncated,
-					Highlighted: l.Highlighted,
-					FirstCause:  l.FirstCause,
-					LastCause:   l.LastCause,
-				}
-			}),
+
+	// only failures have a code cause
+	// failures can happen either due to lack of
+	// OR misconfiguration of something
+	if underlying.Status() == scan.StatusFailed {
+		if code, err := underlying.GetCode(); err == nil {
+			cause.Code = types.Code{
+				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
+					return types.Line{
+						Number:      l.Number,
+						Content:     l.Content,
+						IsCause:     l.IsCause,
+						Annotation:  l.Annotation,
+						Truncated:   l.Truncated,
+						Highlighted: l.Highlighted,
+						FirstCause:  l.FirstCause,
+						LastCause:   l.LastCause,
+					}
+				}),
+			}
 		}
 	}
 	return cause

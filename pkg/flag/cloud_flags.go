@@ -12,7 +12,7 @@ var (
 		Name:       "max-cache-age",
 		ConfigName: "cloud.max-cache-age",
 		Default:    time.Hour * 24,
-		Usage:      "The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this.",
+		Usage:      "The maximum age of the cloud cache. Cached data will be required from the cloud provider if it is older than this.",
 	}
 )
 

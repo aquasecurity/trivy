@@ -3,7 +3,7 @@ package rego
 import (
 	"testing"
 
-	rules2 "github.com/aquasecurity/trivy-policies"
+	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/stretchr/testify/assert"
@@ -80,29 +80,11 @@ deny[res]{
 	res := true
 }`,
 		},
-		{
-			name: "sad path schema does not exist",
-			inputPolicy: `# METADATA
-# title: "dummy title"
-# description: "some description"
-# scope: package
-# schemas:
-# - input: schema["invalid schema"]
-# custom:
-#   input:
-#     selector:
-#     - type: dockerfile
-package builtin.dockerfile.DS1234
-deny[res]{
-	res := true
-}`,
-			expectedError: true,
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			policies, err := LoadPoliciesFromDirs(rules2.EmbeddedLibraryFileSystem, ".")
+			policies, err := LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
 			require.NoError(t, err)
 			newRule, err := ast.ParseModuleWithOpts("/rules/newrule.rego", tc.inputPolicy, ast.ParserOptions{
 				ProcessAnnotation: true,

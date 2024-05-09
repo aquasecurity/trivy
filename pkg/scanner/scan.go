@@ -49,13 +49,13 @@ var StandaloneArchiveSet = wire.NewSet(
 
 // StandaloneFilesystemSet binds filesystem dependencies
 var StandaloneFilesystemSet = wire.NewSet(
-	flocal.NewArtifact,
+	flocal.ArtifactSet,
 	StandaloneSuperSet,
 )
 
 // StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
-	repo.NewArtifact,
+	repo.ArtifactSet,
 	StandaloneSuperSet,
 )
 
@@ -67,7 +67,7 @@ var StandaloneSBOMSet = wire.NewSet(
 
 // StandaloneVMSet binds vm dependencies
 var StandaloneVMSet = wire.NewSet(
-	vm.NewArtifact,
+	vm.ArtifactSet,
 	StandaloneSuperSet,
 )
 
@@ -85,13 +85,13 @@ var RemoteSuperSet = wire.NewSet(
 
 // RemoteFilesystemSet binds filesystem dependencies for client/server mode
 var RemoteFilesystemSet = wire.NewSet(
-	flocal.NewArtifact,
+	flocal.ArtifactSet,
 	RemoteSuperSet,
 )
 
 // RemoteRepositorySet binds repository dependencies for client/server mode
 var RemoteRepositorySet = wire.NewSet(
-	repo.NewArtifact,
+	repo.ArtifactSet,
 	RemoteSuperSet,
 )
 
@@ -103,7 +103,7 @@ var RemoteSBOMSet = wire.NewSet(
 
 // RemoteVMSet binds vm dependencies for client/server mode
 var RemoteVMSet = wire.NewSet(
-	vm.NewArtifact,
+	vm.ArtifactSet,
 	RemoteSuperSet,
 )
 

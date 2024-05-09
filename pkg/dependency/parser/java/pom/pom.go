@@ -13,8 +13,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type pom struct {
@@ -110,17 +111,19 @@ func (p pom) artifact() artifact {
 }
 
 func (p pom) licenses() []string {
-	return lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
+	return slices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
 		return lic.Name, lic.Name != ""
-	})
+	}))
 }
 
-func (p pom) repositories(servers []Server) []string {
+func (p pom) repositories(servers []Server) ([]string, []string) {
 	logger := log.WithPrefix("pom")
-	var urls []string
+	var releaseRepos, snapshotRepos []string
 	for _, rep := range p.content.Repositories.Repository {
+		snapshot := rep.Snapshots.Enabled == "true"
+		release := rep.Releases.Enabled == "true"
 		// Add only enabled repositories
-		if rep.Releases.Enabled == "false" && rep.Snapshots.Enabled == "false" {
+		if !release && !snapshot {
 			continue
 		}
 
@@ -140,9 +143,15 @@ func (p pom) repositories(servers []Server) []string {
 		}
 
 		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
-		urls = append(urls, repoURL.String())
+		if snapshot {
+			snapshotRepos = append(snapshotRepos, repoURL.String())
+		}
+		if release {
+			releaseRepos = append(releaseRepos, repoURL.String())
+		}
 	}
-	return urls
+
+	return releaseRepos, snapshotRepos
 }
 
 type pomXML struct {
@@ -278,9 +287,9 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		exclusions[fmt.Sprintf("%s:%s", e.GroupID, e.ArtifactID)] = struct{}{}
 	}
 
-	var locations types.Locations
+	var locations ftypes.Locations
 	if opts.lineNumber {
-		locations = types.Locations{
+		locations = ftypes.Locations{
 			{
 				StartLine: d.StartLine,
 				EndLine:   d.EndLine,
@@ -289,11 +298,12 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	}
 
 	return artifact{
-		GroupID:    d.GroupID,
-		ArtifactID: d.ArtifactID,
-		Version:    newVersion(d.Version),
-		Exclusions: exclusions,
-		Locations:  locations,
+		GroupID:      d.GroupID,
+		ArtifactID:   d.ArtifactID,
+		Version:      newVersion(d.Version),
+		Exclusions:   exclusions,
+		Locations:    locations,
+		Relationship: ftypes.RelationshipIndirect, // default
 	}
 }
 
