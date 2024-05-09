@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/trivy/pkg/extrafs"
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
@@ -185,28 +184,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	var paths []string
 	for _, info := range fileInfos {
 		realPath := path.Join(dir, info.Name())
-		if info.Type()&os.ModeSymlink != 0 {
-			extra, ok := p.moduleFS.(extrafs.FS)
-			if !ok {
-				// we can't handle symlinks in this fs type for now
-				p.debug.Log("Cannot resolve symlink '%s' in '%s' for this fs type", info.Name(), dir)
-				continue
-			}
-			realPath, err = extra.ResolveSymlink(info.Name(), dir)
-			if err != nil {
-				p.debug.Log("Failed to resolve symlink '%s' in '%s': %s", info.Name(), dir, err)
-				continue
-			}
-			info, err := extra.Stat(realPath)
-			if err != nil {
-				p.debug.Log("Failed to stat resolved symlink '%s': %s", realPath, err)
-				continue
-			}
-			if info.IsDir() {
-				continue
-			}
-			p.debug.Log("Resolved symlink '%s' in '%s' to '%s'", info.Name(), dir, realPath)
-		} else if info.IsDir() {
+		if info.IsDir() {
 			continue
 		}
 		paths = append(paths, realPath)
