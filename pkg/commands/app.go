@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -111,10 +112,13 @@ func NewApp() *cobra.Command {
 }
 
 func loadPluginCommands() []*cobra.Command {
+	ctx := context.Background()
+	manager := plugin.NewManager()
+
 	var commands []*cobra.Command
-	plugins, err := plugin.LoadAll()
+	plugins, err := manager.LoadAll(ctx)
 	if err != nil {
-		log.Debug("No plugins loaded")
+		log.DebugContext(ctx, "No plugins loaded")
 		return nil
 	}
 	for _, p := range plugins {
@@ -124,7 +128,7 @@ func loadPluginCommands() []*cobra.Command {
 			Short:   p.Usage,
 			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err = p.Run(cmd.Context(), plugin.RunOptions{Args: args}); err != nil {
+				if err = p.Run(cmd.Context(), plugin.Options{Args: args}); err != nil {
 					return xerrors.Errorf("plugin error: %w", err)
 				}
 				return nil
@@ -716,6 +720,10 @@ func NewPluginCommand() *cobra.Command {
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			ctx := log.WithContextPrefix(cmd.Context(), "plugin")
+			cmd.SetContext(ctx)
+		},
 	}
 	cmd.AddCommand(
 		&cobra.Command{
@@ -723,10 +731,11 @@ func NewPluginCommand() *cobra.Command {
 			Aliases:               []string{"i"},
 			Short:                 "Install a plugin",
 			SilenceErrors:         true,
+			SilenceUsage:          true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if _, err := plugin.Install(cmd.Context(), args[0], true); err != nil {
+				if _, err := plugin.Install(cmd.Context(), args[0], plugin.Options{}); err != nil {
 					return xerrors.Errorf("plugin install error: %w", err)
 				}
 				return nil
@@ -739,8 +748,8 @@ func NewPluginCommand() *cobra.Command {
 			DisableFlagsInUseLine: true,
 			Short:                 "Uninstall a plugin",
 			Args:                  cobra.ExactArgs(1),
-			RunE: func(_ *cobra.Command, args []string) error {
-				if err := plugin.Uninstall(args[0]); err != nil {
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := plugin.Uninstall(cmd.Context(), args[0]); err != nil {
 					return xerrors.Errorf("plugin uninstall error: %w", err)
 				}
 				return nil
@@ -754,12 +763,8 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "List installed plugin",
 			Args:                  cobra.NoArgs,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				info, err := plugin.List()
-				if err != nil {
+				if err := plugin.List(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin list display error: %w", err)
-				}
-				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
-					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
 			},
@@ -771,12 +776,8 @@ func NewPluginCommand() *cobra.Command {
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
-				info, err := plugin.Information(args[0])
-				if err != nil {
+				if err := plugin.Information(args[0]); err != nil {
 					return xerrors.Errorf("plugin information display error: %w", err)
-				}
-				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
-					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
 			},
@@ -789,18 +790,41 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return plugin.RunWithURL(cmd.Context(), args[0], plugin.RunOptions{Args: args[1:]})
+				return plugin.RunWithURL(cmd.Context(), args[0], plugin.Options{Args: args[1:]})
 			},
 		},
 		&cobra.Command{
-			Use:                   "update PLUGIN_NAME",
-			Short:                 "Update an existing plugin",
+			Use:                   "update",
+			Short:                 "Update the local copy of the plugin index",
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
-			Args:                  cobra.ExactArgs(1),
-			RunE: func(_ *cobra.Command, args []string) error {
-				if err := plugin.Update(args[0]); err != nil {
+			Args:                  cobra.ExactArgs(0),
+			RunE: func(cmd *cobra.Command, _ []string) error {
+				if err := plugin.Update(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin update error: %w", err)
+				}
+				return nil
+			},
+		},
+		&cobra.Command{
+			Use:                   "search [KEYWORD]",
+			SilenceErrors:         true,
+			DisableFlagsInUseLine: true,
+			Short:                 "Run a plugin on the fly",
+			Args:                  cobra.MaximumNArgs(1),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				return plugin.Search(cmd.Context(), args)
+			},
+		},
+		&cobra.Command{
+			Use:                   "upgrade [PLUGIN_NAMES]",
+			Short:                 "Upgrade installed plugins to newer versions",
+			SilenceErrors:         true,
+			DisableFlagsInUseLine: true,
+			Args:                  cobra.MaximumNArgs(1),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := plugin.Upgrade(cmd.Context(), args, plugin.Options{}); err != nil {
+					return xerrors.Errorf("plugin upgrade error: %w", err)
 				}
 				return nil
 			},

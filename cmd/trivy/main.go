@@ -28,10 +28,7 @@ func main() {
 func run() error {
 	// Trivy behaves as the specified plugin.
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
-		if !plugin.IsPredefined(runAsPlugin) {
-			return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
-		}
-		if err := plugin.RunWithURL(context.Background(), runAsPlugin, plugin.RunOptions{Args: os.Args[1:]}); err != nil {
+		if err := plugin.RunWithURL(context.Background(), runAsPlugin, plugin.Options{Args: os.Args[1:]}); err != nil {
 			return xerrors.Errorf("plugin error: %w", err)
 		}
 		return nil
