@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -37,7 +37,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.json"
-				want.ArtifactType = ftypes.ArtifactCycloneDX
+				want.ArtifactType = artifact.TypeCycloneDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.json (centos 7.6.1810)"
@@ -76,7 +76,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl"
-				want.ArtifactType = ftypes.ArtifactCycloneDX
+				want.ArtifactType = artifact.TypeCycloneDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl (centos 7.6.1810)"
@@ -97,7 +97,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.txt"
-				want.ArtifactType = ftypes.ArtifactSPDX
+				want.ArtifactType = artifact.TypeSPDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)"
@@ -113,7 +113,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 			override: func(t *testing.T, want, got *types.Report) {
 				want.ArtifactName = "testdata/fixtures/sbom/centos-7-spdx.json"
-				want.ArtifactType = ftypes.ArtifactSPDX
+				want.ArtifactType = artifact.TypeSPDX
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)"

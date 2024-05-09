@@ -4,12 +4,13 @@ package integration
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -379,7 +380,7 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/gomod-skip.json.golden",
 			override: func(_ *testing.T, want, _ *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+				want.ArtifactType = artifact.TypeFilesystem
 			},
 		},
 		{
@@ -393,7 +394,7 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
 			override: func(_ *testing.T, want, got *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+				want.ArtifactType = artifact.TypeFilesystem
 			},
 		},
 	}

@@ -4,10 +4,13 @@ import (
 	"context"
 	"sort"
 
+	"github.com/google/go-containerregistry/pkg/v1"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 type Option struct {
@@ -72,6 +75,39 @@ func (o *Option) Sort() {
 }
 
 type Artifact interface {
-	Inspect(ctx context.Context) (reference types.ArtifactReference, err error)
-	Clean(reference types.ArtifactReference) error
+	Inspect(ctx context.Context) (reference Reference, err error)
+	Clean(reference Reference) error
+}
+
+// Type represents a type of artifact
+type Type string
+
+const (
+	TypeContainerImage Type = "container_image"
+	TypeFilesystem     Type = "filesystem"
+	TypeRepository     Type = "repository"
+	TypeCycloneDX      Type = "cyclonedx"
+	TypeSPDX           Type = "spdx"
+	TypeAWSAccount     Type = "aws_account"
+	TypeVM             Type = "vm"
+)
+
+// Reference represents a reference of container image, local filesystem and repository
+type Reference struct {
+	Name          string // image name, tar file name, directory or repository name
+	Type          Type
+	ID            string
+	BlobIDs       []string
+	ImageMetadata ImageMetadata
+
+	// SBOM
+	BOM *core.BOM
+}
+
+type ImageMetadata struct {
+	ID          string   // image ID
+	DiffIDs     []string // uncompressed layer IDs
+	RepoTags    []string
+	RepoDigests []string
+	ConfigFile  v1.ConfigFile
 }

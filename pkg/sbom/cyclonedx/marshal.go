@@ -108,12 +108,12 @@ func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component,
 	}
 
 	cdxComponent := &cdx.Component{
-		BOMRef:     component.PkgID.BOMRef,
+		BOMRef:     component.PkgIdentifier.BOMRef,
 		Type:       componentType,
 		Name:       component.Name,
 		Group:      component.Group,
 		Version:    component.Version,
-		PackageURL: m.PackageURL(component.PkgID.PURL),
+		PackageURL: m.PackageURL(component.PkgIdentifier.PURL),
 		Supplier:   m.Supplier(component.Supplier),
 		Hashes:     m.Hashes(component.Files),
 		Licenses:   m.Licenses(component.Licenses),

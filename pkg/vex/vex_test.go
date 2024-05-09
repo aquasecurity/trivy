@@ -1,6 +1,7 @@
 package vex_test
 
 import (
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"os"
 	"testing"
@@ -135,7 +136,7 @@ func TestVEX_Filter(t *testing.T) {
 			fields: fields{
 				filePath: "testdata/cyclonedx.json",
 				report: types.Report{
-					ArtifactType: ftypes.ArtifactCycloneDX,
+					ArtifactType: artifact.TypeCycloneDX,
 					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
 						Version:      1,
@@ -218,7 +219,7 @@ func TestVEX_Filter(t *testing.T) {
 			fields: fields{
 				filePath: "testdata/cyclonedx.json",
 				report: types.Report{
-					ArtifactType: ftypes.ArtifactCycloneDX,
+					ArtifactType: artifact.TypeCycloneDX,
 					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:wrong",
 						Version:      1,
@@ -378,7 +379,7 @@ func newTestBOM() *core.BOM {
 		Root: true,
 		Type: core.TypeContainerImage,
 		Name: "debian:12",
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			PURL: &packageurl.PackageURL{
 				Type:    packageurl.TypeOCI,
 				Name:    "debian",
@@ -405,7 +406,7 @@ func newTestBOM2() *core.BOM {
 		Root: true,
 		Type: core.TypeContainerImage,
 		Name: "ubuntu:24.04",
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			PURL: &packageurl.PackageURL{
 				Type:    packageurl.TypeOCI,
 				Name:    "ubuntu",
