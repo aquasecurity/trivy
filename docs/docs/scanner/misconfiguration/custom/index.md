@@ -131,6 +131,7 @@ correct and do not reference incorrect properties/values.
 | custom.id                  | Any characters                                                    |             N/A              | :material-check: | :material-check: |
 | custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            | :material-check: | :material-check: |
 | custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: |
+| custom.deprecated          | `true`, `false`                                                   |           `false`            | :material-close: | :material-check: | 
 | custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: |
 | url                        | Any characters                                                    |                              | :material-close: | :material-check: |
 
