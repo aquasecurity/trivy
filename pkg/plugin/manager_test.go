@@ -204,6 +204,12 @@ func TestManager_Install(t *testing.T) {
 				Bin: "./test.sh",
 			},
 		},
+		Installed: plugin.Installed{
+			Platform: plugin.Selector{
+				OS:   "linux",
+				Arch: "amd64",
+			},
+		},
 	}
 
 	tests := []struct {
@@ -427,7 +433,11 @@ func TestManager_Upgrade(t *testing.T) {
 repository: testdata/test_plugin
 version: "0.0.5"
 usage: test
-description: A simple test plugin`
+description: A simple test plugin
+installed:
+	platform:
+		os: linux
+		arch: amd64`
 
 	err = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte(pluginMetadata), os.ModePerm)
 	require.NoError(t, err)
@@ -438,14 +448,7 @@ description: A simple test plugin`
 	verifyVersion(t, ctx, pluginName, "0.0.5")
 
 	// Upgrade the existing plugin
-	err = plugin.NewManager().Upgrade(ctx, nil, plugin.Options{
-		Platform: ftypes.Platform{
-			Platform: &v1.Platform{
-				Architecture: "amd64",
-				OS:           "linux",
-			},
-		},
-	})
+	err = plugin.NewManager().Upgrade(ctx, nil)
 	require.NoError(t, err)
 
 	// verify plugin updated

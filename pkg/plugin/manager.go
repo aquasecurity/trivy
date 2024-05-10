@@ -8,16 +8,24 @@ import (
 	"path/filepath"
 	"strings"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
-var defaultManager = NewManager()
+const configFile = "plugin.yaml"
+
+var (
+	pluginsRelativeDir = filepath.Join(".trivy", "plugins")
+
+	defaultManager = NewManager()
+)
 
 type ManagerOption func(indexer *Manager)
 
@@ -59,21 +67,19 @@ func NewManager(opts ...ManagerOption) *Manager {
 func Install(ctx context.Context, name string, opts Options) (Plugin, error) {
 	return defaultManager.Install(ctx, name, opts)
 }
-func Upgrade(ctx context.Context, names []string, opts Options) error {
-	return defaultManager.Upgrade(ctx, names, opts)
-}
 func Start(ctx context.Context, name string, opts Options) (Wait, error) {
 	return defaultManager.Start(ctx, name, opts)
 }
 func RunWithURL(ctx context.Context, name string, opts Options) error {
 	return defaultManager.RunWithURL(ctx, name, opts)
 }
-func Uninstall(ctx context.Context, name string) error { return defaultManager.Uninstall(ctx, name) }
-func Information(name string) error                    { return defaultManager.Information(name) }
-func List(ctx context.Context) error                   { return defaultManager.List(ctx) }
-func Update(ctx context.Context) error                 { return defaultManager.Update(ctx) }
-func Search(ctx context.Context, args []string) error  { return defaultManager.Search(ctx, args) }
-func LoadAll(ctx context.Context) ([]Plugin, error)    { return defaultManager.LoadAll(ctx) }
+func Upgrade(ctx context.Context, names []string) error { return defaultManager.Upgrade(ctx, names) }
+func Uninstall(ctx context.Context, name string) error  { return defaultManager.Uninstall(ctx, name) }
+func Information(name string) error                     { return defaultManager.Information(name) }
+func List(ctx context.Context) error                    { return defaultManager.List(ctx) }
+func Update(ctx context.Context) error                  { return defaultManager.Update(ctx) }
+func Search(ctx context.Context, args []string) error   { return defaultManager.Search(ctx, args) }
+func LoadAll(ctx context.Context) ([]Plugin, error)     { return defaultManager.LoadAll(ctx) }
 
 // Install installs a plugin
 func (m *Manager) Install(ctx context.Context, name string, opts Options) (Plugin, error) {
@@ -107,8 +113,14 @@ func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin
 	}
 
 	// Copy plugin.yaml into the plugin dir
-	if _, err = fsutils.CopyFile(filepath.Join(tempDir, configFile), filepath.Join(plugin.Dir(), configFile)); err != nil {
-		return Plugin{}, xerrors.Errorf("failed to copy plugin.yaml: %w", err)
+	f, err := os.Create(filepath.Join(plugin.Dir(), configFile))
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("failed to create plugin.yaml: %w", err)
+	}
+	defer f.Close()
+
+	if err = yaml.NewEncoder(f).Encode(plugin); err != nil {
+		return Plugin{}, xerrors.Errorf("yaml encode error: %w", err)
 	}
 
 	return plugin, nil
@@ -173,7 +185,7 @@ func (m *Manager) list(ctx context.Context) (string, error) {
 }
 
 // Upgrade upgrades an existing plugins
-func (m *Manager) Upgrade(ctx context.Context, names []string, opts Options) error {
+func (m *Manager) Upgrade(ctx context.Context, names []string) error {
 	if len(names) == 0 {
 		plugins, err := m.LoadAll(ctx)
 		if err != nil {
@@ -185,14 +197,14 @@ func (m *Manager) Upgrade(ctx context.Context, names []string, opts Options) err
 		names = lo.Map(plugins, func(p Plugin, _ int) string { return p.Name })
 	}
 	for _, name := range names {
-		if err := m.upgrade(ctx, name, opts); err != nil {
+		if err := m.upgrade(ctx, name); err != nil {
 			return xerrors.Errorf("unable to upgrade '%s' plugin: %w", name, err)
 		}
 	}
 	return nil
 }
 
-func (m *Manager) upgrade(ctx context.Context, name string, opts Options) error {
+func (m *Manager) upgrade(ctx context.Context, name string) error {
 	plugin, err := m.load(name)
 	if err != nil {
 		return xerrors.Errorf("plugin load error: %w", err)
@@ -200,7 +212,15 @@ func (m *Manager) upgrade(ctx context.Context, name string, opts Options) error 
 
 	logger := log.With("name", name)
 	logger.InfoContext(ctx, "Upgrading plugin...")
-	updated, err := m.install(ctx, plugin.Repository, opts)
+	updated, err := m.install(ctx, plugin.Repository, Options{
+		// Use the current installed platform
+		Platform: ftypes.Platform{
+			Platform: &v1.Platform{
+				OS:           plugin.Installed.Platform.OS,
+				Architecture: plugin.Installed.Platform.Arch,
+			},
+		},
+	})
 	if err != nil {
 		return xerrors.Errorf("unable to perform an upgrade installation: %w", err)
 	}

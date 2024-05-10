@@ -1,15 +1,13 @@
 - name: foo
-  type: output
+  output: true
   maintainer: aquasecurity
   description: A foo plugin
   repository: github.com/aquasecurity/trivy-plugin-foo
 - name: bar
-  type: generic
   maintainer: aquasecurity
   description: A bar plugin
   repository: github.com/aquasecurity/trivy-plugin-bar
 - name: test
-  type: generic
   maintainer: aquasecurity
   description: A test plugin
   repository: testdata/test_plugin

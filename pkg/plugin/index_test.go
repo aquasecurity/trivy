@@ -48,18 +48,18 @@ func TestManager_Search(t *testing.T) {
 			name: "all plugins",
 			args: nil,
 			dir:  "testdata",
-			want: `NAME                 TYPE       DESCRIPTION                                                  MAINTAINER          
-foo                  output     A foo plugin                                                 aquasecurity        
-bar                  generic    A bar plugin                                                 aquasecurity        
-test                 generic    A test plugin                                                aquasecurity        
+			want: `NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
+foo                  A foo plugin                                                 aquasecurity           ✓
+bar                  A bar plugin                                                 aquasecurity         
+test                 A test plugin                                                aquasecurity         
 `,
 		},
 		{
 			name: "keyword",
 			args: []string{"bar"},
 			dir:  "testdata",
-			want: `NAME                 TYPE       DESCRIPTION                                                  MAINTAINER          
-bar                  generic    A bar plugin                                                 aquasecurity        
+			want: `NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
+bar                  A bar plugin                                                 aquasecurity         
 `,
 		},
 		{

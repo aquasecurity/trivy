@@ -727,7 +727,7 @@ func NewPluginCommand() *cobra.Command {
 	}
 	cmd.AddCommand(
 		&cobra.Command{
-			Use:                   "install URL | FILE_PATH",
+			Use:                   "install NAME | URL | FILE_PATH",
 			Aliases:               []string{"i"},
 			Short:                 "Install a plugin",
 			SilenceErrors:         true,
@@ -810,7 +810,7 @@ func NewPluginCommand() *cobra.Command {
 			Use:                   "search [KEYWORD]",
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
-			Short:                 "Run a plugin on the fly",
+			Short:                 "List available plugins and search among them",
 			Args:                  cobra.MaximumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return plugin.Search(cmd.Context(), args)
@@ -823,7 +823,7 @@ func NewPluginCommand() *cobra.Command {
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.MaximumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err := plugin.Upgrade(cmd.Context(), args, plugin.Options{}); err != nil {
+				if err := plugin.Upgrade(cmd.Context(), args); err != nil {
 					return xerrors.Errorf("plugin upgrade error: %w", err)
 				}
 				return nil
