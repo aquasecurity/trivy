@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/samber/lo"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,10 +22,10 @@ const indexURL = "https://aquasecurity.github.io/trivy-plugin-index/v1/index.yam
 
 type Index struct {
 	Name        string `yaml:"name"`
-	Type        string `yaml:"type"`
 	Maintainer  string `yaml:"maintainer"`
 	Description string `yaml:"description"`
 	Repository  string `yaml:"repository"`
+	Output      bool   `yaml:"output"`
 }
 
 func (m *Manager) Update(ctx context.Context) error {
@@ -45,11 +46,12 @@ func (m *Manager) Search(ctx context.Context, args []string) error {
 	}
 
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%-20s %-10s %-60s %-20s\n", "NAME", "TYPE", "DESCRIPTION", "MAINTAINER"))
+	buf.WriteString(fmt.Sprintf("%-20s %-60s %-20s %s\n", "NAME", "DESCRIPTION", "MAINTAINER", "OUTPUT"))
 	for _, index := range indexes {
 		if len(args) == 0 || strings.Contains(index.Name, args[0]) || strings.Contains(index.Description, args[0]) {
-			s := fmt.Sprintf("%-20s %-10s %-60s %-20s\n", truncateString(index.Name, 20), index.Type,
-				truncateString(index.Description, 60), truncateString(index.Maintainer, 20))
+			s := fmt.Sprintf("%-20s %-60s %-20s %s\n", truncateString(index.Name, 20),
+				truncateString(index.Description, 60), truncateString(index.Maintainer, 20),
+				lo.Ternary(index.Output, "  ✓", ""))
 			buf.WriteString(s)
 		}
 	}
