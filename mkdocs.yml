@@ -128,9 +128,12 @@ nav:
           - VEX: docs/supply-chain/vex.md
       - Compliance:
           - Reports:  docs/compliance/compliance.md
+      - Plugin:
+          - Overview: docs/plugin/index.md
+          - User Guide: docs/plugin/user-guide.md
+          - Developer Guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Plugins: docs/advanced/plugins.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
