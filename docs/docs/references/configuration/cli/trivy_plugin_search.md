@@ -1,15 +1,15 @@
-## trivy plugin update
+## trivy plugin search
 
-Update the local copy of the plugin index
+List Trivy plugins available on the plugin index and search among them
 
 ```
-trivy plugin update
+trivy plugin search [KEYWORD]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for update
+  -h, --help   help for search
 ```
 
 ### Options inherited from parent commands

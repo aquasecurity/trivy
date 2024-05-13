@@ -1,15 +1,15 @@
-## trivy plugin update
+## trivy plugin upgrade
 
-Update the local copy of the plugin index
+Upgrade installed plugins to newer versions
 
 ```
-trivy plugin update
+trivy plugin upgrade [PLUGIN_NAMES]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for update
+  -h, --help   help for upgrade
 ```
 
 ### Options inherited from parent commands
