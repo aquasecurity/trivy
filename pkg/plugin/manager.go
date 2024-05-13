@@ -24,7 +24,7 @@ const configFile = "plugin.yaml"
 var (
 	pluginsRelativeDir = filepath.Join(".trivy", "plugins")
 
-	defaultManager = NewManager()
+	_defaultManager *Manager
 )
 
 type ManagerOption func(indexer *Manager)
@@ -64,22 +64,28 @@ func NewManager(opts ...ManagerOption) *Manager {
 	return m
 }
 
+func defaultManager() *Manager {
+	if _defaultManager == nil {
+		_defaultManager = NewManager()
+	}
+	return _defaultManager
+}
+
 func Install(ctx context.Context, name string, opts Options) (Plugin, error) {
-	return defaultManager.Install(ctx, name, opts)
+	return defaultManager().Install(ctx, name, opts)
 }
 func Start(ctx context.Context, name string, opts Options) (Wait, error) {
-	return defaultManager.Start(ctx, name, opts)
+	return defaultManager().Start(ctx, name, opts)
 }
 func RunWithURL(ctx context.Context, name string, opts Options) error {
-	return defaultManager.RunWithURL(ctx, name, opts)
+	return defaultManager().RunWithURL(ctx, name, opts)
 }
-func Upgrade(ctx context.Context, names []string) error { return defaultManager.Upgrade(ctx, names) }
-func Uninstall(ctx context.Context, name string) error  { return defaultManager.Uninstall(ctx, name) }
-func Information(name string) error                     { return defaultManager.Information(name) }
-func List(ctx context.Context) error                    { return defaultManager.List(ctx) }
-func Update(ctx context.Context) error                  { return defaultManager.Update(ctx) }
-func Search(ctx context.Context, args []string) error   { return defaultManager.Search(ctx, args) }
-func LoadAll(ctx context.Context) ([]Plugin, error)     { return defaultManager.LoadAll(ctx) }
+func Upgrade(ctx context.Context, names []string) error { return defaultManager().Upgrade(ctx, names) }
+func Uninstall(ctx context.Context, name string) error  { return defaultManager().Uninstall(ctx, name) }
+func Information(name string) error                     { return defaultManager().Information(name) }
+func List(ctx context.Context) error                    { return defaultManager().List(ctx) }
+func Update(ctx context.Context) error                  { return defaultManager().Update(ctx) }
+func Search(ctx context.Context, args []string) error   { return defaultManager().Search(ctx, args) }
 
 // Install installs a plugin
 func (m *Manager) Install(ctx context.Context, name string, opts Options) (Plugin, error) {
