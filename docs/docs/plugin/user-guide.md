@@ -25,7 +25,6 @@ You can specify search keywords as arguments:
 ```bash
 $ trivy plugin search referrer
 
-NAME                DESCRIPTION                                         INSTALLED
 NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
 referrer             A plugin for OCI referrers                                   aquasecurity           ✓
 ```
