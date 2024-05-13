@@ -27,7 +27,7 @@ Let’s get started:
 $ trivy plugin update
 ```
 
-2. Discover plugins available:
+2. Discover Trivy plugins available on the plugin index:
 
 ```bash
 $ trivy plugin search
