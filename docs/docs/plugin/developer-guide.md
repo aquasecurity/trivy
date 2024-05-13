@@ -8,14 +8,15 @@ You can use this template as a starting point for your plugin development.
 ### Introduction
 If you are looking to start developing plugins for Trivy, read [the user guide](./user-guide.md) first.
 
-To summarize the documentation, the procedure is to:
+The development process involves the following steps:
 
 - Create a repository for your plugin, named `trivy-plugin-<name>`.
 - Create an executable binary that can be invoked as `trivy <name>`.
 - Place the executable binary in a repository.
 - Create a `plugin.yaml` file that describes the plugin.
+- (Submit your plugin to the [Trivy plugin index][trivy-plugin-index].)
 
-After you develop a plugin with a good name following the best practices, you can develop a [Trivy plugin index][trivy-plugin-index] manifest and submit your plugin.
+After you develop a plugin with a good name following the best practices and publish it, you can submit your plugin to the [Trivy plugin index][trivy-plugin-index].
 
 ### Naming
 This section describes guidelines for naming your plugins.
@@ -76,10 +77,11 @@ Here is an example YAML of [trivy-plugin-kubectl][trivy-plugin-kubectl] plugin t
 
 ```yaml
 name: "kubectl"
-repository: github.com/aquasecurity/trivy-plugin-kubectl
 version: "0.1.0"
+repository: github.com/aquasecurity/trivy-plugin-kubectl
+maintainer: aquasecurity
 output: false
-usage: scan kubectl resources
+summary: Scan kubectl resources
 description: |-
   A Trivy plugin that scans the images of a kubernetes resource.
   Usage: trivy kubectl TYPE[.VERSION][.GROUP] NAME
@@ -104,10 +106,12 @@ We encourage you to copy and adapt plugin manifests of existing plugins.
 The `plugin.yaml` field should contain the following information:
 
 - name: The name of the plugin. This also determines how the plugin will be made available in the Trivy CLI. For example, if the plugin is named kubectl, you can call the plugin with `trivy kubectl`. (required)
+- version: The version of the plugin. [Semantic Versioning][semver] should be used. (required)
 - repository: The repository name where the plugin is hosted. (required)
-- version: The version of the plugin. (required)
+- maintainer: The name of the maintainer of the plugin. (required)
 - output: Whether the plugin supports [the output mode](./user-guide.md#output-mode-support). (optional)
-- usage: A short usage description. (required)
+- usage: Deprecated: use summary instead. (optional)
+- summary: A short usage description. (required)
 - description: A long description of the plugin. This is where you could provide a helpful documentation of your plugin. (required)
 - platforms: (required)
     - selector: The OS/Architecture specific variations of a execution file. (optional)
@@ -156,13 +160,43 @@ While the `uri` specified in the plugin.yaml file doesn't necessarily need to po
 You can utilize GitHub Releases to distribute the executable file.
 For an example of how to structure your plugin repository, refer to [the plugin template repository][plugin-template].
 
-## Distributing plugins on the Trivy plugin index
-Trivy can install plugins directly by specifying a repository, so you don't necessarily need to register your plugin in the Trivy Plugin Index.
-However, we would recommend it since it makes it easier for other users to find and install your plugin.
+## Distributing plugins via the Trivy plugin index
+Trivy can install plugins directly by specifying a repository, like `trivy plugin install github.com/aquasecurity/trivy-plugin-referrer`,
+so you don't necessarily need to register your plugin in the Trivy plugin index.
+However, we would recommend distributing your plugin via the Trivy plugin index
+since it makes it easier for other users to find (`trivy plugin search`) and install your plugin (e.g. `trivy plugin install kubectl`).
 
-See [the Trivy plugin index repository][trivy-plugin-index] for more information on how to submit your plugin to the plugin index.
+### Pre-submit checklist
+- Review [the plugin naming guide](#naming).
+- Ensure the `plugin.yaml` file has all the required fields.
+- Tag a git release with a semantic version (e.g. v1.0.0).
+- [Test your plugin installation locally](#testing-plugin-installation-locally).
+
+### Submitting plugins
+Submitting your plugin to the plugin index is a straightforward process.
+All you need to do is create a YAML file for your plugin and place it in the [plugins/](https://github.com/aquasecurity/trivy-plugin-index/tree/main/plugins) directory of [the index repository][trivy-plugin-index].
+
+Once you've done that, create a pull request (PR) and have it reviewed by the maintainers.
+Once your PR is merged, the index will be updated, and your plugin will be available for installation.
+[The plugin index page][plugin-list] will also be automatically updated to list your newly added plugin.
+
+The content of the YAML file is very simple.
+You only need to specify the name of your plugin and the repository where it is distributed.
+
+```yaml
+name: referrer
+repository: github.com/aquasecurity/trivy-plugin-referrer
+```
+
+After your PR is merged, the CI system will automatically retrieve the `plugin.yaml` file from your repository and update [the index.yaml file][index].
+If any required fields are missing from your `plugin.yaml`, the CI will fail, so make sure your `plugin.yaml` has all the required fields before creating a PR.
+Once [the index.yaml][index] has been updated, running `trivy plugin update` will download the updated index to your local machine.
+
 
 [plugin-template]: https://github.com/aquasecurity/trivy-plugin-template
+[plugin-list]: https://aquasecurity.github.io/trivy-plugin-index/
+[index]: https://aquasecurity.github.io/trivy-plugin-index/v1/index.yaml
+[semver]: https://semver.org/
 [trivy-plugin-index]: https://github.com/aquasecurity/trivy-plugin-index
 [trivy-plugin-kubectl]: https://github.com/aquasecurity/trivy-plugin-kubectl
 [trivy-plugin-count]: https://github.com/aquasecurity/trivy-plugin-count/blob/main/plugin.yaml
