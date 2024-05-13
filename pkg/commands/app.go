@@ -798,7 +798,7 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "Update the local copy of the plugin index",
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
-			Args:                  cobra.ExactArgs(0),
+			Args:                  cobra.NoArgs,
 			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := plugin.Update(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin update error: %w", err)
