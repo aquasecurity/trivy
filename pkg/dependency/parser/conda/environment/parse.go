@@ -19,7 +19,7 @@ type environment struct {
 }
 
 type Entry struct {
-	Deps []Dependency
+	Dependencies []Dependency
 }
 
 type Dependency struct {
@@ -47,7 +47,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	var pkgs ftypes.Packages
 	for _, entry := range env.Entries {
-		for _, dep := range entry.Deps {
+		for _, dep := range entry.Dependencies {
 			pkg := p.toPackage(dep)
 			// Skip empty pkgs
 			if pkg.Name == "" {
@@ -117,25 +117,25 @@ func (e *Entry) UnmarshalYAML(node *yaml.Node) error {
 			// e.g. dependencies:
 			//  	  - pip:
 			//     	    - pandas==2.1.4
-			if node.Content[1].Tag == "!!seq" { // Conda supports only map[string][]string format.
-				for _, depContent := range node.Content[1].Content {
-					if depContent.Tag == "!!str" {
-						dependencies = append(dependencies, Dependency{
-							Value: depContent.Value,
-							Line:  depContent.Line,
-						})
-					} else {
-						return xerrors.Errorf("unsupported dependency type %q on line %d", depContent.Tag, depContent.Line)
-					}
-				}
-			} else {
+			if node.Content[1].Tag != "!!seq" { // Conda supports only map[string][]string format.
 				return xerrors.Errorf("unsupported dependency type %q on line %d", node.Content[1].Tag, node.Content[1].Line)
+			}
+
+			for _, depContent := range node.Content[1].Content {
+				if depContent.Tag != "!!str" {
+					return xerrors.Errorf("unsupported dependency type %q on line %d", depContent.Tag, depContent.Line)
+				}
+
+				dependencies = append(dependencies, Dependency{
+					Value: depContent.Value,
+					Line:  depContent.Line,
+				})
 			}
 		}
 	default:
 		return xerrors.Errorf("unsupported dependency type %q on line %d", node.Tag, node.Line)
 	}
 
-	e.Deps = dependencies
+	e.Dependencies = dependencies
 	return nil
 }
