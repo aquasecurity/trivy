@@ -129,6 +129,8 @@ func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin
 		return Plugin{}, xerrors.Errorf("yaml encode error: %w", err)
 	}
 
+	m.logger.InfoContext(ctx, "Plugin successfully installed", log.String("name", plugin.Name))
+
 	return plugin, nil
 }
 
