@@ -817,7 +817,6 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "Upgrade installed plugins to newer versions",
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
-			Args:                  cobra.MaximumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err := plugin.Upgrade(cmd.Context(), args); err != nil {
 					return xerrors.Errorf("plugin upgrade error: %w", err)
