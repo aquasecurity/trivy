@@ -780,7 +780,7 @@ func NewPluginCommand() *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "run URL | FILE_PATH",
+			Use:                   "run NAME | URL | FILE_PATH",
 			Aliases:               []string{"r"},
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
