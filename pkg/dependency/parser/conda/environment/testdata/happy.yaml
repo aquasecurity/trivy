@@ -17,5 +17,8 @@ dependencies:
   - liblapack=3.9.*=22_linuxaarch64_openblas
   - libnsl=2.0.1=h31becfc_0
   - bzip2=1.0.8=h998d150_5
+  - pip:
+      - asgiref==3.8.1
+      - django==5.0.6
 
 prefix: /opt/conda/envs/test-env
