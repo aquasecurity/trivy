@@ -151,10 +151,10 @@ func (m *Manager) Information(name string) error {
 
 	_, err = fmt.Fprintf(m.w, `
 Plugin: %s
-  Description: %s
   Version:     %s
-  Usage:       %s
-`, plugin.Name, plugin.Description, plugin.Version, plugin.Usage)
+  Summary:     %s
+  Description: %s
+`, plugin.Name, plugin.Version, plugin.Summary, plugin.Description)
 
 	return err
 }
@@ -325,6 +325,11 @@ func (m *Manager) loadMetadata(dir string) (Plugin, error) {
 
 	// e.g. ~/.trivy/plugins/kubectl
 	plugin.dir = filepath.Join(m.pluginRoot, plugin.Name)
+
+	if plugin.Summary == "" && plugin.Usage != "" {
+		plugin.Summary = plugin.Usage // For backward compatibility
+		plugin.Usage = ""
+	}
 
 	return plugin, nil
 }

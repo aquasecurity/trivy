@@ -24,7 +24,8 @@ type Plugin struct {
 	Name        string     `yaml:"name"`
 	Repository  string     `yaml:"repository"`
 	Version     string     `yaml:"version"`
-	Usage       string     `yaml:"usage"`
+	Summary     string     `yaml:"summary"`
+	Usage       string     `yaml:"usage"` // Deprecated: Use summary instead
 	Description string     `yaml:"description"`
 	Platforms   []Platform `yaml:"platforms"`
 

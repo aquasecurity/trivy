@@ -125,7 +125,8 @@ func loadPluginCommands() []*cobra.Command {
 		p := p
 		cmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s [flags]", p.Name),
-			Short:   p.Usage,
+			Short:   p.Summary,
+			Long:    p.Description,
 			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err = p.Run(cmd.Context(), plugin.Options{Args: args}); err != nil {

@@ -192,7 +192,7 @@ func TestManager_Install(t *testing.T) {
 		Name:        "test_plugin",
 		Repository:  "github.com/aquasecurity/trivy-plugin-test",
 		Version:     "0.1.0",
-		Usage:       "test",
+		Summary:     "test",
 		Description: "test",
 		Platforms: []plugin.Platform{
 			{
@@ -349,7 +349,12 @@ description: A simple test plugin`
 	// Get Information for the plugin
 	err = manager.Information(pluginName)
 	require.NoError(t, err)
-	assert.Equal(t, "\nPlugin: test_plugin\n  Description: A simple test plugin\n  Version:     0.1.0\n  Usage:       test\n", got.String())
+	assert.Equal(t, `
+Plugin: test_plugin
+  Version:     0.1.0
+  Summary:     test
+  Description: A simple test plugin
+`, got.String())
 	got.Reset()
 
 	// Get Information for unknown plugin
@@ -373,7 +378,7 @@ func TestManager_LoadAll(t *testing.T) {
 					Name:        "test_plugin",
 					Repository:  "github.com/aquasecurity/trivy-plugin-test",
 					Version:     "0.1.0",
-					Usage:       "test",
+					Summary:     "test",
 					Description: "test",
 					Platforms: []plugin.Platform{
 						{
