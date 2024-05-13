@@ -29,6 +29,8 @@ NAME                 DESCRIPTION                                                
 referrer             A plugin for OCI referrers                                   aquasecurity           ✓
 ```
 
+It lists plugins with the keyword in the name or description.
+
 ## Installing  Plugins
 Plugins can be installed with the `trivy plugin install` command:
 
