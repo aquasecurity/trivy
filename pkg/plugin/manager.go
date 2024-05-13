@@ -85,7 +85,7 @@ func Uninstall(ctx context.Context, name string) error  { return defaultManager(
 func Information(name string) error                     { return defaultManager().Information(name) }
 func List(ctx context.Context) error                    { return defaultManager().List(ctx) }
 func Update(ctx context.Context) error                  { return defaultManager().Update(ctx) }
-func Search(ctx context.Context, args []string) error   { return defaultManager().Search(ctx, args) }
+func Search(ctx context.Context, keyword string) error  { return defaultManager().Search(ctx, keyword) }
 
 // Install installs a plugin
 func (m *Manager) Install(ctx context.Context, name string, opts Options) (Plugin, error) {

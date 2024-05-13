@@ -36,7 +36,7 @@ func (m *Manager) Update(ctx context.Context) error {
 	return nil
 }
 
-func (m *Manager) Search(ctx context.Context, args []string) error {
+func (m *Manager) Search(ctx context.Context, keyword string) error {
 	indexes, err := m.loadIndex()
 	if errors.Is(err, os.ErrNotExist) {
 		m.logger.ErrorContext(ctx, "The plugin index is not found. Please run 'trivy plugin update' to download the index.")
@@ -48,7 +48,7 @@ func (m *Manager) Search(ctx context.Context, args []string) error {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("%-20s %-60s %-20s %s\n", "NAME", "DESCRIPTION", "MAINTAINER", "OUTPUT"))
 	for _, index := range indexes {
-		if len(args) == 0 || strings.Contains(index.Name, args[0]) || strings.Contains(index.Description, args[0]) {
+		if keyword == "" || strings.Contains(index.Name, keyword) || strings.Contains(index.Description, keyword) {
 			s := fmt.Sprintf("%-20s %-60s %-20s %s\n", truncateString(index.Name, 20),
 				truncateString(index.Description, 60), truncateString(index.Maintainer, 20),
 				lo.Ternary(index.Output, "  ✓", ""))

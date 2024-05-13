@@ -809,7 +809,11 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "List Trivy plugins available on the plugin index and search among them",
 			Args:                  cobra.MaximumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return plugin.Search(cmd.Context(), args)
+				var keyword string
+				if len(args) == 1 {
+					keyword = args[0]
+				}
+				return plugin.Search(cmd.Context(), keyword)
 			},
 		},
 		&cobra.Command{

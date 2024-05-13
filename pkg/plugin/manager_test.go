@@ -33,7 +33,7 @@ func TestManager_Run(t *testing.T) {
 		Name        string
 		Repository  string
 		Version     string
-		Usage       string
+		Summary     string
 		Description string
 		Platforms   []plugin.Platform
 		GOOS        string
@@ -51,7 +51,7 @@ func TestManager_Run(t *testing.T) {
 				Name:        "test_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
 				Version:     "0.1.0",
-				Usage:       "test",
+				Summary:     "test",
 				Description: "test",
 				Platforms: []plugin.Platform{
 					{
@@ -73,7 +73,7 @@ func TestManager_Run(t *testing.T) {
 				Name:        "test_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
 				Version:     "0.1.0",
-				Usage:       "test",
+				Summary:     "test",
 				Description: "test",
 				Platforms: []plugin.Platform{
 					{
@@ -89,7 +89,7 @@ func TestManager_Run(t *testing.T) {
 				Name:        "test_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
 				Version:     "0.1.0",
-				Usage:       "test",
+				Summary:     "test",
 				Description: "test",
 				Platforms: []plugin.Platform{
 					{
@@ -112,7 +112,7 @@ func TestManager_Run(t *testing.T) {
 				Name:        "test_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
 				Version:     "0.1.0",
-				Usage:       "test",
+				Summary:     "test",
 				Description: "test",
 				Platforms: []plugin.Platform{
 					{
@@ -135,7 +135,7 @@ func TestManager_Run(t *testing.T) {
 				Name:        "error_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-error",
 				Version:     "0.1.0",
-				Usage:       "test",
+				Summary:     "test",
 				Description: "test",
 				Platforms: []plugin.Platform{
 					{
@@ -161,7 +161,7 @@ func TestManager_Run(t *testing.T) {
 				Name:        tt.fields.Name,
 				Repository:  tt.fields.Repository,
 				Version:     tt.fields.Version,
-				Usage:       tt.fields.Usage,
+				Summary:     tt.fields.Summary,
 				Description: tt.fields.Description,
 				Platforms:   tt.fields.Platforms,
 			}

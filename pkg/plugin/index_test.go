@@ -39,15 +39,15 @@ func TestManager_Update(t *testing.T) {
 func TestManager_Search(t *testing.T) {
 	tests := []struct {
 		name    string
-		args    []string
+		keyword string
 		dir     string
 		want    string
 		wantErr string
 	}{
 		{
-			name: "all plugins",
-			args: nil,
-			dir:  "testdata",
+			name:    "all plugins",
+			keyword: "",
+			dir:     "testdata",
 			want: `NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
 foo                  A foo plugin                                                 aquasecurity           ✓
 bar                  A bar plugin                                                 aquasecurity         
@@ -55,16 +55,16 @@ test                 A test plugin                                              
 `,
 		},
 		{
-			name: "keyword",
-			args: []string{"bar"},
-			dir:  "testdata",
+			name:    "keyword",
+			keyword: "bar",
+			dir:     "testdata",
 			want: `NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
 bar                  A bar plugin                                                 aquasecurity         
 `,
 		},
 		{
 			name:    "no index",
-			args:    nil,
+			keyword: "",
 			dir:     "unknown",
 			wantErr: "plugin index not found",
 		},
@@ -75,7 +75,7 @@ bar                  A bar plugin                                               
 
 			var got bytes.Buffer
 			m := plugin.NewManager(plugin.WithWriter(&got))
-			err := m.Search(context.Background(), tt.args)
+			err := m.Search(context.Background(), tt.keyword)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
