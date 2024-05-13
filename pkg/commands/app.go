@@ -720,10 +720,6 @@ func NewPluginCommand() *cobra.Command {
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			ctx := log.WithContextPrefix(cmd.Context(), "plugin")
-			cmd.SetContext(ctx)
-		},
 	}
 	cmd.AddCommand(
 		&cobra.Command{
