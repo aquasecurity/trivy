@@ -396,7 +396,7 @@ func TestManager_LoadAll(t *testing.T) {
 		{
 			name:    "sad path",
 			dir:     "sad",
-			wantErr: "no such file or directory",
+			wantErr: "failed to read",
 		},
 	}
 	for _, tt := range tests {
