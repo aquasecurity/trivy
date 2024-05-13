@@ -5,12 +5,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -36,31 +36,35 @@ type LockFile struct {
 	Packages        map[string]PackageInfo `yaml:"packages,omitempty"`
 }
 
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("pnpm"),
+	}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
 	if err := yaml.NewDecoder(r).Decode(&lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	lockVer := parseLockfileVersion(lockFile)
+	lockVer := p.parseLockfileVersion(lockFile)
 	if lockVer < 0 {
 		return nil, nil, nil
 	}
 
-	libs, deps := p.parse(lockVer, lockFile)
+	pkgs, deps := p.parse(lockVer, lockFile)
 
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
-func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []types.Dependency) {
-	var libs []types.Library
-	var deps []types.Dependency
+func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []ftypes.Dependency) {
+	var pkgs []ftypes.Package
+	var deps []ftypes.Dependency
 
 	// Dependency path is a path to a dependency with a specific set of resolved subdependencies.
 	// cf. https://github.com/pnpm/spec/blob/ad27a225f81d9215becadfa540ef05fa4ad6dd60/dependency-path.md
@@ -76,7 +80,7 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 		version := info.Version
 
 		if name == "" {
-			name, version = parsePackage(depPath, lockVer)
+			name, version = p.parsePackage(depPath, lockVer)
 		}
 		pkgID := packageID(name, version)
 
@@ -85,25 +89,25 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 			dependencies = append(dependencies, packageID(depName, depVer))
 		}
 
-		libs = append(libs, types.Library{
-			ID:       pkgID,
-			Name:     name,
-			Version:  version,
-			Indirect: isIndirectLib(name, lockFile.Dependencies),
+		pkgs = append(pkgs, ftypes.Package{
+			ID:           pkgID,
+			Name:         name,
+			Version:      version,
+			Relationship: lo.Ternary(isDirectPkg(name, lockFile.Dependencies), ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
 		})
 
 		if len(dependencies) > 0 {
-			deps = append(deps, types.Dependency{
+			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependencies,
 			})
 		}
 	}
 
-	return libs, deps
+	return pkgs, deps
 }
 
-func parseLockfileVersion(lockFile LockFile) float64 {
+func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 	switch v := lockFile.LockfileVersion.(type) {
 	// v5
 	case float64:
@@ -111,33 +115,29 @@ func parseLockfileVersion(lockFile LockFile) float64 {
 	// v6+
 	case string:
 		if lockVer, err := strconv.ParseFloat(v, 64); err != nil {
-			log.Logger.Debugf("Unable to convert the lock file version to float: %s", err)
+			p.logger.Debug("Unable to convert the lock file version to float", log.Err(err))
 			return -1
 		} else {
 			return lockVer
 		}
 	default:
-		log.Logger.Debugf("Unknown type for the lock file version: %s", lockFile.LockfileVersion)
+		p.logger.Debug("Unknown type for the lock file version",
+			log.Any("version", lockFile.LockfileVersion))
 		return -1
 	}
 }
 
-func isIndirectLib(name string, directDeps map[string]interface{}) bool {
-	_, ok := directDeps[name]
-	return !ok
-}
-
 // cf. https://github.com/pnpm/pnpm/blob/ce61f8d3c29eee46cee38d56ced45aea8a439a53/packages/dependency-path/src/index.ts#L112-L163
-func parsePackage(depPath string, lockFileVersion float64) (string, string) {
+func (p *Parser) parsePackage(depPath string, lockFileVersion float64) (string, string) {
 	// The version separator is different between v5 and v6+.
 	versionSep := "@"
 	if lockFileVersion < 6 {
 		versionSep = "/"
 	}
-	return parseDepPath(depPath, versionSep)
+	return p.parseDepPath(depPath, versionSep)
 }
 
-func parseDepPath(depPath, versionSep string) (string, string) {
+func (p *Parser) parseDepPath(depPath, versionSep string) (string, string) {
 	// Skip registry
 	// e.g.
 	//    - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10"
@@ -171,10 +171,16 @@ func parseDepPath(depPath, versionSep string) (string, string) {
 		version = version[:idx]
 	}
 	if _, err := semver.Parse(version); err != nil {
-		log.Logger.Debugf("Skip %q package. %q doesn't match semver: %s", depPath, version, err)
+		p.logger.Debug("Skip non-semver package", log.String("pkg_path", depPath),
+			log.String("version", version), log.Err(err))
 		return "", ""
 	}
 	return name, version
+}
+
+func isDirectPkg(name string, directDeps map[string]interface{}) bool {
+	_, ok := directDeps[name]
+	return ok
 }
 
 func packageID(name, version string) string {

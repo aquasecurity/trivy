@@ -432,7 +432,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeGem
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		return packageurl.TypeNuget
-	case ftypes.CondaPkg:
+	case ftypes.CondaPkg, ftypes.CondaEnv:
 		return packageurl.TypeConda
 	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry:
 		return packageurl.TypePyPi

@@ -6,19 +6,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMain(m *testing.M) {
-	logger, _ := zap.NewDevelopment(zap.IncreaseLevel(zapcore.FatalLevel))
-	log.SetLogger(logger.Sugar())
+	log.InitLogger(false, true)
 	os.Exit(m.Run())
 }
 
@@ -675,7 +671,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.txt"),
-				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+				Findings: []types.SecretFinding{
+					wantFinding1,
+					wantFinding2,
+				},
 			},
 		},
 		{
@@ -684,7 +683,11 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
-				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
+				Findings: []types.SecretFinding{
+					wantFinding5,
+					wantFinding10,
+					wantFinding9,
+				},
 			},
 		},
 		{
@@ -720,7 +723,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "docker-secrets.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "docker-secrets.txt"),
-				Findings: []types.SecretFinding{wantFindingDockerKey1, wantFindingDockerKey2},
+				Findings: []types.SecretFinding{
+					wantFindingDockerKey1,
+					wantFindingDockerKey2,
+				},
 			},
 		},
 		{
@@ -738,7 +744,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.txt"),
-				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+				Findings: []types.SecretFinding{
+					wantFinding1,
+					wantFinding2,
+				},
 			},
 		},
 		{
@@ -761,7 +770,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "secret.md"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.md"),
-				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+				Findings: []types.SecretFinding{
+					wantFinding1,
+					wantFinding2,
+				},
 			},
 		},
 		{
@@ -770,7 +782,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
-				Findings: []types.SecretFinding{wantFinding5a, wantFinding6},
+				Findings: []types.SecretFinding{
+					wantFinding5a,
+					wantFinding6,
+				},
 			},
 		},
 		{
@@ -877,7 +892,10 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.txt"),
-				Findings: []types.SecretFinding{wantFinding3, wantFinding4},
+				Findings: []types.SecretFinding{
+					wantFinding3,
+					wantFinding4,
+				},
 			},
 		},
 		{
@@ -892,6 +910,33 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "add unknown severity when rule has no severity",
 			configPath:    filepath.Join("testdata", "config-without-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{wantFinding8},
+			},
+		},
+		{
+			name:          "add unknown severity when rule has no severity",
+			configPath:    filepath.Join("testdata", "config-with-incorrect-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{wantFinding8},
+			},
+		},
+		{
+			name:          "update severity if rule severity is not in uppercase",
+			configPath:    filepath.Join("testdata", "config-with-non-uppercase-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{wantFinding8},
+			},
+		},
+		{
+			name:          "use unknown severity when rule has incorrect severity",
+			configPath:    filepath.Join("testdata", "config-with-incorrect-severity.yaml"),
 			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "secret.txt"),

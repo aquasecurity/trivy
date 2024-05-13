@@ -110,16 +110,16 @@ func (f *RemoteFlagGroup) ToOptions() (RemoteOptions, error) {
 	if serverAddr == "" && listen == "" {
 		switch {
 		case len(customHeaders) > 0:
-			log.Logger.Warn(`"--custom-header" can be used only with "--server"`)
+			log.Warn(`"--custom-header" can be used only with "--server"`)
 		case token != "":
-			log.Logger.Warn(`"--token" can be used only with "--server"`)
+			log.Warn(`"--token" can be used only with "--server"`)
 		case tokenHeader != "" && tokenHeader != DefaultTokenHeader:
-			log.Logger.Warn(`"--token-header" can be used only with "--server"`)
+			log.Warn(`"--token-header" can be used only with "--server"`)
 		}
 	}
 
 	if token == "" && tokenHeader != DefaultTokenHeader {
-		log.Logger.Warn(`"--token-header" should be used with "--token"`)
+		log.Warn(`"--token-header" should be used with "--token"`)
 	}
 
 	if token != "" && tokenHeader != "" {

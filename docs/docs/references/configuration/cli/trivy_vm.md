@@ -23,6 +23,7 @@ trivy vm [flags] VM_IMAGE
       --aws-region string                 AWS region to scan
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
       --custom-headers strings            custom headers in client mode
@@ -35,6 +36,8 @@ trivy vm [flags] VM_IMAGE
       --exit-on-eol int                   exit with the specified code when the OS reaches end of service/life
       --file-patterns strings             specify config file patterns
   -f, --format string                     format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
+      --helm-api-versions strings         Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)
+      --helm-kube-version string          Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -54,14 +57,13 @@ trivy vm [flags] VM_IMAGE
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --reset                             remove all caches and database
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")

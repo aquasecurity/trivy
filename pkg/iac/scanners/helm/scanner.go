@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/liamg/memoryfs"
 
@@ -38,6 +39,8 @@ type Scanner struct {
 	skipRequired          bool
 	frameworks            []framework.Framework
 	spec                  string
+	regoScanner           *rego.Scanner
+	mu                    sync.Mutex
 }
 
 func (s *Scanner) SetSpec(spec string) {
@@ -120,6 +123,10 @@ func (s *Scanner) SetRegoErrorLimit(_ int)   {}
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.Results, error) {
 
+	if err := s.initRegoScanner(target); err != nil {
+		return nil, fmt.Errorf("failed to init rego scanner: %w", err)
+	}
+
 	var results []scan.Result
 	if err := fs.WalkDir(target, path, func(path string, d fs.DirEntry, err error) error {
 		select {
@@ -150,6 +157,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.R
 			} else {
 				results = append(results, scanResults...)
 			}
+			return fs.SkipDir
 		}
 
 		return nil
@@ -162,7 +170,10 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.R
 }
 
 func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS) (results []scan.Result, err error) {
-	helmParser := parser.New(path, s.parserOptions...)
+	helmParser, err := parser.New(path, s.parserOptions...)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := helmParser.ParseFS(ctx, target, path); err != nil {
 		return nil, err
@@ -174,14 +185,6 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 		return nil, nil
 	}
 
-	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
-	policyFS := target
-	if s.policyFS != nil {
-		policyFS = s.policyFS
-	}
-	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, policyFS, s.policyDirs, s.policyReaders); err != nil {
-		return nil, fmt.Errorf("policies load: %w", err)
-	}
 	for _, file := range chartFiles {
 		file := file
 		s.debug.Log("Processing rendered chart file: %s", file.TemplateFilePath)
@@ -191,7 +194,7 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
 		for _, manifest := range manifests {
-			fileResults, err := regoScanner.ScanInput(ctx, rego.Input{
+			fileResults, err := s.regoScanner.ScanInput(ctx, rego.Input{
 				Path:     file.TemplateFilePath,
 				Contents: manifest,
 				FS:       target,
@@ -218,4 +221,19 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 
 	}
 	return results, nil
+}
+
+func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.regoScanner != nil {
+		return nil
+	}
+	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
+	regoScanner.SetParentDebugLogger(s.debug)
+	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
+		return err
+	}
+	s.regoScanner = regoScanner
+	return nil
 }

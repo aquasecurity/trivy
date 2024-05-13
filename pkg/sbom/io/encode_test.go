@@ -2,6 +2,7 @@ package io_test
 
 import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -27,7 +28,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,
@@ -116,7 +117,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Type: core.TypeContainerImage,
 					Name: "debian:12",
 					Root: true,
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeOCI,
 							Name:    "debian",
@@ -163,7 +164,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "debian",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
@@ -181,7 +182,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "debian",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeDebian,
 							Name:    "libc6",
@@ -204,7 +205,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "debian",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeDebian,
 							Name:    "curl",
@@ -237,7 +238,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Value: "jar",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:      packageurl.TypeMaven,
 							Namespace: "org.apache.xmlgraphics",
@@ -294,11 +295,250 @@ func TestEncoder_Encode(t *testing.T) {
 			},
 		},
 		{
+			name: "root package",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "gobinary",
+				ArtifactType:  artifact.TypeFilesystem,
+				Results: []types.Result{
+					{
+						Target: "test",
+						Type:   ftypes.GoBinary,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:   "github.com/org/root",
+								Name: "github.com/org/root",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/org",
+										Name:      "root",
+									},
+								},
+								Relationship: ftypes.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/org/direct@v1.0.0",
+								},
+							},
+							{
+								ID:      "github.com/org/direct@v1.0.0",
+								Name:    "github.com/org/direct",
+								Version: "v1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/org",
+										Name:      "direct",
+										Version:   "1.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+								DependsOn: []string{
+									"github.com/org/indirect@v2.0.0",
+								},
+							},
+							{
+								ID:      "github.com/org/indirect@v2.0.0",
+								Name:    "github.com/org/indirect",
+								Version: "2.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/org",
+										Name:      "indirect",
+										Version:   "2.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipIndirect,
+							},
+							{
+								ID:      "stdlib@1.22.1",
+								Name:    "stdlib",
+								Version: "1.22.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "1.22.1",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeFilesystem,
+					Name: "gobinary",
+					Root: true,
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type: core.TypeApplication,
+					Name: "test",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Name:    "github.com/org/root",
+					SrcFile: "test",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "github.com/org/root",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeGolang,
+							Namespace: "github.com/org",
+							Name:      "root",
+						},
+						BOMRef: "pkg:golang/github.com/org/root",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Name:    "github.com/org/direct",
+					Version: "1.0.0",
+					SrcFile: "test",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "github.com/org/direct@v1.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeGolang,
+							Namespace: "github.com/org",
+							Name:      "direct",
+							Version:   "1.0.0",
+						},
+						BOMRef: "pkg:golang/github.com/org/direct@1.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					Type:    core.TypeLibrary,
+					Name:    "github.com/org/indirect",
+					Version: "2.0.0",
+					SrcFile: "test",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "github.com/org/indirect@v2.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeGolang,
+							Namespace: "github.com/org",
+							Name:      "indirect",
+							Version:   "2.0.0",
+						},
+						BOMRef: "pkg:golang/github.com/org/indirect@2.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): {
+					Type:    core.TypeLibrary,
+					Name:    "stdlib",
+					Version: "1.22.1",
+					SrcFile: "test",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "stdlib@1.22.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeGolang,
+							Name:    "stdlib",
+							Version: "1.22.1",
+						},
+						BOMRef: "pkg:golang/stdlib@1.22.1",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipDependsOn,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): nil,
+			},
+			wantVulns: map[uuid.UUID][]core.Vulnerability{},
+		},
+		{
 			name: "invalid digest",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,
@@ -330,7 +570,7 @@ func TestEncoder_Encode(t *testing.T) {
 
 			require.Len(t, got.Components(), len(tt.wantComponents))
 			for id, want := range tt.wantComponents {
-				assert.EqualExportedValues(t, *want, *got.Components()[id])
+				assert.EqualExportedValues(t, *want, *got.Components()[id], id)
 			}
 
 			assert.Equal(t, tt.wantRels, got.Relationships())

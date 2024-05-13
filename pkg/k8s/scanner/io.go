@@ -28,7 +28,7 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
-			log.Logger.Errorf("failed to close temp file %s: %s:", file.Name(), err)
+			log.Error("Failed to close temp file", log.String("path", file.Name()), log.Err(err))
 		}
 	}()
 
@@ -42,7 +42,7 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 
 func removeFile(filename string) {
 	if err := os.Remove(filename); err != nil {
-		log.Logger.Errorf("failed to remove temp file %s: %s:", filename, err)
+		log.Error("Failed to remove temp file", log.String("path", filename), log.Err(err))
 	}
 }
 

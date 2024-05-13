@@ -3,7 +3,6 @@ package vex
 import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -13,7 +12,7 @@ import (
 type CycloneDX struct {
 	sbom       *core.BOM
 	statements []Statement
-	logger     *zap.SugaredLogger
+	logger     *log.Logger
 }
 
 type Statement struct {
@@ -41,7 +40,7 @@ func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 	return &CycloneDX{
 		sbom:       sbom,
 		statements: stmts,
-		logger:     log.Logger.With(zap.String("VEX format", "CycloneDX")),
+		logger:     log.WithPrefix("vex").With(log.String("format", "CycloneDX")),
 	}
 }
 
@@ -67,13 +66,13 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 		// Affect must be BOM-Link at the moment
 		link, err := cdx.ParseBOMLink(affect)
 		if err != nil {
-			v.logger.Warnw("Unable to parse BOM-Link", zap.String("affect", affect))
+			v.logger.Warn("Unable to parse BOM-Link", log.String("affect", affect))
 			continue
 		}
 		if v.sbom.SerialNumber != link.SerialNumber() || v.sbom.Version != link.Version() {
-			v.logger.Warnw("URN doesn't match with SBOM",
-				zap.String("serial number", link.SerialNumber()),
-				zap.Int("version", link.Version()))
+			v.logger.Warn("URN doesn't match with SBOM",
+				log.String("serial number", link.SerialNumber()),
+				log.Int("version", link.Version()))
 			continue
 		}
 		if vuln.PkgIdentifier.Match(link.Reference()) && (stmt.Status == types.FindingStatusNotAffected || stmt.Status == types.FindingStatusFixed) {

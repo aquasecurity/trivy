@@ -3,6 +3,7 @@ package funcs
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -184,7 +185,7 @@ func MakeTemplateFileFunc(target fs.FS, baseDir string, funcsCb func() map[strin
 
 // MakeFileExistsFunc constructs a function that takes a path
 // and determines whether a file exists at that path
-func MakeFileExistsFunc(baseDir string) function.Function {
+func MakeFileExistsFunc(target fs.FS, baseDir string) function.Function {
 	return function.New(&function.Spec{
 		Params: []function.Parameter{
 			{
@@ -204,12 +205,12 @@ func MakeFileExistsFunc(baseDir string) function.Function {
 				path = filepath.Join(baseDir, path)
 			}
 
-			// Ensure that the path is canonical for the host OS
-			path = filepath.Clean(path)
+			// Trivy uses a virtual file system
+			path = filepath.ToSlash(path)
 
-			fi, err := os.Stat(path)
+			fi, err := fs.Stat(target, path)
 			if err != nil {
-				if os.IsNotExist(err) {
+				if errors.Is(err, os.ErrNotExist) {
 					return cty.False, nil
 				}
 				return cty.UnknownVal(cty.Bool), fmt.Errorf("failed to stat %s", path)
@@ -227,7 +228,7 @@ func MakeFileExistsFunc(baseDir string) function.Function {
 
 // MakeFileSetFunc constructs a function that takes a glob pattern
 // and enumerates a file set from that pattern
-func MakeFileSetFunc(baseDir string) function.Function {
+func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 	return function.New(&function.Spec{
 		Params: []function.Parameter{
 			{
@@ -248,19 +249,19 @@ func MakeFileSetFunc(baseDir string) function.Function {
 				path = filepath.Join(baseDir, path)
 			}
 
-			// Join the path to the glob pattern, while ensuring the full
-			// pattern is canonical for the host OS. The joined path is
-			// automatically cleaned during this operation.
-			pattern = filepath.Join(path, pattern)
+			// Join the path to the glob pattern, and ensure both path and pattern
+			// agree on path separators, so the globbing works as expected.
+			pattern = filepath.ToSlash(filepath.Join(path, pattern))
+			path = filepath.ToSlash(path)
 
-			matches, err := doublestar.Glob(os.DirFS(path), pattern)
+			matches, err := doublestar.Glob(target, pattern)
 			if err != nil {
 				return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to glob pattern (%s): %s", pattern, err)
 			}
 
 			var matchVals []cty.Value
 			for _, match := range matches {
-				fi, err := os.Stat(match)
+				fi, err := fs.Stat(target, match)
 
 				if err != nil {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to stat (%s): %s", match, err)
@@ -364,8 +365,8 @@ func openFile(target fs.FS, baseDir, path string) (fs.File, error) {
 		path = filepath.Join(baseDir, path)
 	}
 
-	// Ensure that the path is canonical for the host OS
-	path = filepath.Clean(path)
+	// Trivy uses a virtual file system
+	path = filepath.ToSlash(path)
 
 	if target != nil {
 		return target.Open(path)
@@ -401,67 +402,4 @@ func readFileBytes(target fs.FS, baseDir, path string) ([]byte, error) {
 func File(target fs.FS, baseDir string, path cty.Value) (cty.Value, error) {
 	fn := MakeFileFunc(target, baseDir, false)
 	return fn.Call([]cty.Value{path})
-}
-
-// FileExists determines whether a file exists at the given path.
-//
-// The underlying function implementation works relative to a particular base
-// directory, so this wrapper takes a base directory string and uses it to
-// construct the underlying function before calling it.
-func FileExists(baseDir string, path cty.Value) (cty.Value, error) {
-	fn := MakeFileExistsFunc(baseDir)
-	return fn.Call([]cty.Value{path})
-}
-
-// FileSet enumerates a set of files given a glob pattern
-//
-// The underlying function implementation works relative to a particular base
-// directory, so this wrapper takes a base directory string and uses it to
-// construct the underlying function before calling it.
-func FileSet(baseDir string, path, pattern cty.Value) (cty.Value, error) {
-	fn := MakeFileSetFunc(baseDir)
-	return fn.Call([]cty.Value{path, pattern})
-}
-
-// FileBase64 reads the contents of the file at the given path.
-//
-// The bytes from the file are encoded as base64 before returning.
-//
-// The underlying function implementation works relative to a particular base
-// directory, so this wrapper takes a base directory string and uses it to
-// construct the underlying function before calling it.
-func FileBase64(target fs.FS, baseDir string, path cty.Value) (cty.Value, error) {
-	fn := MakeFileFunc(target, baseDir, true)
-	return fn.Call([]cty.Value{path})
-}
-
-// Basename takes a string containing a filesystem path and removes all except the last portion from it.
-//
-// The underlying function implementation works only with the path string and does not access the filesystem itself.
-// It is therefore unable to take into account filesystem features such as symlinks.
-//
-// If the path is empty then the result is ".", representing the current working directory.
-func Basename(path cty.Value) (cty.Value, error) {
-	return BasenameFunc.Call([]cty.Value{path})
-}
-
-// Dirname takes a string containing a filesystem path and removes the last portion from it.
-//
-// The underlying function implementation works only with the path string and does not access the filesystem itself.
-// It is therefore unable to take into account filesystem features such as symlinks.
-//
-// If the path is empty then the result is ".", representing the current working directory.
-func Dirname(path cty.Value) (cty.Value, error) {
-	return DirnameFunc.Call([]cty.Value{path})
-}
-
-// Pathexpand takes a string that might begin with a `~` segment, and if so it replaces that segment with
-// the current user's home directory path.
-//
-// The underlying function implementation works only with the path string and does not access the filesystem itself.
-// It is therefore unable to take into account filesystem features such as symlinks.
-//
-// If the leading segment in the path is not `~` then the given path is returned unmodified.
-func Pathexpand(path cty.Value) (cty.Value, error) {
-	return PathExpandFunc.Call([]cty.Value{path})
 }

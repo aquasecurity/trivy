@@ -69,6 +69,7 @@ const (
 
 	// Conda
 	TypeCondaPkg Type = "conda-pkg"
+	TypeCondaEnv Type = "conda-environment"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
@@ -177,6 +178,7 @@ var (
 		TypeDotNetCore,
 		TypePackagesProps,
 		TypeCondaPkg,
+		TypeCondaEnv,
 		TypePythonPkg,
 		TypePip,
 		TypePipenv,
@@ -208,6 +210,7 @@ var (
 		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeCondaEnv,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

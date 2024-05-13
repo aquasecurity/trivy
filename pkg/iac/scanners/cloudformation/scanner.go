@@ -15,7 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -23,7 +23,7 @@ import (
 func WithParameters(params map[string]any) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser2.WithParameters(params))
+			s.addParserOptions(parser.WithParameters(params))
 		}
 	}
 }
@@ -31,7 +31,7 @@ func WithParameters(params map[string]any) options.ScannerOption {
 func WithParameterFiles(files ...string) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser2.WithParameterFiles(files...))
+			s.addParserOptions(parser.WithParameterFiles(files...))
 		}
 	}
 }
@@ -39,7 +39,7 @@ func WithParameterFiles(files ...string) options.ScannerOption {
 func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser2.WithConfigsFS(fsys))
+			s.addParserOptions(parser.WithConfigsFS(fsys))
 		}
 	}
 }
@@ -51,7 +51,7 @@ type Scanner struct { // nolint: gocritic
 	debug                 debug.Logger
 	policyDirs            []string
 	policyReaders         []io.Reader
-	parser                *parser2.Parser
+	parser                *parser.Parser
 	regoScanner           *rego.Scanner
 	skipRequired          bool
 	regoOnly              bool
@@ -131,7 +131,7 @@ func New(opts ...options.ScannerOption) *Scanner {
 		opt(s)
 	}
 	s.addParserOptions(options.ParserWithSkipRequiredCheck(s.skipRequired))
-	s.parser = parser2.New(s.parserOptions...)
+	s.parser = parser.New(s.parserOptions...)
 	return s
 }
 
@@ -206,7 +206,7 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 	return results, nil
 }
 
-func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner, cfCtx *parser2.FileContext, fsys fs.FS) (results scan.Results, err error) {
+func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner, cfCtx *parser.FileContext, fsys fs.FS) (results scan.Results, err error) {
 	state := adapter.Adapt(*cfCtx)
 	if state == nil {
 		return nil, nil
@@ -247,7 +247,15 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 	if err != nil {
 		return nil, fmt.Errorf("rego scan error: %w", err)
 	}
-	return append(results, regoResults...), nil
+	results = append(results, regoResults...)
+
+	results.Ignore(cfCtx.Ignores, nil)
+
+	for _, ignored := range results.GetIgnored() {
+		s.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
+	}
+
+	return results, nil
 }
 
 func getDescription(scanResult scan.Result, ref string) string {

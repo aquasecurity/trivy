@@ -20,10 +20,13 @@ import (
 )
 
 type AWSScanner struct {
+	logger *log.Logger
 }
 
 func NewScanner() *AWSScanner {
-	return &AWSScanner{}
+	return &AWSScanner{
+		logger: log.WithPrefix("aws"),
+	}
 }
 
 func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Results, bool, error) {
@@ -31,9 +34,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	awsCache := cache.New(option.CacheDir, option.MaxCacheAge, option.Account, option.Region)
 	included, missing := awsCache.ListServices(option.Services)
 
+	prefixedLogger := log.NewWriteLogger(log.WithPrefix("aws"))
+
 	var scannerOpts []options.ScannerOption
 	if !option.NoProgress {
-		tracker := newProgressTracker()
+		tracker := newProgressTracker(prefixedLogger)
 		defer tracker.Finish()
 		scannerOpts = append(scannerOpts, aws.ScannerWithProgressTracker(tracker))
 	}
@@ -43,11 +48,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(prefixedLogger))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.PrefixedLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(prefixedLogger))
 	}
 
 	if option.Region != "" {
@@ -67,13 +72,14 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	var policyPaths []string
 	var downloadedPolicyPaths []string
 	var err error
-	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.PolicyBundleRepository)
+
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipCheckUpdate, option.MisconfOptions.ChecksBundleRepository, option.RegistryOpts())
 	if err != nil {
-		if !option.SkipPolicyUpdate {
-			log.Logger.Errorf("Falling back to embedded policies: %s", err)
+		if !option.SkipCheckUpdate {
+			s.logger.Error("Falling back to embedded checks", log.Err(err))
 		}
 	} else {
-		log.Logger.Debug("Policies successfully loaded from disk")
+		s.logger.Debug("Checks successfully loaded from disk")
 		policyPaths = append(policyPaths, downloadedPolicyPaths...)
 		scannerOpts = append(scannerOpts,
 			options.ScannerWithEmbeddedPolicies(false),
@@ -81,7 +87,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	var policyFS fs.FS
-	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.PolicyPaths...))
+	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.CheckPaths...))
 	if err != nil {
 		return nil, false, xerrors.Errorf("unable to create policyfs: %w", err)
 	}
@@ -93,14 +99,14 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
-		log.Logger.Errorf("Could not load config data: %s", err)
+		s.logger.Error("Could not load config data", err)
 	}
 	scannerOpts = append(scannerOpts,
 		options.ScannerWithDataDirs(dataPaths...),
 		options.ScannerWithDataFilesystem(dataFS),
 	)
 
-	scannerOpts = addPolicyNamespaces(option.RegoOptions.PolicyNamespaces, scannerOpts)
+	scannerOpts = addPolicyNamespaces(option.RegoOptions.CheckNamespaces, scannerOpts)
 
 	if option.Compliance.Spec.ID != "" {
 		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance.Spec.ID))

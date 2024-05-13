@@ -8,8 +8,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/azure"
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/ecr"
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/google"
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -41,7 +41,7 @@ func GetToken(ctx context.Context, domain string, opt types.RegistryOptions) (au
 		username, password, err := registry.GetCredential(ctx)
 		if err != nil {
 			// only skip check registry if error occurred
-			log.Logger.Debug(err)
+			log.Debug("Credential error", log.Err(err))
 			break
 		}
 		return authn.Basic{

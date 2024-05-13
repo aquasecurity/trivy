@@ -8,7 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -41,7 +41,7 @@ func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, err
 		if snapshotID == "" {
 			continue
 		}
-		log.Logger.Infof("Snapshot %s found", snapshotID)
+		log.WithPrefix("ami").Info("Snapshot found", log.String("snapshot_id", snapshotID))
 		ebs, err := newEBS(snapshotID, storage, region, endpoint)
 		if err != nil {
 			return nil, xerrors.Errorf("new EBS error: %w", err)
@@ -55,10 +55,10 @@ func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, err
 	return nil, xerrors.New("no snapshot found")
 }
 
-func (a *AMI) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+func (a *AMI) Inspect(ctx context.Context) (artifact.Reference, error) {
 	ref, err := a.EBS.Inspect(ctx)
 	if err != nil {
-		return types.ArtifactReference{}, err
+		return artifact.Reference{}, err
 	}
 	ref.Name = a.imageID
 	return ref, nil

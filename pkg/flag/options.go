@@ -121,7 +121,7 @@ func (f *Flag[T]) parse() any {
 		}
 		v = viper.Get(alias.ConfigName)
 		if v != nil {
-			log.Logger.Warnf("'%s' in config file is deprecated. Use '%s' instead.", alias.ConfigName, f.ConfigName)
+			log.Warnf("'%s' in config file is deprecated. Use '%s' instead.", alias.ConfigName, f.ConfigName)
 			return v
 		}
 	}
@@ -276,7 +276,7 @@ func (f *Flag[T]) BindEnv() error {
 		}
 		if alias.Deprecated {
 			if _, ok := os.LookupEnv(envAlias); ok {
-				log.Logger.Warnf("'%s' is deprecated. Use '%s' instead.", envAlias, envName)
+				log.Warnf("'%s' is deprecated. Use '%s' instead.", envAlias, envName)
 			}
 		}
 	}
@@ -353,22 +353,45 @@ type Options struct {
 }
 
 // Align takes consistency of options
-func (o *Options) Align() {
+func (o *Options) Align() error {
 	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
-		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
+		log.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
 		o.Scanners = nil
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
-		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
+		log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
 		o.Scanners = nil
 	}
 
-	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
-		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning`)
-		o.Scanners = nil
+	if o.Compliance.Spec.ID != "" {
+		if viper.IsSet(ScannersFlag.ConfigName) {
+			log.Info(`The option to change scanners is disabled for scanning with the "--compliance" flag. Default scanners used.`)
+		}
+		if viper.IsSet(ImageConfigScannersFlag.ConfigName) {
+			log.Info(`The option to change image config scanners is disabled for scanning with the "--compliance" flag. Default image config scanners used.`)
+		}
+
+		// set scanners types by spec
+		scanners, err := o.Compliance.Scanners()
+		if err != nil {
+			return xerrors.Errorf("scanner error: %w", err)
+		}
+
+		o.Scanners = scanners
+		o.ImageConfigScanners = nil
+		// TODO: define image-config-scanners in the spec
+		if o.Compliance.Spec.ID == types.ComplianceDockerCIS {
+			o.Scanners = types.Scanners{types.VulnerabilityScanner}
+			o.ImageConfigScanners = types.Scanners{
+				types.MisconfigScanner,
+				types.SecretScanner,
+			}
+		}
 	}
+
+	return nil
 }
 
 // RegistryOpts returns options for OCI registries
@@ -698,7 +721,9 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		}
 	}
 
-	opts.Align()
+	if err := opts.Align(); err != nil {
+		return Options{}, xerrors.Errorf("align options error: %w", err)
+	}
 
 	return opts, nil
 }
@@ -736,7 +761,7 @@ func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.Normaliz
 			if alias.deprecated {
 				// NormalizeFunc is called several times
 				alias.once.Do(func() {
-					log.Logger.Warnf("'--%s' is deprecated. Use '--%s' instead.", name, alias.formalName)
+					log.Warnf("'--%s' is deprecated. Use '--%s' instead.", name, alias.formalName)
 				})
 			}
 			name = alias.formalName

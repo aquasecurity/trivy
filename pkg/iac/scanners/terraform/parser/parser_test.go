@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"sort"
 	"testing"
 
@@ -1521,4 +1522,205 @@ func compareSets(a []int, b []int) bool {
 	}
 
 	return true
+}
+
+func TestModuleRefersToOutputOfAnotherModule(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+module "module2" {
+	source = "./modules/foo"
+}
+
+module "module1" {
+	source = "./modules/bar"
+	test_var = module.module2.test_out
+}
+`,
+		"modules/foo/main.tf": `
+output "test_out" {
+	value = "test_value"
+}
+`,
+		"modules/bar/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {
+	dynamic "dynamic_block" {
+		for_each = [var.test_var]
+		content {
+			some_attr = dynamic_block.value
+		}
+	}
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 3)
+
+	resources := modules.GetResourcesByType("test_resource")
+	require.Len(t, resources, 1)
+
+	attr, _ := resources[0].GetNestedAttribute("dynamic_block.some_attr")
+	require.NotNil(t, attr)
+
+	assert.Equal(t, "test_value", attr.GetRawValue())
+}
+
+func TestCyclicModules(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+module "module2" {
+	source = "./modules/foo"
+	test_var = passthru.handover.from_1
+}
+
+// Demonstrates need for evaluateSteps between submodule evaluations.
+resource "passthru" "handover" {
+	from_1 = module.module1.test_out
+	from_2 = module.module2.test_out
+}
+
+module "module1" {
+	source = "./modules/bar"
+	test_var = passthru.handover.from_2
+}
+`,
+		"modules/foo/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {
+	dynamic "dynamic_block" {
+		for_each = [var.test_var]
+		content {
+			some_attr = dynamic_block.value
+		}
+	}
+}
+
+output "test_out" {
+	value = "test_value"
+}
+`,
+		"modules/bar/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {
+	dynamic "dynamic_block" {
+		for_each = [var.test_var]
+		content {
+			some_attr = dynamic_block.value
+		}
+	}
+}
+
+output "test_out" {
+	value = test_resource.this.dynamic_block.some_attr
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 3)
+
+	resources := modules.GetResourcesByType("test_resource")
+	require.Len(t, resources, 2)
+
+	for _, res := range resources {
+		attr, _ := res.GetNestedAttribute("dynamic_block.some_attr")
+		require.NotNil(t, attr, res.FullName())
+		assert.Equal(t, "test_value", attr.GetRawValue())
+	}
+}
+
+func TestExtractSetValue(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+resource "test" "set-value" {
+	value = toset(["x", "y", "x"])
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+	attr := resources[0].GetAttribute("value")
+	require.NotNil(t, attr)
+	assert.Equal(t, []string{"x", "y"}, attr.GetRawValue())
+}
+
+func TestFunc_fileset(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+resource "test" "fileset-func" {
+	value = fileset(path.module, "**/*.py")
+}
+`,
+		"a.py":      ``,
+		"path/b.py": ``,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+	attr := resources[0].GetAttribute("value")
+	require.NotNil(t, attr)
+	assert.Equal(t, []string{"a.py", "path/b.py"}, attr.GetRawValue())
+}
+
+func TestVarTypeShortcut(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+variable "magic_list" {
+	type    = list
+	default = ["x", "y"]
+}
+
+variable "magic_map" {
+	type    = map
+	default = {a = 1, b = 2}
+}
+
+resource "test" "values" {
+	l = var.magic_list
+	m = var.magic_map
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+
+	list_attr := resources[0].GetAttribute("l")
+	require.NotNil(t, list_attr)
+	assert.Equal(t, []string{"x", "y"}, list_attr.GetRawValue())
+
+	map_attr := resources[0].GetAttribute("m")
+	require.NotNil(t, map_attr)
+	assert.True(t, map_attr.Value().RawEquals(cty.MapVal(map[string]cty.Value{
+		"a": cty.NumberIntVal(1), "b": cty.NumberIntVal(2),
+	})))
+}
+
+func Test_LoadLocalCachedModule(t *testing.T) {
+	fsys := os.DirFS(filepath.Join("testdata", "cached-modules"))
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	assert.Len(t, modules, 2)
+
+	buckets := modules.GetResourcesByType("aws_s3_bucket")
+	assert.Len(t, buckets, 1)
+
+	assert.Equal(t, "my-private-module/s3-bucket/aws/.terraform/modules/s3-bucket/main.tf", buckets[0].GetMetadata().Range().GetFilename())
+
+	bucketName := buckets[0].GetAttribute("bucket").Value().AsString()
+	assert.Equal(t, "my-s3-bucket", bucketName)
 }

@@ -15,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -226,7 +225,7 @@ func (Spring4Shell) PostScan(results serialize.Results) (serialize.Results, erro
 	var javaMajorVersion int
 	var tomcatVersion string
 	for _, result := range results {
-		if result.Class != types.ClassCustom {
+		if result.Class != "custom" {
 			continue
 		}
 

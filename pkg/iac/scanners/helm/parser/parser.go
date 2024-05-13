@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -18,11 +17,12 @@ import (
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/chart/loader"
+	"helm.sh/helm/v3/pkg/chartutil"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/releaseutil"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	detection2 "github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -41,6 +41,7 @@ type Parser struct {
 	fileValues   []string
 	stringValues []string
 	apiVersions  []string
+	kubeVersion  string
 }
 
 type ChartFile struct {
@@ -76,7 +77,11 @@ func (p *Parser) SetAPIVersions(values ...string) {
 	p.apiVersions = values
 }
 
-func New(path string, opts ...options.ParserOption) *Parser {
+func (p *Parser) SetKubeVersion(value string) {
+	p.kubeVersion = value
+}
+
+func New(path string, opts ...options.ParserOption) (*Parser, error) {
 
 	client := action.NewInstall(&action.Configuration{})
 	client.DryRun = true     // don't do anything
@@ -96,7 +101,16 @@ func New(path string, opts ...options.ParserOption) *Parser {
 		p.helmClient.APIVersions = p.apiVersions
 	}
 
-	return p
+	if p.kubeVersion != "" {
+		kubeVersion, err := chartutil.ParseKubeVersion(p.kubeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		p.helmClient.KubeVersion = kubeVersion
+	}
+
+	return p, nil
 }
 
 func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
@@ -119,7 +133,7 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
 			return nil
 		}
 
-		if detection2.IsArchive(path) {
+		if detection.IsArchive(path) {
 			tarFS, err := p.addTarToFS(path)
 			if errors.Is(err, errSkipFS) {
 				// an unpacked Chart already exists
@@ -192,17 +206,7 @@ func (p *Parser) extractChartName(chartPath string) error {
 }
 
 func (p *Parser) RenderedChartFiles() ([]ChartFile, error) {
-
-	tempDir, err := os.MkdirTemp(os.TempDir(), "defsec")
-	if err != nil {
-		return nil, err
-	}
-
-	if err := p.writeBuildFiles(tempDir); err != nil {
-		return nil, err
-	}
-
-	workingChart, err := loadChart(tempDir)
+	workingChart, err := p.loadChart()
 	if err != nil {
 		return nil, err
 	}
@@ -246,19 +250,36 @@ func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
 	return r, nil
 }
 
-func loadChart(tempFs string) (*chart.Chart, error) {
-	loadedChart, err := loader.Load(tempFs)
+func (p *Parser) loadChart() (*chart.Chart, error) {
+
+	var files []*loader.BufferedFile
+
+	for _, filePath := range p.filepaths {
+		b, err := fs.ReadFile(p.workingFS, filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		filePath = strings.TrimPrefix(filePath, p.rootPath+"/")
+		filePath = filepath.ToSlash(filePath)
+		files = append(files, &loader.BufferedFile{
+			Name: filePath,
+			Data: b,
+		})
+	}
+
+	c, err := loader.LoadFiles(files)
 	if err != nil {
 		return nil, err
 	}
 
-	if req := loadedChart.Metadata.Dependencies; req != nil {
-		if err := action.CheckDependencies(loadedChart, req); err != nil {
+	if req := c.Metadata.Dependencies; req != nil {
+		if err := action.CheckDependencies(c, req); err != nil {
 			return nil, err
 		}
 	}
 
-	return loadedChart, nil
+	return c, nil
 }
 
 func (*Parser) getRenderedManifests(manifestsKeys []string, splitManifests map[string]string) []ChartFile {
@@ -290,24 +311,6 @@ func getManifestPath(manifest string) string {
 	return manifestFilePathParts[0]
 }
 
-func (p *Parser) writeBuildFiles(tempFs string) error {
-	for _, path := range p.filepaths {
-		content, err := fs.ReadFile(p.workingFS, path)
-		if err != nil {
-			return err
-		}
-		workingPath := strings.TrimPrefix(path, p.rootPath)
-		workingPath = filepath.Join(tempFs, workingPath)
-		if err := os.MkdirAll(filepath.Dir(workingPath), os.ModePerm); err != nil {
-			return err
-		}
-		if err := os.WriteFile(workingPath, content, os.ModePerm); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (p *Parser) required(path string, workingFS fs.FS) bool {
 	if p.skipRequired {
 		return true
@@ -317,5 +320,5 @@ func (p *Parser) required(path string, workingFS fs.FS) bool {
 		return false
 	}
 
-	return detection2.IsType(path, bytes.NewReader(content), detection2.FileTypeHelm)
+	return detection.IsType(path, bytes.NewReader(content), detection.FileTypeHelm)
 }

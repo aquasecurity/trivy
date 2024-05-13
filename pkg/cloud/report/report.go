@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/tml"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -70,16 +70,18 @@ func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) e
 		return writeCompliance(ctx, rep, opt, output)
 	}
 
+	ignoreConf, err := result.ParseIgnoreFile(ctx, opt.IgnoreFile)
+	if err != nil {
+		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
+	}
+
 	var filtered []types.Result
 
 	// filter results
 	for _, resultsAtTime := range rep.Results {
 		for _, res := range resultsAtTime.Results {
 			resCopy := res
-			if err := result.FilterResult(ctx, &resCopy, result.IgnoreConfig{}, result.FilterOption{
-				Severities:         opt.Severities,
-				IncludeNonFailures: opt.IncludeNonFailures,
-			}); err != nil {
+			if err := result.FilterResult(ctx, &resCopy, ignoreConf, opt.FilterOpts()); err != nil {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {
@@ -95,7 +97,7 @@ func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) e
 	base := types.Report{
 		CreatedAt:    clock.Now(ctx),
 		ArtifactName: rep.AccountID,
-		ArtifactType: ftypes.ArtifactAWSAccount,
+		ArtifactType: artifact.TypeAWSAccount,
 		Results:      filtered,
 	}
 

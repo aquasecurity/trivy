@@ -132,6 +132,19 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "conda environment.yaml",
+			typ:  ftypes.CondaEnv,
+			pkg: ftypes.Package{
+				Name:    "blas",
+				Version: "1.0",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeConda,
+				Name:    "blas",
+				Version: "1.0",
+			},
+		},
+		{
 			name: "composer package",
 			typ:  ftypes.Composer,
 			pkg: ftypes.Package{
@@ -164,7 +177,7 @@ func TestNewPackageURL(t *testing.T) {
 			typ:  ftypes.GoModule,
 			pkg: ftypes.Package{
 				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
-				Version: "(devel)",
+				Version: "",
 			},
 			want: nil,
 		},

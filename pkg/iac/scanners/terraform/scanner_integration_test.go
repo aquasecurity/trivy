@@ -161,6 +161,7 @@ deny[cause] {
 
 	t.Run("without skip", func(t *testing.T) {
 		scanner := New(
+			ScannerWithSkipCachedModules(true),
 			options.ScannerWithPolicyDirs("rules"),
 			options.ScannerWithRegoOnly(true),
 			options.ScannerWithEmbeddedPolicies(false),

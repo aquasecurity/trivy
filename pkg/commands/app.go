@@ -114,7 +114,7 @@ func loadPluginCommands() []*cobra.Command {
 	var commands []*cobra.Command
 	plugins, err := plugin.LoadAll()
 	if err != nil {
-		log.Logger.Debugf("no plugins were loaded")
+		log.Debug("No plugins loaded")
 		return nil
 	}
 	for _, p := range plugins {
@@ -130,6 +130,8 @@ func loadPluginCommands() []*cobra.Command {
 				return nil
 			},
 			DisableFlagParsing: true,
+			SilenceUsage:       true,
+			SilenceErrors:      true,
 		}
 		commands = append(commands, cmd)
 	}
@@ -142,12 +144,12 @@ func initConfig(configFile string) error {
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Logger.Debugf("config file %q not found", configFile)
+			log.Debug("Config file not found", log.String("file_path", configFile))
 			return nil
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
-	log.Logger.Infof("Loaded %s", configFile)
+	log.Info("Loaded", log.String("file_path", configFile))
 	return nil
 }
 
@@ -196,9 +198,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 
 			// Initialize logger
-			if err := log.InitLogger(globalOptions.Debug, globalOptions.Quiet); err != nil {
-				return err
-			}
+			log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
 
 			return nil
 		},
@@ -570,7 +570,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Logger.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
+			log.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
 			if err := clientFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -936,22 +936,21 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 	cmd := &cobra.Command{
-		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
+		Use:     "kubernetes [flags] [CONTEXT]",
 		Aliases: []string{"k8s"},
 		GroupID: groupScanning,
 		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
+		Long:    `Default context in kube configuration will be used unless specified`,
 		Example: `  # cluster scanning
-  $ trivy k8s --report summary cluster
+  $ trivy k8s --report summary
 
-  # namespace scanning:
-  $ trivy k8s -n kube-system --report summary all
+  # cluster scanning with specific namespace:
+  $ trivy k8s --include-namespaces kube-system --report summary 
 
-  # resources scanning:
-  $ trivy k8s --report=summary deploy
-  $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
-
-  # resource scanning:
-  $ trivy k8s deployment/orion
+  # cluster with specific context:
+  $ trivy k8s kind-kind --report summary 
+  
+  
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := k8sFlags.Bind(cmd); err != nil {
@@ -1040,7 +1039,7 @@ The following services are supported:
 			}
 			if opts.Timeout < time.Hour {
 				opts.Timeout = time.Hour
-				log.Logger.Debug("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
+				log.Info("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
 			}
 			return awscommands.Run(cmd.Context(), opts)
 		},
@@ -1106,7 +1105,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			if options.Timeout < time.Minute*30 {
 				options.Timeout = time.Minute * 30
-				log.Logger.Debug("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
+				log.Info("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetVM)
 		},
@@ -1231,14 +1230,14 @@ func showVersion(cacheDir, outputFormat string, w io.Writer) error {
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
-	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset' and '--generate-default-config' don't conduct the subsequent scanning
+	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset', '--reset-checks-bundle' and '--generate-default-config' don't conduct the subsequent scanning
 	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
 		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
-		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetPolicyBundleFlag.ConfigName) {
+		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetChecksBundleFlag.ConfigName) {
 		return nil
 	}
 
-	if len(args) == 0 && viper.GetString(flag.InputFlag.ConfigName) == "" {
+	if len(args) == 0 && viper.GetString(flag.InputFlag.ConfigName) == "" && cmd.Name() != "kubernetes" {
 		if err := cmd.Help(); err != nil {
 			return err
 		}

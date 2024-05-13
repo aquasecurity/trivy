@@ -144,30 +144,6 @@ const expectedS3ScanResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0132",
-          "AVDID": "AVD-AWS-0132",
-          "Title": "S3 encryption should use Customer Managed Keys",
-          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
-          "Message": "Bucket does not encrypt data with a customer managed key.",
-          "Resolution": "Enable encryption using customer managed keys",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0132"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
           "ID": "AVD-AWS-0091",
           "AVDID": "AVD-AWS-0091",
           "Title": "S3 Access Block should Ignore Public Acl",
@@ -260,6 +236,87 @@ const expectedS3ScanResult = `{
               "Lines": null
             }
           }
+        },
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0132",
+          "AVDID": "AVD-AWS-0132",
+          "Title": "S3 encryption should use Customer Managed Keys",
+          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
+          "Message": "Bucket does not encrypt data with a customer managed key.",
+          "Resolution": "Enable encryption using customer managed keys",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0132"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+`
+
+const expectedS3ScanResultWithExceptions = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "12345678",
+  "ArtifactType": "aws_account",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "arn:aws:s3:::examplebucket",
+      "Class": "config",
+      "Type": "cloud",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 1,
+        "Exceptions": 8
+      },
+      "Misconfigurations": [
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0094",
+          "AVDID": "AVD-AWS-0094",
+          "Title": "S3 buckets should each define an aws_s3_bucket_public_access_block",
+          "Description": "The \"block public access\" settings in S3 override individual policies that apply to a given bucket, meaning that all public access can be controlled in one central types for that bucket. It is therefore good practice to define these settings for each bucket in order to clearly define the public access that can be allowed for it.",
+          "Message": "Bucket does not have a corresponding public access block.",
+          "Resolution": "Define a aws_s3_bucket_public_access_block for the given bucket to control public access policies",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0094",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0094"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
         }
       ]
     }
@@ -298,7 +355,7 @@ const expectedCustomScanResult = `{
           "Type": "AWS",
           "Title": "Bad input data",
           "Description": "Just failing rule with input data",
-          "Message": "Rego policy resulted in DENY",
+          "Message": "Rego check resulted in DENY",
           "Namespace": "user.whatever",
           "Query": "deny",
           "Severity": "LOW",
@@ -425,30 +482,6 @@ const expectedCustomScanResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0132",
-          "AVDID": "AVD-AWS-0132",
-          "Title": "S3 encryption should use Customer Managed Keys",
-          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
-          "Message": "Bucket does not encrypt data with a customer managed key.",
-          "Resolution": "Enable encryption using customer managed keys",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0132"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
           "ID": "AVD-AWS-0091",
           "AVDID": "AVD-AWS-0091",
           "Title": "S3 Access Block should Ignore Public Acl",
@@ -541,6 +574,30 @@ const expectedCustomScanResult = `{
               "Lines": null
             }
           }
+        },
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0132",
+          "AVDID": "AVD-AWS-0132",
+          "Title": "S3 encryption should use Customer Managed Keys",
+          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
+          "Message": "Bucket does not encrypt data with a customer managed key.",
+          "Resolution": "Enable encryption using customer managed keys",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0132"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
         }
       ]
     }
@@ -602,10 +659,10 @@ const expectedS3AndCloudTrailResult = `{
           "Type": "AWS",
           "ID": "AVD-AWS-0015",
           "AVDID": "AVD-AWS-0015",
-          "Title": "Cloudtrail should be encrypted at rest to secure access to sensitive trail data",
-          "Description": "Cloudtrail logs should be encrypted at rest to secure the sensitive data. Cloudtrail logs record all activity that occurs in the the account through API calls and would be one of the first places to look when reacting to a breach.",
-          "Message": "Trail is not encrypted.",
-          "Resolution": "Enable encryption at rest",
+          "Title": "CloudTrail should use Customer managed keys to encrypt the logs",
+          "Description": "Using Customer managed keys provides comprehensive control over cryptographic keys, enabling management of policies, permissions, and rotation, thus enhancing security and compliance measures for sensitive data and systems.",
+          "Message": "CloudTrail does not use a customer managed key to encrypt the logs.",
+          "Resolution": "Use Customer managed key",
           "Severity": "HIGH",
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0015",
           "References": [
@@ -780,30 +837,6 @@ const expectedS3AndCloudTrailResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0132",
-          "AVDID": "AVD-AWS-0132",
-          "Title": "S3 encryption should use Customer Managed Keys",
-          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
-          "Message": "Bucket does not encrypt data with a customer managed key.",
-          "Resolution": "Enable encryption using customer managed keys",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0132"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
           "ID": "AVD-AWS-0091",
           "AVDID": "AVD-AWS-0091",
           "Title": "S3 Access Block should Ignore Public Acl",
@@ -896,6 +929,30 @@ const expectedS3AndCloudTrailResult = `{
               "Lines": null
             }
           }
+        },
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0132",
+          "AVDID": "AVD-AWS-0132",
+          "Title": "S3 encryption should use Customer Managed Keys",
+          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
+          "Message": "Bucket does not encrypt data with a customer managed key.",
+          "Resolution": "Enable encryption using customer managed keys",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0132"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
         }
       ]
     }
@@ -915,11 +972,12 @@ func Test_Run(t *testing.T) {
 		regoPolicy   string
 		allServices  []string
 		inputData    string
+		ignoreFile   string
 	}{
 		{
 			name: "succeed with cached infra",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Services: []string{"s3"},
@@ -947,16 +1005,16 @@ func Test_Run(t *testing.T) {
 				},
 				RegoOptions: flag.RegoOptions{
 					Trace: true,
-					PolicyPaths: []string{
+					CheckPaths: []string{
 						filepath.Join(regoDir, "policies"),
 					},
-					PolicyNamespaces: []string{
+					CheckNamespaces: []string{
 						"user",
 					},
 					DataPaths: []string{
 						filepath.Join(regoDir, "data"),
 					},
-					SkipPolicyUpdate: true,
+					SkipCheckUpdate: true,
 				},
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
@@ -1024,7 +1082,7 @@ deny {
 					Format:       "table",
 					ReportFormat: "summary",
 				},
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 			},
 			cacheContent: "testdata/s3onlycache.json",
 			allServices:  []string{"s3"},
@@ -1040,7 +1098,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "scan an unsupported service",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Account:  "123456789",
@@ -1057,7 +1115,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "scan every service",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:  "us-east-1",
 					Account: "123456789",
@@ -1077,7 +1135,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "skip certain services and include specific services",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:       "us-east-1",
 					Services:     []string{"s3"},
@@ -1100,7 +1158,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "only skip certain services but scan the rest",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region: "us-east-1",
 					SkipServices: []string{
@@ -1125,7 +1183,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "fail - service specified to both include and exclude",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:       "us-east-1",
 					Services:     []string{"s3"},
@@ -1139,6 +1197,25 @@ Summary Report for compliance: my-custom-spec
 			},
 			cacheContent: "testdata/s3andcloudtrailcache.json",
 			expectErr:    true,
+		},
+		{
+			name: "ignore findings with .trivyignore",
+			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
+				AWSOptions: flag.AWSOptions{
+					Region:   "us-east-1",
+					Services: []string{"s3"},
+					Account:  "12345678",
+				},
+				CloudOptions: flag.CloudOptions{
+					MaxCacheAge: time.Hour * 24 * 365 * 100,
+				},
+				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
+			},
+			cacheContent: "testdata/s3onlycache.json",
+			allServices:  []string{"s3"},
+			ignoreFile:   "testdata/.trivyignore",
+			want:         expectedS3ScanResultWithExceptions,
 		},
 	}
 
@@ -1190,6 +1267,10 @@ Summary Report for compliance: my-custom-spec
 				require.NoError(t, err, test.name)
 
 				require.NoError(t, os.WriteFile(cacheFile, cacheData, 0600))
+			}
+
+			if test.ignoreFile != "" {
+				test.options.ReportOptions.IgnoreFile = test.ignoreFile
 			}
 
 			err := Run(ctx, test.options)

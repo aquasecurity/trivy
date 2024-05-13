@@ -26,7 +26,7 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Cocoapods,
 						FilePath: "testdata/happy.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "AppCenter@4.2.0",
 								Name:    "AppCenter",
@@ -87,7 +87,7 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 
 			if got != nil {
 				for _, app := range got.Applications {
-					sort.Sort(app.Libraries)
+					sort.Sort(app.Packages)
 				}
 			}
 

@@ -39,12 +39,25 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						SrcRelease: "1",
 						SrcEpoch:   2,
 						Licenses:   []string{"MIT"},
+						Locations: []ftypes.Location{
+							{
+								StartLine: 10,
+								EndLine:   20,
+							},
+							{
+								StartLine: 22,
+								EndLine:   32,
+							},
+						},
 						Layer: ftypes.Layer{
 							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 							DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 						},
 						Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 						Indirect: true,
+						Identifier: ftypes.PkgIdentifier{
+							UID: "01",
+						},
 					},
 				},
 			},
@@ -60,12 +73,25 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					SrcRelease: "1",
 					SrcEpoch:   2,
 					Licenses:   []string{"MIT"},
+					Locations: []*common.Location{
+						{
+							StartLine: 10,
+							EndLine:   20,
+						},
+						{
+							StartLine: 22,
+							EndLine:   32,
+						},
+					},
 					Layer: &common.Layer{
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 					},
 					Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Indirect: true,
+					Identifier: &common.PkgIdentifier{
+						Uid: "01",
+					},
 				},
 			},
 		},
@@ -101,12 +127,25 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						SrcRelease: "1",
 						SrcEpoch:   2,
 						Licenses:   []string{"MIT"},
+						Locations: []*common.Location{
+							{
+								StartLine: 10,
+								EndLine:   20,
+							},
+							{
+								StartLine: 22,
+								EndLine:   32,
+							},
+						},
 						Layer: &common.Layer{
 							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 							DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 						},
 						Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 						Indirect: true,
+						Identifier: &common.PkgIdentifier{
+							Uid: "01",
+						},
 					},
 				},
 			},
@@ -122,12 +161,25 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					SrcRelease: "1",
 					SrcEpoch:   2,
 					Licenses:   []string{"MIT"},
+					Locations: []ftypes.Location{
+						{
+							StartLine: 10,
+							EndLine:   20,
+						},
+						{
+							StartLine: 22,
+							EndLine:   32,
+						},
+					},
 					Layer: ftypes.Layer{
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 					},
 					Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Indirect: true,
+					Identifier: ftypes.PkgIdentifier{
+						UID: "01",
+					},
 				},
 			},
 		},

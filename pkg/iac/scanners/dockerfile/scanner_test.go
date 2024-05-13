@@ -546,7 +546,7 @@ package builtin.dockerfile.DS006
 deny[res]{
 res := true
 }`,
-			expectedError: `1 error occurred: rules/rule.rego:12: rego_type_error: undefined schema: schema["spooky-schema"]`,
+			expectedError: "could not find schema \"spooky-schema\"",
 		},
 	}
 

@@ -75,6 +75,7 @@ jobs:
             dart
             swift
             bitnami
+            conda
 
             os
             lang

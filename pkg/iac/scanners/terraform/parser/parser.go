@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -9,14 +10,13 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/trivy/pkg/extrafs"
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
@@ -25,19 +25,6 @@ import (
 type sourceFile struct {
 	file *hcl.File
 	path string
-}
-
-type Metrics struct {
-	Timings struct {
-		DiskIODuration time.Duration
-		ParseDuration  time.Duration
-	}
-	Counts struct {
-		Blocks          int
-		Modules         int
-		ModuleDownloads int
-		Files           int
-	}
 }
 
 var _ ConfigurableTerraformParser = (*Parser)(nil)
@@ -56,7 +43,6 @@ type Parser struct {
 	workspaceName     string
 	underlying        *hclparse.Parser
 	children          []*Parser
-	metrics           Metrics
 	options           []options.ParserOption
 	debug             debug.Logger
 	allowDownloads    bool
@@ -131,21 +117,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	return mp
 }
 
-func (p *Parser) Metrics() Metrics {
-	total := p.metrics
-	for _, child := range p.children {
-		metrics := child.Metrics()
-		total.Counts.Files += metrics.Counts.Files
-		total.Counts.Blocks += metrics.Counts.Blocks
-		total.Timings.ParseDuration += metrics.Timings.ParseDuration
-		total.Timings.DiskIODuration += metrics.Timings.DiskIODuration
-		// NOTE: we don't add module count - this has already propagated to the top level
-	}
-	return total
-}
-
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
-	diskStart := time.Now()
 
 	isJSON := strings.HasSuffix(fullPath, ".tf.json")
 	isHCL := strings.HasSuffix(fullPath, ".tf")
@@ -164,14 +136,13 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 	if err != nil {
 		return err
 	}
-	p.metrics.Timings.DiskIODuration += time.Since(diskStart)
+
 	if dir := path.Dir(fullPath); p.projectRoot == "" {
 		p.debug.Log("Setting project/module root to '%s'", dir)
 		p.projectRoot = dir
 		p.modulePath = dir
 	}
 
-	start := time.Now()
 	var file *hcl.File
 	var diag hcl.Diagnostics
 
@@ -187,8 +158,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 		file: file,
 		path: fullPath,
 	})
-	p.metrics.Counts.Files++
-	p.metrics.Timings.ParseDuration += time.Since(start)
+
 	p.debug.Log("Added file %s.", fullPath)
 	return nil
 }
@@ -214,28 +184,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	var paths []string
 	for _, info := range fileInfos {
 		realPath := path.Join(dir, info.Name())
-		if info.Type()&os.ModeSymlink != 0 {
-			extra, ok := p.moduleFS.(extrafs.FS)
-			if !ok {
-				// we can't handle symlinks in this fs type for now
-				p.debug.Log("Cannot resolve symlink '%s' in '%s' for this fs type", info.Name(), dir)
-				continue
-			}
-			realPath, err = extra.ResolveSymlink(info.Name(), dir)
-			if err != nil {
-				p.debug.Log("Failed to resolve symlink '%s' in '%s': %s", info.Name(), dir, err)
-				continue
-			}
-			info, err := extra.Stat(realPath)
-			if err != nil {
-				p.debug.Log("Failed to stat resolved symlink '%s': %s", realPath, err)
-				continue
-			}
-			if info.IsDir() {
-				continue
-			}
-			p.debug.Log("Resolved symlink '%s' in '%s' to '%s'", info.Name(), dir, realPath)
-		} else if info.IsDir() {
+		if info.IsDir() {
 			continue
 		}
 		paths = append(paths, realPath)
@@ -254,22 +203,21 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	return nil
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
+var ErrNoFiles = errors.New("no files found")
 
+func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 	p.debug.Log("Evaluating module...")
 
 	if len(p.files) == 0 {
 		p.debug.Log("No files found, nothing to do.")
-		return nil, cty.NilVal, nil
+		return nil, ErrNoFiles
 	}
 
 	blocks, ignores, err := p.readBlocks(p.files)
 	if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 	p.debug.Log("Read %d block(s) and %d ignore(s) for module '%s' (%d file[s])...", len(blocks), len(ignores), p.moduleName, len(p.files))
-
-	p.metrics.Counts.Blocks = len(blocks)
 
 	var inputVars map[string]cty.Value
 	if p.moduleBlock != nil {
@@ -278,7 +226,7 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 	} else {
 		inputVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
 		if err != nil {
-			return nil, cty.NilVal, err
+			return nil, err
 		}
 		p.debug.Log("Added %d variables from tfvars.", len(inputVars))
 	}
@@ -292,10 +240,10 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 
 	workingDir, err := os.Getwd()
 	if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 	p.debug.Log("Working directory for module evaluation is '%s'", workingDir)
-	evaluator := newEvaluator(
+	return newEvaluator(
 		p.moduleFS,
 		p,
 		p.projectRoot,
@@ -310,13 +258,19 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 		p.debug.Extend("evaluator"),
 		p.allowDownloads,
 		p.skipCachedModules,
-	)
-	modules, fsMap, parseDuration := evaluator.EvaluateAll(ctx)
-	p.metrics.Counts.Modules = len(modules)
-	p.metrics.Timings.ParseDuration = parseDuration
+	), nil
+}
+
+func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
+
+	e, err := p.Load(ctx)
+	if errors.Is(err, ErrNoFiles) {
+		return nil, cty.NilVal, nil
+	}
+	modules, fsMap := e.EvaluateAll(ctx)
 	p.debug.Log("Finished parsing module '%s'.", p.moduleName)
 	p.fsMap = fsMap
-	return modules, evaluator.exportOutputs(), nil
+	return modules, e.exportOutputs(), nil
 }
 
 func (p *Parser) GetFilesystemMap() map[string]fs.FS {
@@ -326,12 +280,12 @@ func (p *Parser) GetFilesystemMap() map[string]fs.FS {
 	return p.fsMap
 }
 
-func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, terraform.Ignores, error) {
+func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules, error) {
 	var blocks terraform.Blocks
-	var ignores terraform.Ignores
+	var ignores ignore.Rules
 	moduleCtx := tfcontext.NewContext(&hcl.EvalContext{}, nil)
 	for _, file := range files {
-		fileBlocks, fileIgnores, err := loadBlocksFromFile(file, p.moduleSource)
+		fileBlocks, err := loadBlocksFromFile(file)
 		if err != nil {
 			if p.stopOnHCLError {
 				return nil, nil, err
@@ -342,9 +296,61 @@ func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, terraform.Ign
 		for _, fileBlock := range fileBlocks {
 			blocks = append(blocks, terraform.NewBlock(fileBlock, moduleCtx, p.moduleBlock, nil, p.moduleSource, p.moduleFS))
 		}
+		fileIgnores := ignore.Parse(
+			string(file.file.Bytes),
+			file.path,
+			&ignore.StringMatchParser{
+				SectionKey: "ws",
+			},
+			&paramParser{},
+		)
 		ignores = append(ignores, fileIgnores...)
 	}
 
 	sortBlocksByHierarchy(blocks)
 	return blocks, ignores, nil
+}
+
+func loadBlocksFromFile(file sourceFile) (hcl.Blocks, error) {
+	contents, diagnostics := file.file.Body.Content(terraform.Schema)
+	if diagnostics != nil && diagnostics.HasErrors() {
+		return nil, diagnostics
+	}
+	if contents == nil {
+		return nil, nil
+	}
+	return contents.Blocks, nil
+}
+
+type paramParser struct {
+	params map[string]string
+}
+
+func (s *paramParser) Key() string {
+	return "ignore"
+}
+
+func (s *paramParser) Parse(str string) bool {
+	s.params = make(map[string]string)
+
+	idx := strings.Index(str, "[")
+	if idx == -1 {
+		return false
+	}
+
+	str = str[idx+1:]
+
+	paramStr := strings.TrimSuffix(str, "]")
+	for _, pair := range strings.Split(paramStr, ",") {
+		parts := strings.Split(pair, "=")
+		if len(parts) != 2 {
+			continue
+		}
+		s.params[parts[0]] = parts[1]
+	}
+	return true
+}
+
+func (s *paramParser) Param() any {
+	return s.params
 }

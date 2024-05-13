@@ -69,13 +69,17 @@ trivy aws [flags]
       --account string                    The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.
       --arn string                        The AWS ARN to show results for. Useful to filter results once a scan is cached.
       --cf-params strings                 specify paths to override the CloudFormation parameters files
+      --check-namespaces strings          Rego namespaces
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --compliance string                 compliance report to generate (aws-cis-1.2,aws-cis-1.4)
-      --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
+      --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --endpoint string                   AWS Endpoint override
       --exit-code int                     specify exit code when any security issues are found
   -f, --format string                     format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
+      --helm-api-versions strings         Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)
+      --helm-kube-version string          Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -85,18 +89,16 @@ trivy aws [flags]
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
-      --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
+      --max-cache-age duration            The maximum age of the cloud cache. Cached data will be required from the cloud provider if it is older than this. (default 24h0m0s)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
-      --policy-namespaces strings         Rego namespaces
       --region string                     AWS Region to scan
       --report string                     specify a report format for the output (all,summary) (default "all")
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
       --service strings                   Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --skip-policy-update                skip fetching rego policy updates
+      --skip-check-update                 skip fetching rego check updates
       --skip-service strings              Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules

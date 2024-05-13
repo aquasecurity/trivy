@@ -8,7 +8,7 @@ import (
 
 	"github.com/open-policy-agent/opa/ast"
 
-	rules2 "github.com/aquasecurity/trivy-policies"
+	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 )
 
@@ -62,11 +62,11 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 }
 
 func LoadEmbeddedPolicies() (map[string]*ast.Module, error) {
-	return LoadPoliciesFromDirs(rules2.EmbeddedPolicyFileSystem, ".")
+	return LoadPoliciesFromDirs(checks.EmbeddedPolicyFileSystem, ".")
 }
 
 func LoadEmbeddedLibraries() (map[string]*ast.Module, error) {
-	return LoadPoliciesFromDirs(rules2.EmbeddedLibraryFileSystem, ".")
+	return LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
 }
 
 func LoadPoliciesFromDirs(target fs.FS, paths ...string) (map[string]*ast.Module, error) {
