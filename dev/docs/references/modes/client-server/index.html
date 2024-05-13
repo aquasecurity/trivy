@@ -3744,6 +3744,32 @@ You're not viewing the latest version.
 
 <h1 id="clientserver">Client/Server</h1>
 <p>Trivy has client/server mode. Trivy server has vulnerability database and Trivy client doesn't have to download vulnerability database. It is useful if you want to scan images or files at multiple locations and do not want to download the database at every location.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Client/Server Mode</th>
+<th align="center">Image</th>
+<th align="center">Rootfs</th>
+<th align="center">Filesystem</th>
+<th align="center">Repository</th>
+<th align="center">Config</th>
+<th align="center">AWS</th>
+<th align="center">K8s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Supported</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">X</td>
+<td align="center">X</td>
+</tr>
+</tbody>
+</table>
 <h2 id="server">Server</h2>
 <p>At first, you need to launch Trivy server. It downloads vulnerability database automatically and continue to fetch the latest DB in the background.
 <div class="highlight"><pre><span></span><code>$ trivy server --listen localhost:8080
