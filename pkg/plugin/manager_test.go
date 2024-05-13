@@ -443,24 +443,25 @@ installed:
 	require.NoError(t, err)
 
 	ctx := context.Background()
+	m := plugin.NewManager()
 
 	// verify initial version
-	verifyVersion(t, ctx, pluginName, "0.0.5")
+	verifyVersion(t, ctx, m, pluginName, "0.0.5")
 
 	// Upgrade the existing plugin
-	err = plugin.NewManager().Upgrade(ctx, nil)
+	err = m.Upgrade(ctx, nil)
 	require.NoError(t, err)
 
 	// verify plugin updated
-	verifyVersion(t, ctx, pluginName, "0.1.0")
+	verifyVersion(t, ctx, m, pluginName, "0.1.0")
 }
 
-func verifyVersion(t *testing.T, ctx context.Context, pluginName, expectedVersion string) {
-	plugins, err := plugin.LoadAll(ctx)
+func verifyVersion(t *testing.T, ctx context.Context, m *plugin.Manager, pluginName, expectedVersion string) {
+	plugins, err := m.LoadAll(ctx)
 	require.NoError(t, err)
-	for _, plugin := range plugins {
-		if plugin.Name == pluginName {
-			assert.Equal(t, expectedVersion, plugin.Version)
+	for _, p := range plugins {
+		if p.Name == pluginName {
+			assert.Equal(t, expectedVersion, p.Version)
 		}
 	}
 }
