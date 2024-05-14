@@ -1011,3 +1011,78 @@ deny {
 	assert.Contains(t, buf.String(),
 		`Error occurred while applying rule "deny" from check "checks/bad.rego"`)
 }
+
+func Test_RegoScanning_WithDeprecatedCheck(t *testing.T) {
+	var testCases = []struct {
+		name            string
+		policy          string
+		expectedResults int
+	}{
+		{
+			name: "happy path check is deprecated",
+			policy: `# METADATA
+# title: i am a deprecated check
+# description: i am a description
+# related_resources:
+# - https://google.com
+# custom:
+#   id: EG123
+#   avd_id: AVD-EG-0123
+#   severity: LOW
+#   recommended_action: have a cup of tea
+#   deprecated: true
+package defsec.test
+
+deny {
+  input.text
+}
+
+`,
+			expectedResults: 0,
+		},
+		{
+			name: "happy path check is not deprecated",
+			policy: `# METADATA
+# title: i am a deprecated check
+# description: i am a description
+# related_resources:
+# - https://google.com
+# custom:
+#   id: EG123
+#   avd_id: AVD-EG-0123
+#   severity: LOW
+#   recommended_action: have a cup of tea
+package defsec.test
+
+deny {
+  input.text
+}
+
+`,
+			expectedResults: 1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			srcFS := CreateFS(t, map[string]string{
+				"policies/test.rego": tc.policy,
+			})
+
+			scanner := NewScanner(types.SourceJSON)
+			require.NoError(
+				t,
+				scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+			)
+
+			results, err := scanner.ScanInput(context.TODO(), Input{
+				Path: "/evil.lol",
+				Contents: map[string]interface{}{
+					"text": "test",
+				},
+			})
+			require.NoError(t, err)
+			require.Len(t, results, tc.expectedResults, tc.name)
+		})
+	}
+}

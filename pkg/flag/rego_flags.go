@@ -7,6 +7,11 @@ package flag
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
+	IncludeDeprecatedChecksFlag = Flag[bool]{
+		Name:       "include-deprecated-checks",
+		ConfigName: "rego.include-deprecated-checks",
+		Usage:      "include deprecated checks",
+	}
 	SkipCheckUpdateFlag = Flag[bool]{
 		Name:       "skip-check-update",
 		ConfigName: "rego.skip-check-update",
@@ -53,28 +58,31 @@ var (
 
 // RegoFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
 type RegoFlagGroup struct {
-	SkipCheckUpdate *Flag[bool]
-	Trace           *Flag[bool]
-	CheckPaths      *Flag[[]string]
-	DataPaths       *Flag[[]string]
-	CheckNamespaces *Flag[[]string]
+	IncludeDeprecatedChecks *Flag[bool]
+	SkipCheckUpdate         *Flag[bool]
+	Trace                   *Flag[bool]
+	CheckPaths              *Flag[[]string]
+	DataPaths               *Flag[[]string]
+	CheckNamespaces         *Flag[[]string]
 }
 
 type RegoOptions struct {
-	SkipCheckUpdate bool
-	Trace           bool
-	CheckPaths      []string
-	DataPaths       []string
-	CheckNamespaces []string
+	IncludeDeprecatedChecks bool
+	SkipCheckUpdate         bool
+	Trace                   bool
+	CheckPaths              []string
+	DataPaths               []string
+	CheckNamespaces         []string
 }
 
 func NewRegoFlagGroup() *RegoFlagGroup {
 	return &RegoFlagGroup{
-		SkipCheckUpdate: SkipCheckUpdateFlag.Clone(),
-		Trace:           TraceFlag.Clone(),
-		CheckPaths:      ConfigCheckFlag.Clone(),
-		DataPaths:       ConfigDataFlag.Clone(),
-		CheckNamespaces: CheckNamespaceFlag.Clone(),
+		IncludeDeprecatedChecks: IncludeDeprecatedChecksFlag.Clone(),
+		SkipCheckUpdate:         SkipCheckUpdateFlag.Clone(),
+		Trace:                   TraceFlag.Clone(),
+		CheckPaths:              ConfigCheckFlag.Clone(),
+		DataPaths:               ConfigDataFlag.Clone(),
+		CheckNamespaces:         CheckNamespaceFlag.Clone(),
 	}
 }
 
@@ -84,6 +92,7 @@ func (f *RegoFlagGroup) Name() string {
 
 func (f *RegoFlagGroup) Flags() []Flagger {
 	return []Flagger{
+		f.IncludeDeprecatedChecks,
 		f.SkipCheckUpdate,
 		f.Trace,
 		f.CheckPaths,
@@ -98,10 +107,11 @@ func (f *RegoFlagGroup) ToOptions() (RegoOptions, error) {
 	}
 
 	return RegoOptions{
-		SkipCheckUpdate: f.SkipCheckUpdate.Value(),
-		Trace:           f.Trace.Value(),
-		CheckPaths:      f.CheckPaths.Value(),
-		DataPaths:       f.DataPaths.Value(),
-		CheckNamespaces: f.CheckNamespaces.Value(),
+		IncludeDeprecatedChecks: f.IncludeDeprecatedChecks.Value(),
+		SkipCheckUpdate:         f.SkipCheckUpdate.Value(),
+		Trace:                   f.Trace.Value(),
+		CheckPaths:              f.CheckPaths.Value(),
+		DataPaths:               f.DataPaths.Value(),
+		CheckNamespaces:         f.CheckNamespaces.Value(),
 	}, nil
 }
