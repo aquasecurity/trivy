@@ -2,6 +2,7 @@ package cyclonedx_test
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/package-url/packageurl-go"
 	"testing"
@@ -29,7 +30,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 		Root: true,
 		Type: core.TypeApplication,
 		Name: "jackson-databind-2.13.4.1.jar",
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
 		},
 		Properties: []core.Property{
@@ -50,7 +51,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "rails:latest",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
@@ -668,7 +669,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "centos:latest",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
@@ -1229,7 +1230,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "masahiro331/CVE-2021-41098",
-				ArtifactType:  ftypes.ArtifactFilesystem,
+				ArtifactType:  artifact.TypeFilesystem,
 				Results: types.Results{
 					{
 						Target: "Gemfile.lock",
@@ -1445,7 +1446,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "./report.cdx.json",
-				ArtifactType:  ftypes.ArtifactCycloneDX,
+				ArtifactType:  artifact.TypeCycloneDX,
 				Results: types.Results{
 					{
 						Target: "Java",
@@ -1629,7 +1630,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "CVE-2023-34468",
-				ArtifactType:  ftypes.ArtifactFilesystem,
+				ArtifactType:  artifact.TypeFilesystem,
 				Results: types.Results{
 					{
 						Target: "Java",
@@ -1926,7 +1927,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "test-aggregate",
-				ArtifactType:  ftypes.ArtifactRepository,
+				ArtifactType:  artifact.TypeRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",
@@ -2039,7 +2040,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "empty/path",
-				ArtifactType:  ftypes.ArtifactFilesystem,
+				ArtifactType:  artifact.TypeFilesystem,
 				Results:       types.Results{},
 			},
 			want: &cdx.BOM{

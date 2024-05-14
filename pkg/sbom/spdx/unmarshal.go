@@ -167,7 +167,7 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 	}
 
 	// PURL
-	if component.PkgID.PURL, err = s.parseExternalReferences(spdxPkg.PackageExternalReferences); err != nil {
+	if component.PkgIdentifier.PURL, err = s.parseExternalReferences(spdxPkg.PackageExternalReferences); err != nil {
 		return nil, xerrors.Errorf("external references error: %w", err)
 	}
 

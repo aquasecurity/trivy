@@ -11,7 +11,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/extrafs"
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -281,24 +280,8 @@ func (s *Scanner) findModules(target fs.FS, scanDir string, dirs ...string) []st
 			continue
 		}
 		for _, file := range files {
-			realPath := path.Join(dir, file.Name())
-			if symFS, ok := target.(extrafs.ReadLinkFS); ok {
-				realPath, err = symFS.ResolveSymlink(realPath, scanDir)
-				if err != nil {
-					s.debug.Log("failed to resolve symlink '%s': %s", file.Name(), err)
-					continue
-				}
-			}
 			if file.IsDir() {
-				others = append(others, realPath)
-			} else if statFS, ok := target.(fs.StatFS); ok {
-				info, err := statFS.Stat(filepath.ToSlash(realPath))
-				if err != nil {
-					continue
-				}
-				if info.IsDir() {
-					others = append(others, realPath)
-				}
+				others = append(others, path.Join(dir, file.Name()))
 			}
 		}
 	}

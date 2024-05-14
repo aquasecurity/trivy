@@ -15,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
@@ -62,21 +61,21 @@ func NewArtifact(target string, c cache.ArtifactCache, w Walker, artifactOpt art
 	return nil, cleanup, errs
 }
 
-func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	ref, err := a.local.Inspect(ctx)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("remote repository error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("remote repository error: %w", err)
 	}
 
 	if a.url != "" {
 		ref.Name = a.url
 	}
-	ref.Type = types.ArtifactRepository
+	ref.Type = artifact.TypeRepository
 
 	return ref, nil
 }
 
-func (Artifact) Clean(_ types.ArtifactReference) error {
+func (Artifact) Clean(_ artifact.Reference) error {
 	return nil
 }
 

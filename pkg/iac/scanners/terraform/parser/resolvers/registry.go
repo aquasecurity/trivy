@@ -13,7 +13,7 @@ import (
 
 	"golang.org/x/net/idna"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/go-version/pkg/version"
 )
 
 type registryResolver struct {
@@ -167,13 +167,13 @@ func resolveVersion(input string, versions moduleVersions) (string, error) {
 		return "", fmt.Errorf("no available versions for module")
 	}
 
-	constraints, err := semver.NewConstraints(input)
+	constraints, err := version.NewConstraints(input)
 	if err != nil {
 		return "", err
 	}
-	var realVersions semver.Collection
+	var realVersions version.Collection
 	for _, rawVersion := range versions.Modules[0].Versions {
-		realVersion, err := semver.Parse(rawVersion.Version)
+		realVersion, err := version.Parse(rawVersion.Version)
 		if err != nil {
 			continue
 		}

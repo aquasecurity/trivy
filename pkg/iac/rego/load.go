@@ -149,6 +149,10 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 	var excludedFiles []string
 
 	for _, e := range compiler.Errors {
+		if e.Location == nil {
+			continue
+		}
+
 		loc := e.Location.File
 
 		if lo.Contains(excludedFiles, loc) {
@@ -180,7 +184,7 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 	}
 
 	compiler.Errors = lo.Filter(compiler.Errors, func(e *ast.Error, _ int) bool {
-		return !lo.Contains(excludedFiles, e.Location.File)
+		return e.Location == nil || !lo.Contains(excludedFiles, e.Location.File)
 	})
 }
 
@@ -215,6 +219,9 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 	}
 
 	for _, e := range compiler.Errors {
+		if e.Location == nil {
+			continue
+		}
 		s.debug.Log("Error occurred while parsing: %s, %s", e.Location.File, e.Error())
 		delete(s.policies, e.Location.File)
 	}

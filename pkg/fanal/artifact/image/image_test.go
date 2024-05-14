@@ -340,7 +340,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		missingBlobsExpectation cache.ArtifactCacheMissingBlobsExpectation
 		putBlobExpectations     []cache.ArtifactCachePutBlobExpectation
 		putArtifactExpectations []cache.ArtifactCachePutArtifactExpectation
-		want                    types.ArtifactReference
+		want                    artifact.Reference
 		wantErr                 string
 	}{
 		{
@@ -425,12 +425,12 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
-				Type:    types.ArtifactContainerImage,
+				Type:    artifact.TypeContainerImage,
 				ID:      "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
 				BlobIDs: []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
-				ImageMetadata: types.ImageMetadata{
+				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					DiffIDs: []string{
 						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -700,7 +700,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											ID:       "guzzlehttp/guzzle@6.2.0",
 											Name:     "guzzlehttp/guzzle",
@@ -908,7 +908,114 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "bundler",
 									FilePath: "ruby-app/Gemfile.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
+										{
+											ID:           "dotenv@2.7.2",
+											Name:         "dotenv",
+											Version:      "2.7.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 51,
+													EndLine:   51,
+												},
+											},
+										},
+										{
+											ID:           "faker@1.9.3",
+											Name:         "faker",
+											Version:      "1.9.3",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string{"i18n@1.6.0"},
+											Locations: []types.Location{
+												{
+													StartLine: 53,
+													EndLine:   53,
+												},
+											},
+										},
+										{
+											ID:           "json@2.2.0",
+											Name:         "json",
+											Version:      "2.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 60,
+													EndLine:   60,
+												},
+											},
+										},
+										{
+											ID:           "pry@0.12.2",
+											Name:         "pry",
+											Version:      "0.12.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn: []string{
+												"coderay@1.1.2",
+												"method_source@0.9.2",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 79,
+													EndLine:   79,
+												},
+											},
+										},
+										{
+											ID:           "rails@5.2.0",
+											Name:         "rails",
+											Version:      "5.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn: []string{
+												"actioncable@5.2.3",
+												"actionmailer@5.2.3",
+												"actionpack@5.2.3",
+												"actionview@5.2.3",
+												"activejob@5.2.3",
+												"activemodel@5.2.3",
+												"activerecord@5.2.3",
+												"activestorage@5.2.3",
+												"activesupport@5.2.3",
+												"railties@5.2.3",
+												"sprockets-rails@3.2.1",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 86,
+													EndLine:   86,
+												},
+											},
+										},
+										{
+											ID:           "rubocop@0.67.2",
+											Name:         "rubocop",
+											Version:      "0.67.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn: []string{
+												"jaro_winkler@1.5.2",
+												"parallel@1.17.0",
+												"parser@2.6.3.0",
+												"psych@3.1.0",
+												"rainbow@3.0.0",
+												"ruby-progressbar@1.10.0",
+												"unicode-display_width@1.5.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 112,
+													EndLine:   112,
+												},
+											},
+										},
 										{
 											ID:           "actioncable@5.2.3",
 											Name:         "actioncable",
@@ -1159,20 +1266,6 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:           "dotenv@2.7.2",
-											Name:         "dotenv",
-											Version:      "2.7.2",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn:    []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 51,
-													EndLine:   51,
-												},
-											},
-										},
-										{
 											ID:           "erubi@1.8.0",
 											Name:         "erubi",
 											Version:      "1.8.0",
@@ -1183,20 +1276,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 52,
 													EndLine:   52,
-												},
-											},
-										},
-										{
-											ID:           "faker@1.9.3",
-											Name:         "faker",
-											Version:      "1.9.3",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn:    []string{"i18n@1.6.0"},
-											Locations: []types.Location{
-												{
-													StartLine: 53,
-													EndLine:   53,
 												},
 											},
 										},
@@ -1239,20 +1318,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 59,
 													EndLine:   59,
-												},
-											},
-										},
-										{
-											ID:           "json@2.2.0",
-											Name:         "json",
-											Version:      "2.2.0",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn:    []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 60,
-													EndLine:   60,
 												},
 											},
 										},
@@ -1428,23 +1493,6 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:           "pry@0.12.2",
-											Name:         "pry",
-											Version:      "0.12.2",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn: []string{
-												"coderay@1.1.2",
-												"method_source@0.9.2",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 79,
-													EndLine:   79,
-												},
-											},
-										},
-										{
 											ID:           "psych@3.1.0",
 											Name:         "psych",
 											Version:      "3.1.0",
@@ -1483,32 +1531,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 84,
 													EndLine:   84,
-												},
-											},
-										},
-										{
-											ID:           "rails@5.2.0",
-											Name:         "rails",
-											Version:      "5.2.0",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn: []string{
-												"actioncable@5.2.3",
-												"actionmailer@5.2.3",
-												"actionpack@5.2.3",
-												"actionview@5.2.3",
-												"activejob@5.2.3",
-												"activemodel@5.2.3",
-												"activerecord@5.2.3",
-												"activestorage@5.2.3",
-												"activesupport@5.2.3",
-												"railties@5.2.3",
-												"sprockets-rails@3.2.1",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 86,
-													EndLine:   86,
 												},
 											},
 										},
@@ -1588,28 +1610,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 111,
 													EndLine:   111,
-												},
-											},
-										},
-										{
-											ID:           "rubocop@0.67.2",
-											Name:         "rubocop",
-											Version:      "0.67.2",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn: []string{
-												"jaro_winkler@1.5.2",
-												"parallel@1.17.0",
-												"parser@2.6.3.0",
-												"psych@3.1.0",
-												"rainbow@3.0.0",
-												"ruby-progressbar@1.10.0",
-												"unicode-display_width@1.5.0",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 112,
-													EndLine:   112,
 												},
 											},
 										},
@@ -1756,9 +1756,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				Type: types.ArtifactContainerImage,
+				Type: artifact.TypeContainerImage,
 				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 				BlobIDs: []string{
 					"sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
@@ -1766,7 +1766,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					"sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
 					"sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 				},
-				ImageMetadata: types.ImageMetadata{
+				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 					DiffIDs: []string{
 						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -1921,9 +1921,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				Type: types.ArtifactContainerImage,
+				Type: artifact.TypeContainerImage,
 				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 				BlobIDs: []string{
 					"sha256:e1187118cdbe8893fc2fd4b345f813d195ee6aaeb4820d4576694199f8c10350",
@@ -1931,7 +1931,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					"sha256:47adac0e28b12338e99dedbd7e8b0ef1f7aaa28e646f637ab2db8908b80704c8",
 					"sha256:dd1082b33b17401fdc31bcbf60eaaecb9ce29e23956c50db6f34b2cc6cfa13c8",
 				},
-				ImageMetadata: types.ImageMetadata{
+				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 					DiffIDs: []string{
 						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",

@@ -397,7 +397,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Increase --timeout value")
+			log.Warn("Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
 		}
 	}()
 
@@ -531,25 +531,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	target := opts.Target
 	if opts.Input != "" {
 		target = opts.Input
-	}
-
-	if opts.Compliance.Spec.ID != "" {
-		// set scanners types by spec
-		scanners, err := opts.Compliance.Scanners()
-		if err != nil {
-			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("scanner error: %w", err)
-		}
-
-		opts.Scanners = scanners
-		opts.ImageConfigScanners = nil
-		// TODO: define image-config-scanners in the spec
-		if opts.Compliance.Spec.ID == "docker-cis" {
-			opts.Scanners = types.Scanners{types.VulnerabilityScanner}
-			opts.ImageConfigScanners = types.Scanners{
-				types.MisconfigScanner,
-				types.SecretScanner,
-			}
-		}
 	}
 
 	scanOptions := types.ScanOptions{

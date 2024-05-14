@@ -26,7 +26,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "pear/log@1.13.3",
 								Name:         "pear/log",
@@ -69,7 +69,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "pear/log@1.13.3",
 								Name:         "pear/log",
@@ -112,7 +112,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "pear/log@1.13.3",
 								Name:         "pear/log",

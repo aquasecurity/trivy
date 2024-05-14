@@ -36,7 +36,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		disabledAnalyzers  []analyzer.Type
 		disabledHandlers   []types.HandlerType
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
-		want               types.ArtifactReference
+		want               artifact.Reference
 		wantErr            string
 	}{
 		{
@@ -78,9 +78,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "host",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:afc2bc421aac8c61d89d4dd1c1865efb5441e3877c8a4c919232729d7c574dab",
 				BlobIDs: []string{
 					"sha256:afc2bc421aac8c61d89d4dd1c1865efb5441e3877c8a4c919232729d7c574dab",
@@ -108,9 +108,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "host",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:7db98974b2231d3e25f4890008c4d42f6f26a7da5a8aba99e954dec97f050bd6",
 				BlobIDs: []string{
 					"sha256:7db98974b2231d3e25f4890008c4d42f6f26a7da5a8aba99e954dec97f050bd6",
@@ -174,14 +174,14 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					BlobID: "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: types.Packages{
+								Packages: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
@@ -193,12 +193,12 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/requirements.txt",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+				Type: artifact.TypeFilesystem,
+				ID:   "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				BlobIDs: []string{
-					"sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					"sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				},
 			},
 		},
@@ -209,14 +209,14 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					BlobID: "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: types.Packages{
+								Packages: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
@@ -228,12 +228,12 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/requirements.txt",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+				Type: artifact.TypeFilesystem,
+				ID:   "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				BlobIDs: []string{
-					"sha256:f1101f37560adf2f5d9c8fef2ac66beff236be3be94b3ea48c0fb6f86867775f",
+					"sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
 				},
 			},
 		},
@@ -279,7 +279,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 		fields             fields
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		artifactOpt        artifact.Option
-		want               types.ArtifactReference
+		want               artifact.Reference
 	}{
 		{
 			name: "single failure",
@@ -325,9 +325,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraform/single-failure",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:1a6ce0acc3b57eb6c830c96fcd868fec1eb4d3b57ad51e481c76d85f22870a65",
 				BlobIDs: []string{
 					"sha256:1a6ce0acc3b57eb6c830c96fcd868fec1eb4d3b57ad51e481c76d85f22870a65",
@@ -410,9 +410,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraform/multiple-failures",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:afc20cf0fc99c62bbc79b00cb9fbc70ba7ee76c946a6d560639ba9279344787d",
 				BlobIDs: []string{
 					"sha256:afc20cf0fc99c62bbc79b00cb9fbc70ba7ee76c946a6d560639ba9279344787d",
@@ -440,9 +440,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraform/no-results",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:1827b6a0b0a17e0d623a2045e9d9c331ef613390eda2fed823969ee0dd730257",
 				BlobIDs: []string{
 					"sha256:1827b6a0b0a17e0d623a2045e9d9c331ef613390eda2fed823969ee0dd730257",
@@ -489,9 +489,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraform/passed",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:eec58ef10d1b04df4af76b2472e615f8c27e253a16f90d7542670a7001d88915",
 				BlobIDs: []string{
 					"sha256:eec58ef10d1b04df4af76b2472e615f8c27e253a16f90d7542670a7001d88915",
@@ -555,9 +555,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraform/busted-relative-paths/child/main.tf",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:8db34d644bfb98077180616caeab0b41a26d9029a47a23d4b36e1d6e45584919",
 				BlobIDs: []string{
 					"sha256:8db34d644bfb98077180616caeab0b41a26d9029a47a23d4b36e1d6e45584919",
@@ -605,9 +605,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraform/tfvar-outside/tf",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:eec58ef10d1b04df4af76b2472e615f8c27e253a16f90d7542670a7001d88915",
 				BlobIDs: []string{
 					"sha256:eec58ef10d1b04df4af76b2472e615f8c27e253a16f90d7542670a7001d88915",
@@ -695,9 +695,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraform/relative-paths/child",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:f13b89447db61be1c1e4099ef18aec7272091f8f2d3581643a9d1fabc74eda83",
 				BlobIDs: []string{
 					"sha256:f13b89447db61be1c1e4099ef18aec7272091f8f2d3581643a9d1fabc74eda83",
@@ -776,7 +776,7 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 		name               string
 		fields             fields
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
-		want               types.ArtifactReference
+		want               artifact.Reference
 	}{
 		{
 			name: "single failure",
@@ -814,9 +814,9 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraformplan/snapshots/single-failure",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:732c38451bde877a94d1ff5b6f2019655bed04fd24b1169de195eeee1199045e",
 				BlobIDs: []string{
 					"sha256:732c38451bde877a94d1ff5b6f2019655bed04fd24b1169de195eeee1199045e",
@@ -890,9 +890,9 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraformplan/snapshots/multiple-failures",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:752c0b470adfcfe7e21892cf4c6fc3bc28dba873c9c1696f40b71b7a51ad7231",
 				BlobIDs: []string{
 					"sha256:752c0b470adfcfe7e21892cf4c6fc3bc28dba873c9c1696f40b71b7a51ad7231",
@@ -930,9 +930,9 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/terraformplan/snapshots/passed",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:8947704a08f54ab1df32cd905d6bca72edf1785a42702968bafa331172da7176",
 				BlobIDs: []string{
 					"sha256:8947704a08f54ab1df32cd905d6bca72edf1785a42702968bafa331172da7176",
@@ -990,7 +990,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 		fields             fields
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		artifactOpt        artifact.Option
-		want               types.ArtifactReference
+		want               artifact.Reference
 	}{
 		{
 			name: "single failure",
@@ -1045,9 +1045,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/cloudformation/single-failure/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:889a94522970c6e55f1f7543914b2f0131f79f9c4526445fb95309f64a9947d7",
 				BlobIDs: []string{
 					"sha256:889a94522970c6e55f1f7543914b2f0131f79f9c4526445fb95309f64a9947d7",
@@ -1129,9 +1129,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:17c9c72a759856445e6d3847b2d5ed90c3bad3e4ee50cea0c812ef53c179f8ca",
 				BlobIDs: []string{
 					"sha256:17c9c72a759856445e6d3847b2d5ed90c3bad3e4ee50cea0c812ef53c179f8ca",
@@ -1161,9 +1161,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/cloudformation/no-results/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:26c76a2cb55cb0ef2c3a2dd79e237bddb508ca2c4cefdb103698a1972c8a9c2d",
 				BlobIDs: []string{
 					"sha256:26c76a2cb55cb0ef2c3a2dd79e237bddb508ca2c4cefdb103698a1972c8a9c2d",
@@ -1219,9 +1219,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/cloudformation/params/code/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:267b572211115db6a2a4484a02317fbb6d4f050da0e95b1db4243d49889483de",
 				BlobIDs: []string{
 					"sha256:267b572211115db6a2a4484a02317fbb6d4f050da0e95b1db4243d49889483de",
@@ -1277,9 +1277,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:8ca92725ce2f47b7ffb1b0a9e0359d59ac2b3b3f517ba42f66a859436057e54a",
 				BlobIDs: []string{
 					"sha256:8ca92725ce2f47b7ffb1b0a9e0359d59ac2b3b3f517ba42f66a859436057e54a",
@@ -1314,7 +1314,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 		fields             fields
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		artifactOpt        artifact.Option
-		want               types.ArtifactReference
+		want               artifact.Reference
 	}{
 		{
 			name: "single failure",
@@ -1365,9 +1365,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/dockerfile/single-failure/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:627cbf451ec7929dfe5151dfe0e2305ed855906bf79136f198528a0cc3f6e4f9",
 				BlobIDs: []string{
 					"sha256:627cbf451ec7929dfe5151dfe0e2305ed855906bf79136f198528a0cc3f6e4f9",
@@ -1423,9 +1423,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/dockerfile/multiple-failures/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:627cbf451ec7929dfe5151dfe0e2305ed855906bf79136f198528a0cc3f6e4f9",
 				BlobIDs: []string{
 					"sha256:627cbf451ec7929dfe5151dfe0e2305ed855906bf79136f198528a0cc3f6e4f9",
@@ -1453,9 +1453,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/dockerfile/no-results/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:26c76a2cb55cb0ef2c3a2dd79e237bddb508ca2c4cefdb103698a1972c8a9c2d",
 				BlobIDs: []string{
 					"sha256:26c76a2cb55cb0ef2c3a2dd79e237bddb508ca2c4cefdb103698a1972c8a9c2d",
@@ -1513,9 +1513,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/dockerfile/passed/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:4cc7f6bba417cc65c5391bc9c07fd1e205e21bdec87b271889433af18be1e454",
 				BlobIDs: []string{
 					"sha256:4cc7f6bba417cc65c5391bc9c07fd1e205e21bdec87b271889433af18be1e454",
@@ -1549,7 +1549,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 		fields             fields
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		artifactOpt        artifact.Option
-		want               types.ArtifactReference
+		want               artifact.Reference
 	}{
 		{
 			name: "single failure",
@@ -1605,9 +1605,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/kubernetes/single-failure/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:d5ca0b4e96aaaeafa424a2250db6297a5182cb6ca5db49bc1ff11790f6cdbee9",
 				BlobIDs: []string{
 					"sha256:d5ca0b4e96aaaeafa424a2250db6297a5182cb6ca5db49bc1ff11790f6cdbee9",
@@ -1691,9 +1691,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/kubernetes/multiple-failures/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:eef9fff2fe8f5c4a123c018b4f91db25d9676e7d171a3a683c2fbfbbbe82fa54",
 				BlobIDs: []string{
 					"sha256:eef9fff2fe8f5c4a123c018b4f91db25d9676e7d171a3a683c2fbfbbbe82fa54",
@@ -1721,9 +1721,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/kubernetes/no-results/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:2b54cf33feaa1fe1f5bf223f873ca6c3f7c3693b0bb3b0ce9e2e7fd79cd37b5a",
 				BlobIDs: []string{
 					"sha256:2b54cf33feaa1fe1f5bf223f873ca6c3f7c3693b0bb3b0ce9e2e7fd79cd37b5a",
@@ -1781,9 +1781,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/kubernetes/passed/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:dc7a0fd3ea2f13b0ea05f4e517a16e602b0fc17fbd72aa5e34107ef12a91a30b",
 				BlobIDs: []string{
 					"sha256:dc7a0fd3ea2f13b0ea05f4e517a16e602b0fc17fbd72aa5e34107ef12a91a30b",
@@ -1817,7 +1817,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 		fields             fields
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		artifactOpt        artifact.Option
-		want               types.ArtifactReference
+		want               artifact.Reference
 	}{
 		{
 			name: "single failure",
@@ -1870,9 +1870,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/azurearm/single-failure/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:c1a8bfd544b9041ad194382cc42b54289f70966d061ef501b267aec8fd07c5df",
 				BlobIDs: []string{
 					"sha256:c1a8bfd544b9041ad194382cc42b54289f70966d061ef501b267aec8fd07c5df",
@@ -1952,9 +1952,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/azurearm/multiple-failures/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:75bf0e88f8d2857be90fb8d10a350c04c1532ba7f510e1eb404a8bae30ce97d8",
 				BlobIDs: []string{
 					"sha256:75bf0e88f8d2857be90fb8d10a350c04c1532ba7f510e1eb404a8bae30ce97d8",
@@ -1982,9 +1982,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/azurearm/no-results/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:26c76a2cb55cb0ef2c3a2dd79e237bddb508ca2c4cefdb103698a1972c8a9c2d",
 				BlobIDs: []string{
 					"sha256:26c76a2cb55cb0ef2c3a2dd79e237bddb508ca2c4cefdb103698a1972c8a9c2d",
@@ -2038,9 +2038,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/azurearm/passed/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 				ID:   "sha256:b9ba7c4eafec405c8b6998dbb98ee1c7f7830caf8487fd1461433ff82d8779e9",
 				BlobIDs: []string{
 					"sha256:b9ba7c4eafec405c8b6998dbb98ee1c7f7830caf8487fd1461433ff82d8779e9",
@@ -2074,7 +2074,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 		fields             fields
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		artifactOpt        artifact.Option
-		want               types.ArtifactReference
+		want               artifact.Reference
 	}{
 		{
 			name: "single failure each within terraform and cloudformation",
@@ -2157,9 +2157,9 @@ func TestMixedConfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "testdata/misconfig/mixed/src",
-				Type: types.ArtifactFilesystem,
+				Type: artifact.TypeFilesystem,
 			},
 		},
 	}

@@ -12,7 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/poetry"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -29,7 +28,7 @@ const version = 1
 type poetryAnalyzer struct {
 	logger          *log.Logger
 	pyprojectParser *pyproject.Parser
-	lockParser      godeptypes.Parser
+	lockParser      language.Parser
 }
 
 func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -103,13 +102,13 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	for i, lib := range app.Libraries {
+	for i, pkg := range app.Packages {
 		// Identify the direct/transitive dependencies
-		if _, ok := p[lib.Name]; ok {
-			app.Libraries[i].Relationship = types.RelationshipDirect
+		if _, ok := p[pkg.Name]; ok {
+			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
-			app.Libraries[i].Indirect = true
-			app.Libraries[i].Relationship = types.RelationshipIndirect
+			app.Packages[i].Indirect = true
+			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
 

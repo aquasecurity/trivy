@@ -4,12 +4,13 @@ package integration
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -37,7 +38,7 @@ func TestRepository(t *testing.T) {
 		name     string
 		args     args
 		golden   string
-		override func(want, got *types.Report)
+		override func(t *testing.T, want, got *types.Report)
 	}{
 		{
 			name: "gomod",
@@ -378,8 +379,8 @@ func TestRepository(t *testing.T) {
 				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
-			override: func(want, _ *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+			override: func(_ *testing.T, want, _ *types.Report) {
+				want.ArtifactType = artifact.TypeFilesystem
 			},
 		},
 		{
@@ -392,8 +393,8 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/custom-policy",
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
-			override: func(want, got *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+			override: func(_ *testing.T, want, got *types.Report) {
+				want.ArtifactType = artifact.TypeFilesystem
 			},
 		},
 	}
