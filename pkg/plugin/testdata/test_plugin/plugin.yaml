@@ -9,6 +9,3 @@ platforms:
       arch: amd64
     uri: ./test.sh
     bin: ./test.sh
-# for testing
-_goos: linux
-_goarch: amd64
