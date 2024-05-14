@@ -303,6 +303,8 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 			return err
 		}
 		if ignored {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(scrt, types.FindingStatusIgnored, "Filtered by Rego", policyFile))
 			continue
 		}
 		filteredSecrets = append(filteredSecrets, scrt)
@@ -317,6 +319,8 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 			return err
 		}
 		if ignored {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(lic, types.FindingStatusIgnored, "Filtered by Rego", policyFile))
 			continue
 		}
 		filteredLicenses = append(filteredLicenses, lic)
