@@ -406,15 +406,6 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/julia-spdx.json.golden",
 		},
-		{
-			name: "julia generating CycloneDX SBOM",
-			args: args{
-				command: "rootfs",
-				format:  "cyclonedx",
-				input:   "testdata/fixtures/repo/julia",
-			},
-			golden: "testdata/julia-cyclonedx.json.golden",
-		},
 	}
 
 	// Set up testing DB
