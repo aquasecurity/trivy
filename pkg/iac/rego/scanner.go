@@ -253,10 +253,8 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			continue
 		}
 
-		if !s.includeDeprecatedChecks {
-			if staticMeta.Deprecated {
-				continue // skip deprecated checks
-			}
+		if !s.includeDeprecatedChecks && staticMeta.Deprecated {
+			continue // skip deprecated checks
 		}
 
 		if isPolicyWithSubtype(s.sourceType) {
