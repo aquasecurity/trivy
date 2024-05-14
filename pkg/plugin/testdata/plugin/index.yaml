@@ -1,13 +1,15 @@
-- name: foo
-  output: true
-  maintainer: aquasecurity
-  description: A foo plugin
-  repository: github.com/aquasecurity/trivy-plugin-foo
-- name: bar
-  maintainer: aquasecurity
-  description: A bar plugin
-  repository: github.com/aquasecurity/trivy-plugin-bar
-- name: test
-  maintainer: aquasecurity
-  description: A test plugin
-  repository: testdata/test_plugin
+version: 1
+plugins:
+  - name: foo
+    output: true
+    maintainer: aquasecurity
+    summary: A foo plugin
+    repository: github.com/aquasecurity/trivy-plugin-foo
+  - name: bar
+    maintainer: aquasecurity
+    summary: A bar plugin
+    repository: github.com/aquasecurity/trivy-plugin-bar
+  - name: test
+    maintainer: aquasecurity
+    summary: A test plugin
+    repository: testdata/test_plugin

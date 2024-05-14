@@ -21,11 +21,14 @@ import (
 const indexURL = "https://aquasecurity.github.io/trivy-plugin-index/v1/index.yaml"
 
 type Index struct {
-	Name        string `yaml:"name"`
-	Maintainer  string `yaml:"maintainer"`
-	Description string `yaml:"description"`
-	Repository  string `yaml:"repository"`
-	Output      bool   `yaml:"output"`
+	Version int `yaml:"version"`
+	Plugins []struct {
+		Name       string `yaml:"name"`
+		Maintainer string `yaml:"maintainer"`
+		Summary    string `yaml:"summary"`
+		Repository string `yaml:"repository"`
+		Output     bool   `yaml:"output"`
+	} `yaml:"plugins"`
 }
 
 func (m *Manager) Update(ctx context.Context) error {
@@ -37,7 +40,7 @@ func (m *Manager) Update(ctx context.Context) error {
 }
 
 func (m *Manager) Search(ctx context.Context, keyword string) error {
-	indexes, err := m.loadIndex()
+	index, err := m.loadIndex()
 	if errors.Is(err, os.ErrNotExist) {
 		m.logger.ErrorContext(ctx, "The plugin index is not found. Please run 'trivy plugin update' to download the index.")
 		return xerrors.Errorf("plugin index not found: %w", err)
@@ -47,11 +50,11 @@ func (m *Manager) Search(ctx context.Context, keyword string) error {
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("%-20s %-60s %-20s %s\n", "NAME", "DESCRIPTION", "MAINTAINER", "OUTPUT"))
-	for _, index := range indexes {
-		if keyword == "" || strings.Contains(index.Name, keyword) || strings.Contains(index.Description, keyword) {
-			s := fmt.Sprintf("%-20s %-60s %-20s %s\n", truncateString(index.Name, 20),
-				truncateString(index.Description, 60), truncateString(index.Maintainer, 20),
-				lo.Ternary(index.Output, "  ✓", ""))
+	for _, p := range index.Plugins {
+		if keyword == "" || strings.Contains(p.Name, keyword) || strings.Contains(p.Summary, keyword) {
+			s := fmt.Sprintf("%-20s %-60s %-20s %s\n", truncateString(p.Name, 20),
+				truncateString(p.Summary, 60), truncateString(p.Maintainer, 20),
+				lo.Ternary(p.Output, "  ✓", ""))
 			buf.WriteString(s)
 		}
 	}
@@ -74,7 +77,7 @@ func (m *Manager) tryIndex(ctx context.Context, name string) string {
 		}
 	}
 
-	indexes, err := m.loadIndex()
+	index, err := m.loadIndex()
 	if errors.Is(err, os.ErrNotExist) {
 		m.logger.WarnContext(ctx, "The plugin index is not found. Please run 'trivy plugin update' to download the index.")
 		return name
@@ -83,27 +86,27 @@ func (m *Manager) tryIndex(ctx context.Context, name string) string {
 		return name
 	}
 
-	for _, index := range indexes {
-		if index.Name == name {
-			return index.Repository
+	for _, p := range index.Plugins {
+		if p.Name == name {
+			return p.Repository
 		}
 	}
 	return name
 }
 
-func (m *Manager) loadIndex() ([]Index, error) {
+func (m *Manager) loadIndex() (*Index, error) {
 	f, err := os.Open(m.indexPath)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to open the index file: %w", err)
 	}
 	defer f.Close()
 
-	var indexes []Index
-	if err = yaml.NewDecoder(f).Decode(&indexes); err != nil {
+	var index Index
+	if err = yaml.NewDecoder(f).Decode(&index); err != nil {
 		return nil, xerrors.Errorf("unable to decode the index file: %w", err)
 	}
 
-	return indexes, nil
+	return &index, nil
 }
 
 func truncateString(str string, num int) string {
