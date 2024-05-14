@@ -2,8 +2,7 @@ package post
 
 import (
 	"context"
-
-	"golang.org/x/xerrors"
+	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -38,7 +37,7 @@ func Scan(ctx context.Context, results types.Results) (types.Results, error) {
 	for _, s := range postScanners {
 		results, err = s.PostScan(ctx, results)
 		if err != nil {
-			return nil, xerrors.Errorf("%s post scan error: %w", s.Name(), err)
+			return nil, fmt.Errorf("%s post scan error: %w", s.Name(), err)
 		}
 	}
 	return results, nil

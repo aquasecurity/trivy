@@ -3,9 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -29,10 +28,10 @@ func run() error {
 	// Trivy behaves as the specified plugin.
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
 		if !plugin.IsPredefined(runAsPlugin) {
-			return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
+			return fmt.Errorf("unknown plugin: %s", runAsPlugin)
 		}
 		if err := plugin.RunWithURL(context.Background(), runAsPlugin, plugin.RunOptions{Args: os.Args[1:]}); err != nil {
-			return xerrors.Errorf("plugin error: %w", err)
+			return fmt.Errorf("plugin error: %w", err)
 		}
 		return nil
 	}

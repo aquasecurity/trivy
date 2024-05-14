@@ -13,7 +13,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -151,7 +150,7 @@ func (h *ColorHandler) Handle(ctx context.Context, r slog.Record) error {
 	defer h.mu.Unlock()
 
 	if _, err := h.out.Write(buf); err != nil {
-		return xerrors.Errorf("failed to write log: %w", err)
+		return fmt.Errorf("failed to write log: %w", err)
 	}
 
 	return nil

@@ -3,12 +3,12 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-aws/pkg/errs"
 	awsScanner "github.com/aquasecurity/trivy-aws/pkg/scanner"
@@ -37,10 +37,10 @@ func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string
 	log.DebugContext(ctx, "Looking up AWS caller identity...")
 	result, err := svc.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
 	if err != nil {
-		return "", "", xerrors.Errorf("failed to discover AWS caller identity: %w", err)
+		return "", "", fmt.Errorf("failed to discover AWS caller identity: %w", err)
 	}
 	if result.Account == nil {
-		return "", "", xerrors.Errorf("missing account id for aws account")
+		return "", "", fmt.Errorf("missing account id for aws account")
 	}
 	log.DebugContext(ctx, "Verified AWS credentials for account!", log.String("account", *result.Account))
 	return *result.Account, cfg.Region, nil
@@ -50,7 +50,7 @@ func validateServicesInput(services, skipServices []string) error {
 	for _, s := range services {
 		for _, ss := range skipServices {
 			if s == ss {
-				return xerrors.Errorf("service: %s specified to both skip and include", s)
+				return fmt.Errorf("service: %s specified to both skip and include", s)
 			}
 		}
 	}
@@ -76,7 +76,7 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 	opt.SkipServices = splitSkipServices
 
 	if len(opt.Services) != 1 && opt.ARN != "" {
-		return xerrors.Errorf("you must specify the single --service which the --arn relates to")
+		return fmt.Errorf("you must specify the single --service which the --arn relates to")
 	}
 
 	if opt.Account == "" || opt.Region == "" {
@@ -124,7 +124,7 @@ func filterServices(ctx context.Context, opt *flag.Options) error {
 				}
 			}
 			if !found {
-				return xerrors.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
+				return fmt.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
 			}
 		}
 	}
@@ -156,7 +156,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 				log.WarnContext(ctx, "Adapter error", log.Err(e))
 			}
 		} else {
-			return xerrors.Errorf("aws scan error: %w", err)
+			return fmt.Errorf("aws scan error: %w", err)
 		}
 	}
 
@@ -173,7 +173,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 
 	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
 	if err := report.Write(ctx, r, opt, cached); err != nil {
-		return xerrors.Errorf("unable to write results: %w", err)
+		return fmt.Errorf("unable to write results: %w", err)
 	}
 
 	return operation.Exit(opt, r.Failed(), types.Metadata{})

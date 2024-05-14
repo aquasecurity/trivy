@@ -2,11 +2,10 @@ package gemspec
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -88,11 +87,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) (pkgs []ftypes.Package, deps []ftypes
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, nil, xerrors.Errorf("failed to parse gemspec: %w", err)
+		return nil, nil, fmt.Errorf("failed to parse gemspec: %w", err)
 	}
 
 	if name == "" || version == "" {
-		return nil, nil, xerrors.New("failed to parse gemspec")
+		return nil, nil, errors.New("failed to parse gemspec")
 	}
 
 	return []ftypes.Package{

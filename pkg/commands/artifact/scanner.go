@@ -2,8 +2,7 @@ package artifact
 
 import (
 	"context"
-
-	"golang.org/x/xerrors"
+	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
@@ -14,7 +13,7 @@ func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Sc
 	s, cleanup, err := initializeImageScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
 		conf.ArtifactOption.ImageOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize an image scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize an image scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -24,7 +23,7 @@ func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Sc
 func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize the archive scanner: %w", err)
 	}
 	return s, func() {}, nil
 }
@@ -36,7 +35,7 @@ func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
 	s, cleanup, err := initializeRemoteImageScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption,
 		conf.ArtifactOption.ImageOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize a remote image scanner: %w", err)
+		return scanner.Scanner{}, nil, fmt.Errorf("unable to initialize a remote image scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -47,7 +46,7 @@ func archiveRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scan
 	// Scan tar file
 	s, err := initializeRemoteArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the remote archive scanner: %w", err)
+		return scanner.Scanner{}, nil, fmt.Errorf("unable to initialize the remote archive scanner: %w", err)
 	}
 	return s, func() {}, nil
 }
@@ -56,7 +55,7 @@ func archiveRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scan
 func filesystemStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a filesystem scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -65,7 +64,7 @@ func filesystemStandaloneScanner(ctx context.Context, conf ScannerConfig) (scann
 func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRemoteFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a remote filesystem scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a remote filesystem scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -74,7 +73,7 @@ func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 func repositoryStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a repository scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a repository scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -84,7 +83,7 @@ func repositoryRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 	s, cleanup, err := initializeRemoteRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption,
 		conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a remote repository scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a remote repository scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -93,7 +92,7 @@ func repositoryRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 func sbomStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a cycloneDX scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -102,7 +101,7 @@ func sbomStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Sca
 func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRemoteSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a remote cycloneDX scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a remote cycloneDX scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -111,7 +110,7 @@ func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner
 func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a vm scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -120,7 +119,7 @@ func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scann
 func vmRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRemoteVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a remote vm scanner: %w", err)
+		return scanner.Scanner{}, func() {}, fmt.Errorf("unable to initialize a remote vm scanner: %w", err)
 	}
 	return s, cleanup, nil
 }

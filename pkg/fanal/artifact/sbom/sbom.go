@@ -4,12 +4,12 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/opencontainers/go-digest"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -40,20 +40,20 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 func (a Artifact) Inspect(_ context.Context) (artifact.Reference, error) {
 	f, err := os.Open(a.filePath)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to open sbom file error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("failed to open sbom file error: %w", err)
 	}
 	defer f.Close()
 
 	// Format auto-detection
 	format, err := sbom.DetectFormat(f)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
+		return artifact.Reference{}, fmt.Errorf("failed to detect SBOM format: %w", err)
 	}
 	log.Info("Detected SBOM format", log.String("format", string(format)))
 
 	bom, err := sbom.Decode(f, format)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("SBOM decode error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("SBOM decode error: %w", err)
 	}
 
 	blobInfo := types.BlobInfo{
@@ -65,11 +65,11 @@ func (a Artifact) Inspect(_ context.Context) (artifact.Reference, error) {
 
 	cacheKey, err := a.calcCacheKey(blobInfo)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
+		return artifact.Reference{}, fmt.Errorf("failed to calculate a cache key: %w", err)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+		return artifact.Reference{}, fmt.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
 	var artifactType artifact.Type
@@ -100,13 +100,13 @@ func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	// calculate hash of JSON and use it as pseudo artifactID and blobID
 	h := sha256.New()
 	if err := json.NewEncoder(h).Encode(blobInfo); err != nil {
-		return "", xerrors.Errorf("json error: %w", err)
+		return "", fmt.Errorf("json error: %w", err)
 	}
 
 	d := digest.NewDigest(digest.SHA256, h)
 	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
-		return "", xerrors.Errorf("cache key: %w", err)
+		return "", fmt.Errorf("cache key: %w", err)
 	}
 
 	return cacheKey, nil

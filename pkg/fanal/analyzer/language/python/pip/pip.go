@@ -2,10 +2,9 @@ package pip
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pip"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -24,7 +23,7 @@ type pipLibraryAnalyzer struct{}
 func (a pipLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.Pip, input.FilePath, input.Content, pip.NewParser())
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse requirements.txt: %w", err)
+		return nil, fmt.Errorf("unable to parse requirements.txt: %w", err)
 	}
 	return res, nil
 }

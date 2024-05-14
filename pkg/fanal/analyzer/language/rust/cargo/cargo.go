@@ -15,7 +15,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
 	goversion "github.com/aquasecurity/go-version/pkg/version"
@@ -64,7 +63,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		// Parse Cargo.lock
 		app, err := a.parseCargoLock(filePath, r)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			return fmt.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
@@ -80,7 +79,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("cargo walk error: %w", err)
+		return nil, fmt.Errorf("cargo walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -112,7 +111,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		a.logger.Debug("Cargo.toml not found", log.String("path", cargoTOMLPath))
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
+		return fmt.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
 	// Cargo.toml file can contain same packages with different versions.
@@ -174,7 +173,7 @@ type Dependencies map[string]interface{}
 func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[string]string, error) {
 	dependencies, members, err := parseCargoTOML(fsys, filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
+		return nil, fmt.Errorf("unable to parse %s: %w", filePath, err)
 	}
 	// According to Cargo workspace RFC, workspaces can't be nested:
 	// https://github.com/nox/rust-rfcs/blob/master/text/1525-cargo-workspace.md#validating-a-workspace
@@ -243,12 +242,12 @@ func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, er
 
 	ver, err := semver.Parse(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("version error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := semver.NewConstraints(constraint)
 	if err != nil {
-		return false, xerrors.Errorf("constraint error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("constraint error (%s): %s", currentVersion, err)
 	}
 
 	return c.Check(ver), nil
@@ -258,7 +257,7 @@ func parseCargoTOML(fsys fs.FS, filePath string) (Dependencies, []string, error)
 	// Parse Cargo.toml
 	f, err := fsys.Open(filePath)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("file open error: %w", err)
+		return nil, nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
@@ -268,7 +267,7 @@ func parseCargoTOML(fsys fs.FS, filePath string) (Dependencies, []string, error)
 	// declare `dependencies` to avoid panic
 	dependencies := Dependencies{}
 	if _, err = toml.NewDecoder(f).Decode(&tomlFile); err != nil {
-		return nil, nil, xerrors.Errorf("toml decode error: %w", err)
+		return nil, nil, fmt.Errorf("toml decode error: %w", err)
 	}
 
 	maps.Copy(dependencies, tomlFile.Dependencies)

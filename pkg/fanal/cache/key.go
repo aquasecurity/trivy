@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 
 	"golang.org/x/mod/sumdb/dirhash"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -33,7 +32,7 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 	}{id, analyzerVersions, hookVersions, artifactOpt.WalkerOption.SkipFiles, artifactOpt.WalkerOption.SkipDirs, artifactOpt.FilePatterns}
 
 	if err := json.NewEncoder(h).Encode(keyBase); err != nil {
-		return "", xerrors.Errorf("json encode error: %w", err)
+		return "", fmt.Errorf("json encode error: %w", err)
 	}
 
 	// Write check, data contents and secret config file
@@ -51,7 +50,7 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		}
 
 		if _, err := h.Write([]byte(hash)); err != nil {
-			return "", xerrors.Errorf("sha256 write error: %w", err)
+			return "", fmt.Errorf("sha256 write error: %w", err)
 		}
 	}
 
@@ -61,7 +60,7 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 func hashContents(path string) (string, error) {
 	fi, err := os.Stat(path)
 	if err != nil {
-		return "", xerrors.Errorf("file %q stat error: %w", path, err)
+		return "", fmt.Errorf("file %q stat error: %w", path, err)
 	}
 
 	var hash string
@@ -69,14 +68,14 @@ func hashContents(path string) (string, error) {
 	if fi.IsDir() {
 		hash, err = dirhash.HashDir(path, "", dirhash.DefaultHash)
 		if err != nil {
-			return "", xerrors.Errorf("hash dir error (%s): %w", path, err)
+			return "", fmt.Errorf("hash dir error (%s): %w", path, err)
 		}
 	} else {
 		hash, err = dirhash.DefaultHash([]string{filepath.Base(path)}, func(_ string) (io.ReadCloser, error) {
 			return os.Open(path)
 		})
 		if err != nil {
-			return "", xerrors.Errorf("hash file error (%s): %w", path, err)
+			return "", fmt.Errorf("hash file error (%s): %w", path, err)
 		}
 	}
 	return hash, nil

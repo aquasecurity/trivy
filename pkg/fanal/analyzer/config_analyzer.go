@@ -2,10 +2,10 @@ package analyzer
 
 import (
 	"context"
+	"fmt"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -81,7 +81,7 @@ func NewConfigAnalyzerGroup(opts ConfigAnalyzerOptions) (ConfigAnalyzerGroup, er
 		}
 		a, err := newConfigAnalyzer(opts)
 		if err != nil {
-			return ConfigAnalyzerGroup{}, xerrors.Errorf("config analyzer %s initialize error: %w", t, err)
+			return ConfigAnalyzerGroup{}, fmt.Errorf("config analyzer %s initialize error: %w", t, err)
 		}
 
 		g.configAnalyzers = append(g.configAnalyzers, a)

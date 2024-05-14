@@ -2,6 +2,7 @@ package pom
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,7 +16,6 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
@@ -91,7 +91,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	content, err := parsePom(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)
+		return nil, nil, fmt.Errorf("failed to parse POM: %w", err)
 	}
 
 	root := &pom{
@@ -102,7 +102,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	// Analyze root POM
 	result, err := p.analyze(root, analysisOptions{lineNumber: true})
 	if err != nil {
-		return nil, nil, xerrors.Errorf("analyze error (%s): %w", p.rootPath, err)
+		return nil, nil, fmt.Errorf("analyze error (%s): %w", p.rootPath, err)
 	}
 
 	// Cache root POM
@@ -170,7 +170,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 
 		result, err := p.resolve(art, rootDepManagement)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
+			return nil, nil, fmt.Errorf("resolve error (%s): %w", art, err)
 		}
 
 		if art.Relationship == ftypes.RelationshipRoot {
@@ -263,12 +263,12 @@ func (p *Parser) parseModule(currentPath, relativePath string) (artifact, error)
 	// modulePath: "root/" + "module/" => "root/module"
 	module, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
-		return artifact{}, xerrors.Errorf("unable to open the relative path: %w", err)
+		return artifact{}, fmt.Errorf("unable to open the relative path: %w", err)
 	}
 
 	result, err := p.analyze(module, analysisOptions{})
 	if err != nil {
-		return artifact{}, xerrors.Errorf("analyze error: %w", err)
+		return artifact{}, fmt.Errorf("analyze error: %w", err)
 	}
 
 	moduleArtifact := module.artifact()
@@ -296,7 +296,7 @@ func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 		depManagement: rootDepManagement,
 	})
 	if err != nil {
-		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
+		return analysisResult{}, fmt.Errorf("analyze error: %w", err)
 	}
 
 	p.cache.put(art, result)
@@ -331,7 +331,7 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	// Parent
 	parent, err := p.parseParent(pom.filePath, pom.content.Parent)
 	if err != nil {
-		return analysisResult{}, xerrors.Errorf("parent error: %w", err)
+		return analysisResult{}, fmt.Errorf("parent error: %w", err)
 	}
 
 	// Inherit values/properties from parent
@@ -494,7 +494,7 @@ func (p *Parser) parseParent(currentPath string, parent pomParent) (analysisResu
 
 	result, err := p.analyze(parentPOM, analysisOptions{})
 	if err != nil {
-		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
+		return analysisResult{}, fmt.Errorf("analyze error: %w", err)
 	}
 
 	p.cache.put(target, result)
@@ -548,15 +548,15 @@ func (p *Parser) tryRelativePath(parentArtifact artifact, currentPath, relativeP
 	// Version can contain a property (`p.analyze` function is required to get the GroupID).
 	// So we can only match ArtifactID's.
 	if pom.artifact().ArtifactID != parentArtifact.ArtifactID {
-		return nil, xerrors.New("'parent.relativePath' points at wrong local POM")
+		return nil, errors.New("'parent.relativePath' points at wrong local POM")
 	}
 	result, err := p.analyze(pom, analysisOptions{})
 	if err != nil {
-		return nil, xerrors.Errorf("analyze error: %w", err)
+		return nil, fmt.Errorf("analyze error: %w", err)
 	}
 
 	if !parentArtifact.Equal(result.artifact) {
-		return nil, xerrors.New("'parent.relativePath' points at wrong local POM")
+		return nil, errors.New("'parent.relativePath' points at wrong local POM")
 	}
 
 	return pom, nil
@@ -579,7 +579,7 @@ func (p *Parser) openRelativePom(currentPath, relativePath string) (*pom, error)
 
 	pom, err := p.openPom(filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to open %s: %w", filePath, err)
+		return nil, fmt.Errorf("failed to open %s: %w", filePath, err)
 	}
 	return pom, nil
 }
@@ -587,13 +587,13 @@ func (p *Parser) openRelativePom(currentPath, relativePath string) (*pom, error)
 func (p *Parser) openPom(filePath string) (*pom, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error (%s): %w", filePath, err)
+		return nil, fmt.Errorf("file open error (%s): %w", filePath, err)
 	}
 	defer f.Close()
 
 	content, err := parsePom(f)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse the local POM: %w", err)
+		return nil, fmt.Errorf("failed to parse the local POM: %w", err)
 	}
 	return &pom{
 		filePath: filePath,
@@ -602,7 +602,7 @@ func (p *Parser) openPom(filePath string) (*pom, error) {
 }
 func (p *Parser) tryRepository(groupID, artifactID, version string) (*pom, error) {
 	if version == "" {
-		return nil, xerrors.Errorf("Version missing for %s:%s", groupID, artifactID)
+		return nil, fmt.Errorf("Version missing for %s:%s", groupID, artifactID)
 	}
 
 	// Generate a proper path to the pom.xml
@@ -623,7 +623,7 @@ func (p *Parser) tryRepository(groupID, artifactID, version string) (*pom, error
 		return loaded, nil
 	}
 
-	return nil, xerrors.Errorf("%s:%s:%s was not found in local/remote repositories", groupID, artifactID, version)
+	return nil, fmt.Errorf("%s:%s:%s was not found in local/remote repositories", groupID, artifactID, version)
 }
 
 func (p *Parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
@@ -637,7 +637,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
 		p.logger.Debug("Fetching the remote pom.xml is skipped")
-		return nil, xerrors.New("offline mode")
+		return nil, errors.New("offline mode")
 	}
 
 	remoteRepos := p.releaseRemoteRepos
@@ -650,13 +650,13 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 	for _, repo := range remoteRepos {
 		fetched, err := p.fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
-			return nil, xerrors.Errorf("fetch repository error: %w", err)
+			return nil, fmt.Errorf("fetch repository error: %w", err)
 		} else if fetched == nil {
 			continue
 		}
 		return fetched, nil
 	}
-	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
+	return nil, fmt.Errorf("the POM was not found in remote remoteRepositories")
 }
 
 func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
@@ -690,7 +690,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 
 	content, err := parsePom(resp.Body)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse the remote POM: %w", err)
+		return nil, fmt.Errorf("failed to parse the remote POM: %w", err)
 	}
 
 	return &pom{
@@ -704,7 +704,7 @@ func parsePom(r io.Reader) (*pomXML, error) {
 	decoder := xml.NewDecoder(r)
 	decoder.CharsetReader = charset.NewReaderLabel
 	if err := decoder.Decode(parsed); err != nil {
-		return nil, xerrors.Errorf("xml decode error: %w", err)
+		return nil, fmt.Errorf("xml decode error: %w", err)
 	}
 	return parsed, nil
 }

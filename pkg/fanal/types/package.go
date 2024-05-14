@@ -2,11 +2,11 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 )
@@ -49,7 +49,7 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	return xerrors.Errorf("invalid relationship (%s)", s)
+	return fmt.Errorf("invalid relationship (%s)", s)
 }
 
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.

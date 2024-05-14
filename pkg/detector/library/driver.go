@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -114,7 +113,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 	prefix := fmt.Sprintf("%s::", d.ecosystem)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
+		return nil, fmt.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
 	}
 
 	var vulns []types.DetectedVulnerability

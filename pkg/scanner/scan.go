@@ -2,9 +2,9 @@ package scanner
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/wire"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -145,7 +145,7 @@ func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
+		return types.Report{}, fmt.Errorf("failed analysis: %w", err)
 	}
 	defer func() {
 		if err := s.artifact.Clean(artifactInfo); err != nil {
@@ -156,7 +156,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
+		return types.Report{}, fmt.Errorf("scan failed: %w", err)
 	}
 
 	ptros := &osFound

@@ -11,7 +11,6 @@ import (
 	"runtime"
 	"strings"
 
-	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
@@ -68,7 +67,7 @@ type RunOptions struct {
 func (p Plugin) Cmd(ctx context.Context, opts RunOptions) (*exec.Cmd, error) {
 	platform, err := p.selectPlatform()
 	if err != nil {
-		return nil, xerrors.Errorf("platform selection error: %w", err)
+		return nil, fmt.Errorf("platform selection error: %w", err)
 	}
 
 	execFile := filepath.Join(dir(), p.Name, platform.Bin)
@@ -93,11 +92,11 @@ type Wait func() error
 func (p Plugin) Start(ctx context.Context, opts RunOptions) (Wait, error) {
 	cmd, err := p.Cmd(ctx, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("cmd: %w", err)
+		return nil, fmt.Errorf("cmd: %w", err)
 	}
 
 	if err = cmd.Start(); err != nil {
-		return nil, xerrors.Errorf("plugin start: %w", err)
+		return nil, fmt.Errorf("plugin start: %w", err)
 	}
 	return cmd.Wait, nil
 }
@@ -106,7 +105,7 @@ func (p Plugin) Start(ctx context.Context, opts RunOptions) (Wait, error) {
 func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
 	cmd, err := p.Cmd(ctx, opts)
 	if err != nil {
-		return xerrors.Errorf("cmd: %w", err)
+		return fmt.Errorf("cmd: %w", err)
 	}
 
 	// If an error is found during the execution of the plugin, figure
@@ -119,7 +118,7 @@ func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
 				Code: execError.ExitCode(),
 			}
 		}
-		return xerrors.Errorf("plugin exec: %w", err)
+		return fmt.Errorf("plugin exec: %w", err)
 	}
 	return nil
 }
@@ -146,26 +145,26 @@ func (p Plugin) selectPlatform() (Platform, error) {
 			return platform, nil
 		}
 	}
-	return Platform{}, xerrors.New("platform not found")
+	return Platform{}, errors.New("platform not found")
 }
 
 func (p Plugin) install(ctx context.Context, dst, pwd string) error {
 	log.Debug("Installing the plugin...", log.String("path", dst))
 	platform, err := p.selectPlatform()
 	if err != nil {
-		return xerrors.Errorf("platform selection error: %w", err)
+		return fmt.Errorf("platform selection error: %w", err)
 	}
 
 	log.Debug("Downloading the execution file...", log.String("uri", platform.URI))
 	if err = downloader.Download(ctx, platform.URI, dst, pwd); err != nil {
-		return xerrors.Errorf("unable to download the execution file (%s): %w", platform.URI, err)
+		return fmt.Errorf("unable to download the execution file (%s): %w", platform.URI, err)
 	}
 	return nil
 }
 
 func (p Plugin) dir() (string, error) {
 	if p.Name == "" {
-		return "", xerrors.Errorf("'name' is empty")
+		return "", fmt.Errorf("'name' is empty")
 	}
 
 	// e.g. ~/.trivy/plugins/kubectl
@@ -190,28 +189,28 @@ func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 	log.Info("Installing the plugin...", log.String("url", url))
 	tempDir, err := downloader.DownloadToTempDir(ctx, url)
 	if err != nil {
-		return Plugin{}, xerrors.Errorf("download failed: %w", err)
+		return Plugin{}, fmt.Errorf("download failed: %w", err)
 	}
 	defer os.RemoveAll(tempDir)
 
 	log.Info("Loading the plugin metadata...")
 	plugin, err := loadMetadata(tempDir)
 	if err != nil {
-		return Plugin{}, xerrors.Errorf("failed to load the plugin metadata: %w", err)
+		return Plugin{}, fmt.Errorf("failed to load the plugin metadata: %w", err)
 	}
 
 	pluginDir, err := plugin.dir()
 	if err != nil {
-		return Plugin{}, xerrors.Errorf("failed to determine the plugin dir: %w", err)
+		return Plugin{}, fmt.Errorf("failed to determine the plugin dir: %w", err)
 	}
 
 	if err = plugin.install(ctx, pluginDir, tempDir); err != nil {
-		return Plugin{}, xerrors.Errorf("failed to install the plugin: %w", err)
+		return Plugin{}, fmt.Errorf("failed to install the plugin: %w", err)
 	}
 
 	// Copy plugin.yaml into the plugin dir
 	if _, err = fsutils.CopyFile(filepath.Join(tempDir, configFile), filepath.Join(pluginDir, configFile)); err != nil {
-		return Plugin{}, xerrors.Errorf("failed to copy plugin.yaml: %w", err)
+		return Plugin{}, fmt.Errorf("failed to copy plugin.yaml: %w", err)
 	}
 
 	return plugin, nil
@@ -227,7 +226,7 @@ func Uninstall(name string) error {
 func Information(name string) (string, error) {
 	plugin, err := load(name)
 	if err != nil {
-		return "", xerrors.Errorf("plugin load error: %w", err)
+		return "", fmt.Errorf("plugin load error: %w", err)
 	}
 
 	return fmt.Sprintf(`
@@ -244,11 +243,11 @@ func List() (string, error) {
 		if os.IsNotExist(err) {
 			return "No Installed Plugins\n", nil
 		}
-		return "", xerrors.Errorf("stat error: %w", err)
+		return "", fmt.Errorf("stat error: %w", err)
 	}
 	plugins, err := LoadAll()
 	if err != nil {
-		return "", xerrors.Errorf("unable to load plugins: %w", err)
+		return "", fmt.Errorf("unable to load plugins: %w", err)
 	}
 	pluginList := []string{"Installed Plugins:"}
 	for _, plugin := range plugins {
@@ -262,14 +261,14 @@ func List() (string, error) {
 func Update(name string) error {
 	plugin, err := load(name)
 	if err != nil {
-		return xerrors.Errorf("plugin load error: %w", err)
+		return fmt.Errorf("plugin load error: %w", err)
 	}
 
 	logger := log.With("name", name)
 	logger.Info("Updating plugin...")
 	updated, err := Install(nil, plugin.Repository, true)
 	if err != nil {
-		return xerrors.Errorf("unable to perform an update installation: %w", err)
+		return fmt.Errorf("unable to perform an update installation: %w", err)
 	}
 
 	if plugin.Version == updated.Version {
@@ -286,7 +285,7 @@ func LoadAll() ([]Plugin, error) {
 	pluginsDir := dir()
 	dirs, err := os.ReadDir(pluginsDir)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %s: %w", pluginsDir, err)
+		return nil, fmt.Errorf("failed to read %s: %w", pluginsDir, err)
 	}
 
 	var plugins []Plugin
@@ -308,12 +307,12 @@ func LoadAll() ([]Plugin, error) {
 func Start(ctx context.Context, name string, opts RunOptions) (Wait, error) {
 	plugin, err := load(name)
 	if err != nil {
-		return nil, xerrors.Errorf("plugin load error: %w", err)
+		return nil, fmt.Errorf("plugin load error: %w", err)
 	}
 
 	wait, err := plugin.Start(ctx, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
+		return nil, fmt.Errorf("unable to run %s plugin: %w", plugin.Name, err)
 	}
 	return wait, nil
 }
@@ -322,11 +321,11 @@ func Start(ctx context.Context, name string, opts RunOptions) (Wait, error) {
 func RunWithURL(ctx context.Context, url string, opts RunOptions) error {
 	plugin, err := Install(ctx, url, false)
 	if err != nil {
-		return xerrors.Errorf("plugin install error: %w", err)
+		return fmt.Errorf("plugin install error: %w", err)
 	}
 
 	if err = plugin.Run(ctx, opts); err != nil {
-		return xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
+		return fmt.Errorf("unable to run %s plugin: %w", plugin.Name, err)
 	}
 	return nil
 }
@@ -340,14 +339,14 @@ func load(name string) (Plugin, error) {
 	pluginDir := filepath.Join(dir(), name)
 	if _, err := os.Stat(pluginDir); err != nil {
 		if os.IsNotExist(err) {
-			return Plugin{}, xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
+			return Plugin{}, fmt.Errorf("could not find a plugin called '%s', did you install it?", name)
 		}
-		return Plugin{}, xerrors.Errorf("plugin stat error: %w", err)
+		return Plugin{}, fmt.Errorf("plugin stat error: %w", err)
 	}
 
 	plugin, err := loadMetadata(pluginDir)
 	if err != nil {
-		return Plugin{}, xerrors.Errorf("unable to load plugin metadata: %w", err)
+		return Plugin{}, fmt.Errorf("unable to load plugin metadata: %w", err)
 	}
 
 	return plugin, nil
@@ -357,13 +356,13 @@ func loadMetadata(dir string) (Plugin, error) {
 	filePath := filepath.Join(dir, configFile)
 	f, err := os.Open(filePath)
 	if err != nil {
-		return Plugin{}, xerrors.Errorf("file open error: %w", err)
+		return Plugin{}, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	var plugin Plugin
 	if err = yaml.NewDecoder(f).Decode(&plugin); err != nil {
-		return Plugin{}, xerrors.Errorf("yaml decode error: %w", err)
+		return Plugin{}, fmt.Errorf("yaml decode error: %w", err)
 	}
 
 	return plugin, nil

@@ -3,13 +3,13 @@ package cyclonedx
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -29,7 +29,7 @@ func DecodeJSON(r io.Reader) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
 	decoder := cdx.NewBOMDecoder(r, cdx.BOMFileFormatJSON)
 	if err := decoder.Decode(bom); err != nil {
-		return nil, xerrors.Errorf("CycloneDX decode error: %w", err)
+		return nil, fmt.Errorf("CycloneDX decode error: %w", err)
 	}
 	return bom, nil
 }
@@ -42,7 +42,7 @@ func (b *BOM) UnmarshalJSON(data []byte) error {
 
 	cdxBOM, err := DecodeJSON(bytes.NewReader(data))
 	if err != nil {
-		return xerrors.Errorf("CycloneDX decode error: %w", err)
+		return fmt.Errorf("CycloneDX decode error: %w", err)
 	}
 
 	if !IsTrivySBOM(cdxBOM) {
@@ -51,7 +51,7 @@ func (b *BOM) UnmarshalJSON(data []byte) error {
 	}
 
 	if err = b.parseBOM(cdxBOM); err != nil {
-		return xerrors.Errorf("failed to parse sbom: %w", err)
+		return fmt.Errorf("failed to parse sbom: %w", err)
 	}
 
 	// Store the original metadata
@@ -68,7 +68,7 @@ func (b *BOM) parseBOM(bom *cdx.BOM) error {
 	// Convert the metadata component into Trivy component
 	mComponent, err := b.parseMetadataComponent(bom)
 	if err != nil {
-		return xerrors.Errorf("failed to parse root component: %w", err)
+		return fmt.Errorf("failed to parse root component: %w", err)
 	} else if mComponent != nil {
 		components[mComponent.PkgIdentifier.BOMRef] = mComponent
 	}
@@ -96,7 +96,7 @@ func (b *BOM) parseMetadataComponent(bom *cdx.BOM) (*core.Component, error) {
 	}
 	root, err := b.parseComponent(*bom.Metadata.Component)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
+		return nil, fmt.Errorf("failed to parse metadata component: %w", err)
 	}
 	root.Root = true
 	b.BOM.AddComponent(root)
@@ -125,7 +125,7 @@ func (b *BOM) parseComponents(cdxComponents *[]cdx.Component) map[string]*core.C
 func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 	componentType, err := b.unmarshalType(c.Type)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal component type: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal component type: %w", err)
 	}
 
 	// Parse PURL
@@ -133,7 +133,7 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 	if c.PackageURL != "" {
 		purl, err = packageurl.FromString(c.PackageURL)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse PURL: %w", err)
+			return nil, fmt.Errorf("failed to parse PURL: %w", err)
 		}
 	}
 

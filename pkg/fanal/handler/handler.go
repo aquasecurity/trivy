@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"sort"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -47,7 +47,7 @@ func NewManager(artifactOpt artifact.Option) (Manager, error) {
 		}
 		handler, err := handlerInit(artifactOpt)
 		if err != nil {
-			return Manager{}, xerrors.Errorf("post handler %s initialize error: %w", t, err)
+			return Manager{}, fmt.Errorf("post handler %s initialize error: %w", t, err)
 		}
 
 		m.postHandlers = append(m.postHandlers, handler)
@@ -72,7 +72,7 @@ func (m Manager) Versions() map[string]int {
 func (m Manager) PostHandle(ctx context.Context, result *analyzer.AnalysisResult, blob *types.BlobInfo) error {
 	for _, h := range m.postHandlers {
 		if err := h.Handle(ctx, result, blob); err != nil {
-			return xerrors.Errorf("post handler error: %w", err)
+			return fmt.Errorf("post handler error: %w", err)
 		}
 	}
 	return nil

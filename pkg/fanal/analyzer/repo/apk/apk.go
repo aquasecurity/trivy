@@ -3,11 +3,11 @@ package apk
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 	"regexp"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	ver "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -45,7 +45,7 @@ func (a apkRepoAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 
 		// Find OS Family
 		if osFamily != "" && osFamily != newOSFamily {
-			return nil, xerrors.Errorf("mixing different distributions in etc/apk/repositories: %s != %s", osFamily, newOSFamily)
+			return nil, fmt.Errorf("mixing different distributions in etc/apk/repositories: %s != %s", osFamily, newOSFamily)
 		}
 		osFamily = newOSFamily
 

@@ -11,7 +11,6 @@ import (
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/secret"
@@ -69,7 +68,7 @@ func (a *SecretAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 	configPath := opt.SecretScannerOption.ConfigPath
 	c, err := secret.ParseConfig(configPath)
 	if err != nil {
-		return xerrors.Errorf("secret config error: %w", err)
+		return fmt.Errorf("secret config error: %w", err)
 	}
 	a.scanner = secret.NewScanner(c)
 	a.configPath = configPath
@@ -85,7 +84,7 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 
 	content, err := io.ReadAll(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
+		return nil, fmt.Errorf("read error %s: %w", input.FilePath, err)
 	}
 
 	content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))

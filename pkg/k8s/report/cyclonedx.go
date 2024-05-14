@@ -2,10 +2,10 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
@@ -31,7 +31,7 @@ func NewCycloneDXWriter(output io.Writer, format cdx.BOMFileFormat, appVersion s
 func (w CycloneDXWriter) Write(ctx context.Context, component *core.BOM) error {
 	bom, err := w.marshaler.Marshal(ctx, component)
 	if err != nil {
-		return xerrors.Errorf("CycloneDX marshal error: %w", err)
+		return fmt.Errorf("CycloneDX marshal error: %w", err)
 	}
 	return w.encoder.Encode(bom)
 }

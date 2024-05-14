@@ -2,10 +2,9 @@ package wordpress
 
 import (
 	"bufio"
+	"errors"
 	"io"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -68,7 +67,7 @@ func Parse(r io.Reader) (lib ftypes.Package, err error) {
 	}
 
 	if err = scanner.Err(); err != nil || version == "" {
-		return ftypes.Package{}, xerrors.New("version.php could not be parsed")
+		return ftypes.Package{}, errors.New("version.php could not be parsed")
 	}
 
 	return ftypes.Package{

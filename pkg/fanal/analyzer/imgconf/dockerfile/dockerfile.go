@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"golang.org/x/xerrors"
+	
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
@@ -28,7 +28,7 @@ type historyAnalyzer struct {
 func newHistoryAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
 	s, err := misconf.NewDockerfileScanner(opts.FilePatterns, opts.MisconfScannerOption)
 	if err != nil {
-		return nil, xerrors.Errorf("misconfiguration scanner error: %w", err)
+		return nil, fmt.Errorf("misconfiguration scanner error: %w", err)
 	}
 	return &historyAnalyzer{
 		scanner: s,
@@ -95,12 +95,12 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 
 	fsys := mapfs.New()
 	if err := fsys.WriteVirtualFile("Dockerfile", dockerfile.Bytes(), 0600); err != nil {
-		return nil, xerrors.Errorf("mapfs write error: %w", err)
+		return nil, fmt.Errorf("mapfs write error: %w", err)
 	}
 
 	misconfs, err := a.scanner.Scan(ctx, fsys)
 	if err != nil {
-		return nil, xerrors.Errorf("history scan error: %w", err)
+		return nil, fmt.Errorf("history scan error: %w", err)
 	}
 	// The result should be a single element as it passes one Dockerfile.
 	if len(misconfs) != 1 {

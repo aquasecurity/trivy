@@ -1,9 +1,8 @@
 package language
 
 import (
+	"fmt"
 	"io"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -22,7 +21,7 @@ type Parser interface {
 func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
 	app, err := Parse(fileType, filePath, r, parser)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, fmt.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
 	if app == nil {
@@ -36,7 +35,7 @@ func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parse
 func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
 	app, err := ParsePackage(fileType, filePath, r, parser, checksum)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, fmt.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
 	if app == nil {
@@ -50,11 +49,11 @@ func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt
 func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser) (*types.Application, error) {
 	rr, err := xio.NewReadSeekerAt(r)
 	if err != nil {
-		return nil, xerrors.Errorf("reader error: %w", err)
+		return nil, fmt.Errorf("reader error: %w", err)
 	}
 	parsedPkgs, parsedDependencies, err := parser.Parse(rr)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, fmt.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
 	// The file path of each library should be empty in case of dependency list such as lock file
@@ -66,7 +65,7 @@ func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser)
 func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
 	parsedPkgs, parsedDependencies, err := parser.Parse(r)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, fmt.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
 	// The reader is not passed if the checksum is not necessarily calculated.
@@ -122,7 +121,7 @@ func calculateDigest(r xio.ReadSeekerAt) (digest.Digest, error) {
 	}
 	// return reader to start after it has been read in analyzer
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return "", xerrors.Errorf("unable to seek: %w", err)
+		return "", fmt.Errorf("unable to seek: %w", err)
 	}
 
 	return digest.CalcSHA1(r)

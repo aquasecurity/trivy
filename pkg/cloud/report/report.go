@@ -2,12 +2,11 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"sort"
 	"time"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/tml"
 	"github.com/aquasecurity/trivy/pkg/clock"
@@ -62,7 +61,7 @@ func (r *Report) Failed() bool {
 func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) error {
 	output, cleanup, err := opt.OutputWriter(ctx)
 	if err != nil {
-		return xerrors.Errorf("failed to create output file: %w", err)
+		return fmt.Errorf("failed to create output file: %w", err)
 	}
 	defer cleanup()
 
@@ -72,7 +71,7 @@ func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) e
 
 	ignoreConf, err := result.ParseIgnoreFile(ctx, opt.IgnoreFile)
 	if err != nil {
-		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
+		return fmt.Errorf("%s error: %w", opt.IgnoreFile, err)
 	}
 
 	var filtered []types.Result
@@ -149,7 +148,7 @@ func writeCompliance(ctx context.Context, rep *Report, opt flag.Options, output 
 
 	complianceReport, err := cr.BuildComplianceReport(crr, opt.Compliance)
 	if err != nil {
-		return xerrors.Errorf("compliance report build error: %w", err)
+		return fmt.Errorf("compliance report build error: %w", err)
 	}
 
 	return cr.Write(ctx, complianceReport, cr.Option{

@@ -3,9 +3,8 @@ package binary
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/rust/binary"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -27,7 +26,7 @@ func (a rustBinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Ana
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonRustBinary) {
 		return nil, nil
 	} else if err != nil {
-		return nil, xerrors.Errorf("rust binary parse error: %w", err)
+		return nil, fmt.Errorf("rust binary parse error: %w", err)
 	}
 	return res, nil
 }

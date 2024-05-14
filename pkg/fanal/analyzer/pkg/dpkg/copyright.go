@@ -3,6 +3,7 @@ package dpkg
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -39,18 +39,18 @@ type dpkgLicenseAnalyzer struct {
 func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	findings, err := a.parseCopyright(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("parse copyright %s: %w", input.FilePath, err)
+		return nil, fmt.Errorf("parse copyright %s: %w", input.FilePath, err)
 	}
 
 	// If licenses are not found, fallback to the classifier
 	if len(findings) == 0 && a.licenseFull {
 		// Rewind the reader to the beginning of the stream after saving
 		if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
-			return nil, xerrors.Errorf("seek error: %w", err)
+			return nil, fmt.Errorf("seek error: %w", err)
 		}
 		licenseFile, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
 		if err != nil {
-			return nil, xerrors.Errorf("license classification error: %w", err)
+			return nil, fmt.Errorf("license classification error: %w", err)
 		}
 		findings = licenseFile.Findings
 	}

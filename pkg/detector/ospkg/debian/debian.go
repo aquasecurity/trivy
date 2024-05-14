@@ -2,10 +2,10 @@ package debian
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
@@ -70,7 +70,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get debian advisories: %w", err)
+			return nil, fmt.Errorf("failed to get debian advisories: %w", err)
 		}
 
 		for _, adv := range advisories {

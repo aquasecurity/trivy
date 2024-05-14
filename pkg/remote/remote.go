@@ -3,6 +3,7 @@ package remote
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -14,7 +15,6 @@ import (
 	v1types "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -28,7 +28,7 @@ type Descriptor = remote.Descriptor
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
 	transport, err := httpTransport(option)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create http transport: %w", err)
+		return nil, fmt.Errorf("failed to create http transport: %w", err)
 	}
 
 	var errs error
@@ -42,7 +42,7 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 		if option.Platform.Platform != nil {
 			p, err := resolvePlatform(ref, option.Platform, remoteOpts)
 			if err != nil {
-				return nil, xerrors.Errorf("platform error: %w", err)
+				return nil, fmt.Errorf("platform error: %w", err)
 			}
 			// Don't pass platform when the specified image is single-arch.
 			if p.Platform != nil {
@@ -73,7 +73,7 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
 	transport, err := httpTransport(option)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create http transport: %w", err)
+		return nil, fmt.Errorf("failed to create http transport: %w", err)
 	}
 
 	var errs error
@@ -100,7 +100,7 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (v1.ImageIndex, error) {
 	transport, err := httpTransport(option)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create http transport: %w", err)
+		return nil, fmt.Errorf("failed to create http transport: %w", err)
 	}
 
 	var errs error
@@ -180,7 +180,7 @@ func resolvePlatform(ref name.Reference, p types.Platform, options []remote.Opti
 	// e.g. */amd64
 	d, err := remote.Get(ref, options...)
 	if err != nil {
-		return types.Platform{}, xerrors.Errorf("image get error: %w", err)
+		return types.Platform{}, fmt.Errorf("image get error: %w", err)
 	}
 	switch d.MediaType {
 	case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
@@ -193,12 +193,12 @@ func resolvePlatform(ref name.Reference, p types.Platform, options []remote.Opti
 
 	index, err := d.ImageIndex()
 	if err != nil {
-		return types.Platform{}, xerrors.Errorf("image index error: %w", err)
+		return types.Platform{}, fmt.Errorf("image index error: %w", err)
 	}
 
 	m, err := index.IndexManifest()
 	if err != nil {
-		return types.Platform{}, xerrors.Errorf("remote index manifest error: %w", err)
+		return types.Platform{}, fmt.Errorf("remote index manifest error: %w", err)
 	}
 	if len(m.Manifests) == 0 {
 		log.Debug("Ignore '--platform' as the image is not multi-arch")
@@ -229,7 +229,7 @@ func satisfyPlatform(desc *remote.Descriptor, platform v1.Platform) error {
 		return err
 	}
 	if !lo.FromPtr(c.Platform()).Satisfies(platform) {
-		return xerrors.Errorf("the specified platform not found")
+		return fmt.Errorf("the specified platform not found")
 	}
 	return nil
 }

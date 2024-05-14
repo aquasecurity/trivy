@@ -3,12 +3,11 @@ package mariner
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -29,7 +28,7 @@ type marinerOSAnalyzer struct{}
 func (a marinerOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	foundOS, err := a.parseRelease(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("release parse error: %w", err)
+		return nil, fmt.Errorf("release parse error: %w", err)
 	}
 	return &analyzer.AnalysisResult{
 		OS: foundOS,
@@ -51,7 +50,7 @@ func (a marinerOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 			}, nil
 		}
 	}
-	return types.OS{}, xerrors.Errorf("cbl-mariner: %w", fos.AnalyzeOSError)
+	return types.OS{}, fmt.Errorf("cbl-mariner: %w", fos.AnalyzeOSError)
 }
 
 func (a marinerOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

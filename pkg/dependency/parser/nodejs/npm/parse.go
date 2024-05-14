@@ -11,7 +11,6 @@ import (
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
@@ -65,10 +64,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("read error: %w", err)
+		return nil, nil, fmt.Errorf("read error: %w", err)
 	}
 	if err := jfather.Unmarshal(input, &lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+		return nil, nil, fmt.Errorf("decode error: %w", err)
 	}
 
 	var pkgs []ftypes.Package
@@ -267,7 +266,7 @@ func findDependsOn(pkgPath, depName string, packages map[string]Package) (string
 	}
 
 	// It should not reach here.
-	return "", xerrors.Errorf("can't find dependsOn for %s", depName)
+	return "", fmt.Errorf("can't find dependsOn for %s", depName)
 }
 
 func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string]string) ([]ftypes.Package, []ftypes.Dependency) {

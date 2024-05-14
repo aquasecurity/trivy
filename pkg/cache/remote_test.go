@@ -2,6 +2,7 @@ package cache_test
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -12,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/twitchtv/twirp"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	fcache "github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -27,14 +27,14 @@ type mockCacheServer struct {
 
 func (s *mockCacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*google_protobuf.Empty, error) {
 	if strings.Contains(in.ArtifactId, "invalid") {
-		return &google_protobuf.Empty{}, xerrors.New("invalid image ID")
+		return &google_protobuf.Empty{}, errors.New("invalid image ID")
 	}
 	return &google_protobuf.Empty{}, nil
 }
 
 func (s *mockCacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*google_protobuf.Empty, error) {
 	if strings.Contains(in.DiffId, "invalid") {
-		return &google_protobuf.Empty{}, xerrors.New("invalid layer ID")
+		return &google_protobuf.Empty{}, errors.New("invalid layer ID")
 	}
 	return &google_protobuf.Empty{}, nil
 }
@@ -43,7 +43,7 @@ func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBl
 	var layerIDs []string
 	for _, layerID := range in.BlobIds[:len(in.BlobIds)-1] {
 		if strings.Contains(layerID, "invalid") {
-			return nil, xerrors.New("invalid layer ID")
+			return nil, errors.New("invalid layer ID")
 		}
 		layerIDs = append(layerIDs, layerID)
 	}
@@ -53,7 +53,7 @@ func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBl
 func (s *mockCacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*google_protobuf.Empty, error) {
 	for _, blobId := range in.GetBlobIds() {
 		if strings.Contains(blobId, "invalid") {
-			return &google_protobuf.Empty{}, xerrors.New("invalid layer ID")
+			return &google_protobuf.Empty{}, errors.New("invalid layer ID")
 		}
 	}
 	return &google_protobuf.Empty{}, nil

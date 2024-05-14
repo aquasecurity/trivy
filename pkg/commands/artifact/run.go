@@ -9,7 +9,6 @@ import (
 	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -120,12 +119,12 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 	}
 
 	if err := r.initCache(cliOptions); err != nil {
-		return nil, xerrors.Errorf("cache error: %w", err)
+		return nil, fmt.Errorf("cache error: %w", err)
 	}
 
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
-		return nil, xerrors.Errorf("DB error: %w", err)
+		return nil, fmt.Errorf("DB error: %w", err)
 	}
 
 	// Initialize WASM modules
@@ -134,7 +133,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 		EnabledModules: cliOptions.EnabledModules,
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("WASM module error: %w", err)
+		return nil, fmt.Errorf("WASM module error: %w", err)
 	}
 	m.Register()
 	r.module = m
@@ -263,7 +262,7 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
 	report, err := scan(ctx, opts, initializeScanner, r.cache)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("scan error: %w", err)
+		return types.Report{}, fmt.Errorf("scan error: %w", err)
 	}
 
 	return report, nil
@@ -272,14 +271,14 @@ func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initialize
 func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error) {
 	// Filter results
 	if err := result.Filter(ctx, report, opts.FilterOpts()); err != nil {
-		return types.Report{}, xerrors.Errorf("filtering error: %w", err)
+		return types.Report{}, fmt.Errorf("filtering error: %w", err)
 	}
 	return report, nil
 }
 
 func (r *runner) Report(ctx context.Context, opts flag.Options, report types.Report) error {
 	if err := pkgReport.Write(ctx, report, opts); err != nil {
-		return xerrors.Errorf("unable to write results: %w", err)
+		return fmt.Errorf("unable to write results: %w", err)
 	}
 
 	return nil
@@ -306,7 +305,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 	}
 
 	if err := db.Init(opts.CacheDir); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+		return fmt.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 	r.dbOpen = true
 
@@ -330,7 +329,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 	javadb.Init(opts.CacheDir, opts.JavaDBRepository, opts.SkipJavaDBUpdate, noProgress, opts.RegistryOpts())
 	if opts.DownloadJavaDBOnly {
 		if err := javadb.Update(); err != nil {
-			return xerrors.Errorf("Java DB error: %w", err)
+			return fmt.Errorf("Java DB error: %w", err)
 		}
 		return SkipScan
 	}
@@ -355,14 +354,14 @@ func (r *runner) initCache(opts flag.Options) error {
 	fsutils.SetCacheDir(opts.CacheDir)
 	cacheClient, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
-		return xerrors.Errorf("unable to initialize the cache: %w", err)
+		return fmt.Errorf("unable to initialize the cache: %w", err)
 	}
 	log.Debug("Cache dir", log.String("dir", fsutils.CacheDir()))
 
 	if opts.Reset {
 		defer cacheClient.Close()
 		if err = cacheClient.Reset(); err != nil {
-			return xerrors.Errorf("cache reset error: %w", err)
+			return fmt.Errorf("cache reset error: %w", err)
 		}
 		return SkipScan
 	}
@@ -370,10 +369,10 @@ func (r *runner) initCache(opts flag.Options) error {
 	if opts.ResetChecksBundle {
 		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.ChecksBundleRepository)
 		if err != nil {
-			return xerrors.Errorf("failed to instantiate check client: %w", err)
+			return fmt.Errorf("failed to instantiate check client: %w", err)
 		}
 		if err := c.Clear(); err != nil {
-			return xerrors.Errorf("failed to remove the cache: %w", err)
+			return fmt.Errorf("failed to remove the cache: %w", err)
 		}
 		return SkipScan
 	}
@@ -381,7 +380,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	if opts.ClearCache {
 		defer cacheClient.Close()
 		if err = cacheClient.ClearArtifacts(); err != nil {
-			return xerrors.Errorf("cache clear error: %w", err)
+			return fmt.Errorf("cache clear error: %w", err)
 		}
 		return SkipScan
 	}
@@ -411,7 +410,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		if errors.Is(err, SkipScan) {
 			return nil
 		}
-		return xerrors.Errorf("init error: %w", err)
+		return fmt.Errorf("init error: %w", err)
 	}
 	defer r.Close(ctx)
 
@@ -419,37 +418,37 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	switch targetKind {
 	case TargetContainerImage, TargetImageArchive:
 		if report, err = r.ScanImage(ctx, opts); err != nil {
-			return xerrors.Errorf("image scan error: %w", err)
+			return fmt.Errorf("image scan error: %w", err)
 		}
 	case TargetFilesystem:
 		if report, err = r.ScanFilesystem(ctx, opts); err != nil {
-			return xerrors.Errorf("filesystem scan error: %w", err)
+			return fmt.Errorf("filesystem scan error: %w", err)
 		}
 	case TargetRootfs:
 		if report, err = r.ScanRootfs(ctx, opts); err != nil {
-			return xerrors.Errorf("rootfs scan error: %w", err)
+			return fmt.Errorf("rootfs scan error: %w", err)
 		}
 	case TargetRepository:
 		if report, err = r.ScanRepository(ctx, opts); err != nil {
-			return xerrors.Errorf("repository scan error: %w", err)
+			return fmt.Errorf("repository scan error: %w", err)
 		}
 	case TargetSBOM:
 		if report, err = r.ScanSBOM(ctx, opts); err != nil {
-			return xerrors.Errorf("sbom scan error: %w", err)
+			return fmt.Errorf("sbom scan error: %w", err)
 		}
 	case TargetVM:
 		if report, err = r.ScanVM(ctx, opts); err != nil {
-			return xerrors.Errorf("vm scan error: %w", err)
+			return fmt.Errorf("vm scan error: %w", err)
 		}
 	}
 
 	report, err = r.Filter(ctx, opts, report)
 	if err != nil {
-		return xerrors.Errorf("filter error: %w", err)
+		return fmt.Errorf("filter error: %w", err)
 	}
 
 	if err = r.Report(ctx, opts, report); err != nil {
-		return xerrors.Errorf("report error: %w", err)
+		return fmt.Errorf("report error: %w", err)
 	}
 
 	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
@@ -520,7 +519,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, error) {
 	_, missing := lo.Difference(all, included)
 	if len(missing) > 0 {
-		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
+		return nil, fmt.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
 	}
 
 	log.Debug("Enabling misconfiguration scanners", log.Any("scanners", included))
@@ -684,13 +683,13 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 	}
 	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
+		return types.Report{}, fmt.Errorf("unable to initialize a scanner: %w", err)
 	}
 	defer cleanup()
 
 	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
+		return types.Report{}, fmt.Errorf("scan failed: %w", err)
 	}
 	return report, nil
 }

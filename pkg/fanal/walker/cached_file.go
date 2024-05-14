@@ -2,11 +2,10 @@ package walker
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"sync"
-
-	"golang.org/x/xerrors"
 
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -39,12 +38,12 @@ func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 		if o.size >= defaultSizeThreshold {
 			f, err := os.CreateTemp("", "fanal-*")
 			if err != nil {
-				o.err = xerrors.Errorf("failed to create the temp file: %w", err)
+				o.err = fmt.Errorf("failed to create the temp file: %w", err)
 				return
 			}
 
 			if _, err = io.Copy(f, o.reader); err != nil {
-				o.err = xerrors.Errorf("failed to copy: %w", err)
+				o.err = fmt.Errorf("failed to copy: %w", err)
 				return
 			}
 
@@ -52,14 +51,14 @@ func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 		} else {
 			b, err := io.ReadAll(o.reader)
 			if err != nil {
-				o.err = xerrors.Errorf("unable to read the file: %w", err)
+				o.err = fmt.Errorf("unable to read the file: %w", err)
 				return
 			}
 			o.content = b
 		}
 	})
 	if o.err != nil {
-		return nil, xerrors.Errorf("failed to open: %w", o.err)
+		return nil, fmt.Errorf("failed to open: %w", o.err)
 	}
 
 	return o.open()
@@ -69,7 +68,7 @@ func (o *cachedFile) open() (xio.ReadSeekCloserAt, error) {
 	if o.filePath != "" {
 		f, err := os.Open(o.filePath)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to open the temp file: %w", err)
+			return nil, fmt.Errorf("failed to open the temp file: %w", err)
 		}
 		return f, nil
 	}

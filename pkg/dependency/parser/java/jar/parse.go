@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -77,7 +76,7 @@ func NewParser(c Client, opts ...Option) *Parser {
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	pkgs, deps, err := p.parseArtifact(p.rootFilePath, p.size, r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to parse %s: %w", p.rootFilePath, err)
+		return nil, nil, fmt.Errorf("unable to parse %s: %w", p.rootFilePath, err)
 	}
 	return removePackageDuplicates(pkgs), deps, nil
 }
@@ -92,7 +91,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 
 	pkgs, m, foundPomProps, err := p.traverseZip(filePath, size, r, fileProps)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("zip error: %w", err)
+		return nil, nil, fmt.Errorf("zip error: %w", err)
 	}
 
 	// If pom.properties is found, it should be preferred than MANIFEST.MF.
@@ -124,7 +123,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	if err == nil {
 		return append(pkgs, props.Package()), nil, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return nil, nil, xerrors.Errorf("failed to search by SHA1: %w", err)
+		return nil, nil, fmt.Errorf("failed to search by SHA1: %w", err)
 	}
 
 	p.logger.Debug("No such POM in the central repositories", log.String("file", fileName))
@@ -142,7 +141,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 			log.String("artifact", fileProps.String()))
 		pkgs = append(pkgs, fileProps.Package())
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return nil, nil, xerrors.Errorf("failed to search by artifact id: %w", err)
+		return nil, nil, fmt.Errorf("failed to search by artifact id: %w", err)
 	}
 
 	return pkgs, nil, nil
@@ -156,7 +155,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
-		return nil, manifest{}, false, xerrors.Errorf("zip error: %w", err)
+		return nil, manifest{}, false, fmt.Errorf("zip error: %w", err)
 	}
 
 	for _, fileInJar := range zr.File {
@@ -164,7 +163,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 		case filepath.Base(fileInJar.Name) == "pom.properties":
 			props, err := parsePomProperties(fileInJar, filePath)
 			if err != nil {
-				return nil, manifest{}, false, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
+				return nil, manifest{}, false, fmt.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
 			// Validation of props to avoid getting packages with empty Name/Version
 			if props.Valid() {
@@ -178,7 +177,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 		case filepath.Base(fileInJar.Name) == "MANIFEST.MF":
 			m, err = parseManifest(fileInJar)
 			if err != nil {
-				return nil, manifest{}, false, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
+				return nil, manifest{}, false, fmt.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
 			innerPkgs, _, err := p.parseInnerJar(fileInJar, filePath) // TODO process inner deps
@@ -195,12 +194,12 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package, []ftypes.Dependency, error) {
 	fr, err := zf.Open()
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to open %s: %w", zf.Name, err)
+		return nil, nil, fmt.Errorf("unable to open %s: %w", zf.Name, err)
 	}
 
 	f, err := os.CreateTemp("", "inner")
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to create a temp file: %w", err)
+		return nil, nil, fmt.Errorf("unable to create a temp file: %w", err)
 	}
 	defer func() {
 		_ = f.Close()
@@ -209,9 +208,9 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 
 	// Copy the file content to the temp file
 	if n, err := io.CopyN(f, fr, int64(zf.UncompressedSize64)); err != nil {
-		return nil, nil, xerrors.Errorf("file copy error: %w", err)
+		return nil, nil, fmt.Errorf("file copy error: %w", err)
 	} else if n != int64(zf.UncompressedSize64) {
-		return nil, nil, xerrors.Errorf("file copy size error: %w", err)
+		return nil, nil, fmt.Errorf("file copy size error: %w", err)
 	}
 
 	// build full path to inner jar
@@ -223,7 +222,7 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 	// Parse jar/war/ear recursively
 	innerPkgs, innerDeps, err := p.parseArtifact(fullPath, int64(zf.UncompressedSize64), f)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to parse %s: %w", zf.Name, err)
+		return nil, nil, fmt.Errorf("failed to parse %s: %w", zf.Name, err)
 	}
 
 	return innerPkgs, innerDeps, nil
@@ -231,12 +230,12 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 
 func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return Properties{}, xerrors.Errorf("file seek error: %w", err)
+		return Properties{}, fmt.Errorf("file seek error: %w", err)
 	}
 
 	h := sha1.New() // nolint:gosec
 	if _, err := io.Copy(h, r); err != nil {
-		return Properties{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
+		return Properties{}, fmt.Errorf("unable to calculate SHA-1: %w", err)
 	}
 	s := hex.EncodeToString(h.Sum(nil))
 	prop, err := p.client.SearchBySHA1(s)
@@ -272,7 +271,7 @@ func parseFileName(filePath string) Properties {
 func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 	file, err := f.Open()
 	if err != nil {
-		return Properties{}, xerrors.Errorf("unable to open pom.properties: %w", err)
+		return Properties{}, fmt.Errorf("unable to open pom.properties: %w", err)
 	}
 	defer file.Close()
 
@@ -293,7 +292,7 @@ func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 	}
 
 	if err = scanner.Err(); err != nil {
-		return Properties{}, xerrors.Errorf("scan error: %w", err)
+		return Properties{}, fmt.Errorf("scan error: %w", err)
 	}
 	return p, nil
 }
@@ -314,7 +313,7 @@ type manifest struct {
 func parseManifest(f *zip.File) (manifest, error) {
 	file, err := f.Open()
 	if err != nil {
-		return manifest{}, xerrors.Errorf("unable to open MANIFEST.MF: %w", err)
+		return manifest{}, fmt.Errorf("unable to open MANIFEST.MF: %w", err)
 	}
 	defer file.Close()
 
@@ -356,7 +355,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 	}
 
 	if err = scanner.Err(); err != nil {
-		return manifest{}, xerrors.Errorf("scan error: %w", err)
+		return manifest{}, fmt.Errorf("scan error: %w", err)
 	}
 	return m, nil
 }
@@ -403,7 +402,7 @@ func (m manifest) determineGroupID() (string, error) {
 	case m.specificationVendor != "":
 		groupID = m.specificationVendor
 	default:
-		return "", xerrors.New("no groupID found")
+		return "", errors.New("no groupID found")
 	}
 	return strings.TrimSpace(groupID), nil
 }
@@ -418,7 +417,7 @@ func (m manifest) determineArtifactID() (string, error) {
 	case m.bundleName != "":
 		artifactID = m.bundleName
 	default:
-		return "", xerrors.New("no artifactID found")
+		return "", errors.New("no artifactID found")
 	}
 	return strings.TrimSpace(artifactID), nil
 }
@@ -433,7 +432,7 @@ func (m manifest) determineVersion() (string, error) {
 	case m.bundleVersion != "":
 		version = m.bundleVersion
 	default:
-		return "", xerrors.New("no version found")
+		return "", errors.New("no version found")
 	}
 	return strings.TrimSpace(version), nil
 }

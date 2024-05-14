@@ -3,9 +3,9 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/spf13/viper"
-	"golang.org/x/xerrors"
 
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
@@ -32,7 +32,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	}
 	cluster, err := k8s.GetCluster(clusterOptions...)
 	if err != nil {
-		return xerrors.Errorf("failed getting k8s cluster: %w", err)
+		return fmt.Errorf("failed getting k8s cluster: %w", err)
 	}
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 
@@ -64,7 +64,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		if errors.Is(err, cmd.SkipScan) {
 			return nil
 		}
-		return xerrors.Errorf("init error: %w", err)
+		return fmt.Errorf("init error: %w", err)
 	}
 	defer func() {
 		if err := runner.Close(ctx); err != nil {
@@ -78,19 +78,19 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		scanners, err := r.flagOpts.Compliance.Scanners()
 		if err != nil {
-			return xerrors.Errorf("scanner error: %w", err)
+			return fmt.Errorf("scanner error: %w", err)
 		}
 		r.flagOpts.ScanOptions.Scanners = scanners
 	}
 	var rpt report.Report
 	rpt, err = s.Scan(ctx, artifacts)
 	if err != nil {
-		return xerrors.Errorf("k8s scan error: %w", err)
+		return fmt.Errorf("k8s scan error: %w", err)
 	}
 
 	output, cleanup, err := r.flagOpts.OutputWriter(ctx)
 	if err != nil {
-		return xerrors.Errorf("failed to create output file: %w", err)
+		return fmt.Errorf("failed to create output file: %w", err)
 	}
 	defer cleanup()
 
@@ -101,7 +101,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		}
 		complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
 		if err != nil {
-			return xerrors.Errorf("compliance report build error: %w", err)
+			return fmt.Errorf("compliance report build error: %w", err)
 		}
 		return cr.Write(ctx, complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
@@ -118,7 +118,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
 		APIVersion: r.flagOpts.AppVersion,
 	}); err != nil {
-		return xerrors.Errorf("unable to write results: %w", err)
+		return fmt.Errorf("unable to write results: %w", err)
 	}
 
 	return operation.Exit(r.flagOpts, rpt.Failed(), types.Metadata{})
@@ -146,7 +146,7 @@ func validateReportArguments(opts flag.Options) error {
 
 		m := "All the results in the table format can mess up your terminal. Use \"--report all\" to tell Trivy to output it to your terminal anyway, or consider \"--report summary\" to show the summary output."
 
-		return xerrors.New(m)
+		return errors.New(m)
 	}
 
 	return nil

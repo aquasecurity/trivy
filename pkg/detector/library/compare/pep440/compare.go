@@ -1,7 +1,7 @@
 package pep440
 
 import (
-	"golang.org/x/xerrors"
+	"fmt"
 
 	version "github.com/aquasecurity/go-pep440-version"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -20,12 +20,12 @@ func (n Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := version.Parse(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("python version error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("python version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := version.NewSpecifiers(constraint, version.WithPreRelease(true))
 	if err != nil {
-		return false, xerrors.Errorf("python constraint error (%s): %s", constraint, err)
+		return false, fmt.Errorf("python constraint error (%s): %s", constraint, err)
 	}
 
 	return c.Check(v), nil

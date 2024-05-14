@@ -1,10 +1,10 @@
 package pyproject
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/BurntSushi/toml"
-	"golang.org/x/xerrors"
 )
 
 type PyProject struct {
@@ -31,7 +31,7 @@ func NewParser() *Parser {
 func (p *Parser) Parse(r io.Reader) (map[string]interface{}, error) {
 	var conf PyProject
 	if _, err := toml.NewDecoder(r).Decode(&conf); err != nil {
-		return nil, xerrors.Errorf("toml decode error: %w", err)
+		return nil, fmt.Errorf("toml decode error: %w", err)
 	}
 	return conf.Tool.Poetry.Dependencies, nil
 }

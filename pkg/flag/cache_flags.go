@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 )
 
 // e.g. config yaml:
@@ -129,12 +128,12 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 	// An empty value is also allowed for testability
 	if !strings.HasPrefix(cacheBackend, "redis://") &&
 		cacheBackend != "fs" && cacheBackend != "" {
-		return CacheOptions{}, xerrors.Errorf("unsupported cache backend: %s", cacheBackend)
+		return CacheOptions{}, fmt.Errorf("unsupported cache backend: %s", cacheBackend)
 	}
 	// if one of redis option not nil, make sure CA, cert, and key provided
 	if !lo.IsEmpty(redisOptions) {
 		if redisOptions.RedisCACert == "" || redisOptions.RedisCert == "" || redisOptions.RedisKey == "" {
-			return CacheOptions{}, xerrors.Errorf("you must provide Redis CA, cert and key file path when using TLS")
+			return CacheOptions{}, fmt.Errorf("you must provide Redis CA, cert and key file path when using TLS")
 		}
 	}
 

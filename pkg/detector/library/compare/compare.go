@@ -1,9 +1,8 @@
 package compare
 
 import (
+	"fmt"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/version"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -66,12 +65,12 @@ func (v GenericComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) boo
 func (v GenericComparer) matchVersion(currentVersion, constraint string) (bool, error) {
 	ver, err := version.Parse(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("version error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := version.NewConstraints(constraint)
 	if err != nil {
-		return false, xerrors.Errorf("constraint error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("constraint error (%s): %s", currentVersion, err)
 	}
 
 	return c.Check(ver), nil

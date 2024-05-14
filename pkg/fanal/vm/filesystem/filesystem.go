@@ -2,11 +2,11 @@ package filesystem
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 
 	lru "github.com/hashicorp/golang-lru/v2"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 )
@@ -14,7 +14,7 @@ import (
 const cacheSize = 2048
 
 var (
-	ErrInvalidHeader = xerrors.New("invalid Header error")
+	ErrInvalidHeader = errors.New("invalid Header error")
 	filesystems      = []Filesystem{
 		EXT4{},
 		XFS{},
@@ -31,7 +31,7 @@ func New(sr io.SectionReader) (fs.FS, func(), error) {
 	// Initialize LRU cache for filesystem walking
 	lruCache, err := lru.New[string, any](cacheSize)
 	if err != nil {
-		return nil, clean, xerrors.Errorf("failed to create a LRU cache: %w", err)
+		return nil, clean, fmt.Errorf("failed to create a LRU cache: %w", err)
 	}
 	clean = lruCache.Purge
 
@@ -42,9 +42,9 @@ func New(sr io.SectionReader) (fs.FS, func(), error) {
 			if errors.Is(err, ErrInvalidHeader) {
 				continue
 			}
-			return nil, clean, xerrors.Errorf("unexpected fs error: %w", err)
+			return nil, clean, fmt.Errorf("unexpected fs error: %w", err)
 		}
 		return fsys, clean, nil
 	}
-	return nil, clean, xerrors.New("unable to detect filesystem")
+	return nil, clean, errors.New("unable to detect filesystem")
 }

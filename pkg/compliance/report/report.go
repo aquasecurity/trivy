@@ -2,9 +2,8 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
-
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
@@ -87,7 +86,7 @@ func Write(ctx context.Context, report *ComplianceReport, option Option) error {
 		}
 		return nil
 	default:
-		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
+		return fmt.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}
 }
 

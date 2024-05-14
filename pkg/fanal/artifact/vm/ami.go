@@ -2,10 +2,11 @@ package vm
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -30,9 +31,9 @@ func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, err
 		ImageIds: []string{imageID},
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("ec2.DescribeImages: %w", err)
+		return nil, fmt.Errorf("ec2.DescribeImages: %w", err)
 	} else if len(output.Images) == 0 {
-		return nil, xerrors.Errorf("%s not found", imageID)
+		return nil, fmt.Errorf("%s not found", imageID)
 	}
 
 	// Take the first snapshot
@@ -44,7 +45,7 @@ func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, err
 		log.WithPrefix("ami").Info("Snapshot found", log.String("snapshot_id", snapshotID))
 		ebs, err := newEBS(snapshotID, storage, region, endpoint)
 		if err != nil {
-			return nil, xerrors.Errorf("new EBS error: %w", err)
+			return nil, fmt.Errorf("new EBS error: %w", err)
 		}
 		return &AMI{
 			EBS:     ebs,
@@ -52,7 +53,7 @@ func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, err
 		}, nil
 	}
 
-	return nil, xerrors.New("no snapshot found")
+	return nil, errors.New("no snapshot found")
 }
 
 func (a *AMI) Inspect(ctx context.Context) (artifact.Reference, error) {

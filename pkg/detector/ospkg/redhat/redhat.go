@@ -10,7 +10,6 @@ import (
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
@@ -91,7 +90,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 		detectedVulns, err := s.detect(osVer, pkg)
 		if err != nil {
-			return nil, xerrors.Errorf("redhat vulnerability detection error: %w", err)
+			return nil, fmt.Errorf("redhat vulnerability detection error: %w", err)
 		}
 		vulns = append(vulns, detectedVulns...)
 	}
@@ -113,7 +112,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 	advisories, err := s.vs.Get(pkgName, contentSets, []string{nvr})
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
+		return nil, fmt.Errorf("failed to get Red Hat advisories: %w", err)
 	}
 
 	installed := utils.FormatVersion(pkg)

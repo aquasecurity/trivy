@@ -3,8 +3,7 @@ package secret
 import (
 	"context"
 	"encoding/json"
-
-	"golang.org/x/xerrors"
+	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/secret"
@@ -27,7 +26,7 @@ func newSecretAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnal
 	configPath := opts.SecretScannerOption.ConfigPath
 	c, err := secret.ParseConfig(configPath)
 	if err != nil {
-		return nil, xerrors.Errorf("secret config error: %w", err)
+		return nil, fmt.Errorf("secret config error: %w", err)
 	}
 	scanner := secret.NewScanner(c)
 
@@ -43,7 +42,7 @@ func (a *secretAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnalysi
 	}
 	b, err := json.MarshalIndent(input.Config, "  ", "")
 	if err != nil {
-		return nil, xerrors.Errorf("json marshal error: %w", err)
+		return nil, fmt.Errorf("json marshal error: %w", err)
 	}
 
 	result := a.scanner.Scan(secret.ScanArgs{

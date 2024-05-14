@@ -2,6 +2,7 @@ package oci
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -10,7 +11,6 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -85,12 +85,12 @@ func (a *Artifact) populate(ctx context.Context, opt types.RegistryOptions) erro
 
 	ref, err := name.ParseReference(a.repository, nameOpts...)
 	if err != nil {
-		return xerrors.Errorf("repository name error (%s): %w", a.repository, err)
+		return fmt.Errorf("repository name error (%s): %w", a.repository, err)
 	}
 
 	a.image, err = remote.Image(ctx, ref, opt)
 	if err != nil {
-		return xerrors.Errorf("OCI repository error: %w", err)
+		return fmt.Errorf("OCI repository error: %w", err)
 	}
 	return nil
 }
@@ -107,17 +107,17 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 
 	layers, err := a.image.Layers()
 	if err != nil {
-		return xerrors.Errorf("OCI layer error: %w", err)
+		return fmt.Errorf("OCI layer error: %w", err)
 	}
 
 	manifest, err := a.image.Manifest()
 	if err != nil {
-		return xerrors.Errorf("OCI manifest error: %w", err)
+		return fmt.Errorf("OCI manifest error: %w", err)
 	}
 
 	// A single layer is only supported now.
 	if len(layers) != 1 || len(manifest.Layers) != 1 {
-		return xerrors.Errorf("OCI artifact must be a single layer")
+		return fmt.Errorf("OCI artifact must be a single layer")
 	}
 
 	// Take the first layer
@@ -127,7 +127,7 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 	fileName := opt.Filename
 	if fileName == "" {
 		if v, ok := manifest.Layers[0].Annotations[titleAnnotation]; !ok {
-			return xerrors.Errorf("annotation %s is missing", titleAnnotation)
+			return fmt.Errorf("annotation %s is missing", titleAnnotation)
 		} else {
 			fileName = v
 		}
@@ -135,13 +135,13 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 
 	layerMediaType, err := layer.MediaType()
 	if err != nil {
-		return xerrors.Errorf("media type error: %w", err)
+		return fmt.Errorf("media type error: %w", err)
 	} else if opt.MediaType != "" && opt.MediaType != string(layerMediaType) {
-		return xerrors.Errorf("unacceptable media type: %s", string(layerMediaType))
+		return fmt.Errorf("unacceptable media type: %s", string(layerMediaType))
 	}
 
 	if err = a.download(ctx, layer, fileName, dir); err != nil {
-		return xerrors.Errorf("oci download error: %w", err)
+		return fmt.Errorf("oci download error: %w", err)
 	}
 
 	return nil
@@ -150,12 +150,12 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir string) error {
 	size, err := layer.Size()
 	if err != nil {
-		return xerrors.Errorf("size error: %w", err)
+		return fmt.Errorf("size error: %w", err)
 	}
 
 	rc, err := layer.Compressed()
 	if err != nil {
-		return xerrors.Errorf("failed to fetch the layer: %w", err)
+		return fmt.Errorf("failed to fetch the layer: %w", err)
 	}
 	defer rc.Close()
 
@@ -170,12 +170,12 @@ func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir s
 	// https://github.com/hashicorp/go-getter/issues/326
 	tempDir, err := os.MkdirTemp("", "trivy")
 	if err != nil {
-		return xerrors.Errorf("failed to create a temp dir: %w", err)
+		return fmt.Errorf("failed to create a temp dir: %w", err)
 	}
 
 	f, err := os.Create(filepath.Join(tempDir, fileName))
 	if err != nil {
-		return xerrors.Errorf("failed to create a temp file: %w", err)
+		return fmt.Errorf("failed to create a temp file: %w", err)
 	}
 	defer func() {
 		_ = f.Close()
@@ -184,12 +184,12 @@ func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir s
 
 	// Download the layer content into a temporal file
 	if _, err = io.Copy(f, pr); err != nil {
-		return xerrors.Errorf("copy error: %w", err)
+		return fmt.Errorf("copy error: %w", err)
 	}
 
 	// Decompress the downloaded file if it is compressed and copy it into the dst
 	if err = downloader.Download(ctx, f.Name(), dir, dir); err != nil {
-		return xerrors.Errorf("download error: %w", err)
+		return fmt.Errorf("download error: %w", err)
 	}
 
 	return nil
@@ -202,7 +202,7 @@ func (a *Artifact) Digest(ctx context.Context) (string, error) {
 
 	digest, err := a.image.Digest()
 	if err != nil {
-		return "", xerrors.Errorf("digest error: %w", err)
+		return "", fmt.Errorf("digest error: %w", err)
 	}
 	return digest.String(), nil
 }

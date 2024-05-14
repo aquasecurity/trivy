@@ -10,7 +10,6 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -252,7 +251,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 				Returns: cache.ArtifactCachePutArtifactReturns{
-					Err: xerrors.New("error"),
+					Err: errors.New("error"),
 				},
 			},
 			wantErr: "unable to store image info in cache",
@@ -478,7 +477,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					BlobInfoAnything: true,
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{
-					Err: xerrors.New("error"),
+					Err: errors.New("error"),
 				},
 			},
 			wantErr: "unable to store layer info in cache",
@@ -494,7 +493,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					BlobInfoAnything: true,
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{
-					Err: xerrors.New("error"),
+					Err: errors.New("error"),
 				},
 			},
 			wantErr: "empty layer info",

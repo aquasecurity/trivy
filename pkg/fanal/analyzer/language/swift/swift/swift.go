@@ -2,10 +2,9 @@ package swift
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/swift"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -28,7 +27,7 @@ func (a swiftLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	p := swift.NewParser()
 	res, err := language.Analyze(types.Swift, input.FilePath, input.Content, p)
 	if err != nil {
-		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
+		return nil, fmt.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 	return res, nil
 }

@@ -3,10 +3,10 @@ package redhatbase
 import (
 	"bufio"
 	"context"
+	"errors"
+	"fmt"
 	"os"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -28,7 +28,7 @@ func (a oracleOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 		if len(result) != 3 {
-			return nil, xerrors.New("oracle: invalid oracle-release")
+			return nil, errors.New("oracle: invalid oracle-release")
 		}
 		return &analyzer.AnalysisResult{
 			OS: types.OS{
@@ -38,7 +38,7 @@ func (a oracleOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		}, nil
 	}
 
-	return nil, xerrors.Errorf("oracle: %w", fos.AnalyzeOSError)
+	return nil, fmt.Errorf("oracle: %w", fos.AnalyzeOSError)
 }
 
 func (a oracleOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

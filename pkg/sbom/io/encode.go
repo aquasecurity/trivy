@@ -7,7 +7,6 @@ import (
 
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -31,7 +30,7 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	// Metadata component
 	root, err := e.rootComponent(report)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create root component: %w", err)
+		return nil, fmt.Errorf("failed to create root component: %w", err)
 	}
 
 	e.bom = core.NewBOM(e.opts)
@@ -71,7 +70,7 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 
 		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
-			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
+			return nil, fmt.Errorf("failed to new package url for oci: %w", err)
 		}
 		if p != nil {
 			root.PkgIdentifier.PURL = p.Unwrap()

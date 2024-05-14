@@ -3,6 +3,7 @@ package nuget
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"sort"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/config"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/lock"
@@ -70,7 +70,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 
 		app, err := language.Parse(types.NuGet, path, r, parser)
 		if err != nil {
-			return xerrors.Errorf("NuGet parse error: %w", err)
+			return fmt.Errorf("NuGet parse error: %w", err)
 		}
 
 		// nuget file doesn't contain dependencies
@@ -83,7 +83,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			if !ok {
 				license, err = a.licenseParser.findLicense(lib.Name, lib.Version)
 				if err != nil && !errors.Is(err, fs.ErrNotExist) {
-					return xerrors.Errorf("license find error: %w", err)
+					return fmt.Errorf("license find error: %w", err)
 				}
 				foundLicenses[lib.ID] = license
 			}
@@ -96,7 +96,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("NuGet walk error: %w", err)
+		return nil, fmt.Errorf("NuGet walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{

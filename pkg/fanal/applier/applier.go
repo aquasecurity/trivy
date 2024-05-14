@@ -1,7 +1,7 @@
 package applier
 
 import (
-	"golang.org/x/xerrors"
+	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -26,7 +26,7 @@ func (a *applier) ApplyLayers(imageID string, layerKeys []string) (ftypes.Artifa
 	for _, key := range layerKeys {
 		blob, _ := a.cache.GetBlob(key) // nolint
 		if blob.SchemaVersion == 0 {
-			return ftypes.ArtifactDetail{}, xerrors.Errorf("layer cache missing: %s", key)
+			return ftypes.ArtifactDetail{}, fmt.Errorf("layer cache missing: %s", key)
 		}
 		layers = append(layers, blob)
 	}

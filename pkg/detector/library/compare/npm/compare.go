@@ -1,7 +1,7 @@
 package npm
 
 import (
-	"golang.org/x/xerrors"
+	"fmt"
 
 	npm "github.com/aquasecurity/go-npm-version/pkg"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -20,12 +20,12 @@ func (n Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 func (n Comparer) MatchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := npm.NewVersion(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("npm version error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("npm version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := npm.NewConstraints(constraint)
 	if err != nil {
-		return false, xerrors.Errorf("npm constraint error (%s): %s", constraint, err)
+		return false, fmt.Errorf("npm constraint error (%s): %s", constraint, err)
 	}
 
 	return c.Check(v), nil

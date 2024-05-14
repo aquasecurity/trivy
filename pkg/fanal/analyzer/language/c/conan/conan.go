@@ -3,6 +3,7 @@ package conan
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -10,8 +11,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/c/conan"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -56,7 +55,7 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	if err = fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
 		app, err := language.Parse(types.Conan, filePath, r, a.parser)
 		if err != nil {
-			return xerrors.Errorf("%s parse error: %w", filePath, err)
+			return fmt.Errorf("%s parse error: %w", filePath, err)
 		}
 
 		if app == nil {
@@ -76,7 +75,7 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		apps = append(apps, *app)
 		return nil
 	}); err != nil {
-		return nil, xerrors.Errorf("unable to parse conan lock file: %w", err)
+		return nil, fmt.Errorf("unable to parse conan lock file: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -97,7 +96,7 @@ func licensesFromCache() (map[string]string, error) {
 	cacheDir = path.Join(cacheDir, ".conan", "data")
 
 	if !fsutils.DirExists(cacheDir) {
-		return nil, xerrors.Errorf("the Conan cache directory (%s) was not found.", cacheDir)
+		return nil, fmt.Errorf("the Conan cache directory (%s) was not found.", cacheDir)
 	}
 
 	licenses := make(map[string]string)
@@ -133,7 +132,7 @@ func licensesFromCache() (map[string]string, error) {
 		licenses[name] = license
 		return nil
 	}); err != nil {
-		return nil, xerrors.Errorf("the Conan cache dir (%s) walk error: %w", cacheDir, err)
+		return nil, fmt.Errorf("the Conan cache dir (%s) walk error: %w", cacheDir, err)
 	}
 	return licenses, nil
 }

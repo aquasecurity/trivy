@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/name"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
 	"github.com/aquasecurity/trivy-java-db/pkg/types"
@@ -46,10 +45,10 @@ func (u *Updater) Update() error {
 	meta, err := metac.Get()
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
-			return xerrors.Errorf("Java DB metadata error: %w", err)
+			return fmt.Errorf("Java DB metadata error: %w", err)
 		} else if u.skip {
 			log.Error("The first run cannot skip downloading Java DB")
-			return xerrors.New("'--skip-java-db-update' cannot be specified on the first run")
+			return errors.New("'--skip-java-db-update' cannot be specified on the first run")
 		}
 	}
 
@@ -61,22 +60,22 @@ func (u *Updater) Update() error {
 		// TODO: support remote options
 		var a *oci.Artifact
 		if a, err = oci.NewArtifact(u.repo.String(), u.quiet, u.registryOption); err != nil {
-			return xerrors.Errorf("oci error: %w", err)
+			return fmt.Errorf("oci error: %w", err)
 		}
 		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
-			return xerrors.Errorf("DB download error: %w", err)
+			return fmt.Errorf("DB download error: %w", err)
 		}
 
 		// Parse the newly downloaded metadata.json
 		meta, err = metac.Get()
 		if err != nil {
-			return xerrors.Errorf("Java DB metadata error: %w", err)
+			return fmt.Errorf("Java DB metadata error: %w", err)
 		}
 
 		// Update DownloadedAt
 		meta.DownloadedAt = time.Now().UTC()
 		if err = metac.Update(meta); err != nil {
-			return xerrors.Errorf("Java DB metadata update error: %w", err)
+			return fmt.Errorf("Java DB metadata update error: %w", err)
 		}
 		log.Info("The Java DB is cached for 3 days. If you want to update the database more frequently, " +
 			"the '--reset' flag clears the DB cache.")
@@ -97,7 +96,7 @@ func Init(cacheDir string, javaDBRepository name.Reference, skip, quiet bool, re
 
 func Update() error {
 	if updater == nil {
-		return xerrors.New("Java DB client not initialized")
+		return errors.New("Java DB client not initialized")
 	}
 
 	var err error
@@ -113,12 +112,12 @@ type DB struct {
 
 func NewClient() (*DB, error) {
 	if err := Update(); err != nil {
-		return nil, xerrors.Errorf("Java DB update failed: %s", err)
+		return nil, fmt.Errorf("Java DB update failed: %s", err)
 	}
 
 	dbc, err := db.New(updater.dbDir)
 	if err != nil {
-		return nil, xerrors.Errorf("Java DB open error: %w", err)
+		return nil, fmt.Errorf("Java DB open error: %w", err)
 	}
 
 	return &DB{driver: dbc}, nil
@@ -135,9 +134,9 @@ func (d *DB) Exists(groupID, artifactID string) (bool, error) {
 func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 	index, err := d.driver.SelectIndexBySha1(sha1)
 	if err != nil {
-		return jar.Properties{}, xerrors.Errorf("select error: %w", err)
+		return jar.Properties{}, fmt.Errorf("select error: %w", err)
 	} else if index.ArtifactID == "" {
-		return jar.Properties{}, xerrors.Errorf("digest %s: %w", sha1, jar.ArtifactNotFoundErr)
+		return jar.Properties{}, fmt.Errorf("digest %s: %w", sha1, jar.ArtifactNotFoundErr)
 	}
 	return jar.Properties{
 		GroupID:    index.GroupID,
@@ -149,9 +148,9 @@ func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 func (d *DB) SearchByArtifactID(artifactID, version string) (string, error) {
 	indexes, err := d.driver.SelectIndexesByArtifactIDAndFileType(artifactID, version, types.JarType)
 	if err != nil {
-		return "", xerrors.Errorf("select error: %w", err)
+		return "", fmt.Errorf("select error: %w", err)
 	} else if len(indexes) == 0 {
-		return "", xerrors.Errorf("artifactID %s: %w", artifactID, jar.ArtifactNotFoundErr)
+		return "", fmt.Errorf("artifactID %s: %w", artifactID, jar.ArtifactNotFoundErr)
 	}
 	sort.Slice(indexes, func(i, j int) bool {
 		return indexes[i].GroupID < indexes[j].GroupID

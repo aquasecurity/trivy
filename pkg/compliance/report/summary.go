@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
 )
@@ -45,11 +44,11 @@ func NewSummaryWriter(output io.Writer) SummaryWriter {
 // Write writes the results in a summarized table format
 func (s SummaryWriter) Write(report *ComplianceReport) error {
 	if _, err := fmt.Fprintln(s.Output); err != nil {
-		return xerrors.Errorf("failed to write summary report: %w", err)
+		return fmt.Errorf("failed to write summary report: %w", err)
 	}
 
 	if _, err := fmt.Fprintf(s.Output, "Summary Report for compliance: %s\n", report.Title); err != nil {
-		return xerrors.Errorf("failed to write summary report: %w", err)
+		return fmt.Errorf("failed to write summary report: %w", err)
 	}
 	sr := BuildSummary(report)
 	t := table.New(s.Output)

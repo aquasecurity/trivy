@@ -2,13 +2,13 @@ package vm
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"strings"
 	"sync"
 
 	"github.com/google/wire"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -48,11 +48,11 @@ type Walker interface {
 func NewArtifact(target string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
-		return nil, xerrors.Errorf("handler init error: %w", err)
+		return nil, fmt.Errorf("handler init error: %w", err)
 	}
 	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
 	if err != nil {
-		return nil, xerrors.Errorf("analyzer group error: %w", err)
+		return nil, fmt.Errorf("analyzer group error: %w", err)
 	}
 
 	storage := Storage{
@@ -72,14 +72,14 @@ func NewArtifact(target string, c cache.ArtifactCache, w Walker, opt artifact.Op
 		target = strings.TrimPrefix(target, TypeEBS.Prefix())
 		e, err := newEBS(target, storage, opt.AWSRegion, opt.AWSEndpoint)
 		if err != nil {
-			return nil, xerrors.Errorf("new EBS error: %w", err)
+			return nil, fmt.Errorf("new EBS error: %w", err)
 		}
 		return e, nil
 	case TypeFile:
 		target = strings.TrimPrefix(target, TypeFile.Prefix())
 		return newFile(target, storage)
 	}
-	return nil, xerrors.Errorf("unsupported format")
+	return nil, fmt.Errorf("unsupported format")
 }
 
 type Storage struct {
@@ -104,7 +104,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	// Prepare filesystem for post analysis
 	composite, err := a.analyzer.PostAnalyzerFS()
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("unable to get post analysis filesystem: %w", err)
+		return types.BlobInfo{}, fmt.Errorf("unable to get post analysis filesystem: %w", err)
 	}
 	defer composite.Cleanup()
 
@@ -112,7 +112,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	err = a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
 		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
-			return xerrors.Errorf("analyze file (%s): %w", path, err)
+			return fmt.Errorf("analyze file (%s): %w", path, err)
 		}
 
 		// Skip post analysis if the file is not required
@@ -124,11 +124,11 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 		// Build filesystem for post analysis
 		tmpFilePath, err := composite.CopyFileToTemp(opener, info)
 		if err != nil {
-			return xerrors.Errorf("failed to copy file to temp: %w", err)
+			return fmt.Errorf("failed to copy file to temp: %w", err)
 		}
 
 		if err = composite.CreateLink(analyzerTypes, "", path, tmpFilePath); err != nil {
-			return xerrors.Errorf("failed to write a file: %w", err)
+			return fmt.Errorf("failed to write a file: %w", err)
 		}
 
 		return nil
@@ -138,12 +138,12 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	wg.Wait()
 
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("walk vm error: %w", err)
+		return types.BlobInfo{}, fmt.Errorf("walk vm error: %w", err)
 	}
 
 	// Post-analysis
 	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
+		return types.BlobInfo{}, fmt.Errorf("post analysis error: %w", err)
 	}
 
 	result.Sort()
@@ -160,7 +160,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("failed to call hooks: %w", err)
+		return types.BlobInfo{}, fmt.Errorf("failed to call hooks: %w", err)
 	}
 
 	return blobInfo, nil

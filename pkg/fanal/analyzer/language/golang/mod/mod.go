@@ -15,7 +15,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
@@ -76,7 +75,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			return fmt.Errorf("parse error: %w", err)
 		} else if gomod == nil {
 			return nil
 		}
@@ -86,7 +85,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(input.FS, sumPath, a.sumParser)
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				return xerrors.Errorf("parse error: %w", err)
+				return fmt.Errorf("parse error: %w", err)
 			}
 			mergeGoSum(gomod, gosum)
 		}
@@ -95,7 +94,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, fmt.Errorf("walk error: %w", err)
 	}
 
 	if err = a.fillAdditionalData(apps); err != nil {
@@ -153,7 +152,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 
 			// Collect licenses
 			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
-				return xerrors.Errorf("license error: %w", err)
+				return fmt.Errorf("license error: %w", err)
 			} else {
 				// Cache the detected licenses
 				licenses[lib.ID] = licenseNames
@@ -164,7 +163,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 
 			// Collect dependencies of the direct dependency
 			if dep, err := a.collectDeps(modDir, lib.ID); err != nil {
-				return xerrors.Errorf("dependency graph error: %w", err)
+				return fmt.Errorf("dependency graph error: %w", err)
 			} else if dep.ID == "" {
 				// go.mod not found
 				continue
@@ -192,14 +191,14 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, err
 			log.String("module", pkgID))
 		return types.Dependency{}, nil
 	} else if err != nil {
-		return types.Dependency{}, xerrors.Errorf("file open error: %w", err)
+		return types.Dependency{}, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	// Parse go.mod under $GOPATH/pkg/mod
 	pkgs, _, err := a.leafModParser.Parse(f)
 	if err != nil {
-		return types.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
+		return types.Dependency{}, fmt.Errorf("%s parse error: %w", modPath, err)
 	}
 
 	// Filter out indirect dependencies
@@ -216,13 +215,13 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, err
 func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
 	f, err := fsys.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	file, ok := f.(xio.ReadSeekCloserAt)
 	if !ok {
-		return nil, xerrors.Errorf("type assertion error: %w", err)
+		return nil, fmt.Errorf("type assertion error: %w", err)
 	}
 
 	// Parse go.mod or go.sum
@@ -279,13 +278,13 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 		// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/LICENSE
 		f, err := os.Open(path)
 		if err != nil {
-			return xerrors.Errorf("file (%s) open error: %w", path, err)
+			return fmt.Errorf("file (%s) open error: %w", path, err)
 		}
 		defer f.Close()
 
 		l, err := licensing.Classify(path, f, classifierConfidenceLevel)
 		if err != nil {
-			return xerrors.Errorf("license classify error: %w", err)
+			return fmt.Errorf("license classify error: %w", err)
 		}
 		// License found
 		if l != nil && len(l.Findings) > 0 {

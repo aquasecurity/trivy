@@ -2,10 +2,9 @@ package pnpm
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -27,7 +26,7 @@ type pnpmLibraryAnalyzer struct{}
 func (a pnpmLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.Pnpm, input.FilePath, input.Content, pnpm.NewParser())
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
+		return nil, fmt.Errorf("unable to parse %s: %w", input.FilePath, err)
 	}
 	return res, nil
 }

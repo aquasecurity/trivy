@@ -2,10 +2,9 @@ package environment
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/conda/environment"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -24,7 +23,7 @@ type environmentAnalyzer struct{}
 func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.CondaEnv, input.FilePath, input.Content, environment.NewParser())
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse environment.yaml: %w", err)
+		return nil, fmt.Errorf("unable to parse environment.yaml: %w", err)
 	}
 	return res, nil
 }

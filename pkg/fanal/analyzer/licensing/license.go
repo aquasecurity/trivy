@@ -2,6 +2,7 @@ package licensing
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"math"
 	"os"
@@ -9,7 +10,6 @@ import (
 	"strings"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -101,7 +101,7 @@ func (a *licenseFileAnalyzer) Analyze(ctx context.Context, input analyzer.Analys
 	}
 	lf, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
 	if err != nil {
-		return nil, xerrors.Errorf("license classification error: %w", err)
+		return nil, fmt.Errorf("license classification error: %w", err)
 	} else if len(lf.Findings) == 0 {
 		return nil, nil
 	}

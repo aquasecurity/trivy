@@ -2,13 +2,13 @@ package pip
 
 import (
 	"bufio"
+	"fmt"
 	"strings"
 	"unicode"
 
 	"golang.org/x/text/encoding"
 	u "golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -55,7 +55,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		})
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, nil, xerrors.Errorf("scan error: %w", err)
+		return nil, nil, fmt.Errorf("scan error: %w", err)
 	}
 	return pkgs, nil, nil
 }

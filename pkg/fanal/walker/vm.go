@@ -2,6 +2,7 @@ package walker
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/fs"
 	"path/filepath"
@@ -12,7 +13,6 @@ import (
 	"github.com/masahiro331/go-disk/mbr"
 	"github.com/masahiro331/go-disk/types"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -55,7 +55,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFun
 
 	driver, err := disk.NewDriver(vreader)
 	if err != nil {
-		return xerrors.Errorf("failed to new disk driver: %w", err)
+		return fmt.Errorf("failed to new disk driver: %w", err)
 	}
 
 	for {
@@ -64,7 +64,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFun
 			if err == io.EOF {
 				break
 			}
-			return xerrors.Errorf("failed to get a next partition: %w", err)
+			return fmt.Errorf("failed to get a next partition: %w", err)
 		}
 
 		// skip boot partition
@@ -89,7 +89,7 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 	// Trivy does not support LVM scanning. It is skipped at the moment.
 	foundLVM, err := w.detectLVM(sr)
 	if err != nil {
-		return xerrors.Errorf("LVM detection error: %w", err)
+		return fmt.Errorf("LVM detection error: %w", err)
 	} else if foundLVM {
 		w.logger.Error("LVM is not supported, skipping", log.String("name", partition.Name()+".img"))
 		return nil
@@ -98,7 +98,7 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 	// Auto-detect filesystem such as ext4 and xfs
 	fsys, clean, err := filesystem.New(sr)
 	if err != nil {
-		return xerrors.Errorf("filesystem error: %w", err)
+		return fmt.Errorf("filesystem error: %w", err)
 	}
 	defer clean()
 
@@ -107,18 +107,18 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 		return w.fsWalk(fsys, path, d, err)
 	})
 	if err != nil {
-		return xerrors.Errorf("filesystem walk error: %w", err)
+		return fmt.Errorf("filesystem walk error: %w", err)
 	}
 	return nil
 }
 
 func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 	if err != nil {
-		return xerrors.Errorf("fs.Walk error: %w", err)
+		return fmt.Errorf("fs.Walk error: %w", err)
 	}
 	fi, err := d.Info()
 	if err != nil {
-		return xerrors.Errorf("dir entry info error: %w", err)
+		return fmt.Errorf("dir entry info error: %w", err)
 	}
 	pathName := strings.TrimPrefix(filepath.Clean(path), "/")
 	switch {
@@ -148,7 +148,7 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 	defer cvf.Clean()
 
 	if err = w.analyzeFn(path, fi, cvf.Open); err != nil {
-		return xerrors.Errorf("failed to analyze file: %w", err)
+		return fmt.Errorf("failed to analyze file: %w", err)
 	}
 	return nil
 }
@@ -174,11 +174,11 @@ func (cvf *cachedVMFile) Open() (xio.ReadSeekCloserAt, error) {
 
 	f, err := cvf.fs.Open(cvf.filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	fi, err := f.Stat()
 	if err != nil {
-		return nil, xerrors.Errorf("file stat error: %w", err)
+		return nil, fmt.Errorf("file stat error: %w", err)
 	}
 
 	cvf.cf = newCachedFile(fi.Size(), f)
@@ -196,11 +196,11 @@ func (w *VM) detectLVM(sr io.SectionReader) (bool, error) {
 	buf := make([]byte, 512)
 	_, err := sr.ReadAt(buf, 512)
 	if err != nil {
-		return false, xerrors.Errorf("read header block error: %w", err)
+		return false, fmt.Errorf("read header block error: %w", err)
 	}
 	_, err = sr.Seek(0, io.SeekStart)
 	if err != nil {
-		return false, xerrors.Errorf("seek error: %w", err)
+		return false, fmt.Errorf("seek error: %w", err)
 	}
 
 	// LABELONE is LVM signature

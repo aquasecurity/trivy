@@ -2,12 +2,11 @@ package walker
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -31,7 +30,7 @@ func (w *FS) Walk(root string, opt Option, fn WalkFunc) error {
 
 	// Walk the filesystem
 	if err := filepath.WalkDir(root, walkDirFunc); err != nil {
-		return xerrors.Errorf("walk dir error: %w", err)
+		return fmt.Errorf("walk dir error: %w", err)
 	}
 
 	return nil
@@ -46,7 +45,7 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
 		relPath, err := filepath.Rel(root, filePath)
 		if err != nil {
-			return xerrors.Errorf("filepath rel (%s): %w", relPath, err)
+			return fmt.Errorf("filepath rel (%s): %w", relPath, err)
 		}
 		relPath = filepath.ToSlash(relPath)
 
@@ -65,11 +64,11 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 
 		info, err := d.Info()
 		if err != nil {
-			return xerrors.Errorf("file info error: %w", err)
+			return fmt.Errorf("file info error: %w", err)
 		}
 
 		if err = fn(relPath, info, fileOpener(filePath)); err != nil {
-			return xerrors.Errorf("failed to analyze file: %w", err)
+			return fmt.Errorf("failed to analyze file: %w", err)
 		}
 
 		return nil
@@ -88,7 +87,7 @@ func (w *FS) onError(wrapped fs.WalkDirFunc) fs.WalkDirFunc {
 			return nil
 		case err != nil:
 			// halt traversal on any other error
-			return xerrors.Errorf("unknown error with %s: %w", filePath, err)
+			return fmt.Errorf("unknown error with %s: %w", filePath, err)
 		}
 		return nil
 	}

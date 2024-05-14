@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
+
 	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/trivy-checks/pkg/spec"
@@ -34,7 +34,7 @@ func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
 		for _, check := range control.Checks {
 			scannerType := scannerByCheckID(check.ID)
 			if scannerType == types.UnknownScanner {
-				return nil, xerrors.Errorf("unsupported check ID: %s", check.ID)
+				return nil, fmt.Errorf("unsupported check ID: %s", check.ID)
 			}
 			scannerTypes[scannerType] = struct{}{}
 		}
@@ -86,7 +86,7 @@ func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
 
 	var complianceSpec ComplianceSpec
 	if err = yaml.Unmarshal(b, &complianceSpec); err != nil {
-		return ComplianceSpec{}, xerrors.Errorf("spec yaml decode error: %w", err)
+		return ComplianceSpec{}, fmt.Errorf("spec yaml decode error: %w", err)
 	}
 	return complianceSpec, nil
 

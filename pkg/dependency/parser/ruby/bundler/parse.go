@@ -2,11 +2,11 @@ package bundler
 
 import (
 	"bufio"
+	"fmt"
 	"sort"
 	"strings"
 
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -100,7 +100,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		deps[i].DependsOn = dependsOn
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, nil, xerrors.Errorf("scan error: %w", err)
+		return nil, nil, fmt.Errorf("scan error: %w", err)
 	}
 
 	pkgSlice := maps.Values(pkgs)

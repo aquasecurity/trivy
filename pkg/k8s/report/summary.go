@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -71,11 +70,11 @@ func (s SummaryWriter) Write(report Report) error {
 	consolidated := report.consolidate()
 
 	if _, err := fmt.Fprintln(s.Output); err != nil {
-		return xerrors.Errorf("failed to write summary report: %w", err)
+		return fmt.Errorf("failed to write summary report: %w", err)
 	}
 
 	if _, err := fmt.Fprintln(s.Output, report.name); err != nil {
-		return xerrors.Errorf("failed to write summary report title: %w", err)
+		return fmt.Errorf("failed to write summary report title: %w", err)
 	}
 
 	t := table.New(s.Output)

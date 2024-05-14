@@ -3,9 +3,8 @@ package debian
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -34,7 +33,7 @@ func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 			},
 		}, nil
 	}
-	return nil, xerrors.Errorf("debian: %w", fos.AnalyzeOSError)
+	return nil, fmt.Errorf("debian: %w", fos.AnalyzeOSError)
 }
 
 func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

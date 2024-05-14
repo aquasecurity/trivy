@@ -2,10 +2,10 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 
-	"golang.org/x/xerrors"
 	"k8s.io/utils/strings/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -31,7 +31,7 @@ type NewScanner func([]string, misconf.ScannerOption) (*misconf.Scanner, error)
 func NewAnalyzer(t analyzer.Type, version int, newScanner NewScanner, opts analyzer.AnalyzerOptions) (*Analyzer, error) {
 	s, err := newScanner(opts.FilePatterns, opts.MisconfScannerOption)
 	if err != nil {
-		return nil, xerrors.Errorf("%s scanner init error: %w", t, err)
+		return nil, fmt.Errorf("%s scanner init error: %w", t, err)
 	}
 	return &Analyzer{
 		typ:     t,
@@ -44,7 +44,7 @@ func NewAnalyzer(t analyzer.Type, version int, newScanner NewScanner, opts analy
 func (a *Analyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	misconfs, err := a.scanner.Scan(ctx, input.FS)
 	if err != nil {
-		return nil, xerrors.Errorf("%s scan error: %w", a.typ, err)
+		return nil, fmt.Errorf("%s scan error: %w", a.typ, err)
 	}
 	return &analyzer.AnalysisResult{Misconfigurations: misconfs}, nil
 }

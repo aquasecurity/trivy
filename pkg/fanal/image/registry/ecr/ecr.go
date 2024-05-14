@@ -3,13 +3,13 @@ package ecr
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -38,7 +38,7 @@ func getSession(option types.RegistryOptions) (aws.Config, error) {
 
 func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) error {
 	if !strings.HasSuffix(domain, ecrURL) {
-		return xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
+		return fmt.Errorf("ECR : %w", types.InvalidURLPattern)
 	}
 
 	cfg, err := getSession(option)
@@ -55,12 +55,12 @@ func (e *ECR) GetCredential(ctx context.Context) (username, password string, err
 	input := &ecr.GetAuthorizationTokenInput{}
 	result, err := e.Client.GetAuthorizationToken(ctx, input)
 	if err != nil {
-		return "", "", xerrors.Errorf("failed to get authorization token: %w", err)
+		return "", "", fmt.Errorf("failed to get authorization token: %w", err)
 	}
 	for _, data := range result.AuthorizationData {
 		b, err := base64.StdEncoding.DecodeString(*data.AuthorizationToken)
 		if err != nil {
-			return "", "", xerrors.Errorf("base64 decode failed: %w", err)
+			return "", "", fmt.Errorf("base64 decode failed: %w", err)
 		}
 		// e.g. AWS:eyJwYXlsb2...
 		split := strings.SplitN(string(b), ":", 2)

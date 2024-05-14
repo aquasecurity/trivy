@@ -2,13 +2,13 @@ package image
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	multierror "github.com/hashicorp/go-multierror"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -25,7 +25,7 @@ var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
 
 func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions) (types.Image, func(), error) {
 	if len(opt.ImageSources) == 0 {
-		return nil, func() {}, xerrors.New("no image sources supplied")
+		return nil, func() {}, errors.New("no image sources supplied")
 	}
 
 	var errs error
@@ -36,7 +36,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 
 	ref, err := name.ParseReference(imageName, nameOpts...)
 	if err != nil {
-		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
+		return nil, func() {}, fmt.Errorf("failed to parse the image name: %w", err)
 	}
 
 	for _, src := range opt.ImageSources {
@@ -61,7 +61,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 func ID(img v1.Image) (string, error) {
 	h, err := img.ConfigName()
 	if err != nil {
-		return "", xerrors.Errorf("unable to get the image ID: %w", err)
+		return "", fmt.Errorf("unable to get the image ID: %w", err)
 	}
 	return h.String(), nil
 }
@@ -69,7 +69,7 @@ func ID(img v1.Image) (string, error) {
 func LayerIDs(img v1.Image) ([]string, error) {
 	conf, err := img.ConfigFile()
 	if err != nil {
-		return nil, xerrors.Errorf("unable to get the config file: %w", err)
+		return nil, fmt.Errorf("unable to get the config file: %w", err)
 	}
 
 	var layerIDs []string

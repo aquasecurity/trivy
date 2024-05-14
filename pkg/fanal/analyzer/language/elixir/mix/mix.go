@@ -2,10 +2,9 @@ package mix
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/hex/mix"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -28,7 +27,7 @@ func (a mixLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	p := mix.NewParser()
 	res, err := language.Analyze(types.Hex, input.FilePath, input.Content, p)
 	if err != nil {
-		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
+		return nil, fmt.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 	return res, nil
 }

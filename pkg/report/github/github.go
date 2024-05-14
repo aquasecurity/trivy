@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -138,7 +136,7 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 			githubPkg.Dependencies = pkg.DependsOn // TODO: replace with PURL
 			githubPkg.PackageUrl, err = buildPurl(result.Type, report.Metadata, pkg)
 			if err != nil {
-				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
+				return fmt.Errorf("unable to build purl for %s: %w", pkg.Name, err)
 			}
 
 			if pkg.FilePath != "" {
@@ -156,11 +154,11 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 
 	output, err := json.MarshalIndent(snapshot, "", "  ")
 	if err != nil {
-		return xerrors.Errorf("failed to marshal github dependency snapshots: %w", err)
+		return fmt.Errorf("failed to marshal github dependency snapshots: %w", err)
 	}
 
 	if _, err = fmt.Fprint(w.Output, string(output)); err != nil {
-		return xerrors.Errorf("failed to write github dependency snapshots: %w", err)
+		return fmt.Errorf("failed to write github dependency snapshots: %w", err)
 	}
 	return nil
 }
@@ -186,7 +184,7 @@ func getPkgRelationshipType(pkg ftypes.Package) string {
 func buildPurl(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (string, error) {
 	packageUrl, err := purl.New(t, metadata, pkg)
 	if err != nil {
-		return "", xerrors.Errorf("purl error: %w", err)
+		return "", fmt.Errorf("purl error: %w", err)
 	}
 	if packageUrl == nil {
 		return "", nil

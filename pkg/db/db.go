@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
-	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -99,21 +98,21 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 		log.Debug("There is no valid metadata file", log.Err(err))
 		if skip {
 			log.Error("The first run cannot skip downloading DB")
-			return false, xerrors.New("--skip-update cannot be specified on the first run")
+			return false, errors.New("--skip-update cannot be specified on the first run")
 		}
 		meta = metadata.Metadata{Version: db.SchemaVersion}
 	}
 
 	if db.SchemaVersion < meta.Version {
 		log.Error("The Trivy version is old. Update to the latest version.", log.String("version", cliVersion))
-		return false, xerrors.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
+		return false, fmt.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
 			meta.Version, db.SchemaVersion)
 	}
 
 	if skip {
 		log.Debug("Skipping DB update...")
 		if err = c.validate(meta); err != nil {
-			return false, xerrors.Errorf("validate error: %w", err)
+			return false, fmt.Errorf("validate error: %w", err)
 		}
 		return false, nil
 	}
@@ -130,7 +129,7 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 func (c *Client) validate(meta metadata.Metadata) error {
 	if db.SchemaVersion != meta.Version {
 		log.Error("The local DB has an old schema version which is not supported by the current version of Trivy CLI. DB needs to be updated.")
-		return xerrors.Errorf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
+		return fmt.Errorf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
 			meta.Version, db.SchemaVersion)
 	}
 	return nil
@@ -158,15 +157,15 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 
 	art, err := c.initOCIArtifact(opt)
 	if err != nil {
-		return xerrors.Errorf("OCI artifact error: %w", err)
+		return fmt.Errorf("OCI artifact error: %w", err)
 	}
 
 	if err = art.Download(ctx, db.Dir(dst), oci.DownloadOption{MediaType: dbMediaType}); err != nil {
-		return xerrors.Errorf("database download error: %w", err)
+		return fmt.Errorf("database download error: %w", err)
 	}
 
 	if err = c.updateDownloadedAt(dst); err != nil {
-		return xerrors.Errorf("failed to update downloaded_at: %w", err)
+		return fmt.Errorf("failed to update downloaded_at: %w", err)
 	}
 	return nil
 }
@@ -179,12 +178,12 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	client := metadata.NewClient(dst)
 	meta, err := client.Get()
 	if err != nil {
-		return xerrors.Errorf("unable to get metadata: %w", err)
+		return fmt.Errorf("unable to get metadata: %w", err)
 	}
 
 	meta.DownloadedAt = c.clock.Now().UTC()
 	if err = client.Update(meta); err != nil {
-		return xerrors.Errorf("failed to update metadata: %w", err)
+		return fmt.Errorf("failed to update metadata: %w", err)
 	}
 
 	return nil
@@ -207,7 +206,7 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 				}
 			}
 		}
-		return nil, xerrors.Errorf("OCI artifact error: %w", err)
+		return nil, fmt.Errorf("OCI artifact error: %w", err)
 	}
 	return art, nil
 }

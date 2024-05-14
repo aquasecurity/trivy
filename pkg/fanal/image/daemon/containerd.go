@@ -23,7 +23,6 @@ import (
 	"github.com/opencontainers/go-digest"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -55,7 +54,7 @@ func (n familiarNamed) String() string {
 func imageWriter(client *containerd.Client, img containerd.Image, platform types.Platform) imageSave {
 	return func(ctx context.Context, ref []string) (io.ReadCloser, error) {
 		if len(ref) < 1 {
-			return nil, xerrors.New("no image reference")
+			return nil, errors.New("no image reference")
 		}
 		imgOpts := archive.WithImage(client.ImageService(), ref[0])
 		manifestOpts := archive.WithManifest(img.Target())
@@ -86,7 +85,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 	}
 
 	if _, err := os.Stat(addr); errors.Is(err, os.ErrNotExist) {
-		return nil, cleanup, xerrors.Errorf("containerd socket not found: %s", addr)
+		return nil, cleanup, fmt.Errorf("containerd socket not found: %s", addr)
 	}
 
 	ref, searchFilters, err := parseReference(imageName)
@@ -106,7 +105,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	client, err := containerd.New(addr, options...)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to initialize a containerd client: %w", err)
+		return nil, cleanup, fmt.Errorf("failed to initialize a containerd client: %w", err)
 	}
 
 	namespace := os.Getenv("CONTAINERD_NAMESPACE")
@@ -118,18 +117,18 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	imgs, err := client.ListImages(ctx, searchFilters...)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to list images from containerd client: %w", err)
+		return nil, cleanup, fmt.Errorf("failed to list images from containerd client: %w", err)
 	}
 
 	if len(imgs) < 1 {
-		return nil, cleanup, xerrors.Errorf("image not found in containerd store: %s", imageName)
+		return nil, cleanup, fmt.Errorf("image not found in containerd store: %s", imageName)
 	}
 
 	img := imgs[0]
 
 	f, err := os.CreateTemp("", "fanal-containerd-*")
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
+		return nil, cleanup, fmt.Errorf("failed to create a temporary file: %w", err)
 	}
 
 	cleanup = func() {
@@ -140,7 +139,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	insp, history, ref, err := inspect(ctx, img, ref)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("inspect error: %w", err)
+		return nil, cleanup, fmt.Errorf("inspect error: %w", err)
 	}
 
 	return &image{
@@ -153,7 +152,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 func parseReference(imageName string) (refdocker.Reference, []string, error) {
 	ref, err := refdocker.ParseAnyReference(imageName)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("parse error: %w", err)
+		return nil, nil, fmt.Errorf("parse error: %w", err)
 	}
 
 	d, isDigested := ref.(refdocker.Digested)
@@ -188,7 +187,7 @@ func parseReference(imageName string) (refdocker.Reference, []string, error) {
 		}, nil
 	}
 
-	return nil, nil, xerrors.Errorf("failed to parse image reference: %s", imageName)
+	return nil, nil, fmt.Errorf("failed to parse image reference: %s", imageName)
 }
 
 // readImageConfig reads the config spec (`application/vnd.oci.image.config.v1+json`) for img.platform from content store.

@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
+	"fmt"
 	"io"
 	"strings"
 
 	"github.com/in-toto/in-toto-golang/in_toto"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -40,7 +41,7 @@ const (
 	PredicateCycloneDXBeforeV05 = "https://cyclonedx.org/schema"
 )
 
-var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
+var ErrUnknownFormat = errors.New("Unknown SBOM format")
 
 type cdxHeader struct {
 	// XML specific field
@@ -56,7 +57,7 @@ type spdxHeader struct {
 
 func IsCycloneDXJSON(r io.ReadSeeker) (bool, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return false, xerrors.Errorf("seek error: %w", err)
+		return false, fmt.Errorf("seek error: %w", err)
 	}
 
 	var cdxBom cdxHeader
@@ -69,7 +70,7 @@ func IsCycloneDXJSON(r io.ReadSeeker) (bool, error) {
 }
 func IsCycloneDXXML(r io.ReadSeeker) (bool, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return false, xerrors.Errorf("seek error: %w", err)
+		return false, fmt.Errorf("seek error: %w", err)
 	}
 
 	var cdxBom cdxHeader
@@ -83,7 +84,7 @@ func IsCycloneDXXML(r io.ReadSeeker) (bool, error) {
 
 func IsSPDXJSON(r io.ReadSeeker) (bool, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return false, xerrors.Errorf("seek error: %w", err)
+		return false, fmt.Errorf("seek error: %w", err)
 	}
 
 	var spdxBom spdxHeader
@@ -97,7 +98,7 @@ func IsSPDXJSON(r io.ReadSeeker) (bool, error) {
 
 func IsSPDXTV(r io.ReadSeeker) (bool, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return false, xerrors.Errorf("seek error: %w", err)
+		return false, fmt.Errorf("seek error: %w", err)
 	}
 
 	if scanner := bufio.NewScanner(r); scanner.Scan() {
@@ -141,7 +142,7 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	}
 
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+		return FormatUnknown, fmt.Errorf("seek error: %w", err)
 	}
 
 	// Try in-toto attestation
@@ -217,18 +218,18 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		v = &spdx.SPDX{BOM: bom}
 		decoder = spdx.NewTVDecoder(f)
 	default:
-		return types.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
+		return types.SBOM{}, fmt.Errorf("%s scanning is not yet supported", format)
 
 	}
 
 	// Decode a file content into core.BOM
 	if err := decoder.Decode(v); err != nil {
-		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
+		return types.SBOM{}, fmt.Errorf("failed to decode: %w", err)
 	}
 
 	var sbom types.SBOM
 	if err := sbomio.NewDecoder(bom).Decode(&sbom); err != nil {
-		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
+		return types.SBOM{}, fmt.Errorf("failed to decode: %w", err)
 	}
 
 	return sbom, nil

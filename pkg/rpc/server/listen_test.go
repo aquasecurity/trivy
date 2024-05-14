@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,7 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
@@ -108,7 +108,7 @@ func Test_dbWorker_update(t *testing.T) {
 					appVersion: "1",
 					skip:       false,
 				},
-				output: needsUpdateOutput{err: xerrors.New("fail")},
+				output: needsUpdateOutput{err: errors.New("fail")},
 			},
 			args:    args{appVersion: "1"},
 			wantErr: "failed to check if db needs an update",
@@ -124,7 +124,7 @@ func Test_dbWorker_update(t *testing.T) {
 			},
 			download: download{
 				call: true,
-				err:  xerrors.New("fail"),
+				err:  errors.New("fail"),
 			},
 			args:    args{appVersion: "1"},
 			wantErr: "failed DB hot update",

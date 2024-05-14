@@ -2,9 +2,8 @@ package packagesprops
 
 import (
 	"encoding/xml"
+	"fmt"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
@@ -70,7 +69,7 @@ func isVariable(s string) bool {
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var configData project
 	if err := xml.NewDecoder(r).Decode(&configData); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode '*.packages.props' file: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode '*.packages.props' file: %w", err)
 	}
 
 	var pkgs []ftypes.Package

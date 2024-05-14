@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -12,7 +13,6 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/wire"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/db"
@@ -76,7 +76,7 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 	// standalone mode
 	fsCache, err := cache.NewFSCache(fsutils.CacheDir())
 	if err != nil {
-		return Cache{}, xerrors.Errorf("unable to initialize fs cache: %w", err)
+		return Cache{}, fmt.Errorf("unable to initialize fs cache: %w", err)
 	}
 	return Cache{Cache: fsCache}, nil
 }
@@ -84,10 +84,10 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 // Reset resets the cache
 func (c Cache) Reset() (err error) {
 	if err := c.ClearDB(); err != nil {
-		return xerrors.Errorf("failed to clear the database: %w", err)
+		return fmt.Errorf("failed to clear the database: %w", err)
 	}
 	if err := c.ClearArtifacts(); err != nil {
-		return xerrors.Errorf("failed to clear the artifact cache: %w", err)
+		return fmt.Errorf("failed to clear the artifact cache: %w", err)
 	}
 	return nil
 }
@@ -96,7 +96,7 @@ func (c Cache) Reset() (err error) {
 func (c Cache) ClearDB() (err error) {
 	log.Info("Removing DB file...")
 	if err = os.RemoveAll(fsutils.CacheDir()); err != nil {
-		return xerrors.Errorf("failed to remove the directory (%s) : %w", fsutils.CacheDir(), err)
+		return fmt.Errorf("failed to remove the directory (%s) : %w", fsutils.CacheDir(), err)
 	}
 	return nil
 }
@@ -105,7 +105,7 @@ func (c Cache) ClearDB() (err error) {
 func (c Cache) ClearArtifacts() error {
 	log.Info("Removing artifact caches...")
 	if err := c.Clear(); err != nil {
-		return xerrors.Errorf("failed to remove the cache: %w", err)
+		return fmt.Errorf("failed to remove the cache: %w", err)
 	}
 	return nil
 }
@@ -119,20 +119,20 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {
-		return xerrors.Errorf("database error: %w", err)
+		return fmt.Errorf("database error: %w", err)
 	}
 
 	if needsUpdate {
 		log.Info("Need to update DB")
 		log.Info("Downloading DB...", log.String("repository", dbRepository.String()))
 		if err = client.Download(ctx, cacheDir, opt); err != nil {
-			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
+			return fmt.Errorf("failed to download vulnerability DB: %w", err)
 		}
 	}
 
 	// for debug
 	if err = showDBInfo(cacheDir); err != nil {
-		return xerrors.Errorf("failed to show database info: %w", err)
+		return fmt.Errorf("failed to show database info: %w", err)
 	}
 	return nil
 }
@@ -141,7 +141,7 @@ func showDBInfo(cacheDir string) error {
 	m := metadata.NewClient(cacheDir)
 	meta, err := m.Get()
 	if err != nil {
-		return xerrors.Errorf("something wrong with DB: %w", err)
+		return fmt.Errorf("something wrong with DB: %w", err)
 	}
 	log.Debug("DB info", log.Int("schema", meta.Version), log.Time("updated_at", meta.UpdatedAt),
 		log.Time("next_update", meta.NextUpdate), log.Time("downloaded_at", meta.DownloadedAt))
@@ -155,14 +155,14 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 
 	client, err := policy.NewClient(cacheDir, quiet, checkBundleRepository)
 	if err != nil {
-		return nil, xerrors.Errorf("check client error: %w", err)
+		return nil, fmt.Errorf("check client error: %w", err)
 	}
 
 	needsUpdate := false
 	if !skipUpdate {
 		needsUpdate, err = client.NeedsUpdate(ctx, registryOpts)
 		if err != nil {
-			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
+			return nil, fmt.Errorf("unable to check if built-in policies need to be updated: %w", err)
 		}
 	}
 
@@ -170,7 +170,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 		log.Info("Need to update the built-in policies")
 		log.Info("Downloading the built-in policies...")
 		if err = client.DownloadBuiltinPolicies(ctx, registryOpts); err != nil {
-			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
+			return nil, fmt.Errorf("failed to download built-in policies: %w", err)
 		}
 	}
 
@@ -179,9 +179,9 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 		if skipUpdate {
 			msg := "No downloadable policies were loaded as --skip-check-update is enabled"
 			log.Info(msg)
-			return nil, xerrors.Errorf(msg)
+			return nil, fmt.Errorf(msg)
 		}
-		return nil, xerrors.Errorf("check load error: %w", err)
+		return nil, fmt.Errorf("check load error: %w", err)
 	}
 	return policyPaths, nil
 }

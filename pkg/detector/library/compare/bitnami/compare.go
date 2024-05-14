@@ -1,8 +1,9 @@
 package bitnami
 
 import (
+	"fmt"
+
 	version "github.com/bitnami/go-version/pkg/version"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
@@ -20,12 +21,12 @@ func (n Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := version.Parse(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("bitnami version error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("bitnami version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := version.NewConstraints(constraint)
 	if err != nil {
-		return false, xerrors.Errorf("bitnami constraint error (%s): %s", constraint, err)
+		return false, fmt.Errorf("bitnami constraint error (%s): %s", constraint, err)
 	}
 
 	return c.Check(v), nil

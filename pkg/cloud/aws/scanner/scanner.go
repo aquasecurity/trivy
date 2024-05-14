@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 
-	"golang.org/x/xerrors"
-
 	aws "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -89,7 +87,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	var policyFS fs.FS
 	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.CheckPaths...))
 	if err != nil {
-		return nil, false, xerrors.Errorf("unable to create policyfs: %w", err)
+		return nil, false, fmt.Errorf("unable to create policyfs: %w", err)
 	}
 
 	scannerOpts = append(scannerOpts,

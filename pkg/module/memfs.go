@@ -1,12 +1,11 @@
 package module
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"path/filepath"
 	"time"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -37,15 +36,15 @@ func (m *memFS) Open(name string) (fs.File, error) {
 func (m *memFS) initialize(filePath string, content xio.ReadSeekerAt) error {
 	mfs := mapfs.New()
 	if err := mfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
-		return xerrors.Errorf("mapfs mkdir error: %w", err)
+		return fmt.Errorf("mapfs mkdir error: %w", err)
 	}
 	b, err := io.ReadAll(content)
 	if err != nil {
-		return xerrors.Errorf("read error: %w", err)
+		return fmt.Errorf("read error: %w", err)
 	}
 	err = mfs.WriteVirtualFile(filePath, b, fs.ModePerm)
 	if err != nil {
-		return xerrors.Errorf("mapfs write error: %w", err)
+		return fmt.Errorf("mapfs write error: %w", err)
 	}
 
 	m.current = mfs

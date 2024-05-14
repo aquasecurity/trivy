@@ -2,11 +2,10 @@ package pom
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -28,7 +27,7 @@ func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*
 	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline))
 	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
-		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
+		return nil, fmt.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 
 	// Mark integration test pom files for `maven-invoker-plugin` as Dev to skip them by default.

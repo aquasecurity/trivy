@@ -2,6 +2,8 @@ package vex
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -9,7 +11,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/sbom"
@@ -31,7 +32,7 @@ func New(filePath string, report types.Report) (VEX, error) {
 	}
 	f, err := os.Open(filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
@@ -57,19 +58,19 @@ func New(filePath string, report types.Report) (VEX, error) {
 		return v, nil
 	}
 
-	return nil, xerrors.Errorf("unable to load VEX: %w", errs)
+	return nil, fmt.Errorf("unable to load VEX: %w", errs)
 }
 
 func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("seek error: %w", err)
+		return nil, fmt.Errorf("seek error: %w", err)
 	}
 	vex, err := cyclonedx.DecodeJSON(r)
 	if err != nil {
-		return nil, xerrors.Errorf("json decode error: %w", err)
+		return nil, fmt.Errorf("json decode error: %w", err)
 	}
 	if report.ArtifactType != artifact.TypeCycloneDX {
-		return nil, xerrors.New("CycloneDX VEX can be used with CycloneDX SBOM")
+		return nil, errors.New("CycloneDX VEX can be used with CycloneDX SBOM")
 	}
 	return newCycloneDX(report.BOM, vex), nil
 }
@@ -79,7 +80,7 @@ func decodeOpenVEX(r io.ReadSeeker) (VEX, error) {
 	logrus.SetOutput(io.Discard)
 
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("seek error: %w", err)
+		return nil, fmt.Errorf("seek error: %w", err)
 	}
 	var openVEX openvex.VEX
 	if err := json.NewDecoder(r).Decode(&openVEX); err != nil {
@@ -93,7 +94,7 @@ func decodeOpenVEX(r io.ReadSeeker) (VEX, error) {
 
 func decodeCSAF(r io.ReadSeeker) (VEX, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("seek error: %w", err)
+		return nil, fmt.Errorf("seek error: %w", err)
 	}
 	var adv csaf.Advisory
 	if err := json.NewDecoder(r).Decode(&adv); err != nil {

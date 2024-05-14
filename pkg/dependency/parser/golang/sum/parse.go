@@ -2,9 +2,8 @@ package sum
 
 import (
 	"bufio"
+	"fmt"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -35,7 +34,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		uniquePkgs[s[0]] = strings.TrimSuffix(strings.TrimPrefix(s[1], "v"), "/go.mod")
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, nil, xerrors.Errorf("scan error: %w", err)
+		return nil, nil, fmt.Errorf("scan error: %w", err)
 	}
 
 	for k, v := range uniquePkgs {

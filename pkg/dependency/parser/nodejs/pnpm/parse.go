@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
@@ -49,7 +49,7 @@ func NewParser() *Parser {
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
 	if err := yaml.NewDecoder(r).Decode(&lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+		return nil, nil, fmt.Errorf("decode error: %w", err)
 	}
 
 	lockVer := p.parseLockfileVersion(lockFile)

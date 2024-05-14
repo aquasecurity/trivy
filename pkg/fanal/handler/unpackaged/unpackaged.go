@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -31,7 +31,7 @@ type unpackagedHook struct {
 func NewUnpackagedHandler(opt artifact.Option) (handler.PostHandler, error) {
 	c, err := sbomatt.NewRekor(opt.RekorURL)
 	if err != nil {
-		return nil, xerrors.Errorf("rekor client error: %w", err)
+		return nil, fmt.Errorf("rekor client error: %w", err)
 	}
 	return unpackagedHook{
 		logger: log.WithPrefix("unpackaged"),

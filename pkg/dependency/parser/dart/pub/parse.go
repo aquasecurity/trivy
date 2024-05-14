@@ -1,7 +1,8 @@
 package pub
 
 import (
-	"golang.org/x/xerrors"
+	"fmt"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -34,7 +35,7 @@ type Dep struct {
 func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	l := &lock{}
 	if err := yaml.NewDecoder(r).Decode(&l); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode pubspec.lock: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode pubspec.lock: %w", err)
 	}
 	var pkgs []ftypes.Package
 	for name, dep := range l.Packages {

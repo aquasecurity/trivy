@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/package-url/packageurl-go"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -78,11 +77,11 @@ func (w VulnWriter) Write(ctx context.Context, report types.Report) error {
 
 	output, err := json.MarshalIndent(predicate, "", "  ")
 	if err != nil {
-		return xerrors.Errorf("failed to marshal cosign vulnerability predicate: %w", err)
+		return fmt.Errorf("failed to marshal cosign vulnerability predicate: %w", err)
 	}
 
 	if _, err = fmt.Fprint(w.output, string(output)); err != nil {
-		return xerrors.Errorf("failed to write cosign vulnerability predicate: %w", err)
+		return fmt.Errorf("failed to write cosign vulnerability predicate: %w", err)
 	}
 	return nil
 

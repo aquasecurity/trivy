@@ -2,11 +2,11 @@ package module
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/google/go-containerregistry/pkg/name"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -19,20 +19,20 @@ const mediaType = "application/vnd.module.wasm.content.layer.v1+wasm"
 func Install(ctx context.Context, dir, repo string, quiet bool, opt types.RegistryOptions) error {
 	ref, err := name.ParseReference(repo)
 	if err != nil {
-		return xerrors.Errorf("repository parse error: %w", err)
+		return fmt.Errorf("repository parse error: %w", err)
 	}
 
 	log.Info("Installing the module from the repository...", log.String("repo", repo))
 	artifact, err := oci.NewArtifact(repo, quiet, opt)
 	if err != nil {
-		return xerrors.Errorf("module initialize error: %w", err)
+		return fmt.Errorf("module initialize error: %w", err)
 	}
 
 	dst := filepath.Join(dir, ref.Context().Name())
 	log.Debug("Installing the module...", log.String("dst", dst))
 
 	if err = artifact.Download(ctx, dst, oci.DownloadOption{MediaType: mediaType}); err != nil {
-		return xerrors.Errorf("module download error: %w", err)
+		return fmt.Errorf("module download error: %w", err)
 	}
 
 	return nil
@@ -42,13 +42,13 @@ func Install(ctx context.Context, dir, repo string, quiet bool, opt types.Regist
 func Uninstall(_ context.Context, dir, repo string) error {
 	ref, err := name.ParseReference(repo)
 	if err != nil {
-		return xerrors.Errorf("repository parse error: %w", err)
+		return fmt.Errorf("repository parse error: %w", err)
 	}
 
 	log.Info("Uninstalling the module ...", log.String("module", repo))
 	dst := filepath.Join(dir, ref.Context().Name())
 	if err = os.RemoveAll(dst); err != nil {
-		return xerrors.Errorf("remove error: %w", err)
+		return fmt.Errorf("remove error: %w", err)
 	}
 
 	return nil

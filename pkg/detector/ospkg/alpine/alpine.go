@@ -2,11 +2,11 @@ package alpine
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-apk-version"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
@@ -89,7 +89,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, repo *ftypes.Reposit
 		}
 		advisories, err := s.vs.Get(stream, srcName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
+			return nil, fmt.Errorf("failed to get alpine advisories: %w", err)
 		}
 
 		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))

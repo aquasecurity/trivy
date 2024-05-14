@@ -11,7 +11,6 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -51,7 +50,7 @@ func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*cd
 	opts := core.Options{GenerateBOMRef: true}
 	bom, err := sbomio.NewEncoder(opts).Encode(report)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal report: %w", err)
+		return nil, fmt.Errorf("failed to marshal report: %w", err)
 	}
 
 	return m.Marshal(ctx, bom)
@@ -68,11 +67,11 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*cdx.BOM, error
 
 	var err error
 	if cdxBOM.Metadata.Component, err = m.MarshalRoot(); err != nil {
-		return nil, xerrors.Errorf("failed to marshal component: %w", err)
+		return nil, fmt.Errorf("failed to marshal component: %w", err)
 	}
 
 	if cdxBOM.Components, err = m.marshalComponents(); err != nil {
-		return nil, xerrors.Errorf("failed to marshal components: %w", err)
+		return nil, fmt.Errorf("failed to marshal components: %w", err)
 	}
 
 	cdxBOM.Dependencies = m.marshalDependencies()
@@ -104,7 +103,7 @@ func (m *Marshaler) MarshalRoot() (*cdx.Component, error) {
 func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component, error) {
 	componentType, err := m.componentType(component.Type)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get cdx component type: %w", err)
+		return nil, fmt.Errorf("failed to get cdx component type: %w", err)
 	}
 
 	cdxComponent := &cdx.Component{
@@ -132,7 +131,7 @@ func (m *Marshaler) marshalComponents() (*[]cdx.Component, error) {
 		}
 		c, err := m.MarshalComponent(component)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to marshal component: %w", err)
+			return nil, fmt.Errorf("failed to marshal component: %w", err)
 		}
 		cdxComponents = append(cdxComponents, *c)
 	}
@@ -230,7 +229,7 @@ func (*Marshaler) componentType(t core.ComponentType) (cdx.ComponentType, error)
 	case core.TypePlatform:
 		return cdx.ComponentTypePlatform, nil
 	}
-	return "", xerrors.Errorf("unknown component type: %s", t)
+	return "", fmt.Errorf("unknown component type: %s", t)
 }
 
 func (*Marshaler) PackageURL(p *packageurl.PackageURL) string {

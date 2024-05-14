@@ -2,11 +2,11 @@ package ubuntu
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -87,7 +87,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 		osVer = s.versionFromEolDates(osVer)
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
+			return nil, fmt.Errorf("failed to get Ubuntu advisories: %w", err)
 		}
 
 		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))

@@ -2,6 +2,7 @@ package io
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 	"sort"
 	"strconv"
@@ -11,7 +12,6 @@ import (
 	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -49,12 +49,12 @@ func NewDecoder(bom *core.BOM) *Decoder {
 func (m *Decoder) Decode(sbom *types.SBOM) error {
 	// Parse the root component
 	if err := m.decodeRoot(sbom); err != nil {
-		return xerrors.Errorf("failed to decode root component: %w", err)
+		return fmt.Errorf("failed to decode root component: %w", err)
 	}
 
 	// Parse all components
 	if err := m.decodeComponents(sbom); err != nil {
-		return xerrors.Errorf("failed to decode components: %w", err)
+		return fmt.Errorf("failed to decode components: %w", err)
 	}
 
 	// Build dependency graph between packages
@@ -68,7 +68,7 @@ func (m *Decoder) Decode(sbom *types.SBOM) error {
 
 	// Add remaining packages
 	if err := m.addOrphanPkgs(sbom); err != nil {
-		return xerrors.Errorf("failed to aggregate packages: %w", err)
+		return fmt.Errorf("failed to aggregate packages: %w", err)
 	}
 
 	sort.Slice(sbom.Applications, func(i, j int) bool {
@@ -96,7 +96,7 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 			s.Metadata.ImageID = prop.Value
 		case core.PropertySize:
 			if s.Metadata.Size, err = strconv.ParseInt(prop.Value, 10, 64); err != nil {
-				return xerrors.Errorf("failed to convert size: %w", err)
+				return fmt.Errorf("failed to convert size: %w", err)
 			}
 		case core.PropertyRepoDigest:
 			s.Metadata.RepoDigests = append(s.Metadata.RepoDigests, prop.Value)
@@ -140,7 +140,7 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 			if errors.Is(err, ErrUnsupportedType) || errors.Is(err, ErrPURLEmpty) {
 				continue
 			} else if err != nil {
-				return xerrors.Errorf("failed to decode library: %w", err)
+				return fmt.Errorf("failed to decode library: %w", err)
 			}
 			m.pkgs[id] = pkg
 		}
@@ -215,7 +215,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 			pkg.SrcRelease = prop.Value
 		case core.PropertySrcEpoch:
 			if pkg.SrcEpoch, err = strconv.Atoi(prop.Value); err != nil {
-				return nil, xerrors.Errorf("invalid src epoch: %w", err)
+				return nil, fmt.Errorf("invalid src epoch: %w", err)
 			}
 		case core.PropertyModularitylabel:
 			pkg.Modularitylabel = prop.Value
@@ -358,7 +358,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	}
 
 	if len(osPkgMap) > 1 {
-		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", maps.Keys(osPkgMap))
+		return fmt.Errorf("multiple types of OS packages in SBOM are not supported (%q)", maps.Keys(osPkgMap))
 	}
 
 	// Add OS packages only when OS is detected.

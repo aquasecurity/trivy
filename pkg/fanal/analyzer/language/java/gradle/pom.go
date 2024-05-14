@@ -2,6 +2,7 @@ package gradle
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"strings"
 
 	"golang.org/x/net/html/charset"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
@@ -57,7 +57,7 @@ func (props *Properties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error 
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return xerrors.Errorf("XML decode error: %w", err)
+			return fmt.Errorf("XML decode error: %w", err)
 		}
 
 		(*props)[p.XMLName.Local] = p.Value
@@ -90,7 +90,7 @@ func (a gradleLockAnalyzer) parsePoms() (map[string]pomXML, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("gradle licenses walk error: %w", err)
+		return nil, fmt.Errorf("gradle licenses walk error: %w", err)
 	}
 
 	return poms, nil
@@ -101,7 +101,7 @@ func parsePom(r io.Reader, path string) (pomXML, error) {
 	decoder := xml.NewDecoder(r)
 	decoder.CharsetReader = charset.NewReaderLabel
 	if err := decoder.Decode(&pom); err != nil {
-		return pomXML{}, xerrors.Errorf("xml decode error: %w", err)
+		return pomXML{}, fmt.Errorf("xml decode error: %w", err)
 	}
 
 	// We only need pom's with licenses or dependencies
@@ -121,7 +121,7 @@ func parsePom(r io.Reader, path string) (pomXML, error) {
 	}
 
 	if err := pom.resolveDependencyVersions(); err != nil {
-		return pomXML{}, xerrors.Errorf("unable to resolve dependency version: %w", err)
+		return pomXML{}, fmt.Errorf("unable to resolve dependency version: %w", err)
 	}
 
 	return pom, nil
@@ -139,7 +139,7 @@ func (pom *pomXML) resolveDependencyVersions() error {
 			} else {
 				// We use simplified logic to resolve properties.
 				// If necessary, update and use the logic for maven pom's
-				return xerrors.Errorf("Unable to resolve %q version. Please open a new discussion to update the Trivy logic.", dep.Version)
+				return fmt.Errorf("Unable to resolve %q version. Please open a new discussion to update the Trivy logic.", dep.Version)
 			}
 		}
 	}

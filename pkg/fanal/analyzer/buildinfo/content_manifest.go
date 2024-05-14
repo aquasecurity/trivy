@@ -3,10 +3,9 @@ package buildinfo
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -28,7 +27,7 @@ type contentManifestAnalyzer struct{}
 func (a contentManifestAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	var manifest contentManifest
 	if err := json.NewDecoder(target.Content).Decode(&manifest); err != nil {
-		return nil, xerrors.Errorf("invalid content manifest: %w", err)
+		return nil, fmt.Errorf("invalid content manifest: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{

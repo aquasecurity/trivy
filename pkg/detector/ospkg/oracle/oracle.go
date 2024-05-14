@@ -2,11 +2,11 @@ package oracle
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
-	"golang.org/x/xerrors"
 
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -63,7 +63,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 	for _, pkg := range pkgs {
 		advisories, err := s.vs.Get(osVer, pkg.Name)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get Oracle Linux advisory: %w", err)
+			return nil, fmt.Errorf("failed to get Oracle Linux advisory: %w", err)
 		}
 
 		installed := utils.FormatVersion(pkg)

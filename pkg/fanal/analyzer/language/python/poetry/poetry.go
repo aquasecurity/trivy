@@ -3,12 +3,11 @@ package poetry
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/poetry"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
@@ -50,7 +49,7 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		// Parse poetry.lock
 		app, err := a.parsePoetryLock(path, r)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			return fmt.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
@@ -65,7 +64,7 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("poetry walk error: %w", err)
+		return nil, fmt.Errorf("poetry walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -99,7 +98,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		a.logger.Debug("pyproject.toml not found", log.String("path", path))
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", path, err)
+		return fmt.Errorf("unable to parse %s: %w", path, err)
 	}
 
 	for i, pkg := range app.Packages {
@@ -119,7 +118,7 @@ func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]inte
 	// Parse pyproject.toml
 	f, err := fsys.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 

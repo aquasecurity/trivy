@@ -3,9 +3,8 @@ package cache
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net/http"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -44,7 +43,7 @@ func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo
 		return err
 	})
 	if err != nil {
-		return xerrors.Errorf("unable to store cache on the server: %w", err)
+		return fmt.Errorf("unable to store cache on the server: %w", err)
 	}
 	return nil
 }
@@ -57,7 +56,7 @@ func (c RemoteCache) PutBlob(diffID string, blobInfo types.BlobInfo) error {
 		return err
 	})
 	if err != nil {
-		return xerrors.Errorf("unable to store cache on the server: %w", err)
+		return fmt.Errorf("unable to store cache on the server: %w", err)
 	}
 	return nil
 }
@@ -71,7 +70,7 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 		return err
 	})
 	if err != nil {
-		return false, nil, xerrors.Errorf("unable to fetch missing layers: %w", err)
+		return false, nil, fmt.Errorf("unable to fetch missing layers: %w", err)
 	}
 	return layers.MissingArtifact, layers.MissingBlobIds, nil
 }
@@ -84,7 +83,7 @@ func (c RemoteCache) DeleteBlobs(blobIDs []string) error {
 		return err
 	})
 	if err != nil {
-		return xerrors.Errorf("unable to delete blobs on the server: %w", err)
+		return fmt.Errorf("unable to delete blobs on the server: %w", err)
 	}
 	return nil
 }

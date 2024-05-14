@@ -1,11 +1,11 @@
 package poetry
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"golang.org/x/xerrors"
 
 	version "github.com/aquasecurity/go-pep440-version"
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -41,7 +41,7 @@ func NewParser() *Parser {
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockfile Lockfile
 	if _, err := toml.NewDecoder(r).Decode(&lockfile); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode poetry.lock: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode poetry.lock: %w", err)
 	}
 
 	// Keep all installed versions
@@ -108,7 +108,7 @@ func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[str
 	name = normalizePkgName(name)
 	vers, ok := pkgVersions[name]
 	if !ok {
-		return "", xerrors.Errorf("no version found for %q", name)
+		return "", fmt.Errorf("no version found for %q", name)
 	}
 
 	for _, ver := range vers {
@@ -126,24 +126,24 @@ func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[str
 		}
 
 		if matched, err := matchVersion(ver, vRange); err != nil {
-			return "", xerrors.Errorf("failed to match version for %s: %w", name, err)
+			return "", fmt.Errorf("failed to match version for %s: %w", name, err)
 		} else if matched {
 			return packageID(name, ver), nil
 		}
 	}
-	return "", xerrors.Errorf("no matched version found for %q", name)
+	return "", fmt.Errorf("no matched version found for %q", name)
 }
 
 // matchVersion checks if the package version satisfies the given constraint.
 func matchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := version.Parse(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("python version error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("python version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := version.NewSpecifiers(constraint, version.WithPreRelease(true))
 	if err != nil {
-		return false, xerrors.Errorf("python constraint error (%s): %s", constraint, err)
+		return false, fmt.Errorf("python constraint error (%s): %s", constraint, err)
 	}
 
 	return c.Check(v), nil

@@ -2,9 +2,9 @@ package wolfi
 
 import (
 	"context"
+	"fmt"
 
 	version "github.com/knqyf263/go-apk-version"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/wolfi"
@@ -38,7 +38,7 @@ func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pk
 		}
 		advisories, err := s.vs.Get("", srcName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get Wolfi advisories: %w", err)
+			return nil, fmt.Errorf("failed to get Wolfi advisories: %w", err)
 		}
 
 		installed := utils.FormatVersion(pkg)

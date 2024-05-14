@@ -1,11 +1,11 @@
 package lock
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
@@ -38,10 +38,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to read packages.lock.json: %w", err)
+		return nil, nil, fmt.Errorf("failed to read packages.lock.json: %w", err)
 	}
 	if err := jfather.Unmarshal(input, &lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 
 	var pkgs []ftypes.Package

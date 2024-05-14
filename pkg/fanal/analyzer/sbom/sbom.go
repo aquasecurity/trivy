@@ -2,11 +2,10 @@ package sbom
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -33,12 +32,12 @@ func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 	// Format auto-detection
 	format, err := sbom.DetectFormat(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to detect SBOM format: %w", err)
+		return nil, fmt.Errorf("failed to detect SBOM format: %w", err)
 	}
 
 	bom, err := sbom.Decode(input.Content, format)
 	if err != nil {
-		return nil, xerrors.Errorf("SBOM decode error: %w", err)
+		return nil, fmt.Errorf("SBOM decode error: %w", err)
 	}
 
 	// Bitnami images

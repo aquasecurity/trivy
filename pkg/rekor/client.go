@@ -2,6 +2,8 @@ package rekor
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/url"
 
 	httptransport "github.com/go-openapi/runtime/client"
@@ -11,7 +13,6 @@ import (
 	"github.com/sigstore/rekor/pkg/generated/client/index"
 	"github.com/sigstore/rekor/pkg/generated/models"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -23,7 +24,7 @@ const (
 	uuidLen   = 64
 )
 
-var ErrOverGetEntriesLimit = xerrors.Errorf("over get entries limit")
+var ErrOverGetEntriesLimit = fmt.Errorf("over get entries limit")
 
 // EntryID is a hex-format string. The length of the string is 80 or 64.
 // If the length is 80, it consists of two elements, the TreeID and the UUID. If the length is 64,
@@ -47,7 +48,7 @@ func NewEntryID(entryID string) (EntryID, error) {
 			UUID:   entryID,
 		}, nil
 	default:
-		return EntryID{}, xerrors.New("invalid Entry ID length")
+		return EntryID{}, errors.New("invalid Entry ID length")
 	}
 }
 
@@ -66,7 +67,7 @@ type Client struct {
 func NewClient(rekorURL string) (*Client, error) {
 	u, err := url.Parse(rekorURL)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 
 	c := client.New(
@@ -81,14 +82,14 @@ func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 	params := index.NewSearchIndexParamsWithContext(ctx).WithQuery(&models.SearchIndex{Hash: hash})
 	resp, err := c.Index.SearchIndex(params)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to search: %w", err)
+		return nil, fmt.Errorf("failed to search: %w", err)
 	}
 
 	ids := make([]EntryID, len(resp.Payload))
 	for i, id := range resp.Payload {
 		ids[i], err = NewEntryID(id)
 		if err != nil {
-			return nil, xerrors.Errorf("invalid entry UUID: %w", err)
+			return nil, fmt.Errorf("invalid entry UUID: %w", err)
 		}
 	}
 
@@ -114,7 +115,7 @@ func (c *Client) GetEntries(ctx context.Context, entryIDs []EntryID) ([]Entry, e
 
 	resp, err := c.Entries.SearchLogQuery(params)
 	if err != nil {
-		return []Entry{}, xerrors.Errorf("failed to fetch log entries by UUIDs: %w", err)
+		return []Entry{}, fmt.Errorf("failed to fetch log entries by UUIDs: %w", err)
 	}
 
 	entries := make([]Entry, 0, len(resp.Payload))
@@ -122,7 +123,7 @@ func (c *Client) GetEntries(ctx context.Context, entryIDs []EntryID) ([]Entry, e
 		for id, entry := range payload {
 			eid, err := NewEntryID(id)
 			if err != nil {
-				return []Entry{}, xerrors.Errorf("failed to parse response entryID: %w", err)
+				return []Entry{}, fmt.Errorf("failed to parse response entryID: %w", err)
 			}
 
 			if !slices.Contains(uuids, eid.UUID) {

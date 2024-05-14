@@ -1,11 +1,11 @@
 package pipenv
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
 	"github.com/liamg/jfather"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -30,10 +30,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var lockFile lockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to read packages.lock.json: %w", err)
+		return nil, nil, fmt.Errorf("failed to read packages.lock.json: %w", err)
 	}
 	if err := jfather.Unmarshal(input, &lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode Pipenv.lock: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode Pipenv.lock: %w", err)
 	}
 
 	var pkgs []ftypes.Package

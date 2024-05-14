@@ -3,11 +3,11 @@ package ubuntu
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -48,7 +48,7 @@ func (a ubuntuOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 			}, nil
 		}
 	}
-	return nil, xerrors.Errorf("ubuntu: %w", fos.AnalyzeOSError)
+	return nil, fmt.Errorf("ubuntu: %w", fos.AnalyzeOSError)
 }
 
 func (a ubuntuOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

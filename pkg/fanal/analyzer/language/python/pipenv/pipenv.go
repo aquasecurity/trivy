@@ -2,10 +2,9 @@ package pipenv
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pipenv"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -27,7 +26,7 @@ type pipenvLibraryAnalyzer struct{}
 func (a pipenvLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.Pipenv, input.FilePath, input.Content, pipenv.NewParser())
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse Pipfile.lock: %w", err)
+		return nil, fmt.Errorf("unable to parse Pipfile.lock: %w", err)
 	}
 	return res, nil
 }

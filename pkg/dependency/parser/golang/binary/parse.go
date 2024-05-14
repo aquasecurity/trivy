@@ -3,13 +3,13 @@ package binary
 import (
 	"cmp"
 	"debug/buildinfo"
+	"errors"
 	"runtime/debug"
 	"sort"
 	"strings"
 
 	"github.com/spf13/pflag"
 	"golang.org/x/mod/semver"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
-	ErrNonGoBinary     = xerrors.New("non go binary")
+	ErrUnrecognizedExe = errors.New("unrecognized executable format")
+	ErrNonGoBinary     = errors.New("non go binary")
 )
 
 // convertError detects buildinfo.errUnrecognizedFormat and convert to

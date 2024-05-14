@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -12,7 +13,7 @@ import (
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/package-url/packageurl-go"
-	"golang.org/x/xerrors"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
@@ -65,7 +66,7 @@ func (i *IgnoreFinding) UnmarshalYAML(value *yaml.Node) error {
 
 	for _, pattern := range i.Paths {
 		if !doublestar.ValidatePattern(pattern) {
-			return xerrors.Errorf("invalid path pattern in the ignore file, id: %s, path: %s", i.ID, pattern)
+			return fmt.Errorf("invalid path pattern in the ignore file, id: %s, path: %s", i.ID, pattern)
 		}
 	}
 
@@ -73,7 +74,7 @@ func (i *IgnoreFinding) UnmarshalYAML(value *yaml.Node) error {
 	for _, purlStr := range tmp.PURLs {
 		parsedPURL, err := purl.FromString(purlStr)
 		if err != nil {
-			return xerrors.Errorf("purl error in the ignore file: %w", err)
+			return fmt.Errorf("purl error in the ignore file: %w", err)
 		}
 		i.PURLs = append(i.PURLs, parsedPURL)
 	}
@@ -189,12 +190,12 @@ func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, erro
 	} else if filepath.Ext(ignoreFile) == ".yml" || filepath.Ext(ignoreFile) == ".yaml" {
 		conf, err = parseIgnoreYAML(ignoreFile)
 		if err != nil {
-			return IgnoreConfig{}, xerrors.Errorf("%s parse error: %w", ignoreFile, err)
+			return IgnoreConfig{}, fmt.Errorf("%s parse error: %w", ignoreFile, err)
 		}
 	} else {
 		ignoredFindings, err := parseIgnore(ignoreFile)
 		if err != nil {
-			return IgnoreConfig{}, xerrors.Errorf("%s parse error: %w", ignoreFile, err)
+			return IgnoreConfig{}, fmt.Errorf("%s parse error: %w", ignoreFile, err)
 		}
 
 		// IDs in .trivyignore are treated as IDs for all scanners
@@ -220,7 +221,7 @@ func parseIgnoreYAML(ignoreFile string) (IgnoreConfig, error) {
 	// Read .trivyignore.yaml
 	f, err := os.Open(ignoreFile)
 	if err != nil {
-		return IgnoreConfig{}, xerrors.Errorf("file open error: %w", err)
+		return IgnoreConfig{}, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 	log.Debug("Found an ignore yaml", log.String("path", ignoreFile))
@@ -228,7 +229,7 @@ func parseIgnoreYAML(ignoreFile string) (IgnoreConfig, error) {
 	// Parse the YAML content
 	var ignoreConfig IgnoreConfig
 	if err = yaml.NewDecoder(f).Decode(&ignoreConfig); err != nil {
-		return IgnoreConfig{}, xerrors.Errorf("yaml decode error: %w", err)
+		return IgnoreConfig{}, fmt.Errorf("yaml decode error: %w", err)
 	}
 	return ignoreConfig, nil
 }
@@ -236,7 +237,7 @@ func parseIgnoreYAML(ignoreFile string) (IgnoreConfig, error) {
 func parseIgnore(ignoreFile string) (IgnoreFindings, error) {
 	f, err := os.Open(ignoreFile)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 	log.Debug("Found an ignore file", log.String("path", ignoreFile))

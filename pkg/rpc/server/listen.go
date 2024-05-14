@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"sync"
@@ -11,7 +12,6 @@ import (
 	"github.com/NYTimes/gziphandler"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/twitchtv/twirp"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
@@ -140,14 +140,14 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	log.Debug("Check for DB update...")
 	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
 	if err != nil {
-		return xerrors.Errorf("failed to check if db needs an update")
+		return fmt.Errorf("failed to check if db needs an update")
 	} else if !needsUpdate {
 		return nil
 	}
 
 	log.Info("Updating DB...")
 	if err = w.hotUpdate(ctx, cacheDir, dbUpdateWg, requestWg, opt); err != nil {
-		return xerrors.Errorf("failed DB hot update: %w", err)
+		return fmt.Errorf("failed DB hot update: %w", err)
 	}
 	return nil
 }
@@ -155,12 +155,12 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
 	tmpDir, err := os.MkdirTemp("", "db")
 	if err != nil {
-		return xerrors.Errorf("failed to create a temp dir: %w", err)
+		return fmt.Errorf("failed to create a temp dir: %w", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
 	if err = w.dbClient.Download(ctx, tmpDir, opt); err != nil {
-		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
+		return fmt.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
 	log.Info("Suspending all requests during DB update")
@@ -171,22 +171,22 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	requestWg.Wait()
 
 	if err = db.Close(); err != nil {
-		return xerrors.Errorf("failed to close DB: %w", err)
+		return fmt.Errorf("failed to close DB: %w", err)
 	}
 
 	// Copy trivy.db
 	if _, err = fsutils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
-		return xerrors.Errorf("failed to copy the database file: %w", err)
+		return fmt.Errorf("failed to copy the database file: %w", err)
 	}
 
 	// Copy metadata.json
 	if _, err = fsutils.CopyFile(metadata.Path(tmpDir), metadata.Path(cacheDir)); err != nil {
-		return xerrors.Errorf("failed to copy the metadata file: %w", err)
+		return fmt.Errorf("failed to copy the metadata file: %w", err)
 	}
 
 	log.Info("Reopening DB...")
 	if err = db.Init(cacheDir); err != nil {
-		return xerrors.Errorf("failed to open DB: %w", err)
+		return fmt.Errorf("failed to open DB: %w", err)
 	}
 
 	return nil

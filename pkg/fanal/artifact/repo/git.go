@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"os"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/google/wire"
 	"github.com/hashicorp/go-multierror"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
@@ -64,7 +64,7 @@ func NewArtifact(target string, c cache.ArtifactCache, w Walker, artifactOpt art
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	ref, err := a.local.Inspect(ctx)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("remote repository error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("remote repository error: %w", err)
 	}
 
 	if a.url != "" {
@@ -81,12 +81,12 @@ func (Artifact) Clean(_ artifact.Reference) error {
 
 func tryLocalRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt artifact.Option) (artifact.Artifact, error) {
 	if _, err := os.Stat(target); err != nil {
-		return nil, xerrors.Errorf("no such path: %w", err)
+		return nil, fmt.Errorf("no such path: %w", err)
 	}
 
 	art, err := local.NewArtifact(target, c, w, artifactOpt)
 	if err != nil {
-		return nil, xerrors.Errorf("local repo artifact error: %w", err)
+		return nil, fmt.Errorf("local repo artifact error: %w", err)
 	}
 	return Artifact{
 		local: art,
@@ -102,14 +102,14 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 
 	tmpDir, err := cloneRepo(u, artifactOpt)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("repository clone error: %w", err)
+		return nil, cleanup, fmt.Errorf("repository clone error: %w", err)
 	}
 
 	cleanup = func() { _ = os.RemoveAll(tmpDir) }
 
 	art, err := local.NewArtifact(tmpDir, c, w, artifactOpt)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
+		return nil, cleanup, fmt.Errorf("fs artifact: %w", err)
 	}
 
 	return Artifact{
@@ -122,7 +122,7 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
 	tmpDir, err := os.MkdirTemp("", "trivy-remote-repo")
 	if err != nil {
-		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
+		return "", fmt.Errorf("failed to create a temp dir: %w", err)
 	}
 
 	cloneOptions := git.CloneOptions{
@@ -153,20 +153,20 @@ func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
 
 	r, err := git.PlainClone(tmpDir, false, &cloneOptions)
 	if err != nil {
-		return "", xerrors.Errorf("git clone error: %w", err)
+		return "", fmt.Errorf("git clone error: %w", err)
 	}
 
 	if artifactOpt.RepoCommit != "" {
 		w, err := r.Worktree()
 		if err != nil {
-			return "", xerrors.Errorf("git worktree error: %w", err)
+			return "", fmt.Errorf("git worktree error: %w", err)
 		}
 
 		err = w.Checkout(&git.CheckoutOptions{
 			Hash: plumbing.NewHash(artifactOpt.RepoCommit),
 		})
 		if err != nil {
-			return "", xerrors.Errorf("git checkout error: %w", err)
+			return "", fmt.Errorf("git checkout error: %w", err)
 		}
 	}
 
@@ -176,7 +176,7 @@ func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
 func newURL(rawurl string) (*url.URL, error) {
 	u, err := url.Parse(rawurl)
 	if err != nil {
-		return nil, xerrors.Errorf("url parse error: %w", err)
+		return nil, fmt.Errorf("url parse error: %w", err)
 	}
 	// "https://" can be omitted
 	// e.g. github.com/aquasecurity/trivy

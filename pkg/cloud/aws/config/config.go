@@ -2,10 +2,11 @@ package config
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"golang.org/x/xerrors"
 )
 
 func EndpointResolver(endpoint string) aws.EndpointResolverWithOptionsFunc {
@@ -36,11 +37,11 @@ func MakeAWSOptions(region, endpoint string) []func(*awsconfig.LoadOptions) erro
 func LoadDefaultAWSConfig(ctx context.Context, region, endpoint string) (aws.Config, error) {
 	cfg, err := awsconfig.LoadDefaultConfig(ctx, MakeAWSOptions(region, endpoint)...)
 	if err != nil {
-		return aws.Config{}, xerrors.Errorf("aws config load error: %w", err)
+		return aws.Config{}, fmt.Errorf("aws config load error: %w", err)
 	}
 
 	if cfg.Region == "" {
-		return aws.Config{}, xerrors.New("aws region is required")
+		return aws.Config{}, errors.New("aws region is required")
 	}
 
 	return cfg, nil

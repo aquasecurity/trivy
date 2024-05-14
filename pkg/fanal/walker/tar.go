@@ -2,13 +2,12 @@ package walker
 
 import (
 	"archive/tar"
+	"fmt"
 	"io"
 	"io/fs"
 	"path"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
@@ -40,7 +39,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return nil, nil, xerrors.Errorf("failed to extract the archive: %w", err)
+			return nil, nil, fmt.Errorf("failed to extract the archive: %w", err)
 		}
 
 		// filepath.Clean cannot be used since tar file paths should be OS-agnostic.
@@ -82,7 +81,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 
 		// A regular file will reach here.
 		if err = w.processFile(filePath, tr, hdr.FileInfo(), analyzeFn); err != nil {
-			return nil, nil, xerrors.Errorf("failed to process the file: %w", err)
+			return nil, nil, fmt.Errorf("failed to process the file: %w", err)
 		}
 	}
 	return opqDirs, whFiles, nil
@@ -96,7 +95,7 @@ func (w LayerTar) processFile(filePath string, tr *tar.Reader, fi fs.FileInfo, a
 	}()
 
 	if err := analyzeFn(filePath, fi, cf.Open); err != nil {
-		return xerrors.Errorf("failed to analyze file: %w", err)
+		return fmt.Errorf("failed to analyze file: %w", err)
 	}
 
 	return nil

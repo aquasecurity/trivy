@@ -2,12 +2,11 @@ package analyzer
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/x/sync"
@@ -23,7 +22,7 @@ type CompositeFS struct {
 func NewCompositeFS(group AnalyzerGroup) (*CompositeFS, error) {
 	tmpDir, err := os.MkdirTemp("", "analyzer-fs-*")
 	if err != nil {
-		return nil, xerrors.Errorf("unable to create temporary directory: %w", err)
+		return nil, fmt.Errorf("unable to create temporary directory: %w", err)
 	}
 
 	return &CompositeFS{
@@ -39,25 +38,25 @@ func (c *CompositeFS) CopyFileToTemp(opener Opener, info os.FileInfo) (string, e
 	// so that all the files will not be loaded into memory
 	f, err := os.CreateTemp(c.dir, "file-*")
 	if err != nil {
-		return "", xerrors.Errorf("create temp error: %w", err)
+		return "", fmt.Errorf("create temp error: %w", err)
 	}
 	defer f.Close()
 
 	// Open a file in the layer
 	r, err := opener()
 	if err != nil {
-		return "", xerrors.Errorf("file open error: %w", err)
+		return "", fmt.Errorf("file open error: %w", err)
 	}
 	defer r.Close()
 
 	// Copy file content into the temporary file
 	if _, err = io.Copy(f, r); err != nil {
-		return "", xerrors.Errorf("copy error: %w", err)
+		return "", fmt.Errorf("copy error: %w", err)
 	}
 
 	// Use 0600 instead of file permissions to avoid errors when a file uses incorrect permissions (e.g. 0044).
 	if err = os.Chmod(f.Name(), 0600); err != nil {
-		return "", xerrors.Errorf("chmod error: %w", err)
+		return "", fmt.Errorf("chmod error: %w", err)
 	}
 
 	return f.Name(), nil
@@ -77,11 +76,11 @@ func (c *CompositeFS) CreateLink(analyzerTypes []Type, rootDir, virtualPath, rea
 		mfs, _ := c.files.LoadOrStore(t, mapfs.New(opts...))
 		if d := path.Dir(virtualPath); d != "." {
 			if err := mfs.MkdirAll(d, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-				return xerrors.Errorf("mapfs mkdir error: %w", err)
+				return fmt.Errorf("mapfs mkdir error: %w", err)
 			}
 		}
 		if err := mfs.WriteFile(virtualPath, realPath); err != nil {
-			return xerrors.Errorf("mapfs write error: %w", err)
+			return fmt.Errorf("mapfs write error: %w", err)
 		}
 	}
 	return nil

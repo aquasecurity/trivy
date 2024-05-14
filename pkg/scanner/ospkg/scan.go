@@ -7,8 +7,6 @@ import (
 	"sort"
 	"time"
 
-	"golang.org/x/xerrors"
-
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -57,7 +55,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.Sca
 	if errors.Is(err, ospkgDetector.ErrUnsupportedOS) {
 		return types.Result{}, false, nil
 	} else if err != nil {
-		return types.Result{}, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
+		return types.Result{}, false, fmt.Errorf("failed vulnerability detection of OS packages: %w", err)
 	}
 
 	artifactDetail := fmt.Sprintf("%s (%s %s)", target.Name, target.OS.Family, target.OS.Name)

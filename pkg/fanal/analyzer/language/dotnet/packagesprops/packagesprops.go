@@ -2,10 +2,9 @@ package packagesprops
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	props "github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/packagesprops"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -28,7 +27,7 @@ func (a packagesPropsAnalyzer) Analyze(_ context.Context, input analyzer.Analysi
 	parser := props.NewParser()
 	res, err := language.Analyze(types.PackagesProps, input.FilePath, input.Content, parser)
 	if err != nil {
-		return nil, xerrors.Errorf("*Packages.props dependencies analysis error: %w", err)
+		return nil, fmt.Errorf("*Packages.props dependencies analysis error: %w", err)
 	}
 
 	return res, nil

@@ -1,8 +1,9 @@
 package flag
 
 import (
+	"fmt"
+
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -117,7 +118,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	if p := f.Platform.Value(); p != "" {
 		pl, err := v1.ParsePlatform(p)
 		if err != nil {
-			return ImageOptions{}, xerrors.Errorf("unable to parse platform: %w", err)
+			return ImageOptions{}, fmt.Errorf("unable to parse platform: %w", err)
 		}
 		if pl.OS == "*" {
 			pl.OS = "" // Empty OS means any OS

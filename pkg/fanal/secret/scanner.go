@@ -3,6 +3,7 @@ package secret
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"sort"
@@ -11,7 +12,7 @@ import (
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -74,7 +75,7 @@ func (r *Regexp) UnmarshalYAML(value *yaml.Node) error {
 	}
 	regex, err := regexp.Compile(v)
 	if err != nil {
-		return xerrors.Errorf("regexp compile error: %w", err)
+		return fmt.Errorf("regexp compile error: %w", err)
 	}
 
 	r.Regexp = regex
@@ -282,7 +283,7 @@ func ParseConfig(configPath string) (*Config, error) {
 		logger.Debug("No secret config detected")
 		return nil, nil
 	} else if err != nil {
-		return nil, xerrors.Errorf("file open error %s: %w", configPath, err)
+		return nil, fmt.Errorf("file open error %s: %w", configPath, err)
 	}
 	defer f.Close()
 
@@ -290,7 +291,7 @@ func ParseConfig(configPath string) (*Config, error) {
 
 	var config Config
 	if err = yaml.NewDecoder(f).Decode(&config); err != nil {
-		return nil, xerrors.Errorf("secrets config decode error: %w", err)
+		return nil, fmt.Errorf("secrets config decode error: %w", err)
 	}
 
 	// Update severity for custom rules

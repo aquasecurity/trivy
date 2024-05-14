@@ -2,6 +2,7 @@ package result
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,7 +12,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -39,18 +39,18 @@ type FilterOption struct {
 func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 	ignoreConf, err := ParseIgnoreFile(ctx, opt.IgnoreFile)
 	if err != nil {
-		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
+		return fmt.Errorf("%s error: %w", opt.IgnoreFile, err)
 	}
 
 	for i := range report.Results {
 		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opt); err != nil {
-			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+			return fmt.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
 
 	// Filter out vulnerabilities based on the given VEX document.
 	if err = filterByVEX(report, opt); err != nil {
-		return xerrors.Errorf("VEX error: %w", err)
+		return fmt.Errorf("VEX error: %w", err)
 	}
 
 	return nil
@@ -70,7 +70,7 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 
 	if opt.PolicyFile != "" {
 		if err := applyPolicy(ctx, result, opt.PolicyFile); err != nil {
-			return xerrors.Errorf("failed to apply the policy: %w", err)
+			return fmt.Errorf("failed to apply the policy: %w", err)
 		}
 	}
 	sort.Sort(types.BySeverity(result.Vulnerabilities))
@@ -91,7 +91,7 @@ func filterByVEX(report types.Report, opt FilterOption) error {
 
 	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
 	if err != nil {
-		return xerrors.Errorf("unable to encode the SBOM: %w", err)
+		return fmt.Errorf("unable to encode the SBOM: %w", err)
 	}
 
 	for i, result := range report.Results {
@@ -242,7 +242,7 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 func applyPolicy(ctx context.Context, result *types.Result, policyFile string) error {
 	policy, err := os.ReadFile(policyFile)
 	if err != nil {
-		return xerrors.Errorf("unable to read the policy file: %w", err)
+		return fmt.Errorf("unable to read the policy file: %w", err)
 	}
 
 	query, err := rego.New(
@@ -251,7 +251,7 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 		rego.Module("trivy.rego", string(policy)),
 	).PrepareForEval(ctx)
 	if err != nil {
-		return xerrors.Errorf("unable to prepare for eval: %w", err)
+		return fmt.Errorf("unable to prepare for eval: %w", err)
 	}
 
 	policyFile = filepath.ToSlash(filepath.Clean(policyFile))
@@ -329,7 +329,7 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
 	results, err := query.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
-		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)
+		return false, fmt.Errorf("unable to evaluate the policy: %w", err)
 	} else if len(results) == 0 {
 		// Handle undefined result.
 		return false, nil
@@ -337,7 +337,7 @@ func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface
 	ignore, ok := results[0].Expressions[0].Value.(bool)
 	if !ok {
 		// Handle unexpected result type.
-		return false, xerrors.New("the policy must return boolean")
+		return false, errors.New("the policy must return boolean")
 	}
 	return ignore, nil
 }

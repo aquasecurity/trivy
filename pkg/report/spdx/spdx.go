@@ -3,11 +3,11 @@ package spdx
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/spdx/tools-golang/spdx/v2/v2_3"
 	"github.com/spdx/tools-golang/tagvalue"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -32,16 +32,16 @@ func NewWriter(output io.Writer, version string, spdxFormat types.Format) Writer
 func (w Writer) Write(ctx context.Context, report types.Report) error {
 	spdxDoc, err := w.marshaler.MarshalReport(ctx, report)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal spdx: %w", err)
+		return fmt.Errorf("failed to marshal spdx: %w", err)
 	}
 
 	if w.format == "spdx-json" {
 		if err := writeSPDXJson(spdxDoc, w.output); err != nil {
-			return xerrors.Errorf("failed to save spdx json: %w", err)
+			return fmt.Errorf("failed to save spdx json: %w", err)
 		}
 	} else {
 		if err := tagvalue.Write(spdxDoc, w.output); err != nil {
-			return xerrors.Errorf("failed to save spdx tag-value: %w", err)
+			return fmt.Errorf("failed to save spdx tag-value: %w", err)
 		}
 	}
 

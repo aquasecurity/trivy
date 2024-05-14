@@ -2,6 +2,8 @@ package buildinfo
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,7 +11,7 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"github.com/moby/buildkit/frontend/dockerfile/shell"
-	"golang.org/x/xerrors"
+	
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -28,12 +30,12 @@ func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisI
 	// ported from https://github.com/moby/buildkit/blob/b33357bcd2e3319b0323037c900c13b45a228df1/frontend/dockerfile/dockerfile2llb/convert.go#L73
 	dockerfile, err := parser.Parse(target.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("dockerfile parse error: %w", err)
+		return nil, fmt.Errorf("dockerfile parse error: %w", err)
 	}
 
 	stages, metaArgs, err := instructions.Parse(dockerfile.AST)
 	if err != nil {
-		return nil, xerrors.Errorf("instruction parse error: %w", err)
+		return nil, fmt.Errorf("instruction parse error: %w", err)
 	}
 
 	var args []instructions.KeyValuePairOptional
@@ -58,7 +60,7 @@ func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisI
 				for _, kvp := range c.Labels {
 					key, err := shlex.ProcessWordWithMap(kvp.Key, env)
 					if err != nil {
-						return nil, xerrors.Errorf("unable to evaluate the label '%s': %w", kvp.Key, err)
+						return nil, fmt.Errorf("unable to evaluate the label '%s': %w", kvp.Key, err)
 					}
 
 					key = strings.ToLower(key)
@@ -69,7 +71,7 @@ func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisI
 					}
 
 					if err != nil {
-						return nil, xerrors.Errorf("failed to process the label '%s': %w", key, err)
+						return nil, fmt.Errorf("failed to process the label '%s': %w", key, err)
 					}
 				}
 			}
@@ -77,9 +79,9 @@ func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisI
 	}
 
 	if component == "" {
-		return nil, xerrors.New("no component found")
+		return nil, errors.New("no component found")
 	} else if arch == "" {
-		return nil, xerrors.New("no arch found")
+		return nil, errors.New("no arch found")
 	}
 
 	return &analyzer.AnalysisResult{

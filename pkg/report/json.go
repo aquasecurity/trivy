@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -20,11 +18,11 @@ type JSONWriter struct {
 func (jw JSONWriter) Write(ctx context.Context, report types.Report) error {
 	output, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
-		return xerrors.Errorf("failed to marshal json: %w", err)
+		return fmt.Errorf("failed to marshal json: %w", err)
 	}
 
 	if _, err = fmt.Fprintln(jw.Output, string(output)); err != nil {
-		return xerrors.Errorf("failed to write json: %w", err)
+		return fmt.Errorf("failed to write json: %w", err)
 	}
 	return nil
 }

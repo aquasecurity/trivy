@@ -2,10 +2,9 @@ package deps
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	core "github.com/aquasecurity/trivy/pkg/dependency/parser/dotnet/core_deps"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -28,7 +27,7 @@ func (a depsLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	parser := core.NewParser()
 	res, err := language.Analyze(types.DotNetCore, input.FilePath, input.Content, parser)
 	if err != nil {
-		return nil, xerrors.Errorf(".Net Core dependencies analysis error: %w", err)
+		return nil, fmt.Errorf(".Net Core dependencies analysis error: %w", err)
 	}
 
 	return res, nil

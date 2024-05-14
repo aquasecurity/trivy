@@ -7,8 +7,6 @@ import (
 	"hash"
 	"io"
 	"strings"
-
-	"golang.org/x/xerrors"
 )
 
 type Algorithm string
@@ -66,7 +64,7 @@ func CalcSHA1(r io.ReadSeeker) (Digest, error) {
 
 	h := sha1.New() // nolint
 	if _, err := io.Copy(h, r); err != nil {
-		return "", xerrors.Errorf("unable to calculate sha1 digest: %w", err)
+		return "", fmt.Errorf("unable to calculate sha1 digest: %w", err)
 	}
 
 	return NewDigest(SHA1, h), nil
@@ -77,7 +75,7 @@ func CalcSHA256(r io.ReadSeeker) (Digest, error) {
 
 	h := sha256.New()
 	if _, err := io.Copy(h, r); err != nil {
-		return "", xerrors.Errorf("unable to calculate sha256 digest: %w", err)
+		return "", fmt.Errorf("unable to calculate sha256 digest: %w", err)
 	}
 
 	return NewDigest(SHA256, h), nil

@@ -2,10 +2,11 @@ package parallel
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"io/fs"
 
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -51,7 +52,7 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 			return nil
 		})
 		if err != nil {
-			return xerrors.Errorf("walk error: %w", err)
+			return fmt.Errorf("walk error: %w", err)
 		}
 		return nil
 	})
@@ -90,18 +91,18 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile onFile[T]) error {
 	f, err := fsys.Open(path)
 	if err != nil {
-		return xerrors.Errorf("file open error: %w", err)
+		return fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	info, err := f.Stat()
 	if err != nil {
-		return xerrors.Errorf("stat error: %w", err)
+		return fmt.Errorf("stat error: %w", err)
 	}
 
 	rsa, ok := f.(xio.ReadSeekerAt)
 	if !ok {
-		return xerrors.New("type assertion failed")
+		return errors.New("type assertion failed")
 	}
 	res, err := onFile(path, info, rsa)
 	if err != nil {

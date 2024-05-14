@@ -2,8 +2,7 @@ package config
 
 import (
 	"encoding/xml"
-
-	"golang.org/x/xerrors"
+	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -32,7 +31,7 @@ func NewParser() *Parser {
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var cfgData config
 	if err := xml.NewDecoder(r).Decode(&cfgData); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode .config file: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode .config file: %w", err)
 	}
 
 	var pkgs []ftypes.Package

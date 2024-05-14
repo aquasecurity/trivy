@@ -3,6 +3,7 @@ package analyzer
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"regexp"
@@ -13,7 +14,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -27,11 +27,11 @@ var (
 	postAnalyzers = make(map[Type]postAnalyzerInitialize)
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
-	ErrUnknownOS = xerrors.New("unknown OS")
+	ErrUnknownOS = errors.New("unknown OS")
 	// ErrPkgAnalysis occurs when the analysis of packages is failed.
-	ErrPkgAnalysis = xerrors.New("failed to analyze packages")
+	ErrPkgAnalysis = errors.New("failed to analyze packages")
 	// ErrNoPkgsDetected occurs when the required files for an OS package manager are not detected
-	ErrNoPkgsDetected = xerrors.New("no packages detected")
+	ErrNoPkgsDetected = errors.New("no packages detected")
 )
 
 //////////////////////
@@ -326,13 +326,13 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
 		if len(s) != 2 {
-			return group, xerrors.Errorf("invalid file pattern (%s) expected format: \"fileType:regexPattern\" e.g. \"dockerfile:my_dockerfile_*\"", p)
+			return group, fmt.Errorf("invalid file pattern (%s) expected format: \"fileType:regexPattern\" e.g. \"dockerfile:my_dockerfile_*\"", p)
 		}
 
 		fileType, pattern := s[0], s[1]
 		r, err := regexp.Compile(pattern)
 		if err != nil {
-			return group, xerrors.Errorf("invalid file regexp (%s): %w", p, err)
+			return group, fmt.Errorf("invalid file regexp (%s): %w", p, err)
 		}
 
 		if _, ok := group.filePatterns[Type(fileType)]; !ok {
@@ -349,7 +349,7 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		// Initialize only scanners that have Init()
 		if ini, ok := a.(Initializer); ok {
 			if err := ini.Init(opt); err != nil {
-				return AnalyzerGroup{}, xerrors.Errorf("analyzer initialization error: %w", err)
+				return AnalyzerGroup{}, fmt.Errorf("analyzer initialization error: %w", err)
 			}
 		}
 		group.analyzers = append(group.analyzers, a)
@@ -358,7 +358,7 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	for analyzerType, init := range postAnalyzers {
 		a, err := init(opt)
 		if err != nil {
-			return AnalyzerGroup{}, xerrors.Errorf("post-analyzer init error: %w", err)
+			return AnalyzerGroup{}, fmt.Errorf("post-analyzer init error: %w", err)
 		}
 		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
 			continue
@@ -416,11 +416,11 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 			ag.logger.Debug("Permission error", log.String("file_path", filePath))
 			break
 		} else if err != nil {
-			return xerrors.Errorf("unable to open %s: %w", filePath, err)
+			return fmt.Errorf("unable to open %s: %w", filePath, err)
 		}
 
 		if err = limit.Acquire(ctx, 1); err != nil {
-			return xerrors.Errorf("semaphore acquire: %w", err)
+			return fmt.Errorf("semaphore acquire: %w", err)
 		}
 		wg.Add(1)
 
@@ -487,7 +487,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 
 		filteredFS, err := fsys.Filter(skippedFiles)
 		if err != nil {
-			return xerrors.Errorf("unable to filter filesystem: %w", err)
+			return fmt.Errorf("unable to filter filesystem: %w", err)
 		}
 
 		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
@@ -495,7 +495,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 			Options: opts,
 		})
 		if err != nil {
-			return xerrors.Errorf("post analysis error: %w", err)
+			return fmt.Errorf("post analysis error: %w", err)
 		}
 		result.Merge(res)
 	}

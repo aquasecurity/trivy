@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -55,7 +54,7 @@ func HomeDir() string {
 func CopyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
-		return 0, xerrors.Errorf("file (%s) stat error: %w", src, err)
+		return 0, fmt.Errorf("file (%s) stat error: %w", src, err)
 	}
 
 	if !sourceFileStat.Mode().IsRegular() {
@@ -98,7 +97,7 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 
 		f, err := fsys.Open(path)
 		if err != nil {
-			return xerrors.Errorf("file open error: %w", err)
+			return fmt.Errorf("file open error: %w", err)
 		}
 		defer f.Close()
 

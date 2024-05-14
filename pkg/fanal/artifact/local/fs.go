@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/google/wire"
 	"github.com/opencontainers/go-digest"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -50,12 +50,12 @@ type Artifact struct {
 func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
-		return nil, xerrors.Errorf("handler initialize error: %w", err)
+		return nil, fmt.Errorf("handler initialize error: %w", err)
 	}
 
 	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
 	if err != nil {
-		return nil, xerrors.Errorf("analyzer group error: %w", err)
+		return nil, fmt.Errorf("analyzer group error: %w", err)
 	}
 
 	return Artifact{
@@ -80,7 +80,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	// Prepare filesystem for post analysis
 	composite, err := a.analyzer.PostAnalyzerFS()
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
+		return artifact.Reference{}, fmt.Errorf("failed to prepare filesystem for post analysis: %w", err)
 	}
 
 	err = a.walker.Walk(a.rootPath, a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
@@ -93,7 +93,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		}
 
 		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
-			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
+			return fmt.Errorf("analyze file (%s): %w", filePath, err)
 		}
 
 		// Skip post analysis if the file is not required
@@ -104,13 +104,13 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 		// Build filesystem for post analysis
 		if err := composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
-			return xerrors.Errorf("failed to create link: %w", err)
+			return fmt.Errorf("failed to create link: %w", err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("walk filesystem: %w", err)
+		return artifact.Reference{}, fmt.Errorf("walk filesystem: %w", err)
 	}
 
 	// Wait for all the goroutine to finish.
@@ -118,7 +118,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	// Post-analysis
 	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
-		return artifact.Reference{}, xerrors.Errorf("post analysis error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("post analysis error: %w", err)
 	}
 
 	// Sort the analysis result for consistent results
@@ -137,16 +137,16 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to call hooks: %w", err)
+		return artifact.Reference{}, fmt.Errorf("failed to call hooks: %w", err)
 	}
 
 	cacheKey, err := a.calcCacheKey(blobInfo)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
+		return artifact.Reference{}, fmt.Errorf("failed to calculate a cache key: %w", err)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+		return artifact.Reference{}, fmt.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
 	// get hostname
@@ -175,13 +175,13 @@ func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	// calculate hash of JSON and use it as pseudo artifactID and blobID
 	h := sha256.New()
 	if err := json.NewEncoder(h).Encode(blobInfo); err != nil {
-		return "", xerrors.Errorf("json error: %w", err)
+		return "", fmt.Errorf("json error: %w", err)
 	}
 
 	d := digest.NewDigest(digest.SHA256, h)
 	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
-		return "", xerrors.Errorf("cache key: %w", err)
+		return "", fmt.Errorf("cache key: %w", err)
 	}
 
 	return cacheKey, nil

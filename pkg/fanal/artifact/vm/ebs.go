@@ -2,11 +2,11 @@ package vm
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	lru "github.com/hashicorp/golang-lru/v2"
 	ebsfile "github.com/masahiro331/go-ebs-file"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -29,7 +29,7 @@ type EBS struct {
 func newEBS(snapshotID string, vm Storage, region, endpoint string) (*EBS, error) {
 	ebs, err := ebsfile.New(context.TODO(), config.MakeAWSOptions(region, endpoint)...)
 	if err != nil {
-		return nil, xerrors.Errorf("new ebsfile error: %w", err)
+		return nil, fmt.Errorf("new ebsfile error: %w", err)
 	}
 
 	return &EBS{
@@ -43,12 +43,12 @@ func newEBS(snapshotID string, vm Storage, region, endpoint string) (*EBS, error
 func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 	sr, err := a.openEBS(ctx)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("EBS open error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("EBS open error: %w", err)
 	}
 
 	cacheKey, err := a.calcCacheKey(a.snapshotID)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("cache key calculation error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("cache key calculation error: %w", err)
 	}
 
 	if a.hasCache(cacheKey) {
@@ -62,11 +62,11 @@ func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	blobInfo, err := a.Analyze(ctx, sr)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("inspection error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("inspection error: %w", err)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+		return artifact.Reference{}, fmt.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
 	return artifact.Reference{
@@ -80,12 +80,12 @@ func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 func (a *EBS) openEBS(ctx context.Context) (*io.SectionReader, error) {
 	c, err := lru.New[string, []byte](storageEBSCacheSize)
 	if err != nil {
-		return nil, xerrors.Errorf("lru cache error: %w", err)
+		return nil, fmt.Errorf("lru cache error: %w", err)
 	}
 
 	r, err := ebsfile.Open(a.snapshotID, ctx, c, a.ebs)
 	if err != nil {
-		return nil, xerrors.Errorf("EBS error: %w", err)
+		return nil, fmt.Errorf("EBS error: %w", err)
 	}
 	return r, nil
 }
@@ -101,7 +101,7 @@ func (a *EBS) SetEBS(ebs ebsfile.EBSAPI) {
 func (a *EBS) calcCacheKey(key string) (string, error) {
 	s, err := cache.CalcKey(key, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
-		return "", xerrors.Errorf("failed to calculate cache key: %w", err)
+		return "", fmt.Errorf("failed to calculate cache key: %w", err)
 	}
 	return s, nil
 }

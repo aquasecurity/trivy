@@ -2,9 +2,10 @@
 package binary
 
 import (
+	"errors"
+
 	rustaudit "github.com/microsoft/go-rustaudit"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -12,8 +13,8 @@ import (
 )
 
 var (
-	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
-	ErrNonRustBinary   = xerrors.New("non Rust auditable binary")
+	ErrUnrecognizedExe = errors.New("unrecognized executable format")
+	ErrNonRustBinary   = errors.New("non Rust auditable binary")
 )
 
 // convertError detects rustaudit.ErrUnknownFileFormat and convert to

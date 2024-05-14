@@ -1,6 +1,7 @@
 package mapfs
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -8,8 +9,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	"golang.org/x/xerrors"
 
 	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
@@ -52,7 +51,7 @@ func (f *file) open() (fs.File, error) {
 	case f.stat.IsDir(): // Directory
 		entries, err := f.ReadDir(".")
 		if err != nil {
-			return nil, xerrors.Errorf("read dir error: %w", err)
+			return nil, fmt.Errorf("read dir error: %w", err)
 		}
 		return &mapDir{
 			path:     f.underlyingPath,
@@ -155,7 +154,7 @@ func (f *file) ReadDir(name string) ([]fs.DirEntry, error) {
 			return true
 		})
 		if err != nil {
-			return nil, xerrors.Errorf("range error: %w", err)
+			return nil, fmt.Errorf("range error: %w", err)
 		}
 		sort.Slice(entries, func(i, j int) bool { return entries[i].Name() < entries[j].Name() })
 		return entries, nil
@@ -223,7 +222,7 @@ func (f *file) WriteFile(path, underlyingPath string) error {
 
 func (f *file) WriteVirtualFile(path string, data []byte, mode fs.FileMode) error {
 	if mode&fs.ModeDir != 0 {
-		return xerrors.Errorf("invalid perm: %v", mode)
+		return fmt.Errorf("invalid perm: %v", mode)
 	}
 	parts := strings.Split(path, separator)
 
@@ -272,7 +271,7 @@ func (f *file) glob(pattern string) ([]string, error) {
 		return true
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("range error: %w", err)
+		return nil, fmt.Errorf("range error: %w", err)
 	}
 
 	sort.Strings(entries)

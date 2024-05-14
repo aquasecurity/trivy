@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
@@ -70,13 +68,13 @@ func (p nuspecParser) findLicense(name, version string) ([]string, error) {
 
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to open %q file: %w", path, err)
+		return nil, fmt.Errorf("unable to open %q file: %w", path, err)
 	}
 	defer func() { _ = f.Close() }()
 
 	var pkg Package
 	if err = xml.NewDecoder(f).Decode(&pkg); err != nil {
-		return nil, xerrors.Errorf("unable to decode %q file: %w", path, err)
+		return nil, fmt.Errorf("unable to decode %q file: %w", path, err)
 	}
 
 	if license := pkg.Metadata.License; license.Type != "expression" || license.Text == "" {

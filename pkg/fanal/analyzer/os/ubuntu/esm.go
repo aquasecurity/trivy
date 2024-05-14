@@ -3,10 +3,10 @@ package ubuntu
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -33,7 +33,7 @@ func (a ubuntuESMAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	st := status{}
 	err := json.NewDecoder(input.Content).Decode(&st)
 	if err != nil {
-		return nil, xerrors.Errorf("ubuntu ESM analyze error: %w", err)
+		return nil, fmt.Errorf("ubuntu ESM analyze error: %w", err)
 	}
 	if esmEnabled(st) {
 		return &analyzer.AnalysisResult{

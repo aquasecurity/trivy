@@ -1,13 +1,13 @@
 package cargo
 
 import (
+	"fmt"
 	"io"
 	"sort"
 	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -39,11 +39,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var lockfile Lockfile
 	decoder := toml.NewDecoder(r)
 	if _, err := decoder.Decode(&lockfile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+		return nil, nil, fmt.Errorf("decode error: %w", err)
 	}
 
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, nil, xerrors.Errorf("seek error: %w", err)
+		return nil, nil, fmt.Errorf("seek error: %w", err)
 	}
 
 	// naive parser to get line numbers by package from lock file

@@ -1,10 +1,10 @@
 package flag
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/google/go-containerregistry/pkg/name"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/javadb"
@@ -138,10 +138,10 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	light := f.Light.Value()
 
 	if downloadDBOnly && skipDBUpdate {
-		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
+		return DBOptions{}, errors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
 	if downloadJavaDBOnly && skipJavaDBUpdate {
-		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
+		return DBOptions{}, errors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 	if light {
 		log.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
@@ -151,7 +151,7 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	var err error
 	if f.DBRepository != nil {
 		if dbRepository, err = name.ParseReference(f.DBRepository.Value(), name.WithDefaultTag("")); err != nil {
-			return DBOptions{}, xerrors.Errorf("invalid db repository: %w", err)
+			return DBOptions{}, fmt.Errorf("invalid db repository: %w", err)
 		}
 		// Add the schema version if the tag is not specified for backward compatibility.
 		if t, ok := dbRepository.(name.Tag); ok && t.TagStr() == "" {
@@ -163,7 +163,7 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 
 	if f.JavaDBRepository != nil {
 		if javaDBRepository, err = name.ParseReference(f.JavaDBRepository.Value(), name.WithDefaultTag("")); err != nil {
-			return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
+			return DBOptions{}, fmt.Errorf("invalid javadb repository: %w", err)
 		}
 		// Add the schema version if the tag is not specified for backward compatibility.
 		if t, ok := javaDBRepository.(name.Tag); ok && t.TagStr() == "" {

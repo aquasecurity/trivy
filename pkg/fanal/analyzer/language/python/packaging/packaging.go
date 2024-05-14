@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -13,7 +14,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -71,18 +71,18 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		rsa, ok := r.(xio.ReadSeekerAt)
 		if !ok {
-			return xerrors.New("invalid reader")
+			return errors.New("invalid reader")
 		}
 
 		// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
 		if strings.HasSuffix(path, ".egg") {
 			info, err := d.Info()
 			if err != nil {
-				return xerrors.Errorf("egg file error: %w", err)
+				return fmt.Errorf("egg file error: %w", err)
 			}
 			pkginfoInZip, err := a.analyzeEggZip(rsa, info.Size())
 			if err != nil {
-				return xerrors.Errorf("egg analysis error: %w", err)
+				return fmt.Errorf("egg analysis error: %w", err)
 			}
 
 			// Egg archive may not contain required files, then we will get nil. Skip this archives
@@ -94,7 +94,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 
 		app, err := a.parse(path, rsa, input.Options.FileChecksum)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			return fmt.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
@@ -108,7 +108,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	})
 
 	if err != nil {
-		return nil, xerrors.Errorf("python package walk error: %w", err)
+		return nil, fmt.Errorf("python package walk error: %w", err)
 	}
 	return &analyzer.AnalysisResult{
 		Applications: apps,
@@ -154,13 +154,13 @@ func classifyLicense(dir, licPath string, classifierConfidenceLevel float64, fsy
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
 	} else if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	l, err := licensing.Classify(licPath, f, classifierConfidenceLevel)
 	if err != nil {
-		return nil, xerrors.Errorf("license classify error: %w", err)
+		return nil, fmt.Errorf("license classify error: %w", err)
 	} else if l == nil {
 		return nil, nil
 	}
@@ -175,7 +175,7 @@ func (a packagingAnalyzer) parse(filePath string, r xio.ReadSeekerAt, checksum b
 func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (xio.ReadSeekerAt, error) {
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
-		return nil, xerrors.Errorf("zip reader error: %w", err)
+		return nil, fmt.Errorf("zip reader error: %w", err)
 	}
 
 	found, ok := lo.Find(zr.File, func(f *zip.File) bool {
@@ -197,7 +197,7 @@ func (a packagingAnalyzer) open(file *zip.File) (xio.ReadSeekerAt, error) {
 
 	b, err := io.ReadAll(f)
 	if err != nil {
-		return nil, xerrors.Errorf("file %s open error: %w", file.Name, err)
+		return nil, fmt.Errorf("file %s open error: %w", file.Name, err)
 	}
 
 	return bytes.NewReader(b), nil

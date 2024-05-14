@@ -1,11 +1,11 @@
 package environment
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"sync"
 
-	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/go-version/pkg/version"
@@ -42,7 +42,7 @@ func NewParser() *Parser {
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var env environment
 	if err := yaml.NewDecoder(r).Decode(&env); err != nil {
-		return nil, nil, xerrors.Errorf("unable to decode conda environment.yml file: %w", err)
+		return nil, nil, fmt.Errorf("unable to decode conda environment.yml file: %w", err)
 	}
 
 	var pkgs ftypes.Packages
@@ -118,12 +118,12 @@ func (e *Entry) UnmarshalYAML(node *yaml.Node) error {
 			//  	  - pip:
 			//     	    - pandas==2.1.4
 			if node.Content[1].Tag != "!!seq" { // Conda supports only map[string][]string format.
-				return xerrors.Errorf("unsupported dependency type %q on line %d", node.Content[1].Tag, node.Content[1].Line)
+				return fmt.Errorf("unsupported dependency type %q on line %d", node.Content[1].Tag, node.Content[1].Line)
 			}
 
 			for _, depContent := range node.Content[1].Content {
 				if depContent.Tag != "!!str" {
-					return xerrors.Errorf("unsupported dependency type %q on line %d", depContent.Tag, depContent.Line)
+					return fmt.Errorf("unsupported dependency type %q on line %d", depContent.Tag, depContent.Line)
 				}
 
 				dependencies = append(dependencies, Dependency{
@@ -133,7 +133,7 @@ func (e *Entry) UnmarshalYAML(node *yaml.Node) error {
 			}
 		}
 	default:
-		return xerrors.Errorf("unsupported dependency type %q on line %d", node.Tag, node.Line)
+		return fmt.Errorf("unsupported dependency type %q on line %d", node.Tag, node.Line)
 	}
 
 	e.Dependencies = dependencies

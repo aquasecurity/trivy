@@ -2,8 +2,7 @@ package server
 
 import (
 	"context"
-
-	"golang.org/x/xerrors"
+	"fmt"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -22,7 +21,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	fsutils.SetCacheDir(opts.CacheDir)
 	cache, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
-		return xerrors.Errorf("server cache error: %w", err)
+		return fmt.Errorf("server cache error: %w", err)
 	}
 	defer cache.Close()
 	log.Debug("Cache", log.String("dir", fsutils.CacheDir()))
@@ -42,7 +41,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	if err = db.Init(opts.CacheDir); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+		return fmt.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
 	// Initialize WASM modules
@@ -51,7 +50,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		EnabledModules: opts.EnabledModules,
 	})
 	if err != nil {
-		return xerrors.Errorf("WASM module error: %w", err)
+		return fmt.Errorf("WASM module error: %w", err)
 	}
 	m.Register()
 

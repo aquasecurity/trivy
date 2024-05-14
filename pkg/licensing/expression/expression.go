@@ -1,14 +1,14 @@
 package expression
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 	"unicode"
-
-	"golang.org/x/xerrors"
 )
 
 var (
-	ErrInvalidExpression = xerrors.New("invalid expression error")
+	ErrInvalidExpression = errors.New("invalid expression error")
 )
 
 type NormalizeFunc func(license string) string
@@ -16,7 +16,7 @@ type NormalizeFunc func(license string) string
 func parse(license string) (Expression, error) {
 	l := NewLexer(strings.NewReader(license))
 	if yyParse(l) != 0 {
-		return nil, xerrors.Errorf("license parse error: %w", l.Err())
+		return nil, fmt.Errorf("license parse error: %w", l.Err())
 	} else if err := l.Err(); err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func parse(license string) (Expression, error) {
 func Normalize(license string, fn ...NormalizeFunc) (string, error) {
 	expr, err := parse(license)
 	if err != nil {
-		return "", xerrors.Errorf("license (%s) parse error: %w", license, err)
+		return "", fmt.Errorf("license (%s) parse error: %w", license, err)
 	}
 	expr = normalize(expr, fn...)
 

@@ -1,11 +1,12 @@
 package cocoapods
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -33,7 +34,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	lock := &lockFile{}
 	decoder := yaml.NewDecoder(r)
 	if err := decoder.Decode(&lock); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode cocoapods lock file: %s", err.Error())
+		return nil, nil, fmt.Errorf("failed to decode cocoapods lock file: %s", err.Error())
 	}
 
 	parsedDeps := make(map[string]ftypes.Package) // dependency name => Package
@@ -58,13 +59,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 				children, ok := childDeps.([]interface{})
 				if !ok {
-					return nil, nil, xerrors.Errorf("invalid value of cocoapods direct dependency: %q", childDeps)
+					return nil, nil, fmt.Errorf("invalid value of cocoapods direct dependency: %q", childDeps)
 				}
 
 				for _, childDep := range children {
 					s, ok := childDep.(string)
 					if !ok {
-						return nil, nil, xerrors.Errorf("must be string: %q", childDep)
+						return nil, nil, fmt.Errorf("must be string: %q", childDep)
 					}
 					directDeps[pkg.Name] = append(directDeps[pkg.Name], strings.Fields(s)[0])
 				}
@@ -98,7 +99,7 @@ func parseDep(dep string) (ftypes.Package, error) {
 	// 'AppCenter/Analytics (-> 4.2.0)'
 	ss := strings.Split(dep, " (")
 	if len(ss) != 2 {
-		return ftypes.Package{}, xerrors.Errorf("Unable to determine cocoapods dependency: %q", dep)
+		return ftypes.Package{}, fmt.Errorf("Unable to determine cocoapods dependency: %q", dep)
 	}
 
 	name := ss[0]

@@ -10,7 +10,6 @@ import (
 	ms "github.com/mitchellh/mapstructure"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -106,14 +105,14 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 			}
 			vulns, err := s.scanVulns(ctx, artifact, opts)
 			if err != nil {
-				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+				return scanResult{}, fmt.Errorf("scanning vulnerabilities error: %w", err)
 			}
 			scanResults.vulns = vulns
 		}
 		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
 			misconfig, err := s.scanMisconfigs(ctx, artifact)
 			if err != nil {
-				return scanResult{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+				return scanResult{}, fmt.Errorf("scanning misconfigurations error: %w", err)
 			}
 			scanResults.misconfig = misconfig
 		}
@@ -164,7 +163,7 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 
 		resource, err := s.filter(ctx, imageReport, artifact)
 		if err != nil {
-			return nil, xerrors.Errorf("filter error: %w", err)
+			return nil, fmt.Errorf("filter error: %w", err)
 		}
 
 		resources = append(resources, resource)
@@ -176,7 +175,7 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifact) (report.Resource, error) {
 	configFile, err := createTempFile(artifact)
 	if err != nil {
-		return report.Resource{}, xerrors.Errorf("scan error: %w", err)
+		return report.Resource{}, fmt.Errorf("scan error: %w", err)
 	}
 
 	s.opts.Target = configFile
@@ -194,7 +193,7 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 	var err error
 	r, err = s.runner.Filter(ctx, s.opts, r)
 	if err != nil {
-		return report.Resource{}, xerrors.Errorf("filter error: %w", err)
+		return report.Resource{}, fmt.Errorf("filter error: %w", err)
 	}
 	return report.CreateResource(artifact, r, nil), nil
 }
@@ -399,7 +398,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 					},
 				}, ftypes.Package{})
 				if err != nil {
-					return nil, xerrors.Errorf("failed to create PURL: %w", err)
+					return nil, fmt.Errorf("failed to create PURL: %w", err)
 				}
 
 				imageComponent := &core.Component{

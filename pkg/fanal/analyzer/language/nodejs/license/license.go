@@ -2,12 +2,11 @@ package license
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"path"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -35,7 +34,7 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 	walkDirFunc := func(pkgJSONPath string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := l.parser.Parse(r)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", pkgJSONPath, err)
+			return fmt.Errorf("unable to parse %q: %w", pkgJSONPath, err)
 		}
 
 		ok, licenseFileName := IsLicenseRefToFile(pkg.Licenses)
@@ -49,7 +48,7 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 		licenseFilePath := path.Join(path.Dir(pkgJSONPath), licenseFileName)
 
 		if findings, err := classifyLicense(licenseFilePath, l.classifierConfidenceLevel, fsys); err != nil {
-			return xerrors.Errorf("unable to classify the license: %w", err)
+			return fmt.Errorf("unable to classify the license: %w", err)
 		} else if len(findings) > 0 {
 			// License found
 			licenses[pkg.ID] = findings.Names()
@@ -60,7 +59,7 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 		return nil
 	}
 	if err := fsutils.WalkDir(fsys, root, fsutils.RequiredFile(types.NpmPkg), walkDirFunc); err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, fmt.Errorf("walk error: %w", err)
 	}
 
 	return licenses, nil
@@ -92,13 +91,13 @@ func classifyLicense(filePath string, classifierConfidenceLevel float64, fsys fs
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
 	} else if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	l, err := licensing.Classify(filePath, f, classifierConfidenceLevel)
 	if err != nil {
-		return nil, xerrors.Errorf("license classify error: %w", err)
+		return nil, fmt.Errorf("license classify error: %w", err)
 	}
 
 	if l == nil {

@@ -2,16 +2,17 @@ package analyzer_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/google/go-containerregistry/pkg/name"
 	"os"
 	"sync"
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/name"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -535,7 +536,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
 					if tt.args.testFilePath == "testdata/error" {
-						return nil, xerrors.New("error")
+						return nil, errors.New("error")
 					} else if tt.args.testFilePath == "testdata/no-permission" {
 						os.Chmod(tt.args.testFilePath, 0000)
 						t.Cleanup(func() {

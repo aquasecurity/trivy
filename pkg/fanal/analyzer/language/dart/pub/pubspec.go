@@ -2,6 +2,7 @@ package pub
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -11,7 +12,7 @@ import (
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -62,7 +63,7 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		app, err := language.Parse(types.Pub, path, r, a.parser)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", path, err)
+			return fmt.Errorf("unable to parse %q: %w", path, err)
 		}
 
 		if app == nil {
@@ -91,7 +92,7 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, fmt.Errorf("walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -124,7 +125,7 @@ func (a pubSpecLockAnalyzer) findDependsOn() (map[string][]string, error) {
 		return nil
 
 	}); err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, fmt.Errorf("walk error: %w", err)
 	}
 	return deps, nil
 }
@@ -153,7 +154,7 @@ type pubSpecYaml struct {
 func parsePubSpecYaml(r io.Reader) (string, []string, error) {
 	var spec pubSpecYaml
 	if err := yaml.NewDecoder(r).Decode(&spec); err != nil {
-		return "", nil, xerrors.Errorf("unable to decode: %w", err)
+		return "", nil, fmt.Errorf("unable to decode: %w", err)
 	}
 
 	// Version is a required field only for packages from pub.dev:

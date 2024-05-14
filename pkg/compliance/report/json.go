@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-
-	"golang.org/x/xerrors"
 )
 
 type JSONWriter struct {
@@ -25,16 +23,16 @@ func (jw JSONWriter) Write(report *ComplianceReport) error {
 	case summaryReport:
 		v = BuildSummary(report)
 	default:
-		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, jw.Report)
+		return fmt.Errorf(`report %q not supported. Use "summary" or "all"`, jw.Report)
 	}
 
 	output, err = json.MarshalIndent(v, "", "  ")
 	if err != nil {
-		return xerrors.Errorf("failed to marshal json: %w", err)
+		return fmt.Errorf("failed to marshal json: %w", err)
 	}
 
 	if _, err = fmt.Fprintln(jw.Output, string(output)); err != nil {
-		return xerrors.Errorf("failed to write json: %w", err)
+		return fmt.Errorf("failed to write json: %w", err)
 	}
 
 	return nil

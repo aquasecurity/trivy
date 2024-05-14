@@ -2,9 +2,8 @@ package executable
 
 import (
 	"context"
+	"fmt"
 	"os"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -30,7 +29,7 @@ func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 
 	dig, err := digest.CalcSHA256(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("sha256 error: %w", err)
+		return nil, fmt.Errorf("sha256 error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{

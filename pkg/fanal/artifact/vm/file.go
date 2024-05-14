@@ -5,12 +5,12 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
 	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/opencontainers/go-digest"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -36,12 +36,12 @@ type ImageFile struct {
 func newFile(filePath string, storage Storage) (*ImageFile, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 
 	c, err := lru.New[string, []byte](storageFILECacheSize)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
+		return nil, fmt.Errorf("failed to create new lru cache: %w", err)
 	}
 
 	reader, err := disk.New(f, c)
@@ -55,7 +55,7 @@ func newFile(filePath string, storage Storage) (*ImageFile, error) {
 		logger.Debug("Assume raw image")
 		fi, err := f.Stat()
 		if err != nil {
-			return nil, xerrors.Errorf("file stat error: %w", err)
+			return nil, fmt.Errorf("file stat error: %w", err)
 		}
 		reader = io.NewSectionReader(f, 0, fi.Size())
 	}
@@ -72,16 +72,16 @@ func newFile(filePath string, storage Storage) (*ImageFile, error) {
 func (a *ImageFile) Inspect(ctx context.Context) (artifact.Reference, error) {
 	blobInfo, err := a.Analyze(ctx, a.reader)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("inspection error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("inspection error: %w", err)
 	}
 
 	cacheKey, err := a.calcCacheKey(blobInfo)
 	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("cache calculation error: %w", err)
+		return artifact.Reference{}, fmt.Errorf("cache calculation error: %w", err)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+		return artifact.Reference{}, fmt.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
 	return artifact.Reference{
@@ -96,13 +96,13 @@ func (a *ImageFile) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	// calculate hash of JSON and use it as pseudo artifactID and blobID
 	h := sha256.New()
 	if err := json.NewEncoder(h).Encode(blobInfo); err != nil {
-		return "", xerrors.Errorf("json error: %w", err)
+		return "", fmt.Errorf("json error: %w", err)
 	}
 
 	d := digest.NewDigest(digest.SHA256, h)
 	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
-		return "", xerrors.Errorf("cache key: %w", err)
+		return "", fmt.Errorf("cache key: %w", err)
 	}
 
 	return cacheKey, nil

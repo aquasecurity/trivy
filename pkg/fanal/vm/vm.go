@@ -1,12 +1,10 @@
 package vm
 
-import (
-	"golang.org/x/xerrors"
-)
+import "errors"
 
 var (
-	ErrInvalidSignature = xerrors.New("invalid signature error")
-	ErrUnsupportedType  = xerrors.New("unsupported type error")
+	ErrInvalidSignature = errors.New("invalid signature error")
+	ErrUnsupportedType  = errors.New("unsupported type error")
 )
 
 type Cache[K comparable, V any] interface {

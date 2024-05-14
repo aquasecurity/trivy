@@ -1,12 +1,12 @@
 package julia
 
 import (
+	"fmt"
 	"io"
 	"sort"
 
 	"github.com/BurntSushi/toml"
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -39,10 +39,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	// Try to read the old Manifest format. If that fails, try the new format.
 	if _, err := decoder.Decode(&oldDeps); err != nil {
 		if _, err = r.Seek(0, io.SeekStart); err != nil {
-			return nil, nil, xerrors.Errorf("seek error: %w", err)
+			return nil, nil, fmt.Errorf("seek error: %w", err)
 		}
 		if manMetadata, err = decoder.Decode(&primMan); err != nil {
-			return nil, nil, xerrors.Errorf("decode error: %w", err)
+			return nil, nil, fmt.Errorf("decode error: %w", err)
 		}
 	}
 
@@ -57,11 +57,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	man, err := decodeManifest(&primMan, &manMetadata)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to decode manifest dependencies: %w", err)
+		return nil, nil, fmt.Errorf("unable to decode manifest dependencies: %w", err)
 	}
 
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, nil, xerrors.Errorf("seek error: %w", err)
+		return nil, nil, fmt.Errorf("seek error: %w", err)
 	}
 
 	// naive parser to get line numbers
@@ -140,7 +140,7 @@ func decodeDependency(man *primitiveManifest, dep primitiveDependency, metadata 
 		for _, depName := range possibleDeps {
 			primDep := man.Dependencies[depName]
 			if len(primDep) > 1 {
-				return primitiveDependency{}, xerrors.Errorf("Dependency %q has invalid format (parsed multiple deps): %s", depName, primDep)
+				return primitiveDependency{}, fmt.Errorf("Dependency %q has invalid format (parsed multiple deps): %s", depName, primDep)
 			}
 			possibleUuids = append(possibleUuids, primDep[0].UUID)
 		}

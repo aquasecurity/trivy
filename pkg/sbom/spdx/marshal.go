@@ -14,7 +14,6 @@ import (
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	spdxutils "github.com/spdx/tools-golang/utils"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
@@ -109,7 +108,7 @@ func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*sp
 	// Convert into an intermediate representation
 	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal report: %w", err)
+		return nil, fmt.Errorf("failed to marshal report: %w", err)
 	}
 
 	return m.Marshal(ctx, bom)
@@ -130,7 +129,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 	// Root package contains OS, OS packages, language-specific packages and so on.
 	rootPkg, err := m.rootSPDXPackage(root, pkgDownloadLocation)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to generate a root package: %w", err)
+		return nil, fmt.Errorf("failed to generate a root package: %w", err)
 	}
 	packages = append(packages, rootPkg)
 	relationShips = append(relationShips,
@@ -145,14 +144,14 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		}
 		spdxPackage, err := m.spdxPackage(c, pkgDownloadLocation)
 		if err != nil {
-			return nil, xerrors.Errorf("spdx package error: %w", err)
+			return nil, fmt.Errorf("spdx package error: %w", err)
 		}
 		packages = append(packages, &spdxPackage)
 		packageIDs[c.ID()] = spdxPackage.PackageSPDXIdentifier
 
 		spdxFiles, err := m.spdxFiles(c)
 		if err != nil {
-			return nil, xerrors.Errorf("spdx files error: %w", err)
+			return nil, fmt.Errorf("spdx files error: %w", err)
 		} else if len(spdxFiles) == 0 {
 			continue
 		}
@@ -165,7 +164,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		}
 		verificationCode, err := spdxutils.GetVerificationCode(spdxFiles, "")
 		if err != nil {
-			return nil, xerrors.Errorf("package verification error: %w", err)
+			return nil, fmt.Errorf("package verification error: %w", err)
 		}
 		spdxPackage.FilesAnalyzed = true
 		spdxPackage.PackageVerificationCode = &verificationCode
@@ -235,7 +234,7 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, pkgDownloadLocation st
 
 	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", root.Name, root.Type))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s package ID: %w", pkgID, err)
+		return nil, fmt.Errorf("failed to get %s package ID: %w", pkgID, err)
 	}
 
 	pkgPurpose := PackagePurposeSource
@@ -271,7 +270,7 @@ func (m *Marshaler) purlExternalReference(packageURL string) *spdx.PackageExtern
 func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (spdx.Package, error) {
 	pkgID, err := calcPkgID(m.hasher, c)
 	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
+		return spdx.Package{}, fmt.Errorf("failed to get os metadata package ID: %w", err)
 	}
 
 	var elementType, purpose, license, sourceInfo string
@@ -396,7 +395,7 @@ func (m *Marshaler) spdxFiles(c *core.Component) ([]*spdx.File, error) {
 		}
 		spdxFile, err := m.spdxFile(file.Path, file.Digests)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse file: %w", err)
+			return nil, fmt.Errorf("failed to parse file: %w", err)
 		}
 		files = append(files, spdxFile)
 	}
@@ -406,7 +405,7 @@ func (m *Marshaler) spdxFiles(c *core.Component) ([]*spdx.File, error) {
 func (m *Marshaler) spdxFile(filePath string, digests []digest.Digest) (*spdx.File, error) {
 	pkgID, err := calcPkgID(m.hasher, filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
+		return nil, fmt.Errorf("failed to get %s package ID: %w", filePath, err)
 	}
 	return &spdx.File{
 		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
@@ -493,7 +492,7 @@ func calcPkgID(h Hash, v interface{}) (string, error) {
 		SlicesAsSets: true,
 	})
 	if err != nil {
-		return "", xerrors.Errorf("could not build package ID for %+v: %w", v, err)
+		return "", fmt.Errorf("could not build package ID for %+v: %w", v, err)
 	}
 
 	return fmt.Sprintf("%x", f), nil

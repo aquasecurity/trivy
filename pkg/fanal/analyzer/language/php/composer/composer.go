@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"strings"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/php/composer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -54,7 +54,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 		// Parse composer.lock
 		app, err := a.parseComposerLock(path, r)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			return fmt.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
@@ -70,7 +70,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("composer walk error: %w", err)
+		return nil, fmt.Errorf("composer walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -112,7 +112,7 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 		log.Debug("Unable to determine the direct dependencies, composer.json not found", log.String("path", path))
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", path, err)
+		return fmt.Errorf("unable to parse %s: %w", path, err)
 	}
 
 	for i, pkg := range app.Packages {
@@ -136,14 +136,14 @@ func (a composerAnalyzer) parseComposerJson(fsys fs.FS, path string) (map[string
 	// Parse composer.json
 	f, err := fsys.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
 	jsonFile := composerJson{}
 	err = json.NewDecoder(f).Decode(&jsonFile)
 	if err != nil {
-		return nil, xerrors.Errorf("json decode error: %w", err)
+		return nil, fmt.Errorf("json decode error: %w", err)
 	}
 	return jsonFile.Require, nil
 }

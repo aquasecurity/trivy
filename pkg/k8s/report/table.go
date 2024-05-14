@@ -6,8 +6,6 @@ import (
 	"io"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 )
@@ -68,7 +66,7 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 		writer := NewSummaryWriter(tw.Output, tw.Severities, tw.ColumnHeading)
 		return writer.Write(report)
 	default:
-		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, tw.Report)
+		return fmt.Errorf(`report %q not supported. Use "summary" or "all"`, tw.Report)
 	}
 
 	return nil

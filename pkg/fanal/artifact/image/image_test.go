@@ -9,7 +9,6 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -2015,7 +2014,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobIDs:    []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
-					Err: xerrors.New("MissingBlobs failed"),
+					Err: errors.New("MissingBlobs failed"),
 				},
 			},
 			wantErr: "MissingBlobs failed",

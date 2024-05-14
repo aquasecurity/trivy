@@ -10,7 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/hashicorp/go-multierror"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -42,7 +41,7 @@ func NewS3Cache(bucketName, prefix string, api s3API, downloaderAPI *manager.Dow
 func (c S3Cache) PutArtifact(artifactID string, artifactConfig types.ArtifactInfo) (err error) {
 	key := fmt.Sprintf("%s/%s/%s", artifactBucket, c.prefix, artifactID)
 	if err := c.put(key, artifactConfig); err != nil {
-		return xerrors.Errorf("unable to store artifact information in cache (%s): %w", artifactID, err)
+		return fmt.Errorf("unable to store artifact information in cache (%s): %w", artifactID, err)
 	}
 	return nil
 }
@@ -62,7 +61,7 @@ func (c S3Cache) DeleteBlobs(blobIDs []string) error {
 func (c S3Cache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
 	key := fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)
 	if err := c.put(key, blobInfo); err != nil {
-		return xerrors.Errorf("unable to store blob information in cache (%s): %w", blobID, err)
+		return fmt.Errorf("unable to store blob information in cache (%s): %w", blobID, err)
 	}
 	return nil
 }
@@ -79,7 +78,7 @@ func (c S3Cache) put(key string, body interface{}) (err error) {
 	}
 	_, err = c.s3Client.PutObject(context.TODO(), params)
 	if err != nil {
-		return xerrors.Errorf("unable to put object: %w", err)
+		return fmt.Errorf("unable to put object: %w", err)
 	}
 	// Index file due S3 caveat read after write consistency
 	_, err = c.s3Client.PutObject(context.TODO(), &s3.PutObjectInput{
@@ -87,7 +86,7 @@ func (c S3Cache) put(key string, body interface{}) (err error) {
 		Key:    aws.String(fmt.Sprintf("%s.index", key)),
 	})
 	if err != nil {
-		return xerrors.Errorf("unable to put index object: %w", err)
+		return fmt.Errorf("unable to put index object: %w", err)
 	}
 	return nil
 }
@@ -100,11 +99,11 @@ func (c S3Cache) GetBlob(blobID string) (types.BlobInfo, error) {
 		Key:    aws.String(fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)),
 	})
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("failed to get blob from the cache: %w", err)
+		return types.BlobInfo{}, fmt.Errorf("failed to get blob from the cache: %w", err)
 	}
 	err = json.Unmarshal(buf.Bytes(), &blobInfo)
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
+		return types.BlobInfo{}, fmt.Errorf("JSON unmarshal error: %w", err)
 	}
 	return blobInfo, nil
 }
@@ -117,11 +116,11 @@ func (c S3Cache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 		Key:    aws.String(fmt.Sprintf("%s/%s/%s", artifactBucket, c.prefix, artifactID)),
 	})
 	if err != nil {
-		return types.ArtifactInfo{}, xerrors.Errorf("failed to get artifact from the cache: %w", err)
+		return types.ArtifactInfo{}, fmt.Errorf("failed to get artifact from the cache: %w", err)
 	}
 	err = json.Unmarshal(buf.Bytes(), &info)
 	if err != nil {
-		return types.ArtifactInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
+		return types.ArtifactInfo{}, fmt.Errorf("JSON unmarshal error: %w", err)
 	}
 	return info, nil
 }
@@ -132,7 +131,7 @@ func (c S3Cache) getIndex(key, keyType string) error {
 		Bucket: &c.bucketName,
 	})
 	if err != nil {
-		return xerrors.Errorf("failed to get index from the cache: %w", err)
+		return fmt.Errorf("failed to get index from the cache: %w", err)
 	}
 	return nil
 }
@@ -149,7 +148,7 @@ func (c S3Cache) MissingBlobs(artifactID string, blobIDs []string) (bool, []stri
 		}
 		blobInfo, err := c.GetBlob(blobID)
 		if err != nil {
-			return true, missingBlobIDs, xerrors.Errorf("the blob object (%s) doesn't exist in S3 even though the index file exists: %w", blobID, err)
+			return true, missingBlobIDs, fmt.Errorf("the blob object (%s) doesn't exist in S3 even though the index file exists: %w", blobID, err)
 		}
 		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
 			missingBlobIDs = append(missingBlobIDs, blobID)
@@ -163,7 +162,7 @@ func (c S3Cache) MissingBlobs(artifactID string, blobIDs []string) (bool, []stri
 	}
 	artifactInfo, err := c.GetArtifact(artifactID)
 	if err != nil {
-		return true, missingBlobIDs, xerrors.Errorf("the artifact object (%s) doesn't exist in S3 even though the index file exists: %w", artifactID, err)
+		return true, missingBlobIDs, fmt.Errorf("the artifact object (%s) doesn't exist in S3 even though the index file exists: %w", artifactID, err)
 	}
 	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
 		missingArtifact = true

@@ -1,7 +1,7 @@
 package rubygems
 
 import (
-	"golang.org/x/xerrors"
+	"fmt"
 
 	"github.com/aquasecurity/go-gem-version"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -20,12 +20,12 @@ func (r Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 func (r Comparer) matchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := gem.NewVersion(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("RubyGems version error (%s): %s", currentVersion, err)
+		return false, fmt.Errorf("RubyGems version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := gem.NewConstraints(constraint)
 	if err != nil {
-		return false, xerrors.Errorf("RubyGems constraint error (%s): %s", constraint, err)
+		return false, fmt.Errorf("RubyGems constraint error (%s): %s", constraint, err)
 	}
 
 	return c.Check(v), nil

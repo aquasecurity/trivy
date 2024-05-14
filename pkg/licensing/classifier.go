@@ -8,7 +8,6 @@ import (
 
 	classifier "github.com/google/licenseclassifier/v2"
 	"github.com/google/licenseclassifier/v2/assets"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -35,7 +34,7 @@ func initGoogleClassifier() error {
 func Classify(filePath string, r io.Reader, confidenceLevel float64) (*types.LicenseFile, error) {
 	content, err := io.ReadAll(r)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to read a license file %q: %w", filePath, err)
+		return nil, fmt.Errorf("unable to read a license file %q: %w", filePath, err)
 	}
 	if err = initGoogleClassifier(); err != nil {
 		return nil, err

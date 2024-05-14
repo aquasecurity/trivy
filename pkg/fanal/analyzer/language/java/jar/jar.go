@@ -2,12 +2,11 @@ package jar
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -46,7 +45,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 	// TODO: think about the sonatype API and "--offline"
 	client, err := javadb.NewClient()
 	if err != nil {
-		return nil, xerrors.Errorf("Unable to initialize the Java DB: %s", err)
+		return nil, fmt.Errorf("Unable to initialize the Java DB: %s", err)
 	}
 	defer func() { _ = client.Close() }()
 
@@ -71,7 +70,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 	}
 
 	if err = parallel.WalkDir(ctx, input.FS, ".", a.parallel, onFile, onResult); err != nil {
-		return nil, xerrors.Errorf("walk dir error: %w", err)
+		return nil, fmt.Errorf("walk dir error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{

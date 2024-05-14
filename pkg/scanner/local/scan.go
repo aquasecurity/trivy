@@ -11,7 +11,6 @@ import (
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -86,7 +85,7 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
+		return nil, ftypes.OS{}, fmt.Errorf("failed to apply layers: %w", err)
 	}
 
 	target := types.ScanTarget{
@@ -126,7 +125,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 		var vulnResults types.Results
 		vulnResults, eosl, err = s.scanVulnerabilities(ctx, target, options)
 		if err != nil {
-			return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
+			return nil, ftypes.OS{}, fmt.Errorf("failed to detect vulnerabilities: %w", err)
 		}
 		target.OS.Eosl = eosl
 
@@ -164,7 +163,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	// Post scanning
 	results, err = post.Scan(ctx, results)
 	if err != nil {
-		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
+		return nil, ftypes.OS{}, fmt.Errorf("post scan error: %w", err)
 	}
 
 	return results, target.OS, nil
@@ -178,7 +177,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	if slices.Contains(options.VulnType, types.VulnTypeOS) {
 		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
 		if err != nil {
-			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
+			return nil, false, fmt.Errorf("unable to scan OS packages: %w", err)
 		} else if vuln.Target != "" {
 			results = append(results, vuln)
 		}
@@ -188,7 +187,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
 		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
-			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
+			return nil, false, fmt.Errorf("failed to scan application libraries: %w", err)
 		}
 		results = append(results, vulns...)
 	}

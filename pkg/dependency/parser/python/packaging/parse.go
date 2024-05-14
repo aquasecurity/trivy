@@ -3,12 +3,12 @@ package packaging
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"net/textproto"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -37,12 +37,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		// so we continue with the subsequent process.
 		p.logger.Debug("MIME protocol error", log.Err(err))
 	} else if err != nil && err != io.EOF {
-		return nil, nil, xerrors.Errorf("read MIME error: %w", err)
+		return nil, nil, fmt.Errorf("read MIME error: %w", err)
 	}
 
 	name, version := h.Get("name"), h.Get("version")
 	if name == "" || version == "" {
-		return nil, nil, xerrors.New("name or version is empty")
+		return nil, nil, errors.New("name or version is empty")
 	}
 
 	// "License-Expression" takes precedence in accordance with https://peps.python.org/pep-0639/#deprecate-license-field

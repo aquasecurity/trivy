@@ -2,9 +2,8 @@ package disk
 
 import (
 	"errors"
+	"fmt"
 	"io"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 )
@@ -28,10 +27,10 @@ func New(rs io.ReadSeeker, cache vm.Cache[string, []byte]) (*io.SectionReader, e
 			if errors.Is(err, vm.ErrInvalidSignature) {
 				continue
 			}
-			return nil, xerrors.Errorf("open virtual machine error: %w", err)
+			return nil, fmt.Errorf("open virtual machine error: %w", err)
 		}
 
 		return vreader, nil
 	}
-	return nil, xerrors.New("virtual machine can not be detected")
+	return nil, errors.New("virtual machine can not be detected")
 }

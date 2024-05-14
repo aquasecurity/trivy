@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
@@ -95,7 +94,7 @@ func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS,
 
 		f, err := m.root.getFile(path)
 		if err != nil {
-			return xerrors.Errorf("unable to get %s: %w", path, err)
+			return fmt.Errorf("unable to get %s: %w", path, err)
 		}
 		// Virtual file
 		if f.underlyingPath == "" {
@@ -104,7 +103,7 @@ func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS,
 		return newFS.WriteFile(path, f.underlyingPath)
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error %w", err)
+		return nil, fmt.Errorf("walk error %w", err)
 	}
 
 	return newFS, nil

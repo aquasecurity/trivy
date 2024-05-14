@@ -1,13 +1,13 @@
 package conan
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -121,10 +121,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	input, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to read conan lock file: %w", err)
+		return nil, nil, fmt.Errorf("failed to read conan lock file: %w", err)
 	}
 	if err := jfather.Unmarshal(input, &lock); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode conan lock file: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode conan lock file: %w", err)
 	}
 
 	// try to parse requirements as conan v1.x
@@ -147,7 +147,7 @@ func parsePackage(text string) (string, string, error) {
 	// 'pkgd/0.1.0#7dcb50c43a5a50d984c2e8fa5898bf18'
 	ss := strings.Split(strings.Split(strings.Split(text, "@")[0], "#")[0], "/")
 	if len(ss) != 2 {
-		return "", "", xerrors.Errorf("Unable to determine conan dependency: %q", text)
+		return "", "", fmt.Errorf("Unable to determine conan dependency: %q", text)
 	}
 	return ss[0], ss[1], nil
 }

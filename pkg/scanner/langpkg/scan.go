@@ -2,9 +2,8 @@ package langpkg
 
 import (
 	"context"
+	"fmt"
 	"sort"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -76,7 +75,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.Sca
 		log.DebugContext(ctx, "Scanning packages from the file", log.String("file_path", app.FilePath))
 		vulns, err := library.Detect(ctx, app.Type, app.Packages)
 		if err != nil {
-			return nil, xerrors.Errorf("failed vulnerability detection of packages: %w", err)
+			return nil, fmt.Errorf("failed vulnerability detection of packages: %w", err)
 		} else if len(vulns) == 0 {
 			continue
 		}

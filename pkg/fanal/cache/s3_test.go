@@ -3,13 +3,13 @@ package cache
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -189,7 +189,7 @@ func (m *mockS3ClientMissingBlobs) PutObject(ctx context.Context, in *s3.PutObje
 }
 
 func (m *mockS3ClientMissingBlobs) HeadObject(ctx context.Context, params *s3.HeadObjectInput, optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error) {
-	return &s3.HeadObjectOutput{}, xerrors.Errorf("the object doesn't exist in S3")
+	return &s3.HeadObjectOutput{}, fmt.Errorf("the object doesn't exist in S3")
 }
 
 func TestS3Cache_MissingBlobs(t *testing.T) {

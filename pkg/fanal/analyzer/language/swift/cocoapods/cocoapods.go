@@ -2,9 +2,8 @@ package cocoapods
 
 import (
 	"context"
+	"fmt"
 	"os"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -27,7 +26,7 @@ func (a cocoaPodsLockAnalyzer) Analyze(_ context.Context, input analyzer.Analysi
 	p := cocoapods.NewParser()
 	res, err := language.Analyze(types.Cocoapods, input.FilePath, input.Content, p)
 	if err != nil {
-		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
+		return nil, fmt.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 	return res, nil
 }

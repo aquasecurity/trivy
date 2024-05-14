@@ -1,14 +1,13 @@
 package jar
 
 import (
+	"errors"
 	"fmt"
-
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-var ArtifactNotFoundErr = xerrors.New("no artifact found")
+var ArtifactNotFoundErr = errors.New("no artifact found")
 
 type Properties struct {
 	GroupID    string

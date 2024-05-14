@@ -2,9 +2,9 @@ package meta
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -29,11 +29,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var data packageJSON
 	err := json.NewDecoder(r).Decode(&data)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("JSON decode error: %w", err)
+		return nil, nil, fmt.Errorf("JSON decode error: %w", err)
 	}
 
 	if data.Name == "" || data.Version == "" {
-		return nil, nil, xerrors.Errorf("unable to parse conda package")
+		return nil, nil, fmt.Errorf("unable to parse conda package")
 	}
 
 	return []ftypes.Package{

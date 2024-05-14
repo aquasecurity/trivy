@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"runtime"
 
-	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -24,7 +23,7 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	}
 	file, err := os.CreateTemp("", filename)
 	if err != nil {
-		return "", xerrors.Errorf("creating tmp file error: %w", err)
+		return "", fmt.Errorf("creating tmp file error: %w", err)
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
@@ -34,7 +33,7 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 
 	if err := yaml.NewEncoder(file).Encode(artifact.RawResource); err != nil {
 		removeFile(filename)
-		return "", xerrors.Errorf("marshaling resource error: %w", err)
+		return "", fmt.Errorf("marshaling resource error: %w", err)
 	}
 
 	return file.Name(), nil

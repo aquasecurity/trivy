@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
@@ -147,7 +146,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguration, error) {
 	newfs, err := s.filterFS(fsys)
 	if err != nil {
-		return nil, xerrors.Errorf("fs filter error: %w", err)
+		return nil, fmt.Errorf("fs filter error: %w", err)
 	} else if newfs == nil {
 		// Skip scanning if no relevant files are found
 		return nil, nil
@@ -161,7 +160,7 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 			log.Error("scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}
-		return nil, xerrors.Errorf("scan config error: %w", err)
+		return nil, fmt.Errorf("scan config error: %w", err)
 	}
 
 	configType := enablediacTypes[s.fileType]
@@ -192,7 +191,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 		}
 		rs, ok := file.(io.ReadSeeker)
 		if !ok {
-			return false, xerrors.Errorf("type assertion error: %w", err)
+			return false, fmt.Errorf("type assertion error: %w", err)
 		}
 		defer file.Close()
 
@@ -204,7 +203,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	}
 	newfs, err := mfs.FilterFunc(filter)
 	if err != nil {
-		return nil, xerrors.Errorf("fs filter error: %w", err)
+		return nil, fmt.Errorf("fs filter error: %w", err)
 	}
 	if !foundRelevantFile {
 		return nil, nil
@@ -285,7 +284,7 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]opt
 	if len(scannerOption.TerraformTFVars) > 0 {
 		configFS, err := createConfigFS(scannerOption.TerraformTFVars)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to create Terraform config FS: %w", err)
+			return nil, fmt.Errorf("failed to create Terraform config FS: %w", err)
 		}
 		opts = append(
 			opts,
@@ -306,7 +305,7 @@ func addCFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]opt
 	if len(scannerOption.CloudFormationParamVars) > 0 {
 		configFS, err := createConfigFS(scannerOption.CloudFormationParamVars)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to create CloudFormation config FS: %w", err)
+			return nil, fmt.Errorf("failed to create CloudFormation config FS: %w", err)
 		}
 		opts = append(
 			opts,
@@ -349,10 +348,10 @@ func createConfigFS(paths []string) (fs.FS, error) {
 	mfs := mapfs.New()
 	for _, path := range paths {
 		if err := mfs.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-			return nil, xerrors.Errorf("create dir error: %w", err)
+			return nil, fmt.Errorf("create dir error: %w", err)
 		}
 		if err := mfs.WriteFile(path, path); err != nil {
-			return nil, xerrors.Errorf("write file error: %w", err)
+			return nil, fmt.Errorf("write file error: %w", err)
 		}
 	}
 	return mfs, nil
@@ -367,25 +366,25 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	for _, p := range policyPaths {
 		abs, err := filepath.Abs(p)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
+			return nil, nil, fmt.Errorf("failed to derive absolute path from '%s': %w", p, err)
 		}
 		fi, err := os.Stat(abs)
 		if errors.Is(err, os.ErrNotExist) {
-			return nil, nil, xerrors.Errorf("policy file %q not found", abs)
+			return nil, nil, fmt.Errorf("policy file %q not found", abs)
 		} else if err != nil {
-			return nil, nil, xerrors.Errorf("file %q stat error: %w", abs, err)
+			return nil, nil, fmt.Errorf("file %q stat error: %w", abs, err)
 		}
 
 		if fi.IsDir() {
 			if err = mfs.CopyFilesUnder(abs); err != nil {
-				return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
+				return nil, nil, fmt.Errorf("mapfs file copy error: %w", err)
 			}
 		} else {
 			if err := mfs.MkdirAll(filepath.Dir(abs), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-				return nil, nil, xerrors.Errorf("mapfs mkdir error: %w", err)
+				return nil, nil, fmt.Errorf("mapfs mkdir error: %w", err)
 			}
 			if err := mfs.WriteFile(abs, abs); err != nil {
-				return nil, nil, xerrors.Errorf("mapfs write error: %w", err)
+				return nil, nil, fmt.Errorf("mapfs write error: %w", err)
 			}
 		}
 	}

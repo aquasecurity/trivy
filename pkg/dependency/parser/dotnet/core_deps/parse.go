@@ -1,11 +1,11 @@
 package core_deps
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
 	"github.com/liamg/jfather"
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -27,10 +27,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	input, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("read error: %w", err)
+		return nil, nil, fmt.Errorf("read error: %w", err)
 	}
 	if err := jfather.Unmarshal(input, &depsFile); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
 	var pkgs []ftypes.Package

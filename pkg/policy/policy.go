@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/open-policy-agent/opa/bundle"
-	"golang.org/x/xerrors"
+
 	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -94,7 +94,7 @@ func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) error {
 		log.Debug("Loading check bundle", log.String("repository", c.checkBundleRepo))
 		art, err := oci.NewArtifact(c.checkBundleRepo, c.quiet, registryOpts)
 		if err != nil {
-			return xerrors.Errorf("OCI artifact error: %w", err)
+			return fmt.Errorf("OCI artifact error: %w", err)
 		}
 		c.artifact = art
 	}
@@ -104,23 +104,23 @@ func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) error {
 // DownloadBuiltinPolicies download default policies from GitHub Pages
 func (c *Client) DownloadBuiltinPolicies(ctx context.Context, registryOpts types.RegistryOptions) error {
 	if err := c.populateOCIArtifact(registryOpts); err != nil {
-		return xerrors.Errorf("OPA bundle error: %w", err)
+		return fmt.Errorf("OPA bundle error: %w", err)
 	}
 
 	dst := c.contentDir()
 	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{MediaType: policyMediaType}); err != nil {
-		return xerrors.Errorf("download error: %w", err)
+		return fmt.Errorf("download error: %w", err)
 	}
 
 	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
-		return xerrors.Errorf("digest error: %w", err)
+		return fmt.Errorf("digest error: %w", err)
 	}
 	log.Debug("Digest of the built-in policies", log.String("digest", digest))
 
 	// Update metadata.json with the new digest and the current date
 	if err = c.updateMetadata(digest, c.clock.Now()); err != nil {
-		return xerrors.Errorf("unable to update the check metadata: %w", err)
+		return fmt.Errorf("unable to update the check metadata: %w", err)
 	}
 
 	return nil
@@ -130,13 +130,13 @@ func (c *Client) DownloadBuiltinPolicies(ctx context.Context, registryOpts types
 func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 	f, err := os.Open(c.manifestPath())
 	if err != nil {
-		return nil, xerrors.Errorf("manifest file open error (%s): %w", c.manifestPath(), err)
+		return nil, fmt.Errorf("manifest file open error (%s): %w", c.manifestPath(), err)
 	}
 	defer f.Close()
 
 	var manifest bundle.Manifest
 	if err = json.NewDecoder(f).Decode(&manifest); err != nil {
-		return nil, xerrors.Errorf("json decode error (%s): %w", c.manifestPath(), err)
+		return nil, fmt.Errorf("json decode error (%s): %w", c.manifestPath(), err)
 	}
 
 	// If the "roots" field is not included in the manifest it defaults to [""]
@@ -166,12 +166,12 @@ func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOpt
 	}
 
 	if err = c.populateOCIArtifact(registryOpts); err != nil {
-		return false, xerrors.Errorf("OPA bundle error: %w", err)
+		return false, fmt.Errorf("OPA bundle error: %w", err)
 	}
 
 	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
-		return false, xerrors.Errorf("digest error: %w", err)
+		return false, fmt.Errorf("digest error: %w", err)
 	}
 
 	if meta.Digest != digest {
@@ -182,7 +182,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOpt
 	// Otherwise, if there are no updates in the remote registry,
 	// the digest will be fetched every time even after this.
 	if err = c.updateMetadata(meta.Digest, time.Now()); err != nil {
-		return false, xerrors.Errorf("unable to update the check metadata: %w", err)
+		return false, fmt.Errorf("unable to update the check metadata: %w", err)
 	}
 
 	return false, nil
@@ -203,7 +203,7 @@ func (c *Client) manifestPath() string {
 func (c *Client) updateMetadata(digest string, now time.Time) error {
 	f, err := os.Create(c.metadataPath())
 	if err != nil {
-		return xerrors.Errorf("failed to open a check manifest: %w", err)
+		return fmt.Errorf("failed to open a check manifest: %w", err)
 	}
 	defer f.Close()
 
@@ -213,7 +213,7 @@ func (c *Client) updateMetadata(digest string, now time.Time) error {
 	}
 
 	if err = json.NewEncoder(f).Encode(meta); err != nil {
-		return xerrors.Errorf("json encode error: %w", err)
+		return fmt.Errorf("json encode error: %w", err)
 	}
 
 	return nil
@@ -239,7 +239,7 @@ func (c *Client) GetMetadata() (*Metadata, error) {
 func (c *Client) Clear() error {
 	log.Info("Removing check bundle...")
 	if err := os.RemoveAll(c.policyDir); err != nil {
-		return xerrors.Errorf("failed to remove check bundle: %w", err)
+		return fmt.Errorf("failed to remove check bundle: %w", err)
 	}
 	return nil
 }

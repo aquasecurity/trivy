@@ -2,9 +2,9 @@ package mariner
 
 import (
 	"context"
+	"fmt"
 
 	version "github.com/knqyf263/go-rpm-version"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/mariner"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -39,7 +39,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 		// CBL Mariner OVAL contains source package names only.
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get CBL-Mariner advisories: %w", err)
+			return nil, fmt.Errorf("failed to get CBL-Mariner advisories: %w", err)
 		}
 
 		sourceVersion := version.NewVersion(utils.FormatSrcVersion(pkg))

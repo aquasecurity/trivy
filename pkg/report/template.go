@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/xml"
+	"fmt"
 	"html"
 	"io"
 	"os"
@@ -11,7 +12,6 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -32,7 +32,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 	if strings.HasPrefix(outputTemplate, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
 		if err != nil {
-			return nil, xerrors.Errorf("error retrieving template from path: %w", err)
+			return nil, fmt.Errorf("error retrieving template from path: %w", err)
 		}
 		outputTemplate = string(buf)
 	}
@@ -66,7 +66,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 
 	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {
-		return nil, xerrors.Errorf("error parsing template: %w", err)
+		return nil, fmt.Errorf("error parsing template: %w", err)
 	}
 	return &TemplateWriter{
 		Output:   output,
@@ -78,7 +78,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 func (tw TemplateWriter) Write(ctx context.Context, report types.Report) error {
 	err := tw.Template.Execute(tw.Output, report.Results)
 	if err != nil {
-		return xerrors.Errorf("failed to write with template: %w", err)
+		return fmt.Errorf("failed to write with template: %w", err)
 	}
 	return nil
 }

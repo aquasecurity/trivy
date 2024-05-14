@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -16,7 +17,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
@@ -69,7 +69,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		// Parse yarn.lock
 		app, err := a.parseYarnLock(filePath, r)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			return fmt.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
@@ -97,7 +97,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("yarn walk error: %w", err)
+		return nil, fmt.Errorf("yarn walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -161,7 +161,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 		a.logger.Debug("package.json not found", log.String("path", packageJsonPath))
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", dir, err)
+		return fmt.Errorf("unable to parse %s: %w", dir, err)
 	}
 
 	// yarn.lock file can contain same packages with different versions
@@ -173,13 +173,13 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	// Walk prod dependencies
 	pkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDeps, false)
 	if err != nil {
-		return xerrors.Errorf("unable to walk dependencies: %w", err)
+		return fmt.Errorf("unable to walk dependencies: %w", err)
 	}
 
 	// Walk dev dependencies
 	devPkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDevDeps, true)
 	if err != nil {
-		return xerrors.Errorf("unable to walk dependencies: %w", err)
+		return fmt.Errorf("unable to walk dependencies: %w", err)
 	}
 
 	// Merge prod and dev dependencies.
@@ -214,7 +214,7 @@ func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]t
 
 		// npm has own comparer to compare versions
 		if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-			return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+			return nil, fmt.Errorf("unable to match version for %s", pkg.Name)
 		} else if !match {
 			continue
 		}
@@ -258,13 +258,13 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	// Parse package.json
 	f, err := fsys.Open(filePath)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("file open error: %w", err)
+		return nil, nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
 	rootPkg, err := a.packageJsonParser.Parse(f)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("parse error: %w", err)
+		return nil, nil, fmt.Errorf("parse error: %w", err)
 	}
 
 	// Merge dependencies and optionalDependencies
@@ -274,7 +274,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	if len(rootPkg.Workspaces) > 0 {
 		pkgs, err := a.traverseWorkspaces(fsys, path.Dir(filePath), rootPkg.Workspaces)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("traverse workspaces error: %w", err)
+			return nil, nil, fmt.Errorf("traverse workspaces error: %w", err)
 		}
 		for _, pkg := range pkgs {
 			dependencies = lo.Assign(dependencies, pkg.Dependencies, pkg.OptionalDependencies)
@@ -295,7 +295,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 	walkDirFunc := func(path string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", path, err)
+			return fmt.Errorf("unable to parse %q: %w", path, err)
 		}
 		pkgs = append(pkgs, pkg)
 		return nil
@@ -311,7 +311,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 		}
 		for _, match := range matches {
 			if err := fsutils.WalkDir(fsys, match, required, walkDirFunc); err != nil {
-				return nil, xerrors.Errorf("walk error: %w", err)
+				return nil, fmt.Errorf("walk error: %w", err)
 			}
 		}
 
@@ -322,7 +322,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 func (a yarnAnalyzer) traverseLicenses(fsys fs.FS, lockPath string) (map[string][]string, error) {
 	sub, err := fs.Sub(fsys, path.Dir(lockPath))
 	if err != nil {
-		return nil, xerrors.Errorf("fs error: %w", err)
+		return nil, fmt.Errorf("fs error: %w", err)
 	}
 	var errs error
 
@@ -350,7 +350,7 @@ func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS) (map[string][]string, 
 func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, error) {
 	sub, err := fs.Sub(fsys, ".yarn")
 	if err != nil {
-		return nil, xerrors.Errorf("fs error: %w", err)
+		return nil, fmt.Errorf("fs error: %w", err)
 	}
 
 	var errs error
@@ -388,21 +388,21 @@ func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) 
 		func(filePath string, d fs.DirEntry, r io.Reader) error {
 			fi, err := d.Info()
 			if err != nil {
-				return xerrors.Errorf("file stat error: %w", err)
+				return fmt.Errorf("file stat error: %w", err)
 			}
 
 			rr, err := xio.NewReadSeekerAt(r)
 			if err != nil {
-				return xerrors.Errorf("reader error: %w", err)
+				return fmt.Errorf("reader error: %w", err)
 			}
 
 			zr, err := zip.NewReader(rr, fi.Size())
 			if err != nil {
-				return xerrors.Errorf("zip reader error: %w", err)
+				return fmt.Errorf("zip reader error: %w", err)
 			}
 
 			if l, err := a.license.Traverse(zr, "node_modules"); err != nil {
-				return xerrors.Errorf("license traverse error: %w", err)
+				return fmt.Errorf("license traverse error: %w", err)
 			} else {
 				licenses = lo.Assign(licenses, l)
 			}
@@ -410,7 +410,7 @@ func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) 
 		})
 
 	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, fmt.Errorf("walk error: %w", err)
 	}
 
 	return licenses, nil

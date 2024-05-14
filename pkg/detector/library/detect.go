@@ -2,8 +2,7 @@ package library
 
 import (
 	"context"
-
-	"golang.org/x/xerrors"
+	"fmt"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -19,7 +18,7 @@ func Detect(ctx context.Context, libType ftypes.LangType, pkgs []ftypes.Package)
 
 	vulns, err := detect(ctx, driver, pkgs)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", driver.Type(), err)
+		return nil, fmt.Errorf("failed to scan %s vulnerabilities: %w", driver.Type(), err)
 	}
 
 	return vulns, nil
@@ -35,7 +34,7 @@ func detect(ctx context.Context, driver Driver, pkgs []ftypes.Package) ([]types.
 		}
 		vulns, err := driver.DetectVulnerabilities(pkg.ID, pkg.Name, pkg.Version)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", driver.Type(), err)
+			return nil, fmt.Errorf("failed to detect %s vulnerabilities: %w", driver.Type(), err)
 		}
 
 		for i := range vulns {

@@ -2,11 +2,11 @@ package alma
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -53,7 +53,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
 		advisories, err := s.vs.Get(osVer, pkgName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get AlmaLinux advisories: %w", err)
+			return nil, fmt.Errorf("failed to get AlmaLinux advisories: %w", err)
 		}
 
 		installed := utils.FormatVersion(pkg)

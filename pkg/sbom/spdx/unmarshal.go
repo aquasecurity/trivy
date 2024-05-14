@@ -12,7 +12,6 @@ import (
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	"github.com/spdx/tools-golang/tagvalue"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
@@ -35,15 +34,15 @@ type TVDecoder struct {
 func (tv *TVDecoder) Decode(v interface{}) error {
 	spdxDocument, err := tagvalue.Read(tv.r)
 	if err != nil {
-		return xerrors.Errorf("failed to load tag-value spdx: %w", err)
+		return fmt.Errorf("failed to load tag-value spdx: %w", err)
 	}
 
 	a, ok := v.(*SPDX)
 	if !ok {
-		return xerrors.Errorf("invalid struct type tag-value decoder needed SPDX struct")
+		return fmt.Errorf("invalid struct type tag-value decoder needed SPDX struct")
 	}
 	if err = a.unmarshal(spdxDocument); err != nil {
-		return xerrors.Errorf("failed to unmarshal spdx: %w", err)
+		return fmt.Errorf("failed to unmarshal spdx: %w", err)
 	}
 
 	return nil
@@ -59,11 +58,11 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 
 	spdxDocument, err := json.Read(bytes.NewReader(b))
 	if err != nil {
-		return xerrors.Errorf("failed to load spdx json: %w", err)
+		return fmt.Errorf("failed to load spdx json: %w", err)
 	}
 
 	if err = s.unmarshal(spdxDocument); err != nil {
-		return xerrors.Errorf("failed to unmarshal spdx: %w", err)
+		return fmt.Errorf("failed to unmarshal spdx: %w", err)
 	}
 	return nil
 }
@@ -77,7 +76,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	// Convert all SPDX packages into Trivy components
 	components, err := s.parsePackages(spdxDocument)
 	if err != nil {
-		return xerrors.Errorf("package parse error: %w", err)
+		return fmt.Errorf("package parse error: %w", err)
 	}
 
 	// Parse relationships and build the dependency graph
@@ -146,7 +145,7 @@ func (s *SPDX) parsePackages(spdxDocument *spdx.Document) (map[common.ElementID]
 	for _, pkg := range spdxDocument.Packages {
 		component, err := s.parsePackage(*pkg)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse package: %w", err)
+			return nil, fmt.Errorf("failed to parse package: %w", err)
 		}
 		components[pkg.PackageSPDXIdentifier] = component
 
@@ -168,7 +167,7 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 
 	// PURL
 	if component.PkgIdentifier.PURL, err = s.parseExternalReferences(spdxPkg.PackageExternalReferences); err != nil {
-		return nil, xerrors.Errorf("external references error: %w", err)
+		return nil, fmt.Errorf("external references error: %w", err)
 	}
 
 	// License
@@ -255,7 +254,7 @@ func (s *SPDX) parseExternalReferences(refs []*spdx.PackageExternalReference) (*
 
 		packageURL, err := packageurl.FromString(ref.Locator)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
+			return nil, fmt.Errorf("failed to parse purl from string: %w", err)
 		}
 		return &packageURL, nil
 	}

@@ -12,7 +12,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/xerrors"
 
 	awsScanner "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
@@ -125,7 +124,7 @@ func loadPluginCommands() []*cobra.Command {
 			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err = p.Run(cmd.Context(), plugin.RunOptions{Args: args}); err != nil {
-					return xerrors.Errorf("plugin error: %w", err)
+					return fmt.Errorf("plugin error: %w", err)
 				}
 				return nil
 			},
@@ -147,7 +146,7 @@ func initConfig(configFile string) error {
 			log.Debug("Config file not found", log.String("file_path", configFile))
 			return nil
 		}
-		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
+		return fmt.Errorf("config file %q loading error: %s", configFile, err)
 	}
 	log.Info("Loaded", log.String("file_path", configFile))
 	return nil
@@ -179,7 +178,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			// cf. https://github.com/spf13/cobra/issues/875
 			//     https://github.com/spf13/viper/issues/233
 			if err := globalFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 
 			// The config path is needed for config initialization.
@@ -295,14 +294,14 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			// cf. https://github.com/spf13/cobra/issues/875
 			//     https://github.com/spf13/viper/issues/233
 			if err := imageFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options, err := imageFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetContainerImage)
 		},
@@ -352,17 +351,17 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy fs ./trivy-ci-test/Pipfile.lock`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := fsFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := fsFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := fsFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetFilesystem)
 		},
@@ -412,17 +411,17 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   / # trivy rootfs /`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := rootfsFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := rootfsFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := rootfsFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetRootfs)
 		},
@@ -468,17 +467,17 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy repo /path/to/your/repository`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := repoFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetRepository)
 		},
@@ -509,17 +508,17 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := convertFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := convertFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			opts, err := convertFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 
 			return convert.Run(cmd.Context(), opts)
@@ -565,7 +564,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Hidden:  true, // 'client' command is deprecated
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := clientFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
@@ -573,11 +572,11 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			log.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
 			if err := clientFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := clientFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetContainerImage)
 		},
@@ -620,11 +619,11 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := serverFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := serverFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			return server.Run(cmd.Context(), options)
 		},
@@ -677,17 +676,17 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Short:   "Scan config files for misconfigurations",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := configFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := configFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := configFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 
 			// Disable OS and language analyzers
@@ -727,7 +726,7 @@ func NewPluginCommand() *cobra.Command {
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if _, err := plugin.Install(cmd.Context(), args[0], true); err != nil {
-					return xerrors.Errorf("plugin install error: %w", err)
+					return fmt.Errorf("plugin install error: %w", err)
 				}
 				return nil
 			},
@@ -741,7 +740,7 @@ func NewPluginCommand() *cobra.Command {
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
 				if err := plugin.Uninstall(args[0]); err != nil {
-					return xerrors.Errorf("plugin uninstall error: %w", err)
+					return fmt.Errorf("plugin uninstall error: %w", err)
 				}
 				return nil
 			},
@@ -756,10 +755,10 @@ func NewPluginCommand() *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				info, err := plugin.List()
 				if err != nil {
-					return xerrors.Errorf("plugin list display error: %w", err)
+					return fmt.Errorf("plugin list display error: %w", err)
 				}
 				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
-					return xerrors.Errorf("print error: %w", err)
+					return fmt.Errorf("print error: %w", err)
 				}
 				return nil
 			},
@@ -773,10 +772,10 @@ func NewPluginCommand() *cobra.Command {
 			RunE: func(_ *cobra.Command, args []string) error {
 				info, err := plugin.Information(args[0])
 				if err != nil {
-					return xerrors.Errorf("plugin information display error: %w", err)
+					return fmt.Errorf("plugin information display error: %w", err)
 				}
 				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
-					return xerrors.Errorf("print error: %w", err)
+					return fmt.Errorf("print error: %w", err)
 				}
 				return nil
 			},
@@ -800,7 +799,7 @@ func NewPluginCommand() *cobra.Command {
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
 				if err := plugin.Update(args[0]); err != nil {
-					return xerrors.Errorf("plugin update error: %w", err)
+					return fmt.Errorf("plugin update error: %w", err)
 				}
 				return nil
 			},
@@ -834,7 +833,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Args:    cobra.ExactArgs(1),
 			PreRunE: func(cmd *cobra.Command, args []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
-					return xerrors.Errorf("flag bind error: %w", err)
+					return fmt.Errorf("flag bind error: %w", err)
 				}
 				return nil
 			},
@@ -846,7 +845,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				repo := args[0]
 				opts, err := moduleFlags.ToOptions(args)
 				if err != nil {
-					return xerrors.Errorf("flag error: %w", err)
+					return fmt.Errorf("flag error: %w", err)
 				}
 				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.RegistryOpts())
 			},
@@ -858,7 +857,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Args:    cobra.ExactArgs(1),
 			PreRunE: func(cmd *cobra.Command, args []string) error {
 				if err := moduleFlags.Bind(cmd); err != nil {
-					return xerrors.Errorf("flag bind error: %w", err)
+					return fmt.Errorf("flag bind error: %w", err)
 				}
 				return nil
 			},
@@ -870,7 +869,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				repo := args[0]
 				opts, err := moduleFlags.ToOptions(args)
 				if err != nil {
-					return xerrors.Errorf("flag error: %w", err)
+					return fmt.Errorf("flag error: %w", err)
 				}
 				return module.Uninstall(cmd.Context(), opts.ModuleDir, repo)
 			},
@@ -954,17 +953,17 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := k8sFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := k8sFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			opts, err := k8sFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 
 			return k8scommands.Run(cmd.Context(), args, opts)
@@ -1028,14 +1027,14 @@ The following services are supported:
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := awsFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts, err := awsFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			if opts.Timeout < time.Hour {
 				opts.Timeout = time.Hour
@@ -1091,17 +1090,17 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := vmFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := vmFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := vmFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 			if options.Timeout < time.Minute*30 {
 				options.Timeout = time.Minute * 30
@@ -1166,17 +1165,17 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := sbomFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := sbomFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
+				return fmt.Errorf("flag bind error: %w", err)
 			}
 			options, err := sbomFlags.ToOptions(args)
 			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
+				return fmt.Errorf("flag error: %w", err)
 			}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
@@ -1221,7 +1220,7 @@ func showVersion(cacheDir, outputFormat string, w io.Writer) error {
 	switch outputFormat {
 	case "json":
 		if err := json.NewEncoder(w).Encode(versionInfo); err != nil {
-			return xerrors.Errorf("json encode error: %w", err)
+			return fmt.Errorf("json encode error: %w", err)
 		}
 	default:
 		fmt.Fprint(w, versionInfo.String())
@@ -1243,14 +1242,14 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 		}
 
 		if f := cmd.Flags().Lookup(flag.InputFlag.ConfigName); f != nil {
-			return xerrors.New(`Require at least 1 argument or --input option`)
+			return errors.New(`Require at least 1 argument or --input option`)
 		}
-		return xerrors.New(`Require at least 1 argument`)
+		return errors.New(`Require at least 1 argument`)
 	} else if cmd.Name() != "kubernetes" && len(args) > 1 {
 		if err := cmd.Help(); err != nil {
 			return err
 		}
-		return xerrors.New(`multiple targets cannot be specified`)
+		return errors.New(`multiple targets cannot be specified`)
 	}
 
 	return nil

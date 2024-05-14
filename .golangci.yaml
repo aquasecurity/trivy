@@ -70,22 +70,23 @@ linters-settings:
 linters:
   disable-all: true
   enable:
-    - unused
-    - ineffassign
-    - typecheck
-    - govet
-    - revive
-    - gosec
-    - unconvert
+    - bodyclose
+    - errorlint
+    - gci
     - goconst
+    - gocritic
     - gocyclo
     - gofmt
-    - misspell
-    - bodyclose
-    - gci
     - gomodguard
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - revive
     - tenv
-    - gocritic
+    - typecheck
+    - unconvert
+    - unused
 
 run:
   go: '1.22'

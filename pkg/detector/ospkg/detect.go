@@ -2,10 +2,11 @@ package ospkg
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
@@ -27,7 +28,7 @@ import (
 
 var (
 	// ErrUnsupportedOS defines error for unsupported OS
-	ErrUnsupportedOS = xerrors.New("unsupported os")
+	ErrUnsupportedOS = errors.New("unsupported os")
 
 	drivers = map[ftypes.OSType]Driver{
 		ftypes.Alpine:       alpine.NewScanner(),
@@ -77,7 +78,7 @@ func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo 
 	})
 	vulns, err := driver.Detect(ctx, osName, repo, filteredPkgs)
 	if err != nil {
-		return nil, false, xerrors.Errorf("failed detection: %w", err)
+		return nil, false, fmt.Errorf("failed detection: %w", err)
 	}
 
 	return vulns, eosl, nil

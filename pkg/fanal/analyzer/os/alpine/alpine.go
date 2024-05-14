@@ -3,10 +3,10 @@ package alpine
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -34,7 +34,7 @@ func (a alpineOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 			},
 		}, nil
 	}
-	return nil, xerrors.Errorf("alpine: %w", fos.AnalyzeOSError)
+	return nil, fmt.Errorf("alpine: %w", fos.AnalyzeOSError)
 }
 
 func (a alpineOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

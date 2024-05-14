@@ -2,27 +2,27 @@ package downloader
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	getter "github.com/hashicorp/go-getter"
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
 )
 
 // DownloadToTempDir downloads the configured source to a temp dir.
 func DownloadToTempDir(ctx context.Context, url string) (string, error) {
 	tempDir, err := os.MkdirTemp("", "trivy-plugin")
 	if err != nil {
-		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
+		return "", fmt.Errorf("failed to create a temp dir: %w", err)
 	}
 
 	pwd, err := os.Getwd()
 	if err != nil {
-		return "", xerrors.Errorf("unable to get the current dir: %w", err)
+		return "", fmt.Errorf("unable to get the current dir: %w", err)
 	}
 
 	if err = Download(ctx, url, tempDir, pwd); err != nil {
-		return "", xerrors.Errorf("download error: %w", err)
+		return "", fmt.Errorf("download error: %w", err)
 	}
 
 	return tempDir, nil
@@ -53,7 +53,7 @@ func Download(ctx context.Context, src, dst, pwd string) error {
 	}
 
 	if err := client.Get(); err != nil {
-		return xerrors.Errorf("failed to download: %w", err)
+		return fmt.Errorf("failed to download: %w", err)
 	}
 
 	return nil

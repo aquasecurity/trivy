@@ -3,11 +3,10 @@ package amazonlinux
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -59,7 +58,7 @@ func (a amazonlinuxOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 			}, nil
 		}
 	}
-	return types.OS{}, xerrors.Errorf("amazon: %w", fos.AnalyzeOSError)
+	return types.OS{}, fmt.Errorf("amazon: %w", fos.AnalyzeOSError)
 }
 
 func (a amazonlinuxOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

@@ -3,13 +3,12 @@ package npm
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/npm"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
@@ -61,7 +60,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 		app, err := a.parseNpmPkgLock(input.FS, filePath)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			return fmt.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
@@ -77,7 +76,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("package-lock.json/package.json walk error: %w", err)
+		return nil, fmt.Errorf("package-lock.json/package.json walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -111,13 +110,13 @@ func (a npmLibraryAnalyzer) Version() int {
 func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types.Application, error) {
 	f, err := fsys.Open(filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
 	file, ok := f.(xio.ReadSeekCloserAt)
 	if !ok {
-		return nil, xerrors.Errorf("type assertion error: %w", err)
+		return nil, fmt.Errorf("type assertion error: %w", err)
 	}
 
 	// parse package-lock.json file
@@ -145,14 +144,14 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageParser.Parse(r)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
+			return fmt.Errorf("unable to parse %q: %w", filePath, err)
 		}
 
 		licenses[pkg.ID] = pkg.Licenses
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, fmt.Errorf("walk error: %w", err)
 	}
 	return licenses, nil
 }

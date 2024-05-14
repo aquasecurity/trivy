@@ -9,7 +9,6 @@ import (
 	version "github.com/knqyf263/go-rpm-version"
 	packageurl "github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -49,7 +48,7 @@ type PackageURL packageurl.PackageURL
 func FromString(s string) (*PackageURL, error) {
 	p, err := packageurl.FromString(s)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse purl(%s): %w", s, err)
+		return nil, fmt.Errorf("failed to parse purl(%s): %w", s, err)
 	}
 
 	if len(p.Qualifiers) == 0 {
@@ -285,7 +284,7 @@ func parseOCI(metadata types.Metadata) (*packageurl.PackageURL, error) {
 
 	digest, err := cn.NewDigest(metadata.RepoDigests[0])
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse digest: %w", err)
+		return nil, fmt.Errorf("failed to parse digest: %w", err)
 	}
 
 	name := strings.ToLower(digest.RepositoryStr())

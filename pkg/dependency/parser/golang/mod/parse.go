@@ -1,6 +1,7 @@
 package mod
 
 import (
+	"fmt"
 	"io"
 	"regexp"
 	"strconv"
@@ -9,7 +10,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/mod/modfile"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -71,12 +71,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	goModData, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("file read error: %w", err)
+		return nil, nil, fmt.Errorf("file read error: %w", err)
 	}
 
 	modFileParsed, err := modfile.Parse("go.mod", goModData, nil)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("go.mod parse error: %w", err)
+		return nil, nil, fmt.Errorf("go.mod parse error: %w", err)
 	}
 
 	skipIndirect := true

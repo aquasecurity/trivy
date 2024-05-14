@@ -3,12 +3,13 @@ package yarn
 import (
 	"bufio"
 	"bytes"
+	"errors"
+	"fmt"
 	"io"
 	"regexp"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -63,7 +64,7 @@ func (s *LineScanner) LineNum(prevNum int) int {
 func parsePattern(target string) (packagename, protocol, version string, err error) {
 	capture := yarnPatternRegexp.FindStringSubmatch(target)
 	if len(capture) < 3 {
-		return "", "", "", xerrors.New("not package format")
+		return "", "", "", errors.New("not package format")
 	}
 	for i, group := range yarnPatternRegexp.SubexpNames() {
 		switch group {
@@ -94,7 +95,7 @@ func parsePackagePatterns(target string) (packagename, protocol string, patterns
 func getVersion(target string) (version string, err error) {
 	capture := yarnVersionRegexp.FindStringSubmatch(target)
 	if len(capture) < 2 {
-		return "", xerrors.Errorf("failed to parse version: '%s", target)
+		return "", fmt.Errorf("failed to parse version: '%s", target)
 	}
 	return capture[len(capture)-1], nil
 }
@@ -102,7 +103,7 @@ func getVersion(target string) (version string, err error) {
 func getDependency(target string) (name, version string, err error) {
 	capture := yarnDependencyRegexp.FindStringSubmatch(target)
 	if len(capture) < 3 {
-		return "", "", xerrors.New("not dependency")
+		return "", "", errors.New("not dependency")
 	}
 	if !validProtocol(capture[2]) {
 		return "", "", nil
@@ -216,7 +217,7 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 				if !ignoreProtocol(protocol) {
 					// we need to calculate the last line of the block in order to correctly determine the line numbers of the next blocks
 					// store the error. we will handle it later
-					err = xerrors.Errorf("unknown protocol: '%s', line: %s", protocol, line)
+					err = fmt.Errorf("unknown protocol: '%s', line: %s", protocol, line)
 					continue
 				}
 				continue
@@ -310,7 +311,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, nil, xerrors.Errorf("failed to scan yarn.lock, got scanner error: %s", err.Error())
+		return nil, nil, fmt.Errorf("failed to scan yarn.lock, got scanner error: %s", err.Error())
 	}
 
 	// Replace dependency patterns with library IDs

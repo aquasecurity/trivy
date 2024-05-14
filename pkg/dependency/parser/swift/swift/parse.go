@@ -1,13 +1,13 @@
 package swift
 
 import (
+	"fmt"
 	"io"
 	"sort"
 	"strings"
 
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -30,10 +30,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("read error: %w", err)
+		return nil, nil, fmt.Errorf("read error: %w", err)
 	}
 	if err := jfather.Unmarshal(input, &lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+		return nil, nil, fmt.Errorf("decode error: %w", err)
 	}
 
 	var pkgs ftypes.Packages

@@ -3,10 +3,9 @@ package report
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -28,7 +27,7 @@ const (
 func Write(ctx context.Context, report types.Report, option flag.Options) (err error) {
 	output, cleanup, err := option.OutputWriter(ctx)
 	if err != nil {
-		return xerrors.Errorf("failed to create a file: %w", err)
+		return fmt.Errorf("failed to create a file: %w", err)
 	}
 	defer func() {
 		if cerr := cleanup(); cerr != nil {
@@ -78,7 +77,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		}
 		var err error
 		if writer, err = NewTemplateWriter(output, option.Template, option.AppVersion); err != nil {
-			return xerrors.Errorf("failed to initialize template writer: %w", err)
+			return fmt.Errorf("failed to initialize template writer: %w", err)
 		}
 	case types.FormatSarif:
 		target := ""
@@ -93,11 +92,11 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)
 	default:
-		return xerrors.Errorf("unknown format: %v", option.Format)
+		return fmt.Errorf("unknown format: %v", option.Format)
 	}
 
 	if err = writer.Write(ctx, report); err != nil {
-		return xerrors.Errorf("failed to write results: %w", err)
+		return fmt.Errorf("failed to write results: %w", err)
 	}
 
 	return nil
@@ -106,7 +105,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 func complianceWrite(ctx context.Context, report types.Report, opt flag.Options, output io.Writer) error {
 	complianceReport, err := cr.BuildComplianceReport([]types.Results{report.Results}, opt.Compliance)
 	if err != nil {
-		return xerrors.Errorf("compliance report build error: %w", err)
+		return fmt.Errorf("compliance report build error: %w", err)
 	}
 	return cr.Write(ctx, complianceReport, cr.Option{
 		Format:     opt.Format,

@@ -3,9 +3,8 @@ package client
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net/http"
-
-	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
@@ -92,7 +91,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return err
 	})
 	if err != nil {
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return nil, ftypes.OS{}, fmt.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
 	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), nil

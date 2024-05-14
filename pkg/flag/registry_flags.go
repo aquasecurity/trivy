@@ -1,9 +1,8 @@
 package flag
 
 import (
+	"errors"
 	"strings"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -66,7 +65,7 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	users := f.Username.Value()
 	passwords := f.Password.Value()
 	if len(users) != len(passwords) {
-		return RegistryOptions{}, xerrors.New("the length of usernames and passwords must match")
+		return RegistryOptions{}, errors.New("the length of usernames and passwords must match")
 	}
 	for i, user := range users {
 		credentials = append(credentials, types.Credential{

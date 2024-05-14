@@ -1,13 +1,13 @@
 package language_test
 
 import (
+	"errors"
 	"io"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -32,7 +32,7 @@ func (p *mockParser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Depende
 			},
 		}, nil, nil
 	case "sad":
-		return nil, nil, xerrors.New("unexpected error")
+		return nil, nil, errors.New("unexpected error")
 	}
 
 	return nil, nil, nil

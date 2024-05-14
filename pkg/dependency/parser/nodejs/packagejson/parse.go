@@ -2,11 +2,11 @@ package packagejson
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"regexp"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -41,11 +41,11 @@ func NewParser() *Parser {
 func (p *Parser) Parse(r io.Reader) (Package, error) {
 	var pkgJSON packageJSON
 	if err := json.NewDecoder(r).Decode(&pkgJSON); err != nil {
-		return Package{}, xerrors.Errorf("JSON decode error: %w", err)
+		return Package{}, fmt.Errorf("JSON decode error: %w", err)
 	}
 
 	if !IsValidName(pkgJSON.Name) {
-		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
+		return Package{}, fmt.Errorf("Name can only contain URL-friendly characters")
 	}
 
 	var id string

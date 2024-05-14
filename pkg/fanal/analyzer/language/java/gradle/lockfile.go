@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/gradle/lockfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -57,7 +56,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		var app *types.Application
 		app, err = language.Parse(types.Gradle, filePath, r, a.parser)
 		if err != nil {
-			return xerrors.Errorf("%s parse error: %w", filePath, err)
+			return fmt.Errorf("%s parse error: %w", filePath, err)
 		}
 
 		if app == nil {
@@ -95,7 +94,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, fmt.Errorf("walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{

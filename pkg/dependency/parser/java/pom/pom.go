@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -322,7 +321,7 @@ func (props *properties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error 
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return xerrors.Errorf("XML decode error: %w", err)
+			return fmt.Errorf("XML decode error: %w", err)
 		}
 
 		(*props)[p.XMLName.Local] = p.Value
@@ -336,7 +335,7 @@ func (deps *pomDependencies) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) er
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return xerrors.Errorf("XML decode error: %w", err)
+			return fmt.Errorf("XML decode error: %w", err)
 		}
 
 		t, ok := token.(xml.StartElement)
@@ -351,7 +350,7 @@ func (deps *pomDependencies) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) er
 			// Decode the <dependency> element
 			err = d.DecodeElement(&dep, &t)
 			if err != nil {
-				return xerrors.Errorf("Error decoding dependency: %w", err)
+				return fmt.Errorf("Error decoding dependency: %w", err)
 			}
 
 			dep.EndLine, _ = d.InputPos() // <dependency> tag ends

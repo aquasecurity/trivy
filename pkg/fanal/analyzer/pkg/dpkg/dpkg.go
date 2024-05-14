@@ -17,7 +17,6 @@ import (
 	debVersion "github.com/knqyf263/go-deb-version"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -92,7 +91,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("dpkg walk error: %w", err)
+		return nil, fmt.Errorf("dpkg walk error: %w", err)
 	}
 
 	// map the packages to their respective files
@@ -130,7 +129,7 @@ func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+		return nil, fmt.Errorf("scan error: %w", err)
 	}
 
 	// Add the file if it is not directory.
@@ -160,7 +159,7 @@ func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error
 func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, error) {
 	f, err := fsys.Open(availableFile)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, fmt.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
@@ -179,7 +178,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 		}
 	}
 	if err = scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+		return nil, fmt.Errorf("scan error: %w", err)
 	}
 
 	return pkgs, nil
@@ -208,7 +207,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+		return nil, fmt.Errorf("scan error: %w", err)
 	}
 
 	a.consolidateDependencies(pkgs, pkgIDs)

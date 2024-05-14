@@ -15,7 +15,6 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -96,7 +95,7 @@ func (f *Flag[T]) Parse() error {
 
 	value, ok := f.cast(v).(T)
 	if !ok {
-		return xerrors.Errorf("failed to parse flag %s", f.Name)
+		return fmt.Errorf("failed to parse flag %s", f.Name)
 	}
 
 	if f.ValueNormalize != nil {
@@ -104,7 +103,7 @@ func (f *Flag[T]) Parse() error {
 	}
 
 	if f.isSet() && !f.allowedValue(value) {
-		return xerrors.Errorf(`invalid argument "%s" for "--%s" flag: must be one of %q`, value, f.Name, f.Values)
+		return fmt.Errorf(`invalid argument "%s" for "--%s" flag: must be one of %q`, value, f.Name, f.Values)
 	}
 
 	f.value = value
@@ -250,7 +249,7 @@ func (f *Flag[T]) Bind(cmd *cobra.Command) error {
 		flag = cmd.PersistentFlags().Lookup(f.Name)
 	}
 	if err := viper.BindPFlag(f.ConfigName, flag); err != nil {
-		return xerrors.Errorf("bind flag error: %w", err)
+		return fmt.Errorf("bind flag error: %w", err)
 	}
 
 	// Bind environmental variable
@@ -265,14 +264,14 @@ func (f *Flag[T]) BindEnv() error {
 	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
 	envName := strings.ToUpper("trivy_" + strings.ReplaceAll(f.Name, "-", "_"))
 	if err := viper.BindEnv(f.ConfigName, envName); err != nil {
-		return xerrors.Errorf("bind env error: %w", err)
+		return fmt.Errorf("bind env error: %w", err)
 	}
 
 	// Bind env aliases
 	for _, alias := range f.Aliases {
 		envAlias := strings.ToUpper("trivy_" + strings.ReplaceAll(alias.Name, "-", "_"))
 		if err := viper.BindEnv(f.ConfigName, envAlias); err != nil {
-			return xerrors.Errorf("bind env error: %w", err)
+			return fmt.Errorf("bind env error: %w", err)
 		}
 		if alias.Deprecated {
 			if _, ok := os.LookupEnv(envAlias); ok {
@@ -376,7 +375,7 @@ func (o *Options) Align() error {
 		// set scanners types by spec
 		scanners, err := o.Compliance.Scanners()
 		if err != nil {
-			return xerrors.Errorf("scanner error: %w", err)
+			return fmt.Errorf("scanner error: %w", err)
 		}
 
 		o.Scanners = scanners
@@ -438,7 +437,7 @@ func (o *Options) OutputWriter(ctx context.Context) (io.Writer, func() error, er
 
 	f, err := os.Create(o.Output)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to create output file: %w", err)
+		return nil, nil, fmt.Errorf("failed to create output file: %w", err)
 	}
 	return f, f.Close, nil
 }
@@ -452,15 +451,15 @@ func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() err
 		Stdin: pr,
 	})
 	if err != nil {
-		return nil, nil, xerrors.Errorf("plugin start: %w", err)
+		return nil, nil, fmt.Errorf("plugin start: %w", err)
 	}
 
 	cleanup := func() error {
 		if err = pw.Close(); err != nil {
-			return xerrors.Errorf("failed to close pipe: %w", err)
+			return fmt.Errorf("failed to close pipe: %w", err)
 		}
 		if err = wait(); err != nil {
-			return xerrors.Errorf("plugin error: %w", err)
+			return fmt.Errorf("plugin error: %w", err)
 		}
 		return nil
 	}
@@ -574,7 +573,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 		}
 		for _, flag := range group.Flags() {
 			if err := flag.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag groups: %w", err)
+				return fmt.Errorf("flag groups: %w", err)
 			}
 		}
 	}
@@ -591,138 +590,138 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 	if f.GlobalFlagGroup != nil {
 		opts.GlobalOptions, err = f.GlobalFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("global flag error: %w", err)
+			return Options{}, fmt.Errorf("global flag error: %w", err)
 		}
 	}
 
 	if f.AWSFlagGroup != nil {
 		opts.AWSOptions, err = f.AWSFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("aws flag error: %w", err)
+			return Options{}, fmt.Errorf("aws flag error: %w", err)
 		}
 	}
 
 	if f.CloudFlagGroup != nil {
 		opts.CloudOptions, err = f.CloudFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("cloud flag error: %w", err)
+			return Options{}, fmt.Errorf("cloud flag error: %w", err)
 		}
 	}
 
 	if f.CacheFlagGroup != nil {
 		opts.CacheOptions, err = f.CacheFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("cache flag error: %w", err)
+			return Options{}, fmt.Errorf("cache flag error: %w", err)
 		}
 	}
 
 	if f.DBFlagGroup != nil {
 		opts.DBOptions, err = f.DBFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("db flag error: %w", err)
+			return Options{}, fmt.Errorf("db flag error: %w", err)
 		}
 	}
 
 	if f.ImageFlagGroup != nil {
 		opts.ImageOptions, err = f.ImageFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("image flag error: %w", err)
+			return Options{}, fmt.Errorf("image flag error: %w", err)
 		}
 	}
 
 	if f.K8sFlagGroup != nil {
 		opts.K8sOptions, err = f.K8sFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("k8s flag error: %w", err)
+			return Options{}, fmt.Errorf("k8s flag error: %w", err)
 		}
 	}
 
 	if f.LicenseFlagGroup != nil {
 		opts.LicenseOptions, err = f.LicenseFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("license flag error: %w", err)
+			return Options{}, fmt.Errorf("license flag error: %w", err)
 		}
 	}
 
 	if f.MisconfFlagGroup != nil {
 		opts.MisconfOptions, err = f.MisconfFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("misconfiguration flag error: %w", err)
+			return Options{}, fmt.Errorf("misconfiguration flag error: %w", err)
 		}
 	}
 
 	if f.ModuleFlagGroup != nil {
 		opts.ModuleOptions, err = f.ModuleFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("module flag error: %w", err)
+			return Options{}, fmt.Errorf("module flag error: %w", err)
 		}
 	}
 
 	if f.RegoFlagGroup != nil {
 		opts.RegoOptions, err = f.RegoFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("rego flag error: %w", err)
+			return Options{}, fmt.Errorf("rego flag error: %w", err)
 		}
 	}
 
 	if f.RemoteFlagGroup != nil {
 		opts.RemoteOptions, err = f.RemoteFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("remote flag error: %w", err)
+			return Options{}, fmt.Errorf("remote flag error: %w", err)
 		}
 	}
 
 	if f.RegistryFlagGroup != nil {
 		opts.RegistryOptions, err = f.RegistryFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("registry flag error: %w", err)
+			return Options{}, fmt.Errorf("registry flag error: %w", err)
 		}
 	}
 
 	if f.RepoFlagGroup != nil {
 		opts.RepoOptions, err = f.RepoFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("rego flag error: %w", err)
+			return Options{}, fmt.Errorf("rego flag error: %w", err)
 		}
 	}
 
 	if f.ReportFlagGroup != nil {
 		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("report flag error: %w", err)
+			return Options{}, fmt.Errorf("report flag error: %w", err)
 		}
 	}
 
 	if f.SBOMFlagGroup != nil {
 		opts.SBOMOptions, err = f.SBOMFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("sbom flag error: %w", err)
+			return Options{}, fmt.Errorf("sbom flag error: %w", err)
 		}
 	}
 
 	if f.ScanFlagGroup != nil {
 		opts.ScanOptions, err = f.ScanFlagGroup.ToOptions(args)
 		if err != nil {
-			return Options{}, xerrors.Errorf("scan flag error: %w", err)
+			return Options{}, fmt.Errorf("scan flag error: %w", err)
 		}
 	}
 
 	if f.SecretFlagGroup != nil {
 		opts.SecretOptions, err = f.SecretFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("secret flag error: %w", err)
+			return Options{}, fmt.Errorf("secret flag error: %w", err)
 		}
 	}
 
 	if f.VulnerabilityFlagGroup != nil {
 		opts.VulnerabilityOptions, err = f.VulnerabilityFlagGroup.ToOptions()
 		if err != nil {
-			return Options{}, xerrors.Errorf("vulnerability flag error: %w", err)
+			return Options{}, fmt.Errorf("vulnerability flag error: %w", err)
 		}
 	}
 
 	if err := opts.Align(); err != nil {
-		return Options{}, xerrors.Errorf("align options error: %w", err)
+		return Options{}, fmt.Errorf("align options error: %w", err)
 	}
 
 	return opts, nil
@@ -731,7 +730,7 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 func parseFlags(fg FlagGroup) error {
 	for _, flag := range fg.Flags() {
 		if err := flag.Parse(); err != nil {
-			return xerrors.Errorf("unable to parse flag: %w", err)
+			return fmt.Errorf("unable to parse flag: %w", err)
 		}
 	}
 	return nil

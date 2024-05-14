@@ -3,11 +3,11 @@ package rpm
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -32,7 +32,7 @@ type rpmqaPkgAnalyzer struct{}
 func (a rpmqaPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	pkgs, err := a.parseRpmqaManifest(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse rpmqa manifest: %w", err)
+		return nil, fmt.Errorf("failed to parse rpmqa manifest: %w", err)
 	}
 	return &analyzer.AnalysisResult{
 		PackageInfos: []types.PackageInfo{
@@ -53,7 +53,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r xio.ReadSeekerAt) ([]types.Packag
 		// %{NAME}\t%{VERSION}-%{RELEASE}\t%{INSTALLTIME}\t%{BUILDTIME}\t%{VENDOR}\t(none)\t%{SIZE}\t%{ARCH}\t%{EPOCHNUM}\t%{SOURCERPM}
 		s := strings.Split(line, "\t")
 		if len(s) != 10 {
-			return nil, xerrors.Errorf("failed to parse a line (%s)", line)
+			return nil, fmt.Errorf("failed to parse a line (%s)", line)
 		}
 		name = s[0]
 		arch = s[7]
@@ -62,11 +62,11 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r xio.ReadSeekerAt) ([]types.Packag
 			ver = verRel[0]
 			rel = verRel[1]
 		} else {
-			return nil, xerrors.Errorf("failed to split a version (%s)", s[1])
+			return nil, fmt.Errorf("failed to split a version (%s)", s[1])
 		}
 		srcName, srcVer, srcRel, err := splitFileName(sourceRpm)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to split source rpm: %w", err)
+			return nil, fmt.Errorf("failed to split source rpm: %w", err)
 		}
 		pkgs = append(pkgs, types.Package{
 			Name:       name,

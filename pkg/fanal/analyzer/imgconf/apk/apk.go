@@ -14,7 +14,6 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -76,7 +75,7 @@ func (a alpineCmdAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnaly
 	var err error
 	if apkIndexArchive, err = a.fetchApkIndexArchive(input.OS); err != nil {
 		log.Println(err)
-		return nil, xerrors.Errorf("failed to fetch apk index archive: %w", err)
+		return nil, fmt.Errorf("failed to fetch apk index archive: %w", err)
 	}
 
 	pkgs := a.parseConfig(apkIndexArchive, input.Config)
@@ -101,21 +100,21 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 		var err error
 		reader, err = builtinos.Open(strings.TrimPrefix(url, "file://"))
 		if err != nil {
-			return nil, xerrors.Errorf("failed to read APKINDEX archive file: %w", err)
+			return nil, fmt.Errorf("failed to read APKINDEX archive file: %w", err)
 		}
 		defer reader.(*builtinos.File).Close()
 	} else {
 		// nolint
 		resp, err := http.Get(url)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to fetch APKINDEX archive: %w", err)
+			return nil, fmt.Errorf("failed to fetch APKINDEX archive: %w", err)
 		}
 		defer resp.Body.Close()
 		reader = resp.Body
 	}
 	apkIndexArchive := &apkIndex{}
 	if err := json.NewDecoder(reader).Decode(apkIndexArchive); err != nil {
-		return nil, xerrors.Errorf("failed to decode APKINDEX JSON: %w", err)
+		return nil, fmt.Errorf("failed to decode APKINDEX JSON: %w", err)
 	}
 
 	return apkIndexArchive, nil
