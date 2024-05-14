@@ -1417,28 +1417,6 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
-		{
-			name:      "info list",
-			testFiles: map[string]string{"./testdata/tar.list": "var/lib/dpkg/info/tar.list"},
-			want: &analyzer.AnalysisResult{
-				SystemInstalledFiles: []string{
-					"/bin/tar",
-					"/etc/rmt",
-					"/usr/lib/mime/packages/tar",
-					"/usr/sbin/rmt-tar",
-					"/usr/sbin/tarcat",
-					"/usr/share/doc/tar/AUTHORS",
-					"/usr/share/doc/tar/NEWS.gz",
-					"/usr/share/doc/tar/README.Debian",
-					"/usr/share/doc/tar/THANKS.gz",
-					"/usr/share/doc/tar/changelog.Debian.gz",
-					"/usr/share/doc/tar/copyright",
-					"/usr/share/man/man1/tar.1.gz",
-					"/usr/share/man/man1/tarcat.1.gz",
-					"/usr/share/man/man8/rmt-tar.8.gz",
-				},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1491,19 +1469,9 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 			want:     false,
 		},
 		{
-			name:     "list file",
-			filePath: "var/lib/dpkg/info/bash.list",
-			want:     true,
-		},
-		{
 			name:     "available file",
 			filePath: "var/lib/dpkg/available",
 			want:     true,
-		},
-		{
-			name:     "sad path",
-			filePath: "var/lib/dpkg/status/bash.list",
-			want:     false,
 		},
 	}
 	for _, tt := range tests {

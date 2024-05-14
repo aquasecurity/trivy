@@ -1,7 +1,6 @@
 package dpkg
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -45,7 +44,6 @@ const (
 
 	statusFile    = "var/lib/dpkg/status"
 	statusDir     = "var/lib/dpkg/status.d/"
-	infoDir       = "var/lib/dpkg/info/"
 	availableFile = "var/lib/dpkg/available"
 )
 
@@ -55,7 +53,6 @@ var (
 )
 
 func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	var systemInstalledFiles []string
 	var packageInfos []types.PackageInfo
 
 	// parse `available` file to get digest for packages
@@ -68,21 +65,8 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return path != availableFile
 	}
 
-	packageFiles := make(map[string][]string)
-
 	// parse other files
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
-		// parse list files
-		if a.isListFile(filepath.Split(path)) {
-			scanner := bufio.NewScanner(r)
-			systemFiles, err := a.parseDpkgInfoList(scanner)
-			if err != nil {
-				return err
-			}
-			packageFiles[strings.TrimSuffix(filepath.Base(path), ".list")] = systemFiles
-			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
-			return nil
-		}
 		// parse status files
 		infos, err := a.parseDpkgStatus(path, r, digests)
 		if err != nil {
@@ -95,65 +79,10 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
 
-	// map the packages to their respective files
-	for i, pkgInfo := range packageInfos {
-		for j, pkg := range pkgInfo.Packages {
-			installedFiles, found := packageFiles[pkg.Name]
-			if !found {
-				installedFiles = packageFiles[pkg.Name+":"+pkg.Arch]
-			}
-			packageInfos[i].Packages[j].InstalledFiles = installedFiles
-		}
-	}
-
 	return &analyzer.AnalysisResult{
-		PackageInfos:         packageInfos,
-		SystemInstalledFiles: systemInstalledFiles,
+		PackageInfos: packageInfos,
 	}, nil
 
-}
-
-// parseDpkgInfoList parses /var/lib/dpkg/info/*.list
-func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error) {
-	var (
-		allLines       []string
-		installedFiles []string
-		previous       string
-	)
-
-	for scanner.Scan() {
-		current := scanner.Text()
-		if current == "/." {
-			continue
-		}
-		allLines = append(allLines, current)
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
-	}
-
-	// Add the file if it is not directory.
-	// e.g.
-	//  /usr/sbin
-	//  /usr/sbin/tarcat
-	//
-	// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
-	// sort first,see here:https://github.com/aquasecurity/trivy/discussions/6543
-	sort.Strings(allLines)
-	for _, current := range allLines {
-		if !strings.HasPrefix(current, previous+"/") {
-			installedFiles = append(installedFiles, previous)
-		}
-		previous = current
-	}
-
-	// // Add the last file
-	if previous != "" && !strings.HasSuffix(previous, "/") {
-		installedFiles = append(installedFiles, previous)
-	}
-
-	return installedFiles, nil
 }
 
 // parseDpkgAvailable parses /var/lib/dpkg/available
@@ -290,7 +219,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 
 func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, fileName := filepath.Split(filePath)
-	if a.isListFile(dir, fileName) || filePath == statusFile || filePath == availableFile {
+	if filePath == statusFile || filePath == availableFile {
 		return true
 	}
 
@@ -355,14 +284,6 @@ func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pk
 			pkg.DependsOn = nil
 		}
 	}
-}
-
-func (a dpkgAnalyzer) isListFile(dir, fileName string) bool {
-	if dir != infoDir {
-		return false
-	}
-
-	return strings.HasSuffix(fileName, ".list")
 }
 
 func (a dpkgAnalyzer) Type() analyzer.Type {
