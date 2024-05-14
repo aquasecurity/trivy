@@ -52,7 +52,6 @@ Furthermore, it is possible to download plugins that are not registered in the i
 ```bash
 $ trivy plugin install github.com/aquasecurity/trivy-plugin-kubectl
 ```
-`
 ```bash
 $ trivy plugin install myplugin.tar.gz
 ```
