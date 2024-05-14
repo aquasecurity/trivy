@@ -114,6 +114,7 @@ mode:
 - server
 - aws
 - vm
+- plugin
 
 os:
 

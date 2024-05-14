@@ -1,15 +1,15 @@
-## trivy plugin run
+## trivy plugin upgrade
 
-Run a plugin on the fly
+Upgrade installed plugins to newer versions
 
 ```
-trivy plugin run NAME | URL | FILE_PATH
+trivy plugin upgrade [PLUGIN_NAMES]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for run
+  -h, --help   help for upgrade
 ```
 
 ### Options inherited from parent commands

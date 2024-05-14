@@ -1,15 +1,15 @@
-## trivy plugin run
+## trivy plugin search
 
-Run a plugin on the fly
+List Trivy plugins available on the plugin index and search among them
 
 ```
-trivy plugin run NAME | URL | FILE_PATH
+trivy plugin search [KEYWORD]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for run
+  -h, --help   help for search
 ```
 
 ### Options inherited from parent commands

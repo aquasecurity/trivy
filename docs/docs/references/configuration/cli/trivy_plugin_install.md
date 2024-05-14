@@ -3,7 +3,7 @@
 Install a plugin
 
 ```
-trivy plugin install URL | FILE_PATH
+trivy plugin install NAME | URL | FILE_PATH
 ```
 
 ### Options
