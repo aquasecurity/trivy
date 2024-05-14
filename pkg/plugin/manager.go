@@ -13,6 +13,7 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -88,17 +89,18 @@ func Update(ctx context.Context) error                  { return defaultManager(
 func Search(ctx context.Context, keyword string) error  { return defaultManager().Search(ctx, keyword) }
 
 // Install installs a plugin
-func (m *Manager) Install(ctx context.Context, name string, opts Options) (Plugin, error) {
-	src := m.tryIndex(ctx, name)
+func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin, error) {
+	input := m.parseArg(arg)
+	input.name = m.tryIndex(ctx, input.name)
 
 	// If the plugin is already installed, it skips installing the plugin.
-	if p, installed := m.isInstalled(ctx, src); installed {
+	if p, installed := m.isInstalled(ctx, input.name); installed {
 		m.logger.InfoContext(ctx, "The plugin is already installed", log.String("name", p.Name))
 		return p, nil
 	}
 
-	m.logger.InfoContext(ctx, "Installing the plugin...", log.String("src", src))
-	return m.install(ctx, src, opts)
+	m.logger.InfoContext(ctx, "Installing the plugin...", log.String("src", input.name))
+	return m.install(ctx, input.String(), opts)
 }
 
 func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin, error) {
@@ -129,7 +131,8 @@ func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin
 		return Plugin{}, xerrors.Errorf("yaml encode error: %w", err)
 	}
 
-	m.logger.InfoContext(ctx, "Plugin successfully installed", log.String("name", plugin.Name))
+	m.logger.InfoContext(ctx, "Plugin successfully installed",
+		log.String("name", plugin.Name), log.String("version", plugin.Version))
 
 	return plugin, nil
 }
@@ -352,4 +355,33 @@ func (m *Manager) isInstalled(ctx context.Context, url string) (Plugin, bool) {
 		}
 	}
 	return Plugin{}, false
+}
+
+// Input represents the user-specified Input.
+type Input struct {
+	name    string
+	version string
+}
+
+func (i *Input) String() string {
+	if i.version != "" {
+		// cf. https://github.com/hashicorp/go-getter/blob/268c11cae8cf0d9374783e06572679796abe9ce9/README.md#git-git
+		return i.name + "?ref=v" + i.version
+	}
+	return i.name
+}
+
+func (m *Manager) parseArg(arg string) Input {
+	before, after, found := strings.Cut(arg, "@v")
+	if !found {
+		return Input{name: arg}
+	} else if _, err := semver.Parse(after); err != nil {
+		m.logger.Debug("Unable to identify the plugin version", log.String("name", arg), log.Err(err))
+		return Input{name: arg}
+	}
+	// cf. https://github.com/hashicorp/go-getter/blob/268c11cae8cf0d9374783e06572679796abe9ce9/README.md#git-git
+	return Input{
+		name:    before,
+		version: after,
+	}
 }
