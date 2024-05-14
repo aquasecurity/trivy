@@ -379,7 +379,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 				Version:    comp.Version,
 				Type:       core.TypeApplication,
 				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
-				PkgID: core.PkgID{
+				PkgIdentifier: ftypes.PkgIdentifier{
 					PURL: generatePURL(comp.Name, comp.Version, nodeName),
 				},
 			}
@@ -406,7 +406,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 					Type:    core.TypeContainerImage,
 					Name:    name,
 					Version: cDigest,
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: imagePURL.Unwrap(),
 					},
 					Properties: []core.Property{
@@ -439,7 +439,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 				Name:       cf.Name,
 				Version:    cf.Version,
 				Properties: toProperties(cf.Properties, k8sCoreComponentNamespace),
-				PkgID: core.PkgID{
+				PkgIdentifier: ftypes.PkgIdentifier{
 					PURL: generatePURL(cf.Name, cf.Version, nodeName),
 				},
 				Root: true,
@@ -512,7 +512,7 @@ func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 				Namespace: k8sCoreComponentNamespace,
 			},
 		},
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			PURL: generatePURL(kubelet, kubeletVersion, nf.NodeName),
 		},
 	}
@@ -534,7 +534,7 @@ func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 				Namespace: k8sCoreComponentNamespace,
 			},
 		},
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			PURL: packageurl.NewPackageURL(packageurl.TypeGolang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
 		},
 	}

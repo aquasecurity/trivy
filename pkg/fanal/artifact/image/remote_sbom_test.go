@@ -56,7 +56,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 		fields              fields
 		artifactOpt         artifact.Option
 		putBlobExpectations []cache.ArtifactCachePutBlobExpectation
-		want                types.ArtifactReference
+		want                artifact.Reference
 		wantErr             string
 	}{
 		{
@@ -117,9 +117,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			artifactOpt: artifact.Option{
 				SBOMSources: []string{"rekor"},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "test/image:10",
-				Type: types.ArtifactCycloneDX,
+				Type: artifact.TypeCycloneDX,
 				ID:   "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
 				BlobIDs: []string{
 					"sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
@@ -206,7 +206,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 		fields              fields
 		artifactOpt         artifact.Option
 		putBlobExpectations []cache.ArtifactCachePutBlobExpectation
-		want                types.ArtifactReference
+		want                artifact.Reference
 		wantErr             string
 	}{
 		{
@@ -265,9 +265,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: registry + "/test/image:10",
-				Type: types.ArtifactCycloneDX,
+				Type: artifact.TypeCycloneDX,
 				ID:   "sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",
 				BlobIDs: []string{
 					"sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",

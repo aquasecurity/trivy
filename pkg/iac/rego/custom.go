@@ -4,9 +4,14 @@ import (
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/types"
+
+	checksrego "github.com/aquasecurity/trivy-checks/pkg/rego"
 )
 
 func init() {
+
+	checksrego.RegisterBuiltins()
+
 	rego.RegisterBuiltin2(&rego.Function{
 		Name: "result.new",
 		Decl: types.NewFunction(types.Args(types.S, types.A), types.A),

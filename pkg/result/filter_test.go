@@ -648,65 +648,42 @@ func TestFilter(t *testing.T) {
 					Results: types.Results{
 						{
 							Licenses: []types.DetectedLicense{
-								{
-									Name:       "GPL-3.0",
-									Severity:   dbTypes.SeverityLow.String(),
-									FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
-									Category:   "restricted",
-									Confidence: 1,
-								},
-								{
-									Name:       "GPL-3.0",
-									Severity:   dbTypes.SeverityLow.String(),
-									FilePath:   "usr/share/gcc/python/libstdcxx/v6/printers.py",
-									Category:   "restricted",
-									Confidence: 1,
-								},
+								license1,
+								license2,
 							},
 							Secrets: []types.DetectedSecret{
-								{
-									RuleID:    "generic-passed-rule",
-									Severity:  dbTypes.SeverityLow.String(),
-									Title:     "Secret should pass filter",
-									StartLine: 1,
-									EndLine:   2,
-									Match:     "*****",
-								},
-								{
-									RuleID:    "generic-ignored-rule",
-									Severity:  dbTypes.SeverityLow.String(),
-									Title:     "Secret should be ignored",
-									StartLine: 3,
-									EndLine:   4,
-									Match:     "*****",
-								},
+								secret1,
+								secret2,
 							},
 						},
 					},
 				},
-				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				severities: []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityHigh},
 				policyFile: "./testdata/test-ignore-policy-licenses-and-secrets.rego",
 			},
 			want: types.Report{
 				Results: types.Results{
 					{
 						Licenses: []types.DetectedLicense{
-							{
-								Name:       "GPL-3.0",
-								Severity:   dbTypes.SeverityLow.String(),
-								FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
-								Category:   "restricted",
-								Confidence: 1,
-							},
+							license1,
 						},
 						Secrets: []types.DetectedSecret{
+							secret1,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							 {
+								Type:      types.FindingTypeSecret,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Filtered by Rego",
+								Source:    "testdata/test-ignore-policy-licenses-and-secrets.rego",
+								Finding:   secret2,
+							},
 							{
-								RuleID:    "generic-passed-rule",
-								Severity:  dbTypes.SeverityLow.String(),
-								Title:     "Secret should pass filter",
-								StartLine: 1,
-								EndLine:   2,
-								Match:     "*****",
+								Type:      types.FindingTypeLicense,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Filtered by Rego",
+								Source:    "testdata/test-ignore-policy-licenses-and-secrets.rego",
+								Finding:   license2,
 							},
 						},
 					},
