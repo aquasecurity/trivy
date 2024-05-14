@@ -218,7 +218,7 @@ func (m *Manager) upgrade(ctx context.Context, name string) error {
 		return xerrors.Errorf("plugin load error: %w", err)
 	}
 
-	logger := log.With("name", name)
+	logger := m.logger.With("name", name)
 	logger.InfoContext(ctx, "Upgrading plugin...")
 	updated, err := m.install(ctx, plugin.Repository, Options{
 		// Use the current installed platform
