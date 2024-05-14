@@ -844,6 +844,185 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with filling system files for debian packages",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:03fdf04efd9e8117f277abeef88a9d51d45c154bfa042591f85656e8ffccc141",
+					OS: types.OS{
+						Family: "ubuntu",
+						Name:   "24.04",
+					},
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/info/zlib1g:arm64.list",
+							Packages: types.Packages{
+								{
+									Name: "zlib1g:arm64",
+									InstalledFiles: []string{
+										"/usr/lib/aarch64-linux-gnu/libz.so.1",
+										"/usr/lib/aarch64-linux-gnu/libz.so.1.3",
+										"/usr/share/doc/zlib1g/changelog.Debian.gz",
+										"/usr/share/doc/zlib1g/copyright",
+									},
+								},
+							},
+						},
+						{
+							FilePath: "var/lib/dpkg/status",
+							Packages: types.Packages{
+								{
+									ID:         "zlib1g@1:1.3.dfsg-3.1ubuntu2",
+									Name:       "zlib1g",
+									Version:    "1.3.dfsg",
+									Release:    "3.1ubuntu2",
+									Epoch:      1,
+									Arch:       "arm64",
+									SrcName:    "zlib1g",
+									SrcVersion: "1.3.dfsg",
+									SrcRelease: "3.1ubuntu2",
+									SrcEpoch:   1,
+								},
+							},
+						},
+					},
+				},
+				// Install `curl`
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:3836402300043690208bff1a68978994817546557b9116c6db540935766c652f",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/info/curl.list",
+							Packages: types.Packages{
+								{
+									Name: "curl",
+									InstalledFiles: []string{
+										"/usr/bin/curl",
+										"/usr/share/doc/curl/README.Debian",
+										"/usr/share/doc/curl/changelog.Debian.gz",
+										"/usr/share/doc/curl/copyright",
+										"/usr/share/man/man1/curl.1.gz",
+										"/usr/share/zsh/vendor-completions/_curl",
+									},
+								},
+							},
+						},
+						{
+							FilePath: "var/lib/dpkg/status",
+							Packages: types.Packages{
+								{
+									ID:         "curl@8.5.0-2ubuntu10.1",
+									Name:       "curl",
+									Version:    "8.5.0",
+									Release:    "2ubuntu10.1",
+									Arch:       "arm64",
+									SrcName:    "curl",
+									SrcVersion: "8.5.0",
+									SrcRelease: "2ubuntu10.1",
+								},
+								{
+									ID:         "zlib1g@1:1.3.dfsg-3.1ubuntu2",
+									Name:       "zlib1g",
+									Version:    "1.3.dfsg",
+									Release:    "3.1ubuntu2",
+									Epoch:      1,
+									Arch:       "arm64",
+									SrcName:    "zlib1g",
+									SrcVersion: "1.3.dfsg",
+									SrcRelease: "3.1ubuntu2",
+									SrcEpoch:   1,
+								},
+							},
+						},
+					},
+				},
+				// Remove curl
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:c50cbe1d0dee626cc85de5c53c45a105d8c5cc56e6b675264aa8ba2e03c6bfe7",
+					WhiteoutFiles: []string{
+						"usr/bin/curl",
+						"usr/share/doc/curl",
+						"usr/share/zsh",
+						"var/lib/dpkg/info/curl.list",
+						"var/lib/dpkg/info/curl.md5sums",
+					},
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status",
+							Packages: types.Packages{
+								{
+									ID:         "zlib1g@1:1.3.dfsg-3.1ubuntu2",
+									Name:       "zlib1g",
+									Version:    "1.3.dfsg",
+									Release:    "3.1ubuntu2",
+									Epoch:      1,
+									Arch:       "arm64",
+									SrcName:    "zlib1g",
+									SrcVersion: "1.3.dfsg",
+									SrcRelease: "3.1ubuntu2",
+									SrcEpoch:   1,
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{
+					Family: "ubuntu",
+					Name:   "24.04",
+				},
+				Packages: types.Packages{
+					{
+						ID:         "zlib1g@1:1.3.dfsg-3.1ubuntu2",
+						Name:       "zlib1g",
+						Version:    "1.3.dfsg",
+						Release:    "3.1ubuntu2",
+						Epoch:      1,
+						Arch:       "arm64",
+						SrcName:    "zlib1g",
+						SrcVersion: "1.3.dfsg",
+						SrcRelease: "3.1ubuntu2",
+						SrcEpoch:   1,
+						Identifier: types.PkgIdentifier{
+							UID: "8ad895abf3283710",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "ubuntu",
+								Name:      "zlib1g",
+								Version:   "1.3.dfsg-3.1ubuntu2",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "arch",
+										Value: "arm64",
+									},
+									{
+										Key:   "epoch",
+										Value: "1",
+									},
+									{
+										Key:   "distro",
+										Value: "ubuntu-24.04",
+									},
+								},
+							},
+						},
+						Layer: types.Layer{
+							DiffID: "sha256:03fdf04efd9e8117f277abeef88a9d51d45c154bfa042591f85656e8ffccc141",
+						},
+						InstalledFiles: []string{
+							"/usr/lib/aarch64-linux-gnu/libz.so.1",
+							"/usr/lib/aarch64-linux-gnu/libz.so.1.3",
+							"/usr/share/doc/zlib1g/changelog.Debian.gz",
+							"/usr/share/doc/zlib1g/copyright",
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path, opaque dirs with the trailing slash",
 			inputLayers: []types.BlobInfo{
 				{

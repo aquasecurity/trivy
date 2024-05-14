@@ -2,6 +2,7 @@ package applier
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -94,6 +95,7 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
+	dpkSystemFilesMap := make(map[string][]string)
 	secretsMap := make(map[string]ftypes.Secret)
 	var mergedLayer ftypes.ArtifactDetail
 
@@ -114,8 +116,16 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 		// Apply OS packages
 		for _, pkgInfo := range layer.PackageInfos {
-			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
-			nestedMap.SetByString(key, sep, pkgInfo)
+			// Save system files for debian packages.
+			// We will fill them in later.
+			if filepath.Ext(pkgInfo.FilePath) == ".list" {
+				for _, pkg := range pkgInfo.Packages {
+					dpkSystemFilesMap[pkg.Name] = pkg.InstalledFiles
+				}
+			} else {
+				key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
+				nestedMap.SetByString(key, sep, pkgInfo)
+			}
 		}
 
 		// Apply language-specific packages
@@ -218,15 +228,22 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Packages[i].BuildInfo = buildInfo
 		}
 
-		if mergedLayer.OS.Family != "" {
-			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
-		}
-		mergedLayer.Packages[i].Identifier.UID = calcPkgUID("", pkg)
-
 		// Only debian packages
 		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
 			mergedLayer.Packages[i].Licenses = licenses
 		}
+
+		// Fill system installed files for debian packages
+		if installedFiles, found := dpkSystemFilesMap[pkg.Name]; found {
+			mergedLayer.Packages[i].InstalledFiles = installedFiles
+		} else if installedFiles, found = dpkSystemFilesMap[pkg.Name+":"+pkg.Arch]; found {
+			mergedLayer.Packages[i].InstalledFiles = installedFiles
+		}
+
+		if mergedLayer.OS.Family != "" {
+			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
+		}
+		mergedLayer.Packages[i].Identifier.UID = calcPkgUID("", pkg)
 	}
 
 	for _, app := range mergedLayer.Applications {
