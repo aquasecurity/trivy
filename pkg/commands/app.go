@@ -741,9 +741,10 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "uninstall PLUGIN_NAME",
 			Aliases:               []string{"u"},
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Short:                 "Uninstall a plugin",
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err := plugin.Uninstall(cmd.Context(), args[0]); err != nil {
@@ -755,8 +756,9 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "list",
 			Aliases:               []string{"l"},
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Short:                 "List installed plugin",
 			Args:                  cobra.NoArgs,
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -769,8 +771,9 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "info PLUGIN_NAME",
 			Short:                 "Show information about the specified plugin",
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
 				if err := plugin.Information(args[0]); err != nil {
@@ -782,8 +785,9 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "run NAME | URL | FILE_PATH",
 			Aliases:               []string{"r"},
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -793,8 +797,9 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "update",
 			Short:                 "Update the local copy of the plugin index",
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Args:                  cobra.NoArgs,
 			RunE: func(cmd *cobra.Command, _ []string) error {
 				if err := plugin.Update(cmd.Context()); err != nil {
@@ -805,8 +810,9 @@ func NewPluginCommand() *cobra.Command {
 		},
 		&cobra.Command{
 			Use:                   "search [KEYWORD]",
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Short:                 "List Trivy plugins available on the plugin index and search among them",
 			Args:                  cobra.MaximumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -820,8 +826,9 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "upgrade [PLUGIN_NAMES]",
 			Short:                 "Upgrade installed plugins to newer versions",
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err := plugin.Upgrade(cmd.Context(), args); err != nil {
 					return xerrors.Errorf("plugin upgrade error: %w", err)
