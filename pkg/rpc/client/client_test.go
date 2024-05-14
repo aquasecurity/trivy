@@ -201,7 +201,7 @@ func TestScanner_Scan(t *testing.T) {
 			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}

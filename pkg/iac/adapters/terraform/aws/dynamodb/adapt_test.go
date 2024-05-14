@@ -154,7 +154,7 @@ func TestLines(t *testing.T) {
 	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
 	adapted := Adapt(modules)
 
-	require.Len(t, adapted.DAXClusters, 0)
+	require.Empty(t, adapted.DAXClusters)
 	require.Len(t, adapted.Tables, 1)
 	table := adapted.Tables[0]
 

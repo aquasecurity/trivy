@@ -338,7 +338,7 @@ spec:
 `))
 	require.NoError(t, err)
 
-	assert.Greater(t, len(results.GetFailed()), 0)
+	assert.NotEmpty(t, results.GetFailed())
 }
 
 func Test_FileScan_WithSeparator(t *testing.T) {
@@ -358,7 +358,7 @@ spec:
 `))
 	require.NoError(t, err)
 
-	assert.Greater(t, len(results.GetFailed()), 0)
+	assert.NotEmpty(t, results.GetFailed())
 }
 
 func Test_FileScan_MultiManifests(t *testing.T) {
@@ -396,7 +396,7 @@ spec:
 	for _, failure := range results.GetFailed() {
 		actualCode, err := failure.GetCode()
 		require.NoError(t, err)
-		assert.Greater(t, len(actualCode.Lines), 0)
+		assert.NotEmpty(t, actualCode.Lines)
 		for _, line := range actualCode.Lines {
 			assert.Greater(t, len(fileLines), line.Number)
 			assert.Equal(t, line.Content, fileLines[line.Number-1])
@@ -514,7 +514,7 @@ spec:
 `))
 	require.NoError(t, err)
 
-	assert.Greater(t, len(results.GetFailed()), 0)
+	assert.NotEmpty(t, results.GetFailed())
 
 	firstResult := results.GetFailed()[0]
 	assert.Equal(t, 2, firstResult.Metadata().Range().GetStartLine())
@@ -592,7 +592,7 @@ spec:
 `))
 	require.NoError(t, err)
 
-	require.Greater(t, len(results.GetFailed()), 0)
+	require.NotEmpty(t, results.GetFailed())
 
 	firstResult := results.GetFailed()[0]
 	assert.Equal(t, 8, firstResult.Metadata().Range().GetStartLine())

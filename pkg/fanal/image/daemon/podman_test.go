@@ -88,7 +88,7 @@ func TestPodmanImage(t *testing.T) {
 			defer cleanup()
 
 			if tt.wantErr {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 				return
 			}
 			assert.NoError(t, err)

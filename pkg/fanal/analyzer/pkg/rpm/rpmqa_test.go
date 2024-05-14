@@ -63,7 +63,7 @@ glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86
 			a := rpmqaPkgAnalyzer{}
 			result, err := a.parseRpmqaManifest(strings.NewReader(test.content))
 			if test.wantErr != "" {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 				assert.Equal(t, test.wantErr, err.Error())
 			} else {
 				assert.NoError(t, err)
