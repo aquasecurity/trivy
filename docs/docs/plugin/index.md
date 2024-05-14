@@ -23,44 +23,44 @@ Let’s get started:
 
 1. Download the plugin list:
 
-```bash
-$ trivy plugin update
-```
+    ```bash
+    $ trivy plugin update
+    ```
 
 2. Discover Trivy plugins available on the plugin index:
 
-```bash
-$ trivy plugin search
-NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
-aqua                 A plugin for integration with Aqua Security SaaS platform    aquasecurity
-kubectl              A plugin scanning the images of a kubernetes resource        aquasecurity
-referrer             A plugin for OCI referrers                                   aquasecurity           ✓
-[...]
-```
+    ```bash
+    $ trivy plugin search
+    NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
+    aqua                 A plugin for integration with Aqua Security SaaS platform    aquasecurity
+    kubectl              A plugin scanning the images of a kubernetes resource        aquasecurity
+    referrer             A plugin for OCI referrers                                   aquasecurity           ✓
+    [...]
+    ```
 
 3. Choose a plugin from the list and install it:
 
-```bash
-$ trivy plugin install referrer
-```
+    ```bash
+    $ trivy plugin install referrer
+    ```
 
 4. Use the installed plugin:
 
-```bash
-$ trivy referrer --help
-```
+    ```bash
+    $ trivy referrer --help
+    ```
 
 5. Keep your plugins up-to-date:
 
-```bash
-$ trivy plugin upgrade
-```
+    ```bash
+    $ trivy plugin upgrade
+    ```
 
 6. Uninstall a plugin you no longer use:
 
-```bash
-trivy plugin uninstall referrer
-``` 
+    ```bash
+    trivy plugin uninstall referrer
+    ``` 
 
 This is practically all you need to know to start using Trivy plugins.
 
