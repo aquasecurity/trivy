@@ -141,7 +141,11 @@ func (m *Manager) Uninstall(ctx context.Context, name string) error {
 		m.logger.ErrorContext(ctx, "No such plugin")
 		return nil
 	}
-	return os.RemoveAll(pluginDir)
+	if err := os.RemoveAll(pluginDir); err != nil {
+		return xerrors.Errorf("failed to uninstall the plugin: %w", err)
+	}
+	m.logger.InfoContext(ctx, "Plugin successfully uninstalled", log.String("name", name))
+	return nil
 }
 
 // Information gets the information about an installed plugin
