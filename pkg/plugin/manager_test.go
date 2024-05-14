@@ -8,6 +8,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/sosedoff/gitkit"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -24,11 +25,27 @@ import (
 	"github.com/aquasecurity/trivy/pkg/plugin"
 )
 
+func setupGitServer() (*httptest.Server, error) {
+	service := gitkit.New(gitkit.Config{
+		Dir:        "./testdata",
+		AutoCreate: false,
+	})
+
+	if err := service.Setup(); err != nil {
+		return nil, err
+	}
+
+	ts := httptest.NewServer(service)
+
+	return ts, nil
+}
+
 func TestManager_Run(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		// the test.sh script can't be run on windows so skipping
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
+
 	type fields struct {
 		Name        string
 		Repository  string
@@ -188,10 +205,15 @@ func TestManager_Install(t *testing.T) {
 		// the test.sh script can't be run on windows so skipping
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
+
+	ts, err := setupGitServer()
+	require.NoError(t, err)
+	defer ts.Close()
+
 	wantPlugin := plugin.Plugin{
 		Name:        "test_plugin",
 		Repository:  "github.com/aquasecurity/trivy-plugin-test",
-		Version:     "0.1.0",
+		Version:     "0.2.0",
 		Summary:     "test",
 		Description: "test",
 		Platforms: []plugin.Platform{
@@ -211,6 +233,8 @@ func TestManager_Install(t *testing.T) {
 			},
 		},
 	}
+	wantPluginWithVersion := wantPlugin
+	wantPluginWithVersion.Version = "0.1.0"
 
 	tests := []struct {
 		name       string
@@ -231,7 +255,19 @@ func TestManager_Install(t *testing.T) {
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
 		},
 		{
-			name:       "index",
+			name:       "git",
+			pluginName: "git::" + ts.URL + "/test_plugin.git",
+			want:       wantPlugin,
+			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+		},
+		{
+			name:       "with version",
+			pluginName: "git::" + ts.URL + "/test_plugin.git@v0.1.0",
+			want:       wantPluginWithVersion,
+			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+		},
+		{
+			name:       "via index",
 			pluginName: "test",
 			want:       wantPlugin,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",

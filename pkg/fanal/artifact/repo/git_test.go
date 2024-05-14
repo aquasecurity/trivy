@@ -4,7 +4,6 @@ package repo
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"net/http/httptest"
 	"testing"
 
@@ -16,6 +15,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
 func setupGitServer() (*httptest.Server, error) {

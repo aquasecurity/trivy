@@ -1,6 +1,6 @@
 name: "test_plugin"
 repository: github.com/aquasecurity/trivy-plugin-test
-version: "0.1.0"
+version: "0.2.0"
 summary: test
 description: test
 platforms:
