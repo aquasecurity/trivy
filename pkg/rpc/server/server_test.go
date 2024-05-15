@@ -6,11 +6,10 @@ import (
 	"testing"
 	"time"
 
-	google_protobuf "github.com/golang/protobuf/ptypes/empty"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -124,10 +123,10 @@ func TestScanServer_Scan(t *testing.T) {
 								Title:       "dos",
 								Description: "dos vulnerability",
 								References:  []string{"http://example.com"},
-								LastModifiedDate: &timestamp.Timestamp{
+								LastModifiedDate: &timestamppb.Timestamp{
 									Seconds: 1577840460,
 								},
-								PublishedDate: &timestamp.Timestamp{
+								PublishedDate: &timestamppb.Timestamp{
 									Seconds: 978310860,
 								},
 								DataSource: &common.DataSource{
@@ -193,7 +192,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 		name     string
 		args     args
 		putImage cache.ArtifactCachePutArtifactExpectation
-		want     *google_protobuf.Empty
+		want     *emptypb.Empty
 		wantErr  string
 	}{
 		{
@@ -204,7 +203,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					ArtifactInfo: &rpcCache.ArtifactInfo{
 						SchemaVersion: 1,
 						Architecture:  "amd64",
-						Created: func() *timestamp.Timestamp {
+						Created: func() *timestamppb.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
 							t := timestamppb.New(d)
 							return t
@@ -226,7 +225,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			want: &google_protobuf.Empty{},
+			want: &emptypb.Empty{},
 		},
 		{
 			name: "sad path",
@@ -235,7 +234,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					ArtifactInfo: &rpcCache.ArtifactInfo{
 						SchemaVersion: 1,
-						Created: func() *timestamp.Timestamp {
+						Created: func() *timestamppb.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
 							t := timestamppb.New(d)
 							return t
@@ -294,7 +293,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 		name     string
 		args     args
 		putLayer cache.ArtifactCachePutBlobExpectation
-		want     *google_protobuf.Empty
+		want     *emptypb.Empty
 		wantErr  string
 	}{
 		{
@@ -461,7 +460,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					},
 				},
 			},
-			want: &google_protobuf.Empty{},
+			want: &emptypb.Empty{},
 		},
 		{
 			name: "sad path",
