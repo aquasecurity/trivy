@@ -36,8 +36,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var primMan primitiveManifest
 	var manMetadata toml.MetaData
 	decoder := toml.NewDecoder(r)
-	// Try to read the old Manifest format. If that fails, try the new format.
-	if _, err := decoder.Decode(&oldDeps); err != nil {
+	// Try to read the old Manifest format. This can also read the v1.0 Manifest format, which we parse out later.
+	var err error
+	if manMetadata, err = decoder.Decode(&oldDeps); err != nil {
 		if _, err = r.Seek(0, io.SeekStart); err != nil {
 			return nil, nil, xerrors.Errorf("seek error: %w", err)
 		}

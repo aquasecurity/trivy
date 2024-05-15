@@ -102,6 +102,7 @@ nav:
               - Ruby: docs/coverage/language/ruby.md
               - Rust: docs/coverage/language/rust.md
               - Swift: docs/coverage/language/swift.md
+              - Julia: docs/coverage/language/julia.md
           - IaC:
               - Overview: docs/coverage/iac/index.md
               - Azure ARM Template: docs/coverage/iac/azure-arm.md

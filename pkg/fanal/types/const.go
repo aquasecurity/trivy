@@ -73,6 +73,7 @@ const (
 	Pub           LangType = "pub"
 	Hex           LangType = "hex"
 	Bitnami       LangType = "bitnami"
+	Julia         LangType = "julia"
 
 	K8sUpstream LangType = "kubernetes"
 	EKS         LangType = "eks" // Amazon Elastic Kubernetes Service
@@ -143,4 +144,7 @@ const (
 
 	CondaEnvYaml = "environment.yaml"
 	CondaEnvYml  = "environment.yml"
+
+	JuliaProject  = "Project.toml"
+	JuliaManifest = "Manifest.toml"
 )
