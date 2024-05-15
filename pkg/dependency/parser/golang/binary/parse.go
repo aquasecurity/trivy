@@ -54,7 +54,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	// Ex: "go1.22.3 X:boringcrypto"
 	stdlibVersion := strings.TrimPrefix(info.GoVersion, "go")
-	stdlibVersion, _, _ = strings.TrimPrefix(stdlibVersion, " ")
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
 
 	ldflags := p.ldFlags(info.Settings)
 	pkgs := make(ftypes.Packages, 0, len(info.Deps)+2)
