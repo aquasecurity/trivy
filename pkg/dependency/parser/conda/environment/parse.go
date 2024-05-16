@@ -15,7 +15,11 @@ import (
 )
 
 type environment struct {
-	Dependencies []Dependency `yaml:"dependencies"`
+	Entries []Entry `yaml:"dependencies"`
+}
+
+type Entry struct {
+	Dependencies []Dependency
 }
 
 type Dependency struct {
@@ -42,13 +46,15 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	var pkgs ftypes.Packages
-	for _, dep := range env.Dependencies {
-		pkg := p.toPackage(dep)
-		// Skip empty pkgs
-		if pkg.Name == "" {
-			continue
+	for _, entry := range env.Entries {
+		for _, dep := range entry.Dependencies {
+			pkg := p.toPackage(dep)
+			// Skip empty pkgs
+			if pkg.Name == "" {
+				continue
+			}
+			pkgs = append(pkgs, pkg)
 		}
-		pkgs = append(pkgs, pkg)
 	}
 
 	sort.Sort(pkgs)
@@ -96,8 +102,40 @@ func (*Parser) parseDependency(line string) (string, string) {
 	return name, parts[1]
 }
 
-func (d *Dependency) UnmarshalYAML(node *yaml.Node) error {
-	d.Value = node.Value
-	d.Line = node.Line
+func (e *Entry) UnmarshalYAML(node *yaml.Node) error {
+	var dependencies []Dependency
+	// cf. https://github.com/go-yaml/yaml/blob/f6f7691b1fdeb513f56608cd2c32c51f8194bf51/resolve.go#L70-L81
+	switch node.Tag {
+	case "!!str":
+		dependencies = append(dependencies, Dependency{
+			Value: node.Value,
+			Line:  node.Line,
+		})
+	case "!!map":
+		if node.Content != nil {
+			// Map key is package manager (e.g. pip). So we need to store only map values (dependencies).
+			// e.g. dependencies:
+			//  	  - pip:
+			//     	    - pandas==2.1.4
+			if node.Content[1].Tag != "!!seq" { // Conda supports only map[string][]string format.
+				return xerrors.Errorf("unsupported dependency type %q on line %d", node.Content[1].Tag, node.Content[1].Line)
+			}
+
+			for _, depContent := range node.Content[1].Content {
+				if depContent.Tag != "!!str" {
+					return xerrors.Errorf("unsupported dependency type %q on line %d", depContent.Tag, depContent.Line)
+				}
+
+				dependencies = append(dependencies, Dependency{
+					Value: depContent.Value,
+					Line:  depContent.Line,
+				})
+			}
+		}
+	default:
+		return xerrors.Errorf("unsupported dependency type %q on line %d", node.Tag, node.Line)
+	}
+
+	e.Dependencies = dependencies
 	return nil
 }

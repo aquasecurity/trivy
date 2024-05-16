@@ -397,6 +397,15 @@ func TestRepository(t *testing.T) {
 				want.ArtifactType = artifact.TypeFilesystem
 			},
 		},
+		{
+			name: "julia generating SPDX SBOM",
+			args: args{
+				command: "rootfs",
+				format:  "spdx-json",
+				input:   "testdata/fixtures/repo/julia",
+			},
+			golden: "testdata/julia-spdx.json.golden",
+		},
 	}
 
 	// Set up testing DB
