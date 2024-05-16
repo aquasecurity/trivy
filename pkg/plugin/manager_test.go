@@ -5,6 +5,7 @@ package plugin_test
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -21,6 +22,34 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 )
+
+func setupInstalledPlugin(t *testing.T, homeDir string, p plugin.Plugin) {
+	pluginDir := filepath.Join(homeDir, ".trivy", "plugins", p.Name)
+
+	// Create the test plugin directory
+	err := os.MkdirAll(pluginDir, os.ModePerm)
+	require.NoError(t, err)
+
+	// write the plugin name
+	pluginMetadata := fmt.Sprintf(`name: "%s"
+repository: "%s"
+version: "%s"
+usage: test
+description: test
+platforms:
+  - selector:
+      os: linux
+      arch: amd64
+    uri: ./test.sh
+    bin: ./test.sh  
+installed:
+  platform:
+    os: linux
+    arch: amd64`, p.Name, p.Repository, p.Version)
+
+	err = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte(pluginMetadata), os.ModePerm)
+	require.NoError(t, err)
+}
 
 func TestManager_Run(t *testing.T) {
 	if runtime.GOOS == "windows" {
@@ -318,42 +347,28 @@ func TestManager_Upgrade(t *testing.T) {
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
 	pluginName := "test_plugin"
+	pluginVersion := "0.0.5"
 
 	tempDir := t.TempDir()
-	pluginDir := filepath.Join(tempDir, ".trivy", "plugins", pluginName)
-
 	t.Setenv("XDG_DATA_HOME", tempDir)
-
-	// Create the test plugin directory
-	err := os.MkdirAll(pluginDir, os.ModePerm)
-	require.NoError(t, err)
-
-	// write the plugin name
-	pluginMetadata := `name: "test_plugin"
-repository: testdata/test_plugin
-version: "0.0.5"
-usage: test
-description: A simple test plugin
-installed:
-	platform:
-		os: linux
-		arch: amd64`
-
-	err = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte(pluginMetadata), os.ModePerm)
-	require.NoError(t, err)
+	setupInstalledPlugin(t, tempDir, plugin.Plugin{
+		Name:       pluginName,
+		Version:    pluginVersion,
+		Repository: "testdata/test_plugin",
+	})
 
 	ctx := context.Background()
 	m := plugin.NewManager()
 
 	// verify initial version
-	verifyVersion(t, ctx, m, pluginName, "0.0.5")
+	verifyVersion(t, ctx, m, pluginName, pluginVersion)
 
 	// Upgrade the existing plugin
-	err = m.Upgrade(ctx, nil)
+	err := m.Upgrade(ctx, nil)
 	require.NoError(t, err)
 
 	// verify plugin updated
-	verifyVersion(t, ctx, m, pluginName, "0.1.0")
+	verifyVersion(t, ctx, m, pluginName, "0.2.0")
 }
 
 func verifyVersion(t *testing.T, ctx context.Context, m *plugin.Manager, pluginName, expectedVersion string) {

@@ -9,7 +9,7 @@ plugins:
     maintainer: aquasecurity
     summary: A bar plugin
     repository: github.com/aquasecurity/trivy-plugin-bar
-  - name: test
+  - name: test_plugin
     maintainer: aquasecurity
     summary: A test plugin
     repository: testdata/test_plugin

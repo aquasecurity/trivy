@@ -4,19 +4,24 @@ package plugin_test
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1"
 	"github.com/sosedoff/gitkit" // Not work on Windows
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
@@ -37,13 +42,20 @@ func setupGitServer() (*httptest.Server, error) {
 }
 
 func TestManager_Install(t *testing.T) {
-	ts, err := setupGitServer()
+	gs, err := setupGitServer()
 	require.NoError(t, err)
-	defer ts.Close()
+	t.Cleanup(gs.Close)
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		zr := zip.NewWriter(w)
+		require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin")))
+		require.NoError(t, zr.Close())
+	}))
+	t.Cleanup(ts.Close)
 
 	wantPlugin := plugin.Plugin{
 		Name:        "test_plugin",
-		Repository:  "github.com/aquasecurity/trivy-plugin-test",
+		Repository:  "testdata/test_plugin",
 		Version:     "0.2.0",
 		Summary:     "test",
 		Description: "test",
@@ -67,41 +79,75 @@ func TestManager_Install(t *testing.T) {
 	wantPluginWithVersion := wantPlugin
 	wantPluginWithVersion.Version = "0.1.0"
 
+	wantLogs := `2021-08-25T12:20:30Z	INFO	Installing the plugin...	src="%s"
+2021-08-25T12:20:30Z	INFO	Plugin successfully installed	name="test_plugin" version="%s"
+`
+
 	tests := []struct {
 		name       string
 		pluginName string
+		installed  *plugin.Plugin
 		want       plugin.Plugin
 		wantFile   string
+		wantLogs   string
 		wantErr    string
 	}{
 		{
-			name:     "http",
-			want:     wantPlugin,
-			wantFile: ".trivy/plugins/test_plugin/test.sh",
+			name:       "http",
+			pluginName: ts.URL + "/test_plugin.zip",
+			want:       wantPlugin,
+			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+			wantLogs:   fmt.Sprintf(wantLogs, ts.URL+"/test_plugin.zip", "0.2.0"),
 		},
 		{
 			name:       "local path",
 			pluginName: "testdata/test_plugin",
 			want:       wantPlugin,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+			wantLogs:   fmt.Sprintf(wantLogs, "testdata/test_plugin", "0.2.0"),
 		},
 		{
 			name:       "git",
-			pluginName: "git::" + ts.URL + "/test_plugin.git",
+			pluginName: "git::" + gs.URL + "/test_plugin.git",
 			want:       wantPlugin,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+			wantLogs:   fmt.Sprintf(wantLogs, "git::"+gs.URL+"/test_plugin.git", "0.2.0"),
 		},
 		{
 			name:       "with version",
-			pluginName: "git::" + ts.URL + "/test_plugin.git@v0.1.0",
+			pluginName: "git::" + gs.URL + "/test_plugin.git@v0.1.0",
 			want:       wantPluginWithVersion,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+			wantLogs:   fmt.Sprintf(wantLogs, "git::"+gs.URL+"/test_plugin.git", "0.1.0"),
 		},
 		{
 			name:       "via index",
-			pluginName: "test",
+			pluginName: "test_plugin",
 			want:       wantPlugin,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+			wantLogs:   fmt.Sprintf(wantLogs, "testdata/test_plugin", "0.2.0"),
+		},
+		{
+			name:       "installed",
+			pluginName: "test_plugin",
+			installed: &plugin.Plugin{
+				Name:       "test_plugin",
+				Repository: "testdata/test_plugin",
+				Version:    "0.2.0",
+			},
+			want:     wantPlugin,
+			wantLogs: "2021-08-25T12:20:30Z	INFO	The plugin is already installed	name=\"test_plugin\"\n",
+		},
+		{
+			name:       "different version installed",
+			pluginName: "test_plugin@v0.2.0",
+			installed: &plugin.Plugin{
+				Name:       "test_plugin",
+				Repository: "testdata/test_plugin",
+				Version:    "0.1.0",
+			},
+			want:     wantPlugin,
+			wantLogs: fmt.Sprintf(wantLogs, "testdata/test_plugin", "0.2.0"),
 		},
 		{
 			name:       "plugin not found",
@@ -124,17 +170,16 @@ func TestManager_Install(t *testing.T) {
 			// For plugin index
 			fsutils.SetCacheDir("testdata")
 
-			if tt.pluginName == "" {
-				ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					zr := zip.NewWriter(w)
-					require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin")))
-					require.NoError(t, zr.Close())
-				}))
-				t.Cleanup(ts.Close)
-				tt.pluginName = ts.URL + "/test_plugin.zip"
+			if tt.installed != nil {
+				setupInstalledPlugin(t, dst, *tt.installed)
 			}
 
-			got, err := plugin.NewManager().Install(context.Background(), tt.pluginName, plugin.Options{
+			var gotLogs bytes.Buffer
+			logger := log.New(log.NewHandler(&gotLogs, nil))
+
+			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
+			got, err := plugin.NewManager(plugin.WithLogger(logger)).Install(ctx, tt.pluginName, plugin.Options{
 				Platform: ftypes.Platform{
 					Platform: &v1.Platform{
 						Architecture: "amd64",
@@ -149,7 +194,10 @@ func TestManager_Install(t *testing.T) {
 			assert.NoError(t, err)
 
 			assert.EqualExportedValues(t, tt.want, got)
-			assert.FileExists(t, filepath.Join(dst, tt.wantFile))
+			if tt.wantFile != "" {
+				assert.FileExists(t, filepath.Join(dst, tt.wantFile))
+			}
+			assert.Equal(t, tt.wantLogs, gotLogs.String())
 		})
 	}
 }
