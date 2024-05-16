@@ -100,12 +100,12 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	if len(paths) > 0 {
 		loaded, err := LoadPoliciesFromDirs(srcFS, paths...)
 		if err != nil {
-			return fmt.Errorf("failed to load rego policies from %s: %w", paths, err)
+			return fmt.Errorf("failed to load rego checks from %s: %w", paths, err)
 		}
 		for name, policy := range loaded {
 			s.policies[name] = policy
 		}
-		s.debug.Log("Loaded %d policies from disk.", len(loaded))
+		s.debug.Log("Loaded %d checks from disk.", len(loaded))
 	}
 
 	if len(readers) > 0 {

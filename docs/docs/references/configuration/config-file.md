@@ -382,10 +382,14 @@ misconfiguration:
   # Same as '--include-non-failures'
   # Default is false
   include-non-failures: false
+  
+  # Same as '--include-deprecated-checks'
+  # Default is false
+  include-deprecated-checks: false
 
-  # Same as '--policy-bundle-repository'
+  # Same as '--check-bundle-repository' and '--policy-bundle-repository'
   # Default is 'ghcr.io/aquasecurity/trivy-checks:0'
-  policy-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0  
+  check-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0  
   
   # Same as '--miconfig-scanners'
   # Default is all scanners

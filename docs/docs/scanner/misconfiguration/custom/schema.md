@@ -54,7 +54,7 @@ Currently, out of the box the following schemas are supported natively:
 3. [Cloud](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/cloud.json)
 
 
-## Custom Policies with Custom Schemas
+## Custom Checks with Custom Schemas
 
 You can also bring a custom policy that defines one or more custom schema. 
 
@@ -71,21 +71,21 @@ You can also bring a custom policy that defines one or more custom schema.
     }
     ```
 
-The policies can be placed in a structure as follows
+The checks can be placed in a structure as follows
 
 !!! example
     ```
-    /Users/user/my-custom-policies
+    /Users/user/my-custom-checks
     ├── my_policy.rego
     └── schemas
         └── fooschema.json
         └── barschema.json
     ```
 
-To use such a policy with Trivy, use the `--config-policy` flag that points to the policy file or to the directory where the schemas and policies are contained.
+To use such a policy with Trivy, use the `--config-policy` flag that points to the policy file or to the directory where the schemas and checks are contained.
 
 ```bash
-$ trivy --config-policy=/Users/user/my-custom-policies <path/to/iac>
+$ trivy --config-policy=/Users/user/my-custom-checks <path/to/iac>
 ```
 
-For more details on how to define schemas within Rego policies, please see the [OPA guide](https://www.openpolicyagent.org/docs/latest/policy-language/#schema-annotations) that describes it in more detail.
+For more details on how to define schemas within Rego checks, please see the [OPA guide](https://www.openpolicyagent.org/docs/latest/policy-language/#schema-annotations) that describes it in more detail.

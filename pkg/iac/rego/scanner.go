@@ -26,26 +26,31 @@ import (
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	ruleNamespaces map[string]struct{}
-	policies       map[string]*ast.Module
-	store          storage.Store
-	dataDirs       []string
-	runtimeValues  *ast.Term
-	compiler       *ast.Compiler
-	regoErrorLimit int
-	debug          debug.Logger
-	traceWriter    io.Writer
-	tracePerResult bool
-	retriever      *MetadataRetriever
-	policyFS       fs.FS
-	dataFS         fs.FS
-	frameworks     []framework.Framework
-	spec           string
-	inputSchema    interface{} // unmarshalled into this from a json schema document
-	sourceType     types.Source
+	ruleNamespaces          map[string]struct{}
+	policies                map[string]*ast.Module
+	store                   storage.Store
+	dataDirs                []string
+	runtimeValues           *ast.Term
+	compiler                *ast.Compiler
+	regoErrorLimit          int
+	debug                   debug.Logger
+	traceWriter             io.Writer
+	tracePerResult          bool
+	retriever               *MetadataRetriever
+	policyFS                fs.FS
+	dataFS                  fs.FS
+	frameworks              []framework.Framework
+	spec                    string
+	inputSchema             interface{} // unmarshalled into this from a json schema document
+	sourceType              types.Source
+	includeDeprecatedChecks bool
 
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
+}
+
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
+	s.includeDeprecatedChecks = b
 }
 
 func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
@@ -246,6 +251,10 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 				"Error occurred while retrieving metadata from check %q: %s",
 				module.Package.Location.File, err)
 			continue
+		}
+
+		if !s.includeDeprecatedChecks && staticMeta.Deprecated {
+			continue // skip deprecated checks
 		}
 
 		if isPolicyWithSubtype(s.sourceType) {
