@@ -1161,8 +1161,8 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-policies" class="md-nav__link">
-    Custom Policies
+  <a href="#custom-checks" class="md-nav__link">
+    Custom Checks
   </a>
   
 </li>
@@ -1355,14 +1355,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -3831,8 +3831,8 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-policies" class="md-nav__link">
-    Custom Policies
+  <a href="#custom-checks" class="md-nav__link">
+    Custom Checks
   </a>
   
 </li>
@@ -3932,12 +3932,12 @@ This means you can filter and view results for a service without having to wait 
 If you want to force the cache to be refreshed with the latest data, you can use <code>--update-cache</code>.
 Or if you'd like to use cached data for a different timeframe, you can specify <code>--max-cache-age</code> (e.g. <code>--max-cache-age 2h</code>.).
 Regardless of whether the cache is used or not, rules will be evaluated again with each run of <code>trivy aws</code>.</p>
-<h2 id="custom-policies">Custom Policies</h2>
-<p>You can write custom policies for Trivy to evaluate against your AWS account.
-These policies are written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>, the same language used by <a href="https://www.openpolicyagent.org/">Open Policy Agent</a>.
-See the <a href="../../scanner/misconfiguration/custom/">Custom Policies</a> page for more information on how to write custom policies.</p>
-<p>Custom policies in cloud scanning also support passing in custom data. This can be useful when you want to selectively enable/disable certain aspects of your cloud policies.
-See the <a href="../../scanner/misconfiguration/custom/data/">Custom Data</a> page for more information on how to provide custom data to custom policies.</p>
+<h2 id="custom-checks">Custom Checks</h2>
+<p>You can write custom checks for Trivy to evaluate against your AWS account.
+These checks are written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>, the same language used by <a href="https://www.openpolicyagent.org/">Open Policy Agent</a>.
+See the <a href="../../scanner/misconfiguration/custom/">Custom Checks</a> page for more information on how to write custom checks.</p>
+<p>Custom checks in cloud scanning also support passing in custom data. This can be useful when you want to selectively enable/disable certain aspects of your cloud checks.
+See the <a href="../../scanner/misconfiguration/custom/data/">Custom Data</a> page for more information on how to provide custom data to custom checks.</p>
 
               
             </article>

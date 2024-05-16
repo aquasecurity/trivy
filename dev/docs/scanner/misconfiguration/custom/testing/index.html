@@ -1277,14 +1277,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -3792,10 +3792,10 @@ You're not viewing the latest version.
 
 
 <h1 id="testing">Testing</h1>
-<p>It is highly recommended to write tests for your custom policies.</p>
+<p>It is highly recommended to write tests for your custom checks.</p>
 <h2 id="rego-testing">Rego testing</h2>
-<p>To help you verify the correctness of your custom policies, OPA gives you a framework that you can use to write tests for your policies. 
-By writing tests for your custom policies you can speed up the development process of new rules and reduce the amount of time it takes to modify rules as requirements evolve.</p>
+<p>To help you verify the correctness of your custom checks, OPA gives you a framework that you can use to write tests for your checks. 
+By writing tests for your custom checks you can speed up the development process of new rules and reduce the amount of time it takes to modify rules as requirements evolve.</p>
 <p>For more details, see <a href="https://www.openpolicyagent.org/docs/latest/policy-testing/">Policy Testing</a>.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
@@ -3812,11 +3812,11 @@ test_add_denied {
 }
 </code></pre></div>
 </div>
-<p>To write tests for custom policies, you can refer to existing tests under [trivy-checks][trivy-checks].</p>
+<p>To write tests for custom checks, you can refer to existing tests under [trivy-checks][trivy-checks].</p>
 <h2 id="go-testing">Go testing</h2>
 <p><a href="https://github.com/aquasecurity/fanal">Fanal</a> which is a core library of Trivy can be imported as a Go library.
-You can scan config files in Go and test your custom policies using Go's testing methods, such as <a href="https://github.com/golang/go/wiki/TableDrivenTests">table-driven tests</a>.
-This allows you to use the actual configuration file as input, making it easy to prepare test data and ensure that your custom policies work in practice.</p>
+You can scan config files in Go and test your custom checks using Go's testing methods, such as <a href="https://github.com/golang/go/wiki/TableDrivenTests">table-driven tests</a>.
+This allows you to use the actual configuration file as input, making it easy to prepare test data and ensure that your custom checks work in practice.</p>
 <p>In particular, Dockerfile and HCL need to be converted to structural data as input, which may be different from the expected input format.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>

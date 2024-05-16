@@ -1325,14 +1325,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -3796,10 +3796,10 @@ You're not viewing the latest version.
 Trivy supports two types of exceptions.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>Exceptions can be applied to built-in policies as well as custom policies.</p>
+<p>Exceptions can be applied to built-in checks as well as custom checks.</p>
 </div>
 <h2 id="namespace-based-exceptions">Namespace-based exceptions</h2>
-<p>There are some cases where you need to disable built-in policies partially or fully.
+<p>There are some cases where you need to disable built-in checks partially or fully.
 Namespace-based exceptions lets you rough choose which individual packages to exempt.</p>
 <p>To use namespace-based exceptions, create a Rego rule with the name <code>exception</code> that returns the package names to exempt.
 The <code>exception</code> rule must be defined under <code>namespace.exceptions</code>.
@@ -3816,7 +3816,7 @@ exception[ns] {
 }
 </code></pre></div>
 </div>
-<p>This example exempts all built-in policies for Kubernetes.</p>
+<p>This example exempts all built-in checks for Kubernetes.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
 <p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
@@ -3855,7 +3855,7 @@ exception[rules] {
 }
 </code></pre></div>
 </div>
-<p>If you want to apply rule-based exceptions to built-in policies, you have to define the exception under the same package.</p>
+<p>If you want to apply rule-based exceptions to built-in checks, you have to define the exception under the same package.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>package builtin.kubernetes.KSV012

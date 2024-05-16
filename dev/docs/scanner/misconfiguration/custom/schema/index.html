@@ -1277,14 +1277,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1391,8 +1391,8 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-policies-with-custom-schemas" class="md-nav__link">
-    Custom Policies with Custom Schemas
+  <a href="#custom-checks-with-custom-schemas" class="md-nav__link">
+    Custom Checks with Custom Schemas
   </a>
   
 </li>
@@ -3767,8 +3767,8 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-policies-with-custom-schemas" class="md-nav__link">
-    Custom Policies with Custom Schemas
+  <a href="#custom-checks-with-custom-schemas" class="md-nav__link">
+    Custom Checks with Custom Schemas
   </a>
   
 </li>
@@ -3837,7 +3837,7 @@ can be found <a href="https://github.com/aquasecurity/trivy/blob/main/pkg/iac/re
 <li><a href="https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/kubernetes.json">Kubernetes</a></li>
 <li><a href="https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/cloud.json">Cloud</a></li>
 </ol>
-<h2 id="custom-policies-with-custom-schemas">Custom Policies with Custom Schemas</h2>
+<h2 id="custom-checks-with-custom-schemas">Custom Checks with Custom Schemas</h2>
 <p>You can also bring a custom policy that defines one or more custom schema. </p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
@@ -3852,20 +3852,20 @@ deny {
 }
 </code></pre></div>
 </div>
-<p>The policies can be placed in a structure as follows</p>
+<p>The checks can be placed in a structure as follows</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>/Users/user/my-custom-policies
+<div class="highlight"><pre><span></span><code>/Users/user/my-custom-checks
 ├── my_policy.rego
 └── schemas
     └── fooschema.json
     └── barschema.json
 </code></pre></div>
 </div>
-<p>To use such a policy with Trivy, use the <code>--config-policy</code> flag that points to the policy file or to the directory where the schemas and policies are contained.</p>
-<div class="highlight"><pre><span></span><code>$ trivy --config-policy<span class="o">=</span>/Users/user/my-custom-policies &lt;path/to/iac&gt;
+<p>To use such a policy with Trivy, use the <code>--config-policy</code> flag that points to the policy file or to the directory where the schemas and checks are contained.</p>
+<div class="highlight"><pre><span></span><code>$ trivy --config-policy<span class="o">=</span>/Users/user/my-custom-checks &lt;path/to/iac&gt;
 </code></pre></div>
-<p>For more details on how to define schemas within Rego policies, please see the <a href="https://www.openpolicyagent.org/docs/latest/policy-language/#schema-annotations">OPA guide</a> that describes it in more detail.</p>
+<p>For more details on how to define schemas within Rego checks, please see the <a href="https://www.openpolicyagent.org/docs/latest/policy-language/#schema-annotations">OPA guide</a> that describes it in more detail.</p>
 
               
             </article>

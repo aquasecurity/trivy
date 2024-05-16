@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#debugging-policies" class="md-skip">
+        <a href="#debugging-checks" class="md-skip">
           Skip to content
         </a>
       
@@ -1277,14 +1277,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -3731,13 +3731,13 @@ You're not viewing the latest version.
 
 
 
-<h1 id="debugging-policies">Debugging policies</h1>
+<h1 id="debugging-checks">Debugging checks</h1>
 <p>When working on more complex queries (or when learning Rego), it's useful to see exactly how the policy is applied.
 For this purpose you can use the <code>--trace</code> flag.
 This will output a large trace from Open Policy Agent like the following:</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Only failed policies show traces. If you want to debug a passed policy, you need to make it fail on purpose.</p>
+<p>Only failed checks show traces. If you want to debug a passed check, you need to make it fail on purpose.</p>
 </div>
 <div class="highlight"><pre><span></span><code>$ trivy conf --trace configs/
 <span class="m">2022</span>-05-16T13:47:58.853+0100    INFO    Detected config files: <span class="m">1</span>

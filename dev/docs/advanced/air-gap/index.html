@@ -1271,14 +1271,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -2674,8 +2674,8 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-policy-update-option" class="md-nav__link">
-    Run Trivy with --skip-policy-update option
+  <a href="#run-trivy-with-skip-check-update-option" class="md-nav__link">
+    Run Trivy with --skip-check-update option
   </a>
   
 </li>
@@ -3866,8 +3866,8 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-policy-update-option" class="md-nav__link">
-    Run Trivy with --skip-policy-update option
+  <a href="#run-trivy-with-skip-check-update-option" class="md-nav__link">
+    Run Trivy with --skip-check-update option
   </a>
   
 </li>
@@ -4005,8 +4005,8 @@ In addition, if you want to scan <code>pom.xml</code> dependencies, you need to 
 </code></pre></div>
 <h2 id="air-gapped-environment-for-misconfigurations">Air-Gapped Environment for misconfigurations</h2>
 <p>No special measures are required to detect misconfigurations in an air-gapped environment.</p>
-<h3 id="run-trivy-with-skip-policy-update-option">Run Trivy with <code>--skip-policy-update</code> option</h3>
-<p>In an air-gapped environment, specify <code>--skip-policy-update</code> so that Trivy doesn't attempt to download the latest misconfiguration policies.</p>
+<h3 id="run-trivy-with-skip-check-update-option">Run Trivy with <code>--skip-check-update</code> option</h3>
+<p>In an air-gapped environment, specify <code>--skip-check-update</code> so that Trivy doesn't attempt to download the latest misconfiguration checks.</p>
 <div class="highlight"><pre><span></span><code>$ trivy conf --skip-policy-update /path/to/conf
 </code></pre></div>
 <div class="footnote">

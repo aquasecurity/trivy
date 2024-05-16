@@ -1254,8 +1254,8 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#passing-custom-policies" class="md-nav__link">
-    Passing custom policies
+  <a href="#passing-custom-checks" class="md-nav__link">
+    Passing custom checks
   </a>
   
 </li>
@@ -1412,14 +1412,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -3876,8 +3876,8 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#passing-custom-policies" class="md-nav__link">
-    Passing custom policies
+  <a href="#passing-custom-checks" class="md-nav__link">
+    Passing custom checks
   </a>
   
 </li>
@@ -3968,8 +3968,8 @@ You're not viewing the latest version.
 
 
 <h1 id="misconfiguration-scanning">Misconfiguration Scanning</h1>
-<p>Trivy provides built-in policies to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
-In addition to built-in policies, you can write your own custom policies, as you can see <a href="custom/">here</a>.</p>
+<p>Trivy provides built-in checks to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
+In addition to built-in checks, you can write your own custom checks, as you can see <a href="custom/">here</a>.</p>
 <h2 id="quick-start">Quick start</h2>
 <p>Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm Charts and Dockerfile.</p>
 <div class="highlight"><pre><span></span><code>$ trivy config <span class="o">[</span>YOUR_IaC_DIRECTORY<span class="o">]</span>
@@ -4050,7 +4050,7 @@ Dockerfile:3
 <p>In the above example, Trivy detected vulnerabilities of Python dependencies and misconfigurations in Dockerfile.</p>
 <h2 id="type-detection">Type detection</h2>
 <p>The specified directory can contain mixed types of IaC files.
-Trivy automatically detects config types and applies relevant policies.</p>
+Trivy automatically detects config types and applies relevant checks.</p>
 <p>For example, the following example holds IaC files for Terraform, CloudFormation, Kubernetes, Helm Charts, and Dockerfile in the same directory.</p>
 <div class="highlight"><pre><span></span><code>$ ls iac/
 Dockerfile  deployment.yaml  main.tf mysql-8.8.26.tar
@@ -4270,13 +4270,13 @@ This flag takes a comma-separated list of configuration scanner types.</p>
 <div class="highlight"><pre><span></span><code>trivy config --misconfig-scanners<span class="o">=</span>terraform,dockerfile .
 </code></pre></div>
 <p>Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.</p>
-<h3 id="passing-custom-policies">Passing custom policies</h3>
-<p>You can pass policy files or directories including your custom policies through <code>--policy</code> option.
+<h3 id="passing-custom-checks">Passing custom checks</h3>
+<p>You can pass policy files or directories including your custom checks through <code>--policy</code> option.
 This can be repeated for specifying multiple files or directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> examplex/misconf/
 trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
 </code></pre></div>
-<p>For more details, see <a href="custom/">Custom Policies</a>.</p>
+<p>For more details, see <a href="custom/">Custom Checks</a>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 </div>
@@ -4289,8 +4289,8 @@ trivy conf --policy ./policy --data ./data --namespaces user ./configs
 </code></pre></div>
 <p>For more details, see <a href="custom/data/">Custom Data</a>.</p>
 <h3 id="passing-namespaces">Passing namespaces</h3>
-<p>By default, Trivy evaluates policies defined in <code>builtin.*</code>.
-If you want to evaluate custom policies in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
+<p>By default, Trivy evaluates checks defined in <code>builtin.*</code>.
+If you want to evaluate custom checks in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
 This can be repeated for specifying multiple packages.</p>
 <div class="highlight"><pre><span></span><code>trivy conf --policy ./policy --namespaces main --namespaces user ./configs
 </code></pre></div>

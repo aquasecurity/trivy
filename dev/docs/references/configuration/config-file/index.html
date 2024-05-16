@@ -1271,14 +1271,14 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_3_3_2_3">
-          Custom Policies
+          Custom Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="4">
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
         <label class="md-nav__title" for="__nav_3_3_2_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Custom Checks
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -4346,9 +4346,13 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
 <span class="w">  </span><span class="nt">include-non-failures</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 
-<span class="w">  </span><span class="c1"># Same as &#39;--policy-bundle-repository&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--include-deprecated-checks&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">include-deprecated-checks</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--check-bundle-repository&#39; and &#39;--policy-bundle-repository&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-checks:0&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">policy-bundle-repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-checks:0</span><span class="w">  </span>
+<span class="w">  </span><span class="nt">check-bundle-repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-checks:0</span><span class="w">  </span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--miconfig-scanners&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is all scanners</span><span class="w"></span>
