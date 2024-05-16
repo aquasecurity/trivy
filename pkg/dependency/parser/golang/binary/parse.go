@@ -159,7 +159,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 func isValidXKey(key string) bool {
 	key = strings.ToLower(key)
 	// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
-	return strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver")
+	return strings.HasSuffix(key, ".version") || strings.HasSuffix(key, ".ver")
 }
 
 func isValidSemVer(ver string) bool {
