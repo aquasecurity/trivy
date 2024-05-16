@@ -724,9 +724,17 @@ func NewPluginCommand() *cobra.Command {
 	}
 	cmd.AddCommand(
 		&cobra.Command{
-			Use:                   "install NAME | URL | FILE_PATH",
-			Aliases:               []string{"i"},
-			Short:                 "Install a plugin",
+			Use:     "install NAME | URL | FILE_PATH",
+			Aliases: []string{"i"},
+			Short:   "Install a plugin",
+			Example: `  # Install a plugin from the plugin index
+  $ trivy plugin install referrer
+
+  # Specify the version of the plugin to install
+  $ trivy plugin install referrer@v0.3.0
+
+  # Install a plugin from a URL
+  $ trivy plugin install github.com/aquasecurity/trivy-plugin-referrer`,
 			SilenceErrors:         true,
 			SilenceUsage:          true,
 			DisableFlagsInUseLine: true,
