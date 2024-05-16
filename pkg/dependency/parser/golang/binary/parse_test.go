@@ -128,7 +128,7 @@ func TestParse(t *testing.T) {
 
 			got, _, err := binary.NewParser().Parse(f)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}

@@ -39,10 +39,10 @@ func TestAlpineReleaseOSAnalyzer_Required(t *testing.T) {
 			res, err := a.Analyze(context.Background(), test.input)
 
 			if test.wantError != "" {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 				assert.Equal(t, test.wantError, err.Error())
 			} else {
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				assert.Equal(t, test.wantResult, res)
 			}
 		})

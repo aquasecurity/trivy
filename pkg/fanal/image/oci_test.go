@@ -61,7 +61,7 @@ func TestTryOCI(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			_, err := tryOCI(test.ociImagePath)
 			if test.wantErr != "" {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 				assert.Contains(t, err.Error(), test.wantErr, err)
 			} else {
 				assert.NoError(t, err)

@@ -389,7 +389,7 @@ rules:
 
 func BenchmarkIsType_SmallFile(b *testing.B) {
 	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", "small.file"))
-	assert.Nil(b, err)
+	assert.NoError(b, err)
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -400,7 +400,7 @@ func BenchmarkIsType_SmallFile(b *testing.B) {
 
 func BenchmarkIsType_BigFile(b *testing.B) {
 	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", "big.file"))
-	assert.Nil(b, err)
+	assert.NoError(b, err)
 
 	b.ReportAllocs()
 	b.ResetTimer()

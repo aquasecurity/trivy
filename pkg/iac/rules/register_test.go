@@ -16,7 +16,7 @@ func Test_Reset(t *testing.T) {
 	_ = Register(rule)
 	assert.Equal(t, 1, len(GetFrameworkRules()))
 	Reset()
-	assert.Equal(t, 0, len(GetFrameworkRules()))
+	assert.Empty(t, GetFrameworkRules())
 }
 
 func Test_Registration(t *testing.T) {
@@ -112,7 +112,7 @@ func Test_Deregistration(t *testing.T) {
 	require.Equal(t, 1, len(actual))
 	assert.Equal(t, "B", actual[0].GetRule().AVDID)
 	Deregister(registrationB)
-	assert.Equal(t, 0, len(GetFrameworkRules()))
+	assert.Empty(t, GetFrameworkRules())
 }
 
 func Test_DeregistrationMultipleFrameworks(t *testing.T) {
@@ -135,5 +135,5 @@ func Test_DeregistrationMultipleFrameworks(t *testing.T) {
 	require.Equal(t, 1, len(actual))
 	assert.Equal(t, "B", actual[0].GetRule().AVDID)
 	Deregister(registrationB)
-	assert.Equal(t, 0, len(GetFrameworkRules()))
+	assert.Empty(t, GetFrameworkRules())
 }

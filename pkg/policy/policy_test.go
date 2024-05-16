@@ -124,7 +124,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 
 			got, err := c.LoadBuiltinPolicies()
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
@@ -369,7 +369,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 
 			err = c.DownloadBuiltinPolicies(context.Background(), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}

@@ -408,7 +408,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			got, err := a.Inspect(context.Background())
 			if len(tt.wantErr) > 0 {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				found := false
 				for _, wantErr := range tt.wantErr {
 					if strings.Contains(err.Error(), wantErr) {

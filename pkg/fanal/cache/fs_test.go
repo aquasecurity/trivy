@@ -286,7 +286,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 
 			err = fs.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
@@ -366,7 +366,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 
 			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {

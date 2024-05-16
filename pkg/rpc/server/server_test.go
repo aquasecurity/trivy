@@ -174,7 +174,7 @@ func TestScanServer_Scan(t *testing.T) {
 			s := NewScanServer(mockDriver)
 			got, err := s.Scan(context.Background(), tt.args.in)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}
@@ -273,7 +273,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 			got, err := s.PutArtifact(context.Background(), tt.args.in)
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
@@ -508,7 +508,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 			got, err := s.PutBlob(context.Background(), tt.args.in)
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
@@ -573,7 +573,7 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 			s := NewCacheServer(mockCache)
 			got, err := s.MissingBlobs(tt.args.ctx, tt.args.in)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {

@@ -1,7 +1,6 @@
 package module
 
 import (
-	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -54,6 +53,6 @@ func TestMemFS_NilIsDirectory(t *testing.T) {
 	t.Run("read invalid", func(t *testing.T) {
 		buf := make([]byte, 4)
 		_, err = f.Read(buf)
-		require.True(t, errors.Is(err, fs.ErrInvalid))
+		require.ErrorIs(t, err, fs.ErrInvalid)
 	})
 }
