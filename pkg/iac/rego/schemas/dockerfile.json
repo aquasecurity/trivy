@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/aquasecurity/trivy-policies/blob/main/pkg/rego/schemas/dockerfile.json",
+  "$id": "https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/dockerfile.json",
   "type": "object",
   "properties": {
     "Stages": {

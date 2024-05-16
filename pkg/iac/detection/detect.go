@@ -244,6 +244,10 @@ func init() {
 }
 
 func IsTerraformFile(path string) bool {
+	if strings.HasSuffix(path, filepath.ToSlash(".terraform/modules/modules.json")) {
+		return true
+	}
+
 	for _, ext := range []string{".tf", ".tf.json", ".tfvars"} {
 		if strings.HasSuffix(path, ext) {
 			return true

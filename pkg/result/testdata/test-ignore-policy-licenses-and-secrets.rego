@@ -10,6 +10,6 @@ ignore {
 }
 
 ignore {
-	input.RuleID == "generic-ignored-rule"
-	input.Title == "Secret should be ignored"
+	input.RuleID == "generic-unwanted-rule"
+	input.Title == "Secret that should not pass filter on rule id"
 }

@@ -40,6 +40,8 @@ type Scanner struct { // nolint: gocritic
 	sync.Mutex
 }
 
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {}
+
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec
 }

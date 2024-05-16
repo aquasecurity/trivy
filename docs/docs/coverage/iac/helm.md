@@ -11,7 +11,7 @@ The following scanners are supported.
 Trivy recursively searches directories and scans all found Helm files.
 
 It evaluates variables, functions, and other elements within Helm templates and resolve the chart to Kubernetes manifests then run the Kubernetes checks.
-See [here](../../scanner/misconfiguration/policy/builtin.md) for more details on the built-in policies.
+See [here](../../scanner/misconfiguration/check/builtin.md) for more details on the built-in checks.
 
 ### Value overrides
 There are a number of options for overriding values in Helm charts.

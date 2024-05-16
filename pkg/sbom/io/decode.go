@@ -135,7 +135,7 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 		}
 
 		// Third-party SBOMs may contain packages in types other than "Library"
-		if c.Type == core.TypeLibrary || c.PkgID.PURL != nil {
+		if c.Type == core.TypeLibrary || c.PkgIdentifier.PURL != nil {
 			pkg, err := m.decodeLibrary(c)
 			if errors.Is(err, ErrUnsupportedType) || errors.Is(err, ErrPURLEmpty) {
 				continue
@@ -184,7 +184,7 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 }
 
 func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
-	p := (*purl.PackageURL)(c.PkgID.PURL)
+	p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
 	if p == nil {
 		log.Debug("Skipping a component without PURL",
 			log.String("name", c.Name), log.String("version", c.Version))
@@ -226,7 +226,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 		}
 	}
 
-	pkg.Identifier.BOMRef = c.PkgID.BOMRef
+	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
 	pkg.Licenses = c.Licenses
 
 	for _, f := range c.Files {
@@ -249,10 +249,10 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 // pkgName returns the package name.
 // PURL loses case-sensitivity (e.g. Go, Npm, PyPI), so we have to use an original package name.
 func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
-	p := c.PkgID.PURL
+	p := c.PkgIdentifier.PURL
 
 	// A name from PURL takes precedence for CocoaPods since it has subpath.
-	if c.PkgID.PURL.Type == packageurl.TypeCocoapods {
+	if c.PkgIdentifier.PURL.Type == packageurl.TypeCocoapods {
 		return pkg.Name
 	}
 
@@ -334,7 +334,7 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 			if !ok {
 				continue
 			}
-			app.Libraries = append(app.Libraries, *pkg)
+			app.Packages = append(app.Packages, *pkg)
 			delete(m.pkgs, rel.Dependency) // Delete the added package
 		}
 		sbom.Applications = append(sbom.Applications, *app)
@@ -380,8 +380,8 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	for pkgType, pkgs := range langPkgMap {
 		sort.Sort(pkgs)
 		sbom.Applications = append(sbom.Applications, ftypes.Application{
-			Type:      pkgType,
-			Libraries: pkgs,
+			Type:     pkgType,
+			Packages: pkgs,
 		})
 	}
 	return nil

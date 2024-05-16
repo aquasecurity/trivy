@@ -14,7 +14,7 @@ func Test_Array_Empty(t *testing.T) {
 	target := []int{}
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
-	assert.Len(t, target, 0)
+	assert.Empty(t, target)
 }
 
 func Test_Array_ToSlice(t *testing.T) {

@@ -32,6 +32,8 @@ type Scanner struct { // nolint: gocritic
 	loadEmbeddedLibraries bool
 }
 
+func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+
 func (s *Scanner) SetRegoOnly(bool) {}
 
 func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {

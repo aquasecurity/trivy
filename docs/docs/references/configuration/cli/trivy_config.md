@@ -12,10 +12,12 @@ trivy config [flags] DIR
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --cf-params strings                 specify paths to override the CloudFormation parameters files
+      --check-namespaces strings          Rego namespaces
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
-      --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
+      --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --enable-modules strings            [EXPERIMENTAL] module names to enable
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
@@ -29,6 +31,7 @@ trivy config [flags] DIR
   -h, --help                              help for config
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
+      --include-deprecated-checks         include deprecated checks
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
@@ -36,19 +39,17 @@ trivy config [flags] DIR
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
-      --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --report string                     specify a compliance report format for the output (all,summary) (default "all")
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+      --skip-check-update                 skip fetching rego check updates
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
-      --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files

@@ -13,6 +13,7 @@ import (
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage"
+	"github.com/open-policy-agent/opa/util"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
@@ -25,26 +26,31 @@ import (
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	ruleNamespaces map[string]struct{}
-	policies       map[string]*ast.Module
-	store          storage.Store
-	dataDirs       []string
-	runtimeValues  *ast.Term
-	compiler       *ast.Compiler
-	regoErrorLimit int
-	debug          debug.Logger
-	traceWriter    io.Writer
-	tracePerResult bool
-	retriever      *MetadataRetriever
-	policyFS       fs.FS
-	dataFS         fs.FS
-	frameworks     []framework.Framework
-	spec           string
-	inputSchema    interface{} // unmarshalled into this from a json schema document
-	sourceType     types.Source
+	ruleNamespaces          map[string]struct{}
+	policies                map[string]*ast.Module
+	store                   storage.Store
+	dataDirs                []string
+	runtimeValues           *ast.Term
+	compiler                *ast.Compiler
+	regoErrorLimit          int
+	debug                   debug.Logger
+	traceWriter             io.Writer
+	tracePerResult          bool
+	retriever               *MetadataRetriever
+	policyFS                fs.FS
+	dataFS                  fs.FS
+	frameworks              []framework.Framework
+	spec                    string
+	inputSchema             interface{} // unmarshalled into this from a json schema document
+	sourceType              types.Source
+	includeDeprecatedChecks bool
 
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
+}
+
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
+	s.includeDeprecatedChecks = b
 }
 
 func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
@@ -161,7 +167,7 @@ func (s *Scanner) SetParentDebugLogger(l debug.Logger) {
 	s.debug = l.Extend("rego")
 }
 
-func (s *Scanner) runQuery(ctx context.Context, query string, input interface{}, disableTracing bool) (rego.ResultSet, []string, error) {
+func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, disableTracing bool) (rego.ResultSet, []string, error) {
 
 	trace := (s.traceWriter != nil || s.tracePerResult) && !disableTracing
 
@@ -180,7 +186,7 @@ func (s *Scanner) runQuery(ctx context.Context, query string, input interface{},
 	}
 
 	if input != nil {
-		regoOptions = append(regoOptions, rego.Input(input))
+		regoOptions = append(regoOptions, rego.ParsedInput(input))
 	}
 
 	instance := rego.New(regoOptions...)
@@ -247,8 +253,12 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			continue
 		}
 
+		if !s.includeDeprecatedChecks && staticMeta.Deprecated {
+			continue // skip deprecated checks
+		}
+
 		if isPolicyWithSubtype(s.sourceType) {
-			// skip if policy isn't relevant to what is being scanned
+			// skip if check isn't relevant to what is being scanned
 			if !isPolicyApplicable(staticMeta, inputs...) {
 				continue
 			}
@@ -326,7 +336,7 @@ func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 					continue
 				}
 
-				if len(staticMetadata.InputOptions.Selectors) == 0 { // policy always applies if no selectors
+				if len(staticMetadata.InputOptions.Selectors) == 0 { // check always applies if no selectors
 					return true
 				}
 
@@ -342,6 +352,14 @@ func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	return false
 }
 
+func parseRawInput(input any) (ast.Value, error) {
+	if err := util.RoundTrip(&input); err != nil {
+		return nil, err
+	}
+
+	return ast.InterfaceToValue(input)
+}
+
 func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input, combined bool) (scan.Results, error) {
 
 	// handle combined evaluations if possible
@@ -354,7 +372,12 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
 	for _, input := range inputs {
 		s.trace("INPUT", input)
-		if ignored, err := s.isIgnored(ctx, namespace, rule, input.Contents); err != nil {
+		parsedInput, err := parseRawInput(input.Contents)
+		if err != nil {
+			s.debug.Log("Error occurred while parsing input: %s", err)
+			continue
+		}
+		if ignored, err := s.isIgnored(ctx, namespace, rule, parsedInput); err != nil {
 			return nil, err
 		} else if ignored {
 			var result regoResult
@@ -364,7 +387,7 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 			results.AddIgnored(result)
 			continue
 		}
-		set, traces, err := s.runQuery(ctx, qualified, input.Contents, false)
+		set, traces, err := s.runQuery(ctx, qualified, parsedInput, false)
 		if err != nil {
 			return nil, err
 		}
@@ -388,9 +411,15 @@ func (s *Scanner) applyRuleCombined(ctx context.Context, namespace, rule string,
 	if len(inputs) == 0 {
 		return nil, nil
 	}
+
+	parsed, err := parseRawInput(inputs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse input: %w", err)
+	}
+
 	var results scan.Results
-	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
-	if ignored, err := s.isIgnored(ctx, namespace, rule, inputs); err != nil {
+
+	if ignored, err := s.isIgnored(ctx, namespace, rule, parsed); err != nil {
 		return nil, err
 	} else if ignored {
 		for _, input := range inputs {
@@ -402,7 +431,8 @@ func (s *Scanner) applyRuleCombined(ctx context.Context, namespace, rule string,
 		}
 		return results, nil
 	}
-	set, traces, err := s.runQuery(ctx, qualified, inputs, false)
+	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
+	set, traces, err := s.runQuery(ctx, qualified, parsed, false)
 	if err != nil {
 		return nil, err
 	}

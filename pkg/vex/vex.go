@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
@@ -68,7 +68,7 @@ func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("json decode error: %w", err)
 	}
-	if report.ArtifactType != ftypes.ArtifactCycloneDX {
+	if report.ArtifactType != artifact.TypeCycloneDX {
 		return nil, xerrors.New("CycloneDX VEX can be used with CycloneDX SBOM")
 	}
 	return newCycloneDX(report.BOM, vex), nil

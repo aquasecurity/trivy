@@ -67,7 +67,7 @@ func parseResult(raw interface{}) *regoResult {
 	case map[string]interface{}:
 		result = parseCause(val)
 	default:
-		result.Message = "Rego policy resulted in DENY"
+		result.Message = "Rego check resulted in DENY"
 	}
 	return &result
 }
@@ -150,7 +150,7 @@ func (s *Scanner) convertResults(set rego.ResultSet, input Input, namespace, rul
 					regoResult.Filepath = input.Path
 				}
 				if regoResult.Message == "" {
-					regoResult.Message = fmt.Sprintf("Rego policy rule: %s.%s", namespace, rule)
+					regoResult.Message = fmt.Sprintf("Rego check rule: %s.%s", namespace, rule)
 				}
 				regoResult.StartLine += offset
 				regoResult.EndLine += offset

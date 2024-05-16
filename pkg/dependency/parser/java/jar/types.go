@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var ArtifactNotFoundErr = xerrors.New("no artifact found")
@@ -17,8 +17,8 @@ type Properties struct {
 	FilePath   string // path to file containing these props
 }
 
-func (p Properties) Library() types.Library {
-	return types.Library{
+func (p Properties) Package() ftypes.Package {
+	return ftypes.Package{
 		Name:     fmt.Sprintf("%s:%s", p.GroupID, p.ArtifactID),
 		Version:  p.Version,
 		FilePath: p.FilePath,

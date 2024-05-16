@@ -283,7 +283,9 @@ func TestClientServer(t *testing.T) {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
 			}
 
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{})
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				override: overrideUID,
+			})
 		})
 	}
 }
@@ -397,7 +399,9 @@ func TestClientServerWithFormat(t *testing.T) {
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
-			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{})
+			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
+				override: overrideUID,
+			})
 		})
 	}
 }
@@ -475,7 +479,10 @@ func TestClientServerWithToken(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{wantErr: tt.wantErr})
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				override: overrideUID,
+				wantErr:  tt.wantErr,
+			})
 		})
 	}
 }
@@ -501,7 +508,9 @@ func TestClientServerWithRedis(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
 
 		// Run Trivy client
-		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{})
+		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{
+			override: overrideUID,
+		})
 	})
 
 	// Terminate the Redis container

@@ -100,12 +100,12 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	if len(paths) > 0 {
 		loaded, err := LoadPoliciesFromDirs(srcFS, paths...)
 		if err != nil {
-			return fmt.Errorf("failed to load rego policies from %s: %w", paths, err)
+			return fmt.Errorf("failed to load rego checks from %s: %w", paths, err)
 		}
 		for name, policy := range loaded {
 			s.policies[name] = policy
 		}
-		s.debug.Log("Loaded %d policies from disk.", len(loaded))
+		s.debug.Log("Loaded %d checks from disk.", len(loaded))
 	}
 
 	if len(readers) > 0 {
@@ -149,6 +149,10 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 	var excludedFiles []string
 
 	for _, e := range compiler.Errors {
+		if e.Location == nil {
+			continue
+		}
+
 		loc := e.Location.File
 
 		if lo.Contains(excludedFiles, loc) {
@@ -173,14 +177,14 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 		}
 
 		s.debug.Log("Found embedded check: %s", embedded.Package.Location.File)
-		delete(s.policies, loc) // remove bad policy
+		delete(s.policies, loc) // remove bad check
 		s.policies[embedded.Package.Location.File] = embedded
 		delete(s.embeddedChecks, embedded.Package.Location.File) // avoid infinite loop if embedded check contains ref error
 		excludedFiles = append(excludedFiles, e.Location.File)
 	}
 
 	compiler.Errors = lo.Filter(compiler.Errors, func(e *ast.Error, _ int) bool {
-		return !lo.Contains(excludedFiles, e.Location.File)
+		return e.Location == nil || !lo.Contains(excludedFiles, e.Location.File)
 	})
 }
 
@@ -215,6 +219,9 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 	}
 
 	for _, e := range compiler.Errors {
+		if e.Location == nil {
+			continue
+		}
 		s.debug.Log("Error occurred while parsing: %s, %s", e.Location.File, e.Error())
 		delete(s.policies, e.Location.File)
 	}
@@ -228,7 +235,7 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		return err
 	}
 	if custom {
-		s.inputSchema = nil // discard auto detected input schema in favor of policy defined schema
+		s.inputSchema = nil // discard auto detected input schema in favor of check defined schema
 	}
 
 	compiler := ast.NewCompiler().

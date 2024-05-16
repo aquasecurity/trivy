@@ -10,13 +10,12 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type lockFile struct {
+type LockFile struct {
 	Packages []packageInfo `json:"packages"`
 }
 type packageInfo struct {
@@ -32,14 +31,14 @@ type Parser struct {
 	logger *log.Logger
 }
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{
 		logger: log.WithPrefix("composer"),
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	var lockFile lockFile
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("read error: %w", err)
@@ -48,61 +47,61 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	libs := make(map[string]types.Library)
+	pkgs := make(map[string]ftypes.Package)
 	foundDeps := make(map[string][]string)
-	for _, pkg := range lockFile.Packages {
-		lib := types.Library{
-			ID:           dependency.ID(ftypes.Composer, pkg.Name, pkg.Version),
-			Name:         pkg.Name,
-			Version:      pkg.Version,
-			Relationship: types.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
-			License:      strings.Join(pkg.License, ", "),
-			Locations: []types.Location{
+	for _, lpkg := range lockFile.Packages {
+		pkg := ftypes.Package{
+			ID:           dependency.ID(ftypes.Composer, lpkg.Name, lpkg.Version),
+			Name:         lpkg.Name,
+			Version:      lpkg.Version,
+			Relationship: ftypes.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
+			Licenses:     lpkg.License,
+			Locations: []ftypes.Location{
 				{
-					StartLine: pkg.StartLine,
-					EndLine:   pkg.EndLine,
+					StartLine: lpkg.StartLine,
+					EndLine:   lpkg.EndLine,
 				},
 			},
 		}
-		libs[lib.Name] = lib
+		pkgs[pkg.Name] = pkg
 
 		var dependsOn []string
-		for depName := range pkg.Require {
+		for depName := range lpkg.Require {
 			// Require field includes required php version, skip this
 			// Also skip PHP extensions
 			if depName == "php" || strings.HasPrefix(depName, "ext") {
 				continue
 			}
-			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the libraries
+			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the packages
 		}
 		if len(dependsOn) > 0 {
-			foundDeps[lib.ID] = dependsOn
+			foundDeps[pkg.ID] = dependsOn
 		}
 	}
 
 	// fill deps versions
-	var deps []types.Dependency
-	for libID, depsOn := range foundDeps {
+	var deps ftypes.Dependencies
+	for pkgID, depsOn := range foundDeps {
 		var dependsOn []string
 		for _, depName := range depsOn {
-			if lib, ok := libs[depName]; ok {
-				dependsOn = append(dependsOn, lib.ID)
+			if pkg, ok := pkgs[depName]; ok {
+				dependsOn = append(dependsOn, pkg.ID)
 				continue
 			}
 			p.logger.Debug("Unable to find version", log.String("name", depName))
 		}
 		sort.Strings(dependsOn)
-		deps = append(deps, types.Dependency{
-			ID:        libID,
+		deps = append(deps, ftypes.Dependency{
+			ID:        pkgID,
 			DependsOn: dependsOn,
 		})
 	}
 
-	libSlice := maps.Values(libs)
-	sort.Sort(types.Libraries(libSlice))
-	sort.Sort(types.Dependencies(deps))
+	pkgSlice := maps.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+	sort.Sort(deps)
 
-	return libSlice, deps, nil
+	return pkgSlice, deps, nil
 }
 
 // UnmarshalJSONWithMetadata needed to detect start and end lines of deps

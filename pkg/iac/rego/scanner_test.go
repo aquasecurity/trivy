@@ -59,8 +59,8 @@ deny {
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
 	assert.False(t, results.GetFailed()[0].IsWarning())
@@ -94,8 +94,8 @@ deny {
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
 	assert.False(t, results.GetFailed()[0].IsWarning())
@@ -128,8 +128,8 @@ warn {
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(results.GetFailed()))
-	require.Equal(t, 0, len(results.GetPassed()))
-	require.Equal(t, 0, len(results.GetIgnored()))
+	require.Empty(t, results.GetPassed())
+	require.Empty(t, results.GetIgnored())
 
 	assert.True(t, results.GetFailed()[0].IsWarning())
 }
@@ -159,9 +159,9 @@ deny {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 0, len(results.GetFailed()))
+	assert.Empty(t, results.GetFailed())
 	require.Equal(t, 1, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetPassed()[0].Metadata().Range().GetFilename())
 }
@@ -202,8 +202,8 @@ exception[ns] {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 0, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
+	assert.Empty(t, results.GetFailed())
+	assert.Empty(t, results.GetPassed())
 	assert.Equal(t, 1, len(results.GetIgnored()))
 
 }
@@ -251,7 +251,7 @@ exception[ns] {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
+	assert.Empty(t, results.GetPassed())
 	assert.Equal(t, 1, len(results.GetIgnored()))
 
 }
@@ -287,8 +287,8 @@ exception[rules] {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 0, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
+	assert.Empty(t, results.GetFailed())
+	assert.Empty(t, results.GetPassed())
 	assert.Equal(t, 1, len(results.GetIgnored()))
 }
 
@@ -324,8 +324,8 @@ exception[rules] {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 }
 
 func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
@@ -358,8 +358,8 @@ deny_evil {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 }
 
 func Test_RegoScanning_WithDenyMessage(t *testing.T) {
@@ -389,8 +389,8 @@ deny[msg] {
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "oh no", results.GetFailed()[0].Description())
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
@@ -427,8 +427,8 @@ deny[res] {
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "oh no", results.GetFailed()[0].Description())
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
@@ -469,8 +469,8 @@ deny[res] {
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "oh no", results.GetFailed()[0].Description())
 	assert.Equal(t, "/blah.txt", results.GetFailed()[0].Metadata().Range().GetFilename())
@@ -523,8 +523,8 @@ deny[res] {
 	require.NoError(t, err)
 
 	require.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
 	failure := results.GetFailed()[0]
 
@@ -572,8 +572,8 @@ deny {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 }
 
 func Test_RegoScanning_WithNonMatchingInputSelector(t *testing.T) {
@@ -605,9 +605,9 @@ deny {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 0, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetFailed())
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 }
 
 func Test_RegoScanning_NoTracingByDefault(t *testing.T) {
@@ -637,10 +637,10 @@ deny {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
-	assert.Len(t, results.GetFailed()[0].Traces(), 0)
+	assert.Empty(t, results.GetFailed()[0].Traces())
 }
 
 func Test_RegoScanning_GlobalTracingEnabled(t *testing.T) {
@@ -672,11 +672,11 @@ deny {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
-	assert.Len(t, results.GetFailed()[0].Traces(), 0)
-	assert.Greater(t, len(traceBuffer.Bytes()), 0)
+	assert.Empty(t, results.GetFailed()[0].Traces())
+	assert.NotEmpty(t, traceBuffer.Bytes())
 }
 
 func Test_RegoScanning_PerResultTracingEnabled(t *testing.T) {
@@ -706,10 +706,10 @@ deny {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 
-	assert.Greater(t, len(results.GetFailed()[0].Traces()), 0)
+	assert.NotEmpty(t, results.GetFailed()[0].Traces())
 }
 
 func Test_dynamicMetadata(t *testing.T) {
@@ -934,8 +934,8 @@ deny {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 }
 
 func Test_RegoScanning_InvalidFS(t *testing.T) {
@@ -974,8 +974,8 @@ deny {
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, len(results.GetFailed()))
-	assert.Equal(t, 0, len(results.GetPassed()))
-	assert.Equal(t, 0, len(results.GetIgnored()))
+	assert.Empty(t, results.GetPassed())
+	assert.Empty(t, results.GetIgnored())
 }
 
 func Test_NoErrorsWhenUsingBadRegoCheck(t *testing.T) {
@@ -1010,4 +1010,79 @@ deny {
 	assert.NoError(t, err)
 	assert.Contains(t, buf.String(),
 		`Error occurred while applying rule "deny" from check "checks/bad.rego"`)
+}
+
+func Test_RegoScanning_WithDeprecatedCheck(t *testing.T) {
+	var testCases = []struct {
+		name            string
+		policy          string
+		expectedResults int
+	}{
+		{
+			name: "happy path check is deprecated",
+			policy: `# METADATA
+# title: i am a deprecated check
+# description: i am a description
+# related_resources:
+# - https://google.com
+# custom:
+#   id: EG123
+#   avd_id: AVD-EG-0123
+#   severity: LOW
+#   recommended_action: have a cup of tea
+#   deprecated: true
+package defsec.test
+
+deny {
+  input.text
+}
+
+`,
+			expectedResults: 0,
+		},
+		{
+			name: "happy path check is not deprecated",
+			policy: `# METADATA
+# title: i am a deprecated check
+# description: i am a description
+# related_resources:
+# - https://google.com
+# custom:
+#   id: EG123
+#   avd_id: AVD-EG-0123
+#   severity: LOW
+#   recommended_action: have a cup of tea
+package defsec.test
+
+deny {
+  input.text
+}
+
+`,
+			expectedResults: 1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			srcFS := CreateFS(t, map[string]string{
+				"policies/test.rego": tc.policy,
+			})
+
+			scanner := NewScanner(types.SourceJSON)
+			require.NoError(
+				t,
+				scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+			)
+
+			results, err := scanner.ScanInput(context.TODO(), Input{
+				Path: "/evil.lol",
+				Contents: map[string]interface{}{
+					"text": "test",
+				},
+			})
+			require.NoError(t, err)
+			require.Len(t, results, tc.expectedResults, tc.name)
+		})
+	}
 }

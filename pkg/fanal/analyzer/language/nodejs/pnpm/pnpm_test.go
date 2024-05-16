@@ -27,7 +27,7 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pnpm,
 						FilePath: "testdata/pnpm-lock.yaml",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "lodash@4.17.21",
 								Name:         "lodash",
@@ -54,7 +54,7 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}

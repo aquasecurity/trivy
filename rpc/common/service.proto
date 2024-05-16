@@ -27,7 +27,7 @@ message PackageInfo {
 message Application {
   string           type      = 1;
   string           file_path = 2;
-  repeated Package libraries = 3;
+  repeated Package packages  = 3;
 }
 
 message Package {
@@ -59,6 +59,7 @@ message Package {
 message PkgIdentifier {
   string purl    = 1;
   string bom_ref = 2;
+  string uid     = 3;
 }
 
 message Location {

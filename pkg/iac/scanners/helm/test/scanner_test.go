@@ -357,5 +357,5 @@ deny[res] {
 	require.NoError(t, err)
 	require.Len(t, results, 1)
 
-	assert.Len(t, results.GetFailed(), 0)
+	assert.Empty(t, results.GetFailed())
 }

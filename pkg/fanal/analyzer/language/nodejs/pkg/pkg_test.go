@@ -28,7 +28,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.NodePkg,
 						FilePath: "testdata/package.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:       "lodash@5.0.0",
 								Name:     "lodash",
@@ -50,7 +50,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.NodePkg,
 						FilePath: "testdata/package.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:       "lodash@5.0.0",
 								Name:     "lodash",
@@ -89,7 +89,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}

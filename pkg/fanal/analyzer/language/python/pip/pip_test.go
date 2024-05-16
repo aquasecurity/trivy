@@ -27,7 +27,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pip,
 						FilePath: "testdata/requirements.txt",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "click",
 								Version: "8.0.0",
@@ -65,7 +65,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}

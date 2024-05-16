@@ -38,6 +38,8 @@ type Scanner struct {
 	policyReaders           []io.Reader
 }
 
+func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+
 func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
 	s.loadEmbeddedLibraries = b
 }

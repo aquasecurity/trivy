@@ -483,7 +483,7 @@ trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
 For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`.
 More info about the helper functions are in the library [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go).
 
-You can find more example policies [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
+You can find more example checks [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
 
 ### By Vulnerability Exploitability Exchange (VEX)
 |     Scanner      | Supported |

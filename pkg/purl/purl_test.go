@@ -132,6 +132,19 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "conda environment.yaml",
+			typ:  ftypes.CondaEnv,
+			pkg: ftypes.Package{
+				Name:    "blas",
+				Version: "1.0",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeConda,
+				Name:    "blas",
+				Version: "1.0",
+			},
+		},
+		{
 			name: "composer package",
 			typ:  ftypes.Composer,
 			pkg: ftypes.Package{
@@ -392,6 +405,26 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 			wantErr: "failed to parse digest",
+		},
+		{
+			name: "julia project",
+			typ:  ftypes.Julia,
+			pkg: ftypes.Package{
+				ID:      "ade2ca70-3891-5945-98fb-dc099432e06a",
+				Name:    "Dates",
+				Version: "1.9.0",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeJulia,
+				Name:    "Dates",
+				Version: "1.9.0",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "uuid",
+						Value: "ade2ca70-3891-5945-98fb-dc099432e06a",
+					},
+				},
+			},
 		},
 	}
 

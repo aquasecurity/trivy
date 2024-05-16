@@ -56,7 +56,7 @@ resource "problem" "this" {
 	results, err := New().Execute(modules)
 	assert.Error(t, err)
 
-	assert.Equal(t, len(results.GetFailed()), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_PanicInCheckAllowed(t *testing.T) {
@@ -104,7 +104,7 @@ resource "problem" "this" {
 	results, _ := New().Execute(modules)
 	require.NoError(t, err)
 
-	assert.Equal(t, len(results.GetFailed()), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_PanicNotInCheckNotIncludePassedStopOnError(t *testing.T) {

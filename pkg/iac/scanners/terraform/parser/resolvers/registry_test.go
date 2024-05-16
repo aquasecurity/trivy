@@ -50,7 +50,7 @@ func Test_getPrivateRegistryTokenFromEnvVars_ConvertsSiteNameToEnvVar(t *testing
 			t.Setenv(tt.tokenName, "abcd")
 			token, err := getPrivateRegistryTokenFromEnvVars(tt.siteName)
 			assert.Equal(t, "abcd", token)
-			assert.Equal(t, nil, err)
+			assert.NoError(t, err)
 		})
 	}
 }

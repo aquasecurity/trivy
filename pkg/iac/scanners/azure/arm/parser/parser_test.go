@@ -215,7 +215,7 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, err)
 
 			if !tt.wantDeployment {
-				assert.Len(t, got, 0)
+				assert.Empty(t, got)
 				return
 			}
 

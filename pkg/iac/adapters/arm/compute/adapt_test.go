@@ -30,7 +30,7 @@ func Test_AdaptLinuxVM(t *testing.T) {
 	output := Adapt(input)
 
 	require.Len(t, output.LinuxVirtualMachines, 1)
-	require.Len(t, output.WindowsVirtualMachines, 0)
+	require.Empty(t, output.WindowsVirtualMachines)
 
 	linuxVM := output.LinuxVirtualMachines[0]
 	assert.True(t, linuxVM.OSProfileLinuxConfig.DisablePasswordAuthentication.IsTrue())
@@ -54,6 +54,6 @@ func Test_AdaptWindowsVM(t *testing.T) {
 
 	output := Adapt(input)
 
-	require.Len(t, output.LinuxVirtualMachines, 0)
+	require.Empty(t, output.LinuxVirtualMachines)
 	require.Len(t, output.WindowsVirtualMachines, 1)
 }

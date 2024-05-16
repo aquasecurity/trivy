@@ -44,8 +44,8 @@ func (v *OpenVEX) Filter(result *types.Result, bom *core.BOM) {
 
 func (v *OpenVEX) Matches(vuln types.DetectedVulnerability, bom *core.BOM) []openvex.Statement {
 	root := bom.Root()
-	if root != nil && root.PkgID.PURL != nil {
-		stmts := v.vex.Matches(vuln.VulnerabilityID, root.PkgID.PURL.String(), []string{vuln.PkgIdentifier.PURL.String()})
+	if root != nil && root.PkgIdentifier.PURL != nil {
+		stmts := v.vex.Matches(vuln.VulnerabilityID, root.PkgIdentifier.PURL.String(), []string{vuln.PkgIdentifier.PURL.String()})
 		if len(stmts) != 0 {
 			return stmts
 		}

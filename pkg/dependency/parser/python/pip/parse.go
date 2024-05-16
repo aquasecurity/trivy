@@ -10,7 +10,7 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -24,11 +24,11 @@ const (
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// `requirements.txt` can use byte order marks (BOM)
 	// e.g. on Windows `requirements.txt` can use UTF-16LE with BOM
 	// We need to override them to avoid the file being read incorrectly
@@ -36,7 +36,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	decodedReader := transform.NewReader(r, transformer)
 
 	scanner := bufio.NewScanner(decodedReader)
-	var libs []types.Library
+	var pkgs []ftypes.Package
 	for scanner.Scan() {
 		line := scanner.Text()
 		line = strings.ReplaceAll(line, " ", "")
@@ -49,7 +49,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		if len(s) != 2 {
 			continue
 		}
-		libs = append(libs, types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			Name:    s[0],
 			Version: s[1],
 		})
@@ -57,7 +57,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	if err := scanner.Err(); err != nil {
 		return nil, nil, xerrors.Errorf("scan error: %w", err)
 	}
-	return libs, nil, nil
+	return pkgs, nil, nil
 }
 
 func rStripByKey(line, key string) string {
