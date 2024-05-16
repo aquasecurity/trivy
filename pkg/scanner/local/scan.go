@@ -162,12 +162,15 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 
 	if slices.Contains(options.VulnType, types.VulnTypeOS) {
 		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
-		if !errors.Is(err, ospkgDetector.ErrUnsupportedOS) && err != nil {
+		switch {
+		case errors.Is(err, ospkgDetector.ErrUnsupportedOS):
+		// do nothing
+		case err != nil:
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
-		} else if vuln.Target != "" {
+		case vuln.Target != "":
 			results = append(results, vuln)
+			eosl = detectedEOSL
 		}
-		eosl = detectedEOSL
 	}
 
 	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
