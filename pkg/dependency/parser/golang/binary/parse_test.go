@@ -115,6 +115,22 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "goexperiment",
+			inputFile: "testdata/goexperiment",
+			want: []ftypes.Package{
+				{
+					Name:         "",
+					Version:      "",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					Name:         "stdlib",
+					Version:      "1.22.1",
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/dummy",
 			wantErr:   "unrecognized executable format",

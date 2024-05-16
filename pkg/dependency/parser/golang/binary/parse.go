@@ -52,6 +52,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, convertError(err)
 	}
 
+	// Ex: "go1.22.3 X:boringcrypto"
+	stdlibVersion := strings.TrimPrefix(info.GoVersion, "go")
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
+
 	ldflags := p.ldFlags(info.Settings)
 	pkgs := make(ftypes.Packages, 0, len(info.Deps)+2)
 	pkgs = append(pkgs, []ftypes.Package{
@@ -69,7 +73,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		{
 			// Add the Go version used to build this binary.
 			Name:         "stdlib",
-			Version:      strings.TrimPrefix(info.GoVersion, "go"),
+			Version:      stdlibVersion,
 			Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 		},
 	}...)
