@@ -28,7 +28,7 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 
 	account := output.Accounts[0]
 	assert.Equal(t, "TLS1_0", account.MinimumTLSVersion.Value())
-	assert.Equal(t, false, account.EnforceHTTPS.Value())
+	assert.False(t, account.EnforceHTTPS.Value())
 
 }
 
@@ -53,6 +53,6 @@ func Test_AdaptStorage(t *testing.T) {
 
 	account := output.Accounts[0]
 	assert.Equal(t, "TLS1_2", account.MinimumTLSVersion.Value())
-	assert.Equal(t, true, account.EnforceHTTPS.Value())
+	assert.True(t, account.EnforceHTTPS.Value())
 
 }

@@ -144,7 +144,7 @@ func TestParse(t *testing.T) {
 			ret := yyParse(l)
 			err := l.Err()
 			if tt.wantErr != "" {
-				assert.Equal(t, ret, 1)
+				assert.Equal(t, 1, ret)
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}

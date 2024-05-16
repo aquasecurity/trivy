@@ -43,11 +43,10 @@ jobs:
 
       - name: Lint
         id: lint
-        uses: golangci/golangci-lint-action@v4.0.0
+        uses: golangci/golangci-lint-action@v6.0.1
         with:
           version: v1.57
-          args: --timeout=30m --out-format=line-number
-          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
+          args: --verbose --out-format=line-number
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Check if linter failed

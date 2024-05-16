@@ -96,8 +96,8 @@ func TestScan(t *testing.T) {
 			}()
 
 			results, err := post.Scan(context.Background(), tt.results)
-			require.Equal(t, err != nil, tt.wantErr)
-			assert.Equal(t, results, tt.want)
+			require.Equal(t, tt.wantErr, err != nil)
+			assert.Equal(t, tt.want, results)
 		})
 	}
 }

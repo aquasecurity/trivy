@@ -45,7 +45,7 @@ func TestOptionToToleration(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := optionToTolerations(tt.tolerationsOptions)
 			assert.NoError(t, err)
-			assert.Equal(t, got, tt.want)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
