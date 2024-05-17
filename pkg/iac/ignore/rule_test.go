@@ -225,6 +225,15 @@ test #trivy:ignore:rule-4
 			},
 			shouldIgnore: true,
 		},
+		{
+			name: "multiple ids",
+			src:  `# trivy:ignore:rule-1`,
+			args: args{
+				metadata: metadataWithLine(filename, 1),
+				ids:      []string{"rule-1", "rule-2"},
+			},
+			shouldIgnore: true,
+		},
 	}
 
 	for _, tt := range tests {
