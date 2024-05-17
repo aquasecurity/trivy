@@ -119,11 +119,6 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/goexperiment",
 			want: []ftypes.Package{
 				{
-					Name:         "",
-					Version:      "",
-					Relationship: ftypes.RelationshipRoot,
-				},
-				{
 					Name:         "stdlib",
 					Version:      "1.22.1",
 					Relationship: ftypes.RelationshipDirect,
