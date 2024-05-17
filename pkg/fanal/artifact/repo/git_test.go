@@ -211,7 +211,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			defer cleanup()
 
 			ref, err := art.Inspect(context.Background())
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, ref)
 		})
 	}

@@ -289,7 +289,7 @@ func compareSPDXJson(t *testing.T, wantFile, gotFile string) {
 	SPDXVersion, ok := strings.CutPrefix(want.SPDXVersion, "SPDX-")
 	assert.True(t, ok)
 
-	assert.NoError(t, spdxlib.ValidateDocument(got))
+	require.NoError(t, spdxlib.ValidateDocument(got))
 
 	// Validate SPDX output against the JSON schema
 	validateReport(t, fmt.Sprintf(SPDXSchema, SPDXVersion), got)

@@ -871,7 +871,7 @@ deny {
 	})
 
 	scanner := NewScanner(types.SourceDockerfile)
-	assert.NoError(
+	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
@@ -1007,7 +1007,7 @@ deny {
 		scanner.LoadPolicies(false, false, fsys, []string{"checks"}, nil),
 	)
 	_, err := scanner.ScanInput(context.TODO(), Input{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Contains(t, buf.String(),
 		`Error occurred while applying rule "deny" from check "checks/bad.rego"`)
 }

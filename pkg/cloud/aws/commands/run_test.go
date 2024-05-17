@@ -1275,10 +1275,10 @@ Summary Report for compliance: my-custom-spec
 
 			err := Run(ctx, test.options)
 			if test.expectErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, test.want, output.String())
 		})
 	}

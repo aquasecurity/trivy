@@ -51,7 +51,7 @@ func TestParse(t *testing.T) {
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.ElementsMatch(t, tt.want, got)
 		})
 	}

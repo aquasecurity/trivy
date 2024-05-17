@@ -178,7 +178,7 @@ func TestScanServer_Scan(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}
-			assert.NoError(t, err, tt.name)
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -277,7 +277,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			assert.Equal(t, tt.want, got)
@@ -512,7 +512,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			assert.Equal(t, tt.want, got)
@@ -577,7 +577,7 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			assert.Equal(t, tt.want, got)

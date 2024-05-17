@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -152,11 +153,11 @@ https://dl-cdn.alpinelinux.org/alpine/v3.10/main
 			got, err := a.Analyze(context.Background(), test.input)
 
 			if test.wantErr != "" {
-				assert.Error(t, err)
+				require.Error(t, err)
 				assert.Equal(t, test.wantErr, err.Error())
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, test.want, got)
 		})
 	}

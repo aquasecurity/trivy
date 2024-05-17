@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -1443,21 +1444,21 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			ctx := context.Background()
 
 			mfs := mapfs.New()
 			for testPath, osPath := range tt.testFiles {
 				err = mfs.MkdirAll(filepath.Dir(osPath), os.ModePerm)
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				err = mfs.WriteFile(osPath, testPath)
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS: mfs,
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Sort the result for consistency
 			for i := range got.PackageInfos {
@@ -1509,7 +1510,7 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})

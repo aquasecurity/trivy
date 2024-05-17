@@ -97,7 +97,7 @@ deny {
 }`
 		scanner := rego.NewScanner(types.SourceJSON)
 		err := scanner.LoadPolicies(false, false, fstest.MapFS{}, []string{"."}, []io.Reader{strings.NewReader(check)})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 }
@@ -205,7 +205,7 @@ deny {
 			if tt.expectedErr != "" {
 				assert.ErrorContains(t, err, tt.expectedErr)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -245,5 +245,5 @@ deny {
 		options.ScannerWithEmbeddedPolicies(false),
 	)
 	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
