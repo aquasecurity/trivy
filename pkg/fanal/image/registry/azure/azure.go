@@ -12,11 +12,15 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-type Registry struct {
+type RegistryClient struct {
 	domain string
+}
+
+type Registry struct {
 }
 
 const (
@@ -25,15 +29,14 @@ const (
 	scheme   = "https"
 )
 
-func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) error {
+func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) (intf.RegistryClient, error) {
 	if !strings.HasSuffix(domain, azureURL) {
-		return xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
+		return nil, xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
 	}
-	r.domain = domain
-	return nil
+	return &RegistryClient{domain: domain}, nil
 }
 
-func (r *Registry) GetCredential(ctx context.Context) (string, string, error) {
+func (r *RegistryClient) GetCredential(ctx context.Context) (string, string, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to generate acr credential error: %w", err)
