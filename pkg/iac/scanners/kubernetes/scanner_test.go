@@ -424,7 +424,7 @@ spec:
 `))
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 }
 
 func Test_FileScanJSON(t *testing.T) {
@@ -479,7 +479,7 @@ deny[msg] {
 `))
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 }
 
 func Test_FileScanWithMetadata(t *testing.T) {

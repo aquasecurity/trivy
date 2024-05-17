@@ -159,7 +159,7 @@ func TestScanner_Scan(t *testing.T) {
 
 			misconfs, err := s.Scan(context.Background(), fsys)
 			require.NoError(t, err)
-			require.Equal(t, tt.misconfsExpected, len(misconfs), "wrong number of misconfigurations found")
+			require.Len(t, misconfs, tt.misconfsExpected, "wrong number of misconfigurations found")
 			if tt.misconfsExpected == 1 {
 				assert.Equal(t, tt.wantFilePath, misconfs[0].FilePath, "filePaths don't equal")
 				assert.Equal(t, tt.wantFileType, misconfs[0].FileType, "fileTypes don't equal")
