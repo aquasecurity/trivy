@@ -83,7 +83,7 @@ func (m *Manager) tryIndex(ctx context.Context, name string) string {
 		m.logger.WarnContext(ctx, "The plugin index is not found. Please run 'trivy plugin update' to download the index.")
 		return name
 	} else if err != nil {
-		m.logger.ErrorContext(ctx, "Unable to load the plugin index: %w", err)
+		m.logger.ErrorContext(ctx, "Unable to load the plugin index", log.Err(err))
 		return name
 	}
 

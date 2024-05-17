@@ -107,7 +107,7 @@ func (p *Parser) parseV2(lock LockFile) ([]ftypes.Package, []ftypes.Dependency, 
 	for _, req := range lock.Requires {
 		pkg, err := toPackage(req.Dependency, req.StartLine, req.EndLine)
 		if err != nil {
-			p.logger.Debug("Creating package entry from requirement failed", err)
+			p.logger.Debug("Creating package entry from requirement failed", log.Err(err))
 			continue
 		}
 
