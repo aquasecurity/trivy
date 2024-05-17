@@ -3134,6 +3134,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#options" class="md-nav__link">
     Options
   </a>
@@ -3784,6 +3791,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#options" class="md-nav__link">
     Options
   </a>
@@ -3832,6 +3846,16 @@ You're not viewing the latest version.
 <h2 id="trivy-plugin-install">trivy plugin install</h2>
 <p>Install a plugin</p>
 <div class="highlight"><pre><span></span><code>trivy plugin install NAME | URL | FILE_PATH
+</code></pre></div>
+<h3 id="examples">Examples</h3>
+<div class="highlight"><pre><span></span><code>  # Install a plugin from the plugin index
+  $ trivy plugin install referrer
+
+  # Specify the version of the plugin to install
+  $ trivy plugin install referrer@v0.3.0
+
+  # Install a plugin from a URL
+  $ trivy plugin install github.com/aquasecurity/trivy-plugin-referrer
 </code></pre></div>
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><span></span><code>  -h, --help   help for install

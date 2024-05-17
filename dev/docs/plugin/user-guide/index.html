@@ -3923,6 +3923,13 @@ The preference order is as follows:</p>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$ trivy plugin install myplugin.tar.gz
 </code></pre></div></p>
+<p>If the plugin's Git repository is <a href="../developer-guide/#tagging-plugin-repositories">properly tagged</a>, you can specify the version to install like this:</p>
+<div class="highlight"><pre><span></span><code>$ trivy plugin install referrer@v0.3.0
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The leading <code>v</code> in the version is required. Also, the version must follow the <a href="https://semver.org/">Semantic Versioning</a>.</p>
+</div>
 <p>Under the hood Trivy leverages <a href="https://github.com/hashicorp/go-getter">go-getter</a> to download plugins.
 This means the following protocols are supported for downloading plugins:</p>
 <ul>

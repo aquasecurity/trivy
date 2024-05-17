@@ -2640,6 +2640,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#tagging-plugin-repositories" class="md-nav__link">
+    Tagging plugin repositories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#plugin-argumentsflags" class="md-nav__link">
     Plugin arguments/flags
   </a>
@@ -3970,6 +3977,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#tagging-plugin-repositories" class="md-nav__link">
+    Tagging plugin repositories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#plugin-argumentsflags" class="md-nav__link">
     Plugin arguments/flags
   </a>
@@ -4163,6 +4177,12 @@ Here is an example YAML of <a href="https://github.com/aquasecurity/trivy-plugin
 </ul>
 <p>After determining platform, Trivy will download the execution file from <code>uri</code> and store it in the plugin cache.
 When the plugin is called via Trivy CLI, <code>bin</code> command will be executed.</p>
+<h4 id="tagging-plugin-repositories">Tagging plugin repositories</h4>
+<p>If you are hosting your plugin in a Git repository, it is strongly recommended to tag your releases with a version number.
+By tagging your releases, Trivy can install specific versions of your plugin.</p>
+<div class="highlight"><pre><span></span><code>$ trivy plugin install referrer@v0.3.0
+</code></pre></div>
+<p>When tagging versions, you must follow <a href="https://semver.org/">the Semantic Versioning</a> and prefix the tag with <code>v</code>, like <code>v1.2.3</code>.</p>
 <h4 id="plugin-argumentsflags">Plugin arguments/flags</h4>
 <p>The plugin is responsible for handling flags and arguments.
 Any arguments are passed to the plugin from the <code>trivy</code> command.</p>
