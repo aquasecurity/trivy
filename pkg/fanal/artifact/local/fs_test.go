@@ -3,10 +3,11 @@ package local
 import (
 	"context"
 	"errors"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -736,7 +737,7 @@ __rego_metadata__ := {
 	"url": "https://trivy.dev/",
 }
 
-# taken from defsec rego lib to mimic behaviour
+# taken from defsec rego lib to mimic behavior
 result(msg, cause) = result {
 	metadata := object.get(cause, "__defsec_metadata", cause)
 	result := {

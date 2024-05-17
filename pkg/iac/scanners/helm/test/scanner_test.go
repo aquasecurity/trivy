@@ -307,7 +307,7 @@ deny[res] {
 		options.ScannerWithPolicyReader(strings.NewReader(policy)),
 	)
 
-	results, err := helmScanner.ScanFS(context.TODO(), os.DirFS("testdata/simmilar-templates"), ".")
+	results, err := helmScanner.ScanFS(context.TODO(), os.DirFS("testdata/similar-templates"), ".")
 	require.NoError(t, err)
 
 	failedResults := results.GetFailed()

@@ -114,7 +114,6 @@ issues:
         - gosec
         - govet
         - ineffassign
-        - misspell
         - tenv
         - unused
     - linters:
