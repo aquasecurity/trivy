@@ -51,7 +51,7 @@ func TestManager_Search(t *testing.T) {
 			want: `NAME                 DESCRIPTION                                                  MAINTAINER           OUTPUT
 foo                  A foo plugin                                                 aquasecurity           ✓
 bar                  A bar plugin                                                 aquasecurity         
-test                 A test plugin                                                aquasecurity         
+test_plugin          A test plugin                                                aquasecurity         
 `,
 		},
 		{

@@ -130,6 +130,16 @@ The following rules will apply in deciding which platform to select:
 After determining platform, Trivy will download the execution file from `uri` and store it in the plugin cache.
 When the plugin is called via Trivy CLI, `bin` command will be executed.
 
+#### Tagging plugin repositories
+If you are hosting your plugin in a Git repository, it is strongly recommended to tag your releases with a version number.
+By tagging your releases, Trivy can install specific versions of your plugin.
+
+```bash
+$ trivy plugin install referrer@v0.3.0
+```
+
+When tagging versions, you must follow [the Semantic Versioning][semver] and prefix the tag with `v`, like `v1.2.3`.
+
 #### Plugin arguments/flags
 The plugin is responsible for handling flags and arguments.
 Any arguments are passed to the plugin from the `trivy` command.

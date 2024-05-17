@@ -1,16 +1,15 @@
+//go:build unix
+
 package plugin_test
 
 import (
-	"archive/zip"
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"log/slog"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -24,11 +23,40 @@ import (
 	"github.com/aquasecurity/trivy/pkg/plugin"
 )
 
+func setupInstalledPlugin(t *testing.T, homeDir string, p plugin.Plugin) {
+	pluginDir := filepath.Join(homeDir, ".trivy", "plugins", p.Name)
+
+	// Create the test plugin directory
+	err := os.MkdirAll(pluginDir, os.ModePerm)
+	require.NoError(t, err)
+
+	// write the plugin name
+	pluginMetadata := fmt.Sprintf(`name: "%s"
+repository: "%s"
+version: "%s"
+usage: test
+description: test
+platforms:
+  - selector:
+      os: linux
+      arch: amd64
+    uri: ./test.sh
+    bin: ./test.sh  
+installed:
+  platform:
+    os: linux
+    arch: amd64`, p.Name, p.Repository, p.Version)
+
+	err = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte(pluginMetadata), os.ModePerm)
+	require.NoError(t, err)
+}
+
 func TestManager_Run(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		// the test.sh script can't be run on windows so skipping
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
+
 	type fields struct {
 		Name        string
 		Repository  string
@@ -183,110 +211,6 @@ func TestManager_Run(t *testing.T) {
 	}
 }
 
-func TestManager_Install(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		// the test.sh script can't be run on windows so skipping
-		t.Skip("Test satisfied adequately by Linux tests")
-	}
-	wantPlugin := plugin.Plugin{
-		Name:        "test_plugin",
-		Repository:  "github.com/aquasecurity/trivy-plugin-test",
-		Version:     "0.1.0",
-		Summary:     "test",
-		Description: "test",
-		Platforms: []plugin.Platform{
-			{
-				Selector: &plugin.Selector{
-					OS:   "linux",
-					Arch: "amd64",
-				},
-				URI: "./test.sh",
-				Bin: "./test.sh",
-			},
-		},
-		Installed: plugin.Installed{
-			Platform: plugin.Selector{
-				OS:   "linux",
-				Arch: "amd64",
-			},
-		},
-	}
-
-	tests := []struct {
-		name       string
-		pluginName string
-		want       plugin.Plugin
-		wantFile   string
-		wantErr    string
-	}{
-		{
-			name:     "http",
-			want:     wantPlugin,
-			wantFile: ".trivy/plugins/test_plugin/test.sh",
-		},
-		{
-			name:       "local path",
-			pluginName: "testdata/test_plugin",
-			want:       wantPlugin,
-			wantFile:   ".trivy/plugins/test_plugin/test.sh",
-		},
-		{
-			name:       "index",
-			pluginName: "test",
-			want:       wantPlugin,
-			wantFile:   ".trivy/plugins/test_plugin/test.sh",
-		},
-		{
-			name:       "plugin not found",
-			pluginName: "testdata/not_found",
-			wantErr:    "no such file or directory",
-		},
-		{
-			name:       "no plugin.yaml",
-			pluginName: "testdata/no_yaml",
-			wantErr:    "file open error",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// The test plugin will be installed here
-			dst := t.TempDir()
-			t.Setenv("XDG_DATA_HOME", dst)
-
-			// For plugin index
-			fsutils.SetCacheDir("testdata")
-
-			if tt.pluginName == "" {
-				ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					zr := zip.NewWriter(w)
-					require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin")))
-					require.NoError(t, zr.Close())
-				}))
-				t.Cleanup(ts.Close)
-				tt.pluginName = ts.URL + "/test_plugin.zip"
-			}
-
-			got, err := plugin.NewManager().Install(context.Background(), tt.pluginName, plugin.Options{
-				Platform: ftypes.Platform{
-					Platform: &v1.Platform{
-						Architecture: "amd64",
-						OS:           "linux",
-					},
-				},
-			})
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
-				return
-			}
-			assert.NoError(t, err)
-
-			assert.EqualExportedValues(t, tt.want, got)
-			assert.FileExists(t, filepath.Join(dst, tt.wantFile))
-		})
-	}
-}
-
 func TestManager_Uninstall(t *testing.T) {
 	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	pluginName := "test_plugin"
@@ -423,42 +347,28 @@ func TestManager_Upgrade(t *testing.T) {
 		t.Skip("Test satisfied adequately by Linux tests")
 	}
 	pluginName := "test_plugin"
+	pluginVersion := "0.0.5"
 
 	tempDir := t.TempDir()
-	pluginDir := filepath.Join(tempDir, ".trivy", "plugins", pluginName)
-
 	t.Setenv("XDG_DATA_HOME", tempDir)
-
-	// Create the test plugin directory
-	err := os.MkdirAll(pluginDir, os.ModePerm)
-	require.NoError(t, err)
-
-	// write the plugin name
-	pluginMetadata := `name: "test_plugin"
-repository: testdata/test_plugin
-version: "0.0.5"
-usage: test
-description: A simple test plugin
-installed:
-	platform:
-		os: linux
-		arch: amd64`
-
-	err = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte(pluginMetadata), os.ModePerm)
-	require.NoError(t, err)
+	setupInstalledPlugin(t, tempDir, plugin.Plugin{
+		Name:       pluginName,
+		Version:    pluginVersion,
+		Repository: "testdata/test_plugin",
+	})
 
 	ctx := context.Background()
 	m := plugin.NewManager()
 
 	// verify initial version
-	verifyVersion(t, ctx, m, pluginName, "0.0.5")
+	verifyVersion(t, ctx, m, pluginName, pluginVersion)
 
 	// Upgrade the existing plugin
-	err = m.Upgrade(ctx, nil)
+	err := m.Upgrade(ctx, nil)
 	require.NoError(t, err)
 
 	// verify plugin updated
-	verifyVersion(t, ctx, m, pluginName, "0.1.0")
+	verifyVersion(t, ctx, m, pluginName, "0.2.0")
 }
 
 func verifyVersion(t *testing.T, ctx context.Context, m *plugin.Manager, pluginName, expectedVersion string) {
