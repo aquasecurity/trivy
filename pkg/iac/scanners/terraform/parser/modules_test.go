@@ -5,11 +5,12 @@ import (
 	"path"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/maps"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
 )
 
 func TestFindRootModules(t *testing.T) {

@@ -3,12 +3,11 @@ package storage
 import (
 	"testing"
 
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/require"
+
+	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_AdaptStorageDefaults(t *testing.T) {

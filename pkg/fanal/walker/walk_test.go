@@ -2,11 +2,12 @@ package walker_test
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
 func TestSkipFile(t *testing.T) {

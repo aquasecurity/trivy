@@ -2,10 +2,10 @@ package sbom
 
 import (
 	"context"
-	"github.com/package-url/packageurl-go"
 	"os"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

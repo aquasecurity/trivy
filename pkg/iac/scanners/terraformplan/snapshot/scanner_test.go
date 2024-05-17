@@ -9,12 +9,13 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 )
 
 func initScanner(opts ...options.ScannerOption) *Scanner {

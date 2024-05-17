@@ -3,9 +3,10 @@ package ignore_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func metadataWithLine(path string, line int) types.Metadata {

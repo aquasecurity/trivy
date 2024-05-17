@@ -3,12 +3,12 @@ package iam
 import (
 	"testing"
 
+	"github.com/liamg/iamgo"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	"github.com/liamg/iamgo"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func defaultPolicyDocuemnt(offset bool) iam.Document {

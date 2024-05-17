@@ -106,10 +106,8 @@ issues:
     - path: ".*_test.go$"
       linters:
         - bodyclose
-        - gci
         - gocritic
         - goconst
-        - gofmt
         - gosec
         - govet
         - ineffassign

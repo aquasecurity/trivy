@@ -5,14 +5,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/stretchr/testify/assert"
 	"log/slog"
 	"os"
 	"strings"
 	"testing"
 	"testing/slogtest"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestColorHandler(t *testing.T) {

@@ -2,7 +2,6 @@ package jar_test
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
