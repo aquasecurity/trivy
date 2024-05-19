@@ -40,7 +40,6 @@ func New(options ...Option) *Executor {
 }
 
 func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
-
 	e.debug.Log("Adapting modules...")
 	infra := adapter.Adapt(modules)
 	e.debug.Log("Adapted %d module(s) into defsec state data.", len(modules))

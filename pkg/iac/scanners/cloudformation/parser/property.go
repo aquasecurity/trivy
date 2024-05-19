@@ -134,7 +134,6 @@ func (p *Property) RawValue() interface{} {
 }
 
 func (p *Property) AsRawStrings() ([]string, error) {
-
 	if len(p.ctx.lines) < p.rng.GetEndLine() {
 		return p.ctx.lines, nil
 	}
@@ -225,7 +224,6 @@ func (p *Property) IntDefault(defaultValue int) iacTypes.IntValue {
 }
 
 func (p *Property) GetProperty(path string) *Property {
-
 	pathParts := strings.Split(path, ".")
 
 	first := pathParts[0]
@@ -347,7 +345,6 @@ func (p *Property) SetLogicalResource(id string) {
 			subProp.SetLogicalResource(id)
 		}
 	}
-
 }
 
 func (p *Property) GetJsonBytes(squashList ...bool) []byte {

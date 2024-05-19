@@ -143,6 +143,7 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 
 func filterMisconfigurations(result *types.Result, severities []string, includeNonFailures bool,
 	ignoreConfig IgnoreConfig) {
+
 	var filtered []types.DetectedMisconfiguration
 	result.MisconfSummary = new(types.MisconfSummary)
 

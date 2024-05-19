@@ -10,7 +10,6 @@ import (
 
 func getPolicies(ctx parser.FileContext) (policies []iam.Policy) {
 	for _, policyResource := range ctx.GetResourcesByType("AWS::IAM::Policy") {
-
 		policy := iam.Policy{
 			Metadata: policyResource.Metadata(),
 			Name:     policyResource.GetStringProperty("PolicyName"),

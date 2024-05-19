@@ -7,7 +7,6 @@ import (
 )
 
 func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {
-
 	for _, diskBlock := range modules.GetResourcesByType("google_compute_disk") {
 		disk := compute.Disk{
 			Metadata: diskBlock.GetMetadata(),

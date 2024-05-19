@@ -60,7 +60,6 @@ func (p *Property) isConvertableToInt() bool {
 }
 
 func (p *Property) ConvertTo(conversionType cftypes.CfType) *Property {
-
 	if !p.IsConvertableTo(conversionType) {
 		_, _ = fmt.Fprintf(os.Stderr, "property of type %s cannot be converted to %s\n", p.Type(), conversionType)
 		return p

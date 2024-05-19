@@ -11,7 +11,6 @@ import (
 )
 
 func writeResultsForARN(report *Report, results types.Results, output io.Writer, service, arn string, severities []dbTypes.Severity) error {
-
 	// render scan title
 	_ = tml.Fprintf(output, "\n<bold>Results for '%s' (%s Account %s)</bold>\n\n", arn, report.Provider, report.AccountID)
 

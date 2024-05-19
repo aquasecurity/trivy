@@ -22,11 +22,9 @@ func Test_ContextVariables(t *testing.T) {
 	ctx.Set(val, "my", "value")
 	value := underlying.Variables["my"].AsValueMap()["value"]
 	assert.Equal(t, "hello", value.AsString())
-
 }
 
 func Test_ContextVariablesPreservation(t *testing.T) {
-
 	underlying := &hcl.EvalContext{}
 	underlying.Variables = make(map[string]cty.Value)
 	underlying.Variables["x"], _ = gocty.ToCtyValue("does it work?", cty.String)
@@ -49,11 +47,9 @@ func Test_ContextVariablesPreservation(t *testing.T) {
 	assert.Equal(t, "something", underlying.Variables["my"].AsValueMap()["other"].AsString())
 	assert.Equal(t, "something", underlying.Variables["my"].AsValueMap()["obj"].AsValueMap()["another"].AsString())
 	assert.Equal(t, "does it work?", underlying.Variables["x"].AsString())
-
 }
 
 func Test_ContextVariablesPreservationByDot(t *testing.T) {
-
 	underlying := &hcl.EvalContext{}
 	underlying.Variables = make(map[string]cty.Value)
 	underlying.Variables["x"], _ = gocty.ToCtyValue("does it work?", cty.String)
@@ -79,7 +75,6 @@ func Test_ContextVariablesPreservationByDot(t *testing.T) {
 }
 
 func Test_ContextSetThenImmediateGet(t *testing.T) {
-
 	underlying := &hcl.EvalContext{}
 
 	ctx := NewContext(underlying, nil)
@@ -93,7 +88,6 @@ func Test_ContextSetThenImmediateGet(t *testing.T) {
 }
 
 func Test_ContextSetThenImmediateGetWithChild(t *testing.T) {
-
 	underlying := &hcl.EvalContext{}
 
 	ctx := NewContext(underlying, nil)
@@ -109,7 +103,6 @@ func Test_ContextSetThenImmediateGetWithChild(t *testing.T) {
 }
 
 func Test_MergeObjects(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		oldVal   cty.Value
@@ -173,7 +166,6 @@ func Test_MergeObjects(t *testing.T) {
 			assert.Equal(t, tt.expected, mergeObjects(tt.oldVal, tt.newVal))
 		})
 	}
-
 }
 
 func Test_IsNotEmptyObject(t *testing.T) {

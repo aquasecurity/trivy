@@ -44,7 +44,6 @@ func GetCidr(property *Property) (*Property, bool) {
 }
 
 func calculateCidrs(ipaddress string, count, bit int, original *Property) ([]*Property, error) {
-
 	var cidrProperties []*Property
 
 	_, network, err := net.ParseCIDR(ipaddress)

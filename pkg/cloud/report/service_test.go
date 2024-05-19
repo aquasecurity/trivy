@@ -349,7 +349,6 @@ Scan Overview for AWS Account
 }
 
 func createTestResults() scan.Results {
-
 	baseRule := scan.Rule{
 		AVDID:       "AVD-AWS-9999",
 		Aliases:     []string{"AWS999"},

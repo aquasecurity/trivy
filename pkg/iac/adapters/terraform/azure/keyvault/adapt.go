@@ -25,12 +25,10 @@ type adapter struct {
 }
 
 func (a *adapter) adaptVaults(modules terraform.Modules) []keyvault.Vault {
-
 	var vaults []keyvault.Vault
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_key_vault") {
 			vaults = append(vaults, a.adaptVault(resource, module))
-
 		}
 	}
 
@@ -133,7 +131,6 @@ func adaptSecret(resource *terraform.Block) keyvault.Secret {
 }
 
 func adaptKey(resource *terraform.Block) keyvault.Key {
-
 	return keyvault.Key{
 		Metadata:   resource.GetMetadata(),
 		ExpiryDate: resolveExpiryDate(resource),

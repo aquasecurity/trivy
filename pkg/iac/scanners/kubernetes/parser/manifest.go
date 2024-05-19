@@ -12,7 +12,6 @@ type Manifest struct {
 }
 
 func (m *Manifest) UnmarshalYAML(value *yaml.Node) error {
-
 	switch value.Tag {
 	case string(TagMap):
 		node := new(ManifestNode)

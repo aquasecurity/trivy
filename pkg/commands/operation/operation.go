@@ -113,6 +113,7 @@ func (c Cache) ClearArtifacts() error {
 // DownloadDB downloads the DB
 func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository name.Reference, quiet, skipUpdate bool,
 	opt ftypes.RegistryOptions) error {
+
 	mu.Lock()
 	defer mu.Unlock()
 

@@ -12,7 +12,6 @@ import (
 )
 
 func Test_AdaptStorageDefaults(t *testing.T) {
-
 	input := azure2.Deployment{
 		Resources: []azure2.Resource{
 			{
@@ -29,11 +28,9 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 	account := output.Accounts[0]
 	assert.Equal(t, "TLS1_0", account.MinimumTLSVersion.Value())
 	assert.False(t, account.EnforceHTTPS.Value())
-
 }
 
 func Test_AdaptStorage(t *testing.T) {
-
 	input := azure2.Deployment{
 		Resources: []azure2.Resource{
 			{
@@ -54,5 +51,4 @@ func Test_AdaptStorage(t *testing.T) {
 	account := output.Accounts[0]
 	assert.Equal(t, "TLS1_2", account.MinimumTLSVersion.Value())
 	assert.True(t, account.EnforceHTTPS.Value())
-
 }

@@ -183,7 +183,6 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 
 	layerKeyMap := make(map[string]LayerInfo)
 	for i, diffID := range diffIDs {
-
 		c := ""
 		if validCreatedBy {
 			c = createdBy[i]
@@ -204,6 +203,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	var osFound types.OS
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
 		layerKey string) (any, error) {
+
 		layer := layerKeyMap[layerKey]
 
 		// If it is a base layer, secret scanning should not be performed.
@@ -223,7 +223,6 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 			osFound = layerInfo.OS
 		}
 		return nil, nil
-
 	}, nil)
 
 	if err := p.Do(ctx); err != nil {

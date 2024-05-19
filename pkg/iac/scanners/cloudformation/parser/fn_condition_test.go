@@ -9,7 +9,6 @@ import (
 )
 
 func Test_resolve_condition_value(t *testing.T) {
-
 	fctx := new(FileContext)
 	fctx.Conditions = map[string]Property{
 		"SomeCondition": {

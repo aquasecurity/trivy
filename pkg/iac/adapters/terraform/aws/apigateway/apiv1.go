@@ -33,7 +33,6 @@ func adaptAPIMethodsV1(modules terraform.Modules, resourceBlock *terraform.Block
 }
 
 func adaptAPIsV1(modules terraform.Modules) []v1.API {
-
 	var apis []v1.API
 	apiStageIDs := modules.GetChildResourceIDMapByType("aws_api_gateway_stage")
 
@@ -82,7 +81,6 @@ func adaptStageV1(stageBlock *terraform.Block, modules terraform.Modules) v1.Sta
 		XRayTracingEnabled: stageBlock.GetAttribute("xray_tracing_enabled").AsBoolValueOrDefault(false, stageBlock),
 	}
 	for _, methodSettings := range modules.GetReferencingResources(stageBlock, "aws_api_gateway_method_settings", "stage_name") {
-
 		restMethodSettings := v1.RESTMethodSettings{
 			Metadata:           methodSettings.GetMetadata(),
 			Method:             iacTypes.String("", methodSettings.GetMetadata()),

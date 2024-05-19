@@ -22,7 +22,6 @@ func adaptClusters(modules terraform.Modules) []emr.Cluster {
 }
 
 func adaptCluster(resource *terraform.Block) emr.Cluster {
-
 	return emr.Cluster{
 		Metadata: resource.GetMetadata(),
 	}
@@ -39,11 +38,9 @@ func adaptSecurityConfigurations(modules terraform.Modules) []emr.SecurityConfig
 }
 
 func adaptSecurityConfiguration(resource *terraform.Block) emr.SecurityConfiguration {
-
 	return emr.SecurityConfiguration{
 		Metadata:      resource.GetMetadata(),
 		Name:          resource.GetAttribute("name").AsStringValueOrDefault("", resource),
 		Configuration: resource.GetAttribute("configuration").AsStringValueOrDefault("", resource),
 	}
-
 }

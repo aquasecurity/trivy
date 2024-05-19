@@ -196,6 +196,7 @@ func (a alpineCmdAnalyzer) resolveDependencies(apkIndexArchive *apkIndex, origin
 
 func (a alpineCmdAnalyzer) resolveDependency(apkIndexArchive *apkIndex, pkgName string,
 	seenPkgs map[string]struct{}) (pkgNames []string) {
+
 	pkg, ok := apkIndexArchive.Package[pkgName]
 	if !ok {
 		return nil
@@ -234,6 +235,7 @@ type historyVersion struct {
 
 func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs []string,
 	createdAt time.Time) (pkgs []types.Package) {
+
 	for _, pkg := range originalPkgs {
 		archive, ok := apkIndexArchive.Package[pkg]
 		if !ok {

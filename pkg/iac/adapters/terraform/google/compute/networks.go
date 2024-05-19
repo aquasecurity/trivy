@@ -14,7 +14,6 @@ const (
 )
 
 func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
-
 	networkMap := make(map[string]compute.Network)
 
 	for _, networkBlock := range modules.GetResourcesByType("google_compute_network") {
@@ -27,7 +26,6 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 	}
 
 	for _, subnetworkBlock := range modules.GetResourcesByType("google_compute_subnetwork") {
-
 		subnetwork := compute.SubNetwork{
 			Metadata:       subnetworkBlock.GetMetadata(),
 			Name:           subnetworkBlock.GetAttribute("name").AsStringValueOrDefault("", subnetworkBlock),
@@ -61,7 +59,6 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 	}
 
 	for _, firewallBlock := range modules.GetResourcesByType("google_compute_firewall") {
-
 		firewall := compute.Firewall{
 			Metadata:     firewallBlock.GetMetadata(),
 			Name:         firewallBlock.GetAttribute("name").AsStringValueOrDefault("", firewallBlock),
@@ -193,5 +190,4 @@ func adaptFirewallRule(firewall *compute.Firewall, firewallBlock, ruleBlock *ter
 			SourceRanges: sources,
 		})
 	}
-
 }

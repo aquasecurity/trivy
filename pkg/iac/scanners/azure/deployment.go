@@ -78,7 +78,6 @@ func (r *Resource) GetResourcesByType(t string) []Resource {
 }
 
 func (d *Deployment) GetParameter(parameterName string) interface{} {
-
 	for _, parameter := range d.Parameters {
 		if parameter.Name == parameterName {
 			return parameter.Value.Raw()
@@ -88,7 +87,6 @@ func (d *Deployment) GetParameter(parameterName string) interface{} {
 }
 
 func (d *Deployment) GetVariable(variableName string) interface{} {
-
 	for _, variable := range d.Variables {
 		if variable.Name == variableName {
 			return variable.Value.Raw()
@@ -98,7 +96,6 @@ func (d *Deployment) GetVariable(variableName string) interface{} {
 }
 
 func (d *Deployment) GetEnvVariable(envVariableName string) interface{} {
-
 	if envVariable, exists := os.LookupEnv(envVariableName); exists {
 		return envVariable
 	}
@@ -106,7 +103,6 @@ func (d *Deployment) GetEnvVariable(envVariableName string) interface{} {
 }
 
 func (d *Deployment) GetOutput(outputName string) interface{} {
-
 	for _, output := range d.Outputs {
 		if output.Name == outputName {
 			return output.Value.Raw()
@@ -116,7 +112,6 @@ func (d *Deployment) GetOutput(outputName string) interface{} {
 }
 
 func (d *Deployment) GetDeployment() interface{} {
-
 	type template struct {
 		Schema         string                 `json:"$schema"`
 		ContentVersion string                 `json:"contentVersion"`

@@ -563,7 +563,6 @@ func updateResults(gotResults, results types.Results) {
 					for _, got := range g.Vulnerabilities {
 						if got.VulnerabilityID == v.VulnerabilityID && got.PkgName == v.PkgName &&
 							got.PkgPath == v.PkgPath && got.InstalledVersion == v.InstalledVersion {
-
 							// Override vulnerability details
 							v.SeveritySource = got.SeveritySource
 							v.Vulnerability = got.Vulnerability
@@ -578,7 +577,6 @@ func updateResults(gotResults, results types.Results) {
 						if got.ID == m.ID &&
 							got.CauseMetadata.StartLine == m.CauseMetadata.StartLine &&
 							got.CauseMetadata.EndLine == m.CauseMetadata.EndLine {
-
 							// Override misconfiguration details
 							m.CauseMetadata = got.CauseMetadata
 							m.Severity = got.Severity

@@ -43,7 +43,6 @@ func adaptFirewall(modules terraform.Modules) openstack.Firewall {
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("openstack_fw_rule_v1") {
-
 			sourceAttr := resource.GetAttribute("source_ip_address")
 			sourceVal := sourceAttr.AsStringValueOrDefault("", resource)
 

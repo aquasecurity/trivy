@@ -395,6 +395,7 @@ func (ag AnalyzerGroup) AnalyzerVersions() Versions {
 // This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
 	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
+
 	if info.IsDir() {
 		return nil
 	}

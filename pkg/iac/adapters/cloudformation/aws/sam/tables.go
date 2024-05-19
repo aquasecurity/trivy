@@ -7,7 +7,6 @@ import (
 )
 
 func getSimpleTables(cfFile parser.FileContext) (tables []sam.SimpleTable) {
-
 	tableResources := cfFile.GetResourcesByType("AWS::Serverless::SimpleTable")
 	for _, r := range tableResources {
 		table := sam.SimpleTable{

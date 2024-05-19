@@ -12,7 +12,6 @@ import (
 )
 
 func Test_EmbeddedLoading(t *testing.T) {
-
 	frameworkRules := rules.GetRegistered()
 	var found bool
 	for _, rule := range frameworkRules {

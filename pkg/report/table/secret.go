@@ -83,7 +83,6 @@ func (r *secretRenderer) renderSingle(secret types.DetectedSecret) {
 }
 
 func (r *secretRenderer) renderSummary(secret types.DetectedSecret) {
-
 	// severity
 	switch secret.Severity {
 	case severityCritical:
@@ -111,7 +110,6 @@ func (r *secretRenderer) renderSummary(secret types.DetectedSecret) {
 func (r *secretRenderer) renderCode(secret types.DetectedSecret) {
 	// highlight code if we can...
 	if lines := secret.Code.Lines; len(lines) > 0 {
-
 		var lineInfo string
 		if secret.StartLine > 0 {
 			lineInfo = tml.Sprintf("<dim>:</dim><blue>%d", secret.StartLine)

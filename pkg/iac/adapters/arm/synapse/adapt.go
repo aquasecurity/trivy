@@ -20,7 +20,6 @@ func adaptWorkspaces(deployment azure.Deployment) (workspaces []synapse.Workspac
 }
 
 func adaptWorkspace(resource azure.Resource) synapse.Workspace {
-
 	managedVirtualNetwork := resource.Properties.GetMapValue("managedVirtualNetwork").AsString()
 	enableManagedVirtualNetwork := types.BoolDefault(false, resource.Metadata)
 	if managedVirtualNetwork == "default" {

@@ -67,7 +67,6 @@ func adaptSecurityGroups(modules terraform.Modules) []openstack.SecurityGroup {
 			Rules:       []openstack.SecurityGroupRule{rule},
 		}
 		groupMap[uuid.NewString()] = group
-
 	}
 
 	var groups []openstack.SecurityGroup

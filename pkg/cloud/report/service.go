@@ -14,7 +14,6 @@ import (
 )
 
 func writeServiceTable(report *Report, results types.Results, output io.Writer) error {
-
 	t := table.New(output)
 
 	t.SetHeaders("Service", "Misconfigurations", "Last Scanned")

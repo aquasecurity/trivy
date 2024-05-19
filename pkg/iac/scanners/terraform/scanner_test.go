@@ -56,7 +56,6 @@ deny[res] {
 `
 
 func scanWithOptions(t *testing.T, code string, opt ...options.ScannerOption) scan.Results {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": code,
 	})
@@ -83,7 +82,6 @@ resource "something" "else" {}
 }
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf": `
 resource "aws_s3_bucket" "my-bucket" {
@@ -170,11 +168,9 @@ deny[cause] {
 	if t.Failed() {
 		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
 	}
-
 }
 
 func Test_OptionWithPolicyNamespaces(t *testing.T) {
-
 	tests := []struct {
 		includedNamespaces []string
 		policyNamespace    string
@@ -228,9 +224,7 @@ func Test_OptionWithPolicyNamespaces(t *testing.T) {
 	}
 
 	for i, test := range tests {
-
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-
 			fs := testutil.CreateFS(t, map[string]string{
 				"/code/main.tf": `
 resource "aws_s3_bucket" "my-bucket" {
@@ -273,14 +267,11 @@ cause := bucket.name
 				}
 			}
 			assert.Equal(t, test.wantFailure, found)
-
 		})
 	}
-
 }
 
 func Test_OptionWithRegoOnly(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf": `
 resource "aws_s3_bucket" "my-bucket" {
@@ -334,7 +325,6 @@ deny[cause] {
 }
 
 func Test_OptionWithRegoOnly_CodeHighlighting(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf": `
 resource "aws_s3_bucket" "my-bucket" {
@@ -464,7 +454,6 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-
 }
 
 func Test_ContainerDefinitionRego(t *testing.T) {
@@ -557,7 +546,6 @@ deny[res] {
 }
 
 func Test_S3_Linking(t *testing.T) {
-
 	code := `
 ## tfsec:ignore:aws-s3-enable-bucket-encryption
 ## tfsec:ignore:aws-s3-enable-bucket-logging
@@ -624,7 +612,6 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 }
 
 func Test_S3_Linking_PublicAccess(t *testing.T) {
-
 	code := `
 resource "aws_s3_bucket" "testA" {
   bucket = "com.test.testA"
@@ -688,7 +675,6 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 
 // PoC for replacing Go with Rego: AVD-AWS-0001
 func Test_RegoRules(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf": `
 resource "aws_apigatewayv2_stage" "bad_example" {
@@ -787,7 +773,6 @@ deny[res] {
 	if t.Failed() {
 		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
 	}
-
 }
 
 func Test_OptionWithConfigsFileSystem(t *testing.T) {

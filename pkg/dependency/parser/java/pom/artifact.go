@@ -142,7 +142,6 @@ func evaluateVariable(s string, props map[string]string, seenProps []string) str
 				newValue = evaluateVariable(ss, props, seenProps)
 				seenProps = []string{} // clear props if we returned from recursive. Required for correct work with 2 same props like ${foo}-${foo}
 			}
-
 		}
 		s = strings.ReplaceAll(s, m[0], newValue)
 	}

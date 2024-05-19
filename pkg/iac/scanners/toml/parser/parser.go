@@ -38,7 +38,6 @@ func New(opts ...options.ParserOption) *Parser {
 }
 
 func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]interface{}, error) {
-
 	files := make(map[string]interface{})
 	if err := fs.WalkDir(target, filepath.ToSlash(path), func(path string, entry fs.DirEntry, err error) error {
 		select {

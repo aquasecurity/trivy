@@ -8,7 +8,6 @@ import (
 
 func getClusters(ctx parser.FileContext) (clusters []neptune.Cluster) {
 	for _, r := range ctx.GetResourcesByType("AWS::Neptune::DBCluster") {
-
 		cluster := neptune.Cluster{
 			Metadata: r.Metadata(),
 			Logging: neptune.Logging{

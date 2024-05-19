@@ -12,7 +12,6 @@ import (
 )
 
 func Test_DeterministicResults(t *testing.T) {
-
 	reg := rules.Register(badRule)
 	defer rules.Deregister(reg)
 

@@ -118,7 +118,6 @@ func (p *Parser) Required(fsys fs.FS, path string) bool {
 		return detection.IsType(path, bytes.NewReader(data), detection.FileTypeCloudFormation)
 	}
 	return false
-
 }
 
 func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *FileContext, err error) {

@@ -21,6 +21,7 @@ func NewRange(filename string, startLine, endLine int, sourcePrefix string, srcF
 
 func NewRangeWithLogicalSource(filename string, startLine int, endLine int, sourcePrefix string,
 	srcFS fs.FS) Range {
+
 	r := Range{
 		filename:        filename,
 		startLine:       startLine,

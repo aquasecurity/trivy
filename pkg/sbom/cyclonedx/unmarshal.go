@@ -200,7 +200,6 @@ func (b *BOM) unmarshalLicenses(l *cdx.Licenses) []string {
 			licenses = append(licenses, license.Expression)
 			continue
 		}
-
 	}
 	return licenses
 }

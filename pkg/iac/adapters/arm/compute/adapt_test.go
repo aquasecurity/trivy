@@ -11,7 +11,6 @@ import (
 )
 
 func Test_AdaptLinuxVM(t *testing.T) {
-
 	input := azure2.Deployment{
 		Resources: []azure2.Resource{
 			{
@@ -34,11 +33,9 @@ func Test_AdaptLinuxVM(t *testing.T) {
 
 	linuxVM := output.LinuxVirtualMachines[0]
 	assert.True(t, linuxVM.OSProfileLinuxConfig.DisablePasswordAuthentication.IsTrue())
-
 }
 
 func Test_AdaptWindowsVM(t *testing.T) {
-
 	input := azure2.Deployment{
 		Resources: []azure2.Resource{
 			{

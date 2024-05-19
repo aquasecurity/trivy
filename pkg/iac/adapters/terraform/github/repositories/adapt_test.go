@@ -10,7 +10,6 @@ import (
 )
 
 func Test_AdaptDefaults(t *testing.T) {
-
 	src := `
 resource "github_repository" "my-repo" {
 	
@@ -25,7 +24,6 @@ resource "github_repository" "my-repo" {
 }
 
 func Test_Adapt_Private(t *testing.T) {
-
 	src := `
 resource "github_repository" "my-repo" {
 	private = true
@@ -42,7 +40,6 @@ resource "github_repository" "my-repo" {
 }
 
 func Test_Adapt_Public(t *testing.T) {
-
 	src := `
 resource "github_repository" "my-repo" {
 	private = false
@@ -59,7 +56,6 @@ resource "github_repository" "my-repo" {
 }
 
 func Test_Adapt_VisibilityOverride(t *testing.T) {
-
 	src := `
 resource "github_repository" "my-repo" {
 	private = true
@@ -77,7 +73,6 @@ resource "github_repository" "my-repo" {
 }
 
 func Test_Adapt_VulnerabilityAlertsEnabled(t *testing.T) {
-
 	src := `
 resource "github_repository" "my-repo" {
 	vulnerability_alerts = true
@@ -94,7 +89,6 @@ resource "github_repository" "my-repo" {
 }
 
 func Test_Adapt_VulnerabilityAlertsDisabled(t *testing.T) {
-
 	src := `
 resource "github_repository" "my-repo" {
 	vulnerability_alerts = false

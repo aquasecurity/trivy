@@ -42,7 +42,6 @@ func New(opts ...options.ParserOption) *Parser {
 }
 
 func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]*dockerfile.Dockerfile, error) {
-
 	files := make(map[string]*dockerfile.Dockerfile)
 	if err := fs.WalkDir(target, filepath.ToSlash(path), func(path string, entry fs.DirEntry, err error) error {
 		select {
@@ -141,7 +140,6 @@ func (p *Parser) parse(path string, r io.Reader) (*dockerfile.Dockerfile, error)
 		}
 
 		stage.Commands = append(stage.Commands, cmd)
-
 	}
 	if len(stage.Commands) > 0 {
 		parsedFile.Stages = append(parsedFile.Stages, stage)

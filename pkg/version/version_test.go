@@ -11,7 +11,6 @@ import (
 )
 
 func Test_BuildVersionInfo(t *testing.T) {
-
 	expected := VersionInfo{
 		Version: "dev",
 		VulnerabilityDB: &metadata.Metadata{

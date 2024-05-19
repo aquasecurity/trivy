@@ -17,7 +17,6 @@ func ConvertResults(results scan.Results, provider string, scoped []string) map[
 	convertedResults := make(map[string]ResultsAtTime)
 	resultsByServiceAndARN := make(map[string]map[string]scan.Results)
 	for _, result := range results {
-
 		service := result.Rule().Service
 		resource := result.Flatten().Resource
 		if service == "" || service == "general" {
@@ -41,11 +40,9 @@ func ConvertResults(results scan.Results, provider string, scoped []string) map[
 		}
 	}
 	for service, arnResults := range resultsByServiceAndARN {
-
 		var convertedArnResults []types.Result
 
 		for arn, serviceResults := range arnResults {
-
 			arnResult := types.Result{
 				Target: arn,
 				Class:  types.ClassConfig,
@@ -53,7 +50,6 @@ func ConvertResults(results scan.Results, provider string, scoped []string) map[
 			}
 
 			for _, result := range serviceResults {
-
 				var primaryURL string
 
 				// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule

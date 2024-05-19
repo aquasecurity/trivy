@@ -7,11 +7,9 @@ import (
 )
 
 func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
-
 	domainResources := ctx.GetResourcesByType("AWS::Elasticsearch::Domain", "AWS::OpenSearchService::Domain")
 
 	for _, r := range domainResources {
-
 		domain := elasticsearch.Domain{
 			Metadata:       r.Metadata(),
 			DomainName:     r.GetStringProperty("DomainName"),

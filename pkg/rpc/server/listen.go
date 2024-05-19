@@ -76,6 +76,7 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 
 func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 	token, tokenHeader, cacheDir string) *http.ServeMux {
+
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -86,7 +87,6 @@ func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, reque
 			defer requestWg.Done()
 
 			base.ServeHTTP(w, r.WithContext(ctx))
-
 		})
 	}
 
@@ -137,6 +137,7 @@ func newDBWorker(dbClient dbc.Operation) dbWorker {
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
+
 	log.Debug("Check for DB update...")
 	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
 	if err != nil {

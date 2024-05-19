@@ -20,7 +20,6 @@ type sortableRow struct {
 }
 
 func writeResourceTable(report *Report, results types.Results, output io.Writer, service string) error {
-
 	termWidth, _, err := term.GetSize(0)
 	if err != nil {
 		termWidth = 80

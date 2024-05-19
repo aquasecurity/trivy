@@ -1,7 +1,6 @@
 package functions
 
 func Not(args ...interface{}) interface{} {
-
 	if len(args) != 1 {
 		return false
 	}

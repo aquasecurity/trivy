@@ -12,7 +12,6 @@ import (
 )
 
 func defaultPolicyDocuemnt(offset bool) iam.Document {
-
 	builder := iamgo.NewPolicyBuilder()
 	builder.WithVersion("2012-10-17")
 

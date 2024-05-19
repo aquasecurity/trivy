@@ -833,7 +833,6 @@ func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
 
 // ConvertToRPCArtifactInfo returns PutArtifactRequest
 func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *cache.PutArtifactRequest {
-
 	t := timestamppb.New(imageInfo.Created)
 	if err := t.CheckValid(); err != nil {
 		log.Warn("Invalid timestamp", log.Err(err))
@@ -881,7 +880,6 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 			Failures:   ConvertToMisconfResults(m.Failures),
 			Exceptions: ConvertToMisconfResults(m.Exceptions),
 		})
-
 	}
 
 	var customResources []*common.CustomResource

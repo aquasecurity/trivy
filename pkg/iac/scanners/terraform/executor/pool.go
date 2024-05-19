@@ -38,7 +38,6 @@ func NewPool(size int, rules []types.RegisteredRule, modules terraform.Modules, 
 
 // Run runs the job in the pool - this will only return an error if a job panics
 func (p *Pool) Run() (scan.Results, error) {
-
 	outgoing := make(chan Job, p.size*2)
 
 	var workers []*Worker

@@ -10,7 +10,6 @@ import (
 )
 
 func Test_Networking(t *testing.T) {
-
 	src := `
 resource "openstack_networking_secgroup_v2" "secgroup_1" {
   name        = "secgroup_1"
@@ -68,5 +67,4 @@ resource "openstack_networking_secgroup_rule_v2" "secgroup_rule_1" {
 	assert.True(t, rule.CIDR.EqualTo("0.0.0.0/0"))
 	assert.Equal(t, 13, rule.CIDR.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 13, rule.CIDR.GetMetadata().Range().GetEndLine())
-
 }

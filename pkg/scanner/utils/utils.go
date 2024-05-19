@@ -25,5 +25,4 @@ func formatVersion(epoch int, version, release string) string {
 		v = fmt.Sprintf("%d:%s", epoch, v)
 	}
 	return v
-
 }

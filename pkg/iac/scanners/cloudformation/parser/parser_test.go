@@ -22,7 +22,6 @@ func parseFile(t *testing.T, source string, name string) (FileContexts, error) {
 }
 
 func Test_parse_yaml(t *testing.T) {
-
 	source := `---
 Parameters:
   BucketName: 
@@ -100,7 +99,6 @@ func Test_parse_json(t *testing.T) {
 }
 
 func Test_parse_yaml_with_map_ref(t *testing.T) {
-
 	source := `---
 Parameters:
   BucketName: 
@@ -137,7 +135,6 @@ Resources:
 }
 
 func Test_parse_yaml_with_intrinsic_functions(t *testing.T) {
-
 	source := `---
 Parameters:
   BucketName: 
@@ -231,7 +228,6 @@ Resources:
 }
 
 func TestParse_WithParameters(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"main.yaml": `AWSTemplateFormatVersion: 2010-09-09
 Parameters:
@@ -369,5 +365,4 @@ Resources:
 			assert.Equal(t, "testbucket", bucketNameProp.AsString())
 		}
 	}
-
 }

@@ -51,5 +51,4 @@ z = ["a", "b", "c"]
 	assert.Equal(t, "a", z[0])
 	assert.Equal(t, "b", z[1])
 	assert.Equal(t, "c", z[2])
-
 }

@@ -9,7 +9,6 @@ import (
 )
 
 func init() {
-
 	checksrego.RegisterBuiltins()
 
 	rego.RegisterBuiltin2(&rego.Function{
@@ -34,7 +33,6 @@ func init() {
 }
 
 func createResult(ctx rego.BuiltinContext, msg, cause *ast.Term) (*ast.Term, error) {
-
 	metadata := map[string]*ast.Term{
 		"startline":    ast.IntNumberTerm(0),
 		"endline":      ast.IntNumberTerm(0),

@@ -3,7 +3,6 @@ package functions
 import "strings"
 
 func EndsWith(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return false
 	}

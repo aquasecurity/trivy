@@ -13,7 +13,6 @@ import (
 )
 
 func TestMisconfigRenderer(t *testing.T) {
-
 	tests := []struct {
 		name               string
 		input              types.Result

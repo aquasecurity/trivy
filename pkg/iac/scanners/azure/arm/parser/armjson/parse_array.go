@@ -28,7 +28,6 @@ func (p *parser) parseArray(parentMetadata *types.Metadata) (Node, error) {
 
 	// for each element
 	for {
-
 		if err := p.parseWhitespace(); err != nil {
 			return nil, err
 		}

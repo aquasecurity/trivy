@@ -5,7 +5,6 @@ import (
 )
 
 func SliceToRego(inputValue reflect.Value) []interface{} {
-
 	// make sure we have a struct literal
 	for inputValue.Type().Kind() == reflect.Ptr {
 		if inputValue.IsNil() {

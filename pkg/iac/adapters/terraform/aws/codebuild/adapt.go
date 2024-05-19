@@ -23,7 +23,6 @@ func adaptProjects(modules terraform.Modules) []codebuild.Project {
 }
 
 func adaptProject(resource *terraform.Block) codebuild.Project {
-
 	project := codebuild.Project{
 		Metadata: resource.GetMetadata(),
 		ArtifactSettings: codebuild.ArtifactSettings{
@@ -49,7 +48,6 @@ func adaptProject(resource *terraform.Block) codebuild.Project {
 
 	secondaryArtifactBlocks := resource.GetBlocks("secondary_artifacts")
 	for _, secondaryArtifactBlock := range secondaryArtifactBlocks {
-
 		secondaryEncryptionEnabled := types.BoolDefault(true, secondaryArtifactBlock.GetMetadata())
 		secondaryEncryptionDisabledAttr := secondaryArtifactBlock.GetAttribute("encryption_disabled")
 		if secondaryEncryptionDisabledAttr.IsTrue() && hasArtifacts {

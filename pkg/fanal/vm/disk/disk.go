@@ -21,7 +21,6 @@ type Disk interface {
 }
 
 func New(rs io.ReadSeeker, cache vm.Cache[string, []byte]) (*io.SectionReader, error) {
-
 	for _, vmdisk := range vmDisks {
 		var vreader, err = vmdisk.NewReader(rs, cache)
 		if err != nil {

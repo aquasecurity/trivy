@@ -10,7 +10,6 @@ import (
 )
 
 func TestOptionToToleration(t *testing.T) {
-
 	tests := []struct {
 		name               string
 		tolerationsOptions []string

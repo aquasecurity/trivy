@@ -33,6 +33,7 @@ func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.
 // $ trivy image --server localhost:4954 alpine:3.15
 func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
 	scanner.Scanner, func(), error) {
+
 	s, cleanup, err := initializeRemoteImageScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption,
 		conf.ArtifactOption.ImageOption, conf.ArtifactOption)
 	if err != nil {

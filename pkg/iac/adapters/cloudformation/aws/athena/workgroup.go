@@ -6,13 +6,11 @@ import (
 )
 
 func getWorkGroups(cfFile parser.FileContext) []athena.Workgroup {
-
 	var workgroups []athena.Workgroup
 
 	workgroupResources := cfFile.GetResourcesByType("AWS::Athena::WorkGroup")
 
 	for _, r := range workgroupResources {
-
 		wg := athena.Workgroup{
 			Metadata: r.Metadata(),
 			Name:     r.GetStringProperty("Name"),

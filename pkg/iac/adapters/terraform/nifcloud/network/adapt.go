@@ -6,7 +6,6 @@ import (
 )
 
 func Adapt(modules terraform.Modules) network.Network {
-
 	return network.Network{
 		ElasticLoadBalancers: adaptElasticLoadBalancers(modules),
 		LoadBalancers:        adaptLoadBalancers(modules),

@@ -77,7 +77,6 @@ func Test_helm_scanner_with_archive(t *testing.T) {
 }
 
 func Test_helm_scanner_with_missing_name_can_recover(t *testing.T) {
-
 	tests := []struct {
 		testName    string
 		chartName   string
@@ -124,7 +123,6 @@ func Test_helm_scanner_with_dir(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		t.Logf("Running test: %s", test.testName)
 
 		helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))

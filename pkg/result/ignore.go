@@ -94,7 +94,6 @@ func (f *IgnoreFindings) Match(id, path string, pkg *packageurl.PackageURL) *Ign
 
 		log.Debug("Ignored", log.String("id", id), log.String("target", path))
 		return &finding
-
 	}
 	return nil
 }

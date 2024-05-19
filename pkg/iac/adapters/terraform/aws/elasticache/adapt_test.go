@@ -228,5 +228,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 28, securityGroup.Description.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 28, securityGroup.Description.GetMetadata().Range().GetEndLine())
-
 }

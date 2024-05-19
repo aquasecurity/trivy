@@ -21,7 +21,6 @@ type adapter struct {
 }
 
 func (a *adapter) adaptBuckets() []storage.Bucket {
-
 	a.bindingMap = a.modules.GetChildResourceIDMapByType("google_storage_bucket_iam_binding", "google_storage_bucket_iam_policy")
 	a.memberMap = a.modules.GetChildResourceIDMapByType("google_storage_bucket_iam_member")
 
@@ -67,7 +66,6 @@ func (a *adapter) adaptBuckets() []storage.Bucket {
 }
 
 func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bucket {
-
 	nameAttr := resourceBlock.GetAttribute("name")
 	nameValue := nameAttr.AsStringValueOrDefault("", resourceBlock)
 

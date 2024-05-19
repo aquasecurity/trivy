@@ -55,7 +55,6 @@ func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
 
 // takes in a module "x" {} block and loads resources etc. into e.moduleBlocks - additionally returns variables to add to ["module.x.*"] variables
 func (e *evaluator) loadModule(ctx context.Context, b *terraform.Block) (*ModuleDefinition, error) {
-
 	metadata := b.GetMetadata()
 
 	if b.Label() == "" {
@@ -125,7 +124,6 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 }
 
 func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, source string) (*ModuleDefinition, error) {
-
 	e.debug.Log("locating non-initialized module '%s'...", source)
 
 	version := b.GetAttribute("version").AsStringValueOrDefault("", b).Value()

@@ -22,7 +22,6 @@ type parentedMember struct {
 }
 
 func (a *adapter) adaptBindings() {
-
 	for _, iamBlock := range a.modules.GetResourcesByType("google_storage_bucket_iam_policy") {
 		var parented parentedBinding
 		parented.blockID = iamBlock.ID()
@@ -53,7 +52,6 @@ func (a *adapter) adaptBindings() {
 	}
 
 	for _, iamBlock := range a.modules.GetResourcesByType("google_storage_bucket_iam_binding") {
-
 		var parented parentedBinding
 		parented.blockID = iamBlock.ID()
 		parented.bindings = []iamTypes.Binding{iam2.AdaptBinding(iamBlock, a.modules)}
@@ -74,9 +72,7 @@ func (a *adapter) adaptBindings() {
 }
 
 func (a *adapter) adaptMembers() {
-
 	for _, iamBlock := range a.modules.GetResourcesByType("google_storage_bucket_iam_member") {
-
 		var parented parentedMember
 		parented.blockID = iamBlock.ID()
 		parented.member = iam2.AdaptMember(iamBlock, a.modules)
@@ -94,5 +90,4 @@ func (a *adapter) adaptMembers() {
 
 		a.members = append(a.members, parented)
 	}
-
 }

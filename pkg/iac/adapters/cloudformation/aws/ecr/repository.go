@@ -12,11 +12,9 @@ import (
 )
 
 func getRepositories(ctx parser.FileContext) (repositories []ecr.Repository) {
-
 	repositoryResources := ctx.GetResourcesByType("AWS::ECR::Repository")
 
 	for _, r := range repositoryResources {
-
 		repository := ecr.Repository{
 			Metadata: r.Metadata(),
 			ImageScanning: ecr.ImageScanning{

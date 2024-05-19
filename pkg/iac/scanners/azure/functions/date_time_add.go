@@ -24,7 +24,6 @@ func DateTimeAdd(args ...interface{}) interface{} {
 		if providedFormat, ok := args[2].(string); ok {
 			format = convertFormat(providedFormat)
 		}
-
 	}
 
 	baseTime, err := time.Parse(format, base)

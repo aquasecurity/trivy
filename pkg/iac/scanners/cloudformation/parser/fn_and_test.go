@@ -11,7 +11,6 @@ import (
 )
 
 func Test_resolve_and_value(t *testing.T) {
-
 	property1 := &Property{
 		ctx:  &FileContext{},
 		name: "BucketName",
@@ -98,7 +97,6 @@ func Test_resolve_and_value(t *testing.T) {
 }
 
 func Test_resolve_and_value_not_the_same(t *testing.T) {
-
 	property1 := &Property{
 		ctx:  &FileContext{},
 		name: "BucketName",

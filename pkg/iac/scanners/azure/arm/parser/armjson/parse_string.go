@@ -20,7 +20,6 @@ var escapes = map[rune]string{
 
 // nolint: cyclop
 func (p *parser) parseString(parentMetadata *types.Metadata) (Node, error) {
-
 	n, _ := p.newNode(KindString, parentMetadata)
 
 	b, err := p.next()
@@ -86,6 +85,5 @@ func (p *parser) parseString(parentMetadata *types.Metadata) (Node, error) {
 				sb.WriteRune(c)
 			}
 		}
-
 	}
 }

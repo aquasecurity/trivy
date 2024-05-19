@@ -75,5 +75,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 4, key.Usage.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 4, key.Usage.GetMetadata().Range().GetEndLine())
-
 }

@@ -8,7 +8,6 @@ import (
 
 func getTopics(ctx parser.FileContext) (topics []sns.Topic) {
 	for _, r := range ctx.GetResourcesByType("AWS::SNS::Topic") {
-
 		topic := sns.Topic{
 			Metadata: r.Metadata(),
 			ARN:      types.StringDefault("", r.Metadata()),

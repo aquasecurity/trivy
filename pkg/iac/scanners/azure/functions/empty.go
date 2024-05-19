@@ -1,7 +1,6 @@
 package functions
 
 func Empty(args ...interface{}) interface{} {
-
 	if len(args) != 1 {
 		return false
 	}
@@ -26,7 +25,6 @@ func Empty(args ...interface{}) interface{} {
 		case map[string]interface{}:
 			return len(iType) == 0
 		}
-
 	}
 
 	return false

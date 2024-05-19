@@ -33,7 +33,6 @@ func scanHCLWithWorkspace(t *testing.T, source string, workspace string) scan.Re
 }
 
 func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"main.tf": source,
 	})
@@ -45,7 +44,6 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 }
 
 func scanJSON(t *testing.T, source string) scan.Results {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"main.tf.json": source,
 	})

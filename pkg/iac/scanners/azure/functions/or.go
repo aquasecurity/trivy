@@ -1,7 +1,6 @@
 package functions
 
 func Or(args ...interface{}) interface{} {
-
 	if len(args) <= 1 {
 		return false
 	}
@@ -14,7 +13,6 @@ func Or(args ...interface{}) interface{} {
 		if arg1 {
 			return true
 		}
-
 	}
 	return false
 }

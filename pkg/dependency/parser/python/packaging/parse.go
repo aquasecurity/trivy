@@ -76,7 +76,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				license = l
 			}
 		}
-
 	}
 
 	if license == "" && h.Get("License-File") != "" {

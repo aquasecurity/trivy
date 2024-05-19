@@ -99,7 +99,6 @@ func (p *Parser) required(fsys fs.FS, path string) bool {
 }
 
 func (p *Parser) Parse(r io.Reader, path string) ([]interface{}, error) {
-
 	contents, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err

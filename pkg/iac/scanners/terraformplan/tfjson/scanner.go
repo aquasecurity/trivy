@@ -138,7 +138,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 }
 
 func (s *Scanner) ScanFile(filepath string, fsys fs.FS) (scan.Results, error) {
-
 	s.debug.Log("Scanning file %s", filepath)
 	file, err := fsys.Open(filepath)
 	if err != nil {
@@ -149,7 +148,6 @@ func (s *Scanner) ScanFile(filepath string, fsys fs.FS) (scan.Results, error) {
 }
 
 func (s *Scanner) Scan(reader io.Reader) (scan.Results, error) {
-
 	planFile, err := s.parser.Parse(reader)
 	if err != nil {
 		return nil, err

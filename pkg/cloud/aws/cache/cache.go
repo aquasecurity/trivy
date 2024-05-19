@@ -47,7 +47,6 @@ func New(cacheDir string, maxCacheAge time.Duration, accountID, region string) *
 }
 
 func (c *Cache) load() (*CacheData, error) {
-
 	m, err := os.Open(c.path)
 	if err != nil {
 		return nil, ErrCacheNotFound
@@ -71,7 +70,6 @@ func (c *Cache) load() (*CacheData, error) {
 }
 
 func (c *Cache) ListServices(required []string) (included, missing []string) {
-
 	data, err := c.load()
 	if err != nil {
 		return nil, required

@@ -58,10 +58,8 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 	policyBlocks := module.GetReferencingResources(resource, "aws_ecr_repository_policy", "repository")
 	for _, policyRes := range policyBlocks {
 		if policyAttr := policyRes.GetAttribute("policy"); policyAttr.IsString() {
-
 			dataBlock, err := module.GetBlockByID(policyAttr.Value().AsString())
 			if err != nil {
-
 				parsed, err := iamgo.ParseString(policyAttr.Value().AsString())
 				if err != nil {
 					continue

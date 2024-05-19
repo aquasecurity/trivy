@@ -70,6 +70,9 @@ linters-settings:
     enable-all: true
     disable:
       - float-compare
+      - require-error
+  whitespace:
+    multi-func: true
 
 linters:
   disable-all: true
@@ -91,6 +94,7 @@ linters:
     - typecheck
     - unconvert
     - unused
+    - whitespace
 
 run:
   go: '1.22'

@@ -7,13 +7,11 @@ import (
 )
 
 func getClustersAndInstances(ctx parser.FileContext) ([]rds.Cluster, []rds.Instance) {
-
 	clusterMap := getClusters(ctx)
 
 	var orphans []rds.Instance
 
 	for _, r := range ctx.GetResourcesByType("AWS::RDS::DBInstance") {
-
 		instance := rds.Instance{
 			Metadata:                  r.Metadata(),
 			BackupRetentionPeriodDays: r.GetIntProperty("BackupRetentionPeriod", 1),
@@ -69,7 +67,6 @@ func getClustersAndInstances(ctx parser.FileContext) ([]rds.Cluster, []rds.Insta
 }
 
 func getDBParameterGroups(ctx parser.FileContext, r *parser.Resource) (dbParameterGroup []rds.DBParameterGroupsList) {
-
 	var parameterGroupList []rds.DBParameterGroupsList
 
 	dbParameterGroupName := r.GetStringProperty("DBParameterGroupName")

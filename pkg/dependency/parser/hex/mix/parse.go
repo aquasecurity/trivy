@@ -64,7 +64,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				},
 			},
 		})
-
 	}
 	return utils.UniquePackages(pkgs), nil, nil
 }

@@ -7,7 +7,6 @@ import (
 )
 
 func Test_If(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []interface{}
@@ -40,5 +39,4 @@ func Test_If(t *testing.T) {
 			assert.Equal(t, tt.expected, got)
 		})
 	}
-
 }

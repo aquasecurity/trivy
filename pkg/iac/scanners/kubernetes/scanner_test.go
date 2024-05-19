@@ -15,7 +15,6 @@ import (
 )
 
 func Test_BasicScan_YAML(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/example.yaml": `
 apiVersion: v1
@@ -164,7 +163,6 @@ deny[res] {
 }
 
 func Test_BasicScan_JSON(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/example.json": `
 {
@@ -324,7 +322,6 @@ deny[res] {
 }
 
 func Test_FileScan(t *testing.T) {
-
 	results, err := NewScanner(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true), options.ScannerWithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
 apiVersion: v1
 kind: Pod
@@ -342,7 +339,6 @@ spec:
 }
 
 func Test_FileScan_WithSeparator(t *testing.T) {
-
 	results, err := NewScanner(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
 ---
 ---
@@ -405,7 +401,6 @@ spec:
 }
 
 func Test_FileScanWithPolicyReader(t *testing.T) {
-
 	results, err := NewScanner(options.ScannerWithPolicyReader(strings.NewReader(`package defsec
 
 deny[msg] {
@@ -428,7 +423,6 @@ spec:
 }
 
 func Test_FileScanJSON(t *testing.T) {
-
 	results, err := NewScanner(options.ScannerWithPolicyReader(strings.NewReader(`package defsec
 
 deny[msg] {
@@ -483,7 +477,6 @@ deny[msg] {
 }
 
 func Test_FileScanWithMetadata(t *testing.T) {
-
 	results, err := NewScanner(
 		options.ScannerWithDebug(os.Stdout),
 		options.ScannerWithTrace(os.Stdout),
@@ -523,7 +516,6 @@ spec:
 }
 
 func Test_FileScanExampleWithResultFunction(t *testing.T) {
-
 	results, err := NewScanner(
 		options.ScannerWithDebug(os.Stdout),
 		options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true),

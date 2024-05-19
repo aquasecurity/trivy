@@ -18,7 +18,6 @@ func Union(args ...interface{}) interface{} {
 	}
 
 	return []interface{}{}
-
 }
 
 func unionMap(args ...interface{}) interface{} {

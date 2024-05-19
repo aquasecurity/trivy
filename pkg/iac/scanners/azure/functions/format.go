@@ -12,7 +12,6 @@ func Format(args ...interface{}) interface{} {
 }
 
 func generateFormatterString(args ...interface{}) string {
-
 	formatter, ok := args[0].(string)
 	if !ok {
 		return ""

@@ -11,7 +11,6 @@ import (
 )
 
 func Parse(r io.Reader) (lib ftypes.Package, err error) {
-
 	// If wordpress file, open file and
 	// find line with content
 	// $wp_version = '<WORDPRESS_VERSION>';

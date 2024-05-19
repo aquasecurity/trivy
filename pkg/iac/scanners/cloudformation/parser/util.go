@@ -11,9 +11,7 @@ import (
 )
 
 func setPropertyValueFromJson(node jfather.Node, propertyData *PropertyInner) error {
-
 	switch node.Kind() {
-
 	case jfather.KindNumber:
 		propertyData.Type = cftypes.Float64
 		return node.Decode(&propertyData.Value)
@@ -43,7 +41,6 @@ func setPropertyValueFromJson(node jfather.Node, propertyData *PropertyInner) er
 		propertyData.Type = cftypes.String
 		return node.Decode(&propertyData.Value)
 	}
-
 }
 
 func setPropertyValueFromYaml(node *yaml.Node, propertyData *PropertyInner) error {
@@ -64,7 +61,6 @@ func setPropertyValueFromYaml(node *yaml.Node, propertyData *PropertyInner) erro
 	}
 
 	if node.Content == nil {
-
 		switch node.Tag {
 		case "!!int":
 			propertyData.Type = cftypes.Int
@@ -112,7 +108,6 @@ func createNode(node *yaml.Node, newContent []*yaml.Node) []*yaml.Node {
 			Kind:  yaml.ScalarNode,
 		})
 	} else {
-
 		newNode := &yaml.Node{
 			Content: node.Content,
 			Kind:    node.Kind,
@@ -138,5 +133,4 @@ func calculateEndLine(node *yaml.Node) int {
 	}
 
 	return calculateEndLine(node.Content[len(node.Content)-1])
-
 }

@@ -6,7 +6,6 @@ import (
 )
 
 func getDistributions(ctx parser.FileContext) (distributions []cloudfront.Distribution) {
-
 	distributionResources := ctx.GetResourcesByType("AWS::CloudFront::Distribution")
 
 	for _, r := range distributionResources {

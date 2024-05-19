@@ -9,7 +9,6 @@ import (
 )
 
 func adaptPasswordPolicy(modules terraform.Modules) iam.PasswordPolicy {
-
 	policy := iam.PasswordPolicy{
 		Metadata:             iacTypes.NewUnmanagedMetadata(),
 		ReusePreventionCount: iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),

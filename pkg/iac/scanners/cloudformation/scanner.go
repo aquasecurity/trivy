@@ -153,7 +153,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results scan.Results, err error) {
-
 	contexts, err := s.parser.ParseFS(ctx, fsys, dir)
 	if err != nil {
 		return nil, err
@@ -185,7 +184,6 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results s
 }
 
 func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.Results, error) {
-
 	cfCtx, err := s.parser.ParseFile(ctx, fsys, path)
 	if err != nil {
 		return nil, err
@@ -227,7 +225,6 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 			if len(evalResult) > 0 {
 				s.debug.Log("Found %d results for %s", len(evalResult), rule.GetRule().AVDID)
 				for _, scanResult := range evalResult {
-
 					ref := scanResult.Metadata().Reference()
 
 					if ref == "" && scanResult.Metadata().Parent() != nil {

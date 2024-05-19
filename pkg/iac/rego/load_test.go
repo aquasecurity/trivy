@@ -99,7 +99,6 @@ deny {
 		err := scanner.LoadPolicies(false, false, fstest.MapFS{}, []string{"."}, []io.Reader{strings.NewReader(check)})
 		require.NoError(t, err)
 	})
-
 }
 
 func Test_FallbackToEmbedded(t *testing.T) {

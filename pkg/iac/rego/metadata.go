@@ -54,7 +54,6 @@ func NewStaticMetadata(pkgPath string, inputOpt InputOptions) *StaticMetadata {
 }
 
 func (sm *StaticMetadata) Update(meta map[string]any) error {
-
 	upd := func(field *string, key string) {
 		if raw, ok := meta[key]; ok {
 			*field = fmt.Sprintf("%s", raw)
@@ -202,7 +201,6 @@ type SubType struct {
 }
 
 func (m StaticMetadata) ToRule() scan.Rule {
-
 	provider := "generic"
 	if m.Provider != "" {
 		provider = m.Provider
@@ -251,7 +249,6 @@ func (m *MetadataRetriever) findPackageAnnotations(module *ast.Module) *ast.Anno
 }
 
 func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Module, contents ...any) (*StaticMetadata, error) {
-
 	metadata := NewStaticMetadata(
 		module.Package.Path.String(),
 		m.queryInputOptions(ctx, module),
@@ -311,7 +308,6 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 
 // nolint: gocyclo
 func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.Module) InputOptions {
-
 	options := InputOptions{
 		Combined:  false,
 		Selectors: nil,
@@ -329,7 +325,6 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 	}
 
 	if metadata == nil {
-
 		namespace := getModuleNamespace(module)
 		inputOptionQuery := fmt.Sprintf("data.%s.__rego_input__", namespace)
 		instance := rego.New(
@@ -390,7 +385,6 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 	}
 
 	return options
-
 }
 
 func getModuleNamespace(module *ast.Module) string {

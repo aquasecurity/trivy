@@ -7,7 +7,6 @@ import (
 
 func getClusters(ctx parser.FileContext) (clusters []redshift.Cluster) {
 	for _, r := range ctx.GetResourcesByType("AWS::Redshift::Cluster") {
-
 		cluster := redshift.Cluster{
 			Metadata:                         r.Metadata(),
 			ClusterIdentifier:                r.GetStringProperty("ClusterIdentifier"),

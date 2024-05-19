@@ -89,5 +89,4 @@ func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
 		return ComplianceSpec{}, xerrors.Errorf("spec yaml decode error: %w", err)
 	}
 	return complianceSpec, nil
-
 }

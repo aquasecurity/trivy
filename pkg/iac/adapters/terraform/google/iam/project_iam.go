@@ -55,7 +55,6 @@ var projectMemberResources = []string{
 }
 
 func (a *adapter) adaptProjectMembers() {
-
 	for _, memberType := range projectMemberResources {
 		for _, iamBlock := range a.modules.GetResourcesByType(memberType) {
 			member := a.adaptMember(iamBlock)
@@ -90,7 +89,6 @@ func (a *adapter) adaptProjectMembers() {
 					if foundProject {
 						continue
 					}
-
 				}
 			}
 
@@ -161,7 +159,6 @@ var projectBindingResources = []string{
 
 func (a *adapter) adaptProjectDataBindings() {
 	for _, iamBlock := range a.modules.GetResourcesByType("google_project_iam_policy") {
-
 		policyAttr := iamBlock.GetAttribute("policy_data")
 		if policyAttr.IsNil() {
 			continue
@@ -202,7 +199,6 @@ func (a *adapter) adaptProjectDataBindings() {
 				if foundProject {
 					continue
 				}
-
 			}
 		}
 
@@ -216,11 +212,9 @@ func (a *adapter) adaptProjectDataBindings() {
 			},
 		})
 	}
-
 }
 
 func (a *adapter) adaptProjectBindings() {
-
 	a.adaptProjectDataBindings()
 
 	for _, bindingType := range projectBindingResources {
@@ -257,7 +251,6 @@ func (a *adapter) adaptProjectBindings() {
 					if foundProject {
 						continue
 					}
-
 				}
 			}
 

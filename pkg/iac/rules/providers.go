@@ -21,13 +21,11 @@ type Check struct {
 }
 
 func GetProvidersHierarchy() (providers map[string]map[string][]string) {
-
 	registeredRules := GetRegistered()
 
 	provs := make(map[string]map[string][]string)
 
 	for _, rule := range registeredRules {
-
 		cNames := make(map[string]bool)
 		pName := strings.ToLower(rule.GetRule().Provider.DisplayName())
 		sName := strings.ToLower(rule.GetRule().Service)
@@ -51,13 +49,11 @@ func GetProvidersHierarchy() (providers map[string]map[string][]string) {
 }
 
 func GetProviders() (providers []Provider) {
-
 	registeredRules := GetRegistered()
 
 	provs := make(map[string]map[string][]Check)
 
 	for _, rule := range registeredRules {
-
 		pName := strings.ToLower(rule.GetRule().Provider.DisplayName())
 		sName := strings.ToLower(rule.GetRule().Service)
 		cName := rule.GetRule().AVDID
@@ -96,24 +92,20 @@ func GetProviders() (providers []Provider) {
 }
 
 func GetProvidersAsJson() ([]byte, error) {
-
 	providers := GetProviders()
 
 	return json.MarshalIndent(providers, "", "  ")
 }
 
 func GetProviderNames() []string {
-
 	registeredRules := GetRegistered()
 
 	providers := make(map[string]bool)
 
 	for _, rule := range registeredRules {
-
 		if _, ok := providers[rule.GetRule().Provider.DisplayName()]; !ok {
 			providers[rule.GetRule().Provider.DisplayName()] = true
 		}
-
 	}
 
 	var uniqueProviders []string
@@ -122,17 +114,14 @@ func GetProviderNames() []string {
 	}
 
 	return uniqueProviders
-
 }
 
 func GetProviderServiceNames(providerName string) []string {
-
 	registeredRules := GetRegistered()
 
 	services := make(map[string]bool)
 
 	for _, rule := range registeredRules {
-
 		if !strings.EqualFold(providerName, rule.GetRule().Provider.DisplayName()) {
 			continue
 		}
@@ -140,7 +129,6 @@ func GetProviderServiceNames(providerName string) []string {
 		if _, ok := services[rule.GetRule().Service]; !ok {
 			services[rule.GetRule().Service] = true
 		}
-
 	}
 	var uniqueServices []string
 	for p := range services {
@@ -151,13 +139,11 @@ func GetProviderServiceNames(providerName string) []string {
 }
 
 func GetProviderServiceCheckNames(providerName, serviceName string) []string {
-
 	registeredRules := GetRegistered()
 
 	var checks []string
 
 	for _, rule := range registeredRules {
-
 		if !strings.EqualFold(providerName, rule.GetRule().Provider.DisplayName()) ||
 			!strings.EqualFold(serviceName, rule.GetRule().Service) {
 			continue

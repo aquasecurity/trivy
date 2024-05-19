@@ -13,7 +13,6 @@ import (
 )
 
 func Test_BasicScan(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/data.json": `{ "x": { "y": 123, "z": ["a", "b", "c"]}}`,
 		"/rules/rule.rego": `package builtin.json.lol

@@ -38,6 +38,7 @@ func newSecretAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnal
 
 func (a *secretAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnalysisInput) (*analyzer.
 	ConfigAnalysisResult, error) {
+
 	if input.Config == nil {
 		return nil, nil
 	}

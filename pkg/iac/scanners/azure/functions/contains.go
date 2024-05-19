@@ -6,7 +6,6 @@ import (
 )
 
 func Contains(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return false
 	}

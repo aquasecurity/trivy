@@ -17,10 +17,8 @@ func Adapt(deployment azure.Deployment) storage.Storage {
 func adaptAccounts(deployment azure.Deployment) []storage.Account {
 	var accounts []storage.Account
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Storage/storageAccounts") {
-
 		var networkRules []storage.NetworkRule
 		for _, acl := range resource.Properties.GetMapValue("networkAcls").AsList() {
-
 			var bypasses []types.StringValue
 			bypassProp := acl.GetMapValue("bypass")
 			for _, bypass := range strings.Split(bypassProp.AsString(), ",") {

@@ -120,7 +120,6 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 				manifest.File = &File{
 					SrcLocation: imageReference,
 				}
-
 			} else {
 				manifest.File = &File{
 					SrcLocation: result.Target,

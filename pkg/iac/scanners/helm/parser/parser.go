@@ -82,7 +82,6 @@ func (p *Parser) SetKubeVersion(value string) {
 }
 
 func New(path string, opts ...options.ParserOption) (*Parser, error) {
-
 	client := action.NewInstall(&action.Configuration{})
 	client.DryRun = true     // don't do anything
 	client.Replace = true    // skip name check
@@ -179,7 +178,6 @@ func (p *Parser) addPaths(paths ...string) error {
 }
 
 func (p *Parser) extractChartName(chartPath string) error {
-
 	chrt, err := p.workingFS.Open(chartPath)
 	if err != nil {
 		return err
@@ -251,7 +249,6 @@ func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
 }
 
 func (p *Parser) loadChart() (*chart.Chart, error) {
-
 	var files []*loader.BufferedFile
 
 	for _, filePath := range p.filepaths {

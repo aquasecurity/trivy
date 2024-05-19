@@ -7,7 +7,6 @@ import (
 )
 
 func Test_CreateObject(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		args     []interface{}
@@ -56,5 +55,4 @@ func Test_CreateObject(t *testing.T) {
 			assert.Equal(t, tt.expected, got)
 		})
 	}
-
 }

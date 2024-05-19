@@ -255,7 +255,6 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 					res.Target, license.Name, license.Category, license.PkgName, license.FilePath),
 			})
 		}
-
 	}
 	sw.run.ColumnKind = columnKind
 	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{

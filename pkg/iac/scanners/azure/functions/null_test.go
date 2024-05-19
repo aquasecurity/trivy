@@ -7,6 +7,5 @@ import (
 )
 
 func Test_Null(t *testing.T) {
-
 	assert.Nil(t, Null())
 }

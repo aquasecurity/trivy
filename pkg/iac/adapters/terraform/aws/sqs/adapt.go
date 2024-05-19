@@ -31,7 +31,6 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 	}
 
 	for _, policyBlock := range a.modules.GetResourcesByType("aws_sqs_queue_policy") {
-
 		policy := iamp.Policy{
 			Metadata: policyBlock.GetMetadata(),
 			Name:     iacTypes.StringDefault("", policyBlock.GetMetadata()),
@@ -95,14 +94,12 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 }
 
 func (a *adapter) adaptQueue(resource *terraform.Block) {
-
 	kmsKeyIdAttr := resource.GetAttribute("kms_master_key_id")
 	kmsKeyIdVal := kmsKeyIdAttr.AsStringValueOrDefault("", resource)
 	managedEncryption := resource.GetAttribute("sqs_managed_sse_enabled")
 
 	var policies []iamp.Policy
 	if attr := resource.GetAttribute("policy"); attr.IsString() {
-
 		dataBlock, err := a.modules.GetBlockById(attr.Value().AsString())
 		if err != nil {
 			policy := iamp.Policy{
@@ -136,7 +133,6 @@ func (a *adapter) adaptQueue(resource *terraform.Block) {
 				policies = append(policies, policy)
 			}
 		}
-
 	} else if refBlock, err := a.modules.GetReferencedBlock(attr, resource); err == nil {
 		if refBlock.Type() == "data" && refBlock.TypeLabel() == "aws_iam_policy_document" {
 			if doc, err := iam.ConvertTerraformDocument(a.modules, refBlock); err == nil {

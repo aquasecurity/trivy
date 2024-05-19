@@ -136,7 +136,6 @@ func (l *lexer) readEscapedChar() (rune, error) {
 }
 
 func (l *lexer) lexNumber() (Token, error) {
-
 	var sb strings.Builder
 	var decimal bool
 

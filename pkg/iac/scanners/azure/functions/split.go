@@ -29,7 +29,6 @@ func Split(args ...interface{}) interface{} {
 
 			return strings.FieldsFunc(input, splitter)
 		}
-
 	}
 	return []string{}
 }

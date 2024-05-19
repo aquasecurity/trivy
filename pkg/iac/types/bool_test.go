@@ -25,7 +25,6 @@ func Test_BoolValueIsTrue(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-
 			val := Bool(tC.value, fakeMetadata)
 
 			assert.Equal(t, tC.expected, val.IsTrue())

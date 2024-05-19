@@ -58,7 +58,6 @@ func (r *ManifestNode) ToRego() interface{} {
 }
 
 func (r *ManifestNode) UnmarshalYAML(node *yaml.Node) error {
-
 	r.StartLine = node.Line
 	r.EndLine = node.Line
 	r.Type = TagType(node.Tag)

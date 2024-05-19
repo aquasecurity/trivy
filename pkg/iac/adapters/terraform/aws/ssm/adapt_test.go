@@ -105,5 +105,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 2, secret.KMSKeyID.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 4, secret.KMSKeyID.GetMetadata().Range().GetEndLine())
-
 }

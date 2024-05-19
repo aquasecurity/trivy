@@ -104,7 +104,6 @@ resource "problem" "uhoh" {
 }
 
 func Test_ProblemInModuleInSiblingDir(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -131,11 +130,9 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_ProblemInModuleIgnored(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -163,11 +160,9 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleNotFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_ProblemInModuleInSubdirectory(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -193,11 +188,9 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_ProblemInModuleInParentDir(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -223,11 +216,9 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_ProblemInModuleReuse(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -262,11 +253,9 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_ProblemInNestedModule(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -303,11 +292,9 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_ProblemInReusedNestedModule(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -364,7 +351,6 @@ resource "problem" "uhoh" {
 }
 
 func Test_ProblemInInitialisedModule(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -416,7 +402,6 @@ resource "problem" "uhoh" {
 }
 
 func Test_ProblemInReusedInitialisedModule(t *testing.T) {
-
 	registered := rules.Register(badRule)
 	defer rules.Deregister(registered)
 
@@ -454,7 +439,6 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_ProblemInDuplicateModuleNameAndPath(t *testing.T) {
@@ -512,7 +496,6 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
 }
 
 func Test_Dynamic_Variables(t *testing.T) {
@@ -620,7 +603,6 @@ resource "bad" "thing" {
 }
 
 func Test_ReferencesPassedToNestedModule(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 
@@ -669,5 +651,4 @@ data "aws_iam_policy_document" "policy" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleNotFound(t, iam.CheckEnforceGroupMFA.LongID(), results, "")
-
 }

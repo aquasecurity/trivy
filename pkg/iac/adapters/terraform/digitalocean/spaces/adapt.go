@@ -17,9 +17,7 @@ func Adapt(modules terraform.Modules) spaces.Spaces {
 func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 	bucketMap := make(map[string]spaces.Bucket)
 	for _, module := range modules {
-
 		for _, block := range module.GetResourcesByType("digitalocean_spaces_bucket") {
-
 			bucket := spaces.Bucket{
 				Metadata:     block.GetMetadata(),
 				Name:         block.GetAttribute("name").AsStringValueOrDefault("", block),

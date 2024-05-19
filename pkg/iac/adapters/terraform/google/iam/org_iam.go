@@ -48,14 +48,11 @@ func (a *adapter) adaptOrganizationMembers() {
 			Members:  []iam.Member{member},
 		}
 		a.orgs[placeholderID] = org
-
 	}
 }
 
 func (a *adapter) adaptOrganizationBindings() {
-
 	for _, iamBlock := range a.modules.GetResourcesByType("google_organization_iam_policy") {
-
 		policyAttr := iamBlock.GetAttribute("policy_data")
 		if policyAttr.IsNil() {
 			continue

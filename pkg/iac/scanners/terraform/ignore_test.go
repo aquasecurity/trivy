@@ -44,7 +44,6 @@ var exampleRule = scan.Rule{
 }
 
 func Test_IgnoreAll(t *testing.T) {
-
 	var testCases = []struct {
 		name         string
 		inputOptions string

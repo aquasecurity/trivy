@@ -139,7 +139,6 @@ func (s *Scanner) ScanReader(ctx context.Context, filename string, reader io.Rea
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {
-
 	k8sFilesets, err := s.parser.ParseFS(ctx, target, dir)
 	if err != nil {
 		return nil, err

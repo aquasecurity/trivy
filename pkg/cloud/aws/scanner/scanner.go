@@ -30,7 +30,6 @@ func NewScanner() *AWSScanner {
 }
 
 func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Results, bool, error) {
-
 	awsCache := cache.New(option.CacheDir, option.MaxCacheAge, option.Account, option.Region)
 	included, missing := awsCache.ListServices(option.Services)
 

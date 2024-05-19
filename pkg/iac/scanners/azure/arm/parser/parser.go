@@ -41,7 +41,6 @@ func New(targetFS fs.FS, opts ...options.ParserOption) *Parser {
 }
 
 func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure2.Deployment, error) {
-
 	var deployments []azure2.Deployment
 
 	if err := fs.WalkDir(p.targetFS, dir, func(path string, entry fs.DirEntry, err error) error {
@@ -123,7 +122,6 @@ func (p *Parser) parseFile(r io.Reader, filename string) (*azure2.Deployment, er
 }
 
 func (p *Parser) convertTemplate(template Template) *azure2.Deployment {
-
 	deployment := azure2.Deployment{
 		Metadata:    template.Metadata,
 		TargetScope: azure2.ScopeResourceGroup, // TODO: override from --resource-group?
@@ -171,7 +169,6 @@ func (p *Parser) convertTemplate(template Template) *azure2.Deployment {
 }
 
 func (p *Parser) convertResource(input Resource) azure2.Resource {
-
 	var children []azure2.Resource
 
 	for _, child := range input.Resources {

@@ -14,7 +14,6 @@ import (
 )
 
 func Test_ResultConversion(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		results  scan.Results
@@ -41,7 +40,6 @@ func Test_ResultConversion(t *testing.T) {
 		{
 			name: "multiple results",
 			results: func() scan.Results {
-
 				baseRule := scan.Rule{
 					AVDID:       "AVD-AWS-9999",
 					Aliases:     []string{"AWS999"},
@@ -226,7 +224,6 @@ func Test_ResultConversion(t *testing.T) {
 			assertConvertedResultsMatch(t, test.expected, converted)
 		})
 	}
-
 }
 
 func assertConvertedResultsMatch(t *testing.T, expected, actual map[string]ResultsAtTime) {

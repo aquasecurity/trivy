@@ -23,7 +23,6 @@ func adaptDistributions(modules terraform.Modules) []cloudfront.Distribution {
 }
 
 func adaptDistribution(resource *terraform.Block) cloudfront.Distribution {
-
 	distribution := cloudfront.Distribution{
 		Metadata: resource.GetMetadata(),
 		WAFID:    types.StringDefault("", resource.GetMetadata()),

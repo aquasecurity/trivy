@@ -74,7 +74,6 @@ func (s *Scanner) loadEmbedded() error {
 }
 
 func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies bool, srcFS fs.FS, paths []string, readers []io.Reader) error {
-
 	if s.policies == nil {
 		s.policies = make(map[string]*ast.Module)
 	}
@@ -145,7 +144,6 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 }
 
 func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
-
 	var excludedFiles []string
 
 	for _, e := range compiler.Errors {
@@ -229,7 +227,6 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 }
 
 func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
-
 	schemaSet, custom, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS)
 	if err != nil {
 		return err
@@ -274,7 +271,6 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 }
 
 func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
-
 	filtered := make(map[string]*ast.Module)
 	for name, module := range s.policies {
 		meta, err := retriever.RetrieveMetadata(context.TODO(), module)

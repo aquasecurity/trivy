@@ -12,7 +12,6 @@ import (
 )
 
 func Test_WildcardMatchingOnRequiredLabels(t *testing.T) {
-
 	tests := []struct {
 		input           string
 		pattern         string
@@ -46,11 +45,9 @@ func Test_WildcardMatchingOnRequiredLabels(t *testing.T) {
 	}
 
 	for i, test := range tests {
-
 		code := fmt.Sprintf("wild%d", i)
 
 		t.Run(code, func(t *testing.T) {
-
 			rule := scan.Rule{
 				Service:   "service",
 				ShortCode: code,
@@ -80,5 +77,4 @@ func Test_WildcardMatchingOnRequiredLabels(t *testing.T) {
 			}
 		})
 	}
-
 }

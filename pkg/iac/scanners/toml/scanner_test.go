@@ -13,7 +13,6 @@ import (
 )
 
 func Test_BasicScan(t *testing.T) {
-
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/code.toml": `
 [x]

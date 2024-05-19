@@ -224,7 +224,6 @@ func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]t
 		pkg.Relationship = types.RelationshipDirect
 		pkg.Dev = dev
 		directPkgs[pkg.ID] = pkg
-
 	}
 
 	// Walk indirect dependencies
@@ -314,7 +313,6 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 				return nil, xerrors.Errorf("walk error: %w", err)
 			}
 		}
-
 	}
 	return pkgs, nil
 }

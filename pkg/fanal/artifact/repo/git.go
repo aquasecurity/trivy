@@ -116,7 +116,6 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 		url:   target,
 		local: art,
 	}, cleanup, nil
-
 }
 
 func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
@@ -218,5 +217,4 @@ func gitAuth() *http.BasicAuth {
 	// If no token was provided, we simply return a nil,
 	// which will make the request to be unauthenticated
 	return nil
-
 }

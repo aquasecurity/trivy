@@ -8,7 +8,6 @@ import (
 
 func getClusters(ctx parser.FileContext) (clusters []msk.Cluster) {
 	for _, r := range ctx.GetResourcesByType("AWS::MSK::Cluster") {
-
 		cluster := msk.Cluster{
 			Metadata: r.Metadata(),
 			EncryptionInTransit: msk.EncryptionInTransit{

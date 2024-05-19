@@ -67,7 +67,6 @@ func Test_StringValueStartsWith(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-
 			val := String(tC.input, fakeMetadata)
 
 			var options []StringEqualityOption

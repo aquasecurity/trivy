@@ -133,5 +133,4 @@ func Functions(target fs.FS, baseDir string) map[string]function.Function {
 		"yamlencode":       ctyyaml.YAMLEncodeFunc,
 		"zipmap":           stdlib.ZipmapFunc,
 	}
-
 }

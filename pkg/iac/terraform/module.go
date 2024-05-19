@@ -17,7 +17,6 @@ type Module struct {
 }
 
 func NewModule(rootPath, modulePath string, blocks Blocks, ignores ignore.Rules) *Module {
-
 	blockMap := make(map[string]Blocks)
 
 	for _, b := range blocks {
@@ -106,7 +105,6 @@ func (c *Module) GetProviderBlocksByProvider(providerName, alias string) Blocks 
 			if alias != "" {
 				if block.HasChild("alias") && block.GetAttribute("alias").Equals(strings.ReplaceAll(alias, fmt.Sprintf("%s.", providerName), "")) {
 					results = append(results, block)
-
 				}
 			} else if block.MissingChild("alias") {
 				results = append(results, block)

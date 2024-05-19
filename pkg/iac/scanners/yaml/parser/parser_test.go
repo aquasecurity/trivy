@@ -56,7 +56,6 @@ x:
 	assert.Equal(t, "a", z[0])
 	assert.Equal(t, "b", z[1])
 	assert.Equal(t, "c", z[2])
-
 }
 
 func Test_Parser_WithSeparatedContent(t *testing.T) {
@@ -146,5 +145,4 @@ x:
 		assert.Equal(t, "y", z[1])
 		assert.Equal(t, "z", z[2])
 	}
-
 }

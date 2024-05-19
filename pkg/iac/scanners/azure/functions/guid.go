@@ -8,7 +8,6 @@ import (
 )
 
 func Guid(args ...interface{}) interface{} {
-
 	if len(args) == 0 {
 		return ""
 	}

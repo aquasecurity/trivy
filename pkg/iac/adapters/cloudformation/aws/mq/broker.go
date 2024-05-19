@@ -8,7 +8,6 @@ import (
 
 func getBrokers(ctx parser.FileContext) (brokers []mq.Broker) {
 	for _, r := range ctx.GetResourcesByType("AWS::AmazonMQ::Broker") {
-
 		broker := mq.Broker{
 			Metadata:     r.Metadata(),
 			PublicAccess: r.GetBoolProperty("PubliclyAccessible"),

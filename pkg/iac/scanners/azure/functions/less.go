@@ -1,7 +1,6 @@
 package functions
 
 func Less(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return false
 	}
@@ -23,7 +22,6 @@ func Less(args ...interface{}) interface{} {
 }
 
 func LessOrEquals(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return false
 	}

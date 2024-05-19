@@ -115,5 +115,4 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 			assert.Equal(t, tt.want, got, fileInfo.Mode().Perm())
 		})
 	}
-
 }

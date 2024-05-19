@@ -145,14 +145,12 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		ClusterName:   s.cluster,
 		Resources:     resources,
 	}, nil
-
 }
 
 func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, opts flag.Options) ([]report.Resource, error) {
 	resources := make([]report.Resource, 0, len(artifact.Images))
 
 	for _, image := range artifact.Images {
-
 		opts.Target = image
 
 		imageReport, err := s.runner.ScanImage(ctx, opts)

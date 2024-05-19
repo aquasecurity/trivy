@@ -19,7 +19,6 @@ func adaptRoleDefinitions(deployment azure.Deployment) (roleDefinitions []author
 }
 
 func adaptRoleDefinition(resource azure.Resource) authorization.RoleDefinition {
-
 	return authorization.RoleDefinition{
 		Metadata:         resource.Metadata,
 		Permissions:      adaptPermissions(resource),

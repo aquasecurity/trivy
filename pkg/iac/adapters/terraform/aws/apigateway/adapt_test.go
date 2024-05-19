@@ -229,5 +229,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 34, domainName.SecurityPolicy.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 34, domainName.SecurityPolicy.GetMetadata().Range().GetEndLine())
-
 }

@@ -106,7 +106,6 @@ func (r *misconfigRenderer) renderSingle(misconf types.DetectedMisconfiguration)
 }
 
 func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration) {
-
 	// show pass/fail/exception unless we are only showing failures
 	if r.includeNonFailures {
 		switch misconf.Status {
@@ -151,7 +150,6 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 	// highlight code if we can...
 	if lines := misconf.CauseMetadata.Code.Lines; len(lines) > 0 {
-
 		var lineInfo string
 		if misconf.CauseMetadata.StartLine > 0 {
 			lineInfo = tml.Sprintf("<dim>:</dim><blue>%d", misconf.CauseMetadata.StartLine)

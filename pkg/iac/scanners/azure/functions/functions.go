@@ -86,7 +86,6 @@ var generalFuncs = map[string]func(...interface{}) interface{}{
 }
 
 func Evaluate(deploymentProvider DeploymentData, name string, args ...interface{}) interface{} {
-
 	if f, ok := deploymentFuncs[name]; ok {
 		return f(deploymentProvider, args...)
 	}

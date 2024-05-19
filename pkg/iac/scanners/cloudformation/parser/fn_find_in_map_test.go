@@ -8,7 +8,6 @@ import (
 )
 
 func Test_resolve_find_in_map_value(t *testing.T) {
-
 	source := `---
 Parameters:
   Environment: 
@@ -54,7 +53,6 @@ Resources:
 }
 
 func Test_resolve_find_in_map_with_nested_intrinsic_value(t *testing.T) {
-
 	source := `---
 Parameters:
   Environment: 

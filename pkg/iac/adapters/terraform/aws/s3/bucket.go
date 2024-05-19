@@ -225,7 +225,6 @@ func hasLogging(b *terraform.Block) iacTypes.BoolValue {
 }
 
 func getLifecycle(b *terraform.Block, a *adapter) []s3.Rules {
-
 	var rules []s3.Rules
 	for _, r := range a.modules.GetReferencingResources(b, "aws_s3_bucket_lifecycle_configuration", "bucket") {
 		ruleblock := r.GetBlocks("rule")
@@ -282,7 +281,6 @@ func applyForBucketRelatedResource[T any](a *adapter, block *terraform.Block, re
 				}
 			}
 		}
-
 	}
 	var res T
 	return res, false

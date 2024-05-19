@@ -154,7 +154,6 @@ type terraformRootModule struct {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {
-
 	s.debug.Log("Scanning [%s] at '%s'...", target, dir)
 
 	// find directories which directly contain tf files
@@ -187,7 +186,6 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 
 	// parse all root module directories
 	for _, dir := range rootDirs {
-
 		s.debug.Log("Scanning root module '%s'...", dir)
 
 		p := parser.New(target, "", s.parserOpt...)
@@ -264,7 +262,6 @@ func (s *Scanner) removeNestedDirs(dirs []string) []string {
 }
 
 func (s *Scanner) findModules(target fs.FS, scanDir string, dirs ...string) []string {
-
 	var roots []string
 	var others []string
 

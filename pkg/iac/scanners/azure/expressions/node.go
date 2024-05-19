@@ -69,7 +69,6 @@ func newFunctionNode(tw *tokenWalker) Node {
 		case TokenLiteralString, TokenLiteralInteger, TokenLiteralFloat:
 			funcNode.args = append(funcNode.args, expressionValue{token.Data})
 		}
-
 	}
 	return funcNode
 }

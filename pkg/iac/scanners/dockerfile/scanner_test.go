@@ -633,5 +633,4 @@ COPY --from=dep /binary /`
 			}
 		})
 	}
-
 }

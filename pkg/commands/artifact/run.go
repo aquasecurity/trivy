@@ -679,6 +679,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	types.Report, error) {
+
 	scannerConfig, scanOptions, err := initScannerConfig(opts, cacheClient)
 	if err != nil {
 		return types.Report{}, err

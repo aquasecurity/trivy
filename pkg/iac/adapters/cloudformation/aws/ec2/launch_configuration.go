@@ -10,7 +10,6 @@ func getLaunchConfigurations(file parser.FileContext) (launchConfigurations []ec
 	launchConfigResources := file.GetResourcesByType("AWS::AutoScaling::LaunchConfiguration")
 
 	for _, r := range launchConfigResources {
-
 		launchConfig := ec2.LaunchConfiguration{
 			Metadata:          r.Metadata(),
 			Name:              r.GetStringProperty("LaunchConfigurationName"),
@@ -42,7 +41,6 @@ func getLaunchConfigurations(file parser.FileContext) (launchConfigurations []ec
 		}
 
 		launchConfigurations = append(launchConfigurations, launchConfig)
-
 	}
 	return launchConfigurations
 }

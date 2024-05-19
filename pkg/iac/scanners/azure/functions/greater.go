@@ -1,7 +1,6 @@
 package functions
 
 func Greater(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return false
 	}
@@ -23,7 +22,6 @@ func Greater(args ...interface{}) interface{} {
 }
 
 func GreaterOrEquals(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return false
 	}

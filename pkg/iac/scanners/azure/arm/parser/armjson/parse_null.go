@@ -9,7 +9,6 @@ import (
 var nullRunes = []rune("null")
 
 func (p *parser) parseNull(parentMetadata *types.Metadata) (Node, error) {
-
 	n, _ := p.newNode(KindNull, parentMetadata)
 
 	for _, expected := range nullRunes {

@@ -91,7 +91,6 @@ func newEvaluator(
 }
 
 func (e *evaluator) evaluateStep() {
-
 	e.ctx.Set(e.getValuesByBlockType("variable"), "var")
 	e.ctx.Set(e.getValuesByBlockType("locals"), "local")
 	e.ctx.Set(e.getValuesByBlockType("provider"), "provider")
@@ -121,7 +120,6 @@ func (e *evaluator) exportOutputs() cty.Value {
 }
 
 func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
-
 	fsKey := types.CreateFSKey(e.filesystem)
 	e.debug.Log("Filesystem key is '%s'", fsKey)
 
@@ -223,7 +221,6 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 func (e *evaluator) evaluateSteps() {
 	var lastContext hcl.EvalContext
 	for i := 0; i < maxContextIterations; i++ {
-
 		e.evaluateStep()
 
 		// if ctx matches the last evaluation, we can bail, nothing left to resolve
@@ -280,7 +277,6 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 	var forEachFiltered terraform.Blocks
 
 	for _, block := range blocks {
-
 		forEachAttr := block.GetAttribute("for_each")
 
 		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) {
@@ -296,7 +292,6 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 
 		clones := make(map[string]cty.Value)
 		_ = forEachAttr.Each(func(key cty.Value, val cty.Value) {
-
 			if val.IsNull() {
 				return
 			}
@@ -395,7 +390,6 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 }
 
 func (e *evaluator) copyVariables(from, to *terraform.Block) {
-
 	var fromBase string
 	var fromRel string
 	var toRel string
@@ -464,7 +458,6 @@ func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 	}
 
 	return val, nil
-
 }
 
 func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
@@ -481,12 +474,10 @@ func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
 
 // returns true if all evaluations were successful
 func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
-
 	blocksOfType := e.blocks.OfType(blockType)
 	values := make(map[string]cty.Value)
 
 	for _, b := range blocksOfType {
-
 		switch b.Type() {
 		case "variable": // variables are special in that their value comes from the "default" attribute
 			val, err := e.evaluateVariable(b)

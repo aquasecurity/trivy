@@ -61,7 +61,6 @@ type packagingAnalyzer struct {
 
 // PostAnalyze analyzes egg and wheel files.
 func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {

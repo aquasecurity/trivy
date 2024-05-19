@@ -51,6 +51,7 @@ type Scanner struct {
 // NewScanner is the factory method for Scanner
 func NewScanner(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
 	vulnClient vulnerability.Client) Scanner {
+
 	return Scanner{
 		applier:        a,
 		osPkgScanner:   osPkgScanner,
@@ -62,6 +63,7 @@ func NewScanner(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 // Scan scans the artifact and return results.
 func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
 	types.Results, ftypes.OS, error) {
+
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -153,6 +155,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
+
 	if !options.ListAllPackages && !options.Scanners.Enabled(types.VulnerabilityScanner) {
 		return nil, false, nil
 	}
@@ -322,7 +325,6 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 				Confidence: finding.Confidence,
 				Link:       finding.Link,
 			})
-
 		}
 	}
 	results = append(results, types.Result{

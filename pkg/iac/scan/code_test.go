@@ -13,7 +13,6 @@ import (
 )
 
 func TestResult_GetCode(t *testing.T) {
-
 	tests := []struct {
 		name       string
 		source     string
@@ -260,5 +259,4 @@ func TestResult_GetCode(t *testing.T) {
 			assert.Equal(t, test.expected, code.Lines)
 		})
 	}
-
 }

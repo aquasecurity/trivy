@@ -15,7 +15,6 @@ var (
 )
 
 func ManagementGroup(_ ...interface{}) interface{} {
-
 	return fmt.Sprintf(`{
     "id": "/providers/Microsoft.Management/managementGroups/mgPlaceholder",
     "name": "mgPlaceholder",
@@ -51,7 +50,6 @@ func ManagementGroupResourceID(args ...interface{}) interface{} {
 	default:
 		return fmt.Sprintf("/providers/Microsoft.Management/managementGroups/%s/providers/%s/%s", groupID, args[0], args[1])
 	}
-
 }
 
 func Subscription(_ ...interface{}) interface{} {
@@ -69,7 +67,6 @@ func SubscriptionResourceID(args ...interface{}) interface{} {
 	}
 
 	switch len(args) {
-
 	case 3:
 		return fmt.Sprintf("/subscriptions/%s/providers/%s/%s/%s", subscriptionID, args[0], args[1], args[2])
 	case 4:
@@ -102,5 +99,4 @@ func TenantResourceID(args ...interface{}) interface{} {
 	default:
 		return fmt.Sprintf("/providers/%s/%s", args[0], args[1])
 	}
-
 }

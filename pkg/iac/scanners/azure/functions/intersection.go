@@ -3,7 +3,6 @@ package functions
 import "sort"
 
 func Intersection(args ...interface{}) interface{} {
-
 	if args == nil || len(args) < 2 {
 		return []interface{}{}
 	}

@@ -7,7 +7,6 @@ import (
 )
 
 func Adapt(modules terraform.Modules) database.Database {
-
 	mssqlAdapter := mssqlAdapter{
 		alertPolicyIDs:    modules.GetChildResourceIDMapByType("azurerm_mssql_server_security_alert_policy"),
 		auditingPolicyIDs: modules.GetChildResourceIDMapByType("azurerm_mssql_server_extended_auditing_policy", "azurerm_mssql_database_extended_auditing_policy"),
@@ -82,7 +81,6 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 			orphanage.SecurityAlertPolicies = append(orphanage.SecurityAlertPolicies, adaptMSSQLSecurityAlertPolicy(policy))
 		}
 		mssqlServers = append(mssqlServers, orphanage)
-
 	}
 
 	orphanResources = modules.GetResourceByIDs(a.auditingPolicyIDs.Orphans()...)
@@ -102,7 +100,6 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 			orphanage.ExtendedAuditingPolicies = append(orphanage.ExtendedAuditingPolicies, adaptMSSQLExtendedAuditingPolicy(policy))
 		}
 		mssqlServers = append(mssqlServers, orphanage)
-
 	}
 
 	orphanResources = modules.GetResourceByIDs(a.firewallIDs.Orphans()...)
@@ -115,7 +112,6 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
 		}
 		mssqlServers = append(mssqlServers, orphanage)
-
 	}
 
 	return mssqlServers
@@ -145,7 +141,6 @@ func (a *mysqlAdapter) adaptMySQLServers(modules terraform.Modules) []database.M
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
 		}
 		mySQLServers = append(mySQLServers, orphanage)
-
 	}
 
 	return mySQLServers
@@ -176,7 +171,6 @@ func (a *mariaDBAdapter) adaptMariaDBServers(modules terraform.Modules) []databa
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
 		}
 		mariaDBServers = append(mariaDBServers, orphanage)
-
 	}
 
 	return mariaDBServers
@@ -213,7 +207,6 @@ func (a *postgresqlAdapter) adaptPostgreSQLServers(modules terraform.Modules) []
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
 		}
 		postgreSQLServers = append(postgreSQLServers, orphanage)
-
 	}
 
 	return postgreSQLServers
@@ -234,7 +227,6 @@ func (a *mssqlAdapter) adaptMSSQLServer(resource *terraform.Block, module *terra
 
 		publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
 		publicAccessVal = publicAccessAttr.AsBoolValueOrDefault(true, resource)
-
 	}
 
 	alertPolicyBlocks := module.GetReferencingResources(resource, "azurerm_mssql_server_security_alert_policy", "server_name")
@@ -380,7 +372,6 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 	}
 
 	for _, configBlock := range configBlocks {
-
 		nameAttr := configBlock.GetAttribute("name")
 		valAttr := configBlock.GetAttribute("value")
 
@@ -399,7 +390,6 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 }
 
 func adaptMSSQLSecurityAlertPolicy(resource *terraform.Block) database.SecurityAlertPolicy {
-
 	emailAddressesAttr := resource.GetAttribute("email_addresses")
 	disabledAlertsAttr := resource.GetAttribute("disabled_alerts")
 

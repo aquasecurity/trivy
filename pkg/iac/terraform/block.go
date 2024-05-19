@@ -33,6 +33,7 @@ type Block struct {
 
 func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, parentBlock *Block, moduleSource string,
 	moduleFS fs.FS, index ...cty.Value) *Block {
+
 	if ctx == nil {
 		ctx = context.NewContext(&hcl.EvalContext{}, nil)
 	}
@@ -299,7 +300,6 @@ func (b *Block) GetAttribute(name string) *Attribute {
 }
 
 func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
-
 	parts := strings.Split(name, ".")
 	blocks := parts[:len(parts)-1]
 	attrName := parts[len(parts)-1]
@@ -332,7 +332,6 @@ func (b *Block) LocalName() string {
 }
 
 func (b *Block) FullName() string {
-
 	if b.moduleBlock != nil {
 		return fmt.Sprintf(
 			"%s.%s",
@@ -413,7 +412,6 @@ func (b *Block) MissingNestedChild(name string) bool {
 		}
 	}
 	return !working.HasChild(last)
-
 }
 
 func (b *Block) InModule() bool {

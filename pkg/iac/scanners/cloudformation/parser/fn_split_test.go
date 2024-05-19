@@ -15,7 +15,6 @@ import (
 */
 
 func Test_resolve_split_value(t *testing.T) {
-
 	property := &Property{
 		ctx:  &FileContext{},
 		name: "BucketName",
@@ -52,5 +51,4 @@ func Test_resolve_split_value(t *testing.T) {
 	assert.True(t, resolvedProperty.IsList())
 	listContents := resolvedProperty.AsList()
 	assert.Len(t, listContents, 4)
-
 }

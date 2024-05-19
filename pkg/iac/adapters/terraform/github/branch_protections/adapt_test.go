@@ -10,7 +10,6 @@ import (
 )
 
 func Test_AdaptDefaults(t *testing.T) {
-
 	src := `
 resource "github_branch_protection" "my-repo" {
 	
@@ -25,7 +24,6 @@ resource "github_branch_protection" "my-repo" {
 }
 
 func Test_Adapt_RequireSignedCommitsEnabled(t *testing.T) {
-
 	src := `
 resource "github_branch_protection" "my-repo" {
 	require_signed_commits = true
@@ -42,7 +40,6 @@ resource "github_branch_protection" "my-repo" {
 }
 
 func Test_Adapt_RequireSignedCommitsDisabled(t *testing.T) {
-
 	src := `
 resource "github_branch_protection" "my-repo" {
 	require_signed_commits = false

@@ -63,7 +63,6 @@ func adaptWorkgroup(resource *terraform.Block) athena.Workgroup {
 	}
 
 	if configBlock := resource.GetBlock("configuration"); configBlock.IsNotNil() {
-
 		enforceWGConfigAttr := configBlock.GetAttribute("enforce_workgroup_configuration")
 		workgroup.EnforceConfiguration = enforceWGConfigAttr.AsBoolValueOrDefault(true, configBlock)
 

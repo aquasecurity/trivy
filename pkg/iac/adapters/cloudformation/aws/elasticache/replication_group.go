@@ -6,7 +6,6 @@ import (
 )
 
 func getReplicationGroups(ctx parser.FileContext) (replicationGroups []elasticache.ReplicationGroup) {
-
 	replicationGroupResources := ctx.GetResourcesByType("AWS::ElastiCache::ReplicationGroup")
 
 	for _, r := range replicationGroupResources {

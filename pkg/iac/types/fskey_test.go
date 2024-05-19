@@ -11,7 +11,6 @@ import (
 )
 
 func Test_FSKey(t *testing.T) {
-
 	systems := []fs.FS{
 		os.DirFS("."),
 		os.DirFS(".."),

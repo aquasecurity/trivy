@@ -24,7 +24,6 @@ func getRules(id string, ctx parser.FileContext) (rules []ec2.NetworkACLRule) {
 	for _, ruleResource := range ctx.GetResourcesByType("AWS::EC2::NetworkAclEntry") {
 		aclID := ruleResource.GetProperty("NetworkAclId")
 		if aclID.IsString() && aclID.AsString() == id {
-
 			rule := ec2.NetworkACLRule{
 				Metadata: ruleResource.Metadata(),
 				Type:     iacTypes.StringDefault(ec2.TypeIngress, ruleResource.Metadata()),

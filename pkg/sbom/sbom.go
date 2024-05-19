@@ -218,7 +218,6 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		decoder = spdx.NewTVDecoder(f)
 	default:
 		return types.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
-
 	}
 
 	// Decode a file content into core.BOM

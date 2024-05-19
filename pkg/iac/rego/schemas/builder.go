@@ -27,7 +27,6 @@ type builder struct {
 }
 
 func Build() (*RawSchema, error) {
-
 	b := newBuilder()
 
 	inputValue := reflect.ValueOf(state.State{})
@@ -50,7 +49,6 @@ func newBuilder() *builder {
 }
 
 func (b *builder) fromInput(inputValue reflect.Value) error {
-
 	prop, err := b.readProperty("", nil, inputValue.Type(), 0)
 	if err != nil {
 		return err
@@ -75,7 +73,6 @@ func sanitize(s string) string {
 }
 
 func (b *builder) readProperty(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-
 	if inputType.Kind() == reflect.Ptr {
 		inputType = inputType.Elem()
 	}
@@ -157,7 +154,6 @@ func (b *builder) readProperty(name string, parent, inputType reflect.Type, inde
 				},
 			},
 		}, nil
-
 	}
 
 	fmt.Printf("WARNING: unsupported type: %s (%s)\n", inputType.Name(), inputType)
@@ -167,7 +163,6 @@ func (b *builder) readProperty(name string, parent, inputType reflect.Type, inde
 var converterInterface = reflect.TypeOf((*convert.Converter)(nil)).Elem()
 
 func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-
 	if b.schema.Defs == nil {
 		b.schema.Defs = make(map[string]*Property)
 	}
@@ -190,7 +185,6 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 			return nil, err
 		}
 	} else {
-
 		for i := 0; i < inputType.NumField(); i++ {
 			field := inputType.Field(i)
 			prop, err := b.readProperty(field.Name, inputType, field.Type, indent+1)
@@ -219,7 +213,6 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 }
 
 func (b *builder) readSlice(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-
 	items, err := b.readProperty(name, parent, inputType.Elem(), indent+1)
 	if err != nil {
 		return nil, err
@@ -233,7 +226,6 @@ func (b *builder) readSlice(name string, parent, inputType reflect.Type, indent 
 }
 
 func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type, raw interface{}, indent int) error {
-
 	switch cast := raw.(type) {
 	case map[string]interface{}:
 		def.Type = "object"
@@ -266,5 +258,4 @@ func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type,
 	}
 
 	return nil
-
 }

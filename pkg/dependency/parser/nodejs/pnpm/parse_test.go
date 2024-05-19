@@ -205,6 +205,5 @@ func Test_parsePackage(t *testing.T) {
 			assert.Equal(t, tt.wantName, gotName)
 			assert.Equal(t, tt.wantVersion, gotVersion)
 		})
-
 	}
 }

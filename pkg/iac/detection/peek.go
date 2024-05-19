@@ -9,7 +9,6 @@ import (
 )
 
 func IsHelmChartArchive(path string, file io.Reader) bool {
-
 	if !IsArchive(path) {
 		return false
 	}

@@ -58,5 +58,4 @@ func Test_Peeker(t *testing.T) {
 
 	_, err = peeker.Next()
 	require.Error(t, err)
-
 }

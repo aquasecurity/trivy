@@ -183,7 +183,6 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 				DependsOn: dependsOn,
 			})
 		}
-
 	}
 
 	return maps.Values(pkgs), deps

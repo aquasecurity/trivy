@@ -13,7 +13,6 @@ import (
 )
 
 func init() {
-
 	modules, err := LoadEmbeddedPolicies()
 	if err != nil {
 		// we should panic as the policies were not embedded properly

@@ -17,7 +17,6 @@ func ResolveAnd(property *Property) (resolved *Property, success bool) {
 
 	results := make([]bool, len(refValue))
 	for i := 0; i < len(refValue); i++ {
-
 		r := false
 		if refValue[i].IsBool() {
 			r = refValue[i].AsBool()

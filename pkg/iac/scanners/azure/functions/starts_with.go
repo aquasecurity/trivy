@@ -3,7 +3,6 @@ package functions
 import "strings"
 
 func StartsWith(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return false
 	}

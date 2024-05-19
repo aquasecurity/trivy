@@ -168,7 +168,6 @@ func (s *Scanner) SetParentDebugLogger(l debug.Logger) {
 }
 
 func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, disableTracing bool) (rego.ResultSet, []string, error) {
-
 	trace := (s.traceWriter != nil || s.tracePerResult) && !disableTracing
 
 	regoOptions := []func(*rego.Rego){
@@ -226,13 +225,11 @@ func GetInputsContents(inputs []Input) []any {
 }
 
 func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results, error) {
-
 	s.debug.Log("Scanning %d inputs...", len(inputs))
 
 	var results scan.Results
 
 	for _, module := range s.policies {
-
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
@@ -288,7 +285,6 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 				results = append(results, s.embellishResultsWithRuleMetadata(ruleResults, *staticMeta)...)
 			}
 		}
-
 	}
 
 	return results, nil
@@ -361,7 +357,6 @@ func parseRawInput(input any) (ast.Value, error) {
 }
 
 func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input, combined bool) (scan.Results, error) {
-
 	// handle combined evaluations if possible
 	if combined {
 		s.trace("INPUT", inputs)

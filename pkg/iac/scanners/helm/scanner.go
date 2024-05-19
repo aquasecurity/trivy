@@ -124,7 +124,6 @@ func (s *Scanner) SetDataFilesystem(_ fs.FS) {}
 func (s *Scanner) SetRegoErrorLimit(_ int)   {}
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.Results, error) {
-
 	if err := s.initRegoScanner(target); err != nil {
 		return nil, fmt.Errorf("failed to init rego scanner: %w", err)
 	}
@@ -168,7 +167,6 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.R
 	}
 
 	return results, nil
-
 }
 
 func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS) (results []scan.Result, err error) {
@@ -220,7 +218,6 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 
 			results = append(results, fileResults...)
 		}
-
 	}
 	return results, nil
 }

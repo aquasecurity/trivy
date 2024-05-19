@@ -118,7 +118,6 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 }
 
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
-
 	isJSON := strings.HasSuffix(fullPath, ".tf.json")
 	isHCL := strings.HasSuffix(fullPath, ".tf")
 	if !isJSON && !isHCL {
@@ -165,7 +164,6 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
 func (p *Parser) ParseFS(ctx context.Context, dir string) error {
-
 	dir = path.Clean(dir)
 
 	if p.projectRoot == "" {
@@ -262,7 +260,6 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 }
 
 func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
-
 	e, err := p.Load(ctx)
 	if errors.Is(err, ErrNoFiles) {
 		return nil, cty.NilVal, nil

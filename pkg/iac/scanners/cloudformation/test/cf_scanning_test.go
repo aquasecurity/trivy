@@ -32,7 +32,6 @@ func Test_cloudformation_scanning_has_expected_errors(t *testing.T) {
 }
 
 func Test_cloudformation_scanning_with_debug(t *testing.T) {
-
 	debugWriter := bytes.NewBufferString("")
 
 	scannerOptions := []options.ScannerOption{

@@ -6,7 +6,6 @@ import (
 )
 
 func Base64(args ...interface{}) interface{} {
-
 	if len(args) == 0 {
 		return nil
 	}
@@ -31,7 +30,6 @@ func Base64ToString(args ...interface{}) interface{} {
 }
 
 func Base64ToJson(args ...interface{}) interface{} {
-
 	if len(args) == 0 {
 		return nil
 	}

@@ -247,5 +247,4 @@ func TestLines(t *testing.T) {
 
 	assert.Equal(t, 40, account.Containers[0].PublicAccess.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 40, account.Containers[0].PublicAccess.GetMetadata().Range().GetEndLine())
-
 }

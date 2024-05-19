@@ -942,7 +942,6 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			tmpDir := t.TempDir()
 			f, err := os.Create(filepath.Join(tmpDir, "policy.rego"))
 			require.NoError(t, err)
@@ -2182,5 +2181,4 @@ func TestMixedConfigurationScan(t *testing.T) {
 			assert.Equal(t, tt.want.Type, got.Type)
 		})
 	}
-
 }

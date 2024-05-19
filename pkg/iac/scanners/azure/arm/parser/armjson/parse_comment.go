@@ -7,7 +7,6 @@ import (
 )
 
 func (p *parser) parseComment(parentMetadata *types.Metadata) (Node, error) {
-
 	if err := p.parseWhitespace(); err != nil {
 		return nil, err
 	}
@@ -33,7 +32,6 @@ func (p *parser) parseComment(parentMetadata *types.Metadata) (Node, error) {
 }
 
 func (p *parser) parseLineComment(parentMetadata *types.Metadata) (Node, error) {
-
 	n, _ := p.newNode(KindComment, parentMetadata)
 
 	var sb strings.Builder
@@ -60,7 +58,6 @@ func (p *parser) parseLineComment(parentMetadata *types.Metadata) (Node, error) 
 }
 
 func (p *parser) parseBlockComment(parentMetadata *types.Metadata) (Node, error) {
-
 	n, _ := p.newNode(KindComment, parentMetadata)
 
 	var sb strings.Builder

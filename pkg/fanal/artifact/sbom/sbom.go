@@ -78,7 +78,6 @@ func (a Artifact) Inspect(_ context.Context) (artifact.Reference, error) {
 		artifactType = artifact.TypeCycloneDX
 	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON:
 		artifactType = artifact.TypeSPDX
-
 	}
 
 	return artifact.Reference{

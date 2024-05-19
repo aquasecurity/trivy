@@ -27,6 +27,7 @@ type onResult[U any] func(U) error
 
 func NewPipeline[T, U any](numWorkers int, progress bool, items []T,
 	fn1 onItem[T, U], fn2 onResult[U]) Pipeline[T, U] {
+
 	if fn2 == nil {
 		// In case where there is no need to process the return values
 		fn2 = func(_ U) error { return nil }

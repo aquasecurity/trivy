@@ -22,7 +22,6 @@ func ResolveIf(property *Property) (resolved *Property, success bool) {
 		conditionMet = con.AsBool()
 	} else if property.ctx.Conditions != nil &&
 		condition.IsString() {
-
 		condition := property.ctx.Conditions[condition.AsString()]
 		if condition.isFunction() {
 			con, _ := condition.resolveValue()

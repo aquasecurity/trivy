@@ -5,7 +5,6 @@ import (
 )
 
 func (p *parser) parseObject(parentMetadata *types.Metadata) (Node, error) {
-
 	n, metadata := p.newNode(KindObject, parentMetadata)
 
 	c, err := p.next()
@@ -29,13 +28,11 @@ func (p *parser) parseObject(parentMetadata *types.Metadata) (Node, error) {
 
 	var nextComments []Node
 	return p.iterateObject(nextComments, metadata, n)
-
 }
 
 // nolint: gocyclo
 func (p *parser) iterateObject(nextComments []Node, metadata *types.Metadata, n *node) (Node, error) {
 	for {
-
 		if err := p.parseWhitespace(); err != nil {
 			return nil, err
 		}
@@ -138,6 +135,5 @@ func (p *parser) iterateObject(nextComments []Node, metadata *types.Metadata, n 
 		key.(*node).comments = comments
 		val.(*node).comments = comments
 		n.content = append(n.content, key, val)
-
 	}
 }

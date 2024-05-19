@@ -3,7 +3,6 @@ package functions
 import "strings"
 
 func IndexOf(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return -1
 	}

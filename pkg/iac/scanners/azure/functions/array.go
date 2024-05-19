@@ -1,7 +1,6 @@
 package functions
 
 func Array(args ...interface{}) interface{} {
-
 	if len(args) != 1 {
 		return ""
 	}

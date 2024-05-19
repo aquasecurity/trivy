@@ -61,6 +61,7 @@ func applyForDependentResource[T any](
 	dependentAttrName string,
 	fn func(resource *terraform.Block) T,
 ) (T, bool) {
+
 	for _, resource := range modules.GetResourcesByType(dependentResourceType) {
 		relatedAttr := resource.GetAttribute(dependentAttrName)
 		if relatedAttr.IsNil() {

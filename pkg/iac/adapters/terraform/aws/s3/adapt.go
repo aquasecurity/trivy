@@ -6,7 +6,6 @@ import (
 )
 
 func Adapt(modules terraform.Modules) s3.S3 {
-
 	a := &adapter{
 		modules:   modules,
 		bucketMap: make(map[string]*s3.Bucket),

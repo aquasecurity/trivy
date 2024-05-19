@@ -584,7 +584,6 @@ func (a *Attribute) OnlyContains(checkValue interface{}) bool {
 						break
 					}
 				}
-
 			}
 			if !found {
 				return false
@@ -718,7 +717,6 @@ func (a *Attribute) IsNone(options ...interface{}) bool {
 			if a.Value().RawEquals(checkValue) {
 				return false
 			}
-
 		}
 	}
 
@@ -1091,7 +1089,6 @@ func (a *Attribute) HasIntersect(checkValues ...interface{}) bool {
 		}
 	}
 	return false
-
 }
 
 func (a *Attribute) AsNumber() float64 {

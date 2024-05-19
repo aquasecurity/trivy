@@ -15,13 +15,11 @@ func Adapt(modules terraform.Modules) compute.Compute {
 }
 
 func adaptCompute(modules terraform.Modules) compute.Compute {
-
 	var managedDisks []compute.ManagedDisk
 	var linuxVirtualMachines []compute.LinuxVirtualMachine
 	var windowsVirtualMachines []compute.WindowsVirtualMachine
 
 	for _, module := range modules {
-
 		for _, resource := range module.GetResourcesByType("azurerm_linux_virtual_machine") {
 			linuxVirtualMachines = append(linuxVirtualMachines, adaptLinuxVM(resource))
 		}
@@ -48,7 +46,6 @@ func adaptCompute(modules terraform.Modules) compute.Compute {
 }
 
 func adaptManagedDisk(resource *terraform.Block) compute.ManagedDisk {
-
 	disk := compute.ManagedDisk{
 		Metadata: resource.GetMetadata(),
 		Encryption: compute.Encryption{

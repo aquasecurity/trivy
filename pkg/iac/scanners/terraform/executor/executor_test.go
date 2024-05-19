@@ -35,7 +35,6 @@ var panicRule = scan.Rule{
 }
 
 func Test_PanicInCheckNotAllowed(t *testing.T) {
-
 	reg := rules.Register(panicRule)
 	defer rules.Deregister(reg)
 
@@ -60,7 +59,6 @@ resource "problem" "this" {
 }
 
 func Test_PanicInCheckAllowed(t *testing.T) {
-
 	reg := rules.Register(panicRule)
 	defer rules.Deregister(reg)
 
@@ -83,7 +81,6 @@ resource "problem" "this" {
 }
 
 func Test_PanicNotInCheckNotIncludePassed(t *testing.T) {
-
 	reg := rules.Register(panicRule)
 	defer rules.Deregister(reg)
 
@@ -108,7 +105,6 @@ resource "problem" "this" {
 }
 
 func Test_PanicNotInCheckNotIncludePassedStopOnError(t *testing.T) {
-
 	reg := rules.Register(panicRule)
 	defer rules.Deregister(reg)
 

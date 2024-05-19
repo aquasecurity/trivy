@@ -7,7 +7,6 @@ import (
 )
 
 func Adapt(modules terraform.Modules) elb.ELB {
-
 	adapter := adapter{
 		listenerIDs: modules.GetChildResourceIDMapByType("aws_lb_listener", "aws_alb_listener"),
 	}

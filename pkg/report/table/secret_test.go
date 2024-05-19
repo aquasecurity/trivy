@@ -13,7 +13,6 @@ import (
 )
 
 func TestSecretRenderer(t *testing.T) {
-
 	tests := []struct {
 		name  string
 		input []types.DetectedSecret

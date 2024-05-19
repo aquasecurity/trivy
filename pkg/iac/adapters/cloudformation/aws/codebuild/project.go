@@ -7,7 +7,6 @@ import (
 )
 
 func getProjects(ctx parser.FileContext) (projects []codebuild.Project) {
-
 	projectResources := ctx.GetResourcesByType("AWS::CodeBuild::Project")
 
 	for _, r := range projectResources {
@@ -45,7 +44,6 @@ func getSecondaryArtifactSettings(r *parser.Resource) (secondaryArtifacts []code
 }
 
 func getArtifactSettings(r *parser.Resource) codebuild.ArtifactSettings {
-
 	settings := codebuild.ArtifactSettings{
 		Metadata:          r.Metadata(),
 		EncryptionEnabled: types.BoolDefault(true, r.Metadata()),

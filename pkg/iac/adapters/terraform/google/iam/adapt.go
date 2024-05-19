@@ -42,7 +42,6 @@ func (a *adapter) addOrg(blockID string) {
 }
 
 func (a *adapter) merge() iam.IAM {
-
 	// add projects to folders, orgs
 PROJECT:
 	for _, project := range a.projects {
@@ -77,7 +76,6 @@ FOLDER_NESTED: // nolint: gocritic
 				a.folders[i] = existing
 				continue FOLDER_NESTED // nolint: gocritic
 			}
-
 		}
 	}
 FOLDER_ORG: // nolint: gocritic

@@ -1,7 +1,6 @@
 package functions
 
 func And(args ...interface{}) interface{} {
-
 	if len(args) <= 1 {
 		return false
 	}
@@ -21,7 +20,6 @@ func And(args ...interface{}) interface{} {
 		if benchmark != arg1 {
 			return false
 		}
-
 	}
 	return true
 }

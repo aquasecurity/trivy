@@ -47,7 +47,6 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, 
 			},
 			Relationship: ftypes.RelationshipUnknown,
 		})
-
 	}
 	return utils.UniquePackages(pkgs), nil, nil
 }

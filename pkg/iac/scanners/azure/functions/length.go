@@ -1,7 +1,6 @@
 package functions
 
 func Length(args ...interface{}) interface{} {
-
 	if len(args) != 1 {
 		return 0
 	}

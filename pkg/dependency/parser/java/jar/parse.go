@@ -150,6 +150,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 
 func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
 	[]ftypes.Package, manifest, bool, error) {
+
 	var pkgs []ftypes.Package
 	var m manifest
 	var foundPomProps bool

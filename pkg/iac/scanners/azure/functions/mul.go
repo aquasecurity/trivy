@@ -1,7 +1,6 @@
 package functions
 
 func Mul(args ...interface{}) interface{} {
-
 	if len(args) != 2 {
 		return nil
 	}
