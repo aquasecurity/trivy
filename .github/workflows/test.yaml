@@ -7,6 +7,8 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
   merge_group:
+env:
+  GO_VERSION: '1.22'
 jobs:
   test:
     name: Test
@@ -30,8 +32,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
-
+          go-version: ${{ env.GO_VERSION }}
       - name: go mod tidy
         run: |
           go mod tidy
@@ -84,7 +85,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.0
@@ -113,7 +114,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.0
@@ -133,7 +134,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.0
@@ -164,7 +165,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.0
         with:
@@ -198,7 +199,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version-file: go.mod
+        go-version: ${{ env.GO_VERSION }}
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
