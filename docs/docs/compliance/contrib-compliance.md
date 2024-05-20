@@ -14,7 +14,7 @@ Compliance specs can be based on new compliance reports becoming available e.g. 
 
 ### Create a new Compliance Spec
 
-The existing compliance specs in Trivy are located under the `trivy-policies/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-policies/tree/main/specs/compliance)).
+The existing compliance specs in Trivy are located under the `trivy-checks/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/specs/compliance)).
 
 Create a new file under `trivy-policies/specs/compliance/` and name the file in the format of "provider-resource-spectype-version.yaml". For example, the file name for AWS CIS Benchmarks for EKS version 1.4 is: `aws-eks-cis-1.4.yaml`. Note that if the compliance spec is not specific to a provider, the `provider` field can be ignored.
 
