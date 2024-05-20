@@ -37,7 +37,7 @@ type S3Cache struct {
 	prefix string
 }
 
-func NewS3Cache(client s3API, bucket string, prefix string) S3Cache {
+func NewS3Cache(client s3API, bucket, prefix string) S3Cache {
 	return S3Cache{
 		client: client,
 		bucket: bucket,

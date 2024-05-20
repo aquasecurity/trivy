@@ -59,9 +59,9 @@ func TestS3Cache_PutArtifact(t *testing.T) {
 					mockPutObject: func(_ context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 						assert.Equal(t, "bucket", aws.ToString(params.Bucket))
 						assert.Equal(t, "prefix/artifact/sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf", aws.ToString(params.Key))
-						assert.Equal(t, params.Metadata, map[string]string{
+						assert.Equal(t, map[string]string{
 							metadataSchemaVersion: "1",
-						})
+						}, params.Metadata)
 						b, err := io.ReadAll(params.Body)
 						require.NoError(t, err)
 						require.True(t, json.Valid(b))
@@ -120,9 +120,9 @@ func TestS3Cache_PutBlob(t *testing.T) {
 					mockPutObject: func(_ context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 						assert.Equal(t, "bucket", aws.ToString(params.Bucket))
 						assert.Equal(t, "prefix/blob/sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0", aws.ToString(params.Key))
-						assert.Equal(t, params.Metadata, map[string]string{
+						assert.Equal(t, map[string]string{
 							metadataSchemaVersion: "2",
-						})
+						}, params.Metadata)
 						b, err := io.ReadAll(params.Body)
 						require.NoError(t, err)
 						require.True(t, json.Valid(b))
