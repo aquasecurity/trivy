@@ -174,7 +174,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
+					BlobID: "sha256:0c41376dbbc0dbf18e9dbd36c5de85627007dcf9357fd98f191864d48dd35537",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -185,6 +185,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
+										Locations: []types.Location{
+											{
+												StartLine: 1,
+												EndLine:   1,
+											},
+										},
 									},
 								},
 							},
@@ -196,9 +202,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: "testdata/requirements.txt",
 				Type: artifact.TypeFilesystem,
-				ID:   "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
+				ID:   "sha256:0c41376dbbc0dbf18e9dbd36c5de85627007dcf9357fd98f191864d48dd35537",
 				BlobIDs: []string{
-					"sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
+					"sha256:0c41376dbbc0dbf18e9dbd36c5de85627007dcf9357fd98f191864d48dd35537",
 				},
 			},
 		},
@@ -209,7 +215,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
+					BlobID: "sha256:0c41376dbbc0dbf18e9dbd36c5de85627007dcf9357fd98f191864d48dd35537",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -220,6 +226,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
+										Locations: []types.Location{
+											{
+												StartLine: 1,
+												EndLine:   1,
+											},
+										},
 									},
 								},
 							},
@@ -231,9 +243,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: "testdata/requirements.txt",
 				Type: artifact.TypeFilesystem,
-				ID:   "sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
+				ID:   "sha256:0c41376dbbc0dbf18e9dbd36c5de85627007dcf9357fd98f191864d48dd35537",
 				BlobIDs: []string{
-					"sha256:9e999fcf6fd571e175601fb7cc0da28f0d7960e26eab67dad93152e0bebf21ca",
+					"sha256:0c41376dbbc0dbf18e9dbd36c5de85627007dcf9357fd98f191864d48dd35537",
 				},
 			},
 		},
