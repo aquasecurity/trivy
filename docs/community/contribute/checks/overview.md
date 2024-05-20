@@ -8,7 +8,7 @@ All of the checks in Trivy can be found in the [trivy-policies](https://github.c
 2. The pull requests in the [trivy-policies](https://github.com/aquasecurity/trivy-policies/pulls) repository to see  whether someone else is already contributing the check that you wanted to add. 
 3. The [issues in Trivy](https://github.com/aquasecurity/trivy/issues) to see whether any specific checks are missing in Trivy that you can contribute.
 
-If anything is unclear, please [start a discussion](https://github.com/aquasecurity/trivy/discussions/new) and we'll do our best to help.
+If anything is unclear, please [start a discussion](https://github.com/aquasecurity/trivy/discussions/new) and we will do our best to help.
 
 ## Check structure
 
@@ -57,7 +57,6 @@ Before writing a new check for a cloud provider, you need to verify if the cloud
 ???+ note
     New Kubernetes and Dockerfile checks do not require any additional provider definitions. You can find an example of a Dockerfile check [here](https://github.com/aquasecurity/trivy-policies/blob/main/checks/docker/add_instead_of_copy.rego) and a Kubernetes check [here](https://github.com/aquasecurity/trivy-policies/blob/main/checks/kubernetes/general/CPU_not_limited.rego).
 
-Before writing a new check, you need to verify if the provider your check targets is supported by Trivy. If the provider that you want to target exists, you need to check whether the service your policy will target is supported. If the service is not support, please refer to the documentation on adding support for a new service in an existing provider.
 
 ### Add Support for a New Service in an existing Provider
 

@@ -196,7 +196,7 @@ nav:
           - Pull Requests: community/contribute/pr.md
       - Contribute Rego Checks:
           - Overview: community/contribute/checks/overview.md
-          - Add Service Supprot: community/contribute/checks/service-support.md
+          - Add Service Support: community/contribute/checks/service-support.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
