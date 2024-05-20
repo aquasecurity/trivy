@@ -82,7 +82,7 @@ The corresponding check in the `control` section will look like this:
 ```
 
 - Again, the `id`, `name` and `description` are taken directly from the EKS CIS Benchmarks v1.4.0
-- The `checks` is in this case `null` as the check is not currently present in the AVD and does not have a check in the [trivy policies](https://github.com/aquasecurity/trivy-policies/tree/main/checks) repository
+- The `checks` is in this case `null` as the check is not currently present in the AVD and does not have a check in the [trivy policies](https://github.com/aquasecurity/trivy-checks/tree/main/checks) repository
 - Since the check does not exist in Trivy, the `severity` will be `MEDIUM`. However, in some cases, the compliance report e.g. the CIS Benchmark report will specify the severity
 
 #### Contributing new checks to trivy-policies
