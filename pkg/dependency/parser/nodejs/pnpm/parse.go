@@ -216,18 +216,18 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 }
 
 // markRootPkgs sets `Dev` to false for non dev dependency.
-func (p *Parser) markRootPkgs(id string, libs map[string]ftypes.Package, deps map[string]ftypes.Dependency) {
-	lib, ok := libs[id]
+func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency) {
+	pkg, ok := pkgs[id]
 	if !ok {
 		return
 	}
 
-	lib.Dev = false
-	libs[id] = lib
+	pkg.Dev = false
+	pkgs[id] = pkg
 
 	// Update child deps
 	for _, depID := range deps[id].DependsOn {
-		p.markRootPkgs(depID, libs, deps)
+		p.markRootPkgs(depID, pkgs, deps)
 	}
 	return
 }
