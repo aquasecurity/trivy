@@ -14,7 +14,7 @@
       "name": "Example Company ProductCERT",
       "namespace": "https://psirt.example.com"
     },
-    "title": "Example VEX Document Use Case 1 - Affected",
+    "title": "Aqua Security example VEX document",
     "tracking": {
       "current_release_date": "2022-03-03T11:00:00.000Z",
       "generator": {
@@ -45,47 +45,44 @@
             "branches": [
               {
                 "category": "product_version",
-                "name": "1.0",
+                "name": "v0.24.2",
                 "product": {
-                  "name": "Example Company DEF 1.0",
-                  "product_id": "CSAFPID-0001",
+                  "name": "client-go v0.24.2",
+                  "product_id": "client-go-v0.24.2",
                   "product_identification_helper": {
-                    "purl": "pkg:maven/org.example.company/def@1.0"
+                    "purl": "pkg:golang/k8s.io/client-go@0.24.2"
                   }
                 }
               }
             ],
             "category": "product_name",
-            "name": "DEF"
+            "name": "client-go"
           }
         ],
         "category": "vendor",
-        "name": "Example Company"
+        "name": "k8s.io"
       }
     ]
   },
   "vulnerabilities": [
     {
-      "cve": "CVE-2021-44228",
+      "cve": "CVE-2023-2727",
       "notes": [
         {
           "category": "description",
-          "text": "Apache Log4j2 2.0-beta9 through 2.15.0 (excluding security releases 2.12.2, 2.12.3, and 2.3.1) JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints. An attacker who can control log messages or log message parameters can execute arbitrary code loaded from LDAP servers when message lookup substitution is enabled. From log4j 2.15.0, this behavior has been disabled by default. From version 2.16.0 (along with 2.12.2, 2.12.3, and 2.3.1), this functionality has been completely removed. Note that this vulnerability is specific to log4j-core and does not affect log4net, log4cxx, or other Apache Logging Services projects.",
+          "text": "Users may be able to launch containers using images that are restricted by ImagePolicyWebhook when using ephemeral containers. Kubernetes clusters are only affected if the ImagePolicyWebhook admission plugin is used together with ephemeral containers.",
           "title": "CVE description"
         }
       ],
       "product_status": {
-        "known_affected": [
-          "CSAFPID-0001"
+        "known_not_affected": [
+          "client-go-v0.24.2"
         ]
       },
-      "remediations": [
+      "threats": [
         {
-          "category": "vendor_fix",
-          "details": "Customers should update to version 1.1 of product DEF which fixes the issue.",
-          "product_ids": [
-            "CSAFPID-0001"
-          ]
+          "category": "impact",
+          "details": "The asset uses the component as a dependency in the code, but the vulnerability only affects Kubernetes clusters https://github.com/kubernetes/kubernetes/issues/118640"
         }
       ]
     }

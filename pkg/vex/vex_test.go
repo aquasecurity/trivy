@@ -129,6 +129,43 @@ var (
 			},
 		},
 	}
+	argoComponent = core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "argo-cd",
+		Version: "2.9.3-2",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			UID: "07",
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeBitnami,
+				Name:    "argo-cd",
+				Version: "2.9.3-2",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "amd64",
+					},
+					{
+						Key:   "distro",
+						Value: "debian-12",
+					},
+				},
+			},
+		},
+	}
+	clientGoComponent = core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "k8s.io/client-go",
+		Version: "0.24.2",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			UID: "08",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeGolang,
+				Namespace: "k8s.io",
+				Name:      "client-go",
+				Version:   "0.24.2",
+			},
+		},
+	}
 	vuln1 = types.DetectedVulnerability{
 		VulnerabilityID:  "CVE-2021-44228",
 		PkgName:          springComponent.Name,
@@ -163,6 +200,15 @@ var (
 		PkgIdentifier: ftypes.PkgIdentifier{
 			UID:  goTransitiveComponent.PkgIdentifier.UID,
 			PURL: goTransitiveComponent.PkgIdentifier.PURL,
+		},
+	}
+	vuln5 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2023-2727",
+		PkgName:          clientGoComponent.Name,
+		InstalledVersion: clientGoComponent.Version,
+		PkgIdentifier: ftypes.PkgIdentifier{
+			UID:  clientGoComponent.PkgIdentifier.UID,
+			PURL: clientGoComponent.PkgIdentifier.PURL,
 		},
 	}
 )
@@ -390,90 +436,37 @@ func TestVEX_Filter(t *testing.T) {
 			},
 		},
 		{
-			name: "CSAF (not affected vuln)",
+			name: "CSAF, not affected",
 			fields: fields{
-				filePath: "testdata/csaf-not-affected.json",
+				filePath: "testdata/csaf.json",
 			},
 			args: args{
-				vulns: []types.DetectedVulnerability{
-					{
-						VulnerabilityID:  "CVE-2021-44228",
-						PkgName:          "spring-boot",
-						InstalledVersion: "2.6.0",
-						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: &packageurl.PackageURL{
-								Type:      packageurl.TypeMaven,
-								Namespace: "org.springframework.boot",
-								Name:      "spring-boot",
-								Version:   "2.6.0",
-							},
-						},
-					},
-				},
+				bom:   newTestBOM5(),
+				vulns: []types.DetectedVulnerability{vuln5},
 			},
 			want: []types.DetectedVulnerability{},
 		},
 		{
-			name: "CSAF (affected vuln)",
+			name: "CSAF with relationships, not affected",
 			fields: fields{
-				filePath: "testdata/csaf-affected.json",
+				filePath: "testdata/csaf-relationships.json",
 			},
 			args: args{
-				vulns: []types.DetectedVulnerability{
-					{
-						VulnerabilityID:  "CVE-2021-44228",
-						PkgName:          "def",
-						InstalledVersion: "1.0",
-						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: &packageurl.PackageURL{
-								Type:      packageurl.TypeMaven,
-								Namespace: "org.example.company",
-								Name:      "def",
-								Version:   "1.0",
-							},
-						},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2021-44228",
-					PkgName:          "def",
-					InstalledVersion: "1.0",
-					PkgIdentifier: ftypes.PkgIdentifier{
-						PURL: &packageurl.PackageURL{
-							Type:      packageurl.TypeMaven,
-							Namespace: "org.example.company",
-							Name:      "def",
-							Version:   "1.0",
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "CSAF (not affected vuln) with sub components",
-			fields: fields{
-				filePath: "testdata/csaf-not-affected-sub-components.json",
-			},
-			args: args{
-				vulns: []types.DetectedVulnerability{
-					{
-						VulnerabilityID:  "CVE-2023-2727",
-						PkgName:          "kubernetes",
-						InstalledVersion: "v1.24.2",
-						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: &packageurl.PackageURL{
-								Type:      packageurl.TypeGolang,
-								Namespace: "k8s.io",
-								Name:      "kubernetes",
-								Version:   "v1.24.2",
-							},
-						},
-					},
-				},
+				bom:   newTestBOM5(),
+				vulns: []types.DetectedVulnerability{vuln5},
 			},
 			want: []types.DetectedVulnerability{},
+		},
+		{
+			name: "CSAF with relationships, affected",
+			fields: fields{
+				filePath: "testdata/csaf-relationships.json",
+			},
+			args: args{
+				bom:   newTestBOM6(),
+				vulns: []types.DetectedVulnerability{vuln5},
+			},
+			want: []types.DetectedVulnerability{vuln5},
 		},
 		{
 			name: "unknown format",
@@ -577,5 +570,28 @@ func newTestBOM4() *core.BOM {
 	bom.AddRelationship(&goModuleComponent, &goDirectComponent2, core.RelationshipDependsOn)
 	bom.AddRelationship(&goDirectComponent1, &goTransitiveComponent, core.RelationshipDependsOn)
 	bom.AddRelationship(&goDirectComponent2, &goTransitiveComponent, core.RelationshipDependsOn)
+	return bom
+}
+
+func newTestBOM5() *core.BOM {
+	// - oci:debian?tag=12
+	//     - pkg:bitnami/argo-cd@2.9.3-2?arch=amd64&distro=debian-12
+	//         - pkg:golang/k8s.io/client-go@0.24.2
+	bom := core.NewBOM(core.Options{Parents: true})
+	bom.AddComponent(&ociComponent)
+	bom.AddComponent(&argoComponent)
+	bom.AddComponent(&clientGoComponent)
+	bom.AddRelationship(&ociComponent, &argoComponent, core.RelationshipContains)
+	bom.AddRelationship(&argoComponent, &clientGoComponent, core.RelationshipDependsOn)
+	return bom
+}
+
+func newTestBOM6() *core.BOM {
+	// - oci:debian?tag=12
+	//     - pkg:golang/k8s.io/client-go@0.24.2
+	bom := core.NewBOM(core.Options{Parents: true})
+	bom.AddComponent(&ociComponent)
+	bom.AddComponent(&clientGoComponent)
+	bom.AddRelationship(&ociComponent, &clientGoComponent, core.RelationshipContains)
 	return bom
 }

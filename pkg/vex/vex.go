@@ -116,10 +116,6 @@ func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) 
 	})
 
 	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
-		if vuln.PkgIdentifier.PURL == nil {
-			return true
-		}
-
 		c, ok := components[vuln.PkgIdentifier.UID]
 		if !ok {
 			log.Error("Component not found", log.String("uid", vuln.PkgIdentifier.UID))
