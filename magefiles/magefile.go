@@ -314,13 +314,13 @@ type Lint mg.Namespace
 // Run runs linters
 func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m")
+	return sh.RunV("golangci-lint", "run")
 }
 
 // Fix auto fixes linters
 func (Lint) Fix() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m", "--fix")
+	return sh.RunV("golangci-lint", "run", "--fix")
 }
 
 // Fmt formats Go code and proto files
