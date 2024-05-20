@@ -63,7 +63,20 @@ If you add a new custom policy, it must be defined under a new package like `use
 
 `# METADATA` (optional)
 :   - SHOULD be defined for clarity since these values will be displayed in the scan results
-    - `custom.input` SHOULD be set to indicate the input type the policy should be applied to. See [list of available types](https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go)
+    - `title` is a title for the rule. The title should clearly and succinctly state the problem which is being detected.
+    - `description` is a description of the problem which is being detected. The description should be a little more verbose than the title, and should describe what the rule is trying to achieve. Imagine it completing a sentence starting with `You should...`.
+    - `scope` is used to define the scope of the policy. In this case, we are defining a check that applies to the entire package. At the moment, Trivy only supports using package scope for metadata, so this should always be set to `package`.
+    - `schemas` tells Rego that it should use the `AWS` schema to validate the use of the input data in the policy. We currently support [the following schemas](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas). Please choose a schema that is applicable to your check. Using a schema can help you validate your policy faster for syntax issues.
+    - `custom` is used to define custom fields that can be used by Trivy to provide additional context to the policy and any related detections. This can contain the following:
+      - `avd_id` can be used to link the check to the AVD entry. In the example check above, the `avd_id` `AVD-AWS-0176` is the ID of the check in the [AWS Vulnerability Database](https://avd.aquasec.com/). If there is no AVD_ID available, you can generate an ID to use for this field using `make id`.
+      - `provider` is the name of the [provider](https://github.com/aquasecurity/defsec/tree/master/pkg/providers) the check targets. This should be the same as the provider name in the `pkg/providers` directory, e.g. `aws`.
+      - `service` is the name of the service by the provider that the check targets. This should be the same as the service name in the `pkg/providers` directory, e.g. `rds`.
+      - `severity` is the severity of the check. This should be one of `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`.
+      - `short_code` for the check. This should be a short, descriptive name for the check, separating words with hyphens. You should omit provider/service from this.
+      - `recommended_action` is a recommended remediation action for the check. This should be a short, descriptive sentence describing what the user should do to resolve the issue.
+      - `input` tells trivy what inputs this check should be applied to. Cloud provider checks should always use the `selector` input, and should always use the `type` selector with `cloud`. Check targeting Kubernetes yaml can use `kubenetes`, RBAC can use `rbac`, and so on.
+      - `subtypes` Please refer to the section below for subtypes
+      - `custom.input` SHOULD be set to indicate the input type the policy should be applied to. See [list of available types](https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go)
 
 `package` (required)
 :   - MUST follow the Rego's [specification][package]
@@ -80,7 +93,10 @@ If you add a new custom policy, it must be defined under a new package like `use
         - A `string` denoting the detected issue
             - Although `object` with `msg` field is accepted, other fields are dropped and `string` is recommended if `result.new()` is not utilised.
             - e.g. `{"msg": "deny message", "details": "something"}`
-    
+
+### Subtypes in the custom data
+
+TODO
 
 ### Package
 A package name must be unique per policy.
