@@ -37,7 +37,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	scanner := bufio.NewScanner(decodedReader)
 	var pkgs []ftypes.Package
+	var lineNumber int
 	for scanner.Scan() {
+		lineNumber++
 		line := scanner.Text()
 		line = strings.ReplaceAll(line, " ", "")
 		line = strings.ReplaceAll(line, `\`, "")
@@ -52,6 +54,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		pkgs = append(pkgs, ftypes.Package{
 			Name:    s[0],
 			Version: s[1],
+			Locations: []ftypes.Location{
+				{
+					StartLine: lineNumber,
+					EndLine:   lineNumber,
+				},
+			},
 		})
 	}
 	if err := scanner.Err(); err != nil {
