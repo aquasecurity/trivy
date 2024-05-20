@@ -42,7 +42,7 @@ Note: Take a look at the more generic compliance specs that are already availabl
 For example, the following check is detailed in the AWS EKS CIS v1.4 Benchmark:
 `3.1.2 Ensure that the kubelet kubeconfig file ownership is set to root:root (Manual)`
 
-This check can be found in the general K8s CIS Compliance Benchmark: `k8s-cis-1.23.yaml` ([Link](https://github.com/aquasecurity/trivy-policies/blob/31e779916f3863dd74a28cee869ea24fdc4ca8c2/specs/compliance/k8s-cis-1.23.yaml#L480))
+This check can be found in the general K8s CIS Compliance Benchmark: `k8s-cis-1.23.yaml` ([Link](https://github.com/aquasecurity/trivy-checks/blob/31e779916f3863dd74a28cee869ea24fdc4ca8c2/specs/compliance/k8s-cis-1.23.yaml#L480))
 
 Thus, we can use the information already present:
 
