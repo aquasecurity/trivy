@@ -8,6 +8,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/wire"
@@ -67,6 +69,17 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 
 		redisCache := cache.NewRedisCache(options, c.CacheTTL)
 		return Cache{Cache: redisCache}, nil
+	} else if strings.HasPrefix(c.CacheBackend, "s3://") {
+		cfg, err := config.LoadDefaultConfig(context.Background())
+		if err != nil {
+			return Cache{}, xerrors.Errorf("unable to load AWS SDK config: %w", err)
+		}
+		client := s3.NewFromConfig(cfg)
+		bucket := strings.TrimPrefix(c.CacheBackend, "s3://")
+		bucket, prefix, _ := strings.Cut(bucket, "/")
+		return Cache{
+			Cache: cache.NewS3Cache(client, bucket, prefix),
+		}, nil
 	}
 
 	if c.CacheTTL != 0 {

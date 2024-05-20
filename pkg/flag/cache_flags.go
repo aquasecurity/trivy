@@ -128,6 +128,7 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 	// "redis://" or "fs" are allowed for now
 	// An empty value is also allowed for testability
 	if !strings.HasPrefix(cacheBackend, "redis://") &&
+		!strings.HasPrefix(cacheBackend, "s3://") &&
 		cacheBackend != "fs" && cacheBackend != "" {
 		return CacheOptions{}, xerrors.Errorf("unsupported cache backend: %s", cacheBackend)
 	}

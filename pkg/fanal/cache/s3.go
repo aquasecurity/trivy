@@ -4,169 +4,203 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"path"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/hashicorp/go-multierror"
-	"golang.org/x/xerrors"
+	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+)
+
+const (
+	metadataSchemaVersion = "X-Trivy-Schema-Version"
 )
 
 var _ Cache = &S3Cache{}
 
 type s3API interface {
 	HeadObject(ctx context.Context, params *s3.HeadObjectInput, optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error)
+	GetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.Options)) (*s3.GetObjectOutput, error)
 	PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
-	DeleteBucket(ctx context.Context, params *s3.DeleteBucketInput, optFns ...func(*s3.Options)) (*s3.DeleteBucketOutput, error)
+	DeleteObject(ctx context.Context, params *s3.DeleteObjectInput, optFns ...func(*s3.Options)) (*s3.DeleteObjectOutput, error)
+	ListObjectsV2(ctx context.Context, params *s3.ListObjectsV2Input, optFns ...func(*s3.Options)) (*s3.ListObjectsV2Output, error)
 }
 
 type S3Cache struct {
-	s3Client   s3API
-	downloader *manager.Downloader
-	bucketName string
-	prefix     string
+	client s3API
+	bucket string
+	prefix string
 }
 
-func NewS3Cache(bucketName, prefix string, api s3API, downloaderAPI *manager.Downloader) S3Cache {
+func NewS3Cache(client s3API, bucket string, prefix string) S3Cache {
 	return S3Cache{
-		s3Client:   api,
-		downloader: downloaderAPI,
-		bucketName: bucketName,
-		prefix:     prefix,
+		client: client,
+		bucket: bucket,
+		prefix: prefix,
 	}
 }
 
+func (c S3Cache) artifactKey(artifactID string) string {
+	return path.Join(c.prefix, artifactBucket, artifactID)
+}
+
+func (c S3Cache) blobKey(blobID string) string {
+	return path.Join(c.prefix, blobBucket, blobID)
+}
+
 func (c S3Cache) PutArtifact(artifactID string, artifactConfig types.ArtifactInfo) (err error) {
-	key := fmt.Sprintf("%s/%s/%s", artifactBucket, c.prefix, artifactID)
-	if err := c.put(key, artifactConfig); err != nil {
-		return xerrors.Errorf("unable to store artifact information in cache (%s): %w", artifactID, err)
+	b, err := json.Marshal(artifactConfig)
+	if err != nil {
+		return err
+	}
+	key := c.artifactKey(artifactID)
+	params := &s3.PutObjectInput{
+		Bucket:        aws.String(c.bucket),
+		Key:           aws.String(key),
+		ContentLength: aws.Int64(int64(len(b))),
+		ContentType:   aws.String("application/json"),
+		Body:          bytes.NewReader(b),
+		Metadata: map[string]string{
+			metadataSchemaVersion: strconv.Itoa(artifactConfig.SchemaVersion),
+		},
+	}
+	if _, err := c.client.PutObject(context.TODO(), params); err != nil {
+		return fmt.Errorf("(*s3.Client).PutObject failed for %q: %w", key, err)
 	}
 	return nil
 }
 
 func (c S3Cache) DeleteBlobs(blobIDs []string) error {
-	var errs error
+	var errs []error
 	for _, blobID := range blobIDs {
-		key := fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)
-		input := &s3.DeleteBucketInput{Bucket: aws.String(key)}
-		if _, err := c.s3Client.DeleteBucket(context.TODO(), input); err != nil {
-			errs = multierror.Append(errs, err)
+		key := c.blobKey(blobID)
+		if _, err := c.client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+			Bucket: aws.String(c.bucket),
+			Key:    aws.String(key),
+		}); err != nil {
+			errs = append(errs, fmt.Errorf("(*s3.Client).DeleteObject for %q failed: %w", key, err))
 		}
 	}
-	return errs
+	return errors.Join(errs...)
 }
 
 func (c S3Cache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
-	key := fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)
-	if err := c.put(key, blobInfo); err != nil {
-		return xerrors.Errorf("unable to store blob information in cache (%s): %w", blobID, err)
-	}
-	return nil
-}
-
-func (c S3Cache) put(key string, body interface{}) (err error) {
-	b, err := json.Marshal(body)
+	b, err := json.Marshal(blobInfo)
 	if err != nil {
 		return err
 	}
+	key := c.blobKey(blobID)
 	params := &s3.PutObjectInput{
-		Bucket: aws.String(c.bucketName),
-		Key:    aws.String(key),
-		Body:   bytes.NewReader(b),
+		Bucket:        aws.String(c.bucket),
+		Key:           aws.String(key),
+		ContentLength: aws.Int64(int64(len(b))),
+		ContentType:   aws.String("application/json"),
+		Body:          bytes.NewReader(b),
+		Metadata: map[string]string{
+			metadataSchemaVersion: strconv.Itoa(blobInfo.SchemaVersion),
+		},
 	}
-	_, err = c.s3Client.PutObject(context.TODO(), params)
-	if err != nil {
-		return xerrors.Errorf("unable to put object: %w", err)
-	}
-	// Index file due S3 caveat read after write consistency
-	_, err = c.s3Client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(c.bucketName),
-		Key:    aws.String(fmt.Sprintf("%s.index", key)),
-	})
-	if err != nil {
-		return xerrors.Errorf("unable to put index object: %w", err)
+	if _, err := c.client.PutObject(context.TODO(), params); err != nil {
+		return fmt.Errorf("(*s3.Client).PutObject failed for %q: %w", key, err)
 	}
 	return nil
 }
 
 func (c S3Cache) GetBlob(blobID string) (types.BlobInfo, error) {
-	var blobInfo types.BlobInfo
-	buf := manager.NewWriteAtBuffer([]byte{})
-	_, err := c.downloader.Download(context.TODO(), buf, &s3.GetObjectInput{
-		Bucket: aws.String(c.bucketName),
-		Key:    aws.String(fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)),
+	var info types.BlobInfo
+	key := c.blobKey(blobID)
+	out, err := c.client.GetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(c.bucket),
+		Key:    aws.String(key),
 	})
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("failed to get blob from the cache: %w", err)
+		return info, fmt.Errorf("(*s3.Client).GetObject failed for %q: %w", key, err)
 	}
-	err = json.Unmarshal(buf.Bytes(), &blobInfo)
+	defer out.Body.Close()
+	b, err := io.ReadAll(out.Body)
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
+		return info, fmt.Errorf("(*s3.GetObjectOutput).Body.Read failed for %q: %w", key, err)
 	}
-	return blobInfo, nil
-}
-
-func (c S3Cache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
-	var info types.ArtifactInfo
-	buf := manager.NewWriteAtBuffer([]byte{})
-	_, err := c.downloader.Download(context.TODO(), buf, &s3.GetObjectInput{
-		Bucket: aws.String(c.bucketName),
-		Key:    aws.String(fmt.Sprintf("%s/%s/%s", artifactBucket, c.prefix, artifactID)),
-	})
-	if err != nil {
-		return types.ArtifactInfo{}, xerrors.Errorf("failed to get artifact from the cache: %w", err)
-	}
-	err = json.Unmarshal(buf.Bytes(), &info)
-	if err != nil {
-		return types.ArtifactInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
+	if err := json.Unmarshal(b, &info); err != nil {
+		return info, fmt.Errorf("json.Unmarshal failed for %q: %w", key, err)
 	}
 	return info, nil
 }
 
-func (c S3Cache) getIndex(key, keyType string) error {
-	_, err := c.s3Client.HeadObject(context.TODO(), &s3.HeadObjectInput{
-		Key:    aws.String(fmt.Sprintf("%s/%s/%s.index", keyType, c.prefix, key)),
-		Bucket: &c.bucketName,
+func (c S3Cache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
+	var info types.ArtifactInfo
+	key := c.artifactKey(artifactID)
+	out, err := c.client.GetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(c.bucket),
+		Key:    aws.String(key),
 	})
 	if err != nil {
-		return xerrors.Errorf("failed to get index from the cache: %w", err)
+		return info, fmt.Errorf("(*s3.Client).GetObject failed for %q: %w", key, err)
 	}
-	return nil
+	defer out.Body.Close()
+	b, err := io.ReadAll(out.Body)
+	if err != nil {
+		return info, fmt.Errorf("(*s3.GetObjectOutput).Body.Read failed for %q: %w", key, err)
+	}
+	if err := json.Unmarshal(b, &info); err != nil {
+		return info, fmt.Errorf("json.Unmarshal failed for %q: %w", key, err)
+	}
+	return info, nil
 }
 
 func (c S3Cache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+	ctx := context.TODO()
 	var missingArtifact bool
 	var missingBlobIDs []string
+	key := c.artifactKey(artifactID)
+	if out, err := c.client.HeadObject(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(c.bucket),
+		Key:    aws.String(key),
+	}); err != nil {
+		var nsk *s3types.NoSuchKey
+		var nf *s3types.NotFound
+		if errors.As(err, &nsk) || errors.As(err, &nf) {
+			missingArtifact = true
+		} else {
+			return true, nil, fmt.Errorf("(*s3.Client).HeadObject failed for %q: %w", key, err)
+		}
+	} else if out.Metadata != nil && out.Metadata[metadataSchemaVersion] != "" {
+		v, err := strconv.Atoi(out.Metadata[metadataSchemaVersion])
+		if err != nil {
+			return missingArtifact, nil, fmt.Errorf("strconv.Atoi failed for %q: %w", key, err)
+		}
+		if v != types.ArtifactJSONSchemaVersion {
+			missingArtifact = true
+		}
+	}
 	for _, blobID := range blobIDs {
-		err := c.getIndex(blobID, blobBucket)
-		if err != nil {
-			// error means cache missed blob info
-			missingBlobIDs = append(missingBlobIDs, blobID)
-			continue
+		key := c.blobKey(blobID)
+		if out, err := c.client.HeadObject(ctx, &s3.HeadObjectInput{
+			Bucket: aws.String(c.bucket),
+			Key:    aws.String(key),
+		}); err != nil {
+			var nsk *s3types.NoSuchKey
+			var nf *s3types.NotFound
+			if errors.As(err, &nsk) || errors.As(err, &nf) {
+				missingBlobIDs = append(missingBlobIDs, blobID)
+				continue
+			}
+			return missingArtifact, nil, fmt.Errorf("(*s3.Client).HeadObject failed for %q: %w", key, err)
+		} else if out.Metadata != nil && out.Metadata[metadataSchemaVersion] != "" {
+			v, err := strconv.Atoi(out.Metadata[metadataSchemaVersion])
+			if err != nil {
+				return missingArtifact, nil, fmt.Errorf("strconv.Atoi failed for %q: %w", key, err)
+			}
+			if v != types.BlobJSONSchemaVersion {
+				missingBlobIDs = append(missingBlobIDs, blobID)
+				continue
+			}
 		}
-		blobInfo, err := c.GetBlob(blobID)
-		if err != nil {
-			return true, missingBlobIDs, xerrors.Errorf("the blob object (%s) doesn't exist in S3 even though the index file exists: %w", blobID, err)
-		}
-		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
-			missingBlobIDs = append(missingBlobIDs, blobID)
-		}
-	}
-	// get artifact info
-	err := c.getIndex(artifactID, artifactBucket)
-	// error means cache missed artifact info
-	if err != nil {
-		return true, missingBlobIDs, nil
-	}
-	artifactInfo, err := c.GetArtifact(artifactID)
-	if err != nil {
-		return true, missingBlobIDs, xerrors.Errorf("the artifact object (%s) doesn't exist in S3 even though the index file exists: %w", artifactID, err)
-	}
-	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
-		missingArtifact = true
 	}
 	return missingArtifact, missingBlobIDs, nil
 }
@@ -176,5 +210,38 @@ func (c S3Cache) Close() error {
 }
 
 func (c S3Cache) Clear() error {
-	return nil
+	ctx := context.TODO()
+	var objs []s3types.Object
+	artifactPaginator := s3.NewListObjectsV2Paginator(c.client, &s3.ListObjectsV2Input{
+		Bucket: aws.String(c.bucket),
+		Prefix: aws.String(path.Join(c.prefix, artifactBucket) + "/"),
+	})
+	for artifactPaginator.HasMorePages() {
+		page, err := artifactPaginator.NextPage(ctx)
+		if err != nil {
+			return fmt.Errorf("(*s3.Client).ListObjectsV2 failed: %w", err)
+		}
+		objs = append(objs, page.Contents...)
+	}
+	blobPaginator := s3.NewListObjectsV2Paginator(c.client, &s3.ListObjectsV2Input{
+		Bucket: aws.String(c.bucket),
+		Prefix: aws.String(path.Join(c.prefix, blobBucket) + "/"),
+	})
+	for blobPaginator.HasMorePages() {
+		page, err := blobPaginator.NextPage(ctx)
+		if err != nil {
+			return fmt.Errorf("(*s3.Client).ListObjectsV2 failed: %w", err)
+		}
+		objs = append(objs, page.Contents...)
+	}
+	var errs []error
+	for _, obj := range objs {
+		if _, err := c.client.DeleteObject(ctx, &s3.DeleteObjectInput{
+			Bucket: aws.String(c.bucket),
+			Key:    obj.Key,
+		}); err != nil {
+			errs = append(errs, fmt.Errorf("(*s3.Client).DeleteObject for %q failed: %w", aws.ToString(obj.Key), err))
+		}
+	}
+	return errors.Join(errs...)
 }
