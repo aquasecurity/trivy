@@ -1,7 +1,7 @@
-# Custom Compliance Checks
+# Custom Compliance Spec
 
-Trivy supports several different compliance checks. The details on compliance scanning with Trivy are provided in the [compliance documentation](../../docs/compliance/compliance.md).
-All of the Compliance Checks currently available in Trivy can be found in the `trivy-policies/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-policies/tree/main/specs/compliance)).
+Trivy supports several different compliance specs. The details on compliance scanning with Trivy are provided in the [compliance documentation](../../docs/compliance/compliance.md).
+All of the Compliance Specs currently available in Trivy can be found in the `trivy-policies/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-policies/tree/main/specs/compliance)).
 
 New checks are based on the custom compliance report detailed in the [main documentation.](../../docs/compliance/compliance/#custom-compliance)
 If you would like to create your custom compliance report, please reference the information in the main documentation. This section details how community members can contribute new Compliance Specs to Trivy.
@@ -71,7 +71,7 @@ The corresponding check in the `control` section will look like this:
 
 ```
   - id: 2.1.1
-    name: Enable audit Logs (Automated)
+    name: Enable audit Logs (Manual)
     description: |
       Control plane logs provide visibility into operation of the EKS Control plane components systems. 
       The API server audit logs record all accepted and rejected requests in the cluster. 
