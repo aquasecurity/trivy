@@ -38,7 +38,7 @@ func getSession(option types.RegistryOptions) (aws.Config, error) {
 }
 
 func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) error {
-	if !strings.HasSuffix(domain, ecrURLSuffix) && !strings.Contains(domain, ecrURLPartial)  {
+	if !strings.HasSuffix(domain, ecrURLSuffix) && !strings.Contains(domain, ecrURLPartial) {
 		return xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
 	}
 
