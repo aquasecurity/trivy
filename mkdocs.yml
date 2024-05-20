@@ -128,11 +128,8 @@ nav:
                 - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
           - VEX: docs/supply-chain/vex.md
       - Compliance:
-          - Reports:  docs/compliance/compliance.md
-      - Plugin:
-          - Overview: docs/plugin/index.md
-          - User Guide: docs/plugin/user-guide.md
-          - Developer Guide: docs/plugin/developer-guide.md
+          - Built-in Compliance:  docs/compliance/compliance.md
+          - Custom Compliance: docs/compliance/contrib-compliance.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
@@ -193,7 +190,6 @@ nav:
           - Issues: community/contribute/issue.md
           - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
-          - Compliance Checks: community/contribute/compliance.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
