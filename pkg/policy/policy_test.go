@@ -128,7 +128,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -373,7 +373,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Assert metadata.json
 			metadata := filepath.Join(tempDir, "policy", "metadata.json")

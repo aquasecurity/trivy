@@ -59,7 +59,7 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

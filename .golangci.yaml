@@ -70,7 +70,6 @@ linters-settings:
     enable-all: true
     disable:
       - float-compare
-      - require-error
 
 linters:
   disable-all: true
@@ -99,7 +98,7 @@ run:
 
 issues:
   exclude-files:
-    - ".*_mock.go$"
+    - "mock_*.go$"
     - "examples/*"
   exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions

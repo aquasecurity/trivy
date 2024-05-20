@@ -201,7 +201,7 @@ Resources:
 	for _, tc := range testCases {
 		t.Run(tc.schema, func(t *testing.T) {
 			em, err := NewEngineMetadata(tc.schema, inputSchema)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.want, em.GoodExamples[0])
 		})
 	}

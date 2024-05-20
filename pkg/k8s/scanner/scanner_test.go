@@ -2,13 +2,14 @@ package scanner
 
 import (
 	"context"
+	"sort"
+	"testing"
+
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/maps"
-	"sort"
-	"testing"
 
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
@@ -278,7 +279,7 @@ func TestScanner_Scan(t *testing.T) {
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			runner, err := cmd.NewRunner(ctx, flagOpts)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			scanner := NewScanner(tt.clusterName, runner, flagOpts)
 			got, err := scanner.Scan(ctx, tt.artifacts)

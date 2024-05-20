@@ -7,6 +7,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParser_Parse(t *testing.T) {
@@ -65,7 +66,7 @@ func TestParser_Parse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewParser()
 			f, err := os.Open(tt.inputFile)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			pkgs, _, _ := parser.Parse(f)
 			sort.Sort(ftypes.Packages(pkgs))

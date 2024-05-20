@@ -150,7 +150,7 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 		})
 	}
@@ -211,7 +211,7 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 		})
 	}
@@ -339,7 +339,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err, tt.name)
+			require.NoError(t, err, tt.name)
 		})
 	}
 }

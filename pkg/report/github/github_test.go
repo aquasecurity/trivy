@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -245,11 +246,11 @@ func TestWriter_Write(t *testing.T) {
 			inputResults := tt.report
 
 			err := w.Write(context.Background(), inputResults)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			var got github.DependencySnapshot
 			err = json.Unmarshal(written.Bytes(), &got)
-			assert.NoError(t, err, "invalid github written")
+			require.NoError(t, err, "invalid github written")
 			assert.Equal(t, tt.want, got.Manifests, tt.name)
 		})
 	}

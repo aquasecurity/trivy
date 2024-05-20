@@ -77,7 +77,7 @@ func TestRedisCache_PutArtifact(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			got, err := s.Get(tt.wantKey)
@@ -166,7 +166,7 @@ func TestRedisCache_PutBlob(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			got, err := s.Get(tt.wantKey)
@@ -251,7 +251,7 @@ func TestRedisCache_GetArtifact(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			assert.Equal(t, tt.want, got)
@@ -345,7 +345,7 @@ func TestRedisCache_GetBlob(t *testing.T) {
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -456,7 +456,7 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.wantMissingArtifact, missingArtifact)
 			assert.Equal(t, tt.wantMissingBlobIDs, missingBlobIDs)
 		})
@@ -556,7 +556,7 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 }

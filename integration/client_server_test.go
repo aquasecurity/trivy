@@ -5,16 +5,16 @@ package integration
 import (
 	"context"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 
@@ -542,7 +542,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 	t.Setenv("XDG_DATA_HOME", cacheDir)
 
 	port, err := getFreePort()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	addr := fmt.Sprintf("localhost:%d", port)
 
 	go func() {
@@ -554,7 +554,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	err = waitPort(ctx, addr)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	return addr, cacheDir
 }

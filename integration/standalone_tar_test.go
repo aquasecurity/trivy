@@ -3,13 +3,13 @@
 package integration
 
 import (
-	"github.com/aquasecurity/trivy/pkg/types"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -384,7 +384,7 @@ func TestTar(t *testing.T) {
 			if len(tt.args.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
 				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.IgnoreIDs, "\n")), 0444)
-				assert.NoError(t, err, "failed to write .trivyignore")
+				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
 			if tt.args.Input != "" {

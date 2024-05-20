@@ -178,7 +178,7 @@ func Test_dbWorker_update(t *testing.T) {
 
 			mc := metadata.NewClient(cacheDir)
 			got, err := mc.Get()
-			assert.NoError(t, err, tt.name)
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got, tt.name)
 
 			mockDBClient.AssertExpectations(t)

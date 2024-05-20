@@ -9,6 +9,7 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -672,11 +673,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 				Output: sarifWritten,
 			}
 			err := w.Write(context.TODO(), tt.input)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, result)
 		})
 	}

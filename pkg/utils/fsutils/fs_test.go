@@ -67,7 +67,7 @@ func TestCopyFile(t *testing.T) {
 				require.Error(t, err, tt.name)
 				assert.Equal(t, tt.wantErr, err.Error(), tt.name)
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 		})
 	}

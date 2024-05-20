@@ -78,7 +78,7 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

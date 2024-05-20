@@ -1,8 +1,9 @@
 package flag_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
 	"testing"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
@@ -11,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
@@ -221,7 +223,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			}
 
 			got, err := f.ToOptions()
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
