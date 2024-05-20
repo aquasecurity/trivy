@@ -85,7 +85,7 @@ The corresponding check in the `control` section will look like this:
 - The `checks` is in this case `null` as the check is not currently present in the AVD and does not have a check in the [trivy policies](https://github.com/aquasecurity/trivy-checks/tree/main/checks) repository
 - Since the check does not exist in Trivy, the `severity` will be `MEDIUM`. However, in some cases, the compliance report e.g. the CIS Benchmark report will specify the severity
 
-#### Contributing new checks to trivy-policies
+#### Contributing new checks to trivy-checks
 
 All of the checks in trivy-policies can be referenced in the compliance specs.
 To write new Rego checks for Trivy, please take a look at the contributing documentation for checks.
