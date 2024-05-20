@@ -28,7 +28,7 @@ The first section in the spec is focused on the metadata of the spec. Replace al
 
 Compliance specs detail a set of checks that should pass so that the resource is compliant with the official benchmark specifications. There are two ways in which Trivy compliance checks can enforce the compliance specification:
 
-1. The check is available in Trivy, as part of the `trivy-policies` and can be referenced in the Compliance Spec
+1. The check is available in Trivy, as part of the `trivy-checks` and can be referenced in the Compliance Spec
 2. The check is not available in Trivy and a manual check has to be added to the Compliance Spec
 
 Additional information is provided below.
