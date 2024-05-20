@@ -52,7 +52,7 @@ deny[res] {
 
 Every check for a cloud service references a cloud provider. The list of providers are found in the [trivy](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers) repository. 
 
-Before writing a new check for a cloud provider, you need to verify if the cloud provider your check targets is supported by Trivy. If it's not, you'll need to add support for it. Additionally, if the provider that you want to target exists, you need to check whether the service your policy will target is supported. As a reference you can take a look at the AWS provider [here](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/providers/aws/aws.go).
+Before writing a new check for a cloud provider, you need to verify if the cloud provider or resource type that your check targets is supported by Trivy. If it's not, you'll need to add support for it. Additionally, if the provider that you want to target exists, you need to check whether the service your policy will target is supported. As a reference you can take a look at the AWS provider [here](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/providers/aws/aws.go).
 
 ???+ note
     New Kubernetes and Dockerfile checks do not require any additional provider definitions. You can find an example of a Dockerfile check [here](https://github.com/aquasecurity/trivy-policies/blob/main/checks/docker/add_instead_of_copy.rego) and a Kubernetes check [here](https://github.com/aquasecurity/trivy-policies/blob/main/checks/kubernetes/general/CPU_not_limited.rego).
@@ -87,7 +87,7 @@ Running `make id` in the root of the trivy-policies repository will provide you 
 
 ## Check Schemas
 
-Rego Checks for Trivy can utilise Schams to map the input to specific objects. The schemas available are listed [here.](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas). 
+Rego Checks for Trivy can utilise Schemas to map the input to specific objects. The schemas available are listed [here.](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas). 
 
 More information on using the builtin schemas is provided in the [main documentation.](../../../docs/scanner/misconfiguration/custom/schema.md)
 
@@ -114,18 +114,17 @@ deny[res] {
 }
 ```
 
-The rule should return a result, which can be created using `result.new` (this function does not need to be imported, it is defined internally and provided at runtime). The first argument is the message to display, and the second argument is the resource that the issue was detected on.
+The rule should return a result, which can be created using `result.new`. This function does not need to be imported, it is defined internally and provided at runtime. The first argument is the message to display and the second argument is the resource that the issue was detected on.
 
 It is possible to pass any rego variable that references a field of the input document.
 
-
 ## Generate docs
 
-Finally, you'll want to generate documentation for your newly added rule. Please run `make docs` to generate the documentation for your new policy and submit a PR for us to take a look at.
+Finally, you'll want to generate documentation for your newly added rule. Please run `make docs` in the [trivy-policies](https://github.com/aquasecurity/trivy-policies) directory to generate the documentation for your new policy and submit a PR for us to take a look at.
 
 ## Adding Tests
 
-There are many examples of these in the `checks` directory for each check ([Link](https://github.com/aquasecurity/trivy-policies/tree/main/checks)). More information on how to write tests for Rego checks is provided in the [custom misconfiguration](../../../docs/scanner/misconfiguration/custom/testing.md) section of the docs.
+All Rego checks need to have tests. There are many examples of these in the `checks` directory for each check ([Link](https://github.com/aquasecurity/trivy-policies/tree/main/checks)). More information on how to write tests for Rego checks is provided in the [custom misconfiguration](../../../docs/scanner/misconfiguration/custom/testing.md) section of the docs.
 
 ## Example PR
 
