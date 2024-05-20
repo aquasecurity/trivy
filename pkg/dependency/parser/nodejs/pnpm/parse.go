@@ -253,7 +253,7 @@ func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 }
 
 func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string) {
-	dPath := p.trimRegistry(depPath, lockVer)
+	dPath := p.trimDefaultRegistry(depPath, lockVer)
 
 	var scope string
 	scope, dPath = p.separateScope(dPath)
@@ -271,16 +271,18 @@ func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string) 
 	return name, ver
 }
 
-// trimRegistry trims registry (or `/` prefix) for depPath.
+// trimDefaultRegistry trims default (`registry.npmjs.org`) registry (or `/` prefix) for depPath.
 // e.g.
 //   - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10"
 //   - "registry.npmjs.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9"
 //   - "/lodash/4.17.10" => "lodash/4.17.10"
 //   - "/asap@2.0.6" => "asap@2.0.6"
-func (p *Parser) trimRegistry(depPath string, lockVer float64) string {
+//   - "private.npm.org/@babel/generator/7.21.9" => "private.npm.org/@babel/generator/7.21.9"
+func (p *Parser) trimDefaultRegistry(depPath string, lockVer float64) string {
 	// lock file v9 doesn't use registry prefix
 	if lockVer < 9 {
-		_, depPath, _ = strings.Cut(depPath, "/")
+		depPath = strings.TrimPrefix(depPath, "registry.npmjs.org")
+		depPath = strings.TrimPrefix(depPath, "/")
 	}
 	return depPath
 }
