@@ -137,6 +137,7 @@ func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) 
 	})
 }
 
+// reachRoot traverses the component tree from the leaf to the root and returns true if the leaf reaches the root.
 func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, parents map[uuid.UUID][]uuid.UUID,
 	notAffected func(c, leaf *core.Component) bool) bool {
 
@@ -146,8 +147,10 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 
 	visited := make(map[uuid.UUID]bool)
 
+	// Use Depth First Search (DFS)
 	var dfs func(c *core.Component) bool
 	dfs = func(c *core.Component) bool {
+		// Call the function with the current component and the leaf component
 		if notAffected(c, leaf) {
 			return false
 		} else if c.Root {
