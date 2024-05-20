@@ -37,7 +37,7 @@ Additional information is provided below.
 
 Trivy has a comprehensive list of checks as part of its misconfiguration scanning. These can be found in the `trivy-policies/checks` directory ([Link](https://github.com/aquasecurity/trivy-policies/tree/main/checks)). If the check is present, the `AVD_ID` and other information from the check has to be used.
 
-Note: Take a look at the more generic compliance specs that are already available in Trivy. If you are adding new compliance spec to Kubernetes e.g. AWS EKS CIS Benchmarks, chances are high that the check you would like to add to the new spec has already been defined in the general `k8s-ci-v.000.yaml` compliance spec. The same applies for creating specific Cloud Provider Compliance Specs and the [generic compliance specs](https://github.com/aquasecurity/trivy-policies/tree/main/specs/compliance) available. 
+Note: Take a look at the more generic compliance specs that are already available in Trivy. If you are adding new compliance spec to Kubernetes e.g. AWS EKS CIS Benchmarks, chances are high that the check you would like to add to the new spec has already been defined in the general `k8s-ci-v.000.yaml` compliance spec. The same applies for creating specific Cloud Provider Compliance Specs and the [generic compliance specs](https://github.com/aquasecurity/trivy-checks/tree/main/specs/compliance) available. 
 
 For example, the following check is detailed in the AWS EKS CIS v1.4 Benchmark:
 `3.1.2 Ensure that the kubelet kubeconfig file ownership is set to root:root (Manual)`
