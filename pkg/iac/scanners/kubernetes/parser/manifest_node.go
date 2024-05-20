@@ -98,19 +98,19 @@ func (r *ManifestNode) UnmarshalYAML(node *yaml.Node) error {
 
 func (r *ManifestNode) handleSliceTag(node *yaml.Node) error {
 	var nodes []ManifestNode
-	max := node.Line
+	maxLine := node.Line
 	for _, contentNode := range node.Content {
 		newNode := new(ManifestNode)
 		newNode.Path = r.Path
 		if err := contentNode.Decode(newNode); err != nil {
 			return err
 		}
-		if newNode.EndLine > max {
-			max = newNode.EndLine
+		if newNode.EndLine > maxLine {
+			maxLine = newNode.EndLine
 		}
 		nodes = append(nodes, *newNode)
 	}
-	r.EndLine = max
+	r.EndLine = maxLine
 	r.Value = nodes
 	return nil
 }
@@ -118,7 +118,7 @@ func (r *ManifestNode) handleSliceTag(node *yaml.Node) error {
 func (r *ManifestNode) handleMapTag(node *yaml.Node) error {
 	output := make(map[string]ManifestNode)
 	var key string
-	max := node.Line
+	maxLine := node.Line
 	for i, contentNode := range node.Content {
 		if i == 0 || i%2 == 0 {
 			key = contentNode.Value
@@ -129,12 +129,12 @@ func (r *ManifestNode) handleMapTag(node *yaml.Node) error {
 				return err
 			}
 			output[key] = *newNode
-			if newNode.EndLine > max {
-				max = newNode.EndLine
+			if newNode.EndLine > maxLine {
+				maxLine = newNode.EndLine
 			}
 		}
 	}
-	r.EndLine = max
+	r.EndLine = maxLine
 	r.Value = output
 	return nil
 }

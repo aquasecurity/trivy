@@ -21,12 +21,12 @@ func minInt(args []int) int {
 		return 0
 	}
 
-	min := args[0]
+	minN := args[0]
 
 	for i := 1; i < len(args); i++ {
-		if args[i] < min {
-			min = args[i]
+		if args[i] < minN {
+			minN = args[i]
 		}
 	}
-	return min
+	return minN
 }
