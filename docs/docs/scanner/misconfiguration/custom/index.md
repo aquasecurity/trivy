@@ -63,7 +63,7 @@ If you add a new custom policy, it must be defined under a new package like `use
 
 `# METADATA` (optional unless the check will be contributed into Trivy)
 :   - SHOULD be defined for clarity since these values will be displayed in the scan results
-    - `custom.input` SHOULD be set to indicate the input type the policy should be applied to. See [list of available types](https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go)
+    - `custom.input` SHOULD be set to indicate the input type the policy should be applied to. See [list of available types][source-types]
 
 `package` (required)
 :   - MUST follow the Rego's [specification][package]
@@ -142,11 +142,11 @@ The ID is based on the AVD_ID. For instance if the `avd_id` is `AVD-AWS-0176`, t
 
 #### custom.provider
 
-The `provider` field references the [provider](https://github.com/aquasecurity/defsec/tree/master/pkg/providers) available in Trivy. This should be the same as the provider name in the `pkg/iac/providers` directory, e.g. `aws`. 
+The `provider` field references the [provider](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers) available in Trivy. This should be the same as the provider name in the `pkg/iac/providers` directory, e.g. `aws`. 
 
 #### custom.service
 
-The `service` is the name of the service by the provider that the check targets. This should be the same as the service name in the `pkg/iac/providers` directory ([Link](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers)), e.g. `rds`.
+Services are defined within a provider. For instance, RDS is a service and AWS is a provider. This should be the same as the service name in one of the provider directories. ([Link](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers)), e.g. `aws/rds`.
 
 #### custom.input
 
@@ -204,7 +204,7 @@ You can specify input format via the `custom.input` annotation.
     - `dockerfile` (Dockerfile)
     - `kubernetes` (Kubernetes YAML/JSON)
     - `rbac` (Kubernetes RBAC YAML/JSON)
-    - `cloud` (Cloud format, as defined by defsec - this is used for Terraform, CloudFormation, and Cloud/AWS scanning)
+    - `cloud` (Cloud format, as defined by Trivy - this is used for Terraform, CloudFormation, and Cloud/AWS scanning)
     - `yaml` (Generic YAML)
     - `json` (Generic JSON)
     - `toml` (Generic TOML)
@@ -223,4 +223,4 @@ See [here](schema.md) for the detail.
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages
-[source-types]: https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go
+[source-types]: https://github.com/aquasecurity/trivy/blob/9361cdb7e28fd304d6fd2a1091feac64a6786672/pkg/iac/types/sources.go#L4
