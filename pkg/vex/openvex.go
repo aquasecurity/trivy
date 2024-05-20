@@ -1,9 +1,10 @@
 package vex
 
 import (
+	openvex "github.com/openvex/go-vex/pkg/vex"
+
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
-	openvex "github.com/openvex/go-vex/pkg/vex"
 )
 
 type OpenVEX struct {

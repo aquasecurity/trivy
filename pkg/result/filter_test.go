@@ -2,6 +2,7 @@ package result_test
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
@@ -23,7 +24,7 @@ func TestFilter(t *testing.T) {
 			Name:    "foo",
 			Version: "1.2.3",
 			Identifier: ftypes.PkgIdentifier{
-				Hash: "01",
+				UID: "01",
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
@@ -38,7 +39,7 @@ func TestFilter(t *testing.T) {
 			InstalledVersion: pkg1.Version,
 			FixedVersion:     "1.2.4",
 			PkgIdentifier: ftypes.PkgIdentifier{
-				Hash: pkg1.Identifier.Hash,
+				UID:  pkg1.Identifier.UID,
 				PURL: pkg1.Identifier.PURL,
 			},
 			Vulnerability: dbTypes.Vulnerability{
@@ -51,7 +52,7 @@ func TestFilter(t *testing.T) {
 			InstalledVersion: pkg1.Version,
 			FixedVersion:     "1.2.4",
 			PkgIdentifier: ftypes.PkgIdentifier{
-				Hash: pkg1.Identifier.Hash,
+				UID:  pkg1.Identifier.UID,
 				PURL: pkg1.Identifier.PURL,
 			},
 			Vulnerability: dbTypes.Vulnerability{
@@ -250,7 +251,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: types.Report{
 					ArtifactName: ".",
-					ArtifactType: ftypes.ArtifactFilesystem,
+					ArtifactType: artifact.TypeFilesystem,
 					Results: types.Results{
 						types.Result{
 							Target:   "gobinary",
@@ -275,7 +276,7 @@ func TestFilter(t *testing.T) {
 			},
 			want: types.Report{
 				ArtifactName: ".",
-				ArtifactType: ftypes.ArtifactFilesystem,
+				ArtifactType: artifact.TypeFilesystem,
 				Results: types.Results{
 					types.Result{
 						Target:   "gobinary",
@@ -676,7 +677,10 @@ func TestFilter(t *testing.T) {
 						},
 					},
 				},
-				severities: []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityHigh},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
 				policyFile: "./testdata/test-ignore-policy-licenses-and-secrets.rego",
 			},
 			want: types.Report{
@@ -689,7 +693,7 @@ func TestFilter(t *testing.T) {
 							secret1,
 						},
 						ModifiedFindings: []types.ModifiedFinding{
-							 {
+							{
 								Type:      types.FindingTypeSecret,
 								Status:    types.FindingStatusIgnored,
 								Statement: "Filtered by Rego",

@@ -111,7 +111,7 @@ type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *c
 
 func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) {
 	components := lo.MapEntries(bom.Components(), func(id uuid.UUID, component *core.Component) (string, *core.Component) {
-		return component.PkgID.Hash, component
+		return component.PkgIdentifier.UID, component
 	})
 
 	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
@@ -119,7 +119,7 @@ func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) 
 			return true
 		}
 
-		c, ok := components[vuln.PkgIdentifier.Hash]
+		c, ok := components[vuln.PkgIdentifier.UID]
 		if !ok {
 			return true // Should never reach here
 		}
