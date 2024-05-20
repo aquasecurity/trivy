@@ -24,6 +24,7 @@ type Index struct {
 	Version int `yaml:"version"`
 	Plugins []struct {
 		Name       string `yaml:"name"`
+		Version    string `yaml:"version"`
 		Maintainer string `yaml:"maintainer"`
 		Summary    string `yaml:"summary"`
 		Repository string `yaml:"repository"`

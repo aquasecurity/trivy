@@ -291,7 +291,7 @@ resource "something" "blah" {
 	attr := block.GetAttribute("value")
 	require.NotNil(t, attr)
 
-	assert.Equal(t, false, attr.IsResolvable())
+	assert.False(t, attr.IsResolvable())
 }
 
 func Test_UndefinedModuleOutputReferenceInSlice(t *testing.T) {
@@ -318,18 +318,18 @@ resource "something" "blah" {
 	attr := block.GetAttribute("value")
 	require.NotNil(t, attr)
 
-	assert.Equal(t, true, attr.IsResolvable())
+	assert.True(t, attr.IsResolvable())
 
 	values := attr.AsStringValueSliceOrEmpty()
 	require.Len(t, values, 3)
 
 	assert.Equal(t, "first", values[0].Value())
-	assert.Equal(t, true, values[0].GetMetadata().IsResolvable())
+	assert.True(t, values[0].GetMetadata().IsResolvable())
 
-	assert.Equal(t, false, values[1].GetMetadata().IsResolvable())
+	assert.False(t, values[1].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "last", values[2].Value())
-	assert.Equal(t, true, values[2].GetMetadata().IsResolvable())
+	assert.True(t, values[2].GetMetadata().IsResolvable())
 }
 
 func Test_TemplatedSliceValue(t *testing.T) {
@@ -361,19 +361,19 @@ resource "something" "blah" {
 	attr := block.GetAttribute("value")
 	require.NotNil(t, attr)
 
-	assert.Equal(t, true, attr.IsResolvable())
+	assert.True(t, attr.IsResolvable())
 
 	values := attr.AsStringValueSliceOrEmpty()
 	require.Len(t, values, 3)
 
 	assert.Equal(t, "first", values[0].Value())
-	assert.Equal(t, true, values[0].GetMetadata().IsResolvable())
+	assert.True(t, values[0].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "hello-hello", values[1].Value())
-	assert.Equal(t, true, values[1].GetMetadata().IsResolvable())
+	assert.True(t, values[1].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "last", values[2].Value())
-	assert.Equal(t, true, values[2].GetMetadata().IsResolvable())
+	assert.True(t, values[2].GetMetadata().IsResolvable())
 }
 
 func Test_SliceOfVars(t *testing.T) {
@@ -409,16 +409,16 @@ resource "something" "blah" {
 	attr := block.GetAttribute("value")
 	require.NotNil(t, attr)
 
-	assert.Equal(t, true, attr.IsResolvable())
+	assert.True(t, attr.IsResolvable())
 
 	values := attr.AsStringValueSliceOrEmpty()
 	require.Len(t, values, 2)
 
 	assert.Equal(t, "1", values[0].Value())
-	assert.Equal(t, true, values[0].GetMetadata().IsResolvable())
+	assert.True(t, values[0].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "2", values[1].Value())
-	assert.Equal(t, true, values[1].GetMetadata().IsResolvable())
+	assert.True(t, values[1].GetMetadata().IsResolvable())
 }
 
 func Test_VarSlice(t *testing.T) {
@@ -450,19 +450,19 @@ resource "something" "blah" {
 	attr := block.GetAttribute("value")
 	require.NotNil(t, attr)
 
-	assert.Equal(t, true, attr.IsResolvable())
+	assert.True(t, attr.IsResolvable())
 
 	values := attr.AsStringValueSliceOrEmpty()
 	require.Len(t, values, 3)
 
 	assert.Equal(t, "a", values[0].Value())
-	assert.Equal(t, true, values[0].GetMetadata().IsResolvable())
+	assert.True(t, values[0].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "b", values[1].Value())
-	assert.Equal(t, true, values[1].GetMetadata().IsResolvable())
+	assert.True(t, values[1].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "c", values[2].Value())
-	assert.Equal(t, true, values[2].GetMetadata().IsResolvable())
+	assert.True(t, values[2].GetMetadata().IsResolvable())
 }
 
 func Test_LocalSliceNested(t *testing.T) {
@@ -498,19 +498,19 @@ resource "something" "blah" {
 	attr := block.GetAttribute("value")
 	require.NotNil(t, attr)
 
-	assert.Equal(t, true, attr.IsResolvable())
+	assert.True(t, attr.IsResolvable())
 
 	values := attr.AsStringValueSliceOrEmpty()
 	require.Len(t, values, 3)
 
 	assert.Equal(t, "a", values[0].Value())
-	assert.Equal(t, true, values[0].GetMetadata().IsResolvable())
+	assert.True(t, values[0].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "b", values[1].Value())
-	assert.Equal(t, true, values[1].GetMetadata().IsResolvable())
+	assert.True(t, values[1].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "c", values[2].Value())
-	assert.Equal(t, true, values[2].GetMetadata().IsResolvable())
+	assert.True(t, values[2].GetMetadata().IsResolvable())
 }
 
 func Test_FunctionCall(t *testing.T) {
@@ -543,19 +543,19 @@ resource "something" "blah" {
 	attr := block.GetAttribute("value")
 	require.NotNil(t, attr)
 
-	assert.Equal(t, true, attr.IsResolvable())
+	assert.True(t, attr.IsResolvable())
 
 	values := attr.AsStringValueSliceOrEmpty()
 	require.Len(t, values, 3)
 
 	assert.Equal(t, "a", values[0].Value())
-	assert.Equal(t, true, values[0].GetMetadata().IsResolvable())
+	assert.True(t, values[0].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "b", values[1].Value())
-	assert.Equal(t, true, values[1].GetMetadata().IsResolvable())
+	assert.True(t, values[1].GetMetadata().IsResolvable())
 
 	assert.Equal(t, "c", values[2].Value())
-	assert.Equal(t, true, values[2].GetMetadata().IsResolvable())
+	assert.True(t, values[2].GetMetadata().IsResolvable())
 }
 
 func Test_NullDefaultValueForVar(t *testing.T) {
@@ -802,7 +802,7 @@ policy_rules = {
 	block := blocks[0]
 
 	assert.Equal(t, "secure-tag-1", block.GetAttribute("name").AsStringValueOrDefault("", block).Value())
-	assert.Equal(t, true, block.GetAttribute("enabled").AsBoolValueOrDefault(false, block).Value())
+	assert.True(t, block.GetAttribute("enabled").AsBoolValueOrDefault(false, block).Value())
 	assert.Equal(t, "host() != 'google.com'", block.GetAttribute("session_matcher").AsStringValueOrDefault("", block).Value())
 	assert.Equal(t, 1001, block.GetAttribute("priority").AsIntValueOrDefault(0, block).Value())
 }

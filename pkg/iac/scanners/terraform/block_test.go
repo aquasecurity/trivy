@@ -49,8 +49,8 @@ resource "aws_s3_bucket" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					assert.Equal(t, block.HasChild(test.expectedAttribute), true)
-					assert.Equal(t, !block.HasChild(test.expectedAttribute), false)
+					assert.True(t, block.HasChild(test.expectedAttribute))
+					assert.True(t, block.HasChild(test.expectedAttribute))
 				}
 			}
 		})
@@ -89,8 +89,8 @@ resource "aws_s3_bucket" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					assert.Equal(t, block.HasChild(test.expectedAttribute), false)
-					assert.Equal(t, !block.HasChild(test.expectedAttribute), true)
+					assert.False(t, block.HasChild(test.expectedAttribute))
+					assert.False(t, block.HasChild(test.expectedAttribute))
 				}
 			}
 		})
@@ -129,8 +129,8 @@ resource "aws_s3_bucket" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					assert.Equal(t, block.MissingChild(test.expectedAttribute), true)
-					assert.Equal(t, !block.HasChild(test.expectedAttribute), true)
+					assert.True(t, block.MissingChild(test.expectedAttribute))
+					assert.False(t, block.HasChild(test.expectedAttribute))
 				}
 			}
 		})

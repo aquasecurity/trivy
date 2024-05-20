@@ -92,7 +92,7 @@ func TestReport_ColumnHeading(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			column := ColumnHeading(tt.scanners, tt.availableColumns)
-			if !assert.Equal(t, column, tt.want) {
+			if !assert.Equal(t, tt.want, column) {
 				t.Error(fmt.Errorf("TestReport_ColumnHeading want %v got %v", tt.want, column))
 			}
 		})

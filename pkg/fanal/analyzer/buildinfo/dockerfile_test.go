@@ -59,7 +59,7 @@ func Test_dockerfileAnalyzer_Analyze(t *testing.T) {
 
 			if tt.wantErr != "" {
 				require.Error(t, err)
-				assert.Equal(t, err.Error(), tt.wantErr)
+				assert.Equal(t, tt.wantErr, err.Error())
 				return
 			}
 			assert.NoError(t, err)

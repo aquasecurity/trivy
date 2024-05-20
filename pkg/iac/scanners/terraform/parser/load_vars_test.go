@@ -39,7 +39,7 @@ func Test_TFVarsFile(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "bar", vars["variable"].GetAttr("foo").GetAttr("default").AsString())
 		assert.Equal(t, "qux", vars["variable"].GetAttr("baz").AsString())
-		assert.Equal(t, true, vars["foo2"].True())
-		assert.Equal(t, true, vars["foo3"].Equals(cty.NumberIntVal(3)).True())
+		assert.True(t, vars["foo2"].True())
+		assert.True(t, vars["foo3"].Equals(cty.NumberIntVal(3)).True())
 	})
 }

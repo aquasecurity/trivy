@@ -58,7 +58,7 @@ deny {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(results.GetFailed()))
+	require.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -93,7 +93,7 @@ deny {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(results.GetFailed()))
+	require.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -127,7 +127,7 @@ warn {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(results.GetFailed()))
+	require.Len(t, results.GetFailed(), 1)
 	require.Empty(t, results.GetPassed())
 	require.Empty(t, results.GetIgnored())
 
@@ -160,7 +160,7 @@ deny {
 	require.NoError(t, err)
 
 	assert.Empty(t, results.GetFailed())
-	require.Equal(t, 1, len(results.GetPassed()))
+	require.Len(t, results.GetPassed(), 1)
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetPassed()[0].Metadata().Range().GetFilename())
@@ -204,7 +204,7 @@ exception[ns] {
 
 	assert.Empty(t, results.GetFailed())
 	assert.Empty(t, results.GetPassed())
-	assert.Equal(t, 1, len(results.GetIgnored()))
+	assert.Len(t, results.GetIgnored(), 1)
 
 }
 
@@ -250,9 +250,9 @@ exception[ns] {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
-	assert.Equal(t, 1, len(results.GetIgnored()))
+	assert.Len(t, results.GetIgnored(), 1)
 
 }
 
@@ -289,7 +289,7 @@ exception[rules] {
 
 	assert.Empty(t, results.GetFailed())
 	assert.Empty(t, results.GetPassed())
-	assert.Equal(t, 1, len(results.GetIgnored()))
+	assert.Len(t, results.GetIgnored(), 1)
 }
 
 func Test_RegoScanning_Rule_Exception_WithoutMatch(t *testing.T) {
@@ -323,7 +323,7 @@ exception[rules] {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 }
@@ -357,7 +357,7 @@ deny_evil {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 }
@@ -388,7 +388,7 @@ deny[msg] {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(results.GetFailed()))
+	require.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -426,7 +426,7 @@ deny[res] {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(results.GetFailed()))
+	require.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -468,7 +468,7 @@ deny[res] {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(results.GetFailed()))
+	require.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -522,7 +522,7 @@ deny[res] {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(results.GetFailed()))
+	require.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -571,7 +571,7 @@ deny {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 }
@@ -636,7 +636,7 @@ deny {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -671,7 +671,7 @@ deny {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -705,7 +705,7 @@ deny {
 	})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 
@@ -742,7 +742,7 @@ deny {
 		},
 	})
 	require.NoError(t, err)
-	assert.Equal(t, results[0].Rule().Summary, "i am dynamic")
+	assert.Equal(t, "i am dynamic", results[0].Rule().Summary)
 }
 
 func Test_staticMetadata(t *testing.T) {
@@ -775,7 +775,7 @@ deny {
 		},
 	})
 	require.NoError(t, err)
-	assert.Equal(t, results[0].Rule().Summary, "i am static")
+	assert.Equal(t, "i am static", results[0].Rule().Summary)
 }
 
 func Test_annotationMetadata(t *testing.T) {
@@ -933,7 +933,7 @@ deny {
 	results, err := scanner.ScanInput(context.TODO(), Input{})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 }
@@ -973,7 +973,7 @@ deny {
 	results, err := scanner.ScanInput(context.TODO(), Input{})
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(results.GetFailed()))
+	assert.Len(t, results.GetFailed(), 1)
 	assert.Empty(t, results.GetPassed())
 	assert.Empty(t, results.GetIgnored())
 }

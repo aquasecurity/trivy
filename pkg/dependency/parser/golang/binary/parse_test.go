@@ -119,11 +119,6 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/goexperiment",
 			want: []ftypes.Package{
 				{
-					Name:         "",
-					Version:      "",
-					Relationship: ftypes.RelationshipRoot,
-				},
-				{
 					Name:         "stdlib",
 					Version:      "1.22.1",
 					Relationship: ftypes.RelationshipDirect,
@@ -242,6 +237,18 @@ func TestParser_ParseLDFlags(t *testing.T) {
 				},
 			},
 			want: "0.50.1",
+		},
+		{
+			name: "with version with extra prefix",
+			args: args{
+				name: "github.com/argoproj/argo-cd/v2",
+				flags: []string{
+					"-s",
+					"-w",
+					"-X='github.com/argoproj/argo-cd/v2/common.kubectlVersion=v0.26.11'",
+				},
+			},
+			want: "",
 		},
 		{
 			name: "with no flags",

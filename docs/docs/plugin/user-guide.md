@@ -40,6 +40,8 @@ $ trivy plugin install referrer
 
 This command will download the plugin and install it in the plugin cache.
 
+
+
 Trivy adheres to the XDG specification, so the location depends on whether XDG_DATA_HOME is set.
 Trivy will now search XDG_DATA_HOME for the location of the Trivy plugins cache.
 The preference order is as follows:
@@ -55,6 +57,15 @@ $ trivy plugin install github.com/aquasecurity/trivy-plugin-kubectl
 ```bash
 $ trivy plugin install myplugin.tar.gz
 ```
+
+If the plugin's Git repository is [properly tagged](./developer-guide.md#tagging-plugin-repositories), you can specify the version to install like this:
+
+```bash
+$ trivy plugin install referrer@v0.3.0
+```
+
+!!! note
+    The leading `v` in the version is required. Also, the version must follow the [Semantic Versioning](https://semver.org/).
 
 Under the hood Trivy leverages [go-getter][go-getter] to download plugins.
 This means the following protocols are supported for downloading plugins:

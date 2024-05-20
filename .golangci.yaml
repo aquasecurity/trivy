@@ -69,10 +69,7 @@ linters-settings:
   testifylint:
     enable-all: true
     disable:
-      - bool-compare
-      - expected-actual
       - float-compare
-      - len
       - require-error
 
 linters:
@@ -98,11 +95,11 @@ linters:
 
 run:
   go: '1.22'
+  timeout: 30m
 
 issues:
   exclude-files:
     - ".*_mock.go$"
-    - "integration/*"
     - "examples/*"
   exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
