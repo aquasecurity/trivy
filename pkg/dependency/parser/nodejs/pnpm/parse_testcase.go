@@ -1,6 +1,8 @@
 package pnpm
 
-import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+import (
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+)
 
 var (
 	// docker run --name node --rm -it node:16-alpine sh
@@ -728,6 +730,174 @@ var (
 		{
 			ID:        "redux@4.2.0",
 			DependsOn: []string{"@babel/runtime@7.22.3"},
+		},
+	}
+
+	pnpmV9 = []ftypes.Package{
+		{
+			ID:           "@babel/helper-string-parser@7.24.1",
+			Name:         "@babel/helper-string-parser",
+			Version:      "7.24.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "asap@2.0.6",
+			Name:         "asap",
+			Version:      "2.0.6",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "asynckit@0.4.0",
+			Name:         "asynckit",
+			Version:      "0.4.0",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "debug@4.3.4",
+			Name:         "debug",
+			Version:      "4.3.4",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "debug@4.3.5",
+			Name:         "debug",
+			Version:      "4.3.5",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "ee-first@1.1.1",
+			Name:         "ee-first",
+			Version:      "1.1.1",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "encodeurl@1.0.2",
+			Name:         "encodeurl",
+			Version:      "1.0.2",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "escape-html@1.0.3",
+			Name:         "escape-html",
+			Version:      "1.0.3",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "finalhandler@1.1.1",
+			Name:         "finalhandler",
+			Version:      "1.1.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "is-negative@2.0.1",
+			Name:         "is-negative",
+			Version:      "2.0.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "jquery@3.6.0",
+			Name:         "jquery",
+			Version:      "3.6.0",
+			Dev:          true,
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "lodash@4.17.21",
+			Name:         "lodash",
+			Version:      "4.17.21",
+			Dev:          true,
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "ms@2.0.0",
+			Name:         "ms",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "ms@2.1.2",
+			Name:         "ms",
+			Version:      "2.1.2",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "on-finished@2.3.0",
+			Name:         "on-finished",
+			Version:      "2.3.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "package1",
+			Name:         "package1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "parseurl@1.3.3",
+			Name:         "parseurl",
+			Version:      "1.3.3",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "promise@8.1.0",
+			Name:         "promise",
+			Version:      "8.1.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "statuses@1.4.0",
+			Name:         "statuses",
+			Version:      "1.4.0",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "unpipe@1.0.0",
+			Name:         "unpipe",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+	}
+	pnpmV9Deps = []ftypes.Dependency{
+		{
+			ID: "debug@4.3.4",
+			DependsOn: []string{
+				"ms@2.0.0",
+			},
+		},
+		{
+			ID: "debug@4.3.5",
+			DependsOn: []string{
+				"ms@2.1.2",
+			},
+		},
+		{
+			ID: "finalhandler@1.1.1",
+			DependsOn: []string{
+				"debug@4.3.4",
+				"encodeurl@1.0.2",
+				"escape-html@1.0.3",
+				"on-finished@2.3.0",
+				"parseurl@1.3.3",
+				"statuses@1.4.0",
+				"unpipe@1.0.0",
+			},
+		},
+		{
+			ID: "on-finished@2.3.0",
+			DependsOn: []string{
+				"ee-first@1.1.1",
+			},
+		},
+		{
+			ID: "package1",
+			DependsOn: []string{
+				"asynckit@0.4.0",
+			},
+		},
+		{
+			ID: "promise@8.1.0",
+			DependsOn: []string{
+				"asap@2.0.6",
+			},
 		},
 	}
 )
