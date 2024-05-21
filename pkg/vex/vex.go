@@ -6,7 +6,7 @@ import (
 	"os"
 
 	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
-	"github.com/google/uuid"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/samber/lo"
