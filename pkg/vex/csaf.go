@@ -1,7 +1,7 @@
 package vex
 
 import (
-	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/csaf-poc/csaf_distribution/v3/csaf"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
