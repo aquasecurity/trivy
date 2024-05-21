@@ -110,9 +110,10 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 		// cf. https://github.com/pnpm/spec/blob/274ff02de23376ad59773a9f25ecfedd03a41f64/lockfile/6.0.md#packagesdependencypathname
 		name := info.Name
 		version := info.Version
+		var ref string
 
 		if name == "" {
-			name, version = p.parseDepPath(depPath, lockVer)
+			name, version, ref = p.parseDepPath(depPath, lockVer)
 			version = p.parseVersion(depPath, version, lockVer)
 		}
 		pkgID := packageID(name, version)
@@ -123,10 +124,11 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]ftypes.Package, []
 		}
 
 		pkgs = append(pkgs, ftypes.Package{
-			ID:           pkgID,
-			Name:         name,
-			Version:      version,
-			Relationship: lo.Ternary(isDirectPkg(name, lockFile.Dependencies), ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
+			ID:                 pkgID,
+			Name:               name,
+			Version:            version,
+			Relationship:       lo.Ternary(isDirectPkg(name, lockFile.Dependencies), ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
+			ExternalReferences: toExternalRefs(ref),
 		})
 
 		if len(dependencies) > 0 {
@@ -149,7 +151,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	// Check all snapshots and save with resolved versions
 	resolvedSnapshots := make(map[string][]string)
 	for depPath, snapshot := range lockFile.Snapshots {
-		name, version := p.parseDepPath(depPath, lockVer)
+		name, version, _ := p.parseDepPath(depPath, lockVer)
 
 		var dependsOn []string
 		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
@@ -167,7 +169,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	}
 
 	for depPath, pkgInfo := range lockFile.Packages {
-		name, ver := p.parseDepPath(depPath, lockVer)
+		name, ver, ref := p.parseDepPath(depPath, lockVer)
 		parsedVer := p.parseVersion(depPath, ver, lockVer)
 
 		if pkgInfo.Version != "" {
@@ -188,11 +190,12 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 
 		id := packageID(name, parsedVer)
 		resolvedPkgs[id] = ftypes.Package{
-			ID:           id,
-			Name:         name,
-			Version:      parsedVer,
-			Relationship: relationship,
-			Dev:          dev,
+			ID:                 id,
+			Name:               name,
+			Version:            parsedVer,
+			Relationship:       relationship,
+			Dev:                dev,
+			ExternalReferences: toExternalRefs(ref),
 		}
 
 		// Save child deps
@@ -252,8 +255,8 @@ func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 	}
 }
 
-func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string) {
-	dPath := p.trimDefaultRegistry(depPath, lockVer)
+func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string, string) {
+	dPath, nonDefaultRegistry := p.trimRegistry(depPath, lockVer)
 
 	var scope string
 	scope, dPath = p.separateScope(dPath)
@@ -268,23 +271,28 @@ func (p *Parser) parseDepPath(depPath string, lockVer float64) (string, string) 
 
 	ver := p.trimPeerDeps(dPath, lockVer)
 
-	return name, ver
+	return name, ver, lo.Ternary(nonDefaultRegistry, depPath, "")
 }
 
-// trimDefaultRegistry trims default (`registry.npmjs.org`) registry (or `/` prefix) for depPath.
+// trimRegistry trims registry (or `/` prefix) for depPath.
+// It returns true if non-default registry has been trimmed.
 // e.g.
-//   - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10"
-//   - "registry.npmjs.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9"
-//   - "/lodash/4.17.10" => "lodash/4.17.10"
-//   - "/asap@2.0.6" => "asap@2.0.6"
-//   - "private.npm.org/@babel/generator/7.21.9" => "private.npm.org/@babel/generator/7.21.9"
-func (p *Parser) trimDefaultRegistry(depPath string, lockVer float64) string {
+//   - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10", false
+//   - "registry.npmjs.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9", false
+//   - "private.npm.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9", true
+//   - "/lodash/4.17.10" => "lodash/4.17.10", false
+//   - "/asap@2.0.6" => "asap@2.0.6", false
+func (p *Parser) trimRegistry(depPath string, lockVer float64) (string, bool) {
+	var nonDefaultRegistry bool
 	// lock file v9 doesn't use registry prefix
 	if lockVer < 9 {
-		depPath = strings.TrimPrefix(depPath, "registry.npmjs.org")
-		depPath = strings.TrimPrefix(depPath, "/")
+		var registry string
+		registry, depPath, _ = strings.Cut(depPath, "/")
+		if registry != "" && registry != "registry.npmjs.org" {
+			nonDefaultRegistry = true
+		}
 	}
-	return depPath
+	return depPath, nonDefaultRegistry
 }
 
 // separateScope separates the scope (if set) from the rest of the depPath.
@@ -359,4 +367,16 @@ func isDirectPkg(name string, directDeps map[string]interface{}) bool {
 
 func packageID(name, version string) string {
 	return dependency.ID(ftypes.Pnpm, name, version)
+}
+
+func toExternalRefs(ref string) []ftypes.ExternalRef {
+	if ref == "" {
+		return nil
+	}
+	return []ftypes.ExternalRef{
+		{
+			Type: ftypes.RefVCS,
+			URL:  ref,
+		},
+	}
 }

@@ -5,10 +5,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParse(t *testing.T) {
@@ -72,7 +70,7 @@ func TestParse(t *testing.T) {
 
 			sort.Sort(ftypes.Packages(got))
 			sort.Sort(ftypes.Packages(tt.want))
-			assert.Equal(t, tt.want, got)
+			require.Equal(t, tt.want, got)
 
 			if tt.wantDeps != nil {
 				sort.Sort(ftypes.Dependencies(deps))
@@ -83,7 +81,7 @@ func TestParse(t *testing.T) {
 				for _, dep := range tt.wantDeps {
 					sort.Strings(dep.DependsOn)
 				}
-				assert.Equal(t, tt.wantDeps, deps)
+				require.Equal(t, tt.wantDeps, deps)
 			}
 		})
 	}
@@ -96,6 +94,7 @@ func Test_parseDepPath(t *testing.T) {
 		pkg         string
 		wantName    string
 		wantVersion string
+		wantRef     string
 	}{
 		{
 			name:        "v5 - relative path",
@@ -110,6 +109,14 @@ func Test_parseDepPath(t *testing.T) {
 			pkg:         "registry.npmjs.org/lodash/4.17.10",
 			wantName:    "lodash",
 			wantVersion: "4.17.10",
+		},
+		{
+			name:        "v5 - non-default registry",
+			lockFileVer: 5.0,
+			pkg:         "private.npmjs.org/lodash/4.17.10",
+			wantName:    "lodash",
+			wantVersion: "4.17.10",
+			wantRef:     "private.npmjs.org/lodash/4.17.10",
 		},
 		{
 			name:        "v5 - relative path with slash",
@@ -161,6 +168,14 @@ func Test_parseDepPath(t *testing.T) {
 			wantVersion: "4.17.10",
 		},
 		{
+			name:        "v6 - non-default registry",
+			lockFileVer: 6.0,
+			pkg:         "private.npmjs.org/lodash@4.17.10",
+			wantName:    "lodash",
+			wantVersion: "4.17.10",
+			wantRef:     "private.npmjs.org/lodash@4.17.10",
+		},
+		{
 			name:        "v6 - relative path with slash",
 			lockFileVer: 6.0,
 			pkg:         "/@babel/helper-annotate-as-pure@7.18.6",
@@ -207,9 +222,10 @@ func Test_parseDepPath(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := NewParser()
-			gotName, gotVersion := p.parseDepPath(tt.pkg, tt.lockFileVer)
-			assert.Equal(t, tt.wantName, gotName)
-			assert.Equal(t, tt.wantVersion, gotVersion)
+			gotName, gotVersion, gotRef := p.parseDepPath(tt.pkg, tt.lockFileVer)
+			require.Equal(t, tt.wantName, gotName)
+			require.Equal(t, tt.wantVersion, gotVersion)
+			require.Equal(t, tt.wantRef, gotRef)
 		})
 
 	}
@@ -258,7 +274,7 @@ func Test_parseVersion(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := NewParser()
 			gotVer := p.parseVersion("depPath", tt.ver, tt.lockVer)
-			assert.Equal(t, tt.wantVer, gotVer)
+			require.Equal(t, tt.wantVer, gotVer)
 		})
 
 	}
