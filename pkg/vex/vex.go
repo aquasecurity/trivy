@@ -5,8 +5,7 @@ import (
 	"io"
 	"os"
 
-	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
-	"github.com/aquasecurity/trivy/pkg/uuid"
+	"github.com/csaf-poc/csaf_distribution/v3/csaf"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/samber/lo"
@@ -14,10 +13,12 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -121,6 +122,7 @@ func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) 
 
 		c, ok := components[vuln.PkgIdentifier.UID]
 		if !ok {
+			log.Error("Component not found", log.String("uid", vuln.PkgIdentifier.UID))
 			return true // Should never reach here
 		}
 
