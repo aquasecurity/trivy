@@ -9,10 +9,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
@@ -95,10 +95,10 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: &common.Layer{
 									DiffId: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
-								LastModifiedDate: &timestamp.Timestamp{
+								LastModifiedDate: &timestamppb.Timestamp{
 									Seconds: 1577840460,
 								},
-								PublishedDate: &timestamp.Timestamp{
+								PublishedDate: &timestamppb.Timestamp{
 									Seconds: 978310860,
 								},
 							},
@@ -201,7 +201,7 @@ func TestScanner_Scan(t *testing.T) {
 			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}

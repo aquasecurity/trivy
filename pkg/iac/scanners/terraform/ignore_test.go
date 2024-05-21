@@ -673,7 +673,7 @@ func Test_IgnoreInline(t *testing.T) {
 		  secure = false # tfsec:ignore:%s
 	}
 	  `, exampleRule.LongID()))
-	assert.Len(t, results.GetFailed(), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_IgnoreWithAliasCodeStillIgnored(t *testing.T) {
@@ -686,7 +686,7 @@ resource "bad" "my-rule" {
 	
 }
 `, "testworkspace")
-	assert.Len(t, results.GetFailed(), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_TrivyIgnoreWithAliasCodeStillIgnored(t *testing.T) {
@@ -699,7 +699,7 @@ resource "bad" "my-rule" {
 	
 }
 `, "testworkspace")
-	assert.Len(t, results.GetFailed(), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_TrivyIgnoreInline(t *testing.T) {
@@ -711,7 +711,7 @@ func Test_TrivyIgnoreInline(t *testing.T) {
 		  secure = false # trivy:ignore:%s
 	}
 	  `, exampleRule.LongID()))
-	assert.Len(t, results.GetFailed(), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_IgnoreInlineByAVDID(t *testing.T) {
@@ -742,7 +742,7 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 				reg := rules.Register(exampleRule)
 				defer rules.Deregister(reg)
 				results := scanHCL(t, fmt.Sprintf(tc.input, id))
-				assert.Len(t, results.GetFailed(), 0)
+				assert.Empty(t, results.GetFailed())
 			})
 		}
 	}

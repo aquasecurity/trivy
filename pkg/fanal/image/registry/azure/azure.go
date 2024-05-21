@@ -20,7 +20,7 @@ type Registry struct {
 }
 
 const (
-	azureURL = "azurecr.io"
+	azureURL = ".azurecr.io"
 	scope    = "https://management.azure.com/.default"
 	scheme   = "https"
 )

@@ -52,10 +52,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, convertError(err)
 	}
 
+	// Ex: "go1.22.3 X:boringcrypto"
+	stdlibVersion := strings.TrimPrefix(info.GoVersion, "go")
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
+
 	ldflags := p.ldFlags(info.Settings)
 	pkgs := make(ftypes.Packages, 0, len(info.Deps)+2)
-	pkgs = append(pkgs, []ftypes.Package{
-		{
+	pkgs = append(pkgs, ftypes.Package{
+		// Add the Go version used to build this binary.
+		Name:         "stdlib",
+		Version:      stdlibVersion,
+		Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+	})
+
+	// There are times when gobinaries don't contain Main information.
+	// e.g. `Go` binaries (e.g. `go`, `gofmt`, etc.)
+	if info.Main.Path != "" {
+		pkgs = append(pkgs, ftypes.Package{
 			// Add main module
 			Name: info.Main.Path,
 			// Only binaries installed with `go install` contain semver version of the main module.
@@ -65,14 +78,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
 			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.ParseLDFlags(info.Main.Path, ldflags)),
 			Relationship: ftypes.RelationshipRoot,
-		},
-		{
-			// Add the Go version used to build this binary.
-			Name:         "stdlib",
-			Version:      strings.TrimPrefix(info.GoVersion, "go"),
-			Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
-		},
-	}...)
+		})
+	}
 
 	for _, dep := range info.Deps {
 		// binaries with old go version may incorrectly add module in Deps
@@ -159,7 +166,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 func isValidXKey(key string) bool {
 	key = strings.ToLower(key)
 	// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
-	return strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver")
+	return strings.HasSuffix(key, ".version") || strings.HasSuffix(key, ".ver")
 }
 
 func isValidSemVer(ver string) bool {

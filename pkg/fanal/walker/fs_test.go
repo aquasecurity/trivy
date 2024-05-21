@@ -2,13 +2,14 @@ package walker_test
 
 import (
 	"errors"
-	"golang.org/x/exp/slices"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
+
+	"golang.org/x/exp/slices"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -84,7 +85,7 @@ func TestFS_Walk(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 }

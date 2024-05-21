@@ -64,6 +64,8 @@ type Scanner struct { // nolint: gocritic
 	sync.Mutex
 }
 
+func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+
 func (s *Scanner) addParserOptions(opt options.ParserOption) {
 	s.parserOptions = append(s.parserOptions, opt)
 }

@@ -2,10 +2,11 @@ package ubuntu_test
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -188,7 +189,7 @@ func TestScanner_Detect(t *testing.T) {
 			sort.Slice(got, func(i, j int) bool {
 				return got[i].VulnerabilityID < got[j].VulnerabilityID
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -18,5 +18,5 @@ func Test_OS_FS(t *testing.T) {
 	)
 	results, err := s.ScanFS(context.TODO(), os.DirFS("testdata"), "fail")
 	require.NoError(t, err)
-	assert.Greater(t, len(results.GetFailed()), 0)
+	assert.NotEmpty(t, results.GetFailed())
 }

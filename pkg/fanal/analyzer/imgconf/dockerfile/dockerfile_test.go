@@ -291,7 +291,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			got, err := a.Analyze(context.Background(), tt.input)
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
 			if got != nil && got.Misconfiguration != nil {

@@ -112,7 +112,7 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 		Algorithm: "sha256",
 		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 	}, conf)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 }
 
 func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
@@ -152,7 +152,7 @@ func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
 		Algorithm: "sha256",
 		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 	}, conf)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 }
 
 func Test_image_ConfigFile(t *testing.T) {

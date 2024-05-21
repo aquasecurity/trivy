@@ -28,6 +28,8 @@ Manage plugins
 * [trivy plugin install](trivy_plugin_install.md)	 - Install a plugin
 * [trivy plugin list](trivy_plugin_list.md)	 - List installed plugin
 * [trivy plugin run](trivy_plugin_run.md)	 - Run a plugin on the fly
+* [trivy plugin search](trivy_plugin_search.md)	 - List Trivy plugins available on the plugin index and search among them
 * [trivy plugin uninstall](trivy_plugin_uninstall.md)	 - Uninstall a plugin
-* [trivy plugin update](trivy_plugin_update.md)	 - Update an existing plugin
+* [trivy plugin update](trivy_plugin_update.md)	 - Update the local copy of the plugin index
+* [trivy plugin upgrade](trivy_plugin_upgrade.md)	 - Upgrade installed plugins to newer versions
 

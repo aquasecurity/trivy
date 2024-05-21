@@ -23,9 +23,9 @@ The following table provides an outline of the features Trivy offers.
 
 | Package manager | File             | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
 |-----------------|------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
-| pip             | requirements.txt |            -            |     Include      |                  -                   |    -     |
+| pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |
-| Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |          |
+| Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |    -     |
 
 
 | Packaging | Dependency graph |

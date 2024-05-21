@@ -66,39 +66,56 @@ linters-settings:
       ruleguard:
         failOn: all
         rules: '${configDir}/misc/lint/rules.go'
+  testifylint:
+    enable-all: true
+    disable:
+      - float-compare
 
 linters:
   disable-all: true
   enable:
-    - unused
-    - ineffassign
-    - typecheck
-    - govet
-    - revive
-    - gosec
-    - unconvert
-    - goconst
-    - gocyclo
-    - gofmt
-    - misspell
     - bodyclose
     - gci
-    - gomodguard
-    - tenv
+    - goconst
     - gocritic
+    - gocyclo
+    - gofmt
+    - gomodguard
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - revive
+    - tenv
+    - testifylint
+    - typecheck
+    - unconvert
+    - unused
 
 run:
   go: '1.22'
+  timeout: 30m
 
 issues:
   exclude-files:
-    - ".*_mock.go$"
-    - ".*_test.go$"
-    - "integration/*"
+    - "mock_*.go$"
     - "examples/*"
   exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
   exclude-rules:
+    - path: ".*_test.go$"
+      linters:
+        - bodyclose
+        - gci
+        - gocritic
+        - goconst
+        - gofmt
+        - gosec
+        - govet
+        - ineffassign
+        - misspell
+        - tenv
+        - unused
     - linters:
         - gosec
       text: "G304: Potential file inclusion"

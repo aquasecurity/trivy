@@ -9,9 +9,11 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -27,7 +29,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "report with vulnerabilities",
 			input: types.Report{
 				ArtifactName: "debian:9",
-				ArtifactType: ftypes.ArtifactContainerImage,
+				ArtifactType: artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					RepoTags: []string{
 						"debian:9",
@@ -671,11 +673,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 				Output: sarifWritten,
 			}
 			err := w.Write(context.TODO(), tt.input)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, result)
 		})
 	}

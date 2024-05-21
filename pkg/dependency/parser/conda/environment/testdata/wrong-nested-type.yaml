@@ -1,0 +1,7 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+  - pip: asgiref==3.8.1
+
+prefix: /opt/conda/envs/test-env

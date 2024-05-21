@@ -447,7 +447,7 @@ func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() err
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
 	pr, pw := io.Pipe()
-	wait, err := plugin.Start(ctx, pluginName, plugin.RunOptions{
+	wait, err := plugin.Start(ctx, pluginName, plugin.Options{
 		Args:  o.OutputPluginArgs,
 		Stdin: pr,
 	})

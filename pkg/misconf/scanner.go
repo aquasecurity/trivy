@@ -54,6 +54,7 @@ type ScannerOption struct {
 	DataPaths                []string
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
+	IncludeDeprecatedChecks  bool
 
 	HelmValues              []string
 	HelmValueFiles          []string
@@ -217,6 +218,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
+		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)

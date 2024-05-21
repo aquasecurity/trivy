@@ -4,7 +4,6 @@ package repo
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"net/http/httptest"
 	"testing"
 
@@ -12,12 +11,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
 func setupGitServer() (*httptest.Server, error) {
@@ -186,15 +184,15 @@ func TestArtifact_Inspect(t *testing.T) {
 	tests := []struct {
 		name    string
 		rawurl  string
-		want    types.ArtifactReference
+		want    artifact.Reference
 		wantErr bool
 	}{
 		{
 			name:   "happy path",
 			rawurl: ts.URL + "/test.git",
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: ts.URL + "/test.git",
-				Type: types.ArtifactRepository,
+				Type: artifact.TypeRepository,
 				ID:   "sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
 				BlobIDs: []string{
 					"sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
@@ -213,7 +211,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			defer cleanup()
 
 			ref, err := art.Inspect(context.Background())
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, ref)
 		})
 	}
@@ -255,7 +253,7 @@ func Test_newURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := newURL(tt.args.rawurl)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			} else {

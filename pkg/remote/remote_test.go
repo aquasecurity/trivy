@@ -202,7 +202,7 @@ func TestGet(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 }

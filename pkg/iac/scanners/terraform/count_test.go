@@ -181,7 +181,7 @@ variable "things" {
 			} else {
 				exclude = r1.LongID()
 			}
-			assert.Equal(t, test.expectedResults, len(results.GetFailed()))
+			assert.Len(t, results.GetFailed(), test.expectedResults)
 			if include != "" {
 				testutil.AssertRuleFound(t, include, results, "false negative found")
 			}

@@ -62,6 +62,7 @@ trivy kubernetes [flags] [CONTEXT]
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
+      --include-deprecated-checks         include deprecated checks
       --include-kinds strings             indicate the kinds included in scanning (example: node)
       --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
@@ -71,7 +72,7 @@ trivy kubernetes [flags] [CONTEXT]
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --no-progress                       suppress progress bar
-      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.0.9")
+      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.2.1")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name

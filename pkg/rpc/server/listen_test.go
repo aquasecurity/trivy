@@ -166,7 +166,7 @@ func Test_dbWorker_update(t *testing.T) {
 			err := w.update(context.Background(), tt.args.appVersion, cacheDir,
 				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}
@@ -178,7 +178,7 @@ func Test_dbWorker_update(t *testing.T) {
 
 			mc := metadata.NewClient(cacheDir)
 			got, err := mc.Get()
-			assert.NoError(t, err, tt.name)
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got, tt.name)
 
 			mockDBClient.AssertExpectations(t)

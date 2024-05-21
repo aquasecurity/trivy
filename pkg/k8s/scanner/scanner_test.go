@@ -2,12 +2,14 @@ package scanner
 
 import (
 	"context"
+	"sort"
+	"testing"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/maps"
-	"sort"
-	"testing"
 
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
@@ -99,7 +101,7 @@ func TestScanner_Scan(t *testing.T) {
 							Namespace: k8sCoreComponentNamespace,
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:       "golang",
 							Name:       "github.com/containerd/containerd",
@@ -113,7 +115,7 @@ func TestScanner_Scan(t *testing.T) {
 					Type:    core.TypeApplication,
 					Name:    "k8s.io/apiserver",
 					Version: "1.21.1",
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    purl.TypeK8s,
 							Name:    "k8s.io/apiserver",
@@ -138,7 +140,7 @@ func TestScanner_Scan(t *testing.T) {
 							Namespace: k8sCoreComponentNamespace,
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    "k8s",
 							Name:    "k8s.io/kubelet",
@@ -150,7 +152,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Type: core.TypeApplication,
 					Name: "node-core-components",
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000006",
 					},
 				},
@@ -158,7 +160,7 @@ func TestScanner_Scan(t *testing.T) {
 					Type:    core.TypeContainerImage,
 					Name:    "k8s.gcr.io/kube-apiserver",
 					Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    "oci",
 							Name:    "kube-apiserver",
@@ -199,7 +201,7 @@ func TestScanner_Scan(t *testing.T) {
 							Namespace: "",
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000005",
 					},
 				},
@@ -220,7 +222,7 @@ func TestScanner_Scan(t *testing.T) {
 							Namespace: k8sCoreComponentNamespace,
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    purl.TypeK8s,
 							Name:    "k8s.io/kubernetes",
@@ -264,7 +266,7 @@ func TestScanner_Scan(t *testing.T) {
 							Namespace: k8sCoreComponentNamespace,
 						},
 					},
-					PkgID: core.PkgID{
+					PkgIdentifier: ftypes.PkgIdentifier{
 						BOMRef: "3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
@@ -277,7 +279,7 @@ func TestScanner_Scan(t *testing.T) {
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			runner, err := cmd.NewRunner(ctx, flagOpts)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			scanner := NewScanner(tt.clusterName, runner, flagOpts)
 			got, err := scanner.Scan(ctx, tt.artifacts)

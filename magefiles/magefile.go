@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,6 +15,10 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
+
+	// Trivy packages should not be imported in Mage (see https://github.com/aquasecurity/trivy/pull/4242),
+	// but this package doesn't have so many dependencies, and Mage is still fast.
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -23,6 +29,10 @@ var (
 		"CGO_ENABLED": "0",
 	}
 )
+
+func init() {
+	slog.SetDefault(log.New(log.NewHandler(os.Stderr, nil))) // stdout is suppressed in mage
+}
 
 func version() (string, error) {
 	if ver, err := sh.Output("git", "describe", "--tags", "--always"); err != nil {
@@ -60,13 +70,36 @@ func (Tool) Wire() error {
 }
 
 // GolangciLint installs golangci-lint
-func (Tool) GolangciLint() error {
-	const version = "v1.57.2"
-	if exists(filepath.Join(GOBIN, "golangci-lint")) {
+func (t Tool) GolangciLint() error {
+	const version = "v1.58.2"
+	bin := filepath.Join(GOBIN, "golangci-lint")
+	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
 	}
 	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, version)
 	return sh.Run("bash", "-c", command)
+}
+
+func (Tool) matchGolangciLintVersion(bin, version string) bool {
+	out, err := sh.Output(bin, "version", "--format", "json")
+	if err != nil {
+		slog.Error("Unable to get golangci-lint version", slog.Any("err", err))
+		return false
+	}
+	var output struct {
+		Version string `json:"Version"`
+	}
+	if err = json.Unmarshal([]byte(out), &output); err != nil {
+		slog.Error("Unable to parse golangci-lint version", slog.Any("err", err))
+		return false
+	}
+
+	version = strings.TrimPrefix(version, "v")
+	if output.Version != version {
+		slog.Info("golangci-lint version mismatch", slog.String("expected", version), slog.String("actual", output.Version))
+		return false
+	}
+	return true
 }
 
 // Labeler installs labeler
@@ -281,13 +314,13 @@ type Lint mg.Namespace
 // Run runs linters
 func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m")
+	return sh.RunV("golangci-lint", "run")
 }
 
 // Fix auto fixes linters
 func (Lint) Fix() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m", "--fix")
+	return sh.RunV("golangci-lint", "run", "--fix")
 }
 
 // Fmt formats Go code and proto files

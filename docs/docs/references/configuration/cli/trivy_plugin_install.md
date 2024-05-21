@@ -3,7 +3,20 @@
 Install a plugin
 
 ```
-trivy plugin install URL | FILE_PATH
+trivy plugin install NAME | URL | FILE_PATH
+```
+
+### Examples
+
+```
+  # Install a plugin from the plugin index
+  $ trivy plugin install referrer
+
+  # Specify the version of the plugin to install
+  $ trivy plugin install referrer@v0.3.0
+
+  # Install a plugin from a URL
+  $ trivy plugin install github.com/aquasecurity/trivy-plugin-referrer
 ```
 
 ### Options

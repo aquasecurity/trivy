@@ -97,9 +97,9 @@ func Test_splitFileName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotName, gotVer, gotRel, err := splitFileName(tt.filename)
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 			assert.Equal(t, tt.wantName, gotName)
 			assert.Equal(t, tt.wantVer, gotVer)

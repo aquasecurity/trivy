@@ -84,7 +84,7 @@ func TestLayerTar_Walk(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.wantOpqDirs, gotOpqDirs)
 			assert.Equal(t, tt.wantWhFiles, gotWhFiles)
 		})

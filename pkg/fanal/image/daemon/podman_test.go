@@ -88,10 +88,10 @@ func TestPodmanImage(t *testing.T) {
 			defer cleanup()
 
 			if tt.wantErr {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			confName, err := img.ConfigName()
 			require.NoError(t, err)

@@ -54,9 +54,9 @@ resource "problem" "this" {
 	require.NoError(t, err)
 
 	results, err := New().Execute(modules)
-	assert.Error(t, err)
+	require.Error(t, err)
 
-	assert.Equal(t, len(results.GetFailed()), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_PanicInCheckAllowed(t *testing.T) {
@@ -79,7 +79,7 @@ resource "problem" "this" {
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
 	_, err = New().Execute(modules)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func Test_PanicNotInCheckNotIncludePassed(t *testing.T) {
@@ -104,7 +104,7 @@ resource "problem" "this" {
 	results, _ := New().Execute(modules)
 	require.NoError(t, err)
 
-	assert.Equal(t, len(results.GetFailed()), 0)
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_PanicNotInCheckNotIncludePassedStopOnError(t *testing.T) {
@@ -127,5 +127,5 @@ resource "problem" "this" {
 	require.NoError(t, err)
 
 	_, err = New().Execute(modules)
-	assert.Error(t, err)
+	require.Error(t, err)
 }

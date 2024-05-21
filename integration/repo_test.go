@@ -4,13 +4,13 @@ package integration
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/require"
 )
 
 // TestRepository tests `trivy repo` with the local code repositories
@@ -379,7 +379,7 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/gomod-skip.json.golden",
 			override: func(_ *testing.T, want, _ *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+				want.ArtifactType = artifact.TypeFilesystem
 			},
 		},
 		{
@@ -393,8 +393,17 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
 			override: func(_ *testing.T, want, got *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+				want.ArtifactType = artifact.TypeFilesystem
 			},
+		},
+		{
+			name: "julia generating SPDX SBOM",
+			args: args{
+				command: "rootfs",
+				format:  "spdx-json",
+				input:   "testdata/fixtures/repo/julia",
+			},
+			golden: "testdata/julia-spdx.json.golden",
 		},
 	}
 
@@ -450,7 +459,7 @@ func TestRepository(t *testing.T) {
 			if len(tt.args.ignoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
 				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.ignoreIDs, "\n")), 0444)
-				assert.NoError(t, err, "failed to write .trivyignore")
+				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
 

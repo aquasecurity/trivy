@@ -32,6 +32,16 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
+					Name:    "asgiref",
+					Version: "3.8.1",
+					Locations: ftypes.Locations{
+						{
+							StartLine: 21,
+							EndLine:   21,
+						},
+					},
+				},
+				{
 					Name:    "blas",
 					Version: "1.0",
 					Locations: ftypes.Locations{
@@ -58,6 +68,16 @@ func TestParse(t *testing.T) {
 						{
 							StartLine: 7,
 							EndLine:   7,
+						},
+					},
+				},
+				{
+					Name:    "django",
+					Version: "5.0.6",
+					Locations: ftypes.Locations{
+						{
+							StartLine: 22,
+							EndLine:   22,
 						},
 					},
 				},
@@ -167,9 +187,24 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name:    "invalid_json",
+			name:    "invalid yaml file",
 			input:   "testdata/invalid.yaml",
-			wantErr: "unable to decode conda environment.yml file",
+			wantErr: "cannot unmarshal !!str `invalid` into environment.environment",
+		},
+		{
+			name:    "`dependency` field uses unsupported type",
+			input:   "testdata/wrong-deps-type.yaml",
+			wantErr: `unsupported dependency type "!!int" on line 5`,
+		},
+		{
+			name:    "nested field uses unsupported type",
+			input:   "testdata/wrong-nested-type.yaml",
+			wantErr: `unsupported dependency type "!!str" on line 5`,
+		},
+		{
+			name:    "nested dependency uses unsupported type",
+			input:   "testdata/wrong-nested-dep-type.yaml",
+			wantErr: `unsupported dependency type "!!map" on line 6`,
 		},
 	}
 	for _, tt := range tests {
@@ -185,7 +220,7 @@ func TestParse(t *testing.T) {
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

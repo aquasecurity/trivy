@@ -57,7 +57,7 @@ nav:
               - Policy:
                   - Built-in Checks: docs/scanner/misconfiguration/check/builtin.md
                   - Exceptions: docs/scanner/misconfiguration/check/exceptions.md
-              - Custom Policies:
+              - Custom Checks:
                   - Overview: docs/scanner/misconfiguration/custom/index.md
                   - Data: docs/scanner/misconfiguration/custom/data.md
                   - Combine: docs/scanner/misconfiguration/custom/combine.md
@@ -102,6 +102,7 @@ nav:
               - Ruby: docs/coverage/language/ruby.md
               - Rust: docs/coverage/language/rust.md
               - Swift: docs/coverage/language/swift.md
+              - Julia: docs/coverage/language/julia.md
           - IaC:
               - Overview: docs/coverage/iac/index.md
               - Azure ARM Template: docs/coverage/iac/azure-arm.md
@@ -128,9 +129,12 @@ nav:
           - VEX: docs/supply-chain/vex.md
       - Compliance:
           - Reports:  docs/compliance/compliance.md
+      - Plugin:
+          - Overview: docs/plugin/index.md
+          - User Guide: docs/plugin/user-guide.md
+          - Developer Guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Plugins: docs/advanced/plugins.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
@@ -152,16 +156,20 @@ nav:
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
                   - Image: docs/references/configuration/cli/trivy_image.md
                   - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
-                  - Module: docs/references/configuration/cli/trivy_module.md
-                  - Module Install: docs/references/configuration/cli/trivy_module_install.md
-                  - Module Uninstall: docs/references/configuration/cli/trivy_module_uninstall.md
-                  - Plugin: docs/references/configuration/cli/trivy_plugin.md
-                  - Plugin Info: docs/references/configuration/cli/trivy_plugin_info.md
-                  - Plugin Install: docs/references/configuration/cli/trivy_plugin_install.md
-                  - Plugin List: docs/references/configuration/cli/trivy_plugin_list.md
-                  - Plugin Run: docs/references/configuration/cli/trivy_plugin_run.md
-                  - Plugin Uninstall: docs/references/configuration/cli/trivy_plugin_uninstall.md
-                  - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
+                  - Module:
+                      - Module: docs/references/configuration/cli/trivy_module.md
+                      - Module Install: docs/references/configuration/cli/trivy_module_install.md
+                      - Module Uninstall: docs/references/configuration/cli/trivy_module_uninstall.md
+                  - Plugin:
+                      - Plugin: docs/references/configuration/cli/trivy_plugin.md
+                      - Plugin Info: docs/references/configuration/cli/trivy_plugin_info.md
+                      - Plugin Install: docs/references/configuration/cli/trivy_plugin_install.md
+                      - Plugin List: docs/references/configuration/cli/trivy_plugin_list.md
+                      - Plugin Run: docs/references/configuration/cli/trivy_plugin_run.md
+                      - Plugin Uninstall: docs/references/configuration/cli/trivy_plugin_uninstall.md
+                      - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
+                      - Plugin Upgrade: docs/references/configuration/cli/trivy_plugin_upgrade.md
+                      - Plugin Search: docs/references/configuration/cli/trivy_plugin_search.md
                   - Repository: docs/references/configuration/cli/trivy_repository.md
                   - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
                   - SBOM: docs/references/configuration/cli/trivy_sbom.md

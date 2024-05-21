@@ -109,6 +109,10 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 			return nil, nil
 		}
 		return (*PackageURL)(purl), nil
+	case packageurl.TypeJulia:
+		var qs packageurl.Qualifiers
+		namespace, name, qs = parseJulia(name, pkg.ID) // for Julia, the ID is set to the package UUID
+		qualifiers = append(qualifiers, qs...)
 	}
 
 	return (*PackageURL)(packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath)), nil
@@ -424,6 +428,18 @@ func parseNpm(pkgName string) (string, string) {
 	return parsePkgName(name)
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/7759d1cf81629267742eeeb0cdfccf5ebd624cc5/PURL-TYPES.rst#julia
+func parseJulia(pkgName, pkgUUID string) (string, string, packageurl.Qualifiers) {
+	namespace, name := parsePkgName(pkgName)
+	qualifiers := packageurl.Qualifiers{
+		{
+			Key:   "uuid",
+			Value: pkgUUID,
+		},
+	}
+	return namespace, name, qualifiers
+}
+
 func purlType(t ftypes.TargetType) string {
 	switch t {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
@@ -462,6 +478,8 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeRPM
 	case TypeOCI:
 		return packageurl.TypeOCI
+	case ftypes.Julia:
+		return packageurl.TypeJulia
 	}
 	return string(t)
 }

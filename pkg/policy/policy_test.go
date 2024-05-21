@@ -124,11 +124,11 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 
 			got, err := c.LoadBuiltinPolicies()
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -369,11 +369,11 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 
 			err = c.DownloadBuiltinPolicies(context.Background(), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Assert metadata.json
 			metadata := filepath.Join(tempDir, "policy", "metadata.json")

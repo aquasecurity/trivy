@@ -1408,7 +1408,7 @@ func TestPom_Parse(t *testing.T) {
 
 			gotPkgs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}

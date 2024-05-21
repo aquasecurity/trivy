@@ -1,8 +1,9 @@
 package cache
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"testing"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -253,7 +254,7 @@ func TestCalcKey(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

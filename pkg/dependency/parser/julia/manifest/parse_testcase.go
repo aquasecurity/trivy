@@ -74,4 +74,19 @@ var (
 	juliaV1_9ShadowedDepDeps = []ftypes.Dependency{
 		{ID: "ead4f63c-334e-11e9-00e6-e7f0a5f21b60", DependsOn: []string{"f41f7b98-334e-11e9-1257-49272045fb24"}},
 	}
+
+	juliaV10FormatPkgs = []ftypes.Package{
+		{ID: "767738be-2f1f-45a9-b806-0234f3164144", Name: "Foo", Version: "unknown", Locations: []ftypes.Location{{StartLine: 1, EndLine: 5}}},
+		{ID: "6f418443-bd2e-4783-b551-cdbac608adf2", Name: "Foo", Version: "unknown", Locations: []ftypes.Location{{StartLine: 7, EndLine: 10}}},
+		{ID: "2a550a13-6bab-4a91-a4ee-dff34d6b99d0", Name: "Bar", Version: "unknown", Locations: []ftypes.Location{{StartLine: 12, EndLine: 14}}},
+		{ID: "6801f525-dc68-44e8-a4e8-cabd286279e7", Name: "Baz", Version: "unknown", Locations: []ftypes.Location{{StartLine: 19, EndLine: 21}}},
+		{ID: "b5ec9b9c-e354-47fd-b367-a348bdc8f909", Name: "Qux", Version: "unknown", Locations: []ftypes.Location{{StartLine: 26, EndLine: 28}}},
+	}
+
+	juliaV10FormatDeps = []ftypes.Dependency{
+		{ID: "767738be-2f1f-45a9-b806-0234f3164144", DependsOn: []string{"2a550a13-6bab-4a91-a4ee-dff34d6b99d0", "6801f525-dc68-44e8-a4e8-cabd286279e7", "b5ec9b9c-e354-47fd-b367-a348bdc8f909"}},
+		{ID: "6f418443-bd2e-4783-b551-cdbac608adf2", DependsOn: []string{"b5ec9b9c-e354-47fd-b367-a348bdc8f909"}},
+		{ID: "2a550a13-6bab-4a91-a4ee-dff34d6b99d0", DependsOn: []string{"6801f525-dc68-44e8-a4e8-cabd286279e7", "6f418443-bd2e-4783-b551-cdbac608adf2"}},
+		{ID: "6801f525-dc68-44e8-a4e8-cabd286279e7", DependsOn: []string{"6f418443-bd2e-4783-b551-cdbac608adf2", "b5ec9b9c-e354-47fd-b367-a348bdc8f909"}},
+	}
 )

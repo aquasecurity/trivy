@@ -231,13 +231,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS: mfs,
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			if len(got.Applications) > 0 {
 				sort.Sort(got.Applications[0].Packages)
 				sort.Sort(tt.want.Applications[0].Packages)
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

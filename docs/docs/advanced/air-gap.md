@@ -129,8 +129,8 @@ $ trivy image --skip-db-update --skip-java-db-update --offline-scan alpine:3.12
 
 No special measures are required to detect misconfigurations in an air-gapped environment.
 
-### Run Trivy with `--skip-policy-update` option
-In an air-gapped environment, specify `--skip-policy-update` so that Trivy doesn't attempt to download the latest misconfiguration policies.
+### Run Trivy with `--skip-check-update` option
+In an air-gapped environment, specify `--skip-check-update` so that Trivy doesn't attempt to download the latest misconfiguration checks.
 
 ```
 $ trivy conf --skip-policy-update /path/to/conf

@@ -54,6 +54,12 @@ func TestParse(t *testing.T) {
 			want:     juliaV1_9ShadowedDepPkgs,
 			wantDeps: juliaV1_9ShadowedDepDeps,
 		},
+		{
+			name:     "julia v1.0 format",
+			file:     "testdata/julia_v1.0_format/Manifest.toml",
+			want:     juliaV10FormatPkgs,
+			wantDeps: juliaV10FormatDeps,
+		},
 	}
 
 	for _, tt := range tests {

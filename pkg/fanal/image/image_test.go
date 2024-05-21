@@ -281,10 +281,10 @@ func TestNewDockerImage(t *testing.T) {
 			defer cleanup()
 
 			if tt.wantErr {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			gotID, err := img.ID()
 			require.NoError(t, err)
@@ -399,10 +399,10 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			defer cleanup()
 
 			if tt.wantErr != "" {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -490,11 +490,11 @@ func TestNewArchiveImage(t *testing.T) {
 			img, err := NewArchiveImage(tt.args.fileName)
 			switch {
 			case tt.wantErr != "":
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			default:
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			// archive doesn't support RepoTags and RepoDigests
@@ -552,7 +552,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 		})
 	}
