@@ -1381,6 +1381,54 @@ You're not viewing the latest version.
     Metadata
   </a>
   
+    <nav class="md-nav" aria-label="Metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customavd_id-and-customid" class="md-nav__link">
+    custom.avd_id and custom.id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customprovider" class="md-nav__link">
+    custom.provider
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customservice" class="md-nav__link">
+    custom.service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custominput" class="md-nav__link">
+    custom.input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subtypes-in-the-custom-data" class="md-nav__link">
+    Subtypes in the custom data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-result" class="md-nav__link">
+    Scan Result
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1489,6 +1537,20 @@ You're not viewing the latest version.
     <li class="md-nav__item">
       <a href="debug/" class="md-nav__link">
         Debugging Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contribute-checks/" class="md-nav__link">
+        Contribute Checks
       </a>
     </li>
   
@@ -3742,12 +3804,75 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link" for="__nav_5_3">
+          Contribute Rego Checks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contribute Rego Checks" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_3">
+          <span class="md-nav__icon md-icon"></span>
+          Contribute Rego Checks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../community/contribute/checks/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../community/contribute/checks/service-support/" class="md-nav__link">
+        Add Service Support
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4">
           Maintainer
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Maintainer" data-md-level="2">
-        <label class="md-nav__title" for="__nav_5_3">
+        <label class="md-nav__title" for="__nav_5_4">
           <span class="md-nav__icon md-icon"></span>
           Maintainer
         </label>
@@ -3874,6 +3999,54 @@ You're not viewing the latest version.
     Metadata
   </a>
   
+    <nav class="md-nav" aria-label="Metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customavd_id-and-customid" class="md-nav__link">
+    custom.avd_id and custom.id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customprovider" class="md-nav__link">
+    custom.provider
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customservice" class="md-nav__link">
+    custom.service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custominput" class="md-nav__link">
+    custom.input
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subtypes-in-the-custom-data" class="md-nav__link">
+    Subtypes in the custom data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-result" class="md-nav__link">
+    Scan Result
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -3989,11 +4162,11 @@ deny[res] {
 If you add a new custom policy, it must be defined under a new package like <code>user.kubernetes.ID002</code>.</p>
 <h3 id="policy-structure">Policy structure</h3>
 <dl>
-<dt><code># METADATA</code> (optional)</dt>
+<dt><code># METADATA</code> (optional unless the check will be contributed into Trivy)</dt>
 <dd>
 <ul>
 <li>SHOULD be defined for clarity since these values will be displayed in the scan results</li>
-<li><code>custom.input</code> SHOULD be set to indicate the input type the policy should be applied to. See <a href="https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go">list of available types</a></li>
+<li><code>custom.input</code> SHOULD be set to indicate the input type the policy should be applied to. See <a href="https://github.com/aquasecurity/trivy/blob/9361cdb7e28fd304d6fd2a1091feac64a6786672/pkg/iac/types/sources.go#L4">list of available types</a></li>
 </ul>
 </dd>
 <dt><code>package</code> (required)</dt>
@@ -4035,7 +4208,7 @@ If you add a new custom policy, it must be defined under a new package like <cod
 </code></pre></div>
 </div>
 <p>By default, only <code>builtin.*</code> packages will be evaluated.
-If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. </p>
+If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be <code>user</code> as in this example. It could be anything user-defined.</p>
 <div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 </code></pre></div>
 <p>In this case, <code>user.*</code> will be evaluated.
@@ -4056,8 +4229,7 @@ Any package prefixes such as <code>main</code> and <code>user</code> are allowed
 #     - type: kubernetes
 </code></pre></div>
 </div>
-<p>All fields are optional. The <code>schemas</code> field should be used to enable policy validation using a built-in schema. The 
-schema that will be used is based on the input document type. It is recommended to use this to ensure your checks are 
+<p>If you are creating checks for your Trivy misconfiguration scans, some fields are optional as referenced in the table below. The <code>schemas</code> field should be used to enable policy validation using a built-in schema. It is recommended to use this to ensure your checks are 
 correct and do not reference incorrect properties/values.</p>
 <table>
 <thead>
@@ -4121,7 +4293,7 @@ correct and do not reference incorrect properties/values.</p>
 </tr>
 <tr>
 <td>custom.input.selector.type</td>
-<td>Any item(s) in <a href="https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go">this list</a></td>
+<td>Any item(s) in <a href="https://github.com/aquasecurity/trivy/blob/9361cdb7e28fd304d6fd2a1091feac64a6786672/pkg/iac/types/sources.go#L4">this list</a></td>
 <td align="center"></td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
@@ -4135,6 +4307,18 @@ correct and do not reference incorrect properties/values.</p>
 </tr>
 </tbody>
 </table>
+<h4 id="customavd_id-and-customid">custom.avd_id and custom.id</h4>
+<p>The AVD_ID can be used to link the check to the Aqua Vulnerability Database (AVD) entry. For example, the <code>avd_id</code> <code>AVD-AWS-0176</code> is the ID of the check in the <a href="https://avd.aquasec.com/">AWS Vulnerability Database</a>. If you are <a href="../../../../community/contribute/checks/overview/">contributing your check to trivy-policies</a>, you need to generate an ID using <code>make id</code> in the <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a> repository. The output of the command will provide you the next free IDs for the different providers in Trivy.</p>
+<p>The ID is based on the AVD_ID. For instance if the <code>avd_id</code> is <code>AVD-AWS-0176</code>, the ID is <code>ID0176</code>.</p>
+<h4 id="customprovider">custom.provider</h4>
+<p>The <code>provider</code> field references the <a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers">provider</a> available in Trivy. This should be the same as the provider name in the <code>pkg/iac/providers</code> directory, e.g. <code>aws</code>. </p>
+<h4 id="customservice">custom.service</h4>
+<p>Services are defined within a provider. For instance, RDS is a service and AWS is a provider. This should be the same as the service name in one of the provider directories. (<a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers">Link</a>), e.g. <code>aws/rds</code>.</p>
+<h4 id="custominput">custom.input</h4>
+<p>The <code>input</code> tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the <code>selector</code> input, and should always use the <code>type</code> selector with <code>cloud</code>. Check targeting Kubernetes yaml can use <code>kubenetes</code>, RBAC can use <code>rbac</code>, and so on.</p>
+<h4 id="subtypes-in-the-custom-data">Subtypes in the custom data</h4>
+<p>Subtypes currently only need to be defined for cloud providers <a href="./selectors.md/#enabling-selectors-and-subtypes">as detailed in the documentation.</a></p>
+<h4 id="scan-result">Scan Result</h4>
 <p>Some fields are displayed in scan results.</p>
 <div class="highlight"><pre><span></span><code>k.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
 ───────────────────
@@ -4177,7 +4361,7 @@ Even if a Dockerfile exists in the specified directory, it will not be passed to
 <li><code>dockerfile</code> (Dockerfile)</li>
 <li><code>kubernetes</code> (Kubernetes YAML/JSON)</li>
 <li><code>rbac</code> (Kubernetes RBAC YAML/JSON)</li>
-<li><code>cloud</code> (Cloud format, as defined by defsec - this is used for Terraform, CloudFormation, and Cloud/AWS scanning)</li>
+<li><code>cloud</code> (Cloud format, as defined by Trivy - this is used for Terraform, CloudFormation, and Cloud/AWS scanning)</li>
 <li><code>yaml</code> (Generic YAML)</li>
 <li><code>json</code> (Generic JSON)</li>
 <li><code>toml</code> (Generic TOML)</li>
