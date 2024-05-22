@@ -1,5 +1,5 @@
 package xerrors
 
-func Errorf(format string, a ...interface{}) error {
+func Errorf(format string, a ...any) error {
 	return nil
 }

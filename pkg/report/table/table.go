@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	SeverityColor = []func(a ...interface{}) string{
+	SeverityColor = []func(a ...any) string{
 		color.New(color.FgCyan).SprintFunc(),   // UNKNOWN
 		color.New(color.FgBlue).SprintFunc(),   // LOW
 		color.New(color.FgYellow).SprintFunc(), // MEDIUM

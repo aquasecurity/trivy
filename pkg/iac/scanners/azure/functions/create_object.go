@@ -1,7 +1,7 @@
 package functions
 
-func CreateObject(args ...interface{}) interface{} {
-	obj := make(map[string]interface{})
+func CreateObject(args ...any) any {
+	obj := make(map[string]any)
 	if len(args) == 0 {
 		return obj
 	}

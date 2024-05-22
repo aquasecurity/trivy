@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func UniqueString(args ...interface{}) interface{} {
+func UniqueString(args ...any) any {
 	if len(args) == 0 {
 		return ""
 	}

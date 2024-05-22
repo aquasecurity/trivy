@@ -232,10 +232,10 @@ func (b *builder) readSlice(name string, parent, inputType reflect.Type, indent 
 	return prop, nil
 }
 
-func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type, raw interface{}, indent int) error {
+func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type, raw any, indent int) error {
 
 	switch cast := raw.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		def.Type = "object"
 		for k, v := range cast {
 			child := &Property{

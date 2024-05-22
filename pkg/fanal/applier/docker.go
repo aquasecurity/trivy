@@ -166,7 +166,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	}
 
 	// nolint
-	_ = nestedMap.Walk(func(keys []string, value interface{}) error {
+	_ = nestedMap.Walk(func(keys []string, value any) error {
 		switch v := value.(type) {
 		case ftypes.PackageInfo:
 			mergedLayer.Packages = append(mergedLayer.Packages, v.Packages...)

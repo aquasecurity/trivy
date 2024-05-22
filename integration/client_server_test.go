@@ -371,7 +371,7 @@ func TestClientServerWithFormat(t *testing.T) {
 	}
 
 	fakeTime := time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
-	report.CustomTemplateFuncMap = map[string]interface{}{
+	report.CustomTemplateFuncMap = map[string]any{
 		"now": func() time.Time {
 			return fakeTime
 		},
@@ -388,7 +388,7 @@ func TestClientServerWithFormat(t *testing.T) {
 	t.Setenv("GITHUB_WORKFLOW", "workflow-name")
 
 	t.Cleanup(func() {
-		report.CustomTemplateFuncMap = map[string]interface{}{}
+		report.CustomTemplateFuncMap = map[string]any{}
 	})
 
 	addr, cacheDir := setup(t, setupOptions{})

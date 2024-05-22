@@ -38,7 +38,7 @@ func (m *Map[K, V]) Store(key K, value V) { m.m.Store(key, value) }
 // Len returns the length of the map
 func (m *Map[K, V]) Len() int {
 	var i int
-	m.m.Range(func(k, v interface{}) bool {
+	m.m.Range(func(k, v any) bool {
 		i++
 		return true
 	})

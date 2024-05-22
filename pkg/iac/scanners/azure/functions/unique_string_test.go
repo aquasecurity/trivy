@@ -9,19 +9,19 @@ import (
 func Test_UniqueString(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "unique string from a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 			},
 			expected: "68656c6c6fe3b",
 		},
 		{
 			name: "unique string from a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				"world",
 			},

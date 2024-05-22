@@ -37,9 +37,9 @@ func New(opts ...options.ParserOption) *Parser {
 	return p
 }
 
-func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]interface{}, error) {
+func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]any, error) {
 
-	files := make(map[string]interface{})
+	files := make(map[string]any)
 	if err := fs.WalkDir(target, filepath.ToSlash(path), func(path string, entry fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
@@ -69,13 +69,13 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 }
 
 // ParseFile parses toml content from the provided filesystem path.
-func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (interface{}, error) {
+func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (any, error) {
 	f, err := fsys.Open(filepath.ToSlash(path))
 	if err != nil {
 		return nil, err
 	}
 	defer func() { _ = f.Close() }()
-	var target interface{}
+	var target any
 	if _, err := toml.NewDecoder(f).Decode(&target); err != nil {
 		return nil, err
 	}

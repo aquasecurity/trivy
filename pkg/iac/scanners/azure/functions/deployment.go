@@ -1,12 +1,12 @@
 package functions
 
 type DeploymentData interface {
-	GetParameter(name string) interface{}
-	GetVariable(variableName string) interface{}
-	GetEnvVariable(envVariableName string) interface{}
+	GetParameter(name string) any
+	GetVariable(variableName string) any
+	GetEnvVariable(envVariableName string) any
 }
 
-func Deployment(deploymentProvider DeploymentData, args ...interface{}) interface{} {
+func Deployment(deploymentProvider DeploymentData, args ...any) any {
 
 	/*
 
@@ -36,7 +36,7 @@ func Deployment(deploymentProvider DeploymentData, args ...interface{}) interfac
 	return nil
 }
 
-func Environment(envProvider DeploymentData, args ...interface{}) interface{} {
+func Environment(envProvider DeploymentData, args ...any) any {
 	if len(args) == 0 {
 		return nil
 	}
@@ -48,7 +48,7 @@ func Environment(envProvider DeploymentData, args ...interface{}) interface{} {
 	return envProvider.GetEnvVariable(envVarName)
 }
 
-func Variables(varProvider DeploymentData, args ...interface{}) interface{} {
+func Variables(varProvider DeploymentData, args ...any) any {
 	if len(args) == 0 {
 		return nil
 	}
@@ -60,7 +60,7 @@ func Variables(varProvider DeploymentData, args ...interface{}) interface{} {
 	return varProvider.GetVariable(varName)
 }
 
-func Parameters(paramProvider DeploymentData, args ...interface{}) interface{} {
+func Parameters(paramProvider DeploymentData, args ...any) any {
 	if len(args) == 0 {
 		return nil
 	}

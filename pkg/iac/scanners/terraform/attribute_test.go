@@ -297,7 +297,7 @@ func Test_AttributeIsAny(t *testing.T) {
 		name           string
 		source         string
 		checkAttribute string
-		checkValue     []interface{}
+		checkValue     []any
 		expectedResult bool
 	}{
 		{
@@ -308,7 +308,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	acl = "public-read"
 }`,
 			checkAttribute: "acl",
-			checkValue:     []interface{}{"private", "authenticated-read"},
+			checkValue:     []any{"private", "authenticated-read"},
 			expectedResult: false,
 		},
 		{
@@ -319,7 +319,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	acl = "private"
 }`,
 			checkAttribute: "acl",
-			checkValue:     []interface{}{"private", "authenticated-read"},
+			checkValue:     []any{"private", "authenticated-read"},
 			expectedResult: true,
 		},
 		{
@@ -329,7 +329,7 @@ resource "aws_security_group" "my-security_group" {
 	count = 1
 }`,
 			checkAttribute: "count",
-			checkValue:     []interface{}{1, 2},
+			checkValue:     []any{1, 2},
 			expectedResult: true,
 		},
 	}
@@ -355,7 +355,7 @@ func Test_AttributeIsNone(t *testing.T) {
 		name           string
 		source         string
 		checkAttribute string
-		checkValue     []interface{}
+		checkValue     []any
 		expectedResult bool
 	}{
 		{
@@ -366,7 +366,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	acl = "public-read"
 }`,
 			checkAttribute: "acl",
-			checkValue:     []interface{}{"private", "authenticated-read"},
+			checkValue:     []any{"private", "authenticated-read"},
 			expectedResult: true,
 		},
 		{
@@ -377,7 +377,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	acl = "private"
 }`,
 			checkAttribute: "acl",
-			checkValue:     []interface{}{"private", "authenticated-read"},
+			checkValue:     []any{"private", "authenticated-read"},
 			expectedResult: false,
 		},
 		{
@@ -387,7 +387,7 @@ resource "aws_security_group" "my-security_group" {
 	count = 0
 }`,
 			checkAttribute: "count",
-			checkValue:     []interface{}{1, 2},
+			checkValue:     []any{1, 2},
 			expectedResult: true,
 		},
 	}
@@ -413,7 +413,7 @@ func Test_AttributeIsEmpty(t *testing.T) {
 		name           string
 		source         string
 		checkAttribute string
-		checkValue     []interface{}
+		checkValue     []any
 		expectedResult bool
 	}{
 		{

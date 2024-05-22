@@ -1,6 +1,6 @@
 package functions
 
-func If(args ...interface{}) interface{} {
+func If(args ...any) any {
 
 	if len(args) != 3 {
 		return nil

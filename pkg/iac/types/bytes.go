@@ -10,14 +10,14 @@ type BytesValue struct {
 }
 
 func (b BytesValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"value":    b.value,
 		"metadata": b.metadata,
 	})
 }
 
 func (b *BytesValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (b BytesValue) Value() []byte {
 	return b.value
 }
 
-func (b BytesValue) GetRawValue() interface{} {
+func (b BytesValue) GetRawValue() any {
 	return b.value
 }
 
@@ -87,8 +87,8 @@ func BytesUnresolvable(m Metadata) BytesValue {
 	return b
 }
 
-func (s BytesValue) ToRego() interface{} {
-	m := s.metadata.ToRego().(map[string]interface{})
+func (s BytesValue) ToRego() any {
+	m := s.metadata.ToRego().(map[string]any)
 	m["value"] = string(s.Value())
 	return m
 }

@@ -1,6 +1,6 @@
 package functions
 
-func Greater(args ...interface{}) interface{} {
+func Greater(args ...any) any {
 
 	if len(args) != 2 {
 		return false
@@ -22,7 +22,7 @@ func Greater(args ...interface{}) interface{} {
 	return false
 }
 
-func GreaterOrEquals(args ...interface{}) interface{} {
+func GreaterOrEquals(args ...any) any {
 
 	if len(args) != 2 {
 		return false

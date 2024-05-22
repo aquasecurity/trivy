@@ -9,7 +9,7 @@ import (
 )
 
 func EndpointResolver(endpoint string) aws.EndpointResolverWithOptionsFunc {
-	return aws.EndpointResolverWithOptionsFunc(func(_, reg string, options ...interface{}) (aws.Endpoint, error) {
+	return aws.EndpointResolverWithOptionsFunc(func(_, reg string, options ...any) (aws.Endpoint, error) {
 		return aws.Endpoint{
 			PartitionID:   "aws",
 			URL:           endpoint,

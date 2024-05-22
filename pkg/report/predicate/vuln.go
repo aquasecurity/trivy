@@ -25,10 +25,10 @@ type CosignVulnPredicate struct {
 }
 
 type Invocation struct {
-	Parameters interface{} `json:"parameters"`
-	URI        string      `json:"uri"`
-	EventID    string      `json:"event_id"`
-	BuilderID  string      `json:"builder.id"`
+	Parameters any    `json:"parameters"`
+	URI        string `json:"uri"`
+	EventID    string `json:"event_id"`
+	BuilderID  string `json:"builder.id"`
 }
 
 type DB struct {

@@ -22,7 +22,7 @@ func Test_EqualTo(t *testing.T) {
 	tests := []struct {
 		name       string
 		property   *Property
-		checkValue interface{}
+		checkValue any
 		opts       []EqualityOptions
 		isEqual    bool
 	}{

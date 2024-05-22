@@ -10,27 +10,27 @@ func Test_Or(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected bool
 	}{
 		{
 			name:     "And with same 2 bools",
-			args:     []interface{}{true, true},
+			args:     []any{true, true},
 			expected: true,
 		},
 		{
 			name:     "And with same 3 bools",
-			args:     []interface{}{true, true, true},
+			args:     []any{true, true, true},
 			expected: true,
 		},
 		{
 			name:     "And with different 4 bools",
-			args:     []interface{}{true, true, false, true},
+			args:     []any{true, true, false, true},
 			expected: true,
 		},
 		{
 			name:     "And with same false 4 bools",
-			args:     []interface{}{false, false, false, false},
+			args:     []any{false, false, false, false},
 			expected: false,
 		},
 	}

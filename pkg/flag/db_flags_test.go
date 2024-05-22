@@ -66,7 +66,7 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				SkipDBUpdate:   true,
 				DownloadDBOnly: true,
 			},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+			assertion: func(t require.TestingT, err error, msgs ...any) {
 				require.ErrorContains(t, err, "--skip-db-update and --download-db-only options can not be specified both")
 			},
 		},
@@ -77,7 +77,7 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				DownloadDBOnly: false,
 				DBRepository:   "foo:bar:baz",
 			},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+			assertion: func(t require.TestingT, err error, msgs ...any) {
 				require.ErrorContains(t, err, "invalid db repository")
 			},
 		},

@@ -15,7 +15,7 @@ import (
 
 func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS) (*ast.SchemaSet, bool, error) {
 	schemaSet := ast.NewSchemaSet()
-	schemaSet.Put(ast.MustParseRef("schema.input"), make(map[string]interface{})) // for backwards compat only
+	schemaSet.Put(ast.MustParseRef("schema.input"), make(map[string]any)) // for backwards compat only
 	var customFound bool
 
 	for _, policy := range policies {
