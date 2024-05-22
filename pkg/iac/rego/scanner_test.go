@@ -330,7 +330,7 @@ exception[rules] {
 
 func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
 
-	_ = os.Setenv("DEFSEC_RUNTIME_VAL", "AOK")
+	t.Setenv("DEFSEC_RUNTIME_VAL", "AOK")
 
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
