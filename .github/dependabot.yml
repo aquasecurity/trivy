@@ -35,8 +35,3 @@ updates:
       common:
         patterns:
           - "*"
-        exclude-patterns:
-          - "github.com/aws/*"
-          - "github.com/testcontainers/*"
-          - "github.com/docker/*"
-          - "github.com/moby/*"
