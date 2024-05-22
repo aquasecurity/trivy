@@ -1,0 +1,131 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/amazon-1.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "amazon",
+      "Name": "AMI release 2018.03"
+    },
+    "ImageID": "sha256:961c4ee06269351d858969ea0426878675ed708d3a140246eabbc0bfc352bffa",
+    "DiffIDs": [
+      "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "ef1b126795001e9b4bdc14a01180e4d8146282d279f53e05adfaa8195ecda20e",
+      "created": "2019-09-05T23:37:46.854286502Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-09-05T23:37:46.575366692Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:45ed06ba8960dec70e01e809fe38df2718d4b16aa2b0f88835522d8366de71e3 in / "
+        },
+        {
+          "created": "2019-09-05T23:37:46.854286502Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:8db654f611aca1693ac658bd981ee35e4b6517e6ef74fa608c4b3b3595a986c8",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/amazon-1.tar.gz (amazon AMI release 2018.03)",
+      "Class": "os-pkgs",
+      "Type": "amazon",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-5481",
+          "PkgID": "curl@7.61.1-11.91.amzn1.x86_64",
+          "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/amazon/curl@7.61.1-11.91.amzn1?arch=x86_64\u0026distro=amazon-AMI+release+2018.03",
+            "UID": "9fafb1be522b1e7"
+          },
+          "InstalledVersion": "7.61.1-11.91.amzn1",
+          "FixedVersion": "7.61.1-12.93.amzn1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:105ff6bf468b1422ad7c47ea9d63eae82f875c93310cb8d34551951e754ef43b",
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
+          "DataSource": {
+            "ID": "amazon",
+            "Name": "Amazon Linux Security Center",
+            "URL": "https://alas.aws.amazon.com/"
+          },
+          "Title": "curl: double free due to subsequent call of realloc()",
+          "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-415"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 4,
+            "oracle-oval": 2,
+            "photon": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+              "V3Score": 5.7
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+            "https://access.redhat.com/security/cve/CVE-2019-5481",
+            "https://curl.haxx.se/docs/CVE-2019-5481.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
+            "https://linux.oracle.com/cve/CVE-2019-5481.html",
+            "https://linux.oracle.com/errata/ELSA-2020-1792.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+            "https://seclists.org/bugtraq/2020/Feb/36",
+            "https://security.gentoo.org/glsa/202003-29",
+            "https://security.netapp.com/advisory/ntap-20191004-0003/",
+            "https://ubuntu.com/security/notices/USN-4129-1",
+            "https://www.debian.org/security/2020/dsa-4633",
+            "https://www.oracle.com/security-alerts/cpuapr2020.html",
+            "https://www.oracle.com/security-alerts/cpujan2020.html",
+            "https://www.oracle.com/security-alerts/cpuoct2020.html"
+          ],
+          "PublishedDate": "2019-09-16T19:15:00Z",
+          "LastModifiedDate": "2020-10-20T22:15:00Z"
+        }
+      ]
+    }
+  ]
+}

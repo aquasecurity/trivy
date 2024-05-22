@@ -1,0 +1,74 @@
+[
+  {
+    "Name": "tzdata",
+    "Version": "2019a-0+deb9u1",
+    "Release": "",
+    "Epoch": 0,
+    "Arch": "",
+    "SrcName": "tzdata",
+    "SrcVersion": "2019a-0+deb9u1",
+    "SrcRelease": "",
+    "SrcEpoch":0,
+    "LayerID":"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+  },
+  {
+    "Name": "base-files",
+    "Version": "9.9+deb9u9",
+    "Release": "",
+    "Epoch": 0,
+    "Arch": "",
+    "SrcName": "base-files",
+    "SrcVersion": "9.9+deb9u9",
+    "SrcRelease": "",
+    "SrcEpoch":0,
+    "LayerID":"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+  },
+  {
+    "Name": "netbase",
+    "Version": "5.4",
+    "Release": "",
+    "Epoch": 0,
+    "Arch": "",
+    "SrcName": "netbase",
+    "SrcVersion": "5.4",
+    "SrcRelease": "",
+    "SrcEpoch":0,
+    "LayerID":"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+  },
+  {
+    "Name": "libc6",
+    "Version": "2.24-11+deb9u4",
+    "Release": "",
+    "Epoch": 0,
+    "Arch": "",
+    "SrcName": "glibc",
+    "SrcVersion": "2.24-11+deb9u4",
+    "SrcRelease": "",
+    "SrcEpoch":0,
+    "LayerID":"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+  },
+  {
+    "Name": "libssl1.1",
+    "Version": "1.1.0k-1~deb9u1",
+    "Release": "",
+    "Epoch": 0,
+    "Arch": "",
+    "SrcName": "openssl",
+    "SrcVersion": "1.1.0k-1~deb9u1",
+    "SrcRelease": "",
+    "SrcEpoch":0,
+    "LayerID":"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+  },
+  {
+    "Name": "openssl",
+    "Version": "1.1.0k-1~deb9u1",
+    "Release": "",
+    "Epoch": 0,
+    "Arch": "",
+    "SrcName": "openssl",
+    "SrcVersion": "1.1.0k-1~deb9u1",
+    "SrcRelease": "",
+    "SrcEpoch":0,
+    "LayerID":"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+  }
+]

@@ -1,0 +1,42 @@
+{
+	"SPDXID": "SPDXRef-DOCUMENT",
+	"creationInfo": {
+		"created": "2022-09-12T17:04:09.262672Z",
+		"creators": [
+			"Tool: trivy-dev",
+			"Organization: aquasecurity"
+		]
+	},
+	"dataLicense": "CC0-1.0",
+	"documentNamespace": "http://aquasecurity.github.io/trivy/container/maven-test-project-1a255568-e896-498f-93de-7975a5cb0212",
+	"name": "maven-test-project",
+	"packages": [
+		{
+			"SPDXID": "SPDXRef-ContainerImage-fbbee9b988766322",
+			"attributionTexts": [
+				"SchemaVersion: 2"
+			],
+			"filesAnalyzed": false,
+			"name": "maven-test-project"
+		},
+		{
+			"SPDXID": "SPDXRef-OperatingSystem-bd17bf9010aa612c",
+			"filesAnalyzed": false,
+			"name": "alpine",
+			"versionInfo": "3.16.0"
+		}
+	],
+	"relationships": [
+		{
+			"relatedSpdxElement": "SPDXRef-ContainerImage-fbbee9b988766322",
+			"relationshipType": "DESCRIBE",
+			"spdxElementId": "SPDXRef-DOCUMENT"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-OperatingSystem-bd17bf9010aa612c",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-ContainerImage-fbbee9b988766322"
+		}
+	],
+	"spdxVersion": "SPDX-2.2"
+}

@@ -1,0 +1,78 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "disk.img",
+  "ArtifactType": "vm",
+  "Metadata": {
+    "OS": {
+      "Family": "amazon",
+      "Name": "2 (Karoo)"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "disk.img (amazon 2 (Karoo))",
+      "Class": "os-pkgs",
+      "Type": "amazon",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-38177",
+          "PkgID": "bind-export-libs@9.11.4-26.P2.amzn2.5.2.x86_64",
+          "PkgName": "bind-export-libs",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/amazon/bind-export-libs@9.11.4-26.P2.amzn2.5.2?arch=x86_64\u0026distro=amazon-2+%28Karoo%29\u0026epoch=32"
+          },
+          "InstalledVersion": "32:9.11.4-26.P2.amzn2.5.2",
+          "FixedVersion": "99:9.11.4-26.P2.amzn2.13",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-38177",
+          "DataSource": {
+            "ID": "amazon",
+            "Name": "Amazon Linux Security Center",
+            "URL": "https://alas.aws.amazon.com/"
+          },
+          "Title": "bind: memory leak in ECDSA DNSSEC verification code",
+          "Description": "By spoofing the target resolver with responses that have a malformed ECDSA signature, an attacker can trigger a small memory leak. It is possible to gradually erode available memory to the point where named crashes for lack of resources.",
+          "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "arch-linux": 2,
+            "nvd": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2022/09/21/3",
+            "https://access.redhat.com/errata/RHSA-2022:6763",
+            "https://access.redhat.com/hydra/rest/securitydata/cve/CVE-2022-38177.json",
+            "https://access.redhat.com/hydra/rest/securitydata/cve/CVE-2022-38178.json",
+            "https://access.redhat.com/security/cve/CVE-2022-38177"
+          ],
+          "PublishedDate": "2022-09-21T11:15:00Z",
+          "LastModifiedDate": "2022-09-21T11:15:00Z"
+        }
+      ]
+    }
+  ]
+}

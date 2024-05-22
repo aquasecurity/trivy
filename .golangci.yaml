@@ -1,0 +1,134 @@
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    check-shadowing: false
+  gofmt:
+    simplify: false
+  revive:
+    ignore-generated-header: true
+  gocyclo:
+    min-complexity: 20
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  misspell:
+    locale: US
+    ignore-words:
+      - licence
+      - optimise
+  gosec:
+    excludes:
+      - G101
+      - G114
+      - G204
+      - G402
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/aquasecurity/)
+      - blank
+      - dot
+  gomodguard:
+    blocked:
+      modules:
+        - github.com/hashicorp/go-version:
+            recommendations:
+              - github.com/aquasecurity/go-version
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - github.com/Masterminds/semver:
+            recommendations:
+              - github.com/aquasecurity/go-version
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
+  gocritic:
+    disabled-checks:
+      - appendAssign
+      - unnamedResult
+      - whyNoLint
+      - indexAlloc
+      - octalLiteral
+      - hugeParam
+      - rangeValCopy
+      - regexpSimplify
+      - sloppyReassign
+      - commentedOutCode
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+      - experimental
+      - opinionated
+    settings:
+      ruleguard:
+        failOn: all
+        rules: '${configDir}/misc/lint/rules.go'
+  testifylint:
+    enable-all: true
+    disable:
+      - float-compare
+
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - gci
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - gomodguard
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - revive
+    - tenv
+    - testifylint
+    - typecheck
+    - unconvert
+    - unused
+
+run:
+  go: '1.22'
+  timeout: 30m
+
+issues:
+  exclude-files:
+    - "mock_*.go$"
+    - "examples/*"
+  exclude-dirs:
+    - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
+  exclude-rules:
+    - path: ".*_test.go$"
+      linters:
+        - bodyclose
+        - gocritic
+        - goconst
+        - gosec
+        - govet
+        - ineffassign
+        - misspell
+        - unused
+    - linters:
+        - gosec
+      text: "G304: Potential file inclusion"
+    - linters:
+        - gosec
+      text: "Deferring unsafe method"
+    - linters:
+        - errcheck
+      text: "Close` is not checked"
+    - linters:
+        - errcheck
+      text: "os.*` is not checked"
+    - linters:
+        - golint
+      text: "a blank import should be only in a main or test package"
+  exclude:
+    - "should have a package comment, unless it's in another file for this package"
+  exclude-use-default: false
+  max-same-issues: 0

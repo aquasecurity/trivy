@@ -1,0 +1,10 @@
+- bucket: conan::GitLab Advisory Database Community
+  pairs:
+    - bucket: pcre
+      pairs:
+        - key: CVE-2020-14155
+          value:
+            PatchedVersions:
+              - "8.45"
+            VulnerableVersions:
+              - "<8.44"

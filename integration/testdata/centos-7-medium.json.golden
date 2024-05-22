@@ -1,0 +1,165 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/centos-7.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "centos",
+      "Name": "7.6.1810"
+    },
+    "ImageID": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
+    "DiffIDs": [
+      "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "cc6043a787f6d1c7ae3e121ebdf1c4478186336aa7274871780a0a7bcc3a061a",
+      "created": "2019-03-14T21:20:29.635970966Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-03-14T21:20:28.997703205Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:54b004357379717dfb7ea6f024ca80ce762ea4b06647fcddc0f6697146551172 in / "
+        },
+        {
+          "created": "2019-03-14T21:20:29.452720615Z",
+          "created_by": "/bin/sh -c #(nop)  LABEL org.label-schema.schema-version=1.0 org.label-schema.name=CentOS Base Image org.label-schema.vendor=CentOS org.label-schema.license=GPLv2 org.label-schema.build-date=20181204",
+          "empty_layer": true
+        },
+        {
+          "created": "2019-03-14T21:20:29.635970966Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:698a0848ee35389ab7b98494bdc60f887c54ddb94fc2326a1fb4eff8895aff43",
+        "Labels": {
+          "org.label-schema.build-date": "20181204",
+          "org.label-schema.license": "GPLv2",
+          "org.label-schema.name": "CentOS Base Image",
+          "org.label-schema.schema-version": "1.0",
+          "org.label-schema.vendor": "CentOS"
+        },
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/centos-7.tar.gz (centos 7.6.1810)",
+      "Class": "os-pkgs",
+      "Type": "centos",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-1559",
+          "VendorIDs": [
+            "RHSA-2019:2304"
+          ],
+          "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
+          "PkgName": "openssl-libs",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
+            "UID": "20f09cdcea6545a2"
+          },
+          "InstalledVersion": "1:1.0.2k-16.el7",
+          "FixedVersion": "1:1.0.2k-19.el7",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
+            "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+          },
+          "SeveritySource": "redhat",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
+          "Title": "openssl: 0-byte record padding oracle",
+          "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-203"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V2Score": 4.3,
+              "V3Score": 5.9
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 5.9
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00047.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00049.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00080.html",
+            "http://www.securityfocus.com/bid/107174",
+            "https://access.redhat.com/errata/RHSA-2019:2304",
+            "https://access.redhat.com/errata/RHSA-2019:2437",
+            "https://access.redhat.com/errata/RHSA-2019:2439",
+            "https://access.redhat.com/errata/RHSA-2019:2471",
+            "https://access.redhat.com/errata/RHSA-2019:3929",
+            "https://access.redhat.com/errata/RHSA-2019:3931",
+            "https://access.redhat.com/security/cve/CVE-2019-1559",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e9bbefbf0f24c57645e7ad6a5a71ae649d18ac8e",
+            "https://github.com/RUB-NDS/TLS-Padding-Oracles",
+            "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10282",
+            "https://linux.oracle.com/cve/CVE-2019-1559.html",
+            "https://linux.oracle.com/errata/ELSA-2019-2471.html",
+            "https://lists.debian.org/debian-lts-announce/2019/03/msg00003.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EWC42UXL5GHTU5G77VKBF6JYUUNGSHOM/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/Y3IVFGSERAZLNJCK35TEM2R4726XIH3Z/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBEV5QGDRFUZDMNECFXUSN5FMYOZDE4V/",
+            "https://security.gentoo.org/glsa/201903-10",
+            "https://security.netapp.com/advisory/ntap-20190301-0001/",
+            "https://security.netapp.com/advisory/ntap-20190301-0002/",
+            "https://security.netapp.com/advisory/ntap-20190423-0002/",
+            "https://support.f5.com/csp/article/K18549143",
+            "https://support.f5.com/csp/article/K18549143?utm_source=f5support\u0026amp;utm_medium=RSS",
+            "https://ubuntu.com/security/notices/USN-3899-1",
+            "https://ubuntu.com/security/notices/USN-4376-2",
+            "https://usn.ubuntu.com/3899-1/",
+            "https://usn.ubuntu.com/4376-2/",
+            "https://www.debian.org/security/2019/dsa-4400",
+            "https://www.openssl.org/news/secadv/20190226.txt",
+            "https://www.oracle.com/security-alerts/cpujan2020.html",
+            "https://www.oracle.com/security-alerts/cpujan2021.html",
+            "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+            "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
+            "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
+            "https://www.tenable.com/security/tns-2019-02",
+            "https://www.tenable.com/security/tns-2019-03"
+          ],
+          "PublishedDate": "2019-02-27T23:29:00Z",
+          "LastModifiedDate": "2021-01-20T15:15:00Z"
+        }
+      ]
+    }
+  ]
+}

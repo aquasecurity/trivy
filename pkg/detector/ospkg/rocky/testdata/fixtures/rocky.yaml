@@ -1,0 +1,18 @@
+- bucket: rocky 8
+  pairs:
+    - bucket: bpftool
+      pairs:
+        - key: CVE-2021-20317
+          value:
+            FixedVersion: "4.18.0-348.2.1.el8_5"
+            Entries:
+              - FixedVersion: "4.18.0-348.2.1.el8_5"
+                Arches:
+                  - "x86_64"
+                VendorIDs:
+                  - "RLSA-2021:4647"
+              - FixedVersion: "5.18.0-348.2.1.el8_5"
+                Arches:
+                  - "aarch64"
+                VendorIDs:
+                  - "RLSA-2021:4647"

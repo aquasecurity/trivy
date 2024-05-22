@@ -1,0 +1,269 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package trivy.common;
+option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
+
+import "google/protobuf/struct.proto";
+
+message OS {
+  string family   = 1;
+  string name     = 2;
+  bool   eosl     = 3;
+  bool   extended = 4;
+}
+
+message Repository {
+  string family  = 1;
+  string release = 2;
+}
+
+message PackageInfo {
+  string           file_path = 1;
+  repeated Package packages  = 2;
+}
+
+message Application {
+  string           type      = 1;
+  string           file_path = 2;
+  repeated Package packages  = 3;
+}
+
+message Package {
+  // binary package
+  // e.g. bind-utils
+  string        id         = 13;
+  string        name       = 1;
+  string        version    = 2;
+  string        release    = 3;
+  int32         epoch      = 4;
+  PkgIdentifier identifier = 19;
+  string        arch       = 5;
+  // src package containing some binary packages
+  // e.g. bind
+  string            src_name    = 6;
+  string            src_version = 7;
+  string            src_release = 8;
+  int32             src_epoch   = 9;
+  repeated string   licenses    = 15;
+  repeated Location locations   = 20;
+  Layer             layer       = 11;
+  string            file_path   = 12;
+  repeated string   depends_on  = 14;
+  string            digest      = 16;
+  bool              dev         = 17;
+  bool              indirect    = 18;
+}
+
+message PkgIdentifier {
+  string purl    = 1;
+  string bom_ref = 2;
+  string uid     = 3;
+}
+
+message Location {
+  int32 start_line = 1;
+  int32 end_line   = 2;
+}
+
+message Misconfiguration {
+  string                 file_type  = 1;
+  string                 file_path  = 2;
+  repeated MisconfResult successes  = 3;
+  repeated MisconfResult warnings   = 4;
+  repeated MisconfResult failures   = 5;
+  repeated MisconfResult exceptions = 6;
+}
+
+message MisconfResult {
+  string namespace = 1;
+  string message   = 2;
+  reserved 3 to 6;
+  reserved "type", "id", "title", "severity";
+  PolicyMetadata policy_metadata = 7;
+  CauseMetadata  cause_metadata  = 8;
+}
+
+message PolicyMetadata {
+  string          id                  = 1;
+  string          adv_id              = 2;
+  string          type                = 3;
+  string          title               = 4;
+  string          description         = 5;
+  string          severity            = 6;
+  string          recommended_actions = 7;
+  repeated string references          = 8;
+}
+
+message DetectedMisconfiguration {
+  string type                    = 1;
+  string id                      = 2;
+  string title                   = 3;
+  string description             = 4;
+  string message                 = 5;
+  string namespace               = 6;
+  string          resolution     = 7;
+  Severity        severity       = 8;
+  string          primary_url    = 9;
+  repeated string references     = 10;
+  string          status         = 11;
+  Layer           layer          = 12;
+  CauseMetadata   cause_metadata = 13;
+  string          avd_id         = 14;
+  string          query          = 15;
+}
+
+message Vulnerability {
+  string                    vulnerability_id     = 1;
+  string                    pkg_name             = 2;
+  string                    installed_version    = 3;
+  string                    fixed_version        = 4;
+  string                    title                = 5;
+  string                    description          = 6;
+  Severity                  severity             = 7;
+  repeated string           references           = 8;
+  PkgIdentifier             pkg_identifier       = 25;
+  Layer                     layer                = 10;
+  string                    severity_source      = 11;
+  map<string, CVSS>         cvss                 = 12;
+  repeated string           cwe_ids              = 13;
+  string                    primary_url          = 14;
+  google.protobuf.Timestamp published_date       = 15;
+  google.protobuf.Timestamp last_modified_date   = 16;
+  google.protobuf.Value     custom_advisory_data = 17;
+  google.protobuf.Value     custom_vuln_data     = 18;
+  repeated string           vendor_ids           = 19;
+  DataSource                data_source          = 20;
+  map<string, Severity>     vendor_severity      = 21;
+  string                    pkg_path             = 22;
+  string                    pkg_id               = 23;
+  int32                     status               = 24;
+}
+
+message DataSource {
+  string id   = 1;
+  string name = 2;
+  string url  = 3;
+}
+
+message Layer {
+  string digest     = 1;
+  string diff_id    = 2;
+  string created_by = 3;
+}
+
+message CauseMetadata {
+  string resource   = 1;
+  string provider   = 2;
+  string service    = 3;
+  int32  start_line = 4;
+  int32  end_line   = 5;
+  Code   code       = 6;
+}
+
+enum Severity {
+  UNKNOWN  = 0;
+  LOW      = 1;
+  MEDIUM   = 2;
+  HIGH     = 3;
+  CRITICAL = 4;
+}
+
+message CVSS {
+  string v2_vector = 1;
+  string v3_vector = 2;
+  double v2_score  = 3;
+  double v3_score  = 4;
+}
+
+message CustomResource {
+  string                type      = 1;
+  string                file_path = 2;
+  Layer                 layer     = 3;
+  google.protobuf.Value data      = 4;
+}
+
+message Line {
+  int32  number      = 1;
+  string content     = 2;
+  bool   is_cause    = 3;
+  string annotation  = 4;
+  bool   truncated   = 5;
+  string highlighted = 6;
+  bool   first_cause = 7;
+  bool   last_cause  = 8;
+}
+
+message Code {
+  repeated Line lines = 1;
+}
+
+message SecretFinding {
+  string rule_id    = 1;
+  string category   = 2;
+  string severity   = 3;
+  string title      = 4;
+  int32  start_line = 5;
+  int32  end_line   = 6;
+  Code   code       = 7;
+  string match      = 8;
+  Layer  layer      = 10;
+
+  reserved 9;  // deprecated 'deleted'
+}
+
+message Secret {
+  string                 filepath = 1;
+  repeated SecretFinding findings = 2;
+}
+
+message DetectedLicense {
+  Severity             severity   = 1;
+  LicenseCategory.Enum category   = 2;
+  string               pkg_name   = 3;
+  string               file_path  = 4;
+  string               name       = 5;
+  float                confidence = 6;
+  string               link       = 7;
+}
+
+message LicenseFile {
+  LicenseType.Enum        license_type = 1;
+  string                  file_path    = 2;
+  string                  pkg_name     = 3;
+  repeated LicenseFinding fingings     = 4;
+  Layer                   layer        = 5;
+}
+
+message LicenseFinding {
+  LicenseCategory.Enum category   = 1;
+  string               name       = 2;
+  float                confidence = 3;
+  string               link       = 4;
+}
+
+// Enumerations are wrapped with a message to improve the readability of
+// enumerations in generated code and avoid name conflicts.
+// https://github.com/golang/protobuf/issues/513
+message LicenseCategory {
+  enum Enum {
+    UNSPECIFIED  = 0;
+    FORBIDDEN    = 1;
+    RESTRICTED   = 2;
+    RECIPROCAL   = 3;
+    NOTICE       = 4;
+    PERMISSIVE   = 5;
+    UNENCUMBERED = 6;
+    UNKNOWN      = 7;
+  }
+}
+
+message LicenseType {
+  enum Enum {
+    UNSPECIFIED  = 0;
+    DPKG         = 1;
+    HEADER       = 2;
+    LICENSE_FILE = 3;
+  }
+}

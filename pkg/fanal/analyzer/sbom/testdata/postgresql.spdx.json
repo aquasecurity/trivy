@@ -1,0 +1,120 @@
+{
+    "SPDXID": "SPDXRef-postgresql",
+    "spdxVersion": "SPDX-2.3",
+    "creationInfo": {
+        "created": "2023-07-13T19:24:23.609Z",
+        "creators": [
+            "Organization: VMware, Inc."
+        ]
+    },
+    "name": "SPDX document for PostgreSQL 15.3.0",
+    "dataLicense": "CC0-1.0",
+    "documentDescribes": [
+        "SPDXRef-postgresql"
+    ],
+    "documentNamespace": "postgresql-15.3.0",
+    "packages": [
+        {
+            "SPDXID": "SPDXRef-postgresql",
+            "name": "PostgreSQL",
+            "versionInfo": "15.3.0",
+            "downloadLocation": "https://ftp.postgresql.org/pub/source/v15.3/postgresql-15.3.tar.gz",
+            "licenseConcluded": "PostgreSQL",
+            "licenseDeclared": "PostgreSQL",
+            "filesAnalyzed": false,
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:*:postgresql:postgresql:15.3.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:bitnami/postgresql@15.3.0"
+                }
+            ]
+        },
+        {
+            "SPDXID": "SPDXRef-geos",
+            "name": "GEOS",
+            "versionInfo": "3.8.3",
+            "downloadLocation": "https://github.com/libgeos/geos/archive/3.8.3.tar.gz",
+            "licenseConcluded": "LGPL-2.1-only",
+            "licenseDeclared": "LGPL-2.1-only",
+            "filesAnalyzed": false,
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:*:libgeos:geos:3.8.3:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:bitnami/geos@3.8.3"
+                }
+            ]
+        },
+        {
+            "SPDXID": "SPDXRef-proj",
+            "name": "Proj",
+            "versionInfo": "6.3.2",
+            "downloadLocation": "https://github.com/OSGeo/PROJ/archive/6.3.2.tar.gz",
+            "licenseConcluded": "MIT",
+            "licenseDeclared": "MIT",
+            "filesAnalyzed": false,
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:*:proj:proj:6.3.2:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:bitnami/proj@6.3.2"
+                }
+            ]
+        },
+        {
+            "SPDXID": "SPDXRef-gdal",
+            "name": "GDAL",
+            "versionInfo": "3.7.1",
+            "downloadLocation": "https://github.com/OSGeo/gdal/releases/download/v3.7.1/gdal-3.7.1.tar.gz",
+            "licenseConcluded": "MIT",
+            "licenseDeclared": "MIT",
+            "filesAnalyzed": false,
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:*:osgeo:gdal:3.7.1:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:bitnami/gdal@3.7.1"
+                }
+            ]
+        }
+    ],
+    "files": [],
+    "relationships": [
+        {
+            "spdxElementId": "SPDXRef-postgresql",
+            "relationshipType": "CONTAINS",
+            "relatedSpdxElement": "SPDXRef-geos"
+        },
+        {
+            "spdxElementId": "SPDXRef-postgresql",
+            "relationshipType": "CONTAINS",
+            "relatedSpdxElement": "SPDXRef-proj"
+        },
+        {
+            "spdxElementId": "SPDXRef-postgresql",
+            "relationshipType": "CONTAINS",
+            "relatedSpdxElement": "SPDXRef-gdal"
+        }
+    ]
+}

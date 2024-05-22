@@ -1,0 +1,13 @@
+- bucket: cargo::Open Source Vulnerability
+  pairs:
+    - bucket: ammonia
+      pairs:
+        - key: CVE-2019-15542
+          value:
+            PatchedVersions:
+              - ">= 2.1.0"
+        - key: CVE-2021-38193
+          value:
+            PatchedVersions:
+              - ">= 3.1.0"
+              - ">= 2.1.3, < 3.0.0"

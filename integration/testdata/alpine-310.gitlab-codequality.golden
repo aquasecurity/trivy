@@ -1,0 +1,62 @@
+[
+    {
+      "type": "issue",
+      "check_name": "container_scanning",
+      "categories": [ "Security" ],
+      "description": "CVE-2019-1549 - libcrypto1.1 - 1.1.1c-r0 - openssl: information disclosure in fork()",
+      "fingerprint": "aeda1fbbe0e7f685887445359f8078c98eafd6de",
+      "content": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
+      "severity": "minor",
+      "location": {
+        "path": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+        "lines": {
+          "begin": 0
+        }
+      }
+    },
+    {
+      "type": "issue",
+      "check_name": "container_scanning",
+      "categories": [ "Security" ],
+      "description": "CVE-2019-1551 - libcrypto1.1 - 1.1.1c-r0 - openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "fingerprint": "473af5b2ba6b728fa3f356551c4b07a3b64d4f2a",
+      "content": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+      "severity": "minor",
+      "location": {
+        "path": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+        "lines": {
+          "begin": 0
+        }
+      }
+    },
+    {
+      "type": "issue",
+      "check_name": "container_scanning",
+      "categories": [ "Security" ],
+      "description": "CVE-2019-1549 - libssl1.1 - 1.1.1c-r0 - openssl: information disclosure in fork()",
+      "fingerprint": "45d39f7ecf688270aeab0da7fcad5c0cf5a57886",
+      "content": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
+      "severity": "minor",
+      "location": {
+        "path": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+        "lines": {
+          "begin": 0
+        }
+      }
+    },
+    {
+      "type": "issue",
+      "check_name": "container_scanning",
+      "categories": [ "Security" ],
+      "description": "CVE-2019-1551 - libssl1.1 - 1.1.1c-r0 - openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "fingerprint": "28d484eb3b3439c4991f14b3b1b26cc339eee128",
+      "content": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+      "severity": "minor",
+      "location": {
+        "path": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+        "lines": {
+          "begin": 0
+        }
+      }
+    }
+]

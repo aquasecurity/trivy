@@ -1,0 +1,10 @@
+- bucket: Photon OS 1.0
+  pairs:
+    - bucket: PyYAML
+      pairs:
+        - key: CVE-2017-18342
+          value:
+            FixedVersion: "3.12-3.ph1"
+        - key: CVE-2020-1747
+          value:
+            FixedVersion: "3.12-5.ph1"

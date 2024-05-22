@@ -1,0 +1,127 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "10.1"
+    },
+    "ImageID": "sha256:c2c03a296d2329a4f3ab72a7bf38b78a8a80108204d326b0139d6af700e152d1",
+    "DiffIDs": [
+      "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "cbb6a20ddb7dedfeee41aeb21e9780f14afbb0f47a6b1ffa514a1822f45d0a51",
+      "created": "2019-09-11T23:21:51.562946709Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-09-11T23:21:51.123609274Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:770e381defc5e4a0ba5df52265a96494b9f5d94309234cb3f7bc6b00e1d18f9a in / "
+        },
+        {
+          "created": "2019-09-11T23:21:51.562946709Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:5519bb349f72eef81944da56843c995b1b81ed67c8e7e48ac29dd6c543c1dd2d",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/debian-buster.tar.gz (debian 10.1)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-18224",
+          "VendorIDs": [
+            "DSA-4613-1"
+          ],
+          "PkgID": "libidn2-0@2.0.5-1",
+          "PkgName": "libidn2-0",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64\u0026distro=debian-10.1",
+            "UID": "473f5eb9e3d4a2f2"
+          },
+          "InstalledVersion": "2.0.5-1",
+          "FixedVersion": "2.0.5-1+deb10u1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:4a56a430b2bac33260d6449e162017e2b23076c6411a17b46db67f5b84dde2bd",
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
+          "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.6
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
+            "https://access.redhat.com/security/cve/CVE-2019-18224",
+            "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
+            "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
+            "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
+            "https://seclists.org/bugtraq/2020/Feb/4",
+            "https://security.gentoo.org/glsa/202003-63",
+            "https://ubuntu.com/security/notices/USN-4168-1",
+            "https://usn.ubuntu.com/4168-1/",
+            "https://www.debian.org/security/2020/dsa-4613"
+          ],
+          "PublishedDate": "2019-10-21T17:15:00Z",
+          "LastModifiedDate": "2019-10-29T19:15:00Z"
+        }
+      ]
+    }
+  ]
+}

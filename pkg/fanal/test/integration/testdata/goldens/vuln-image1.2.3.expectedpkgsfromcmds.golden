@@ -1,0 +1,500 @@
+[
+  {
+    "Name": "acl",
+    "Identifier": {},
+    "Version": "2.2.52-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "apr",
+    "Identifier": {},
+    "Version": "1.6.3-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "apr-util",
+    "Identifier": {},
+    "Version": "1.6.1-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "attr",
+    "Identifier": {},
+    "Version": "2.4.47-r6",
+    "Layer": {}
+  },
+  {
+    "Name": "autoconf",
+    "Identifier": {},
+    "Version": "2.69-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "bash",
+    "Identifier": {},
+    "Version": "4.4.19-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "binutils",
+    "Identifier": {},
+    "Version": "2.30-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "binutils-libs",
+    "Identifier": {},
+    "Version": "2.30-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "busybox",
+    "Identifier": {},
+    "Version": "1.27.2-r11",
+    "Layer": {}
+  },
+  {
+    "Name": "bzip2",
+    "Identifier": {},
+    "Version": "1.0.6-r6",
+    "Layer": {}
+  },
+  {
+    "Name": "ca-certificates",
+    "Identifier": {},
+    "Version": "20171114-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "coreutils",
+    "Identifier": {},
+    "Version": "8.28-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "cyrus-sasl",
+    "Identifier": {},
+    "Version": "2.1.26-r11",
+    "Layer": {}
+  },
+  {
+    "Name": "db",
+    "Identifier": {},
+    "Version": "5.3.28-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "dpkg",
+    "Identifier": {},
+    "Version": "1.18.24-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "dpkg-dev",
+    "Identifier": {},
+    "Version": "1.18.24-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "expat",
+    "Identifier": {},
+    "Version": "2.2.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "file",
+    "Identifier": {},
+    "Version": "5.32-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "g++",
+    "Identifier": {},
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "gcc",
+    "Identifier": {},
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "gdbm",
+    "Identifier": {},
+    "Version": "1.13-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "gmp",
+    "Identifier": {},
+    "Version": "6.1.2-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "gnupg",
+    "Identifier": {},
+    "Version": "2.2.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "gnutls",
+    "Identifier": {},
+    "Version": "3.6.1-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "isl",
+    "Identifier": {},
+    "Version": "0.18-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libacl",
+    "Identifier": {},
+    "Version": "2.2.52-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libassuan",
+    "Identifier": {},
+    "Version": "2.4.4-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libatomic",
+    "Identifier": {},
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libattr",
+    "Identifier": {},
+    "Version": "2.4.47-r6",
+    "Layer": {}
+  },
+  {
+    "Name": "libbz2",
+    "Identifier": {},
+    "Version": "1.0.6-r6",
+    "Layer": {}
+  },
+  {
+    "Name": "libc-dev",
+    "Identifier": {},
+    "Version": "0.7.1-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libcap",
+    "Identifier": {},
+    "Version": "2.25-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "libedit",
+    "Identifier": {},
+    "Version": "20170329.3.1-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libedit-dev",
+    "Identifier": {},
+    "Version": "20170329.3.1-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libffi",
+    "Identifier": {},
+    "Version": "3.2.1-r4",
+    "Layer": {}
+  },
+  {
+    "Name": "libgcc",
+    "Identifier": {},
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libgcrypt",
+    "Identifier": {},
+    "Version": "1.8.3-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libgomp",
+    "Identifier": {},
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libgpg-error",
+    "Identifier": {},
+    "Version": "1.27-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "libksba",
+    "Identifier": {},
+    "Version": "1.3.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libldap",
+    "Identifier": {},
+    "Version": "2.4.45-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libmagic",
+    "Identifier": {},
+    "Version": "5.32-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl",
+    "Identifier": {},
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl-dev",
+    "Identifier": {},
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl2.6-libcrypto",
+    "Identifier": {},
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl2.6-libssl",
+    "Identifier": {},
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl2.6-libtls",
+    "Identifier": {},
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libsasl",
+    "Identifier": {},
+    "Version": "2.1.26-r11",
+    "Layer": {}
+  },
+  {
+    "Name": "libsodium",
+    "Identifier": {},
+    "Version": "1.0.15-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libsodium-dev",
+    "Identifier": {},
+    "Version": "1.0.15-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libstdc++",
+    "Identifier": {},
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libtasn1",
+    "Identifier": {},
+    "Version": "4.12-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libunistring",
+    "Identifier": {},
+    "Version": "0.9.7-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "m4",
+    "Identifier": {},
+    "Version": "1.4.18-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "make",
+    "Identifier": {},
+    "Version": "4.2.1-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "mercurial",
+    "Identifier": {},
+    "Version": "4.5.2-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "mpc1",
+    "Identifier": {},
+    "Version": "1.0.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "mpfr3",
+    "Identifier": {},
+    "Version": "3.1.5-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "musl",
+    "Identifier": {},
+    "Version": "1.1.18-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "musl-dev",
+    "Identifier": {},
+    "Version": "1.1.18-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses",
+    "Identifier": {},
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-dev",
+    "Identifier": {},
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-libs",
+    "Identifier": {},
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-terminfo",
+    "Identifier": {},
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-terminfo-base",
+    "Identifier": {},
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "nettle",
+    "Identifier": {},
+    "Version": "3.3-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "npth",
+    "Identifier": {},
+    "Version": "1.5-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "openldap",
+    "Identifier": {},
+    "Version": "2.4.45-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "p11-kit",
+    "Identifier": {},
+    "Version": "0.23.2-r2",
+    "Layer": {}
+  },
+  {
+    "Name": "patch",
+    "Identifier": {},
+    "Version": "2.7.5-r2",
+    "Layer": {}
+  },
+  {
+    "Name": "pcre2",
+    "Identifier": {},
+    "Version": "10.30-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "pinentry",
+    "Identifier": {},
+    "Version": "1.0.0-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "pkgconf",
+    "Identifier": {},
+    "Version": "1.3.10-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "python2",
+    "Identifier": {},
+    "Version": "2.7.15-r2",
+    "Layer": {}
+  },
+  {
+    "Name": "re2c",
+    "Identifier": {},
+    "Version": "1.0.2-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "readline",
+    "Identifier": {},
+    "Version": "7.0.003-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "serf",
+    "Identifier": {},
+    "Version": "1.3.9-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "subversion",
+    "Identifier": {},
+    "Version": "1.9.7-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "subversion-libs",
+    "Identifier": {},
+    "Version": "1.9.7-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "xz",
+    "Identifier": {},
+    "Version": "5.2.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "xz-libs",
+    "Identifier": {},
+    "Version": "5.2.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "zlib",
+    "Identifier": {},
+    "Version": "1.2.11-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "zlib-dev",
+    "Identifier": {},
+    "Version": "1.2.11-r1",
+    "Layer": {}
+  }
+]

@@ -1,0 +1,18 @@
+- bucket: "composer::GitLab Advisory Database Community"
+  pairs:
+    - bucket: symfony/symfony
+      pairs:
+        - key: CVE-2019-10909
+          value:
+            PatchedVersions:
+              - 4.2.7
+            VulnerableVersions:
+              - ">= 4.2.0, < 4.2.7"
+- bucket: "composer::php-security-advisories"
+  pairs:
+    - bucket: symfony/symfony
+      pairs:
+        - key: CVE-2020-5275
+          value:
+            VulnerableVersions:
+              - ">= 4.4.0, < 4.4.7"

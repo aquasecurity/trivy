@@ -1,0 +1,182 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:a085f5e7-f5c1-4bc0-96be-ffa4d235ebc8",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-04-06T05:41:44+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "pkg:oci/ubuntu@sha256:67211c14fa74f070d27cc59d69a7fa9aeff8e28ea118ef3babc295a0428a6d21?repository_url=index.docker.io%2Flibrary%2Fubuntu\u0026arch=amd64",
+      "type": "container",
+      "name": "ubuntu",
+      "purl": "pkg:oci/ubuntu@sha256:67211c14fa74f070d27cc59d69a7fa9aeff8e28ea118ef3babc295a0428a6d21?repository_url=index.docker.io%2Flibrary%2Fubuntu\u0026arch=amd64",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:08d22c0ceb150ddeb2237c5fa3129c0183f3cc6f5eeb2e7aa4016da3ad02140a"
+        },
+        {
+          "name": "aquasecurity:trivy:RepoDigest",
+          "value": "ubuntu@sha256:67211c14fa74f070d27cc59d69a7fa9aeff8e28ea118ef3babc295a0428a6d21"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466"
+        },
+        {
+          "name": "aquasecurity:trivy:RepoTag",
+          "value": "ubuntu:latest"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+      "type": "library",
+      "name": "libc6",
+      "version": "2.35-0ubuntu3.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "LGPL-2.1"
+          }
+        },
+        {
+          "license": {
+            "name": "GPL-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "GFDL-1.3"
+          }
+        }
+      ],
+      "purl": "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "libc6@2.35-0ubuntu3.1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "ubuntu"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "glibc"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "2.35"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcRelease",
+          "value": "0ubuntu3.1"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1\u0026distro=ubuntu-22.04",
+      "type": "library",
+      "name": "libcrypt1",
+      "version": "4.4.27-1",
+      "purl": "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1\u0026distro=ubuntu-22.04",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "libcrypt1@1:4.4.27-1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "ubuntu"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "libxcrypt"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "4.4.27"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcRelease",
+          "value": "1"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcEpoch",
+          "value": "1"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466"
+        }
+      ]
+    },
+    {
+      "bom-ref": "71577c3e-dbc6-41be-ba9e-c5268bc2e5d4",
+      "type": "operating-system",
+      "name": "ubuntu",
+      "version": "22.04",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "ubuntu"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "71577c3e-dbc6-41be-ba9e-c5268bc2e5d4",
+      "dependsOn": [
+        "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+        "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1\u0026distro=ubuntu-22.04"
+      ]
+    },
+    {
+      "ref": "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+      "dependsOn": [
+        "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1\u0026distro=ubuntu-22.04"
+      ]
+    },
+    {
+      "ref": "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1\u0026distro=ubuntu-22.04",
+      "dependsOn": [
+        "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04"
+      ]
+    }
+  ],
+  "vulnerabilities": []
+}

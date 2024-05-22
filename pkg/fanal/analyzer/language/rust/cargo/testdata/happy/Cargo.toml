@@ -1,0 +1,18 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+regex = "=1.7.3"
+
+[target.'cfg(not(target_os = "windows"))'.dependencies]
+memchr = { version = "1.*", optional = true }
+
+[workspace.dependencies]
+regex-syntax = { version = "<0.6"}
+
+[dev-dependencies]
+winapi = "*"

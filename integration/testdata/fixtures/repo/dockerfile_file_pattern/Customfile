@@ -1,0 +1,3 @@
+FROM alpine:3.13
+
+HEALTHCHECK NONE

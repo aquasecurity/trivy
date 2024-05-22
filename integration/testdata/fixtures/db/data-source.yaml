@@ -1,0 +1,151 @@
+- bucket: data-source
+  pairs:
+    - key: "composer::GitHub Security Advisory Composer"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Composer"
+        URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
+    - key: "maven::GitHub Security Advisory Maven"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Maven"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
+    - key: "npm::GitHub Security Advisory Npm"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Npm"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
+    - key: "nuget::GitHub Security Advisory Nuget"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Nuget"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anuget"
+    - key: "pip::GitHub Security Advisory Pip"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Pip"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+    - key: "rubygems::GitHub Security Advisory RubyGems"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory RubyGems"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
+    - key: "pub::GitHub Security Advisory Pub"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Pub"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apub"
+    - key: "erlang::GitHub Security Advisory Erlang"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Erlang"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aerlang"
+    - key: "go::GitHub Security Advisory Go"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Go"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
+    - key: Oracle Linux 8
+      value:
+        ID: "oracle-oval"
+        Name: "Oracle Linux OVAL definitions"
+        URL: "https://linux.oracle.com/security/oval/"
+    - key: Photon OS 3.0
+      value:
+        ID: "photon"
+        Name: "Photon OS CVE metadata"
+        URL: "https://packages.vmware.com/photon/photon_cve_metadata/"
+    - key: alma 8
+      value:
+        ID: "alma"
+        Name: "AlmaLinux Product Errata"
+        URL:  "https://errata.almalinux.org/"
+    - key: alpine 3.9
+      value:
+        ID: "alpine"
+        Name: "Alpine Secdb"
+        URL: "https://secdb.alpinelinux.org/"
+    - key: alpine 3.10
+      value:
+        ID: "alpine"
+        Name: "Alpine Secdb"
+        URL: "https://secdb.alpinelinux.org/"
+    - key: amazon linux 1
+      value:
+        ID: "amazon"
+        Name: "Amazon Linux Security Center"
+        URL: "https://alas.aws.amazon.com/"
+    - key: amazon linux 2
+      value:
+        ID: "amazon"
+        Name: "Amazon Linux Security Center"
+        URL: "https://alas.aws.amazon.com/"
+    - key: cargo::Open Source Vulnerability
+      value:
+        Name: "RustSec Advisory Database"
+        URL:  "https://github.com/RustSec/advisory-db"
+    - key: debian 10
+      value:
+        ID: "debian"
+        Name: "Debian Security Tracker"
+        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
+    - key: debian 9
+      value:
+        ID: "debian"
+        Name: "Debian Security Tracker"
+        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
+    - key: maven::GitLab Advisory Database Community
+      value:
+        ID: "glad"
+        Name: "GitLab Advisory Database Community"
+        URL:  "https://gitlab.com/gitlab-org/advisories-community"
+    - key: npm::nodejs-security-wg
+      value:
+        ID: "nodejs-security-wg"
+        Name: "Node.js Ecosystem Security Working Group"
+        URL:  "https://github.com/nodejs/security-wg"
+    - key: openSUSE Leap 15.0
+      value:
+        ID: "suse-cvrf"
+        Name: "SUSE CVRF"
+        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
+    - key: openSUSE Leap 15.1
+      value:
+        ID: "suse-cvrf"
+        Name: "SUSE CVRF"
+        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
+    - key: composer::php-security-advisories
+      value:
+        ID: "php-security-advisories"
+        Name: "PHP Security Advisories Database"
+        URL: "https://github.com/FriendsOfPHP/security-advisories"
+    - key: pip::Open Source Vulnerability
+      value:
+        ID: "osv"
+        Name: "Python Packaging Advisory Database"
+        URL: "https://github.com/pypa/advisory-db"
+    - key: rocky 8
+      value:
+        ID: "rocky"
+        Name: "Rocky Linux updateinfo"
+        URL: "https://download.rockylinux.org/pub/rocky/"
+    - key: rubygems::ruby-advisory-db
+      value:
+        ID: "ruby-advisory-db"
+        Name: "Ruby Advisory Database"
+        URL:  "https://github.com/rubysec/ruby-advisory-db"
+    - key: ubuntu 18.04
+      value:
+        ID: "ubuntu"
+        Name: "Ubuntu CVE Tracker"
+        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
+    - key: CBL-Mariner 1.0
+      value:
+        ID:   "cbl-mariner"
+        Name: "CBL-Mariner Vulnerability Data"
+        URL:  "https://github.com/microsoft/CBL-MarinerVulnerabilityData"
+    - key: k8s::Official Kubernetes CVE Feed
+      value:
+        ID:   "k8s"
+        Name: "Official Kubernetes CVE Feed"
+        URL:  "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"

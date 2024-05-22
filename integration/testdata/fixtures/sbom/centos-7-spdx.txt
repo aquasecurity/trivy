@@ -1,0 +1,59 @@
+SPDXVersion: SPDX-2.2
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: integration/testdata/fixtures/images/centos-7.tar.gz
+DocumentNamespace: http://aquasecurity.github.io/trivy/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-6a2c050f-bc12-46dc-b2df-1f4e3e0b5e1d
+Creator: Organization: aquasecurity
+Creator: Tool: trivy-dev
+Created: 2022-09-13T13:24:58.796907Z
+
+##### Package: integration/testdata/fixtures/images/centos-7.tar.gz
+
+PackageName: integration/testdata/fixtures/images/centos-7.tar.gz
+SPDXID: SPDXRef-ContainerImage-dd5cad897c6263
+FilesAnalyzed: false
+PackageAttributionText: SchemaVersion: 2
+PackageAttributionText: ImageID: sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427
+PackageAttributionText: DiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a
+
+##### Package: centos
+
+PackageName: centos
+SPDXID: SPDXRef-OperatingSystem-2e91c856c499a371
+PackageVersion: 7.6.1810
+FilesAnalyzed: false
+
+##### Package: bash
+
+PackageName: bash
+SPDXID: SPDXRef-Package-5a18334f22149877
+PackageVersion: 4.2.46
+FilesAnalyzed: false
+PackageSourceInfo: built package from: bash 4.2.46-31.el7
+PackageLicenseConcluded: GPLv3+
+PackageLicenseDeclared: GPLv3+
+ExternalRef: PACKAGE-MANAGER purl pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810
+PackageAttributionText: PkgID: bash@4.2.46-31.el7.x86_64
+PackageAttributionText: LayerDigest: sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b
+PackageAttributionText: LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a
+
+##### Package: openssl-libs
+
+PackageName: openssl-libs
+SPDXID: SPDXRef-Package-e16b1cbaa5186199
+PackageVersion: 1.0.2k
+FilesAnalyzed: false
+PackageSourceInfo: built package from: openssl-libs 1:1.0.2k-16.el7
+PackageLicenseConcluded: OpenSSL
+PackageLicenseDeclared: OpenSSL
+ExternalRef: PACKAGE-MANAGER purl pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810
+PackageAttributionText: PkgID: openssl-libs@1.0.2k-16.el7.x86_64
+PackageAttributionText: LayerDigest: sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b
+PackageAttributionText: LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a
+
+##### Relationships
+
+Relationship: SPDXRef-DOCUMENT DESCRIBE SPDXRef-ContainerImage-dd5cad897c6263
+Relationship: SPDXRef-ContainerImage-dd5cad897c6263 CONTAINS SPDXRef-OperatingSystem-2e91c856c499a371
+Relationship: SPDXRef-OperatingSystem-2e91c856c499a371 DEPENDS_ON SPDXRef-Package-5a18334f22149877
+Relationship: SPDXRef-OperatingSystem-2e91c856c499a371 DEPENDS_ON SPDXRef-Package-e16b1cbaa5186199

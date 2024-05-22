@@ -1,0 +1,125 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "testdata/fixtures/repo/conda",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000004",
+  "creationInfo": {
+    "creators": [
+      "Organization: aquasecurity",
+      "Tool: trivy-dev"
+    ],
+    "created": "2021-08-25T12:20:30Z"
+  },
+  "packages": [
+    {
+      "name": "openssl",
+      "SPDXID": "SPDXRef-Package-22a178da112ac20a",
+      "versionInfo": "1.1.1q",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "2a05c7ad4baa728c79bc1ee1adea9b837d0bf6c0"
+      },
+      "licenseConcluded": "OpenSSL",
+      "licenseDeclared": "OpenSSL",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:conda/openssl@1.1.1q"
+        }
+      ],
+      "attributionTexts": [
+        "PkgType: conda-pkg"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
+      "name": "pip",
+      "SPDXID": "SPDXRef-Package-c22b9ee9a601ba6",
+      "versionInfo": "22.2.2",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "8619446a1cd1118e82f1f984ce59116422a59151"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:conda/pip@22.2.2"
+        }
+      ],
+      "attributionTexts": [
+        "PkgType: conda-pkg"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
+      "name": "testdata/fixtures/repo/conda",
+      "SPDXID": "SPDXRef-Filesystem-2e2426fd0f2580ef",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "attributionTexts": [
+        "SchemaVersion: 2"
+      ],
+      "primaryPackagePurpose": "SOURCE"
+    }
+  ],
+  "files": [
+    {
+      "fileName": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json",
+      "SPDXID": "SPDXRef-File-600e5e0110a84891",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "237db0da53131e4548cb1181337fa0f420299e1f"
+        }
+      ],
+      "copyrightText": ""
+    },
+    {
+      "fileName": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json",
+      "SPDXID": "SPDXRef-File-7eb62e2a3edddc0a",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
+        }
+      ],
+      "copyrightText": ""
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Filesystem-2e2426fd0f2580ef",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
+      "relatedSpdxElement": "SPDXRef-Package-22a178da112ac20a",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
+      "relatedSpdxElement": "SPDXRef-Package-c22b9ee9a601ba6",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-22a178da112ac20a",
+      "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-c22b9ee9a601ba6",
+      "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
+      "relationshipType": "CONTAINS"
+    }
+  ]
+}

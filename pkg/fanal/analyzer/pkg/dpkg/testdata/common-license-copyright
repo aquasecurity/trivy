@@ -1,0 +1,47 @@
+This package was first put together by Ian Murdock
+<imurdock@debian.org> and was maintained by Steve Phillips
+<sjp@cvfn.org> from sources written for the Debian Project by Ian
+Murdock, Ted Hajek <tedhajek@boombox.micro.umn.edu>, and Sven Rudolph
+<sr1@inf.tu-dresden.de>.
+
+Since Nov 27 1996, it was maintained by Guy Maor <maor@debian.org>.  He
+rewrote most of it.
+
+Since May 20 2000, it is maintained by Roland Bauerschmidt
+<rb@debian.org>.
+
+Since March 24 2004, it is maintained by Roland Bauerschmidt
+<rb@debian.org>, and co-maintained by Marc Haber
+<mh+debian-packages@zugschlus.de>
+
+Since 23 Oct 2005, it has been maintained by Joerg Hoh <joerg@joerghoh.de> 
+
+Since June 2006, it has been maintained by Stephen Gran <sgran@debian.org>
+
+deluser is Copyright (C) 2000 Roland Bauerschmidt <rb@debian.org>
+and based on the source code of adduser.
+
+adduser is Copyright (C) 1997, 1998, 1999 Guy Maor <maor@debian.org>.
+adduser is Copyright (C) 1995 Ted Hajek <tedhajek@boombox.micro.umn.edu>
+with portions Copyright (C) 1994 Debian Association, Inc.
+
+The examples directory has been contributed by John Zaitseff, and is
+GPL V2 as well.
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the
+    Free Software Foundation, Inc.,
+    51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL-2'.

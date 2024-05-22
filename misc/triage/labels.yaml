@@ -1,0 +1,136 @@
+---
+repo: aquasecurity/trivy
+labels:
+
+# kind
+- name: kind/breaking
+  color: e11d21
+  description: Categorizes issue or PR as related to breaking compatibility.
+  from: kind/api-change
+- name: kind/bug
+  color: e11d21
+  from: bug
+  description: Categorizes issue or PR as related to a bug.
+- name: kind/security-advisory
+  color: e11d21
+  description: Categorizes issue or PR as related to security advisories.
+- name: kind/cleanup
+  color: c7def8
+  description: Categorizes issue or PR as related to cleaning up code, process, or technical debt.
+- name: kind/deprecation
+  color: e11d21
+  from: enhancement
+  description: Categorizes issue or PR as related to a feature/enhancement marked for deprecation.
+- name: kind/documentation
+  color: c7def8
+  description: Categorizes issue or PR as related to documentation.
+- name: kind/feature
+  color: c7def8
+  description: Categorizes issue or PR as related to a new feature.
+- name: kind/testing
+  color: c7def8
+  description: Categorizes issue or PR as related to a unit/integration test.
+- name: kind/security
+  color: f4dddc
+  description: Categorizes issue or PR as related to Trivy's own security or internal vulnerabilities.
+- name: kind/integration
+  color: f4dddc
+  description: Categorizes issue or PR as related to a third party integration of Trivy.
+
+# lifecycle for the stale bot
+- name: lifecycle/frozen
+  color: d3e2f0
+  description: Indicates that an issue or PR should not be auto-closed due to staleness.
+- name: lifecycle/stale
+  color: "795548"
+  description: Denotes an issue or PR has remained open with no activity and will be auto-closed.
+- name: lifecycle/active
+  color: "1d76db"
+  description: Indicates that an issue or PR is actively being worked on by a contributor.
+
+# priority
+- name: priority/critical-urgent
+  color: e11d21
+  description: Highest priority. Must be actively worked on as someone's top priority right now.
+- name: priority/important-soon
+  color: eb6420
+  description: Must be staffed and worked on either currently, or very soon, ideally in time for the next release.
+- name: priority/important-longterm
+  color: eb6420
+  description: Important over the long term, but may not be staffed and/or may need multiple releases to complete.
+- name: priority/backlog
+  color: fbca04
+  description: Higher priority than priority/awaiting-more-evidence.
+- name: priority/awaiting-more-evidence
+  color: fef2c0
+  description: Lowest priority. Possibly useful, but not yet enough support to actually get it done.
+
+# triage
+- name: triage/discuss
+  color: faff84
+  description: Items for discussion
+- name: triage/duplicate
+  color: d455d0
+  from: duplicate
+  description: Indicates an issue is a duplicate of other open issue.
+- name: triage/needs-information
+  color: d455d0
+  description: Indicates an issue needs more information in order to work on it.
+- name: triage/not-reproducible
+  color: d455d0
+  description: Indicates an issue can not be reproduced as described.
+- name: triage/obsolete
+  color: faff84
+  description: Bugs that no longer occur in the latest stable release
+- name: triage/support
+  color: d455d0
+  from: question
+  description: Indicates an issue that is a support question.
+- name: triage/unresolved
+  color: d455d0
+  description: Indicates an issue that can not or will not be resolved.
+
+# scanning
+- name: scan/vulnerability
+  color: d9ead3
+  description: Issues relating to vulnerability scanning
+- name: scan/misconfiguration
+  color: d9ead3
+  description: Issues relating to misconfiguration scanning
+- name: scan/secret
+  color: d9ead3
+  description: Issues relating to secret scanning
+- name: scan/sbom
+  color: d9ead3
+  description: Issues relating to SBOM
+- name: scan/license
+  color: d9ead3
+  description: Issues relating to license scanning
+
+# target
+- name: target/container-image
+  color: 0ebdb0
+  description: Issues relating to container image scanning
+- name: target/filesystem
+  color: 0ebdb0
+  description: Issues relating to filesystem scanning
+- name: target/repository
+  color: 0ebdb0
+  description: Issues relating to VCS repository scanning
+- name: target/kubernetes
+  color: 0ebdb0
+  description: Issues relating to kubernetes cluster scanning
+- name: target/cloud
+  color: 0ebdb0
+  description: Issues relating to cloud account scanning
+- name: target/vm
+  color: 0ebdb0
+  description: Issues relating to virtual machine scanning
+
+# others
+- name: good first issue
+  color: 7057ff
+  description: Denotes an issue ready for a new contributor, according to the "help wanted" guidelines.
+- name: help wanted
+  color: 006b75
+  description: Denotes an issue that needs help from a contributor. Must meet "help wanted" guidelines.

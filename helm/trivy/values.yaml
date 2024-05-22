@@ -1,0 +1,163 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  registry: docker.io
+  repository: aquasec/trivy
+  # tag is an override of the image tag, which is by default set by the
+  # appVersion field in Chart.yaml.
+  tag: ""
+  pullPolicy: IfNotPresent
+  pullSecret: ""
+
+replicaCount: 1
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+rbac:
+  create: true
+  pspEnabled: false
+  pspAnnotations: {}
+
+podSecurityContext:
+  runAsUser: 65534
+  runAsNonRoot: true
+  fsGroup: 65534
+
+securityContext:
+  privileged: false
+  readOnlyRootFilesystem: true
+
+## Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+nodeSelector: {}
+
+## Affinity settings for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+affinity: {}
+
+## Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+tolerations: []
+
+## Annotations for pods created by statefulset
+## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
+trivy:
+  # debugMode the flag to enable Trivy debug mode
+  debugMode: false
+  # gitHubToken the GitHub access token to download Trivy DB
+  #
+  # Trivy DB contains vulnerability information from NVD, Red Hat, and many other upstream vulnerability databases.
+  # It is downloaded by Trivy from the GitHub release page https://github.com/aquasecurity/trivy-db/releases and cached
+  # in the local file system (`/home/scanner/.cache/trivy/db/trivy.db`). In addition, the database contains the update
+  # timestamp so Trivy can detect whether it should download a newer version from the Internet or use the cached one.
+  # Currently, the database is updated every 12 hours and published as a new release to GitHub.
+  #
+  # Anonymous downloads from GitHub are subject to the limit of 60 requests per hour. Normally such rate limit is enough
+  # for production operations. If, for any reason, it's not enough, you could increase the rate limit to 5000
+  # requests per hour by specifying the GitHub access token. For more details on GitHub rate limiting please consult
+  # https://developer.github.com/v3/#rate-limiting
+  #
+  # You can create a GitHub token by following the instructions in
+  # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
+  gitHubToken: ""
+
+  # Docker registry credentials
+  # See also: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/
+  #
+  # Either
+  # Directly in this file
+  #
+  # TRIVY_USERNAME
+  registryUsername: ""
+  # TRIVY_PASSWORD
+  registryPassword: ""
+  #
+  # Or
+  # From an existing secret
+  #
+  # The secret must be Opaque and just contain "TRIVY_USERNAME: your_user" and "TRIVY_PASSWORD: your_password" as k/v pairs.
+  # NOTE: When this is set the previous parameters are ignored.
+  #
+  # registryCredentialsExistingSecret: name-of-existing-secret
+  # skipDBUpdate the flag to enable or disable Trivy DB downloads from GitHub
+  #
+  # You might want to enable this flag in test or CI/CD environments to avoid GitHub rate limiting issues.
+  # If the flag is enabled you have to manually download the `trivy.db` file and mount it in the
+  # `/home/scanner/.cache/trivy/db/trivy.db` path (see `cacheDir`).
+  skipDBUpdate: false
+  # OCI repository to retrieve the trivy vulnerability database from
+  dbRepository: ghcr.io/aquasecurity/trivy-db
+  # Trivy supports filesystem and redis as caching backend
+  # https://github.com/aquasecurity/trivy#specify-cache-backend
+  # This location is only used for the cache, not the db storage: https://github.com/aquasecurity/trivy/issues/765#issue-756010345
+  #
+  # In case you specify redis as backend, make sure you installed a redis server yourself, e.g.
+  # https://bitnami.com/stack/redis/helm
+  #
+  # In case redis is not enabled, the filesystem will be used
+  cache:
+    redis:
+      enabled: false
+      url: ""  # e.g. redis://redis.redis.svc:6379
+      ttl: ""  # e.g 3600s, 24h
+      tls: false
+  serviceAccount:
+    annotations: {}
+      # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+  # If you want to add custom labels to your statefulset and podTemplate
+  labels: {}
+  # serverToken is the token to authenticate Trivy client with Trivy server.
+  serverToken: ""
+  # existingSecret if an existing secret has been created outside the chart.
+  # Overrides gitHubToken, registryUsername, registryPassword, serverToken
+  existingSecret: ""
+  # extraEnvVars to be set on the container
+  extraEnvVars: {}
+
+service:
+  # If specified, the name used for the Trivy service.
+  name:
+  # type Kubernetes service type
+  type: ClusterIP
+  # port Kubernetes service port
+  port: 4954
+  # sessionAffinity Kubernetes service session affinity
+  sessionAffinity: ClientIP
+
+ingress:
+  enabled: false
+  # From Kubernetes 1.18+ this field is supported in case your ingress controller supports it. When set, you do not need to add the ingress class as annotation.
+  ingressClassName:
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: trivy.example.com
+  path: "/"
+  # type is only needed for networking.k8s.io/v1 in k8s 1.19+
+  pathType: Prefix
+  tls: []
+  #  - secretName: trivy-example-tls
+  #    hosts:
+  #      - trivy.example.com
+
+# httpProxy the URL of the HTTP proxy server
+httpProxy:
+# httpsProxy the URL of the HTTPS proxy server
+httpsProxy:
+# noProxy the URLs that the proxy settings do not apply to
+noProxy:

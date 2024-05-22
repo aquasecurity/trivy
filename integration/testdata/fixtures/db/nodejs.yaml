@@ -1,0 +1,24 @@
+- bucket: "npm::GitHub Security Advisory Npm"
+  pairs:
+    - bucket: jquery
+      pairs:
+        - key: CVE-2015-9251
+          value:
+            PatchedVersions:
+              - 3.0.0
+            VulnerableVersions:
+              - < 3.0.0
+        - key: CVE-2019-11358
+          value:
+            PatchedVersions:
+              - 3.4.0
+            VulnerableVersions:
+              - < 3.4.0
+    - bucket: lodash
+      pairs:
+        - key: CVE-2019-10744
+          value:
+            PatchedVersions:
+              - 4.17.12
+            VulnerableVersions:
+              - < 4.17.12

@@ -1,0 +1,135 @@
+{
+  "version": 0,
+  "detector": {
+    "name": "trivy",
+    "version": "dev",
+    "url": "https://github.com/aquasecurity/trivy"
+  },
+  "ref": "/ref/feature-1",
+  "sha": "39da54a1ff04120a31df8cbc94ce9ede251d21a3",
+  "job": {
+    "correlator": "workflow-name_integration",
+    "id": "1910764383"
+  },
+  "scanned": "2021-08-25T12:20:30Z",
+  "manifests": {
+    "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)": {
+      "name": "alpine",
+      "resolved": {
+        "alpine-baselayout": {
+          "package_url": "pkg:apk/alpine/alpine-baselayout@3.1.2-r0?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "busybox@1.30.1-r2",
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "alpine-keys": {
+          "package_url": "pkg:apk/alpine/alpine-keys@2.1-r2?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "apk-tools": {
+          "package_url": "pkg:apk/alpine/apk-tools@2.10.4-r2?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "libcrypto1.1@1.1.1c-r0",
+            "libssl1.1@1.1.1c-r0",
+            "musl@1.1.22-r3",
+            "zlib@1.2.11-r1"
+          ],
+          "scope": "runtime"
+        },
+        "busybox": {
+          "package_url": "pkg:apk/alpine/busybox@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "ca-certificates-cacert": {
+          "package_url": "pkg:apk/alpine/ca-certificates-cacert@20190108-r0?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "libc-utils": {
+          "package_url": "pkg:apk/alpine/libc-utils@0.7.1-r0?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "musl-utils@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "libcrypto1.1": {
+          "package_url": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "libssl1.1": {
+          "package_url": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "libcrypto1.1@1.1.1c-r0",
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "libtls-standalone": {
+          "package_url": "pkg:apk/alpine/libtls-standalone@2.9.1-r0?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "ca-certificates-cacert@20190108-r0",
+            "libcrypto1.1@1.1.1c-r0",
+            "libssl1.1@1.1.1c-r0",
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "musl": {
+          "package_url": "pkg:apk/alpine/musl@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "musl-utils": {
+          "package_url": "pkg:apk/alpine/musl-utils@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "musl@1.1.22-r3",
+            "scanelf@1.2.3-r0"
+          ],
+          "scope": "runtime"
+        },
+        "scanelf": {
+          "package_url": "pkg:apk/alpine/scanelf@1.2.3-r0?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "ssl_client": {
+          "package_url": "pkg:apk/alpine/ssl_client@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "libtls-standalone@2.9.1-r0",
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        },
+        "zlib": {
+          "package_url": "pkg:apk/alpine/zlib@1.2.11-r1?arch=x86_64\u0026distro=3.10.2",
+          "relationship": "direct",
+          "dependencies": [
+            "musl@1.1.22-r3"
+          ],
+          "scope": "runtime"
+        }
+      }
+    }
+  }
+}

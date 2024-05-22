@@ -1,0 +1,82 @@
+{
+	"SPDXID": "SPDXRef-DOCUMENT",
+	"creationInfo": {
+		"created": "2022-09-12T17:04:28.43059Z",
+		"creators": [
+			"Tool: trivy-dev",
+			"Organization: aquasecurity"
+		]
+	},
+	"dataLicense": "CC0-1.0",
+	"documentNamespace": "http://aquasecurity.github.io/trivy/application/maven-test-project-8aa3b6db-bae7-4755-b43e-00b4bcf46410",
+	"name": "maven-test-project",
+	"packages": [
+		{
+			"SPDXID": "SPDXRef-Application-193be12e25033404",
+			"filesAnalyzed": false,
+			"name": "composer",
+			"sourceInfo": "app/composer/composer.lock"
+		},
+		{
+			"SPDXID": "SPDXRef-Filesystem-12d960c003a8275b",
+			"attributionTexts": [
+				"SchemaVersion: 2"
+			],
+			"filesAnalyzed": false,
+			"name": "maven-test-project"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-2906575950df652b",
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:composer/pear/log@1.13.1",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "NONE",
+			"licenseDeclared": "NONE",
+			"name": "pear/log",
+			"versionInfo": "1.13.1"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-5e2e255ac76747ef",
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:composer/pear/pear_exception@v1.0.0",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "NONE",
+			"licenseDeclared": "NONE",
+			"name": "pear/pear_exception",
+			"versionInfo": "v1.0.0"
+		}
+	],
+	"relationships": [
+		{
+			"relatedSpdxElement": "SPDXRef-Filesystem-12d960c003a8275b",
+			"relationshipType": "DESCRIBE",
+			"spdxElementId": "SPDXRef-DOCUMENT"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Application-193be12e25033404",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-Filesystem-12d960c003a8275b"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-2906575950df652b",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-Application-193be12e25033404"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-5e2e255ac76747ef",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-Application-193be12e25033404"
+		}
+	],
+	"spdxVersion": "SPDX-2.2"
+}

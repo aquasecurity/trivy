@@ -1,0 +1,138 @@
+name: Reusable release
+on:
+  workflow_call:
+    inputs:
+      goreleaser_config:
+        description: 'file path to GoReleaser config'
+        required: true
+        type: string
+      goreleaser_options:
+        description: 'GoReleaser options separated by spaces'
+        default: ''
+        required: false
+        type: string
+
+env:
+  GH_USER: "aqua-bot"
+  GO_VERSION: '1.22'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
+    permissions:
+      id-token: write # For cosign
+      packages: write # For GHCR
+      contents: read  # Not required for public repositories, but for clarity
+    steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@v10
+        with:
+          root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
+          remove-android: 'true'
+          remove-docker-images: 'true'
+          remove-dotnet: 'true'
+          remove-haskell: 'true'
+
+      - name: Cosign install
+        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Show available Docker Buildx platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      - name: Login to docker.io registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to ghcr.io registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ env.GH_USER }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.ECR_ACCESS_KEY_ID }}
+          password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4.1.4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false # Disable cache to avoid free space issues during `Post Setup Go` step.
+
+      - name: Generate SBOM
+        uses: CycloneDX/gh-gomod-generate-sbom@v2
+        with:
+          args: mod -licenses -json -output bom.json
+          version: ^v1
+
+      - name: "save gpg key"
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+        run: |
+          echo "$GPG_KEY" > gpg.key
+
+      # Create tmp dir for GoReleaser
+      - name: "create tmp dir"
+        run: |
+          mkdir tmp    
+
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: v1.20.0
+          args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_FILE: "gpg.key"
+          TMPDIR: "tmp"
+
+      - name: "remove gpg key"
+        run: |
+          rm gpg.key
+
+      # Push images to registries (only for canary build)
+      # The custom Dockerfile.canary is necessary
+      # because GoReleaser Free doesn't support pushing images with the `--snapshot` flag.
+      - name: Build and push
+        if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64, linux/arm64
+          file: ./Dockerfile.canary # path to Dockerfile
+          context: .
+          push: true
+          tags: |
+            aquasec/trivy:canary
+            ghcr.io/aquasecurity/trivy:canary
+            public.ecr.aws/aquasecurity/trivy:canary
+
+      - name: Cache Trivy binaries
+        uses: actions/cache@v4.0.2
+        with:
+          path: dist/
+          # use 'github.sha' to create a unique cache folder for each run.
+          # use 'github.workflow' to create a unique cache folder if some runs have same commit sha.
+          # e.g. build and release runs
+          key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}

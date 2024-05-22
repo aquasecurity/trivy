@@ -1,0 +1,337 @@
+{
+  "version": "15.0.7",
+  "scan": {
+    "analyzer": {
+      "id": "trivy",
+      "name": "Trivy",
+      "vendor": {
+        "name": "Aqua Security"
+      },
+      "version": "dev"
+    },
+    "end_time": "2021-08-25T12:20:30",
+    "scanner": {
+      "id": "trivy",
+      "name": "Trivy",
+      "url": "https://github.com/aquasecurity/trivy/",
+      "vendor": {
+        "name": "Aqua Security"
+      },
+      "version": "dev"
+    },
+    "start_time": "2021-08-25T12:20:30",
+    "status": "success",
+    "type": "container_scanning"
+  },
+  "vulnerabilities": [
+    {
+      "id": "CVE-2019-1549",
+      "name": "openssl: information disclosure in fork()",
+      "description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
+      "severity": "Medium",
+      "solution": "Upgrade libcrypto1.1 to 1.1.1d-r0",
+      "location": {
+        "dependency": {
+          "package": {
+            "name": "libcrypto1.1"
+          },
+          "version": "1.1.1c-r0"
+        },
+        "operating_system": "Unknown",
+        "image": "testdata/fixtures/images/alpine-310.tar.gz"
+      },
+      "identifiers": [
+        {
+          "type": "cve",
+          "name": "CVE-2019-1549",
+          "value": "CVE-2019-1549",
+          "url": "https://avd.aquasec.com/nvd/cve-2019-1549"
+        }
+      ],
+      "links": [{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1549"
+        },{
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be"
+        },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1549.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
+        },{
+          "url": "https://support.f5.com/csp/article/K44070243"
+        },{
+          "url": "https://support.f5.com/csp/article/K44070243?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
+          "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuoct2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2019-1551",
+      "name": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+      "severity": "Medium",
+      "solution": "Upgrade libcrypto1.1 to 1.1.1d-r2",
+      "location": {
+        "dependency": {
+          "package": {
+            "name": "libcrypto1.1"
+          },
+          "version": "1.1.1c-r0"
+        },
+        "operating_system": "Unknown",
+        "image": "testdata/fixtures/images/alpine-310.tar.gz"
+      },
+      "identifiers": [
+        {
+          "type": "cve",
+          "name": "CVE-2019-1551",
+          "value": "CVE-2019-1551",
+          "url": "https://avd.aquasec.com/nvd/cve-2019-1551"
+        }
+      ],
+      "links": [{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html"
+        },{
+          "url": "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html"
+        },{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1551"
+        },{
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98"
+        },{
+          "url": "https://github.com/openssl/openssl/pull/10575"
+        },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1551.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-4514.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Dec/39"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Dec/46"
+        },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20191210-0001/"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4504-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4504-1/"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4594"
+        },{
+          "url": "https://www.debian.org/security/2021/dsa-4855"
+        },{
+          "url": "https://www.openssl.org/news/secadv/20191206.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuApr2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-09"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-03"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-11"
+        },{
+          "url": "https://www.tenable.com/security/tns-2021-10"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2019-1549",
+      "name": "openssl: information disclosure in fork()",
+      "description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
+      "severity": "Medium",
+      "solution": "Upgrade libssl1.1 to 1.1.1d-r0",
+      "location": {
+        "dependency": {
+          "package": {
+            "name": "libssl1.1"
+          },
+          "version": "1.1.1c-r0"
+        },
+        "operating_system": "Unknown",
+        "image": "testdata/fixtures/images/alpine-310.tar.gz"
+      },
+      "identifiers": [
+        {
+          "type": "cve",
+          "name": "CVE-2019-1549",
+          "value": "CVE-2019-1549",
+          "url": "https://avd.aquasec.com/nvd/cve-2019-1549"
+        }
+      ],
+      "links": [{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1549"
+        },{
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be"
+        },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1549.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
+        },{
+          "url": "https://support.f5.com/csp/article/K44070243"
+        },{
+          "url": "https://support.f5.com/csp/article/K44070243?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
+          "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuoct2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2019-1551",
+      "name": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+      "severity": "Medium",
+      "solution": "Upgrade libssl1.1 to 1.1.1d-r2",
+      "location": {
+        "dependency": {
+          "package": {
+            "name": "libssl1.1"
+          },
+          "version": "1.1.1c-r0"
+        },
+        "operating_system": "Unknown",
+        "image": "testdata/fixtures/images/alpine-310.tar.gz"
+      },
+      "identifiers": [
+        {
+          "type": "cve",
+          "name": "CVE-2019-1551",
+          "value": "CVE-2019-1551",
+          "url": "https://avd.aquasec.com/nvd/cve-2019-1551"
+        }
+      ],
+      "links": [{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html"
+        },{
+          "url": "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html"
+        },{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1551"
+        },{
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98"
+        },{
+          "url": "https://github.com/openssl/openssl/pull/10575"
+        },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1551.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-4514.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Dec/39"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Dec/46"
+        },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20191210-0001/"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4504-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4504-1/"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4594"
+        },{
+          "url": "https://www.debian.org/security/2021/dsa-4855"
+        },{
+          "url": "https://www.openssl.org/news/secadv/20191206.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuApr2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-09"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-03"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-11"
+        },{
+          "url": "https://www.tenable.com/security/tns-2021-10"
+        }
+      ]
+    }
+  ],
+  "remediations": []
+}

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package trivy.scanner.v1;
+option  go_package = "github.com/aquasecurity/trivy/rpc/scanner;scanner";
+
+import "rpc/common/service.proto";
+
+service Scanner {
+  rpc Scan(ScanRequest) returns (ScanResponse);
+}
+
+message ScanRequest {
+  string          target      = 1;  // image name or tar file path
+  string          artifact_id = 2;
+  repeated string blob_ids    = 3;
+  ScanOptions     options     = 4;
+}
+
+// cf.
+// https://stackoverflow.com/questions/38886789/protobuf3-how-to-describe-map-of-repeated-string
+message Licenses {
+  repeated string names = 1;
+}
+
+message ScanOptions {
+  repeated string       vuln_type          = 1;
+  repeated string       scanners           = 2;
+  bool                  list_all_packages  = 3;
+  map<string, Licenses> license_categories = 4;
+  bool                  include_dev_deps   = 5;
+}
+
+message ScanResponse {
+  common.OS       os      = 1;
+  repeated Result results = 3;
+}
+
+// Result is the same as github.com/aquasecurity/trivy/pkg/report.Result
+message Result {
+  string   target                                            = 1;
+  repeated common.Vulnerability vulnerabilities              = 2;
+  repeated common.DetectedMisconfiguration misconfigurations = 4;
+  string class                                               = 6;
+  string   type                                              = 3;
+  repeated common.Package packages                           = 5;
+  repeated common.CustomResource custom_resources            = 7;
+  repeated common.SecretFinding secrets                      = 8;
+  repeated common.DetectedLicense licenses                   = 9;
+}

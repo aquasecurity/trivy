@@ -1,0 +1,7 @@
+- bucket: "rubygems::uby-advisory-db"
+  pairs:
+    - bucket: rails
+      pairs:
+        - key: CVE-2014-0081
+          value:
+            PatchedVersions: "invalid"

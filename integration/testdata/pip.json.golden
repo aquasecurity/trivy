@@ -1,0 +1,246 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/pip",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Packages": [
+        {
+          "Name": "Flask",
+          "Identifier": {
+            "PURL": "pkg:pypi/flask@2.0.0",
+            "UID": "8b02ba2c070d72c6"
+          },
+          "Version": "2.0.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ]
+        },
+        {
+          "Name": "Jinja2",
+          "Identifier": {
+            "PURL": "pkg:pypi/jinja2@3.0.0",
+            "UID": "476df0c1e49c8f99"
+          },
+          "Version": "3.0.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ]
+        },
+        {
+          "Name": "Werkzeug",
+          "Identifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11",
+            "UID": "4163de19df046f49"
+          },
+          "Version": "0.11",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ]
+        },
+        {
+          "Name": "click",
+          "Identifier": {
+            "PURL": "pkg:pypi/click@8.0.0",
+            "UID": "71e4c8ef31456bf"
+          },
+          "Version": "8.0.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 1,
+              "EndLine": 1
+            }
+          ]
+        },
+        {
+          "Name": "itsdangerous",
+          "Identifier": {
+            "PURL": "pkg:pypi/itsdangerous@2.0.0",
+            "UID": "389c7cbc34cb6b32"
+          },
+          "Version": "2.0.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ]
+        },
+        {
+          "Name": "oauth2-client",
+          "Identifier": {
+            "PURL": "pkg:pypi/oauth2-client@4.0.0",
+            "UID": "c63f60db796a16ed"
+          },
+          "Version": "4.0.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ]
+        },
+        {
+          "Name": "python-gitlab",
+          "Identifier": {
+            "PURL": "pkg:pypi/python-gitlab@2.0.0",
+            "UID": "ccad39abab737d13"
+          },
+          "Version": "2.0.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-14806",
+          "PkgName": "Werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11",
+            "UID": "4163de19df046f49"
+          },
+          "InstalledVersion": "0.11",
+          "FixedVersion": "0.15.3",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
+          "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-331"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "redhat": 2,
+            "ubuntu": 1
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V2Score": 5,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00034.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00047.html",
+            "https://access.redhat.com/security/cve/CVE-2019-14806",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14806",
+            "https://github.com/advisories/GHSA-gq9m-qvpx-68hc",
+            "https://github.com/pallets/werkzeug/blob/7fef41b120327d3912fbe12fb64f1951496fcf3e/src/werkzeug/debug/__init__.py#L168",
+            "https://github.com/pallets/werkzeug/commit/00bc43b1672e662e5e3b8cecd79e67fc968fa246",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-14806",
+            "https://palletsprojects.com/blog/werkzeug-0-15-3-released/",
+            "https://ubuntu.com/security/notices/USN-4655-1"
+          ],
+          "PublishedDate": "2019-08-09T15:15:00Z",
+          "LastModifiedDate": "2019-09-11T00:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2020-28724",
+          "PkgName": "Werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11",
+            "UID": "4163de19df046f49"
+          },
+          "InstalledVersion": "0.11",
+          "FixedVersion": "0.11.6",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "python-werkzeug: open redirect via double slash in the URL",
+          "Description": "Open redirect vulnerability in werkzeug before 0.11.6 via a double slash in the URL.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-601"
+          ],
+          "VendorSeverity": {
+            "ghsa": 2,
+            "nvd": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V2Score": 5.8,
+              "V3Score": 6.1
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
+              "V3Score": 5.4
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2020-28724",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-28724",
+            "https://github.com/advisories/GHSA-3p3h-qghp-hvh2",
+            "https://github.com/pallets/flask/issues/1639",
+            "https://github.com/pallets/werkzeug/issues/822",
+            "https://github.com/pallets/werkzeug/pull/890/files",
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-28724",
+            "https://ubuntu.com/security/notices/USN-4655-1"
+          ],
+          "PublishedDate": "2020-11-18T15:15:00Z",
+          "LastModifiedDate": "2020-12-01T16:05:00Z"
+        }
+      ]
+    }
+  ]
+}

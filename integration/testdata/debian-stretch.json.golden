@@ -1,0 +1,419 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/debian-stretch.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "9.9"
+    },
+    "ImageID": "sha256:f26939cc87ef44a6fc554eedd0a976ab30b5bc2769d65d2e986b6c5f1fd4053d",
+    "DiffIDs": [
+      "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "957bc0b73d29f0e1030fec9c63f81d3e81baa610cffcc9c574b14fee6d1821ae",
+      "created": "2019-08-14T00:24:45.872523599Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-08-14T00:24:45.612796997Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:b9b24bd862a79bf6c6e79daf6babca27245063eb52a2f72ffc4fc3494ddd3d48 in / "
+        },
+        {
+          "created": "2019-08-14T00:24:45.872523599Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:2ce0e924e5d43d66387e476478ce3c857b1eaae74b5c74693ed47b3502bbdc3e",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/debian-stretch.tar.gz (debian 9.9)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@4.4-5",
+          "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/bash@4.4-5?arch=amd64\u0026distro=debian-9.9",
+            "UID": "6100d09336f565a0"
+          },
+          "InstalledVersion": "4.4-5",
+          "Status": "end_of_life",
+          "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
+            "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
+          "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-273"
+          ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "debian": 1,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.2,
+              "V3Score": 7.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            }
+          },
+          "References": [
+            "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
+            "https://access.redhat.com/security/cve/CVE-2019-18276",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
+            "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
+            "https://linux.oracle.com/cve/CVE-2019-18276.html",
+            "https://linux.oracle.com/errata/ELSA-2021-1679.html",
+            "https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-18276",
+            "https://security.gentoo.org/glsa/202105-34",
+            "https://security.netapp.com/advisory/ntap-20200430-0003/",
+            "https://www.youtube.com/watch?v=-wGtxJ8opa8"
+          ],
+          "PublishedDate": "2019-11-28T01:15:00Z",
+          "LastModifiedDate": "2021-05-26T12:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "VendorIDs": [
+            "DSA-4535-1"
+          ],
+          "PkgID": "e2fslibs@1.43.4-2",
+          "PkgName": "e2fslibs",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/e2fslibs@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "656652ce5818f7b6"
+          },
+          "InstalledVersion": "1.43.4-2",
+          "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
+            "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 4.6,
+              "V3Score": 6.7
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://linux.oracle.com/cve/CVE-2019-5094.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4011.html",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://security.gentoo.org/glsa/202003-05",
+            "https://security.netapp.com/advisory/ntap-20200115-0002/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://ubuntu.com/security/notices/USN-4142-1",
+            "https://ubuntu.com/security/notices/USN-4142-2",
+            "https://usn.ubuntu.com/4142-1/",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2021-01-11T19:21:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "VendorIDs": [
+            "DSA-4535-1"
+          ],
+          "PkgID": "e2fsprogs@1.43.4-2",
+          "PkgName": "e2fsprogs",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/e2fsprogs@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "3d19fd957338dc06"
+          },
+          "InstalledVersion": "1.43.4-2",
+          "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
+            "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 4.6,
+              "V3Score": 6.7
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://linux.oracle.com/cve/CVE-2019-5094.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4011.html",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://security.gentoo.org/glsa/202003-05",
+            "https://security.netapp.com/advisory/ntap-20200115-0002/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://ubuntu.com/security/notices/USN-4142-1",
+            "https://ubuntu.com/security/notices/USN-4142-2",
+            "https://usn.ubuntu.com/4142-1/",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2021-01-11T19:21:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "VendorIDs": [
+            "DSA-4535-1"
+          ],
+          "PkgID": "libcomerr2@1.43.4-2",
+          "PkgName": "libcomerr2",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libcomerr2@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "6ba1fac685a0c068"
+          },
+          "InstalledVersion": "1.43.4-2",
+          "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
+            "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 4.6,
+              "V3Score": 6.7
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://linux.oracle.com/cve/CVE-2019-5094.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4011.html",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://security.gentoo.org/glsa/202003-05",
+            "https://security.netapp.com/advisory/ntap-20200115-0002/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://ubuntu.com/security/notices/USN-4142-1",
+            "https://ubuntu.com/security/notices/USN-4142-2",
+            "https://usn.ubuntu.com/4142-1/",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2021-01-11T19:21:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "VendorIDs": [
+            "DSA-4535-1"
+          ],
+          "PkgID": "libss2@1.43.4-2",
+          "PkgName": "libss2",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libss2@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
+            "UID": "e507c185f61cd2e8"
+          },
+          "InstalledVersion": "1.43.4-2",
+          "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
+            "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 4.6,
+              "V3Score": 6.7
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://linux.oracle.com/cve/CVE-2019-5094.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4011.html",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://security.gentoo.org/glsa/202003-05",
+            "https://security.netapp.com/advisory/ntap-20200115-0002/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://ubuntu.com/security/notices/USN-4142-1",
+            "https://ubuntu.com/security/notices/USN-4142-2",
+            "https://usn.ubuntu.com/4142-1/",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2021-01-11T19:21:00Z"
+        }
+      ]
+    }
+  ]
+}

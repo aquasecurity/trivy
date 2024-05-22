@@ -1,0 +1,37 @@
+- bucket: alpine 3.9
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2019-1549
+          value:
+            FixedVersion: 1.1.1d-r0
+        - key: CVE-2019-1551
+          value:
+            FixedVersion: 1.1.1d-r2
+    - bucket: musl
+      pairs:
+        - key: CVE-2019-14697
+          value:
+            FixedVersion: 1.1.20-r5
+- bucket: alpine 3.10
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2019-1549
+          value:
+            FixedVersion: 1.1.1d-r0
+        - key: CVE-2019-1551
+          value:
+            FixedVersion: 1.1.1d-r2
+    - bucket: musl
+      pairs:
+        - key: CVE-2019-14697
+          value:
+            FixedVersion: 1.1.20-r5
+- bucket: alpine edge
+  pairs:
+    - bucket: git
+      pairs:
+        - key: CVE-2022-24765
+          value:
+            FixedVersion: 2.35.2-r0

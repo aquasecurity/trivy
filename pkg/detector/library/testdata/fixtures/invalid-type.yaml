@@ -1,0 +1,7 @@
+- bucket: composer::GitHub Security Advisory Composer
+  pairs:
+    - bucket: "symfony/symfony"
+      pairs:
+        - key: CVE-2020-15094
+          value:
+            PatchedVersions: malformed

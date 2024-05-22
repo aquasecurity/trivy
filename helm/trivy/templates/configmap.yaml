@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "trivy.fullname" . }}
+  labels:
+{{ include "trivy.labels" . | indent 4 }}
+data:
+  TRIVY_LISTEN: "0.0.0.0:{{ .Values.service.port }}"
+  TRIVY_CACHE_DIR: "/home/scanner/.cache/trivy"
+{{- if .Values.trivy.cache.redis.enabled }}
+  TRIVY_CACHE_BACKEND: {{ .Values.trivy.cache.redis.url | quote }}
+  TRIVY_CACHE_TTL: {{ .Values.trivy.cache.redis.ttl | quote }}
+  TRIVY_REDIS_TLS: {{ .Values.trivy.cache.redis.tls | quote }}
+{{- end }}
+  TRIVY_DEBUG: {{ .Values.trivy.debugMode | quote }}
+  TRIVY_SKIP_DB_UPDATE: {{ .Values.trivy.skipDBUpdate | quote }}
+  TRIVY_DB_REPOSITORY: {{ .Values.trivy.dbRepository | quote }}
+{{- if .Values.httpProxy }}
+  HTTP_PROXY: {{ .Values.httpProxy | quote }}
+{{- end }}
+{{- if .Values.httpsProxy }}
+  HTTPS_PROXY: {{ .Values.httpsProxy | quote }}
+{{- end }}
+{{- if .Values.noProxy }}
+  NO_PROXY: {{ .Values.noProxy | quote }}
+{{- end }}
+{{- with .Values.trivy.extraEnvVars }}
+  {{- . | toYaml | nindent 2 }}
+{{- end }}

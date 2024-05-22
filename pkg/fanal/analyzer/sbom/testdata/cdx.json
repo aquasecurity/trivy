@@ -1,0 +1,61 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:73f26314-e86a-4f5a-befc-f853a15b64e7",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-06-01T13:10:23+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "0.41.0-80-g1c03982fe"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "pkg:oci/elasticsearch@sha256:d4b68b602eb3d92ea3256886761752ae1159dc01fd391f4c4a87ebf6ba9d3895?repository_url=index.docker.io%2Fbitnami%2Felasticsearch\u0026arch=arm64",
+      "type": "container",
+      "name": "bitnami/elasticsearch:8.7.1-debian-11-r7",
+      "purl": "pkg:oci/elasticsearch@sha256:d4b68b602eb3d92ea3256886761752ae1159dc01fd391f4c4a87ebf6ba9d3895?repository_url=index.docker.io%2Fbitnami%2Felasticsearch\u0026arch=arm64"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+      "type": "library",
+      "name": "co.elastic.apm:apm-agent",
+      "version": "1.36.0",
+      "purl": "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "jar"
+        },
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "modules/apm/elastic-apm-agent-1.36.0.jar"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+      "type": "library",
+      "name": "co.elastic.apm:apm-agent-cached-lookup-key",
+      "version": "1.36.0",
+      "purl": "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "jar"
+        },
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "modules/apm/elastic-apm-agent-1.36.0.jar"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/oraclelinux-8.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "oracle",
+      "Name": "8.0"
+    },
+    "ImageID": "sha256:8988c7081e1f7b6c2928cbc4832b8a05968bb589d45d444ca1e3027c68f97f56",
+    "DiffIDs": [
+      "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
+      "container": "b5339bf682ea7c2a5b817144038646d7fa55d72e9943283bd0ff5e01eb8e5e40",
+      "created": "2019-10-15T21:23:26.082686371Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
+          "created": "2018-08-30T21:49:27.028879762Z",
+          "created_by": "/bin/sh -c #(nop)  MAINTAINER Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
+          "empty_layer": true
+        },
+        {
+          "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
+          "created": "2019-10-15T21:23:25.715030578Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:40a576906f00da132c935b4713c8012d0ac0422f507fc3239d647b0ed9930ed7 in / "
+        },
+        {
+          "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
+          "created": "2019-10-15T21:23:26.082686371Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:d2f0ba2a964f3d0b1935be99979b6930f8b989217ff6a5e6d4093e9df9baee11",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/oraclelinux-8.tar.gz (oracle 8.0)",
+      "Class": "os-pkgs",
+      "Type": "oracle",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-3823",
+          "PkgID": "curl@7.61.1-8.el8.x86_64",
+          "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
+            "UID": "6837a94bd82971ac"
+          },
+          "InstalledVersion": "7.61.1-8.el8",
+          "FixedVersion": "7.61.1-11.el8",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:e1b9aa33b064e76023cc29e9fac51bcebe62740c92ed38f09ba6205ddd9aa6f4",
+            "DiffID": "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
+          },
+          "SeveritySource": "oracle-oval",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3823",
+          "DataSource": {
+            "ID": "oracle-oval",
+            "Name": "Oracle Linux OVAL definitions",
+            "URL": "https://linux.oracle.com/security/oval/"
+          },
+          "Title": "curl: SMTP end-of-response out-of-bounds read",
+          "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 3,
+            "nvd": 3,
+            "oracle-oval": 2,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 5,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+              "V3Score": 4.3
+            }
+          },
+          "References": [
+            "http://www.securityfocus.com/bid/106950",
+            "https://access.redhat.com/errata/RHSA-2019:3701",
+            "https://access.redhat.com/security/cve/CVE-2019-3823",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3823",
+            "https://cert-portal.siemens.com/productcert/pdf/ssa-936080.pdf",
+            "https://curl.haxx.se/docs/CVE-2019-3823.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3823",
+            "https://linux.oracle.com/cve/CVE-2019-3823.html",
+            "https://linux.oracle.com/errata/ELSA-2019-3701.html",
+            "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
+            "https://security.gentoo.org/glsa/201903-03",
+            "https://security.netapp.com/advisory/ntap-20190315-0001/",
+            "https://ubuntu.com/security/notices/USN-3882-1",
+            "https://usn.ubuntu.com/3882-1/",
+            "https://www.debian.org/security/2019/dsa-4386",
+            "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+            "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+          ],
+          "PublishedDate": "2019-02-06T20:29:00Z",
+          "LastModifiedDate": "2021-03-09T15:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5436",
+          "PkgID": "curl@7.61.1-8.el8.x86_64",
+          "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
+            "UID": "6837a94bd82971ac"
+          },
+          "InstalledVersion": "7.61.1-8.el8",
+          "FixedVersion": "7.61.1-12.el8",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:e1b9aa33b064e76023cc29e9fac51bcebe62740c92ed38f09ba6205ddd9aa6f4",
+            "DiffID": "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
+          },
+          "SeveritySource": "oracle-oval",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5436",
+          "DataSource": {
+            "ID": "oracle-oval",
+            "Name": "Oracle Linux OVAL definitions",
+            "URL": "https://linux.oracle.com/security/oval/"
+          },
+          "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
+          "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "arch-linux": 3,
+            "nvd": 3,
+            "oracle-oval": 2,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 4.6,
+              "V3Score": 7.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 7
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00008.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00017.html",
+            "http://www.openwall.com/lists/oss-security/2019/09/11/6",
+            "https://access.redhat.com/security/cve/CVE-2019-5436",
+            "https://curl.haxx.se/docs/CVE-2019-5436.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5436",
+            "https://linux.oracle.com/cve/CVE-2019-5436.html",
+            "https://linux.oracle.com/errata/ELSA-2020-1792.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SMG3V4VTX2SE3EW3HQTN3DDLQBTORQC2/",
+            "https://seclists.org/bugtraq/2020/Feb/36",
+            "https://security.gentoo.org/glsa/202003-29",
+            "https://security.netapp.com/advisory/ntap-20190606-0004/",
+            "https://support.f5.com/csp/article/K55133295",
+            "https://support.f5.com/csp/article/K55133295?utm_source=f5support\u0026amp;utm_medium=RSS",
+            "https://ubuntu.com/security/notices/USN-3993-1",
+            "https://ubuntu.com/security/notices/USN-3993-2",
+            "https://www.debian.org/security/2020/dsa-4633",
+            "https://www.oracle.com/security-alerts/cpuapr2020.html",
+            "https://www.oracle.com/security-alerts/cpuoct2020.html",
+            "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+          ],
+          "PublishedDate": "2019-05-28T19:29:00Z",
+          "LastModifiedDate": "2020-10-20T22:15:00Z"
+        }
+      ]
+    }
+  ]
+}

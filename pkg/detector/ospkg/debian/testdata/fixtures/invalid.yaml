@@ -1,0 +1,9 @@
+- bucket: debian 9
+  pairs:
+    - bucket: apache2
+      pairs:
+        - key: CVE-2020-8177
+          value:
+            FixedVersion:
+              - foo
+              - bar

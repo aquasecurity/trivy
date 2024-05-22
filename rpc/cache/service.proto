@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package trivy.cache.v1;
+option  go_package = "github.com/aquasecurity/trivy/rpc/cache;cache";
+
+import "google/protobuf/timestamp.proto";
+import "rpc/common/service.proto";
+import "google/protobuf/empty.proto";
+
+service Cache {
+  rpc PutArtifact(PutArtifactRequest) returns (google.protobuf.Empty);
+  rpc PutBlob(PutBlobRequest) returns (google.protobuf.Empty);
+  rpc MissingBlobs(MissingBlobsRequest) returns (MissingBlobsResponse);
+  rpc DeleteBlobs(DeleteBlobsRequest) returns (google.protobuf.Empty);
+}
+
+message ArtifactInfo {
+  int32                     schema_version = 1;
+  string                    architecture   = 2;
+  google.protobuf.Timestamp created        = 3;
+  string                    docker_version = 4;
+  string                    os             = 5;
+  repeated common.Package history_packages = 6;
+}
+
+message PutArtifactRequest {
+  string       artifact_id   = 1;
+  ArtifactInfo artifact_info = 2;
+}
+
+message BlobInfo {
+  int32             schema_version                   = 1;
+  common.OS         os                               = 2;
+  common.Repository repository                       = 11;
+  repeated common.PackageInfo package_infos          = 3;
+  repeated common.Application applications           = 4;
+  repeated common.Misconfiguration misconfigurations = 9;
+  repeated string                  opaque_dirs       = 5;
+  repeated string                  whiteout_files    = 6;
+  string                           digest            = 7;
+  string                           diff_id           = 8;
+  repeated common.CustomResource custom_resources    = 10;
+  repeated common.Secret secrets                     = 12;
+  repeated common.LicenseFile licenses               = 13;
+}
+
+message PutBlobRequest {
+  string   diff_id   = 1;
+  BlobInfo blob_info = 3;
+}
+
+message PutResponse {
+  common.OS os   = 1;
+  bool      eosl = 2;
+}
+
+message MissingBlobsRequest {
+  string          artifact_id = 1;
+  repeated string blob_ids    = 2;
+}
+
+message MissingBlobsResponse {
+  bool            missing_artifact = 1;
+  repeated string missing_blob_ids = 2;
+}
+
+message DeleteBlobsRequest {
+  repeated string blob_ids = 1;
+}

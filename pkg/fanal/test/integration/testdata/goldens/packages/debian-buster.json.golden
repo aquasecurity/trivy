@@ -1,0 +1,1906 @@
+[
+  {
+    "ID": "adduser@3.118",
+    "Name": "adduser",
+    "Version": "3.118",
+    "SrcName": "adduser",
+    "SrcVersion": "3.118",
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "Debian Adduser Developers \u003cadduser@packages.debian.org\u003e",
+    "DependsOn": [
+      "debconf@1.5.71",
+      "passwd@1:4.5-1.1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "apt@1.8.2",
+    "Name": "apt",
+    "Version": "1.8.2",
+    "SrcName": "apt",
+    "SrcVersion": "1.8.2",
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e",
+    "DependsOn": [
+      "adduser@3.118",
+      "debian-archive-keyring@2019.1",
+      "gpgv@2.2.12-1+deb10u1",
+      "libapt-pkg5.0@1.8.2",
+      "libc6@2.28-10",
+      "libgcc1@1:8.3.0-6",
+      "libgnutls30@3.6.7-4",
+      "libseccomp2@2.3.3-4",
+      "libstdc++6@8.3.0-6"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "base-files@10.3+deb10u1",
+    "Name": "base-files",
+    "Version": "10.3+deb10u1",
+    "SrcName": "base-files",
+    "SrcVersion": "10.3+deb10u1",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "base-passwd@3.5.46",
+    "Name": "base-passwd",
+    "Version": "3.5.46",
+    "SrcName": "base-passwd",
+    "SrcVersion": "3.5.46",
+    "Licenses": [
+      "GPL-2.0",
+      "PD"
+    ],
+    "Maintainer": "Colin Watson \u003ccjwatson@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libdebconfclient0@0.249"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "bash@5.0-4",
+    "Name": "bash",
+    "Version": "5.0",
+    "Release": "4",
+    "SrcName": "bash",
+    "SrcVersion": "5.0",
+    "SrcRelease": "4",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Matthias Klose \u003cdoko@debian.org\u003e",
+    "DependsOn": [
+      "base-files@10.3+deb10u1",
+      "debianutils@4.8.6.1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "bsdutils@1:2.33.1-0.1",
+    "Name": "bsdutils",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "Epoch": 1,
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "coreutils@8.30-3",
+    "Name": "coreutils",
+    "Version": "8.30",
+    "Release": "3",
+    "SrcName": "coreutils",
+    "SrcVersion": "8.30",
+    "SrcRelease": "3",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Michael Stone \u003cmstone@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "dash@0.5.10.2-5",
+    "Name": "dash",
+    "Version": "0.5.10.2",
+    "Release": "5",
+    "SrcName": "dash",
+    "SrcVersion": "0.5.10.2",
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Andrej Shadura \u003candrewsh@debian.org\u003e",
+    "DependsOn": [
+      "debconf@1.5.71",
+      "debianutils@4.8.6.1",
+      "dpkg@1.19.7"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "debconf@1.5.71",
+    "Name": "debconf",
+    "Version": "1.5.71",
+    "SrcName": "debconf",
+    "SrcVersion": "1.5.71",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "Debconf Developers \u003cdebconf-devel@lists.alioth.debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "debian-archive-keyring@2019.1",
+    "Name": "debian-archive-keyring",
+    "Version": "2019.1",
+    "SrcName": "debian-archive-keyring",
+    "SrcVersion": "2019.1",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Debian Release Team \u003cpackages@release.debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "debianutils@4.8.6.1",
+    "Name": "debianutils",
+    "Version": "4.8.6.1",
+    "SrcName": "debianutils",
+    "SrcVersion": "4.8.6.1",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "diffutils@1:3.7-3",
+    "Name": "diffutils",
+    "Version": "3.7",
+    "Release": "3",
+    "Epoch": 1,
+    "SrcName": "diffutils",
+    "SrcVersion": "3.7",
+    "SrcRelease": "3",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-3.0",
+      "GFDL"
+    ],
+    "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "dpkg@1.19.7",
+    "Name": "dpkg",
+    "Version": "1.19.7",
+    "SrcName": "dpkg",
+    "SrcVersion": "1.19.7",
+    "Licenses": [
+      "GPL-2.0",
+      "BSD-2-Clause",
+      "public-domain-s-s-d",
+      "public-domain-md5"
+    ],
+    "Maintainer": "Dpkg Developers \u003cdebian-dpkg@lists.debian.org\u003e",
+    "DependsOn": [
+      "tar@1.30+dfsg-6"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "e2fsprogs@1.44.5-1+deb10u1",
+    "Name": "e2fsprogs",
+    "Version": "1.44.5",
+    "Release": "1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5",
+    "SrcRelease": "1+deb10u1",
+    "Licenses": [
+      "GPL-2.0",
+      "LGPL-2.0"
+    ],
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "fdisk@2.33.1-0.1",
+    "Name": "fdisk",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libfdisk1@2.33.1-0.1",
+      "libmount1@2.33.1-0.1",
+      "libncursesw6@6.1+20181013-2+deb10u1",
+      "libsmartcols1@2.33.1-0.1",
+      "libtinfo6@6.1+20181013-2+deb10u1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "findutils@4.6.0+git+20190209-2",
+    "Name": "findutils",
+    "Version": "4.6.0+git+20190209",
+    "Release": "2",
+    "SrcName": "findutils",
+    "SrcVersion": "4.6.0+git+20190209",
+    "SrcRelease": "2",
+    "Licenses": [
+      "GPL-3.0",
+      "GFDL-1.3"
+    ],
+    "Maintainer": "Andreas Metzler \u003cametzler@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "gcc-8-base@8.3.0-6",
+    "Name": "gcc-8-base",
+    "Version": "8.3.0",
+    "Release": "6",
+    "SrcName": "gcc-8",
+    "SrcVersion": "8.3.0",
+    "SrcRelease": "6",
+    "Licenses": [
+      "GPL-3.0",
+      "GFDL-1.2",
+      "GPL-2.0",
+      "Artistic",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "gpgv@2.2.12-1+deb10u1",
+    "Name": "gpgv",
+    "Version": "2.2.12",
+    "Release": "1+deb10u1",
+    "SrcName": "gnupg2",
+    "SrcVersion": "2.2.12",
+    "SrcRelease": "1+deb10u1",
+    "Licenses": [
+      "GPL-3.0",
+      "permissive",
+      "LGPL-2.1",
+      "Expat",
+      "BSD-3-Clause",
+      "LGPL-3.0",
+      "RFC-Reference",
+      "TinySCHEME",
+      "CC0-1.0"
+    ],
+    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libbz2-1.0@1.0.6-9.2~deb10u1",
+      "libc6@2.28-10",
+      "libgcrypt20@1.8.4-5",
+      "libgpg-error0@1.35-1",
+      "zlib1g@1:1.2.11.dfsg-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "grep@3.3-1",
+    "Name": "grep",
+    "Version": "3.3",
+    "Release": "1",
+    "SrcName": "grep",
+    "SrcVersion": "3.3",
+    "SrcRelease": "1",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
+    "DependsOn": [
+      "dpkg@1.19.7"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "gzip@1.9-3",
+    "Name": "gzip",
+    "Version": "1.9",
+    "Release": "3",
+    "SrcName": "gzip",
+    "SrcVersion": "1.9",
+    "SrcRelease": "3",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e",
+    "DependsOn": [
+      "dpkg@1.19.7"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "hostname@3.21",
+    "Name": "hostname",
+    "Version": "3.21",
+    "SrcName": "hostname",
+    "SrcVersion": "3.21",
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "Michael Meskes \u003cmeskes@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "init-system-helpers@1.56+nmu1",
+    "Name": "init-system-helpers",
+    "Version": "1.56+nmu1",
+    "SrcName": "init-system-helpers",
+    "SrcVersion": "1.56+nmu1",
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "perl-base@5.28.1-6"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "iproute2@4.20.0-2",
+    "Name": "iproute2",
+    "Version": "4.20.0",
+    "Release": "2",
+    "SrcName": "iproute2",
+    "SrcVersion": "4.20.0",
+    "SrcRelease": "2",
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "Alexander Wirt \u003cformorer@debian.org\u003e",
+    "DependsOn": [
+      "debconf@1.5.71",
+      "libc6@2.28-10",
+      "libcap2-bin@1:2.25-2",
+      "libcap2@1:2.25-2",
+      "libdb5.3@5.3.28+dfsg1-0.5",
+      "libelf1@0.176-1.1",
+      "libmnl0@1.0.4-2",
+      "libselinux1@2.8-1+b1",
+      "libxtables12@1.8.2-4"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "iputils-ping@3:20180629-2",
+    "Name": "iputils-ping",
+    "Version": "20180629",
+    "Release": "2",
+    "Epoch": 3,
+    "SrcName": "iputils",
+    "SrcVersion": "20180629",
+    "SrcRelease": "2",
+    "SrcEpoch": 3,
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Noah Meyerhans \u003cnoahm@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libcap2@1:2.25-2",
+      "libidn2-0@2.0.5-1",
+      "libnettle6@3.4.1-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libacl1@2.2.53-4",
+    "Name": "libacl1",
+    "Version": "2.2.53",
+    "Release": "4",
+    "SrcName": "acl",
+    "SrcVersion": "2.2.53",
+    "SrcRelease": "4",
+    "Licenses": [
+      "GPL-2.0",
+      "LGPL-2.0",
+      "LGPL-2.1"
+    ],
+    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e",
+    "DependsOn": [
+      "libattr1@1:2.4.48-4",
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libapt-pkg5.0@1.8.2",
+    "Name": "libapt-pkg5.0",
+    "Version": "1.8.2",
+    "SrcName": "apt",
+    "SrcVersion": "1.8.2",
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e",
+    "DependsOn": [
+      "libbz2-1.0@1.0.6-9.2~deb10u1",
+      "libc6@2.28-10",
+      "libgcc1@1:8.3.0-6",
+      "liblz4-1@1.8.3-1",
+      "liblzma5@5.2.4-1",
+      "libstdc++6@8.3.0-6",
+      "libsystemd0@241-7~deb10u1",
+      "libudev1@241-7~deb10u1",
+      "libzstd1@1.3.8+dfsg-3",
+      "zlib1g@1:1.2.11.dfsg-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libattr1@1:2.4.48-4",
+    "Name": "libattr1",
+    "Version": "2.4.48",
+    "Release": "4",
+    "Epoch": 1,
+    "SrcName": "attr",
+    "SrcVersion": "2.4.48",
+    "SrcRelease": "4",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0",
+      "LGPL-2.0",
+      "LGPL-2.1"
+    ],
+    "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libaudit-common@1:2.8.4-3",
+    "Name": "libaudit-common",
+    "Version": "2.8.4",
+    "Release": "3",
+    "Epoch": 1,
+    "SrcName": "audit",
+    "SrcVersion": "2.8.4",
+    "SrcRelease": "3",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0",
+      "LGPL-2.1",
+      "GPL-1.0"
+    ],
+    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libaudit1@1:2.8.4-3",
+    "Name": "libaudit1",
+    "Version": "2.8.4",
+    "Release": "3",
+    "Epoch": 1,
+    "SrcName": "audit",
+    "SrcVersion": "2.8.4",
+    "SrcRelease": "3",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0",
+      "LGPL-2.1",
+      "GPL-1.0"
+    ],
+    "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e",
+    "DependsOn": [
+      "libaudit-common@1:2.8.4-3",
+      "libc6@2.28-10",
+      "libcap-ng0@0.7.9-2"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libblkid1@2.33.1-0.1",
+    "Name": "libblkid1",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libuuid1@2.33.1-0.1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libbz2-1.0@1.0.6-9.2~deb10u1",
+    "Name": "libbz2-1.0",
+    "Version": "1.0.6",
+    "Release": "9.2~deb10u1",
+    "SrcName": "bzip2",
+    "SrcVersion": "1.0.6",
+    "SrcRelease": "9.2~deb10u1",
+    "Licenses": [
+      "BSD-variant",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libc-bin@2.28-10",
+    "Name": "libc-bin",
+    "Version": "2.28",
+    "Release": "10",
+    "SrcName": "glibc",
+    "SrcVersion": "2.28",
+    "SrcRelease": "10",
+    "Licenses": [
+      "LGPL-2.1",
+      "GPL-2.0"
+    ],
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libc6@2.28-10",
+    "Name": "libc6",
+    "Version": "2.28",
+    "Release": "10",
+    "SrcName": "glibc",
+    "SrcVersion": "2.28",
+    "SrcRelease": "10",
+    "Licenses": [
+      "LGPL-2.1",
+      "GPL-2.0"
+    ],
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
+    "DependsOn": [
+      "libgcc1@1:8.3.0-6"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libcap-ng0@0.7.9-2",
+    "Name": "libcap-ng0",
+    "Version": "0.7.9",
+    "Release": "2",
+    "SrcName": "libcap-ng",
+    "SrcVersion": "0.7.9",
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-2.1",
+      "GPL-2.0",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Pierre Chifflier \u003cpollux@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libcap2@1:2.25-2",
+    "Name": "libcap2",
+    "Version": "2.25",
+    "Release": "2",
+    "Epoch": 1,
+    "SrcName": "libcap2",
+    "SrcVersion": "2.25",
+    "SrcRelease": "2",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libcap2-bin@1:2.25-2",
+    "Name": "libcap2-bin",
+    "Version": "2.25",
+    "Release": "2",
+    "Epoch": 1,
+    "SrcName": "libcap2",
+    "SrcVersion": "2.25",
+    "SrcRelease": "2",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libcap2@1:2.25-2"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libcom-err2@1.44.5-1+deb10u1",
+    "Name": "libcom-err2",
+    "Version": "1.44.5",
+    "Release": "1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5",
+    "SrcRelease": "1+deb10u1",
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libdb5.3@5.3.28+dfsg1-0.5",
+    "Name": "libdb5.3",
+    "Version": "5.3.28+dfsg1",
+    "Release": "0.5",
+    "SrcName": "db5.3",
+    "SrcVersion": "5.3.28+dfsg1",
+    "SrcRelease": "0.5",
+    "Maintainer": "Debian Berkeley DB Team \u003cteam+bdb@tracker.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libdebconfclient0@0.249",
+    "Name": "libdebconfclient0",
+    "Version": "0.249",
+    "SrcName": "cdebconf",
+    "SrcVersion": "0.249",
+    "Maintainer": "Debian Install System Team \u003cdebian-boot@lists.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libelf1@0.176-1.1",
+    "Name": "libelf1",
+    "Version": "0.176",
+    "Release": "1.1",
+    "SrcName": "elfutils",
+    "SrcVersion": "0.176",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "Kurt Roeckx \u003ckurt@roeckx.be\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "zlib1g@1:1.2.11.dfsg-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libext2fs2@1.44.5-1+deb10u1",
+    "Name": "libext2fs2",
+    "Version": "1.44.5",
+    "Release": "1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5",
+    "SrcRelease": "1+deb10u1",
+    "Licenses": [
+      "GPL-2.0",
+      "LGPL-2.0"
+    ],
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libfdisk1@2.33.1-0.1",
+    "Name": "libfdisk1",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "libblkid1@2.33.1-0.1",
+      "libc6@2.28-10",
+      "libuuid1@2.33.1-0.1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libffi6@3.2.1-9",
+    "Name": "libffi6",
+    "Version": "3.2.1",
+    "Release": "9",
+    "SrcName": "libffi",
+    "SrcVersion": "3.2.1",
+    "SrcRelease": "9",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libgcc1@1:8.3.0-6",
+    "Name": "libgcc1",
+    "Version": "8.3.0",
+    "Release": "6",
+    "Epoch": 1,
+    "SrcName": "gcc-8",
+    "SrcVersion": "8.3.0",
+    "SrcRelease": "6",
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "DependsOn": [
+      "gcc-8-base@8.3.0-6",
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libgcrypt20@1.8.4-5",
+    "Name": "libgcrypt20",
+    "Version": "1.8.4",
+    "Release": "5",
+    "SrcName": "libgcrypt20",
+    "SrcVersion": "1.8.4",
+    "SrcRelease": "5",
+    "Licenses": [
+      "LGPL-3.0",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libgpg-error0@1.35-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libgmp10@2:6.1.2+dfsg-4",
+    "Name": "libgmp10",
+    "Version": "6.1.2+dfsg",
+    "Release": "4",
+    "Epoch": 2,
+    "SrcName": "gmp",
+    "SrcVersion": "6.1.2+dfsg",
+    "SrcRelease": "4",
+    "SrcEpoch": 2,
+    "Licenses": [
+      "LGPL-3.0",
+      "GPL-2.0",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Debian Science Team \u003cdebian-science-maintainers@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libgnutls30@3.6.7-4",
+    "Name": "libgnutls30",
+    "Version": "3.6.7",
+    "Release": "4",
+    "SrcName": "gnutls28",
+    "SrcVersion": "3.6.7",
+    "SrcRelease": "4",
+    "Licenses": [
+      "The main library is licensed under GNU Lesser",
+      "LGPL-3.0",
+      "GPL-3.0",
+      "GFDL-1.3",
+      "CC0 license",
+      "The MIT License (MIT)",
+      "LGPLv3+",
+      "GPL-2.0",
+      "Apache-2.0"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libgmp10@2:6.1.2+dfsg-4",
+      "libhogweed4@3.4.1-1",
+      "libidn2-0@2.0.5-1",
+      "libnettle6@3.4.1-1",
+      "libp11-kit0@0.23.15-2",
+      "libtasn1-6@4.13-3",
+      "libunistring2@0.9.10-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libgpg-error0@1.35-1",
+    "Name": "libgpg-error0",
+    "Version": "1.35",
+    "Release": "1",
+    "SrcName": "libgpg-error",
+    "SrcVersion": "1.35",
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-2.1",
+      "BSD-3-Clause",
+      "g10-permissive",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libhogweed4@3.4.1-1",
+    "Name": "libhogweed4",
+    "Version": "3.4.1",
+    "Release": "1",
+    "SrcName": "nettle",
+    "SrcVersion": "3.4.1",
+    "SrcRelease": "1",
+    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libgmp10@2:6.1.2+dfsg-4",
+      "libnettle6@3.4.1-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libidn2-0@2.0.5-1",
+    "Name": "libidn2-0",
+    "Version": "2.0.5",
+    "Release": "1",
+    "SrcName": "libidn2",
+    "SrcVersion": "2.0.5",
+    "SrcRelease": "1",
+    "Licenses": [
+      "GPL-3.0",
+      "LGPL-3.0",
+      "GPL-2.0",
+      "Unicode"
+    ],
+    "Maintainer": "Debian Libidn team \u003chelp-libidn@gnu.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libunistring2@0.9.10-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "liblz4-1@1.8.3-1",
+    "Name": "liblz4-1",
+    "Version": "1.8.3",
+    "Release": "1",
+    "SrcName": "lz4",
+    "SrcVersion": "1.8.3",
+    "SrcRelease": "1",
+    "Licenses": [
+      "BSD-2-Clause",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Nobuhiro Iwamatsu \u003ciwamatsu@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "liblzma5@5.2.4-1",
+    "Name": "liblzma5",
+    "Version": "5.2.4",
+    "Release": "1",
+    "SrcName": "xz-utils",
+    "SrcVersion": "5.2.4",
+    "SrcRelease": "1",
+    "Licenses": [
+      "PD",
+      "probably-PD",
+      "GPL-2.0",
+      "LGPL-2.1",
+      "permissive-fsf",
+      "Autoconf",
+      "permissive-nowarranty",
+      "none",
+      "config-h",
+      "LGPL-2.0",
+      "noderivs",
+      "PD-debian",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Jonathan Nieder \u003cjrnieder@gmail.com\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libmnl0@1.0.4-2",
+    "Name": "libmnl0",
+    "Version": "1.0.4",
+    "Release": "2",
+    "SrcName": "libmnl",
+    "SrcVersion": "1.0.4",
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-2.1",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libmount1@2.33.1-0.1",
+    "Name": "libmount1",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "libblkid1@2.33.1-0.1",
+      "libc6@2.28-10",
+      "libselinux1@2.8-1+b1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libncursesw6@6.1+20181013-2+deb10u1",
+    "Name": "libncursesw6",
+    "Version": "6.1+20181013",
+    "Release": "2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013",
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libtinfo6@6.1+20181013-2+deb10u1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libnettle6@3.4.1-1",
+    "Name": "libnettle6",
+    "Version": "3.4.1",
+    "Release": "1",
+    "SrcName": "nettle",
+    "SrcVersion": "3.4.1",
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-2.1",
+      "LGPL-2.0",
+      "other",
+      "GPL-2.0",
+      "GPL-2.0-with-autoconf-exception",
+      "public-domain",
+      "GAP",
+      "LGPL-3.0",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libp11-kit0@0.23.15-2",
+    "Name": "libp11-kit0",
+    "Version": "0.23.15",
+    "Release": "2",
+    "SrcName": "p11-kit",
+    "SrcVersion": "0.23.15",
+    "SrcRelease": "2",
+    "Licenses": [
+      "BSD-3-Clause",
+      "permissive-like-automake-output",
+      "ISC",
+      "ISC+IBM",
+      "same-as-rest-of-p11kit"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libffi6@3.2.1-9"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libpam-modules@1.3.1-5",
+    "Name": "libpam-modules",
+    "Version": "1.3.1",
+    "Release": "5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1",
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libpam-modules-bin@1.3.1-5",
+    "Name": "libpam-modules-bin",
+    "Version": "1.3.1",
+    "Release": "5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1",
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "DependsOn": [
+      "libaudit1@1:2.8.4-3",
+      "libc6@2.28-10",
+      "libpam0g@1.3.1-5",
+      "libselinux1@2.8-1+b1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libpam-runtime@1.3.1-5",
+    "Name": "libpam-runtime",
+    "Version": "1.3.1",
+    "Release": "5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1",
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "DependsOn": [
+      "debconf@1.5.71",
+      "debconf@1.5.71",
+      "libpam-modules@1.3.1-5"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libpam0g@1.3.1-5",
+    "Name": "libpam0g",
+    "Version": "1.3.1",
+    "Release": "5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1",
+    "SrcRelease": "5",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "DependsOn": [
+      "debconf@1.5.71",
+      "libaudit1@1:2.8.4-3",
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libpcre3@2:8.39-12",
+    "Name": "libpcre3",
+    "Version": "8.39",
+    "Release": "12",
+    "Epoch": 2,
+    "SrcName": "pcre3",
+    "SrcVersion": "8.39",
+    "SrcRelease": "12",
+    "SrcEpoch": 2,
+    "Maintainer": "Matthew Vernon \u003cmatthew@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libseccomp2@2.3.3-4",
+    "Name": "libseccomp2",
+    "Version": "2.3.3",
+    "Release": "4",
+    "SrcName": "libseccomp",
+    "SrcVersion": "2.3.3",
+    "SrcRelease": "4",
+    "Licenses": [
+      "LGPL-2.1"
+    ],
+    "Maintainer": "Kees Cook \u003ckees@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libselinux1@2.8-1+b1",
+    "Name": "libselinux1",
+    "Version": "2.8",
+    "Release": "1+b1",
+    "SrcName": "libselinux",
+    "SrcVersion": "2.8",
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-2.1",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libpcre3@2:8.39-12"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libsemanage-common@2.8-2",
+    "Name": "libsemanage-common",
+    "Version": "2.8",
+    "Release": "2",
+    "SrcName": "libsemanage",
+    "SrcVersion": "2.8",
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-3.0",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libsemanage1@2.8-2",
+    "Name": "libsemanage1",
+    "Version": "2.8",
+    "Release": "2",
+    "SrcName": "libsemanage",
+    "SrcVersion": "2.8",
+    "SrcRelease": "2",
+    "Licenses": [
+      "LGPL-3.0",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libaudit1@1:2.8.4-3",
+      "libbz2-1.0@1.0.6-9.2~deb10u1",
+      "libc6@2.28-10",
+      "libselinux1@2.8-1+b1",
+      "libsemanage-common@2.8-2",
+      "libsepol1@2.8-1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libsepol1@2.8-1",
+    "Name": "libsepol1",
+    "Version": "2.8",
+    "Release": "1",
+    "SrcName": "libsepol",
+    "SrcVersion": "2.8",
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-3.0",
+      "GPL-3.0"
+    ],
+    "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libsmartcols1@2.33.1-0.1",
+    "Name": "libsmartcols1",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libss2@1.44.5-1+deb10u1",
+    "Name": "libss2",
+    "Version": "1.44.5",
+    "Release": "1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5",
+    "SrcRelease": "1+deb10u1",
+    "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
+    "DependsOn": [
+      "libc6@2.28-10",
+      "libcom-err2@1.44.5-1+deb10u1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libstdc++6@8.3.0-6",
+    "Name": "libstdc++6",
+    "Version": "8.3.0",
+    "Release": "6",
+    "SrcName": "gcc-8",
+    "SrcVersion": "8.3.0",
+    "SrcRelease": "6",
+    "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
+    "DependsOn": [
+      "gcc-8-base@8.3.0-6",
+      "libc6@2.28-10",
+      "libgcc1@1:8.3.0-6"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libsystemd0@241-7~deb10u1",
+    "Name": "libsystemd0",
+    "Version": "241",
+    "Release": "7~deb10u1",
+    "SrcName": "systemd",
+    "SrcVersion": "241",
+    "SrcRelease": "7~deb10u1",
+    "Licenses": [
+      "LGPL-2.1",
+      "CC0-1.0",
+      "GPL-2.0",
+      "Expat",
+      "public-domain"
+    ],
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libtasn1-6@4.13-3",
+    "Name": "libtasn1-6",
+    "Version": "4.13",
+    "Release": "3",
+    "SrcName": "libtasn1-6",
+    "SrcVersion": "4.13",
+    "SrcRelease": "3",
+    "Licenses": [
+      "LGPL-3.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "GFDL-1.3"
+    ],
+    "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libtinfo6@6.1+20181013-2+deb10u1",
+    "Name": "libtinfo6",
+    "Version": "6.1+20181013",
+    "Release": "2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013",
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libudev1@241-7~deb10u1",
+    "Name": "libudev1",
+    "Version": "241",
+    "Release": "7~deb10u1",
+    "SrcName": "systemd",
+    "SrcVersion": "241",
+    "SrcRelease": "7~deb10u1",
+    "Licenses": [
+      "LGPL-2.1",
+      "CC0-1.0",
+      "GPL-2.0",
+      "Expat",
+      "public-domain"
+    ],
+    "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libunistring2@0.9.10-1",
+    "Name": "libunistring2",
+    "Version": "0.9.10",
+    "Release": "1",
+    "SrcName": "libunistring",
+    "SrcVersion": "0.9.10",
+    "SrcRelease": "1",
+    "Licenses": [
+      "LGPL-3.0",
+      "GPL-2.0",
+      "FreeSoftware",
+      "GPL-2+ with distribution exception",
+      "GPL-3.0",
+      "GFDL-1.2+",
+      "MIT",
+      "GFDL-1.2"
+    ],
+    "Maintainer": "Jörg Frings-Fürst \u003cdebian@jff.email\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libuuid1@2.33.1-0.1",
+    "Name": "libuuid1",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libxtables12@1.8.2-4",
+    "Name": "libxtables12",
+    "Version": "1.8.2",
+    "Release": "4",
+    "SrcName": "iptables",
+    "SrcVersion": "1.8.2",
+    "SrcRelease": "4",
+    "Licenses": [
+      "GPL-2.0",
+      "Artistic-2",
+      "custom"
+    ],
+    "Maintainer": "Debian Netfilter Packaging Team \u003cpkg-netfilter-team@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "libzstd1@1.3.8+dfsg-3",
+    "Name": "libzstd1",
+    "Version": "1.3.8+dfsg",
+    "Release": "3",
+    "SrcName": "libzstd",
+    "SrcVersion": "1.3.8+dfsg",
+    "SrcRelease": "3",
+    "Licenses": [
+      "BSD-3-Clause",
+      "GPL-2.0",
+      "Zlib",
+      "Expat"
+    ],
+    "Maintainer": "Debian Med Packaging Team \u003cdebian-med-packaging@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "login@1:4.5-1.1",
+    "Name": "login",
+    "Version": "4.5",
+    "Release": "1.1",
+    "Epoch": 1,
+    "SrcName": "shadow",
+    "SrcVersion": "4.5",
+    "SrcRelease": "1.1",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "mawk@1.3.3-17+b3",
+    "Name": "mawk",
+    "Version": "1.3.3",
+    "Release": "17+b3",
+    "SrcName": "mawk",
+    "SrcVersion": "1.3.3",
+    "SrcRelease": "17",
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "mount@2.33.1-0.1",
+    "Name": "mount",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "util-linux@2.33.1-0.1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "ncurses-base@6.1+20181013-2+deb10u1",
+    "Name": "ncurses-base",
+    "Version": "6.1+20181013",
+    "Release": "2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013",
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "ncurses-bin@6.1+20181013-2+deb10u1",
+    "Name": "ncurses-bin",
+    "Version": "6.1+20181013",
+    "Release": "2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013",
+    "SrcRelease": "2+deb10u1",
+    "Maintainer": "Craig Small \u003ccsmall@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "passwd@1:4.5-1.1",
+    "Name": "passwd",
+    "Version": "4.5",
+    "Release": "1.1",
+    "Epoch": 1,
+    "SrcName": "shadow",
+    "SrcVersion": "4.5",
+    "SrcRelease": "1.1",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e",
+    "DependsOn": [
+      "libaudit1@1:2.8.4-3",
+      "libc6@2.28-10",
+      "libpam-modules@1.3.1-5",
+      "libpam0g@1.3.1-5",
+      "libselinux1@2.8-1+b1",
+      "libsemanage1@2.8-2"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "perl-base@5.28.1-6",
+    "Name": "perl-base",
+    "Version": "5.28.1",
+    "Release": "6",
+    "SrcName": "perl",
+    "SrcVersion": "5.28.1",
+    "SrcRelease": "6",
+    "Maintainer": "Niko Tyni \u003cntyni@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "sed@4.7-1",
+    "Name": "sed",
+    "Version": "4.7",
+    "Release": "1",
+    "SrcName": "sed",
+    "SrcVersion": "4.7",
+    "SrcRelease": "1",
+    "Licenses": [
+      "GPL-3.0"
+    ],
+    "Maintainer": "Clint Adams \u003cclint@debian.org\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "sysvinit-utils@2.93-8",
+    "Name": "sysvinit-utils",
+    "Version": "2.93",
+    "Release": "8",
+    "SrcName": "sysvinit",
+    "SrcVersion": "2.93",
+    "SrcRelease": "8",
+    "Licenses": [
+      "GPL-2.0"
+    ],
+    "Maintainer": "Debian sysvinit maintainers \u003cdebian-init-diversity@chiark.greenend.org.uk\u003e",
+    "DependsOn": [
+      "init-system-helpers@1.56+nmu1",
+      "libc6@2.28-10",
+      "util-linux@2.33.1-0.1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "tar@1.30+dfsg-6",
+    "Name": "tar",
+    "Version": "1.30+dfsg",
+    "Release": "6",
+    "SrcName": "tar",
+    "SrcVersion": "1.30+dfsg",
+    "SrcRelease": "6",
+    "Licenses": [
+      "GPL-3.0",
+      "GPL-2.0"
+    ],
+    "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "tzdata@2019b-0+deb10u1",
+    "Name": "tzdata",
+    "Version": "2019b",
+    "Release": "0+deb10u1",
+    "SrcName": "tzdata",
+    "SrcVersion": "2019b",
+    "SrcRelease": "0+deb10u1",
+    "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
+    "DependsOn": [
+      "debconf@1.5.71"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "util-linux@2.33.1-0.1",
+    "Name": "util-linux",
+    "Version": "2.33.1",
+    "Release": "0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1",
+    "SrcRelease": "0.1",
+    "Licenses": [
+      "GPL-2.0",
+      "public-domain",
+      "BSD-4-Clause",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "LGPL-2.0",
+      "LGPL-2.1",
+      "GPL-3.0",
+      "LGPL-3.0"
+    ],
+    "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
+    "DependsOn": [
+      "fdisk@2.33.1-0.1",
+      "login@1:4.5-1.1"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "ID": "zlib1g@1:1.2.11.dfsg-1",
+    "Name": "zlib1g",
+    "Version": "1.2.11.dfsg",
+    "Release": "1",
+    "Epoch": 1,
+    "SrcName": "zlib",
+    "SrcVersion": "1.2.11.dfsg",
+    "SrcRelease": "1",
+    "SrcEpoch": 1,
+    "Licenses": [
+      "Zlib"
+    ],
+    "Maintainer": "Mark Brown \u003cbroonie@debian.org\u003e",
+    "DependsOn": [
+      "libc6@2.28-10"
+    ],
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  }
+]

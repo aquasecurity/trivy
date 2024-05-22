@@ -1,0 +1,28 @@
+- bucket: maven::GitHub Security Advisory Maven
+  pairs:
+    - bucket: com.fasterxml.jackson.core:jackson-databind
+      pairs:
+        - key: CVE-2020-9548
+          value:
+            PatchedVersions:
+              - 2.9.10.4
+            VulnerableVersions:
+              - ">= 2.0.0, <= 2.9.10.3"
+    - bucket: org.springframework:spring-beans
+      pairs:
+        - key: CVE-2022-22965
+          value:
+            PatchedVersions:
+              - 5.3.18
+            VulnerableVersions:
+              - ">= 5.3.0, < 5.3.18"
+- bucket: maven::GitLab Advisory Database Community
+  pairs:
+    - bucket: com.fasterxml.jackson.core:jackson-databind
+      pairs:
+        - key: CVE-2021-20190
+          value:
+            PatchedVersions:
+              - 2.9.10.7
+            VulnerableVersions:
+              - "[2.9.0,2.9.10.7)"

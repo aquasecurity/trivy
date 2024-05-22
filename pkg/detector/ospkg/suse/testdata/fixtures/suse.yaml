@@ -1,0 +1,10 @@
+- bucket: openSUSE Leap 15.3
+  pairs:
+    - bucket: postgresql
+      pairs:
+        - key: SUSE-SU-2021:0175-1
+          value:
+            FixedVersion: "13-4.6.7"
+        - key: CVE-2021-0001
+          value:
+            FixedVersion: ""

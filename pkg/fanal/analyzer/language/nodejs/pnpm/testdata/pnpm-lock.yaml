@@ -1,0 +1,13 @@
+lockfileVersion: 5.4
+
+specifiers:
+  lodash: ^4.17.21
+
+dependencies:
+  lodash: 4.17.21
+
+packages:
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false

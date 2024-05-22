@@ -1,0 +1,44 @@
+{{- if .Values.rbac.pspEnabled }}
+  {{- if .Capabilities.APIVersions.Has "policy/v1beta1/PodSecurityPolicy" }}
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: {{ include "trivy.fullname" . }}
+  {{- with .Values.rbac.pspAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+{{ include "trivy.labels" . | indent 4 }}
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'persistentVolumeClaim'
+    - 'secret'
+    - 'projected'
+    - 'downwardAPI'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+    - min: 1
+      max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+    - min: 1
+      max: 65535
+  readOnlyRootFilesystem: true
+  requiredDropCapabilities:
+    - ALL
+  {{- end }}
+{{- end }}

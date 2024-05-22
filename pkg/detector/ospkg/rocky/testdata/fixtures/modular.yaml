@@ -1,0 +1,7 @@
+- bucket: rocky 8
+  pairs:
+    - bucket: nginx:1.16::nginx # actual: bucket of modular package is not created. ref: https://github.com/aquasecurity/trivy-db/pull/154
+      pairs:
+        - key: CVE-2021-23017
+          value:
+            FixedVersion: "1:1.16.1-2.module+el8.4.0+543+efbf198b.1"
