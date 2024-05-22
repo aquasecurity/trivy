@@ -1,7 +1,6 @@
 package table_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/types"
 	"strings"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestSecretRenderer(t *testing.T) {

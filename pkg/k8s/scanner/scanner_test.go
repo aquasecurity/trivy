@@ -5,19 +5,18 @@ import (
 	"sort"
 	"testing"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/aquasecurity/trivy/pkg/uuid"
+	"github.com/package-url/packageurl-go"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/maps"
 
-	"github.com/package-url/packageurl-go"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 func TestScanner_Scan(t *testing.T) {

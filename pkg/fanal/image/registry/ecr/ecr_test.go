@@ -22,11 +22,11 @@ func TestCheckOptions(t *testing.T) {
 			wantErr: types.InvalidURLPattern,
 		},
 		"InvalidDomain": {
-			domain: "xxx.ecr.ap-northeast-1.not-amazonaws.com",
+			domain:  "xxx.ecr.ap-northeast-1.not-amazonaws.com",
 			wantErr: types.InvalidURLPattern,
 		},
 		"InvalidSubdomain": {
-			domain: "xxx.s3.ap-northeast-1.amazonaws.com",
+			domain:  "xxx.s3.ap-northeast-1.amazonaws.com",
 			wantErr: types.InvalidURLPattern,
 		},
 		"NoOption": {

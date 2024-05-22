@@ -3,15 +3,17 @@ package plugin_test
 import (
 	"bytes"
 	"context"
-	"github.com/aquasecurity/trivy/pkg/plugin"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/plugin"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func TestManager_Update(t *testing.T) {

@@ -9,11 +9,11 @@ import (
 	"testing"
 	"testing/fstest"
 
-	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"

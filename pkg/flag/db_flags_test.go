@@ -1,14 +1,15 @@
 package flag_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/google/go-containerregistry/pkg/name"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestDBFlagGroup_ToOptions(t *testing.T) {

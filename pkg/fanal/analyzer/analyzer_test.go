@@ -3,11 +3,11 @@ package analyzer_test
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-containerregistry/pkg/name"
 	"os"
 	"sync"
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/semaphore"

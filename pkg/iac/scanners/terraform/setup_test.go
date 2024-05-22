@@ -4,12 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/stretchr/testify/require"
 )
 
 func createModulesFromSource(t *testing.T, source string, ext string) terraform.Modules {

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func BenchmarkUnmarshal_JFather(b *testing.B) {

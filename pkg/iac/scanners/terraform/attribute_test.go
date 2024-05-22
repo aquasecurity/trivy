@@ -3,8 +3,9 @@ package terraform
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Test_AttributeStartsWith(t *testing.T) {

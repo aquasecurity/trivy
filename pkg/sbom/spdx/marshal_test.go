@@ -2,23 +2,23 @@ package spdx_test
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/package-url/packageurl-go"
 	"hash/fnv"
 	"testing"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/package-url/packageurl-go"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	tspdx "github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"

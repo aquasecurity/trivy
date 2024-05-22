@@ -3,11 +3,11 @@ package sbom_test
 import (
 	"context"
 	"errors"
-	"github.com/package-url/packageurl-go"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

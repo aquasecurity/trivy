@@ -4,14 +4,12 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
-
-	"github.com/stretchr/testify/assert"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_RegoConversion(t *testing.T) {

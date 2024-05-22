@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_SliceConversion(t *testing.T) {

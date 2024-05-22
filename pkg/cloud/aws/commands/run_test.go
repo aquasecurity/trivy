@@ -8,12 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
