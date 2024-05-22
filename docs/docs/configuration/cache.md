@@ -38,15 +38,19 @@ $ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy supports local filesystem and Redis as the cache backend. This option is useful especially for client/server mode.
+Trivy supports local filesystem, Redis and S3 as the cache backend. This option is useful especially for client/server mode.
 
-Two options:
+Three options:
 
 - `fs`
     - the cache path can be specified by `--cache-dir`
 - `redis://`
     - `redis://[HOST]:[PORT]`
     - TTL can be configured via `--cache-ttl`
+- `s3://`
+    - `s3://[BUCKET]/[PREFIX]`
+    - Authentication is obtained via the [AWS SDK's default credential provider chain](https://aws.github.io/aws-sdk-go-v2/docs/configuring-sdk/#specifying-credentials).
+    - This feature can be used with any S3 compatible API (ex: GCS, Cloudflare R2, etc) via the [AWS SDK's endpoint url configuration feature](https://docs.aws.amazon.com/sdkref/latest/guide/feature-ss-endpoints.html).
 
 ```
 $ trivy server --cache-backend redis://localhost:6379
