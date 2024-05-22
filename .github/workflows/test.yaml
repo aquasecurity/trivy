@@ -27,7 +27,7 @@ jobs:
           remove-haskell: "true"
         if: matrix.operating-system == 'ubuntu-latest'
 
-      - uses: actions/checkout@v4.1.4
+      - uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -57,7 +57,7 @@ jobs:
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -87,7 +87,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -108,7 +108,7 @@ jobs:
           remove-haskell: "true"
 
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -116,7 +116,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -136,7 +136,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -159,14 +159,14 @@ jobs:
           remove-haskell: 'true'
 
       - name: Checkout
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
       - name: Run vm integration tests
@@ -193,7 +193,7 @@ jobs:
       if: matrix.operating-system == 'ubuntu-latest'
 
     - name: Checkout
-      uses: actions/checkout@v4.1.4
+      uses: actions/checkout@v4.1.6
 
     - name: Set up Go
       uses: actions/setup-go@v5
