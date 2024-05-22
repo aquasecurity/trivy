@@ -20,7 +20,7 @@ updates:
     open-pull-requests-limit: 10
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
     groups:
       aws:
         patterns:
