@@ -263,7 +263,7 @@ func Test_newServeMux(t *testing.T) {
 			if tt.header == nil {
 				resp, err = http.Get(url)
 			} else {
-				req, err := http.NewRequest(http.MethodPost, url, nil)
+				req, err := http.NewRequest(http.MethodPost, url, http.NoBody)
 				require.NoError(t, err)
 
 				req.Header = tt.header

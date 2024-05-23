@@ -106,13 +106,24 @@ issues:
     - path: ".*_test.go$"
       linters:
         - bodyclose
-        - gocritic
         - goconst
         - gosec
         - govet
         - ineffassign
         - misspell
         - unused
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "commentFormatting:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "exitAfterDefer:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "importShadow:"
     - linters:
         - gosec
       text: "G304: Potential file inclusion"

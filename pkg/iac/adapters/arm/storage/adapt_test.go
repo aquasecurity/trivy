@@ -16,7 +16,7 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 		Resources: []azure2.Resource{
 			{
 				Type:       azure2.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
-				Properties: azure2.NewValue(map[string]azure2.Value{}, types.NewTestMetadata()),
+				Properties: azure2.NewValue(make(map[string]azure2.Value), types.NewTestMetadata()),
 			},
 		},
 	}

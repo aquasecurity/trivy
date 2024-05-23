@@ -82,7 +82,7 @@ deny[res] {
 			Terraform: (*scan.TerraformCustomCheck)(nil),
 		},
 		RegoPackage: "data.builtin.dockerfile.DS006",
-		Frameworks:  map[framework.Framework][]string{},
+		Frameworks:  make(map[framework.Framework][]string),
 	}, results.GetFailed()[0].Rule())
 
 	failure := results.GetFailed()[0]

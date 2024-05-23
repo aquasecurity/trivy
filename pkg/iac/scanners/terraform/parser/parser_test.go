@@ -1510,7 +1510,7 @@ func parse(t *testing.T, files map[string]string) terraform.Modules {
 	return modules
 }
 
-func compareSets(a []int, b []int) bool {
+func compareSets(a, b []int) bool {
 	m := make(map[int]bool)
 	for _, el := range a {
 		m[el] = true

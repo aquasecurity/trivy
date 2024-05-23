@@ -45,7 +45,7 @@ func Test_AdaptWindowsVM(t *testing.T) {
 				Type: azure2.NewValue("Microsoft.Compute/virtualMachines", types.NewTestMetadata()),
 				Properties: azure2.NewValue(map[string]azure2.Value{
 					"osProfile": azure2.NewValue(map[string]azure2.Value{
-						"windowsConfiguration": azure2.NewValue(map[string]azure2.Value{}, types.NewTestMetadata()),
+						"windowsConfiguration": azure2.NewValue(make(map[string]azure2.Value), types.NewTestMetadata()),
 					}, types.NewTestMetadata()),
 				}, types.NewTestMetadata()),
 			},

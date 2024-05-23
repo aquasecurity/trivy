@@ -21,7 +21,7 @@ func Test_SliceConversion(t *testing.T) {
 	}
 	input[0].Z.A = 123
 	converted := SliceToRego(reflect.ValueOf(input))
-	assert.Equal(t, []interface{}{map[string]interface{}{"z": map[string]interface{}{}}}, converted)
+	assert.Equal(t, []interface{}{map[string]interface{}{"z": make(map[string]interface{})}}, converted)
 }
 
 func Test_SliceTypesConversion(t *testing.T) {

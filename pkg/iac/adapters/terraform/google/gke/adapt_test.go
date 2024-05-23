@@ -237,7 +237,7 @@ resource "google_container_cluster" "example" {
 						},
 						EnableShieldedNodes:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						EnableLegacyABAC:      iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						ResourceLabels:        iacTypes.Map(map[string]string{}, iacTypes.NewTestMetadata()),
+						ResourceLabels:        iacTypes.Map(make(map[string]string), iacTypes.NewTestMetadata()),
 						RemoveDefaultNodePool: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
