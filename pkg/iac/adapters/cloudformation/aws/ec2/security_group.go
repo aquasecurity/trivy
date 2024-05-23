@@ -1,12 +1,16 @@
 package ec2
 
 import (
+	"golang.org/x/exp/maps"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getSecurityGroups(ctx parser.FileContext) (groups []ec2.SecurityGroup) {
+func getSecurityGroups(ctx parser.FileContext) []ec2.SecurityGroup {
+	mGroups := make(map[string]ec2.SecurityGroup)
+
 	for _, r := range ctx.GetResourcesByType("AWS::EC2::SecurityGroup") {
 		group := ec2.SecurityGroup{
 			Metadata:     r.Metadata(),
@@ -17,52 +21,69 @@ func getSecurityGroups(ctx parser.FileContext) (groups []ec2.SecurityGroup) {
 			VPCID:        r.GetStringProperty("VpcId"),
 		}
 
-		groups = append(groups, group)
+		mGroups[r.ID()] = group
 	}
-	return groups
+
+	for _, r := range ctx.GetResourcesByType("AWS::EC2::SecurityGroupIngress") {
+		groupID := r.GetProperty("GroupId").AsString()
+
+		if group, ok := mGroups[groupID]; ok {
+			group.IngressRules = append(group.IngressRules, adaptRule(r))
+			mGroups[groupID] = group
+		}
+	}
+
+	for _, r := range ctx.GetResourcesByType("AWS::EC2::SecurityGroupEgress") {
+		groupID := r.GetProperty("GroupId").AsString()
+
+		if group, ok := mGroups[groupID]; ok {
+			group.EgressRules = append(group.EgressRules, adaptRule(r))
+			mGroups[groupID] = group
+		}
+	}
+
+	if len(mGroups) > 0 {
+		return maps.Values(mGroups)
+	}
+	return nil
 }
 
 func getIngressRules(r *parser.Resource) (sgRules []ec2.SecurityGroupRule) {
 	if ingressProp := r.GetProperty("SecurityGroupIngress"); ingressProp.IsList() {
 		for _, ingress := range ingressProp.AsList() {
-			rule := ec2.SecurityGroupRule{
-				Metadata:    ingress.Metadata(),
-				Description: ingress.GetStringProperty("Description"),
-				CIDRs:       nil,
-			}
-			v4Cidr := ingress.GetProperty("CidrIp")
-			if v4Cidr.IsString() && v4Cidr.AsStringValue().IsNotEmpty() {
-				rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v4Cidr.AsString(), v4Cidr.Metadata()))
-			}
-			v6Cidr := ingress.GetProperty("CidrIpv6")
-			if v6Cidr.IsString() && v6Cidr.AsStringValue().IsNotEmpty() {
-				rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v6Cidr.AsString(), v6Cidr.Metadata()))
-			}
-
-			sgRules = append(sgRules, rule)
+			sgRules = append(sgRules, adaptRule(ingress))
 		}
 	}
+
 	return sgRules
 }
 
 func getEgressRules(r *parser.Resource) (sgRules []ec2.SecurityGroupRule) {
 	if egressProp := r.GetProperty("SecurityGroupEgress"); egressProp.IsList() {
 		for _, egress := range egressProp.AsList() {
-			rule := ec2.SecurityGroupRule{
-				Metadata:    egress.Metadata(),
-				Description: egress.GetStringProperty("Description"),
-			}
-			v4Cidr := egress.GetProperty("CidrIp")
-			if v4Cidr.IsString() && v4Cidr.AsStringValue().IsNotEmpty() {
-				rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v4Cidr.AsString(), v4Cidr.Metadata()))
-			}
-			v6Cidr := egress.GetProperty("CidrIpv6")
-			if v6Cidr.IsString() && v6Cidr.AsStringValue().IsNotEmpty() {
-				rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v6Cidr.AsString(), v6Cidr.Metadata()))
-			}
-
-			sgRules = append(sgRules, rule)
+			sgRules = append(sgRules, adaptRule(egress))
 		}
 	}
 	return sgRules
+}
+
+func adaptRule(r interface {
+	GetProperty(string) *parser.Property
+	Metadata() types.Metadata
+	GetStringProperty(string, ...string) types.StringValue
+}) ec2.SecurityGroupRule {
+	rule := ec2.SecurityGroupRule{
+		Metadata:    r.Metadata(),
+		Description: r.GetStringProperty("Description"),
+	}
+	v4Cidr := r.GetProperty("CidrIp")
+	if v4Cidr.IsString() && v4Cidr.AsStringValue().IsNotEmpty() {
+		rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v4Cidr.AsString(), v4Cidr.Metadata()))
+	}
+	v6Cidr := r.GetProperty("CidrIpv6")
+	if v6Cidr.IsString() && v6Cidr.AsStringValue().IsNotEmpty() {
+		rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v6Cidr.AsString(), v6Cidr.Metadata()))
+	}
+
+	return rule
 }
