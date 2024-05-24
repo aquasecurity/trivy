@@ -39,10 +39,10 @@ type csArgs struct {
 
 func TestClientServer(t *testing.T) {
 	tests := []struct {
-		name    string
-		args    csArgs
-		golden  string
-		wantErr string
+		name     string
+		args     csArgs
+		golden   string
+		override func(t *testing.T, want, got *types.Report)
 	}{
 		{
 			name: "alpine 3.9",
@@ -270,6 +270,9 @@ func TestClientServer(t *testing.T) {
 				Target:           "https://github.com/knqyf263/trivy-ci-test",
 			},
 			golden: "testdata/test-repo.json.golden",
+			override: func(t *testing.T, want, got *types.Report) {
+				want.ArtifactName = "https://github.com/knqyf263/trivy-ci-test"
+			},
 		},
 	}
 
@@ -284,7 +287,7 @@ func TestClientServer(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				override: overrideUID,
+				override: overrideFuncs(overrideUID, tt.override),
 			})
 		})
 	}

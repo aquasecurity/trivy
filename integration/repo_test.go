@@ -235,6 +235,14 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/composer.lock.json.golden",
 		},
 		{
+			name: "multiple lockfiles",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/trivy-ci-test",
+			},
+			golden: "testdata/test-repo.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				scanner:    types.MisconfigScanner,
