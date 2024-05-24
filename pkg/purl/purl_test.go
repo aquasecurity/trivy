@@ -780,7 +780,7 @@ func TestPackageURL_LangType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := (purl.PackageURL)(tt.purl)
+			p := purl.PackageURL(tt.purl)
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
 		})
 	}

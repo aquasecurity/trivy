@@ -197,7 +197,7 @@ func TestSlogtest(t *testing.T) {
 
 	results := func(*testing.T) map[string]any {
 		for _, line := range strings.Split(buf.String(), "\n") {
-			if len(line) == 0 {
+			if line == "" {
 				continue
 			}
 			m, err := parseLogLine(line)

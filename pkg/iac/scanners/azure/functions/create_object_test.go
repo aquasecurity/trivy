@@ -16,7 +16,7 @@ func Test_CreateObject(t *testing.T) {
 		{
 			name:     "CreateObject with no args",
 			args:     []interface{}{},
-			expected: map[string]interface{}{},
+			expected: make(map[string]interface{}),
 		},
 		{
 			name:     "CreateObject with one arg",
@@ -36,7 +36,7 @@ func Test_CreateObject(t *testing.T) {
 		{
 			name:     "CreateObject with odd number of args",
 			args:     []interface{}{"foo", "bar", "baz"},
-			expected: map[string]interface{}{},
+			expected: make(map[string]interface{}),
 		},
 		{
 			name: "CreateObject with odd number of args",

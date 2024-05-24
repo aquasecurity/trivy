@@ -1261,9 +1261,9 @@ func TestResolveDependency(t *testing.T) {
 		if err = json.NewDecoder(f).Decode(&apkIndexArchive); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
-		circularDependencyCheck := map[string]struct{}{}
+		circularDependencyCheck := make(map[string]struct{})
 		pkgs := analyzer.resolveDependency(apkIndexArchive, v.pkgName, circularDependencyCheck)
-		actual := map[string]struct{}{}
+		actual := make(map[string]struct{})
 		for _, pkg := range pkgs {
 			actual[pkg] = struct{}{}
 		}

@@ -46,7 +46,7 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name:         "unknown",
-			categories:   map[types.LicenseCategory][]string{},
+			categories:   make(map[types.LicenseCategory][]string),
 			licenseName:  licensing.BSD3Clause,
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",

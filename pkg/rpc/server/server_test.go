@@ -115,7 +115,7 @@ func TestScanServer_Scan(t *testing.T) {
 								Severity:         common.Severity_MEDIUM,
 								SeveritySource:   "nvd",
 								Layer:            &common.Layer{},
-								Cvss:             map[string]*common.CVSS{},
+								Cvss:             make(map[string]*common.CVSS),
 								VendorSeverity: map[string]common.Severity{
 									string(vulnerability.NVD): common.Severity_MEDIUM,
 								},
