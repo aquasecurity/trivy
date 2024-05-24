@@ -11,8 +11,6 @@ Currently, Trivy supports the following three formats:
 - [OpenVEX](https://github.com/openvex/spec)
 - [CSAF](https://oasis-open.github.io/csaf-documentation/specification.html)
 
-This is still an experimental implementation, with only minimal functionality added.
-
 ## CycloneDX
 |     Target      | Supported |
 |:---------------:|:---------:|
@@ -40,7 +38,7 @@ The following steps are required:
 ### Generate the SBOM
 You can generate a CycloneDX SBOM with Trivy as follows:
 
-```shell
+```bash
 $ trivy image --format cyclonedx --output debian11.sbom.cdx debian:11
 ```
 
@@ -49,7 +47,7 @@ Next, create a VEX based on the generated SBOM.
 Multiple vulnerability statuses can be defined under `vulnerabilities`.
 Take a look at the example below.
 
-```
+```bash
 $ cat <<EOF > trivy.vex.cdx
 {
   "bomFormat": "CycloneDX",
@@ -105,7 +103,7 @@ For more details on CycloneDX VEX and BOM-Link, please refer to the following li
 ### Scan SBOM with VEX
 Provide the VEX when scanning the CycloneDX SBOM.
 
-```
+```bash
 $ trivy sbom trivy.sbom.cdx --vex trivy.vex.cdx
 ...
 2023-04-13T12:55:44.838+0300    INFO    Filtered out the detected vulnerability {"VEX format": "CycloneDX", "vulnerability-id": "CVE-2020-8911", "status": "not_affected", "justification": "code_not_reachable"}
@@ -147,8 +145,8 @@ The following steps are required:
 Please see also [the example](https://github.com/openvex/examples).
 In Trivy, [the Package URL (PURL)][purl] is used as the product identifier.
 
-```
-$ cat <<EOF > debian11.openvex
+```bash
+$ cat <<EOF > debian11.openvex.json
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://openvex.dev/docs/public/vex-2e67563e128250cbcb3e98930df948dd053e43271d70dc50cfa22d57e03fe96f",
@@ -170,18 +168,104 @@ EOF
 ```
 
 In the above example, PURLs, located in `packages.externalRefs.referenceLocator` in SPDX are used for the product identifier.
+See [here](#purl-matching) for more details of PURL matching.
 
-!!! note
-    If a qualifier is specified in the PURL used as the product id in the VEX, the qualifier is compared.
-    Other qualifiers are ignored in the comparison.
-    `pkg:deb/debian/curl@7.50.3-1` in OpenVEX matches `pkg:deb/debian/curl@7.50.3-1?arch=i386`, 
-    while `pkg:deb/debian/curl@7.50.3-1?arch=amd64` does not match `pkg:deb/debian/curl@7.50.3-1?arch=i386`.
+Trivy also supports [OpenVEX subcomponents][openvex-subcomponent], which allow for more precise specification of the scope of a VEX statement, reducing the risk of incorrect filtering.
+Let's say you want to suppress vulnerabilities within a container image.
+If you specify the PURL of the container image as the product, the resulting VEX would look like this:
+
+<details>
+<summary>OpenVEX</summary>
+
+```json
+"statements": [
+  {
+    "vulnerability": {"name": "CVE-2024-32002"},
+    "products": [
+      {"@id": "pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy"}
+    ],
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path"
+  }
+]
+```
+
+</details>
+
+However, this approach would suppress all instances of CVE-2024-32002 within the container image.
+If the intention is to declare that the `git` package distributed by Alpine Linux within this image is not affected, subcomponents can be utilized as follows:
+
+<details>
+<summary>OpenVEX subcomponent</summary>
+
+```json
+"statements": [
+  {
+    "vulnerability": {"name": "CVE-2024-32002"},
+    "products": [
+      {
+        "@id": "pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy",
+        "subcomponents": [
+          {"@id": "pkg:apk/alpine/git"}
+        ]
+      }
+    ],
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path"
+  }
+]
+```
+
+</details>
+
+By declaring the statement in this manner, Trivy will filter the results, considering only the `git` package within the `ghcr.io/aquasecurity/trivy` container image as not affected.
+It's worth noting that omitting the version in the PURL applies the statement to all versions of the package.
+More details can be found [here](#purl-matching).
+
+Furthermore, the product specified in a VEX statement does not necessarily need to be the target of the scan.
+It is possible to specify a component that is included in the scan target as the product.
+For example, you can designate a specific Go project as the product and its dependent modules as subcomponents.
+
+In the following example, the VEX statement declares that the `github.com/docker/docker` module, which is a dependency of the `github.com/aquasecurity/trivy` Go project, is not affected by CVE-2024-29018.
+
+<details>
+<summary>OpenVEX intermediate components</summary>
+
+```json
+"statements": [
+  {
+    "vulnerability": {"name": "CVE-2024-29018"},
+    "products": [
+      {
+        "@id": "pkg:golang/github.com/aquasecurity/trivy",
+        "subcomponents": [
+          { "@id": "pkg:golang/github.com/docker/docker" }
+        ]
+      }
+    ],
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path"
+  }
+]
+```
+
+</details>
+
+This VEX document can be used when scanning a container image.
+The VEX statement will be applied when Trivy finds the Go binary within the container image.
+
+```bash
+$ trivy image ghcr.io/aquasecurity/trivy:0.50.0 --vex trivy.openvex.json
+```
+
+VEX documents can indeed be reused across different container images, eliminating the need to issue separate VEX documents for each image.
+This is particularly useful when there is a common component or library that is used across multiple projects or container images.
 
 ### Scan with VEX
 Provide the VEX when scanning your target.
 
-```
-$ trivy image debian:11 --vex debian11.openvex
+```bash
+$ trivy image debian:11 --vex debian11.openvex.json
 ...
 2023-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability {"VEX format": "OpenVEX", "vulnerability-id": "CVE-2019-8457", "status": "not_affected", "justification": "vulnerable_code_not_in_execute_path"}
 
@@ -376,3 +460,5 @@ does not match:
 [openvex]: https://github.com/openvex/spec
 [purl]: https://github.com/package-url/purl-spec
 [purl-matching]: https://github.com/openvex/spec/issues/27
+
+[openvex-subcomponent]: https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#subcomponent
