@@ -43,7 +43,7 @@ func Test_Empty(t *testing.T) {
 		{
 			name: "map is empty",
 			args: []interface{}{
-				map[string]interface{}{},
+				make(map[string]interface{}),
 			},
 			expected: true,
 		},

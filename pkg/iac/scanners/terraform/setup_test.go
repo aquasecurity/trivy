@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
-func createModulesFromSource(t *testing.T, source string, ext string) terraform.Modules {
+func createModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
 	fs := testutil.CreateFS(t, map[string]string{
 		"source" + ext: source,
 	})
@@ -29,7 +29,7 @@ func createModulesFromSource(t *testing.T, source string, ext string) terraform.
 	return modules
 }
 
-func scanHCLWithWorkspace(t *testing.T, source string, workspace string) scan.Results {
+func scanHCLWithWorkspace(t *testing.T, source, workspace string) scan.Results {
 	return scanHCL(t, source, ScannerWithWorkspaceName(workspace))
 }
 

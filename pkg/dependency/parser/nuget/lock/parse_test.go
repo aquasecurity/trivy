@@ -4,7 +4,6 @@ import (
 	"os"
 	"path"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -65,7 +64,7 @@ func TestParse(t *testing.T) {
 
 func sortDeps(deps []ftypes.Dependency) {
 	sort.Slice(deps, func(i, j int) bool {
-		return strings.Compare(deps[i].ID, deps[j].ID) < 0
+		return deps[i].ID < deps[j].ID
 	})
 
 	for i := range deps {

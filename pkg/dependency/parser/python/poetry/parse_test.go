@@ -109,7 +109,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "pkgsVersions doesn't contain required version",
 			packageName:  "test",
 			versionRange: ">=1.0.0",
-			pkgsVersions: map[string][]string{},
+			pkgsVersions: make(map[string][]string),
 			wantErr:      "no version found",
 		},
 	}

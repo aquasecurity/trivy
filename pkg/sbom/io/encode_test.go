@@ -533,7 +533,7 @@ func TestEncoder_Encode(t *testing.T) {
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): nil,
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): nil,
 			},
-			wantVulns: map[uuid.UUID][]core.Vulnerability{},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
 			name: "invalid digest",

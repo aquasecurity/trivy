@@ -110,7 +110,7 @@ func TestGet(t *testing.T) {
 			name: "keychain",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("test", "testpass")),
+				config:    fmt.Sprintf(`{"auths": {%q: {"auth": %q}}}`, serverAddr, encode("test", "testpass")),
 				option: types.RegistryOptions{
 					Insecure: true,
 				},
@@ -180,7 +180,7 @@ func TestGet(t *testing.T) {
 			name: "bad keychain",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("foo", "bar")),
+				config:    fmt.Sprintf(`{"auths": {%q: {"auth": %q}}}`, serverAddr, encode("foo", "bar")),
 				option: types.RegistryOptions{
 					Insecure: true,
 				},
