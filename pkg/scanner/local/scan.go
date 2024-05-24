@@ -153,7 +153,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
-	if !options.ListAllPackages && !options.Scanners.Enabled(types.VulnerabilityScanner) {
+	if !options.Scanners.AnyEnabled(types.SBOMScanner, types.VulnerabilityScanner) {
 		return nil, false, nil
 	}
 

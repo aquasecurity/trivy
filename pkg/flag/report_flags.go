@@ -132,7 +132,6 @@ type ReportOptions struct {
 	ReportFormat     string
 	Template         string
 	DependencyTree   bool
-	ListAllPkgs      bool
 	IgnoreFile       string
 	ExitCode         int
 	ExitOnEOL        int
@@ -142,6 +141,8 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
+
+	listAllPkgs bool
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -208,10 +209,10 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		}
 	}
 
-	// "--list-all-pkgs" option is unavailable with "--format table".
-	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if listAllPkgs && format == types.FormatTable {
-		log.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
+	// "--list-all-pkgs" option is unavailable with other than "--format json".
+	// If user specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
+	if listAllPkgs && format != types.FormatJSON {
+		log.Warn(`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`)
 	}
 
 	// "--dependency-tree" option is available only with "--format table".
@@ -222,11 +223,6 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		if format != types.FormatTable {
 			log.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
-	}
-
-	// Enable '--list-all-pkgs' if needed
-	if f.forceListAllPkgs(format, listAllPkgs, dependencyTree) {
-		listAllPkgs = true
 	}
 
 	cs, err := loadComplianceTypes(f.Compliance.Value())
@@ -247,7 +243,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		ReportFormat:     f.ReportFormat.Value(),
 		Template:         template,
 		DependencyTree:   dependencyTree,
-		ListAllPkgs:      listAllPkgs,
+		listAllPkgs:      listAllPkgs,
 		IgnoreFile:       f.IgnoreFile.Value(),
 		ExitCode:         f.ExitCode.Value(),
 		ExitOnEOL:        f.ExitOnEOL.Value(),
@@ -271,23 +267,6 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 	}
 
 	return cs, nil
-}
-
-func (f *ReportFlagGroup) forceListAllPkgs(format types.Format, listAllPkgs, dependencyTree bool) bool {
-	if slices.Contains(types.SupportedSBOMFormats, format) && !listAllPkgs {
-		log.Debugf("%q automatically enables '--list-all-pkgs'.", types.SupportedSBOMFormats)
-		return true
-	}
-	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if format == types.FormatSarif && !listAllPkgs {
-		log.Debug("Sarif format automatically enables '--list-all-pkgs' to get locations")
-		return true
-	}
-	if dependencyTree && !listAllPkgs {
-		log.Debug("'--dependency-tree' enables '--list-all-pkgs'.")
-		return true
-	}
-	return false
 }
 
 func toSeverity(severity []string) []dbTypes.Severity {

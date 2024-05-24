@@ -13,11 +13,19 @@ import (
 
 // JSONWriter implements result Writer
 type JSONWriter struct {
-	Output io.Writer
+	Output      io.Writer
+	ListAllPkgs bool
 }
 
 // Write writes the results in JSON format
-func (jw JSONWriter) Write(ctx context.Context, report types.Report) error {
+func (jw JSONWriter) Write(_ context.Context, report types.Report) error {
+	if !jw.ListAllPkgs {
+		// Delete packages
+		for i := range report.Results {
+			report.Results[i].Packages = nil
+		}
+	}
+
 	output, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
