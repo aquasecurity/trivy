@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -25,6 +26,9 @@ func (jw JSONWriter) Write(_ context.Context, report types.Report) error {
 			report.Results[i].Packages = nil
 		}
 	}
+	report.Results = lo.Filter(report.Results, func(r types.Result, _ int) bool {
+		return r.Target != "" || !r.IsEmpty()
+	})
 
 	output, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {

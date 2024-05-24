@@ -53,9 +53,6 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 			Class:  types.ClassLangPkg,
 			Type:   app.Type,
 		}
-		if result.Target == "" {
-			continue
-		}
 
 		sort.Sort(app.Packages)
 		result.Packages = app.Packages
