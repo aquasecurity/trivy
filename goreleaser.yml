@@ -1,7 +1,7 @@
 project_name: trivy
 builds:
   - id: build-linux
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
@@ -21,7 +21,7 @@ builds:
     goarm:
       - 7
   - id: build-bsd
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
@@ -36,7 +36,7 @@ builds:
       - 386
       - amd64
   - id: build-macos
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
@@ -52,7 +52,7 @@ builds:
     goarm:
       - 7
   - id: build-windows
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
