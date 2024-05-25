@@ -25,6 +25,7 @@ linters-settings:
       - G101
       - G114
       - G204
+      - G304
       - G402
   gci:
     sections:
@@ -124,12 +125,6 @@ issues:
       linters:
         - gocritic
       text: "importShadow:"
-    - linters:
-        - gosec
-      text: "G304: Potential file inclusion"
-    - linters:
-        - gosec
-      text: "Deferring unsafe method"
     - linters:
         - errcheck
       text: "Close` is not checked"
