@@ -109,7 +109,6 @@ issues:
         - goconst
         - gosec
         - govet
-        - ineffassign
         - misspell
         - unused
     - path: ".*_test.go$"
