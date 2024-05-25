@@ -263,6 +263,7 @@ func Test_newServeMux(t *testing.T) {
 			if tt.header == nil {
 				resp, err = http.Get(url)
 				require.NoError(t, err)
+				defer resp.Body.Close()
 			} else {
 				req, err := http.NewRequest(http.MethodPost, url, http.NoBody)
 				require.NoError(t, err)
@@ -271,9 +272,9 @@ func Test_newServeMux(t *testing.T) {
 				client := new(http.Client)
 				resp, err = client.Do(req)
 				require.NoError(t, err)
+				defer resp.Body.Close()
 			}
 			assert.Equal(t, tt.want, resp.StatusCode)
-			defer resp.Body.Close()
 		})
 	}
 }
