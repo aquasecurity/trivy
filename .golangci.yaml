@@ -105,7 +105,6 @@ issues:
   exclude-rules:
     - path: ".*_test.go$"
       linters:
-        - bodyclose
         - goconst
         - gosec
         - govet
