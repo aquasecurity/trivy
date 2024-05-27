@@ -16,12 +16,14 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name    string
 		dir     string
+		venv    string
 		want    *analyzer.AnalysisResult
 		wantErr string
 	}{
 		{
-			name: "happy path",
+			name: "happy path with licenses from venv",
 			dir:  "testdata/happy",
+			venv: "testdata",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -37,6 +39,9 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 										EndLine:   1,
 									},
 								},
+								Licenses: []string{
+									"BSD License",
+								},
 							},
 							{
 								Name:    "Flask",
@@ -46,6 +51,9 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 										StartLine: 2,
 										EndLine:   2,
 									},
+								},
+								Licenses: []string{
+									"BSD License",
 								},
 							},
 							{
@@ -71,6 +79,9 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.venv != "" {
+				t.Setenv("VIRTUAL_ENV", tt.venv)
+			}
 			a, err := newPipLibraryAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
