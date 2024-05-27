@@ -243,7 +243,7 @@ func Test_pythonExecutablePath(t *testing.T) {
 			require.NoError(t, err)
 
 			if runtime.GOOS == "windows" {
-				tt.execName = tt.execName + ".exe"
+				tt.execName += ".exe"
 			}
 			err = os.WriteFile(filepath.Join(binDir, tt.execName), nil, 0755)
 			require.NoError(t, err)
