@@ -250,7 +250,7 @@ type Worker struct {
 	incoming <-chan Job
 	mu       sync.Mutex
 	results  scan.Results
-	panic    interface{}
+	panic    any
 }
 
 func NewWorker(incoming <-chan Job) *Worker {

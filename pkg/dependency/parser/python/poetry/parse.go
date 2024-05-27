@@ -16,15 +16,15 @@ import (
 
 type Lockfile struct {
 	Packages []struct {
-		Category       string                 `toml:"category"`
-		Description    string                 `toml:"description"`
-		Marker         string                 `toml:"marker,omitempty"`
-		Name           string                 `toml:"name"`
-		Optional       bool                   `toml:"optional"`
-		PythonVersions string                 `toml:"python-versions"`
-		Version        string                 `toml:"version"`
-		Dependencies   map[string]interface{} `toml:"dependencies"`
-		Metadata       interface{}
+		Category       string         `toml:"category"`
+		Description    string         `toml:"description"`
+		Marker         string         `toml:"marker,omitempty"`
+		Name           string         `toml:"name"`
+		Optional       bool           `toml:"optional"`
+		PythonVersions string         `toml:"python-versions"`
+		Version        string         `toml:"version"`
+		Dependencies   map[string]any `toml:"dependencies"`
+		Metadata       any
 	} `toml:"package"`
 }
 
@@ -117,7 +117,7 @@ func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[str
 		switch r := versRange.(type) {
 		case string:
 			vRange = r
-		case map[string]interface{}:
+		case map[string]any:
 			for k, v := range r {
 				if k == "version" {
 					vRange = v.(string)

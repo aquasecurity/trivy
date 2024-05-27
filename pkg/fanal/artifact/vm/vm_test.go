@@ -79,14 +79,14 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name:   "sad path unsupported vm format",
 			target: "testdata/monolithicSparse.vmdk",
-			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+			wantErr: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "unsupported type error")
 			},
 		},
 		{
 			name:   "sad path file not found",
 			target: "testdata/no-file",
-			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+			wantErr: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "file open error")
 			},
 		},

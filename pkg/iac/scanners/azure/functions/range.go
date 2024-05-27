@@ -1,9 +1,9 @@
 package functions
 
-func Range(args ...interface{}) interface{} {
+func Range(args ...any) any {
 
 	if len(args) != 2 {
-		return []interface{}{}
+		return []any{}
 	}
 
 	start, ok := args[0].(int)

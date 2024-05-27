@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func Contains(args ...interface{}) interface{} {
+func Contains(args ...any) any {
 
 	if len(args) != 2 {
 		return false
@@ -22,13 +22,13 @@ func Contains(args ...interface{}) interface{} {
 		case int, int32, int64, uint, uint32, uint64:
 			return strings.Contains(strings.ToLower(cType), fmt.Sprintf("%d", iType))
 		}
-	case []interface{}:
+	case []any:
 		for _, item := range cType {
 			if item == itemToFind {
 				return true
 			}
 		}
-	case map[string]interface{}:
+	case map[string]any:
 		for key := range cType {
 			if key == itemToFind {
 				return true

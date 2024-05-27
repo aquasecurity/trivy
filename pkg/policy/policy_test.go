@@ -143,7 +143,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		name          string
 		clock         clock.Clock
 		digestReturns digestReturns
-		metadata      interface{}
+		metadata      any
 		want          bool
 		wantErr       bool
 	}{

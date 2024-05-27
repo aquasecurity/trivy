@@ -32,12 +32,12 @@ func Test_RegoConversion(t *testing.T) {
 		},
 	}
 	converted := s.ToRego()
-	assert.Equal(t, map[string]interface{}{
-		"aws": map[string]interface{}{
-			"s3": map[string]interface{}{
-				"buckets": []interface{}{
-					map[string]interface{}{
-						"__defsec_metadata": map[string]interface{}{
+	assert.Equal(t, map[string]any{
+		"aws": map[string]any{
+			"s3": map[string]any{
+				"buckets": []any{
+					map[string]any{
+						"__defsec_metadata": map[string]any{
 							"resource":     "aws_s3_bucket.example",
 							"sourceprefix": "",
 							"filepath":     "main.tf",
@@ -47,7 +47,7 @@ func Test_RegoConversion(t *testing.T) {
 							"explicit":     false,
 							"fskey":        "",
 						},
-						"name": map[string]interface{}{
+						"name": map[string]any{
 							"resource":     "aws_s3_bucket.example.bucket",
 							"sourceprefix": "",
 							"filepath":     "main.tf",

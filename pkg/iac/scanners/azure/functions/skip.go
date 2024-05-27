@@ -1,6 +1,6 @@
 package functions
 
-func Skip(args ...interface{}) interface{} {
+func Skip(args ...any) any {
 	if len(args) != 2 {
 		return ""
 	}
@@ -15,7 +15,7 @@ func Skip(args ...interface{}) interface{} {
 			return ""
 		}
 		return input[count:]
-	case interface{}:
+	case any:
 		switch iType := input.(type) {
 		case []int:
 			return iType[count:]
@@ -25,7 +25,7 @@ func Skip(args ...interface{}) interface{} {
 			return iType[count:]
 		case []float64:
 			return iType[count:]
-		case []interface{}:
+		case []any:
 			return iType[count:]
 		}
 	}

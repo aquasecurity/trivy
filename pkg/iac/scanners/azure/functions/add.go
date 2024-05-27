@@ -1,6 +1,6 @@
 package functions
 
-func Add(args ...interface{}) interface{} {
+func Add(args ...any) any {
 
 	if len(args) != 2 {
 		return nil

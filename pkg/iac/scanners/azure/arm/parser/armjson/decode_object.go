@@ -13,7 +13,7 @@ func (n *node) decodeObject(v reflect.Value) error {
 	case reflect.Map:
 		return n.decodeObjectToMap(v)
 	case reflect.Interface:
-		target := reflect.New(reflect.TypeOf(make(map[string]interface{}, len(n.Content())))).Elem()
+		target := reflect.New(reflect.TypeOf(make(map[string]any, len(n.Content())))).Elem()
 		if err := n.decodeObjectToMap(target); err != nil {
 			return err
 		}

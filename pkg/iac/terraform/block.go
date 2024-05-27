@@ -132,7 +132,7 @@ func (b *Block) GetMetadata() iacTypes.Metadata {
 	return b.metadata
 }
 
-func (b *Block) GetRawValue() interface{} {
+func (b *Block) GetRawValue() any {
 	return nil
 }
 

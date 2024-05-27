@@ -10,19 +10,19 @@ func Test_ToLower(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "lowercase a string",
-			args: []interface{}{
+			args: []any{
 				"HELLO",
 			},
 			expected: "hello",
 		},
 		{
 			name: "lowercase a string with a non-string input",
-			args: []interface{}{
+			args: []any{
 				10,
 			},
 			expected: "",
@@ -42,19 +42,19 @@ func Test_ToUpper(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "uppercase a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 			},
 			expected: "HELLO",
 		},
 		{
 			name: "uppercase a string with a non-string input",
-			args: []interface{}{
+			args: []any{
 				10,
 			},
 			expected: "",

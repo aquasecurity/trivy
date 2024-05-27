@@ -1,6 +1,6 @@
 package functions
 
-func First(args ...interface{}) interface{} {
+func First(args ...any) any {
 	if len(args) != 1 {
 		return ""
 	}
@@ -12,7 +12,7 @@ func First(args ...interface{}) interface{} {
 		if cType != "" {
 			return string(cType[0])
 		}
-	case interface{}:
+	case any:
 		switch iType := cType.(type) {
 		case []string:
 			if len(iType) > 0 {

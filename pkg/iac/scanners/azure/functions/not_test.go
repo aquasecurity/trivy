@@ -9,17 +9,17 @@ import (
 func Test_Not(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected bool
 	}{
 		{
 			name:     "Not with true",
-			args:     []interface{}{true},
+			args:     []any{true},
 			expected: false,
 		},
 		{
 			name:     "Not with false",
-			args:     []interface{}{false},
+			args:     []any{false},
 			expected: true,
 		},
 	}

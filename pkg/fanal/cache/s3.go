@@ -67,7 +67,7 @@ func (c S3Cache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
 	return nil
 }
 
-func (c S3Cache) put(key string, body interface{}) (err error) {
+func (c S3Cache) put(key string, body any) (err error) {
 	b, err := json.Marshal(body)
 	if err != nil {
 		return err

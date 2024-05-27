@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-func SliceToRego(inputValue reflect.Value) []interface{} {
+func SliceToRego(inputValue reflect.Value) []any {
 
 	// make sure we have a struct literal
 	for inputValue.Type().Kind() == reflect.Ptr {
@@ -17,7 +17,7 @@ func SliceToRego(inputValue reflect.Value) []interface{} {
 		panic("not a slice")
 	}
 
-	output := make([]interface{}, inputValue.Len())
+	output := make([]any, inputValue.Len())
 
 	for i := 0; i < inputValue.Len(); i++ {
 		val := inputValue.Index(i)

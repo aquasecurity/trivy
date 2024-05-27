@@ -10,13 +10,13 @@ import (
 func Test_DateTimeAdd(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 
 		{
 			name: "datetime add 1 years",
-			args: []interface{}{
+			args: []any{
 				"2010-01-01T00:00:00Z",
 				"P1Y",
 			},
@@ -24,7 +24,7 @@ func Test_DateTimeAdd(t *testing.T) {
 		},
 		{
 			name: "datetime add 3 months",
-			args: []interface{}{
+			args: []any{
 				"2010-01-01T00:00:00Z",
 				"P3M",
 			},

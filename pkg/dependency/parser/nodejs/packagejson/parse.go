@@ -17,7 +17,7 @@ var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
 type packageJSON struct {
 	Name                 string            `json:"name"`
 	Version              string            `json:"version"`
-	License              interface{}       `json:"license"`
+	License              any               `json:"license"`
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
@@ -69,14 +69,14 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}, nil
 }
 
-func parseLicense(val interface{}) []string {
+func parseLicense(val any) []string {
 	// the license isn't always a string, check for legacy struct if not string
 	switch v := val.(type) {
 	case string:
 		if v != "" {
 			return []string{v}
 		}
-	case map[string]interface{}:
+	case map[string]any:
 		if license, ok := v["type"]; ok {
 			if s, ok := license.(string); ok && s != "" {
 				return []string{s}
@@ -92,17 +92,17 @@ func parseWorkspaces(val any) []string {
 	switch ws := val.(type) {
 	// Workspace as object (map[string][]string)
 	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
-	case map[string]interface{}:
+	case map[string]any:
 		// Take only workspaces for `packages` - https://classic.yarnpkg.com/blog/2018/02/15/nohoist/
 		if pkgsWorkspaces, ok := ws["packages"]; ok {
-			return lo.Map(pkgsWorkspaces.([]interface{}), func(workspace interface{}, _ int) string {
+			return lo.Map(pkgsWorkspaces.([]any), func(workspace any, _ int) string {
 				return workspace.(string)
 			})
 		}
 	// Workspace as string array
 	// e.g.   "workspaces": ["packages/*", "backend"],
-	case []interface{}:
-		return lo.Map(ws, func(workspace interface{}, _ int) string {
+	case []any:
+		return lo.Map(ws, func(workspace any, _ int) string {
 			return workspace.(string)
 		})
 	}

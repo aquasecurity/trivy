@@ -1,5 +1,5 @@
 package convert
 
 type Converter interface {
-	ToRego() interface{}
+	ToRego() any
 }

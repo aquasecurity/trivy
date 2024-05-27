@@ -9,33 +9,33 @@ import (
 func Test_Last(t *testing.T) {
 	test := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "last in empty string",
-			args: []interface{}{
+			args: []any{
 				"",
 			},
 			expected: "",
 		},
 		{
 			name: "last in string",
-			args: []interface{}{
+			args: []any{
 				"Hello",
 			},
 			expected: "o",
 		},
 		{
 			name: "last in empty slice",
-			args: []interface{}{
+			args: []any{
 				[]string{},
 			},
 			expected: "",
 		},
 		{
 			name: "last in slice",
-			args: []interface{}{
+			args: []any{
 				[]string{"Hello", "World"},
 			},
 			expected: "World",

@@ -18,8 +18,8 @@ type Parameter struct {
 }
 
 type parameterInner struct {
-	Type    string      `yaml:"Type"`
-	Default interface{} `yaml:"Default"`
+	Type    string `yaml:"Type"`
+	Default any    `yaml:"Default"`
 }
 
 func (p *Parameter) UnmarshalYAML(node *yaml.Node) error {
@@ -43,11 +43,11 @@ func (p *Parameter) Type() cftypes.CfType {
 	}
 }
 
-func (p *Parameter) Default() interface{} {
+func (p *Parameter) Default() any {
 	return p.inner.Default
 }
 
-func (p *Parameter) UpdateDefault(inVal interface{}) {
+func (p *Parameter) UpdateDefault(inVal any) {
 	passedVal := inVal.(string)
 
 	switch p.inner.Type {

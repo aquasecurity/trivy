@@ -9,12 +9,12 @@ import (
 func Test_Take(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "take a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				2,
 			},
@@ -22,7 +22,7 @@ func Test_Take(t *testing.T) {
 		},
 		{
 			name: "take a string with invalid count",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				10,
 			},
@@ -30,7 +30,7 @@ func Test_Take(t *testing.T) {
 		},
 		{
 			name: "take a string from slice",
-			args: []interface{}{
+			args: []any{
 				[]string{"a", "b", "c"},
 				2,
 			},
@@ -38,7 +38,7 @@ func Test_Take(t *testing.T) {
 		},
 		{
 			name: "take a string from a slice",
-			args: []interface{}{
+			args: []any{
 				[]string{"a", "b", "c"},
 				2,
 			},
@@ -46,7 +46,7 @@ func Test_Take(t *testing.T) {
 		},
 		{
 			name: "take a string from a slice with invalid count",
-			args: []interface{}{
+			args: []any{
 				[]string{"a", "b", "c"},
 				10,
 			},

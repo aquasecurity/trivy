@@ -63,7 +63,7 @@ func (r *secretRenderer) countSeverities() map[string]int {
 	return severityCount
 }
 
-func (r *secretRenderer) printf(format string, args ...interface{}) {
+func (r *secretRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }

@@ -10,25 +10,25 @@ func Test_JSON(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected map[string]interface{}
+		args     []any
+		expected map[string]any
 	}{
 		{
 			name: "simple json string to json type",
-			args: []interface{}{
+			args: []any{
 				`{"hello": "world"}`,
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"hello": "world",
 			},
 		},
 		{
 			name: "more complex json string to json type",
-			args: []interface{}{
+			args: []any{
 				`{"hello": ["world", "world2"]}`,
 			},
-			expected: map[string]interface{}{
-				"hello": []interface{}{"world", "world2"},
+			expected: map[string]any{
+				"hello": []any{"world", "world2"},
 			},
 		},
 	}

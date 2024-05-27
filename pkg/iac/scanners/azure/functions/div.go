@@ -1,6 +1,6 @@
 package functions
 
-func Div(args ...interface{}) interface{} {
+func Div(args ...any) any {
 
 	if len(args) != 2 {
 		return nil
