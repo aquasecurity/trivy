@@ -3,6 +3,8 @@ package pip
 import (
 	"context"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,17 +15,83 @@ import (
 )
 
 func Test_pipAnalyzer_Analyze(t *testing.T) {
+	resultWithLicenses := &analyzer.AnalysisResult{
+		Applications: []types.Application{
+			{
+				Type:     types.Pip,
+				FilePath: "requirements.txt",
+				Packages: types.Packages{
+					{
+						Name:    "click",
+						Version: "8.0.0",
+						Locations: []types.Location{
+							{
+								StartLine: 1,
+								EndLine:   1,
+							},
+						},
+						Licenses: []string{
+							"BSD License",
+						},
+					},
+					{
+						Name:    "Flask",
+						Version: "2.0.0",
+						Locations: []types.Location{
+							{
+								StartLine: 2,
+								EndLine:   2,
+							},
+						},
+						Licenses: []string{
+							"BSD License",
+						},
+					},
+					{
+						Name:    "itsdangerous",
+						Version: "2.0.0",
+						Locations: []types.Location{
+							{
+								StartLine: 3,
+								EndLine:   3,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
 	tests := []struct {
-		name    string
-		dir     string
-		venv    string
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name          string
+		dir           string
+		venv          string
+		pythonExecDir string
+		want          *analyzer.AnalysisResult
+		wantErr       string
 	}{
 		{
-			name: "happy path with licenses from venv",
-			dir:  "testdata/happy",
-			venv: "testdata",
+			name:          "happy path with licenses from venv",
+			dir:           filepath.Join("testdata", "happy"),
+			venv:          filepath.Join("testdata", "libs", "python-dir"),
+			pythonExecDir: filepath.Join("testdata", "libs", "python-dir", "bin"),
+			want:          resultWithLicenses,
+		},
+		{
+			name:          "happy path with licenses from python dir",
+			dir:           filepath.Join("testdata", "happy"),
+			pythonExecDir: filepath.Join("testdata", "libs", "python-dir", "bin"),
+			want:          resultWithLicenses,
+		},
+		{
+			name:          "happy path with licenses from common dir",
+			dir:           filepath.Join("testdata", "happy"),
+			pythonExecDir: filepath.Join("testdata", "libs", "common-dir", "foo", "bar"),
+			want:          resultWithLicenses,
+		},
+		{
+			name: "happy path without licenses",
+			dir:  filepath.Join("testdata", "happy"),
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -39,9 +107,6 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 										EndLine:   1,
 									},
 								},
-								Licenses: []string{
-									"BSD License",
-								},
 							},
 							{
 								Name:    "Flask",
@@ -51,9 +116,6 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 										StartLine: 2,
 										EndLine:   2,
 									},
-								},
-								Licenses: []string{
-									"BSD License",
 								},
 							},
 							{
@@ -82,6 +144,26 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 			if tt.venv != "" {
 				t.Setenv("VIRTUAL_ENV", tt.venv)
 			}
+			if tt.pythonExecDir != "" {
+				err := os.MkdirAll(tt.pythonExecDir, os.ModePerm)
+				require.NoError(t, err)
+				defer func() {
+					if strings.HasSuffix(tt.pythonExecDir, "bar") { // for `happy path with licenses from common dir` test
+						tt.pythonExecDir = filepath.Dir(tt.pythonExecDir)
+					}
+					err = os.RemoveAll(tt.pythonExecDir)
+					require.NoError(t, err)
+				}()
+
+				// create temp python3 Executable
+				err = os.WriteFile(filepath.Join(tt.pythonExecDir, "python3"), nil, 0755)
+				require.NoError(t, err)
+
+				absPath, err := filepath.Abs(tt.pythonExecDir)
+				require.NoError(t, err)
+				t.Setenv("PATH", absPath)
+			}
+
 			a, err := newPipLibraryAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
