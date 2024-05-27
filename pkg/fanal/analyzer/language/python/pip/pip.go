@@ -2,6 +2,7 @@ package pip
 
 import (
 	"context"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"io"
 	"io/fs"
 	"os"
@@ -19,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -44,33 +44,10 @@ func newPipLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 
 func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
-	var licenses = make(map[string][]string)
 
-	if libDir, err := getPythonSitePackagesDir(); err != nil || libDir == "" {
-		a.logger.Warn("Unable to find python `lib` directory. License detection is skipped.", log.Err(err))
-	} else {
-		requiredMetadata := func(filePath string, _ fs.DirEntry) bool {
-			return strings.HasSuffix(filepath.Dir(filePath), ".dist-info") && filepath.Base(filePath) == "METADATA"
-		}
-
-		// Detect licenses from python lib directory
-		if err = fsutils.WalkDir(os.DirFS(libDir), ".", requiredMetadata, func(path string, d fs.DirEntry, r io.Reader) error {
-			rs, err := xio.NewReadSeekerAt(r)
-			if err != nil {
-				return xerrors.Errorf("Unable to convert reader: %w", err)
-			}
-
-			metadataPkg, _, err := a.metadataParser.Parse(rs)
-			if err != nil {
-				return xerrors.Errorf("metadata parse error: %w", err)
-			}
-
-			// METADATA file contains info about only 1 package
-			licenses[packageID(metadataPkg[0].Name, metadataPkg[0].Version)] = metadataPkg[0].Licenses
-			return nil
-		}); err != nil {
-			return nil, xerrors.Errorf("walk python lib dir error: %w", err)
-		}
+	licenses, err := a.getLicenses()
+	if err != nil {
+		a.logger.Warn("Unable to find python `site-packages` directory. License detection is skipped.", log.Err(err))
 	}
 
 	// We only saved the `requirement.txt` files
@@ -122,6 +99,38 @@ func (a pipLibraryAnalyzer) Version() int {
 
 func packageID(name, ver string) string {
 	return dependency.ID(types.Pip, name, ver)
+}
+
+func (a pipLibraryAnalyzer) getLicenses() (map[string][]string, error) {
+	var licenses = make(map[string][]string)
+
+	spDir, err := getPythonSitePackagesDir()
+	if err != nil {
+		return nil, xerrors.Errorf("Unable to find python `site-packages` directory: %w", err)
+	}
+	requiredMetadata := func(filePath string, _ fs.DirEntry) bool {
+		return strings.HasSuffix(filepath.Dir(filePath), ".dist-info") && filepath.Base(filePath) == "METADATA"
+	}
+
+	// Detect licenses from `site-packages` directory
+	if err = fsutils.WalkDir(os.DirFS(spDir), ".", requiredMetadata, func(path string, d fs.DirEntry, r io.Reader) error {
+		rs, err := xio.NewReadSeekerAt(r)
+		if err != nil {
+			return xerrors.Errorf("Unable to convert reader: %w", err)
+		}
+
+		metadataPkg, _, err := a.metadataParser.Parse(rs)
+		if err != nil {
+			return xerrors.Errorf("metadata parse error: %w", err)
+		}
+
+		// METADATA file contains info about only 1 package
+		licenses[packageID(metadataPkg[0].Name, metadataPkg[0].Version)] = metadataPkg[0].Licenses
+		return nil
+	}); err != nil {
+		return nil, xerrors.Errorf("walk site-packages dir error: %w", err)
+	}
+	return licenses, nil
 }
 
 func getPythonSitePackagesDir() (string, error) {
