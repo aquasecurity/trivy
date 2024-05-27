@@ -14,19 +14,19 @@ import (
 
 func Test_pipAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name    string
+		dir     string
+		want    *analyzer.AnalysisResult
+		wantErr string
 	}{
 		{
-			name:      "happy path",
-			inputFile: "testdata/requirements.txt",
+			name: "happy path",
+			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Pip,
-						FilePath: "testdata/requirements.txt",
+						FilePath: "requirements.txt",
 						Packages: types.Packages{
 							{
 								Name:    "click",
@@ -64,29 +64,20 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path with not related filename",
-			inputFile: "testdata/not-related.txt",
-			want:      nil,
+			name: "happy path with not related filename",
+			dir:  "testdata/empty",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
+			a, err := newPipLibraryAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-			defer f.Close()
 
-			a := pipLibraryAnalyzer{}
-			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Content:  f,
+			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+				FS: os.DirFS(tt.dir),
 			})
 
-			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
