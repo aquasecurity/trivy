@@ -9,27 +9,27 @@ import (
 func Test_Sub(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name:     "subtract 2 from 5",
-			args:     []interface{}{5, 2},
+			args:     []any{5, 2},
 			expected: 3,
 		},
 		{
 			name:     "subtract 2 from 1",
-			args:     []interface{}{1, 2},
+			args:     []any{1, 2},
 			expected: -1,
 		},
 		{
 			name:     "subtract 3 from 2",
-			args:     []interface{}{2, 3},
+			args:     []any{2, 3},
 			expected: -1,
 		},
 		{
 			name:     "subtract -4 from 3",
-			args:     []interface{}{3, -4},
+			args:     []any{3, -4},
 			expected: 7,
 		},
 	}

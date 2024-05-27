@@ -10,12 +10,12 @@ func Test_SubscriptionResourceID(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "scope resource id with subscription ID",
-			args: []interface{}{
+			args: []any{
 				"4ec875a5-41a2-4837-88cf-4266466e65ed",
 				"Microsoft.Authorization/roleDefinitions",
 				"8e3af657-a8ff-443c-a75c-2fe8c4bcb635",

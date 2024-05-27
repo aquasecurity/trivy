@@ -18,14 +18,14 @@ type Stage struct {
 	Commands []Command
 }
 
-func (d Dockerfile) ToRego() interface{} {
-	return map[string]interface{}{
+func (d Dockerfile) ToRego() any {
+	return map[string]any{
 		"Stages": convert.SliceToRego(reflect.ValueOf(d.Stages)),
 	}
 }
 
-func (s Stage) ToRego() interface{} {
-	return map[string]interface{}{
+func (s Stage) ToRego() any {
+	return map[string]any{
 		"Name":     s.Name,
 		"Commands": convert.SliceToRego(reflect.ValueOf(s.Commands)),
 	}
@@ -45,8 +45,8 @@ type Command struct {
 	EndLine   int
 }
 
-func (c Command) ToRego() interface{} {
-	return map[string]interface{}{
+func (c Command) ToRego() any {
+	return map[string]any{
 		"Cmd":       c.Cmd,
 		"SubCmd":    c.SubCmd,
 		"Flags":     c.Flags,

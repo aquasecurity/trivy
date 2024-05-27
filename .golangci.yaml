@@ -6,6 +6,9 @@ linters-settings:
     check-shadowing: false
   gofmt:
     simplify: false
+    rewrite-rules:
+      - pattern: 'interface{}'
+        replacement: 'any'
   revive:
     ignore-generated-header: true
   gocyclo:

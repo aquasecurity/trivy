@@ -330,7 +330,7 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	return nil
 }
 
-func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
+func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input any) (bool, error) {
 	results, err := query.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)

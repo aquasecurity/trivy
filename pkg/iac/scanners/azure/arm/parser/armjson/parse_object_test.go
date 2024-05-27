@@ -68,7 +68,7 @@ func Test_Object_ToMapStringInterface(t *testing.T) {
 	"Name": "testing"
 }`)
 
-	parent := make(map[string]interface{})
+	parent := make(map[string]any)
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 	assert.Equal(t, "testing", parent["Name"])
@@ -93,7 +93,7 @@ func Test_Object_ToNestedMapStringInterfaceFromIAM(t *testing.T) {
   ]
 }`)
 
-	parent := make(map[string]interface{})
+	parent := make(map[string]any)
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 }
@@ -106,10 +106,10 @@ func Test_Object_ToNestedMapStringInterface(t *testing.T) {
 	"Name": "testing"
 }`)
 
-	parent := make(map[string]interface{})
+	parent := make(map[string]any)
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 	assert.Equal(t, "testing", parent["Name"])
-	child := parent["Child"].(map[string]interface{})
+	child := parent["Child"].(map[string]any)
 	assert.Equal(t, "password", child["secret"])
 }

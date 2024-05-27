@@ -138,8 +138,8 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 }
 
 func Test_getEngineMetadata(t *testing.T) {
-	inputSchema := map[string]interface{}{
-		"terraform": map[string]interface{}{
+	inputSchema := map[string]any{
+		"terraform": map[string]any{
 			"good_examples": `resource "aws_cloudtrail" "good_example" {
    is_multi_region_trail = true
  
@@ -154,7 +154,7 @@ func Test_getEngineMetadata(t *testing.T) {
    }
  }`,
 		},
-		"cloud_formation": map[string]interface{}{"good_examples": `---
+		"cloud_formation": map[string]any{"good_examples": `---
 Resources:
   GoodExample:
     Type: AWS::CloudTrail::Trail

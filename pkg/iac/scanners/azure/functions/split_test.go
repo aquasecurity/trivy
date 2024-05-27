@@ -9,12 +9,12 @@ import (
 func Test_Split(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected []string
 	}{
 		{
 			name: "split a string",
-			args: []interface{}{
+			args: []any{
 				"hello, world",
 				",",
 			},
@@ -22,7 +22,7 @@ func Test_Split(t *testing.T) {
 		},
 		{
 			name: "split a string with multiple separators",
-			args: []interface{}{
+			args: []any{
 				"one;two,three",
 				[]string{",", ";"},
 			},

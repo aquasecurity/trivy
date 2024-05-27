@@ -41,7 +41,7 @@ type Scanner struct {
 	dataFS                  fs.FS
 	frameworks              []framework.Framework
 	spec                    string
-	inputSchema             interface{} // unmarshalled into this from a json schema document
+	inputSchema             any // unmarshalled into this from a json schema document
 	sourceType              types.Source
 	includeDeprecatedChecks bool
 
@@ -71,7 +71,7 @@ func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
 	// handled externally
 }
 
-func (s *Scanner) trace(heading string, input interface{}) {
+func (s *Scanner) trace(heading string, input any) {
 	if s.traceWriter == nil {
 		return
 	}
@@ -212,9 +212,9 @@ func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, d
 }
 
 type Input struct {
-	Path     string      `json:"path"`
-	FS       fs.FS       `json:"-"`
-	Contents interface{} `json:"contents"`
+	Path     string `json:"path"`
+	FS       fs.FS  `json:"-"`
+	Contents any    `json:"contents"`
 }
 
 func GetInputsContents(inputs []Input) []any {
@@ -303,14 +303,14 @@ func isPolicyWithSubtype(sourceType types.Source) bool {
 	return false
 }
 
-func checkSubtype(ii map[string]interface{}, provider string, subTypes []SubType) bool {
+func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 	if len(subTypes) == 0 {
 		return true
 	}
 
 	for _, st := range subTypes {
 		switch services := ii[provider].(type) {
-		case map[string]interface{}: // cloud
+		case map[string]any:
 			for service := range services {
 				if (service == st.Service) && (st.Provider == provider) {
 					return true
@@ -329,7 +329,7 @@ func checkSubtype(ii map[string]interface{}, provider string, subTypes []SubType
 
 func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	for _, input := range inputs {
-		if ii, ok := input.Contents.(map[string]interface{}); ok {
+		if ii, ok := input.Contents.(map[string]any); ok {
 			for provider := range ii {
 				// TODO(simar): Add other providers
 				if !strings.Contains(strings.Join([]string{"kind", "aws", "azure"}, ","), provider) {

@@ -13,19 +13,19 @@ const (
 	valueNameKey    = "value"
 )
 
-var functions = map[string]func(interface{}, interface{}) bool{
+var functions = map[string]func(any, any) bool{
 	"isAny":        isAny,
 	"isNone":       isNone,
 	"regexMatches": regexMatches,
 }
 
-func evaluate(criteriaValue, testValue interface{}) bool {
+func evaluate(criteriaValue, testValue any) bool {
 	switch t := criteriaValue.(type) {
-	case map[interface{}]interface{}:
+	case map[any]any:
 		if t[functionNameKey] != nil {
 			return executeFunction(t[functionNameKey].(string), t[valueNameKey], testValue)
 		}
-	case map[string]interface{}:
+	case map[string]any:
 		if t[functionNameKey] != nil {
 			return executeFunction(t[functionNameKey].(string), t[valueNameKey], testValue)
 		}
@@ -35,16 +35,16 @@ func evaluate(criteriaValue, testValue interface{}) bool {
 	return false
 }
 
-func executeFunction(functionName string, criteriaValues, testValue interface{}) bool {
+func executeFunction(functionName string, criteriaValues, testValue any) bool {
 	if functions[functionName] != nil {
 		return functions[functionName](criteriaValues, testValue)
 	}
 	return false
 }
 
-func isAny(criteriaValues, testValue interface{}) bool {
+func isAny(criteriaValues, testValue any) bool {
 	switch t := criteriaValues.(type) {
-	case []interface{}:
+	case []any:
 		for _, v := range t {
 			if v == testValue {
 				return true
@@ -60,11 +60,11 @@ func isAny(criteriaValues, testValue interface{}) bool {
 	return false
 }
 
-func isNone(criteriaValues, testValue interface{}) bool {
+func isNone(criteriaValues, testValue any) bool {
 	return !isAny(criteriaValues, testValue)
 }
 
-func regexMatches(criteriaValue, testValue interface{}) bool {
+func regexMatches(criteriaValue, testValue any) bool {
 	var patternVal string
 	switch t := criteriaValue.(type) {
 	case string:

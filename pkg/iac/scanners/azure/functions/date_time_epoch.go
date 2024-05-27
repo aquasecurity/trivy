@@ -6,7 +6,7 @@ import (
 	smithyTime "github.com/aws/smithy-go/time"
 )
 
-func DateTimeFromEpoch(args ...interface{}) interface{} {
+func DateTimeFromEpoch(args ...any) any {
 	if len(args) != 1 {
 		return nil
 	}
@@ -19,7 +19,7 @@ func DateTimeFromEpoch(args ...interface{}) interface{} {
 	return smithyTime.ParseEpochSeconds(float64(epoch)).Format(time.RFC3339)
 }
 
-func DateTimeToEpoch(args ...interface{}) interface{} {
+func DateTimeToEpoch(args ...any) any {
 	if len(args) != 1 {
 		return nil
 	}

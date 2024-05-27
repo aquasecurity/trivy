@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func IndexOf(args ...interface{}) interface{} {
+func IndexOf(args ...any) any {
 
 	if len(args) != 2 {
 		return -1

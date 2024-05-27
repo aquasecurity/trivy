@@ -360,7 +360,7 @@ func (p *Parser) parseVersion(depPath, ver string, lockVer float64) string {
 	return ver
 }
 
-func isDirectPkg(name string, directDeps map[string]interface{}) bool {
+func isDirectPkg(name string, directDeps map[string]any) bool {
 	_, ok := directDeps[name]
 	return ok
 }

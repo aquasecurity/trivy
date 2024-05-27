@@ -5,22 +5,22 @@ import "testing"
 func Test_Int(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name:     "Int with 1",
-			args:     []interface{}{1},
+			args:     []any{1},
 			expected: 1,
 		},
 		{
 			name:     "Int with 2",
-			args:     []interface{}{"2"},
+			args:     []any{"2"},
 			expected: 2,
 		},
 		{
 			name:     "Int with 2.3",
-			args:     []interface{}{"2.3"},
+			args:     []any{"2.3"},
 			expected: 0,
 		},
 	}

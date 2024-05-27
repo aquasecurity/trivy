@@ -145,9 +145,9 @@ func cacheDir() string {
 }
 
 type pubSpecYaml struct {
-	Name         string                 `yaml:"name"`
-	Version      string                 `yaml:"version,omitempty"`
-	Dependencies map[string]interface{} `yaml:"dependencies,omitempty"`
+	Name         string         `yaml:"name"`
+	Version      string         `yaml:"version,omitempty"`
+	Dependencies map[string]any `yaml:"dependencies,omitempty"`
 }
 
 func parsePubSpecYaml(r io.Reader) (string, []string, error) {
