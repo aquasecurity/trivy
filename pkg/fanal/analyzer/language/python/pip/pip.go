@@ -2,7 +2,6 @@ package pip
 
 import (
 	"context"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"io"
 	"io/fs"
 	"os"
@@ -20,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
