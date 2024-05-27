@@ -202,3 +202,54 @@ func Test_pipAnalyzer_Required(t *testing.T) {
 		})
 	}
 }
+
+func Test_getPythonExecutablePath(t *testing.T) {
+	tests := []struct {
+		name     string
+		execName string
+		wantErr  string
+	}{
+		{
+			name:     "happy path with `python` filename",
+			execName: "python",
+		},
+		{
+			name:     "happy path with `python3` filename",
+			execName: "python3",
+		},
+		{
+			name:     "happy path with `python2` filename",
+			execName: "python2",
+		},
+		{
+			name:     "happy path with `python.exe` filename",
+			execName: "python.exe",
+		},
+		{
+			name:     "sad path. Python executable not found",
+			execName: "python-wrong",
+			wantErr:  "Unable to find path to Python executable",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			binDir := filepath.Join(tmpDir, "bin")
+			err := os.MkdirAll(binDir, os.ModePerm)
+			require.NoError(t, err)
+
+			err = os.WriteFile(filepath.Join(binDir, tt.execName), nil, 0755)
+			require.NoError(t, err)
+
+			t.Setenv("PATH", binDir)
+
+			path, err := getPythonExecutablePath()
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tt.execName, filepath.Base(path))
+		})
+	}
+}
