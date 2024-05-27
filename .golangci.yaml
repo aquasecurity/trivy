@@ -112,10 +112,13 @@ issues:
         - bodyclose
         - goconst
         - gosec
-        - govet
         - ineffassign
         - misspell
         - unused
+    - path: ".*_test.go$"
+      linters:
+        - govet
+      text: "copylocks:"
     - path: ".*_test.go$"
       linters:
         - gocritic
