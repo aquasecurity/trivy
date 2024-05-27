@@ -202,6 +202,7 @@ nav:
           - Release Flow: community/maintainer/release-flow.md
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
+          - Backporting: community/maintainer/backporting.md
 theme:
   name: material
   custom_dir: docs/overrides
