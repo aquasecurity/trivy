@@ -45,7 +45,7 @@ func newPipLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
-	licenses, err := a.getLicenses()
+	licenses, err := a.licenseList()
 	if err != nil {
 		a.logger.Warn("Unable to find python `site-packages` directory. License detection is skipped.", log.Err(err))
 	}
@@ -97,14 +97,11 @@ func (a pipLibraryAnalyzer) Version() int {
 	return version
 }
 
-func packageID(name, ver string) string {
-	return dependency.ID(types.Pip, name, ver)
-}
-
-func (a pipLibraryAnalyzer) getLicenses() (map[string][]string, error) {
+// licenseList returns list of licenses found in METADATA files in the `site-packages` directory.
+func (a pipLibraryAnalyzer) licenseList() (map[string][]string, error) {
 	var licenses = make(map[string][]string)
 
-	spDir, err := getPythonSitePackagesDir()
+	spDir, err := pythonSitePackagesDir()
 	if err != nil {
 		return nil, xerrors.Errorf("Unable to find python `site-packages` directory: %w", err)
 	}
@@ -133,7 +130,8 @@ func (a pipLibraryAnalyzer) getLicenses() (map[string][]string, error) {
 	return licenses, nil
 }
 
-func getPythonSitePackagesDir() (string, error) {
+// pythonSitePackagesDir returns path to site-packages dir
+func pythonSitePackagesDir() (string, error) {
 	// check VIRTUAL_ENV first
 	if venv := os.Getenv("VIRTUAL_ENV"); venv != "" {
 		libDir := filepath.Join(venv, "lib")
@@ -141,7 +139,7 @@ func getPythonSitePackagesDir() (string, error) {
 			return "", xerrors.Errorf("Unable to detect `lib` dir for %q venv: %w", venv, err)
 		}
 
-		spDir, err := sitePackagesDir(libDir)
+		spDir, err := findSitePackagesDir(libDir)
 		if err != nil {
 			return "", xerrors.Errorf("Unable to detect `site-packages` dir for %q venv: %w", spDir, err)
 		}
@@ -152,7 +150,7 @@ func getPythonSitePackagesDir() (string, error) {
 	}
 
 	// Find path to Python executable
-	pythonExecPath, err := getPythonExecutablePath()
+	pythonExecPath, err := pythonExecutablePath()
 	if err != nil {
 		return "", err
 	}
@@ -160,7 +158,7 @@ func getPythonSitePackagesDir() (string, error) {
 
 	// Search for a directory starting with "python" in the lib directory
 	libDir := filepath.Join(pythonExecDir, "..", "lib")
-	spDir, err := sitePackagesDir(libDir)
+	spDir, err := findSitePackagesDir(libDir)
 	if err != nil {
 		return "", xerrors.Errorf("Unable to detect `site-packages` dir for %q: %w", pythonExecPath, err)
 	}
@@ -170,15 +168,15 @@ func getPythonSitePackagesDir() (string, error) {
 
 	// Try another common pattern if the Python library directory is not found
 	spDir = filepath.Join(pythonExecDir, "..", "..", "lib", "site-packages")
-	_, err = os.Stat(spDir)
-	if os.IsNotExist(err) {
+	if _, err = os.Stat(spDir); os.IsNotExist(err) {
 		return "", xerrors.Errorf("site-packages directory not found")
 	}
 
 	return spDir, nil
 }
 
-func getPythonExecutablePath() (string, error) {
+// pythonExecutablePath returns path to Python executable
+func pythonExecutablePath() (string, error) {
 	for _, execName := range pythonExecNames {
 		// Get the absolute path of the python command
 		pythonPath, err := exec.LookPath(execName)
@@ -190,7 +188,8 @@ func getPythonExecutablePath() (string, error) {
 	return "", xerrors.Errorf("Unable to find path to Python executable")
 }
 
-func sitePackagesDir(libDir string) (string, error) {
+// findSitePackagesDir finds `site-packages` dir in `lib` dir
+func findSitePackagesDir(libDir string) (string, error) {
 	entries, err := os.ReadDir(libDir)
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -204,8 +203,16 @@ func sitePackagesDir(libDir string) (string, error) {
 	for _, entry := range entries {
 		if entry.IsDir() && strings.HasPrefix(entry.Name(), "python") {
 			// Found a directory starting with "python", assume it's the Python library directory
-			spDir = filepath.Join(libDir, entry.Name(), "site-packages")
+			dir := filepath.Join(libDir, entry.Name(), "site-packages")
+			if _, err = os.Stat(dir); !os.IsNotExist(err) {
+				spDir = filepath.Join(libDir, entry.Name(), "site-packages")
+			}
+
 		}
 	}
 	return spDir, nil
+}
+
+func packageID(name, ver string) string {
+	return dependency.ID(types.Pip, name, ver)
 }

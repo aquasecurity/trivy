@@ -203,7 +203,7 @@ func Test_pipAnalyzer_Required(t *testing.T) {
 	}
 }
 
-func Test_getPythonExecutablePath(t *testing.T) {
+func Test_pythonExecutablePath(t *testing.T) {
 	tests := []struct {
 		name     string
 		execName string
@@ -243,7 +243,7 @@ func Test_getPythonExecutablePath(t *testing.T) {
 
 			t.Setenv("PATH", binDir)
 
-			path, err := getPythonExecutablePath()
+			path, err := pythonExecutablePath()
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
