@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -144,6 +145,8 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 			if tt.venv != "" {
 				t.Setenv("VIRTUAL_ENV", tt.venv)
 			}
+
+			var newPATH string
 			if tt.pythonExecDir != "" {
 				err := os.MkdirAll(tt.pythonExecDir, os.ModePerm)
 				require.NoError(t, err)
@@ -155,14 +158,19 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 					require.NoError(t, err)
 				}()
 
+				pythonExecFileName := "python"
+				if runtime.GOOS == "windows" {
+					pythonExecFileName = "python.exe"
+				}
 				// create temp python3 Executable
-				err = os.WriteFile(filepath.Join(tt.pythonExecDir, "python3"), nil, 0755)
+				err = os.WriteFile(filepath.Join(tt.pythonExecDir, pythonExecFileName), nil, 0755)
 				require.NoError(t, err)
 
-				absPath, err := filepath.Abs(tt.pythonExecDir)
+				newPATH, err = filepath.Abs(tt.pythonExecDir)
 				require.NoError(t, err)
-				t.Setenv("PATH", absPath)
+
 			}
+			t.Setenv("PATH", newPATH)
 
 			a, err := newPipLibraryAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
@@ -222,10 +230,6 @@ func Test_pythonExecutablePath(t *testing.T) {
 			execName: "python2",
 		},
 		{
-			name:     "happy path with `python.exe` filename",
-			execName: "python.exe",
-		},
-		{
 			name:     "sad path. Python executable not found",
 			execName: "python-wrong",
 			wantErr:  "Unable to find path to Python executable",
@@ -238,6 +242,9 @@ func Test_pythonExecutablePath(t *testing.T) {
 			err := os.MkdirAll(binDir, os.ModePerm)
 			require.NoError(t, err)
 
+			if runtime.GOOS == "windows" {
+				tt.execName = tt.execName + ".exe"
+			}
 			err = os.WriteFile(filepath.Join(binDir, tt.execName), nil, 0755)
 			require.NoError(t, err)
 
