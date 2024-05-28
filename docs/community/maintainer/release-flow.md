@@ -3,7 +3,6 @@
 ## Overview
 Trivy adopts [conventional commit messages][conventional-commits], and [Release Please][release-please] automatically creates a [release PR](https://github.com/googleapis/release-please?tab=readme-ov-file#whats-a-release-pr) based on the messages of the merged commits.
 This release PR is automatically updated every time a new commit is added to the release branch.
-See the [Release Please documentation][release-please] for more information.
 
 If a commit has the prefix `feat:`, a PR is automatically created to increment the minor version, and if a commit has the prefix `fix:`, a PR is created to increment the patch version.
 When the PR is merged, GitHub Actions automatically creates a version tag and the release is performed.
@@ -23,6 +22,10 @@ The release flow consists of the following main steps:
 
 ### Automatic Release PR Creation
 When a releasable commit (a commit with `feat` or `fix` prefix) is merged, a release PR is automatically created.
+These Release PRs are kept up-to-date as additional work is merged.
+When it's ready to tag a release, simply merge the release PR.
+See the [Release Please documentation][release-please] for more information.
+
 The title of the PR will be in the format `release: v${version} [${branch}]` (e.g., `release: v0.51.0 [main]`).
 The format of the PR title is important for identifying the release commit, so it should not be changed.
 
