@@ -2,6 +2,7 @@ package pip
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -19,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -45,7 +45,7 @@ func newPipLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
-	licenses, err := a.licenseList()
+	sitePackagesDir, err := pythonSitePackagesDir()
 	if err != nil {
 		a.logger.Warn("Unable to find python `site-packages` directory. License detection is skipped.", log.Err(err))
 	}
@@ -55,7 +55,7 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		return true
 	}
 
-	if err := fsutils.WalkDir(input.FS, ".", required, func(pathPath string, d fs.DirEntry, r io.Reader) error {
+	if err = fsutils.WalkDir(input.FS, ".", required, func(pathPath string, d fs.DirEntry, r io.Reader) error {
 		app, err := language.Parse(types.Pip, pathPath, r, pip.NewParser())
 		if err != nil {
 			return xerrors.Errorf("unable to parse requirements.txt: %w", err)
@@ -66,10 +66,9 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		}
 
 		// Fill licenses
-		for i, pkg := range app.Packages {
-			pkgID := packageID(pkg.Name, pkg.Version)
-			if lics, ok := licenses[pkgID]; ok {
-				app.Packages[i].Licenses = lics
+		if sitePackagesDir != "" {
+			for i := range app.Packages {
+				app.Packages[i].Licenses = a.pkgLicense(app.Packages[i].Name, app.Packages[i].Version, sitePackagesDir)
 			}
 		}
 
@@ -97,37 +96,32 @@ func (a pipLibraryAnalyzer) Version() int {
 	return version
 }
 
-// licenseList returns list of licenses found in METADATA files in the `site-packages` directory.
-func (a pipLibraryAnalyzer) licenseList() (map[string][]string, error) {
-	var licenses = make(map[string][]string)
-
-	spDir, err := pythonSitePackagesDir()
-	if err != nil {
-		return nil, xerrors.Errorf("Unable to find python `site-packages` directory: %w", err)
-	}
-	requiredMetadata := func(filePath string, _ fs.DirEntry) bool {
-		return strings.HasSuffix(filepath.Dir(filePath), ".dist-info") && filepath.Base(filePath) == "METADATA"
-	}
-
-	// Detect licenses from `site-packages` directory
-	if err = fsutils.WalkDir(os.DirFS(spDir), ".", requiredMetadata, func(path string, d fs.DirEntry, r io.Reader) error {
-		rs, err := xio.NewReadSeekerAt(r)
-		if err != nil {
-			return xerrors.Errorf("Unable to convert reader: %w", err)
-		}
-
-		metadataPkg, _, err := a.metadataParser.Parse(rs)
-		if err != nil {
-			return xerrors.Errorf("metadata parse error: %w", err)
-		}
-
-		// METADATA file contains info about only 1 package
-		licenses[packageID(metadataPkg[0].Name, metadataPkg[0].Version)] = metadataPkg[0].Licenses
+// pkgLicense parses `METADATA` pkg file to look for licenses
+func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
+	// Don't look for licenses if `site-packages` directory is not found
+	if spDir == "" {
 		return nil
-	}); err != nil {
-		return nil, xerrors.Errorf("walk site-packages dir error: %w", err)
 	}
-	return licenses, nil
+
+	// METADATA path is `**/site-packages/<pkg_name>-<pkg_version>.dist-info/METADATA`
+	pkgDir := fmt.Sprintf("%s-%s.dist-info", pkgName, pkgVer)
+	metadataPath := filepath.Join(spDir, pkgDir, "METADATA")
+	metadataFile, err := os.Open(metadataPath)
+	if os.IsNotExist(err) {
+		a.logger.Debug("site-packages directory doesn't contain package", log.String("site-packages dir", pkgDir),
+			log.String("name", pkgName), log.String("version", pkgVer))
+		return nil
+	}
+
+	metadataPkg, _, err := a.metadataParser.Parse(metadataFile)
+	if err != nil {
+		a.logger.Warn("Unable to parse METADATA file", log.String("path", metadataPath), log.Err(err))
+		return nil
+	}
+
+	// METADATA file contains info about only 1 package
+	// cf. https://github.com/aquasecurity/trivy/blob/e66dbb935764908f0b2b9a55cbfe6c107f101a31/pkg/dependency/parser/python/packaging/parse.go#L86-L92
+	return metadataPkg[0].Licenses
 }
 
 // pythonSitePackagesDir returns path to site-packages dir
