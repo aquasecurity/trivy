@@ -109,8 +109,9 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`,
 			},
 			want: flag.ReportOptions{
-				Format:     "table",
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				Format:      "table",
+				Severities:  []dbTypes.Severity{dbTypes.SeverityLow},
+				ListAllPkgs: true,
 			},
 		},
 		{

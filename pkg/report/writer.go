@@ -57,7 +57,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	case types.FormatJSON:
 		writer = &JSONWriter{
 			Output:      output,
-			ListAllPkgs: option.Scanners.Enabled(types.SBOMScanner),
+			ListAllPkgs: option.ListAllPkgs,
 		}
 	case types.FormatGitHub:
 		writer = &github.Writer{

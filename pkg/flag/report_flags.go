@@ -132,6 +132,7 @@ type ReportOptions struct {
 	ReportFormat     string
 	Template         string
 	DependencyTree   bool
+	ListAllPkgs      bool
 	IgnoreFile       string
 	ExitCode         int
 	ExitOnEOL        int
@@ -141,8 +142,6 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
-
-	listAllPkgs bool
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -243,7 +242,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		ReportFormat:     f.ReportFormat.Value(),
 		Template:         template,
 		DependencyTree:   dependencyTree,
-		listAllPkgs:      listAllPkgs,
+		ListAllPkgs:      listAllPkgs,
 		IgnoreFile:       f.IgnoreFile.Value(),
 		ExitCode:         f.ExitCode.Value(),
 		ExitOnEOL:        f.ExitOnEOL.Value(),

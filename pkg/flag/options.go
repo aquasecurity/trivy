@@ -392,7 +392,7 @@ func (o *Options) enableSBOM() {
 	}
 
 	// Enable the SBOM scanner when a list of packages is necessary.
-	if o.listAllPkgs || slices.Contains(types.SupportedSBOMFormats, o.Format) {
+	if o.ListAllPkgs || slices.Contains(types.SupportedSBOMFormats, o.Format) {
 		o.Scanners.Enable(types.SBOMScanner)
 	}
 
