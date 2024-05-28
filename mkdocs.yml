@@ -131,6 +131,10 @@ nav:
       - Compliance:
           - Built-in Compliance:  docs/compliance/compliance.md
           - Custom Compliance: docs/compliance/contrib-compliance.md
+      - Plugins:
+          - Overview: docs/plugin/index.md
+          - User guide: docs/plugin/user-guide.md
+          - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
