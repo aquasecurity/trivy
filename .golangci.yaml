@@ -109,10 +109,8 @@ issues:
   exclude-rules:
     - path: ".*_test.go$"
       linters:
-        - bodyclose
         - goconst
         - gosec
-        - ineffassign
         - misspell
         - unused
     - path: ".*_test.go$"
