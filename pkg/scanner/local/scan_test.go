@@ -377,9 +377,8 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "./result.cdx",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:        []string{types.VulnTypeLibrary},
-					Scanners:        types.Scanners{types.VulnerabilityScanner},
-					ListAllPackages: true,
+					VulnType: []string{types.VulnTypeLibrary},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
