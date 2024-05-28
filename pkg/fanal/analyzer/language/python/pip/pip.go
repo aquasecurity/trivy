@@ -12,7 +12,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pip"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -205,8 +204,4 @@ func findSitePackagesDir(libDir string) (string, error) {
 		}
 	}
 	return spDir, nil
-}
-
-func packageID(name, ver string) string {
-	return dependency.ID(types.Pip, name, ver)
 }
