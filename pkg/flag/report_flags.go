@@ -54,7 +54,7 @@ var (
 	ListAllPkgsFlag = Flag[bool]{
 		Name:       "list-all-pkgs",
 		ConfigName: "list-all-pkgs",
-		Usage:      "enabling the option will output all packages regardless of vulnerability",
+		Usage:      "output all packages in the JSON report regardless of vulnerability",
 	}
 	IgnoreFileFlag = Flag[string]{
 		Name:       "ignorefile",
