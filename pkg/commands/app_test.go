@@ -197,6 +197,7 @@ func TestFlags(t *testing.T) {
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
 					types.SecretScanner,
+					types.SBOMScanner,
 				},
 			},
 		},
@@ -216,6 +217,7 @@ func TestFlags(t *testing.T) {
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
 					types.SecretScanner,
+					types.SBOMScanner,
 				},
 			},
 		},
@@ -237,6 +239,7 @@ func TestFlags(t *testing.T) {
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
 					types.SecretScanner,
+					types.SBOMScanner,
 				},
 			},
 		},
@@ -257,6 +260,7 @@ func TestFlags(t *testing.T) {
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
 					types.SecretScanner,
+					types.SBOMScanner,
 				},
 			},
 		},
