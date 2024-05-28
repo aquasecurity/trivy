@@ -4133,7 +4133,6 @@ Currently, Trivy supports the following three formats:</p>
 <li><a href="https://github.com/openvex/spec">OpenVEX</a></li>
 <li><a href="https://oasis-open.github.io/csaf-documentation/specification.html">CSAF</a></li>
 </ul>
-<p>This is still an experimental implementation, with only minimal functionality added.</p>
 <h2 id="cyclonedx">CycloneDX</h2>
 <table>
 <thead>
@@ -4190,29 +4189,29 @@ The input SBOM format must be in CycloneDX format.</p>
 <p>Next, create a VEX based on the generated SBOM.
 Multiple vulnerability statuses can be defined under <code>vulnerabilities</code>.
 Take a look at the example below.</p>
-<div class="highlight"><pre><span></span><code>$ cat &lt;&lt;EOF &gt; trivy.vex.cdx
-{
-  &quot;bomFormat&quot;: &quot;CycloneDX&quot;,
-  &quot;specVersion&quot;: &quot;1.5&quot;,
-  &quot;version&quot;: 1,
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;id&quot;: &quot;CVE-2020-8911&quot;,
-      &quot;analysis&quot;: {
-        &quot;state&quot;: &quot;not_affected&quot;,
-        &quot;justification&quot;: &quot;code_not_reachable&quot;,
-        &quot;response&quot;: [&quot;will_not_fix&quot;, &quot;update&quot;],
-        &quot;detail&quot;: &quot;The vulnerable function is not called&quot;
-      },
-      &quot;affects&quot;: [
-        {
-          &quot;ref&quot;: &quot;urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@1.44.234&quot;
-        }
-      ]
-    }
-  ]
-}
-EOF
+<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; trivy.vex.cdx</span>
+<span class="s">{</span>
+<span class="s">  &quot;bomFormat&quot;: &quot;CycloneDX&quot;,</span>
+<span class="s">  &quot;specVersion&quot;: &quot;1.5&quot;,</span>
+<span class="s">  &quot;version&quot;: 1,</span>
+<span class="s">  &quot;vulnerabilities&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;id&quot;: &quot;CVE-2020-8911&quot;,</span>
+<span class="s">      &quot;analysis&quot;: {</span>
+<span class="s">        &quot;state&quot;: &quot;not_affected&quot;,</span>
+<span class="s">        &quot;justification&quot;: &quot;code_not_reachable&quot;,</span>
+<span class="s">        &quot;response&quot;: [&quot;will_not_fix&quot;, &quot;update&quot;],</span>
+<span class="s">        &quot;detail&quot;: &quot;The vulnerable function is not called&quot;</span>
+<span class="s">      },</span>
+<span class="s">      &quot;affects&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;ref&quot;: &quot;urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@1.44.234&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ]</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
 </code></pre></div>
 <p>This is a VEX document in the CycloneDX format.
 The vulnerability ID, such as a CVE-ID or GHSA-ID, should be placed in <code>vulnerabilities.id</code>.
@@ -4240,17 +4239,17 @@ In the example above, since the Go package <code>github.com/aws/aws-sdk-go</code
 <p>Provide the VEX when scanning the CycloneDX SBOM.</p>
 <div class="highlight"><pre><span></span><code>$ trivy sbom trivy.sbom.cdx --vex trivy.vex.cdx
 ...
-2023-04-13T12:55:44.838+0300    INFO    Filtered out the detected vulnerability {&quot;VEX format&quot;: &quot;CycloneDX&quot;, &quot;vulnerability-id&quot;: &quot;CVE-2020-8911&quot;, &quot;status&quot;: &quot;not_affected&quot;, &quot;justification&quot;: &quot;code_not_reachable&quot;}
+<span class="m">2023</span>-04-13T12:55:44.838+0300    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;CycloneDX&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2020-8911&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span>, <span class="s2">&quot;justification&quot;</span>: <span class="s2">&quot;code_not_reachable&quot;</span><span class="o">}</span>
 
-go.mod (gomod)
-==============
-Total: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+go.mod <span class="o">(</span>gomod<span class="o">)</span>
+<span class="o">==============</span>
+Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 ┌───────────────────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
 │          Library          │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                           Title                            │
 ├───────────────────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
-│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ 1.44.234          │               │ aws-sdk-go: In-band key negotiation issue in AWS S3 Crypto │
-│                           │               │          │                   │               │ SDK for golang...                                          │
+│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ <span class="m">1</span>.44.234          │               │ aws-sdk-go: In-band key negotiation issue <span class="k">in</span> AWS S3 Crypto │
+│                           │               │          │                   │               │ SDK <span class="k">for</span> golang...                                          │
 │                           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-8912                  │
 └───────────────────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
 </code></pre></div>
@@ -4299,44 +4298,119 @@ OpenVEX can be used in all Trivy targets, unlike CycloneDX VEX.</p>
 </ol>
 <h3 id="create-the-vex-document">Create the VEX document</h3>
 <p>Please see also <a href="https://github.com/openvex/examples">the example</a>.
-In Trivy, <a href="https://github.com/package-url/purl-spec">the Package URL (PURL)</a> is used as the product identifier.</p>
-<div class="highlight"><pre><span></span><code>$ cat &lt;&lt;EOF &gt; debian11.openvex
-{
-  &quot;@context&quot;: &quot;https://openvex.dev/ns/v0.2.0&quot;,
-  &quot;@id&quot;: &quot;https://openvex.dev/docs/public/vex-2e67563e128250cbcb3e98930df948dd053e43271d70dc50cfa22d57e03fe96f&quot;,
-  &quot;author&quot;: &quot;Aqua Security&quot;,
-  &quot;timestamp&quot;: &quot;2023-08-29T19:07:16.853479631-06:00&quot;,
-  &quot;version&quot;: 1,
-  &quot;statements&quot;: [
-    {
-      &quot;vulnerability&quot;: {&quot;name&quot;: &quot;CVE-2019-8457&quot;},
-      &quot;products&quot;: [
-        {&quot;@id&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8&quot;}
-      ],
-      &quot;status&quot;: &quot;not_affected&quot;,
-      &quot;justification&quot;: &quot;vulnerable_code_not_in_execute_path&quot;
-    }
-  ]
-}
-EOF
+Trivy requires <a href="https://github.com/package-url/purl-spec">the Package URL (PURL)</a> as the product identifier.</p>
+<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; debian11.openvex.json</span>
+<span class="s">{</span>
+<span class="s">  &quot;@context&quot;: &quot;https://openvex.dev/ns/v0.2.0&quot;,</span>
+<span class="s">  &quot;@id&quot;: &quot;https://openvex.dev/docs/public/vex-2e67563e128250cbcb3e98930df948dd053e43271d70dc50cfa22d57e03fe96f&quot;,</span>
+<span class="s">  &quot;author&quot;: &quot;Aqua Security&quot;,</span>
+<span class="s">  &quot;timestamp&quot;: &quot;2023-08-29T19:07:16.853479631-06:00&quot;,</span>
+<span class="s">  &quot;version&quot;: 1,</span>
+<span class="s">  &quot;statements&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;vulnerability&quot;: {&quot;name&quot;: &quot;CVE-2019-8457&quot;},</span>
+<span class="s">      &quot;products&quot;: [</span>
+<span class="s">        {&quot;@id&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8&quot;}</span>
+<span class="s">      ],</span>
+<span class="s">      &quot;status&quot;: &quot;not_affected&quot;,</span>
+<span class="s">      &quot;justification&quot;: &quot;vulnerable_code_not_in_execute_path&quot;</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
 </code></pre></div>
-<p>In the above example, PURLs, located in <code>packages.externalRefs.referenceLocator</code> in SPDX are used for the product identifier.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If a qualifier is specified in the PURL used as the product id in the VEX, the qualifier is compared.
-Other qualifiers are ignored in the comparison.
-<code>pkg:deb/debian/curl@7.50.3-1</code> in OpenVEX matches <code>pkg:deb/debian/curl@7.50.3-1?arch=i386</code>, 
-while <code>pkg:deb/debian/curl@7.50.3-1?arch=amd64</code> does not match <code>pkg:deb/debian/curl@7.50.3-1?arch=i386</code>.</p>
-</div>
+<p>In the above example, PURLs, <code>pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8</code> are used for the product identifier.
+You can find PURLs in the JSON report generated by Trivy.
+This VEX statement is applied if the PURL specified in the VEX matches the PURL found during the scan.
+See <a href="#purl-matching">here</a> for more details of PURL matching.</p>
+<p>Trivy also supports <a href="https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#subcomponent">OpenVEX subcomponents</a>, which allow for more precise specification of the scope of a VEX statement, reducing the risk of incorrect filtering.
+Let's say you want to suppress vulnerabilities within a container image.
+If you only specify the PURL of the container image as the product, the resulting VEX would look like this:</p>
+<details>
+<summary>OpenVEX products only</summary>
+
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-32002&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+
+<p>However, this approach would suppress all instances of CVE-2024-32002 within the container image.
+If the intention is to declare that the <code>git</code> package distributed by Alpine Linux within this image is not affected, subcomponents can be utilized as follows:</p>
+<details>
+<summary>OpenVEX subcomponents</summary>
+
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-32002&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="p">{</span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/git&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+
+<p>By declaring the subcomponent in this manner, Trivy will filter the results, considering only the <code>git</code> package within the <code>ghcr.io/aquasecurity/trivy</code> container image as not affected.
+Omitting the version in the PURL applies the statement to all versions of the package.
+More details about PURL matching can be found <a href="#purl-matching">here</a>.</p>
+<p>Furthermore, the product specified in a VEX statement does not necessarily need to be the target of the scan.
+It is possible to specify a component that is included in the scan target as the product.
+For example, you can designate a specific Go project as the product and its dependent modules as subcomponents.</p>
+<p>In the following example, the VEX statement declares that the <code>github.com/docker/docker</code> module, which is a dependency of the <code>github.com/aquasecurity/trivy</code> Go project, is not affected by CVE-2024-29018.</p>
+<details>
+<summary>OpenVEX intermediate components</summary>
+
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-29018&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/github.com/aquasecurity/trivy&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/github.com/docker/docker&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+
+<p>This VEX document can be used when scanning a container image as well as other targets.
+The VEX statement will be applied when Trivy finds the Go binary within the container image.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image ghcr.io/aquasecurity/trivy:0.50.0 --vex trivy.openvex.json
+</code></pre></div>
+<p>VEX documents can indeed be reused across different container images, eliminating the need to issue separate VEX documents for each image.
+This is particularly useful when there is a common component or library that is used across multiple projects or container images.</p>
 <h3 id="scan-with-vex">Scan with VEX</h3>
 <p>Provide the VEX when scanning your target.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.openvex
+<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.openvex.json
 ...
-2023-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability {&quot;VEX format&quot;: &quot;OpenVEX&quot;, &quot;vulnerability-id&quot;: &quot;CVE-2019-8457&quot;, &quot;status&quot;: &quot;not_affected&quot;, &quot;justification&quot;: &quot;vulnerable_code_not_in_execute_path&quot;}
+<span class="m">2023</span>-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;OpenVEX&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2019-8457&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span>, <span class="s2">&quot;justification&quot;</span>: <span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="o">}</span>
 
-debian11.spdx.json (debian 11.6)
-================================
-Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
+debian11.spdx.json <span class="o">(</span>debian <span class="m">11</span>.6<span class="o">)</span>
+<span class="o">================================</span>
+Total: <span class="m">80</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">58</span>, MEDIUM: <span class="m">6</span>, HIGH: <span class="m">16</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 </code></pre></div>
 <p>CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.</p>
 <h2 id="csaf">CSAF</h2>
@@ -4383,111 +4457,125 @@ Since CSAF aims to be SBOM format agnostic, both CycloneDX and SPDX formats are 
 </ol>
 <h3 id="create-the-csaf-document">Create the CSAF document</h3>
 <p>Create a CSAF document in JSON format as follows:</p>
-<div class="highlight"><pre><span></span><code>$ cat &lt;&lt;EOF &gt; debian11.vex.csaf
-{
-  &quot;document&quot;: {
-    &quot;category&quot;: &quot;csaf_vex&quot;,
-    &quot;csaf_version&quot;: &quot;2.0&quot;,
-    &quot;notes&quot;: [
-      {
-        &quot;category&quot;: &quot;summary&quot;,
-        &quot;text&quot;: &quot;Example Company VEX document. Unofficial content for demonstration purposes only.&quot;,
-        &quot;title&quot;: &quot;Author comment&quot;
-      }
-    ],
-    &quot;publisher&quot;: {
-      &quot;category&quot;: &quot;vendor&quot;,
-      &quot;name&quot;: &quot;Example Company ProductCERT&quot;,
-      &quot;namespace&quot;: &quot;https://psirt.example.com&quot;
-    },
-    &quot;title&quot;: &quot;AquaSecurity example VEX document&quot;,
-    &quot;tracking&quot;: {
-      &quot;current_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
-      &quot;generator&quot;: {
-        &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
-        &quot;engine&quot;: {
-          &quot;name&quot;: &quot;Secvisogram&quot;,
-          &quot;version&quot;: &quot;1.11.0&quot;
-        }
-      },
-      &quot;id&quot;: &quot;2024-EVD-UC-01-A-001&quot;,
-      &quot;initial_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
-      &quot;revision_history&quot;: [
-        {
-          &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
-          &quot;number&quot;: &quot;1&quot;,
-          &quot;summary&quot;: &quot;Initial version.&quot;
-        }
-      ],
-      &quot;status&quot;: &quot;final&quot;,
-      &quot;version&quot;: &quot;1&quot;
-    }
-  },
-  &quot;product_tree&quot;: {
-    &quot;branches&quot;: [
-      {
-        &quot;branches&quot;: [
-          {
-            &quot;branches&quot;: [
-              {
-                &quot;category&quot;: &quot;product_version&quot;,
-                &quot;name&quot;: &quot;5.3&quot;,
-                &quot;product&quot;: {
-                  &quot;name&quot;: &quot;Database Libraries 5.3&quot;,
-                  &quot;product_id&quot;: &quot;LIBDB-5328&quot;,
-                  &quot;product_identification_helper&quot;: {
-                    &quot;purl&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.8?arch=amd64\u0026distro=debian-11.8&quot;
-                  }
-                }
-              }
-            ],
-            &quot;category&quot;: &quot;product_name&quot;,
-            &quot;name&quot;: &quot;Database Libraries&quot;
-          }
-        ],
-        &quot;category&quot;: &quot;vendor&quot;,
-        &quot;name&quot;: &quot;Debian&quot;
-      }
-    ]
-  },
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;cve&quot;: &quot;CVE-2019-8457&quot;,
-      &quot;notes&quot;: [
-        {
-          &quot;category&quot;: &quot;description&quot;,
-          &quot;text&quot;: &quot;SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.&quot;,
-          &quot;title&quot;: &quot;CVE description&quot;
-        }
-      ],
-      &quot;product_status&quot;: {
-        &quot;known_not_affected&quot;: [
-          &quot;LIBDB-5328&quot;
-        ]
-      },
-      &quot;threats&quot;: [
-        {
-          &quot;category&quot;: &quot;impact&quot;,
-          &quot;details&quot;: &quot;Vulnerable code not in execute path.&quot;,
-          &quot;product_ids&quot;: [
-            &quot;LIBDB-5328&quot;
-          ]
-        }
-      ]
-    }
-  ]
-}
-EOF
+<details>
+<summary>CSAF VEX</summary>
+
+<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; debian11.vex.csaf</span>
+<span class="s">{</span>
+<span class="s">  &quot;document&quot;: {</span>
+<span class="s">    &quot;category&quot;: &quot;csaf_vex&quot;,</span>
+<span class="s">    &quot;csaf_version&quot;: &quot;2.0&quot;,</span>
+<span class="s">    &quot;notes&quot;: [</span>
+<span class="s">      {</span>
+<span class="s">        &quot;category&quot;: &quot;summary&quot;,</span>
+<span class="s">        &quot;text&quot;: &quot;Example Company VEX document. Unofficial content for demonstration purposes only.&quot;,</span>
+<span class="s">        &quot;title&quot;: &quot;Author comment&quot;</span>
+<span class="s">      }</span>
+<span class="s">    ],</span>
+<span class="s">    &quot;publisher&quot;: {</span>
+<span class="s">      &quot;category&quot;: &quot;vendor&quot;,</span>
+<span class="s">      &quot;name&quot;: &quot;Example Company ProductCERT&quot;,</span>
+<span class="s">      &quot;namespace&quot;: &quot;https://psirt.example.com&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;title&quot;: &quot;AquaSecurity example VEX document&quot;,</span>
+<span class="s">    &quot;tracking&quot;: {</span>
+<span class="s">      &quot;current_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">      &quot;generator&quot;: {</span>
+<span class="s">        &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">        &quot;engine&quot;: {</span>
+<span class="s">          &quot;name&quot;: &quot;Secvisogram&quot;,</span>
+<span class="s">          &quot;version&quot;: &quot;1.11.0&quot;</span>
+<span class="s">        }</span>
+<span class="s">      },</span>
+<span class="s">      &quot;id&quot;: &quot;2024-EVD-UC-01-A-001&quot;,</span>
+<span class="s">      &quot;initial_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">      &quot;revision_history&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">          &quot;number&quot;: &quot;1&quot;,</span>
+<span class="s">          &quot;summary&quot;: &quot;Initial version.&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ],</span>
+<span class="s">      &quot;status&quot;: &quot;final&quot;,</span>
+<span class="s">      &quot;version&quot;: &quot;1&quot;</span>
+<span class="s">    }</span>
+<span class="s">  },</span>
+<span class="s">  &quot;product_tree&quot;: {</span>
+<span class="s">    &quot;branches&quot;: [</span>
+<span class="s">      {</span>
+<span class="s">        &quot;branches&quot;: [</span>
+<span class="s">          {</span>
+<span class="s">            &quot;branches&quot;: [</span>
+<span class="s">              {</span>
+<span class="s">                &quot;category&quot;: &quot;product_version&quot;,</span>
+<span class="s">                &quot;name&quot;: &quot;5.3&quot;,</span>
+<span class="s">                &quot;product&quot;: {</span>
+<span class="s">                  &quot;name&quot;: &quot;Database Libraries 5.3&quot;,</span>
+<span class="s">                  &quot;product_id&quot;: &quot;LIBDB-5328&quot;,</span>
+<span class="s">                  &quot;product_identification_helper&quot;: {</span>
+<span class="s">                    &quot;purl&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.8?arch=amd64\u0026distro=debian-11.8&quot;</span>
+<span class="s">                  }</span>
+<span class="s">                }</span>
+<span class="s">              }</span>
+<span class="s">            ],</span>
+<span class="s">            &quot;category&quot;: &quot;product_name&quot;,</span>
+<span class="s">            &quot;name&quot;: &quot;Database Libraries&quot;</span>
+<span class="s">          }</span>
+<span class="s">        ],</span>
+<span class="s">        &quot;category&quot;: &quot;vendor&quot;,</span>
+<span class="s">        &quot;name&quot;: &quot;Debian&quot;</span>
+<span class="s">      }</span>
+<span class="s">    ]</span>
+<span class="s">  },</span>
+<span class="s">  &quot;vulnerabilities&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;cve&quot;: &quot;CVE-2019-8457&quot;,</span>
+<span class="s">      &quot;notes&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;category&quot;: &quot;description&quot;,</span>
+<span class="s">          &quot;text&quot;: &quot;SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.&quot;,</span>
+<span class="s">          &quot;title&quot;: &quot;CVE description&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ],</span>
+<span class="s">      &quot;product_status&quot;: {</span>
+<span class="s">        &quot;known_not_affected&quot;: [</span>
+<span class="s">          &quot;LIBDB-5328&quot;</span>
+<span class="s">        ]</span>
+<span class="s">      },</span>
+<span class="s">      &quot;threats&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;category&quot;: &quot;impact&quot;,</span>
+<span class="s">          &quot;details&quot;: &quot;Vulnerable code not in execute path.&quot;,</span>
+<span class="s">          &quot;product_ids&quot;: [</span>
+<span class="s">            &quot;LIBDB-5328&quot;</span>
+<span class="s">          ]</span>
+<span class="s">        }</span>
+<span class="s">      ]</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
 </code></pre></div>
+
+</details>
+
+<p>Trivy also supports <a href="https://docs.oasis-open.org/csaf/csaf/v2.0/os/csaf-v2.0-os.html#3224-product-tree-property---relationships">CSAF relationships</a>, reducing the risk of incorrect filtering.
+It works in the same way as OpenVEX subcomponents.
+At present, the specified relationship category is not taken into account and all the following categories are treated internally as "depends_on".</p>
+<ul>
+<li>default_component_of</li>
+<li>installed_on</li>
+<li>installed_with</li>
+</ul>
 <h3 id="scan-with-csaf-vex">Scan with CSAF VEX</h3>
 <p>Provide the CSAF document when scanning your target.</p>
-<div class="highlight"><pre><span></span><code><span class="gp">$ </span>trivy image debian:11 --vex debian11.vex.csaf
-<span class="go">...</span>
-<span class="go">2024-01-02T10:28:26.704+0100    INFO    Filtered out the detected vulnerability {&quot;VEX format&quot;: &quot;CSAF&quot;, &quot;vulnerability-id&quot;: &quot;CVE-2019-8457&quot;, &quot;status&quot;: &quot;not_affected&quot;}</span>
+<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.vex.csaf
+...
+<span class="m">2024</span>-01-02T10:28:26.704+0100    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;CSAF&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2019-8457&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span><span class="o">}</span>
 
-<span class="go">debian11.spdx.json (debian 11.6)</span>
-<span class="go">================================</span>
-<span class="go">Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)</span>
+debian11.spdx.json <span class="o">(</span>debian <span class="m">11</span>.6<span class="o">)</span>
+<span class="o">================================</span>
+Total: <span class="m">80</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">58</span>, MEDIUM: <span class="m">6</span>, HIGH: <span class="m">16</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 </code></pre></div>
 <p>CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.</p>
 <h2 id="appendix">Appendix</h2>
