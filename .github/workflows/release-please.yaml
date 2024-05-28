@@ -9,7 +9,7 @@ on:
     inputs:
       version:
         required: true
-        description: 'Release version (e.g., 0.51.0)'
+        description: 'Release version without the "v" prefix (e.g., 0.51.0)'
         type: string
 
 jobs:
