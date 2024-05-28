@@ -260,3 +260,36 @@ func Test_pythonExecutablePath(t *testing.T) {
 		})
 	}
 }
+
+func Test_sortPythonDirs(t *testing.T) {
+	dirs := []string{
+		"wrong",
+		"wrong2.7",
+		"python3.11",
+		"python3.10",
+		"python2.7",
+		"python3.9",
+		"python3",
+		"python2",
+	}
+	wantDirs := []string{
+		"python2",
+		"python2.7",
+		"python3",
+		"python3.9",
+		"python3.10",
+		"python3.11",
+	}
+
+	tmp := t.TempDir()
+	for _, dir := range dirs {
+		err := os.Mkdir(filepath.Join(tmp, dir), os.ModePerm)
+		require.NoError(t, err)
+	}
+
+	tmpDir, err := os.ReadDir(tmp)
+	require.NoError(t, err)
+
+	got := sortPythonDirs(tmpDir)
+	require.Equal(t, wantDirs, got)
+}

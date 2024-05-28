@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -193,15 +195,53 @@ func findSitePackagesDir(libDir string) (string, error) {
 
 	// Use latest python dir
 	var spDir string
-	for _, entry := range entries {
-		if entry.IsDir() && strings.HasPrefix(entry.Name(), "python") {
-			// Found a directory starting with "python", assume it's the Python library directory
-			dir := filepath.Join(libDir, entry.Name(), "site-packages")
-			if _, err = os.Stat(dir); !os.IsNotExist(err) {
-				spDir = filepath.Join(libDir, entry.Name(), "site-packages")
-			}
-
+	for _, pythonDir := range sortPythonDirs(entries) {
+		// Found a directory starting with "python", assume it's the Python library directory
+		dir := filepath.Join(libDir, pythonDir, "site-packages")
+		if _, err = os.Stat(dir); !os.IsNotExist(err) {
+			spDir = filepath.Join(libDir, pythonDir, "site-packages")
 		}
+
 	}
 	return spDir, nil
+}
+
+// sortPythonDirs finds `python` dirs and sorts them according to major and minor versions.
+// e.g. python2.7 => python3.9 => python3.11
+func sortPythonDirs(entries []os.DirEntry) []string {
+	var pythonDirs []string
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasPrefix(entry.Name(), "python") {
+			pythonDirs = append(pythonDirs, entry.Name())
+		}
+	}
+
+	sort.Slice(pythonDirs, func(i, j int) bool {
+		majorVer1, minorVer1, found1 := strings.Cut(pythonDirs[i], ".")
+		majorVer2, minorVer2, found2 := strings.Cut(pythonDirs[j], ".")
+
+		// if one of dir doesn't contain minor version => sort as strings
+		if !found1 || !found2 {
+			return pythonDirs[i] < pythonDirs[j]
+		}
+
+		// Sort major versions as strings
+		// e.g. `python2.7` and `python3.10`
+		if majorVer1 != majorVer2 {
+			return majorVer1 < majorVer2
+		}
+
+		// Convert minor versions
+		ver1, err1 := strconv.Atoi(minorVer1)
+		ver2, err2 := strconv.Atoi(minorVer2)
+
+		// If we can't convert minor versions => sort as strings
+		if err1 != nil || err2 != nil {
+			return pythonDirs[i] < pythonDirs[j]
+		}
+
+		return ver1 < ver2
+	})
+
+	return pythonDirs
 }
