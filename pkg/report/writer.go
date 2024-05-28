@@ -55,7 +55,10 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			IgnoredLicenses:      option.IgnoredLicenses,
 		}
 	case types.FormatJSON:
-		writer = &JSONWriter{Output: output}
+		writer = &JSONWriter{
+			Output:      output,
+			ListAllPkgs: option.ListAllPkgs,
+		}
 	case types.FormatGitHub:
 		writer = &github.Writer{
 			Output:  output,
@@ -76,7 +79,6 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			}
 			break
 		}
-		var err error
 		if writer, err = NewTemplateWriter(output, option.Template, option.AppVersion); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}

@@ -354,16 +354,7 @@ type Options struct {
 
 // Align takes consistency of options
 func (o *Options) Align() error {
-	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
-		log.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
-		o.Scanners = nil
-	}
-
-	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
-		log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-		o.Scanners = nil
-	}
+	o.enableSBOM()
 
 	if o.Compliance.Spec.ID != "" {
 		if viper.IsSet(ScannersFlag.ConfigName) {
@@ -392,6 +383,32 @@ func (o *Options) Align() error {
 	}
 
 	return nil
+}
+
+func (o *Options) enableSBOM() {
+	// Always need packages when the vulnerability scanner is enabled
+	if o.Scanners.Enabled(types.VulnerabilityScanner) {
+		o.Scanners.Enable(types.SBOMScanner)
+	}
+
+	// Enable the SBOM scanner when a list of packages is necessary.
+	if o.ListAllPkgs || slices.Contains(types.SupportedSBOMFormats, o.Format) {
+		o.Scanners.Enable(types.SBOMScanner)
+	}
+
+	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
+		log.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
+		o.Scanners = types.Scanners{types.SBOMScanner}
+	}
+
+	if o.Format == types.FormatCycloneDX {
+		// Vulnerability scanning is disabled by default for CycloneDX.
+		if !viper.IsSet(ScannersFlag.ConfigName) {
+			log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+			o.Scanners = nil
+		}
+		o.Scanners.Enable(types.SBOMScanner)
+	}
 }
 
 // RegistryOpts returns options for OCI registries

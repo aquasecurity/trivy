@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactName": "https://github.com/knqyf263/trivy-ci-test",
+  "ArtifactName": "testdata/fixtures/repo/trivy-ci-test",
   "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
@@ -109,6 +109,11 @@
           "LastModifiedDate": "2021-08-16T16:37:00Z"
         }
       ]
+    },
+    {
+      "Target": "Pipfile.lock",
+      "Class": "lang-pkgs",
+      "Type": "pipenv"
     }
   ]
 }

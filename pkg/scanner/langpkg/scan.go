@@ -54,10 +54,8 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 			Type:   app.Type,
 		}
 
-		if opts.ListAllPackages {
-			sort.Sort(app.Packages)
-			result.Packages = app.Packages
-		}
+		sort.Sort(app.Packages)
+		result.Packages = app.Packages
 
 		if opts.Scanners.Enabled(types.VulnerabilityScanner) {
 			var err error
