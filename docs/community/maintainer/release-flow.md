@@ -41,7 +41,7 @@ In Trivy, the following branches are the release branches.
 - `main`
 - `release/vX.Y` (e.g. `release/v0.51`)
 
-Then, specify the release version (without the `v` prefix) and click "Run workflow" to create a release PR for the specified version.
+Specify the release version (without the `v` prefix) and click "Run workflow" to create a release PR for the specified version.
 
 ### Drafting the Release Notes
 Next, create release notes for this version.
