@@ -436,7 +436,7 @@ func TestNewPackageURL(t *testing.T) {
 				assert.Contains(t, err.Error(), tc.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.want, packageURL, tc.name)
 		})
 	}
@@ -554,7 +554,7 @@ func TestFromString(t *testing.T) {
 				assert.ErrorContains(t, err, tc.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.want, *pkg, tc.name)
 		})
 	}
@@ -780,7 +780,7 @@ func TestPackageURL_LangType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := (purl.PackageURL)(tt.purl)
+			p := purl.PackageURL(tt.purl)
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
 		})
 	}

@@ -6,7 +6,7 @@ import (
 
 var converterInterface = reflect.TypeOf((*Converter)(nil)).Elem()
 
-func anonymousToRego(inputValue reflect.Value) interface{} {
+func anonymousToRego(inputValue reflect.Value) any {
 
 	if inputValue.IsZero() {
 		return nil

@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
 )
 
 func Test_DefaultRegistry(t *testing.T) {

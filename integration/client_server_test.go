@@ -5,16 +5,16 @@ package integration
 import (
 	"context"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 
@@ -39,10 +39,10 @@ type csArgs struct {
 
 func TestClientServer(t *testing.T) {
 	tests := []struct {
-		name    string
-		args    csArgs
-		golden  string
-		wantErr string
+		name     string
+		args     csArgs
+		golden   string
+		override func(t *testing.T, want, got *types.Report)
 	}{
 		{
 			name: "alpine 3.9",
@@ -270,6 +270,9 @@ func TestClientServer(t *testing.T) {
 				Target:           "https://github.com/knqyf263/trivy-ci-test",
 			},
 			golden: "testdata/test-repo.json.golden",
+			override: func(t *testing.T, want, got *types.Report) {
+				want.ArtifactName = "https://github.com/knqyf263/trivy-ci-test"
+			},
 		},
 	}
 
@@ -284,7 +287,7 @@ func TestClientServer(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				override: overrideUID,
+				override: overrideFuncs(overrideUID, tt.override),
 			})
 		})
 	}
@@ -371,7 +374,7 @@ func TestClientServerWithFormat(t *testing.T) {
 	}
 
 	fakeTime := time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
-	report.CustomTemplateFuncMap = map[string]interface{}{
+	report.CustomTemplateFuncMap = map[string]any{
 		"now": func() time.Time {
 			return fakeTime
 		},
@@ -388,7 +391,7 @@ func TestClientServerWithFormat(t *testing.T) {
 	t.Setenv("GITHUB_WORKFLOW", "workflow-name")
 
 	t.Cleanup(func() {
-		report.CustomTemplateFuncMap = map[string]interface{}{}
+		report.CustomTemplateFuncMap = map[string]any{}
 	})
 
 	addr, cacheDir := setup(t, setupOptions{})
@@ -542,7 +545,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 	t.Setenv("XDG_DATA_HOME", cacheDir)
 
 	port, err := getFreePort()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	addr := fmt.Sprintf("localhost:%d", port)
 
 	go func() {
@@ -554,7 +557,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	err = waitPort(ctx, addr)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	return addr, cacheDir
 }

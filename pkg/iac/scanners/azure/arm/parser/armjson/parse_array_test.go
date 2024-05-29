@@ -3,15 +3,15 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_Array_Empty(t *testing.T) {
 	example := []byte(`[]`)
-	target := []int{}
+	var target []int
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Empty(t, target)
@@ -19,7 +19,7 @@ func Test_Array_Empty(t *testing.T) {
 
 func Test_Array_ToSlice(t *testing.T) {
 	example := []byte(`[1, 2, 3]`)
-	target := []int{}
+	var target []int
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Len(t, target, 3)
@@ -38,7 +38,7 @@ func Test_Array_ToArray(t *testing.T) {
 func Test_Array_ToInterface(t *testing.T) {
 	example := []byte(`{ "List": [1, 2, 3] }`)
 	target := struct {
-		List interface{}
+		List any
 	}{}
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))

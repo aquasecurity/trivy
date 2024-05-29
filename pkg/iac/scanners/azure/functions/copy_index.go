@@ -2,7 +2,7 @@ package functions
 
 var loopCounter = make(map[string]int)
 
-func CopyIndex(args ...interface{}) interface{} {
+func CopyIndex(args ...any) any {
 	loopName := "default"
 	offset := 1
 	if len(args) > 0 {

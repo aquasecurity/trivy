@@ -3,9 +3,10 @@ package parser
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
 func Test_resolve_condition_value(t *testing.T) {

@@ -11,12 +11,12 @@ import (
 func Test_Base64Call(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "simple base64 call",
-			args: []interface{}{
+			args: []any{
 				"hello, world",
 			},
 			expected: "aGVsbG8sIHdvcmxk",
@@ -35,12 +35,12 @@ func Test_Base64Call(t *testing.T) {
 func Test_Base64ToStringCall(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "simple base64ToString call",
-			args: []interface{}{
+			args: []any{
 				"aGVsbG8sIHdvcmxk",
 			},
 			expected: "hello, world",
@@ -60,12 +60,12 @@ func Test_Base64ToJsonCall(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "simple base64ToJson call",
-			args: []interface{}{
+			args: []any{
 				"eyJoZWxsbyI6ICJ3b3JsZCJ9",
 			},
 			expected: `{"hello":"world"}`,

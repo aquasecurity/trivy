@@ -11,11 +11,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 )
 
 func setupGitServer() (*httptest.Server, error) {
@@ -112,7 +113,7 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: false,
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "repository not found")
 			},
 		},
@@ -123,7 +124,7 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: false,
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "url parse error")
 			},
 		},
@@ -134,7 +135,7 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				repoBranch: "invalid-branch",
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, `couldn't find remote ref "refs/heads/invalid-branch"`)
 			},
 		},
@@ -145,7 +146,7 @@ func TestNewArtifact(t *testing.T) {
 				c:       nil,
 				repoTag: "v1.0.9",
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, `couldn't find remote ref "refs/tags/v1.0.9"`)
 			},
 		},
@@ -156,7 +157,7 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778e",
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "git checkout error: object not found")
 			},
 		},
@@ -211,7 +212,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			defer cleanup()
 
 			ref, err := art.Inspect(context.Background())
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, ref)
 		})
 	}

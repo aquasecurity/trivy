@@ -5,10 +5,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_juliaAnalyzer_Analyze(t *testing.T) {
@@ -202,7 +203,7 @@ func Test_juliaAnalyzer_Analyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

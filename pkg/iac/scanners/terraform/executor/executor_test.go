@@ -4,6 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -11,8 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 var panicRule = scan.Rule{
@@ -54,7 +55,7 @@ resource "problem" "this" {
 	require.NoError(t, err)
 
 	results, err := New().Execute(modules)
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	assert.Empty(t, results.GetFailed())
 }
@@ -79,7 +80,7 @@ resource "problem" "this" {
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
 	_, err = New().Execute(modules)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func Test_PanicNotInCheckNotIncludePassed(t *testing.T) {
@@ -127,5 +128,5 @@ resource "problem" "this" {
 	require.NoError(t, err)
 
 	_, err = New().Execute(modules)
-	assert.Error(t, err)
+	require.Error(t, err)
 }

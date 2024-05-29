@@ -3,14 +3,15 @@ package apigateway
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Adapt(t *testing.T) {

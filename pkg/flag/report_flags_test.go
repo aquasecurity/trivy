@@ -1,16 +1,18 @@
 package flag_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
 	"testing"
+
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
@@ -44,34 +46,12 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "happy path with an cyclonedx",
 			fields: fields{
-				severities:  "CRITICAL",
-				format:      "cyclonedx",
-				listAllPkgs: true,
+				severities: "CRITICAL",
+				format:     "cyclonedx",
 			},
 			want: flag.ReportOptions{
-				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
-				Format:      types.FormatCycloneDX,
-				ListAllPkgs: true,
-			},
-		},
-		{
-			name: "happy path with an cyclonedx option list-all-pkgs is false",
-			fields: fields{
-				severities:  "CRITICAL",
-				format:      "cyclonedx",
-				listAllPkgs: false,
-				debug:       true,
-			},
-			wantLogs: []string{
-				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--list-all-pkgs'.`,
-				`Parsed severities	severities=[CRITICAL]`,
-			},
-			want: flag.ReportOptions{
-				Severities: []dbTypes.Severity{
-					dbTypes.SeverityCritical,
-				},
-				Format:      types.FormatCycloneDX,
-				ListAllPkgs: true,
+				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+				Format:     types.FormatCycloneDX,
 			},
 		},
 		{
@@ -126,7 +106,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				listAllPkgs: true,
 			},
 			wantLogs: []string{
-				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
+				`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`,
 			},
 			want: flag.ReportOptions{
 				Format:      "table",
@@ -221,8 +201,8 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			}
 
 			got, err := f.ToOptions()
-			assert.NoError(t, err)
-			assert.Equalf(t, tt.want, got, "ToOptions()")
+			require.NoError(t, err)
+			assert.EqualExportedValuesf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
 			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)

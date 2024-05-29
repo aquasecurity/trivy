@@ -4,15 +4,16 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/stretchr/testify/require"
 )
 
-func createModulesFromSource(t *testing.T, source string, ext string) terraform.Modules {
+func createModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
 	fs := testutil.CreateFS(t, map[string]string{
 		"source" + ext: source,
 	})
@@ -28,7 +29,7 @@ func createModulesFromSource(t *testing.T, source string, ext string) terraform.
 	return modules
 }
 
-func scanHCLWithWorkspace(t *testing.T, source string, workspace string) scan.Results {
+func scanHCLWithWorkspace(t *testing.T, source, workspace string) scan.Results {
 	return scanHCL(t, source, ScannerWithWorkspaceName(workspace))
 }
 

@@ -5,14 +5,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/stretchr/testify/assert"
 	"log/slog"
 	"os"
 	"strings"
 	"testing"
 	"testing/slogtest"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestColorHandler(t *testing.T) {
@@ -195,7 +197,7 @@ func TestSlogtest(t *testing.T) {
 
 	results := func(*testing.T) map[string]any {
 		for _, line := range strings.Split(buf.String(), "\n") {
-			if len(line) == 0 {
+			if line == "" {
 				continue
 			}
 			m, err := parseLogLine(line)

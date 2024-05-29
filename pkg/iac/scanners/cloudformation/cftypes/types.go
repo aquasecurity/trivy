@@ -14,7 +14,7 @@ const (
 	Unknown CfType = "unknown"
 )
 
-func TypeFromGoValue(value interface{}) CfType {
+func TypeFromGoValue(value any) CfType {
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
 		return String

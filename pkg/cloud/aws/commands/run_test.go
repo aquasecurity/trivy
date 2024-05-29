@@ -8,12 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -1275,10 +1274,10 @@ Summary Report for compliance: my-custom-spec
 
 			err := Run(ctx, test.options)
 			if test.expectErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, test.want, output.String())
 		})
 	}

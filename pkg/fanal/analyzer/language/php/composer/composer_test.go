@@ -163,7 +163,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

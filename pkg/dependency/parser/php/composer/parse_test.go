@@ -1,11 +1,13 @@
 package composer
 
 import (
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (

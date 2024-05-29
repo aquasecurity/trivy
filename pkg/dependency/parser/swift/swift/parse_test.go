@@ -1,10 +1,13 @@
 package swift
 
 import (
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParser_Parse(t *testing.T) {
@@ -90,10 +93,10 @@ func TestParser_Parse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewParser()
 			f, err := os.Open(tt.inputFile)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			gotPkgs, _, err := parser.Parse(f)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, gotPkgs)
 		})
 	}

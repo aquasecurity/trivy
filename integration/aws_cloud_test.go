@@ -71,7 +71,7 @@ func TestAwsCommandRun(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 

@@ -34,10 +34,10 @@ type Document struct {
 	HasRefs  bool
 }
 
-func (d Document) ToRego() interface{} {
+func (d Document) ToRego() any {
 	m := d.Metadata
 	doc, _ := d.Parsed.MarshalJSON()
-	input := map[string]interface{}{
+	input := map[string]any{
 		"filepath":     m.Range().GetFilename(),
 		"startline":    m.Range().GetStartLine(),
 		"endline":      m.Range().GetEndLine(),

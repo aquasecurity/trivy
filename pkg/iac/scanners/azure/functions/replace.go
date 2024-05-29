@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func Replace(args ...interface{}) interface{} {
+func Replace(args ...any) any {
 	if len(args) != 3 {
 		return ""
 	}

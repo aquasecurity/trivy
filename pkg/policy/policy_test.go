@@ -70,15 +70,15 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			name:     "happy path",
 			cacheDir: "testdata/happy",
 			want: []string{
-				filepath.Join("testdata/happy/policy/content/kubernetes"),
-				filepath.Join("testdata/happy/policy/content/docker"),
+				filepath.Join("testdata", "happy", "policy", "content", "kubernetes"),
+				filepath.Join("testdata", "happy", "policy", "content", "docker"),
 			},
 		},
 		{
 			name:     "empty roots",
 			cacheDir: "testdata/empty",
 			want: []string{
-				filepath.Join("testdata/empty/policy/content"),
+				filepath.Join("testdata", "empty", "policy", "content"),
 			},
 		},
 		{
@@ -128,7 +128,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -143,7 +143,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		name          string
 		clock         clock.Clock
 		digestReturns digestReturns
-		metadata      interface{}
+		metadata      any
 		want          bool
 		wantErr       bool
 	}{
@@ -373,7 +373,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Assert metadata.json
 			metadata := filepath.Join(tempDir, "policy", "metadata.json")

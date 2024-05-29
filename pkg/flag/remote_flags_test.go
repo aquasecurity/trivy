@@ -1,14 +1,15 @@
 package flag_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestRemoteFlagGroup_ToOptions(t *testing.T) {

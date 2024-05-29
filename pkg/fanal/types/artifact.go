@@ -184,5 +184,5 @@ type CustomResource struct {
 	Type     string
 	FilePath string
 	Layer    Layer
-	Data     interface{}
+	Data     any
 }

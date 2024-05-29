@@ -1,6 +1,6 @@
 package functions
 
-func And(args ...interface{}) interface{} {
+func And(args ...any) any {
 
 	if len(args) <= 1 {
 		return false

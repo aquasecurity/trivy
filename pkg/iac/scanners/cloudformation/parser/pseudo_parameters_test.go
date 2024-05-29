@@ -10,7 +10,7 @@ func Test_Raw(t *testing.T) {
 	tests := []struct {
 		name     string
 		key      string
-		expected interface{}
+		expected any
 	}{
 		{
 			name:     "parameter with a string type value",

@@ -191,7 +191,7 @@ func TestManager_Install(t *testing.T) {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			assert.EqualExportedValues(t, tt.want, got)
 			if tt.wantFile != "" {

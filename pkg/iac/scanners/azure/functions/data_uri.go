@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func DataUri(args ...interface{}) interface{} {
+func DataUri(args ...any) any {
 	if len(args) == 0 {
 		return ""
 	}
@@ -18,7 +18,7 @@ func DataUri(args ...interface{}) interface{} {
 	return fmt.Sprintf("data:text/plain;charset=utf8;base64,%s", Base64(input))
 }
 
-func DataUriToString(args ...interface{}) interface{} {
+func DataUriToString(args ...any) any {
 	if len(args) == 0 {
 		return ""
 	}

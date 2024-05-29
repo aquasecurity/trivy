@@ -2,7 +2,7 @@ package functions
 
 import "strconv"
 
-func Float(args ...interface{}) interface{} {
+func Float(args ...any) any {
 	if len(args) != 1 {
 		return 0.0
 	}

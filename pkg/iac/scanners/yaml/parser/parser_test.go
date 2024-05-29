@@ -28,13 +28,13 @@ x:
 
 	assert.Len(t, data, 1)
 
-	msi, ok := data[0].(map[string]interface{})
+	msi, ok := data[0].(map[string]any)
 	require.True(t, ok)
 
 	xObj, ok := msi["x"]
 	require.True(t, ok)
 
-	xMsi, ok := xObj.(map[string]interface{})
+	xMsi, ok := xObj.(map[string]any)
 	require.True(t, ok)
 
 	yRaw, ok := xMsi["y"]
@@ -48,7 +48,7 @@ x:
 	zRaw, ok := xMsi["z"]
 	require.True(t, ok)
 
-	z, ok := zRaw.([]interface{})
+	z, ok := zRaw.([]any)
 	require.True(t, ok)
 
 	require.Len(t, z, 3)
@@ -86,13 +86,13 @@ x:
 	assert.Len(t, data, 2)
 
 	{
-		msi, ok := data[0].(map[string]interface{})
+		msi, ok := data[0].(map[string]any)
 		require.True(t, ok)
 
 		xObj, ok := msi["x"]
 		require.True(t, ok)
 
-		xMsi, ok := xObj.(map[string]interface{})
+		xMsi, ok := xObj.(map[string]any)
 		require.True(t, ok)
 
 		yRaw, ok := xMsi["y"]
@@ -106,7 +106,7 @@ x:
 		zRaw, ok := xMsi["z"]
 		require.True(t, ok)
 
-		z, ok := zRaw.([]interface{})
+		z, ok := zRaw.([]any)
 		require.True(t, ok)
 
 		require.Len(t, z, 3)
@@ -117,13 +117,13 @@ x:
 	}
 
 	{
-		msi, ok := data[1].(map[string]interface{})
+		msi, ok := data[1].(map[string]any)
 		require.True(t, ok)
 
 		xObj, ok := msi["x"]
 		require.True(t, ok)
 
-		xMsi, ok := xObj.(map[string]interface{})
+		xMsi, ok := xObj.(map[string]any)
 		require.True(t, ok)
 
 		yRaw, ok := xMsi["y"]
@@ -137,7 +137,7 @@ x:
 		zRaw, ok := xMsi["z"]
 		require.True(t, ok)
 
-		z, ok := zRaw.([]interface{})
+		z, ok := zRaw.([]any)
 		require.True(t, ok)
 
 		require.Len(t, z, 3)

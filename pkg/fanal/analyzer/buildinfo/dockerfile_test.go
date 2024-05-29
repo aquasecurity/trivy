@@ -62,7 +62,7 @@ func Test_dockerfileAnalyzer_Analyze(t *testing.T) {
 				assert.Equal(t, tt.wantErr, err.Error())
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

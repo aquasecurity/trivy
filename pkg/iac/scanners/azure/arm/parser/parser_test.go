@@ -6,14 +6,14 @@ import (
 	"os"
 	"testing"
 
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func createMetadata(targetFS fs.FS, filename string, start, end int, ref string, parent *types.Metadata) types.Metadata {

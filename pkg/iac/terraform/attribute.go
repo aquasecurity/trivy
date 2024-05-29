@@ -65,7 +65,7 @@ func (a *Attribute) GetMetadata() iacTypes.Metadata {
 	return a.metadata
 }
 
-func (a *Attribute) GetRawValue() interface{} {
+func (a *Attribute) GetRawValue() any {
 	switch typ := a.Type(); typ {
 	case cty.String:
 		return a.Value().AsString()
@@ -470,13 +470,13 @@ func (a *Attribute) extractListValues() []string {
 	return values
 }
 
-func (a *Attribute) mapContains(checkValue interface{}, val cty.Value) bool {
+func (a *Attribute) mapContains(checkValue any, val cty.Value) bool {
 	if a == nil {
 		return false
 	}
 	valueMap := val.AsValueMap()
 	switch t := checkValue.(type) {
-	case map[interface{}]interface{}:
+	case map[any]any:
 		for k, v := range t {
 			for key, value := range valueMap {
 				rawValue := getRawValue(value)
@@ -486,7 +486,7 @@ func (a *Attribute) mapContains(checkValue interface{}, val cty.Value) bool {
 			}
 		}
 		return false
-	case map[string]interface{}:
+	case map[string]any:
 		for k, v := range t {
 			for key, value := range valueMap {
 				rawValue := getRawValue(value)
@@ -506,11 +506,11 @@ func (a *Attribute) mapContains(checkValue interface{}, val cty.Value) bool {
 	}
 }
 
-func (a *Attribute) NotContains(checkValue interface{}, equalityOptions ...EqualityOption) bool {
+func (a *Attribute) NotContains(checkValue any, equalityOptions ...EqualityOption) bool {
 	return !a.Contains(checkValue, equalityOptions...)
 }
 
-func (a *Attribute) Contains(checkValue interface{}, equalityOptions ...EqualityOption) bool {
+func (a *Attribute) Contains(checkValue any, equalityOptions ...EqualityOption) bool {
 	if a == nil {
 		return false
 	}
@@ -542,7 +542,7 @@ func (a *Attribute) Contains(checkValue interface{}, equalityOptions ...Equality
 	return strings.Contains(val.AsString(), stringToLookFor)
 }
 
-func (a *Attribute) OnlyContains(checkValue interface{}) bool {
+func (a *Attribute) OnlyContains(checkValue any) bool {
 	if a == nil {
 		return false
 	}
@@ -551,7 +551,7 @@ func (a *Attribute) OnlyContains(checkValue interface{}) bool {
 		return false
 	}
 
-	checkSlice, ok := checkValue.([]interface{})
+	checkSlice, ok := checkValue.([]any)
 	if !ok {
 		return false
 	}
@@ -600,7 +600,7 @@ func containsIgnoreCase(left, substring string) bool {
 	return strings.Contains(strings.ToLower(left), strings.ToLower(substring))
 }
 
-func (a *Attribute) StartsWith(prefix interface{}) bool {
+func (a *Attribute) StartsWith(prefix any) bool {
 	if a == nil {
 		return false
 	}
@@ -610,7 +610,7 @@ func (a *Attribute) StartsWith(prefix interface{}) bool {
 	return false
 }
 
-func (a *Attribute) EndsWith(suffix interface{}) bool {
+func (a *Attribute) EndsWith(suffix any) bool {
 	if a == nil {
 		return false
 	}
@@ -626,7 +626,7 @@ const (
 	IgnoreCase EqualityOption = iota
 )
 
-func (a *Attribute) Equals(checkValue interface{}, equalityOptions ...EqualityOption) bool {
+func (a *Attribute) Equals(checkValue any, equalityOptions ...EqualityOption) bool {
 	if a == nil {
 		return false
 	}
@@ -653,7 +653,7 @@ func (a *Attribute) Equals(checkValue interface{}, equalityOptions ...EqualityOp
 	return false
 }
 
-func (a *Attribute) NotEqual(checkValue interface{}, equalityOptions ...EqualityOption) bool {
+func (a *Attribute) NotEqual(checkValue any, equalityOptions ...EqualityOption) bool {
 	return !a.Equals(checkValue, equalityOptions...)
 }
 
@@ -668,11 +668,11 @@ func (a *Attribute) RegexMatches(re regexp.Regexp) bool {
 	return false
 }
 
-func (a *Attribute) IsNotAny(options ...interface{}) bool {
+func (a *Attribute) IsNotAny(options ...any) bool {
 	return !a.IsAny(options...)
 }
 
-func (a *Attribute) IsAny(options ...interface{}) bool {
+func (a *Attribute) IsAny(options ...any) bool {
 	if a == nil {
 		return false
 	}
@@ -698,7 +698,7 @@ func (a *Attribute) IsAny(options ...interface{}) bool {
 	return false
 }
 
-func (a *Attribute) IsNone(options ...interface{}) bool {
+func (a *Attribute) IsNone(options ...any) bool {
 	if a == nil {
 		return false
 	}
@@ -844,7 +844,7 @@ func (a *Attribute) AsMapValue() iacTypes.MapValue {
 	return iacTypes.Map(values, a.GetMetadata())
 }
 
-func (a *Attribute) LessThan(checkValue interface{}) bool {
+func (a *Attribute) LessThan(checkValue any) bool {
 	if a == nil {
 		return false
 	}
@@ -859,7 +859,7 @@ func (a *Attribute) LessThan(checkValue interface{}) bool {
 	return false
 }
 
-func (a *Attribute) LessThanOrEqualTo(checkValue interface{}) bool {
+func (a *Attribute) LessThanOrEqualTo(checkValue any) bool {
 	if a == nil {
 		return false
 	}
@@ -874,7 +874,7 @@ func (a *Attribute) LessThanOrEqualTo(checkValue interface{}) bool {
 	return false
 }
 
-func (a *Attribute) GreaterThan(checkValue interface{}) bool {
+func (a *Attribute) GreaterThan(checkValue any) bool {
 	if a == nil {
 		return false
 	}
@@ -889,7 +889,7 @@ func (a *Attribute) GreaterThan(checkValue interface{}) bool {
 	return false
 }
 
-func (a *Attribute) GreaterThanOrEqualTo(checkValue interface{}) bool {
+func (a *Attribute) GreaterThanOrEqualTo(checkValue any) bool {
 	if a == nil {
 		return false
 	}
@@ -1053,7 +1053,7 @@ func (a *Attribute) References(r Reference) bool {
 	return false
 }
 
-func getRawValue(value cty.Value) interface{} {
+func getRawValue(value cty.Value) any {
 	if value.IsNull() || !value.IsKnown() {
 		return value
 	}
@@ -1080,7 +1080,7 @@ func (a *Attribute) IsNotNil() bool {
 	return !a.IsNil()
 }
 
-func (a *Attribute) HasIntersect(checkValues ...interface{}) bool {
+func (a *Attribute) HasIntersect(checkValues ...any) bool {
 	if !a.Type().IsListType() && !a.Type().IsTupleType() {
 		return false
 	}

@@ -5,14 +5,15 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const DS006PolicyWithDockerfileSchema = `# METADATA
@@ -251,7 +252,7 @@ USER root
 			CustomChecks: scan.CustomChecks{
 				Terraform: (*scan.TerraformCustomCheck)(nil)},
 			RegoPackage: "data.builtin.dockerfile.DS006",
-			Frameworks:  map[framework.Framework][]string{},
+			Frameworks:  make(map[framework.Framework][]string),
 		},
 		results.GetFailed()[0].Rule(),
 	)
@@ -606,7 +607,7 @@ COPY --from=dep /binary /`
 						CustomChecks: scan.CustomChecks{
 							Terraform: (*scan.TerraformCustomCheck)(nil)},
 						RegoPackage: "data.builtin.dockerfile.DS006",
-						Frameworks:  map[framework.Framework][]string{},
+						Frameworks:  make(map[framework.Framework][]string),
 					},
 					results.GetFailed()[0].Rule(),
 				)

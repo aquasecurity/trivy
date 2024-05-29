@@ -6,6 +6,9 @@ linters-settings:
     check-shadowing: false
   gofmt:
     simplify: false
+    rewrite-rules:
+      - pattern: 'interface{}'
+        replacement: 'any'
   revive:
     ignore-generated-header: true
   gocyclo:
@@ -25,6 +28,7 @@ linters-settings:
       - G101
       - G114
       - G204
+      - G304
       - G402
   gci:
     sections:
@@ -70,7 +74,6 @@ linters-settings:
     enable-all: true
     disable:
       - float-compare
-      - require-error
 
 linters:
   disable-all: true
@@ -99,30 +102,33 @@ run:
 
 issues:
   exclude-files:
-    - ".*_mock.go$"
+    - "mock_*.go$"
     - "examples/*"
   exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
   exclude-rules:
     - path: ".*_test.go$"
       linters:
-        - bodyclose
-        - gci
-        - gocritic
         - goconst
-        - gofmt
         - gosec
-        - govet
-        - ineffassign
         - misspell
-        - tenv
         - unused
-    - linters:
-        - gosec
-      text: "G304: Potential file inclusion"
-    - linters:
-        - gosec
-      text: "Deferring unsafe method"
+    - path: ".*_test.go$"
+      linters:
+        - govet
+      text: "copylocks:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "commentFormatting:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "exitAfterDefer:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "importShadow:"
     - linters:
         - errcheck
       text: "Close` is not checked"

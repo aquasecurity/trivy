@@ -2,16 +2,16 @@ package spdx_test
 
 import (
 	"encoding/json"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/package-url/packageurl-go"
 	"os"
 	"sort"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )

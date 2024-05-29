@@ -6,9 +6,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/clock"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -16,9 +13,12 @@ import (
 	"testing"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 )
@@ -206,7 +206,7 @@ func TestManager_Run(t *testing.T) {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 }
@@ -230,7 +230,7 @@ func TestManager_Uninstall(t *testing.T) {
 
 		// Uninstall the plugin
 		err = plugin.NewManager().Uninstall(ctx, pluginName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NoDirExists(t, pluginDir)
 	})
 
@@ -240,7 +240,7 @@ func TestManager_Uninstall(t *testing.T) {
 		slog.SetDefault(slog.New(log.NewHandler(buf, &log.Options{Level: log.LevelInfo})))
 
 		err := plugin.NewManager().Uninstall(ctx, pluginName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "2021-08-25T12:20:30Z\tERROR\t[plugin] No such plugin\n", buf.String())
 	})
 }
@@ -332,7 +332,7 @@ func TestManager_LoadAll(t *testing.T) {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			require.Len(t, got, len(tt.want))
 			for i := range tt.want {
 				assert.EqualExportedValues(t, tt.want[i], got[i])

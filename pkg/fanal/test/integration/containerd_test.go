@@ -63,7 +63,7 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 			return err, true
 		}
 		t.Cleanup(func() {
-			assert.NoError(t, client.Close())
+			require.NoError(t, client.Close())
 		})
 		return nil, false
 	})
@@ -105,7 +105,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
-		assert.NoError(t, containerdC.Terminate(ctx))
+		require.NoError(t, containerdC.Terminate(ctx))
 	})
 }
 

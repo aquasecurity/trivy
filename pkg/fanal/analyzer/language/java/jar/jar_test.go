@@ -2,13 +2,13 @@ package jar
 
 import (
 	"context"
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -141,16 +141,16 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 
 			mfs := mapfs.New()
 			err = mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			err = mfs.WriteFile(tt.inputFile, tt.inputFile)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS:      mfs,
 				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

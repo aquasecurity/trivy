@@ -5,15 +5,15 @@ package integration
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"io"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	api "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -298,7 +298,7 @@ func TestDockerEngine(t *testing.T) {
 			if len(tt.ignoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
 				err = os.WriteFile(trivyIgnore, []byte(strings.Join(tt.ignoreIDs, "\n")), 0444)
-				assert.NoError(t, err, "failed to write .trivyignore")
+				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
 			osArgs = append(osArgs, tt.input)

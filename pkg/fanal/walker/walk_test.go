@@ -2,11 +2,12 @@ package walker_test
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
 func TestSkipFile(t *testing.T) {
@@ -100,7 +101,7 @@ func TestSkipDir(t *testing.T) {
 		},
 		{
 			name:     "two stars",
-			skipDirs: []string{filepath.Join("/etc/*/*")},
+			skipDirs: []string{"/etc/*/*"},
 			wants: map[string]bool{
 				"/etc/foo":     false,
 				"/etc/foo/bar": true,
@@ -108,11 +109,11 @@ func TestSkipDir(t *testing.T) {
 		},
 		{
 			name:     "multiple dirs",
-			skipDirs: []string{filepath.Join("/etc/*/*"), filepath.Join("/var/log/*")},
+			skipDirs: []string{"/etc/*/*", "/var/log/*"},
 			wants: map[string]bool{
-				filepath.Join("/etc/foo"):     false,
-				filepath.Join("/etc/foo/bar"): true,
-				filepath.Join("/var/log/bar"): true,
+				"/etc/foo":     false,
+				"/etc/foo/bar": true,
+				"/var/log/bar": true,
 			},
 		},
 		{
@@ -125,10 +126,10 @@ func TestSkipDir(t *testing.T) {
 		},
 		{
 			name:     "error bad pattern",
-			skipDirs: []string{filepath.Join(`[^etc`)}, // filepath.Match returns ErrBadPattern
+			skipDirs: []string{`[^etc`}, // filepath.Match returns ErrBadPattern
 			wants: map[string]bool{
-				filepath.Join("/etc/foo"):     false,
-				filepath.Join("/etc/foo/bar"): false,
+				"/etc/foo":     false,
+				"/etc/foo/bar": false,
 			},
 		},
 	}

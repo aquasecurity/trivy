@@ -239,7 +239,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			if len(got.Applications) > 0 {
 				sort.Sort(got.Applications[0].Packages)
 			}

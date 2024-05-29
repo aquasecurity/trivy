@@ -9,22 +9,22 @@ import (
 func Test_Mul(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name:     "multiply -2 by 1",
-			args:     []interface{}{-2, 1},
+			args:     []any{-2, 1},
 			expected: -2,
 		},
 		{
 			name:     "multiply 4 by 2",
-			args:     []interface{}{4, 2},
+			args:     []any{4, 2},
 			expected: 8,
 		},
 		{
 			name:     "multiply 6 by 3",
-			args:     []interface{}{6, 3},
+			args:     []any{6, 3},
 			expected: 18,
 		},
 	}

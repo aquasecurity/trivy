@@ -42,10 +42,8 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 		Type:   target.OS.Family,
 	}
 
-	if opts.ListAllPackages {
-		sort.Sort(target.Packages)
-		result.Packages = target.Packages
-	}
+	sort.Sort(target.Packages)
+	result.Packages = target.Packages
 
 	if !opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		// Return packages only

@@ -9,19 +9,19 @@ import (
 func Test_Guid(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "guid from a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 			},
 			expected: "2cf24dba-5fb0-430e-a6e8-3b2ac5b9e29e",
 		},
 		{
 			name:     "guid from an string",
-			args:     []interface{}{},
+			args:     []any{},
 			expected: "",
 		},
 	}

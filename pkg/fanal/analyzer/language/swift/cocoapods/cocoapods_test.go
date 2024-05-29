@@ -91,7 +91,7 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 				}
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

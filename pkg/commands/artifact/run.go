@@ -538,7 +538,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
 		IncludeDevDeps:      opts.IncludeDevDeps,

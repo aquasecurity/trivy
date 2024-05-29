@@ -3,10 +3,11 @@ package rego
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 func Test_UpdateStaticMetadata(t *testing.T) {
@@ -137,8 +138,8 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 }
 
 func Test_getEngineMetadata(t *testing.T) {
-	inputSchema := map[string]interface{}{
-		"terraform": map[string]interface{}{
+	inputSchema := map[string]any{
+		"terraform": map[string]any{
 			"good_examples": `resource "aws_cloudtrail" "good_example" {
    is_multi_region_trail = true
  
@@ -153,7 +154,7 @@ func Test_getEngineMetadata(t *testing.T) {
    }
  }`,
 		},
-		"cloud_formation": map[string]interface{}{"good_examples": `---
+		"cloud_formation": map[string]any{"good_examples": `---
 Resources:
   GoodExample:
     Type: AWS::CloudTrail::Trail
@@ -201,7 +202,7 @@ Resources:
 	for _, tc := range testCases {
 		t.Run(tc.schema, func(t *testing.T) {
 			em, err := NewEngineMetadata(tc.schema, inputSchema)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.want, em.GoodExamples[0])
 		})
 	}

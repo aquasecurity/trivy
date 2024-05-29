@@ -5,38 +5,38 @@ import "testing"
 func Test_CopyIndex(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name:     "CopyIndex with 1",
-			args:     []interface{}{},
+			args:     []any{},
 			expected: 1,
 		},
 		{
 			name:     "CopyIndex with 2",
-			args:     []interface{}{},
+			args:     []any{},
 			expected: 2,
 		},
 		{
 			name:     "CopyIndex with 3",
-			args:     []interface{}{},
+			args:     []any{},
 			expected: 3,
 		},
 		{
 			name:     "CopyIndex with loopName",
-			args:     []interface{}{"loop1"},
+			args:     []any{"loop1"},
 			expected: 1,
 		},
 		{
 			name: "CopyIndex with same lo" +
 				"opName",
-			args:     []interface{}{"loop1"},
+			args:     []any{"loop1"},
 			expected: 2,
 		},
 		{
 			name:     "CopyIndex with loopName",
-			args:     []interface{}{"loop2", 10},
+			args:     []any{"loop2", 10},
 			expected: 10,
 		},
 	}

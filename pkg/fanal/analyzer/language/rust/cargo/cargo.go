@@ -167,7 +167,7 @@ type cargoTomlWorkspace struct {
 	Members      []string     `toml:"members"`
 }
 
-type Dependencies map[string]interface{}
+type Dependencies map[string]any
 
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
@@ -196,7 +196,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[stri
 		case string:
 			// e.g. regex = "1.5"
 			deps[name] = ver
-		case map[string]interface{}:
+		case map[string]any:
 			// e.g. serde = { version = "1.0", features = ["derive"] }
 			for k, v := range ver {
 				if k == "version" {

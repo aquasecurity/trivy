@@ -1,6 +1,12 @@
 package io_test
 
 import (
+	"testing"
+
+	"github.com/package-url/packageurl-go"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -8,10 +14,6 @@ import (
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/package-url/packageurl-go"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestEncoder_Encode(t *testing.T) {
@@ -531,7 +533,7 @@ func TestEncoder_Encode(t *testing.T) {
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): nil,
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): nil,
 			},
-			wantVulns: map[uuid.UUID][]core.Vulnerability{},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
 			name: "invalid digest",

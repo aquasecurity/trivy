@@ -31,14 +31,32 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "click",
 								Version: "8.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 1,
+										EndLine:   1,
+									},
+								},
 							},
 							{
 								Name:    "Flask",
 								Version: "2.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 2,
+										EndLine:   2,
+									},
+								},
 							},
 							{
 								Name:    "itsdangerous",
 								Version: "2.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 3,
+										EndLine:   3,
+									},
+								},
 							},
 						},
 					},
@@ -69,7 +87,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

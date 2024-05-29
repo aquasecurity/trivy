@@ -9,12 +9,12 @@ import (
 func Test_Range(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "range for 3 from 1",
-			args: []interface{}{
+			args: []any{
 				1,
 				3,
 			},
@@ -22,7 +22,7 @@ func Test_Range(t *testing.T) {
 		},
 		{
 			name: "range with for 10 from 3",
-			args: []interface{}{
+			args: []any{
 				3,
 				10,
 			},
@@ -30,7 +30,7 @@ func Test_Range(t *testing.T) {
 		},
 		{
 			name: "range with for 10 from -10",
-			args: []interface{}{
+			args: []any{
 				-10,
 				10,
 			},

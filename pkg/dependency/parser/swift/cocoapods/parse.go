@@ -47,7 +47,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				continue
 			}
 			parsedDeps[pkg.Name] = pkg
-		case map[string]interface{}: // dependency with its child dependencies
+		case map[string]any:
 			for dep, childDeps := range dep {
 				pkg, err := parseDep(dep)
 				if err != nil {
@@ -56,7 +56,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				}
 				parsedDeps[pkg.Name] = pkg
 
-				children, ok := childDeps.([]interface{})
+				children, ok := childDeps.([]any)
 				if !ok {
 					return nil, nil, xerrors.Errorf("invalid value of cocoapods direct dependency: %q", childDeps)
 				}

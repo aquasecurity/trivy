@@ -3,10 +3,10 @@ package s3
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 )
 
 func Test_GetBuckets(t *testing.T) {

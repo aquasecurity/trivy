@@ -2,7 +2,6 @@ package jar_test
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -203,7 +203,7 @@ type doc struct {
 	ArtifactID   string `json:"a"`
 	Version      string `json:"v"`
 	P            string `json:"p"`
-	VersionCount int    `json:versionCount`
+	VersionCount int    `json:"versionCount"`
 }
 
 func TestParse(t *testing.T) {

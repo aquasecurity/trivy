@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/azure"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -37,7 +38,7 @@ func TestRegistry_CheckOptions(t *testing.T) {
 			if tt.wantErr != "" {
 				assert.EqualError(t, err, tt.wantErr)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 		})
 	}

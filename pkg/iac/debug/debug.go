@@ -28,7 +28,7 @@ func (l *Logger) Extend(parts ...string) Logger {
 	}
 }
 
-func (l *Logger) Log(format string, args ...interface{}) {
+func (l *Logger) Log(format string, args ...any) {
 	if l.writer == nil {
 		return
 	}

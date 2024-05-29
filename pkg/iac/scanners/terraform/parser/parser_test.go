@@ -7,12 +7,13 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Test_BasicParsing(t *testing.T) {
@@ -174,7 +175,7 @@ output "mod_result" {
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	require.Len(t, modules, 2)
 	rootModule := modules[0]
@@ -235,7 +236,7 @@ output "mod_result" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.Len(t, modules, 2)
 	rootModule := modules[0]
 	childModule := modules[1]
@@ -280,7 +281,7 @@ resource "something" "blah" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
 
@@ -307,7 +308,7 @@ resource "something" "blah" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
 
@@ -350,7 +351,7 @@ resource "something" "blah" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
 
@@ -398,7 +399,7 @@ resource "something" "blah" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
 
@@ -439,7 +440,7 @@ resource "something" "blah" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
 
@@ -487,7 +488,7 @@ resource "something" "blah" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.Len(t, modules, 1)
 	rootModule := modules[0]
 
@@ -635,7 +636,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this2" {
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	rootModule := modules[0]
@@ -670,7 +671,7 @@ resource "aws_s3_bucket" "main" {
 
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	rootModule := modules[0]
@@ -703,7 +704,7 @@ resource "aws_s3_bucket" "this" {
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	rootModule := modules[0]
@@ -737,7 +738,7 @@ resource "aws_s3_bucket" "this" {
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	rootModule := modules[0]
@@ -791,7 +792,7 @@ policy_rules = {
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	rootModule := modules[0]
@@ -827,7 +828,7 @@ resource "aws_s3_bucket" "this" {
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	bucketBlocks := modules.GetResourcesByType("aws_s3_bucket")
@@ -859,7 +860,7 @@ data "http" "example" {
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	rootModule := modules[0]
@@ -896,7 +897,7 @@ data "http" "example" {
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 
 	rootModule := modules[0]
@@ -1268,7 +1269,7 @@ func TestForEachWithObjectsOfDifferentTypes(t *testing.T) {
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, modules, 1)
 }
 
@@ -1509,7 +1510,7 @@ func parse(t *testing.T, files map[string]string) terraform.Modules {
 	return modules
 }
 
-func compareSets(a []int, b []int) bool {
+func compareSets(a, b []int) bool {
 	m := make(map[int]bool)
 	for _, el := range a {
 		m[el] = true
