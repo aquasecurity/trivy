@@ -83,8 +83,15 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 		root.Type = core.TypeFilesystem
 	case artifact.TypeRepository:
 		root.Type = core.TypeRepository
-	case artifact.TypeCycloneDX:
-		return r.BOM.Root(), nil
+	case artifact.TypeCycloneDX, artifact.TypeSPDX:
+		// When we scan SBOM file
+		if r.BOM != nil {
+			return r.BOM.Root(), nil
+		}
+		// When we scan a `json` file (meaning a file in `json` format) which was created from the SBOM file.
+		// e.g. for use in `convert` mode.
+		// See https://github.com/aquasecurity/trivy/issues/6780
+		root.Type = core.TypeFilesystem
 	}
 
 	if r.Metadata.Size != 0 {
