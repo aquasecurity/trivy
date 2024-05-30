@@ -143,9 +143,7 @@ func (a pipLibraryAnalyzer) pythonSitePackagesDir() (string, error) {
 		spDir, err := a.findSitePackagesDir(libDir)
 		if err != nil {
 			return "", xerrors.Errorf("unable to detect `site-packages` dir for %q venv: %w", spDir, err)
-		}
-
-		if spDir != "" {
+		} else if spDir != "" {
 			return spDir, nil
 		}
 	}
@@ -162,18 +160,17 @@ func (a pipLibraryAnalyzer) pythonSitePackagesDir() (string, error) {
 	spDir, err := a.findSitePackagesDir(libDir)
 	if err != nil {
 		return "", xerrors.Errorf("unable to detect `site-packages` dir for %q: %w", pythonExecPath, err)
-	}
-	if spDir != "" {
+	} else if spDir != "" {
 		return spDir, nil
 	}
 
 	// Try another common pattern if the Python library directory is not found
 	spDir = filepath.Join(pythonExecDir, "..", "..", "lib", "site-packages")
-	if !fsutils.DirExists(spDir) {
-		return "", xerrors.Errorf("site-packages directory not found")
+	if fsutils.DirExists(spDir) {
+		return spDir, nil
 	}
 
-	return spDir, nil
+	return "", xerrors.Errorf("site-packages directory not found")
 }
 
 // pythonExecutablePath returns path to Python executable
