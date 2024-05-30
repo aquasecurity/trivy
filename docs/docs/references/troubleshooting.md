@@ -154,22 +154,26 @@ $ TMPDIR=/my/custom/path trivy repo ...
     write /tmp/fanal-3323732142: no space left on device
     ```
 
-Trivy uses the `$TMPDIR` directory during image scans.
-If the image is large or `$TMPDIR` has insufficient space, the scan will fail.
-You can set the `$TMPDIR` environment variable to redirect Trivy to a directory with adequate storage.
+Trivy uses a temporary directory during image scans.
+The directory path would be determined as follows:
 
-Try:
+- On Unix systems: Use `$TMPDIR` if non-empty, else `/tmp`.
+- On Windows: Uses GetTempPath, returning the first non-empty value from `%TMP%`, `%TEMP%`, `%USERPROFILE%`, or the Windows directory.
+
+If the image is large or the temporary directory has insufficient space, the scan will fail.
+You can configure the directory path to redirect Trivy to a directory with adequate storage.
+On Unix systems, you can set the `$TMPDIR` environment variable.
 
 ```
 $ TMPDIR=/my/custom/path trivy image ...
 ```
 
 When scanning images from a container registry, Trivy processes each layer by streaming, loading only the necessary files for the scan into memory and discarding unnecessary files.
-If a layer contains large files that are necessary for the scan (such as JAR files or binary files), Trivy saves them to a temporary directory ($TMPDIR) on local storage to avoid increased memory consumption.
+If a layer contains large files that are necessary for the scan (such as JAR files or binary files), Trivy saves them to a temporary directory (e.g. $TMPDIR) on local storage to avoid increased memory consumption.
 Although these files are deleted after the scan is complete, they can temporarily increase disk consumption and potentially exhaust storage.
 In such cases, there are currently three workarounds:
 
-1. Specify `$TMPDIR` with sufficient capacity
+1. Use a temporary directory with sufficient capacity
  
     This is the same as explained above.
  
