@@ -205,7 +205,7 @@ func (a pipLibraryAnalyzer) findSitePackagesDir(libDir string) (string, error) {
 	for i := len(pythonDirs) - 1; i >= 0; i-- {
 		dir := filepath.Join(libDir, pythonDirs[i], "site-packages")
 		if fsutils.DirExists(dir) {
-			return filepath.Join(libDir, pythonDirs[i], "site-packages"), nil
+			return dir, nil
 		}
 	}
 	return "", nil
