@@ -160,6 +160,8 @@ The directory path would be determined as follows:
 - On Unix systems: Use `$TMPDIR` if non-empty, else `/tmp`.
 - On Windows: Uses GetTempPath, returning the first non-empty value from `%TMP%`, `%TEMP%`, `%USERPROFILE%`, or the Windows directory.
 
+See [this documentation](https://golang.org/pkg/os/#TempDir) for more details.
+
 If the image is large or the temporary directory has insufficient space, the scan will fail.
 You can configure the directory path to redirect Trivy to a directory with adequate storage.
 On Unix systems, you can set the `$TMPDIR` environment variable.
