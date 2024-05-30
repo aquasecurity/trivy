@@ -152,7 +152,6 @@ nav:
           - Configuration:
               - CLI:
                   - Overview: docs/references/configuration/cli/trivy.md
-                  - AWS: docs/references/configuration/cli/trivy_aws.md
                   - Config: docs/references/configuration/cli/trivy_config.md
                   - Convert: docs/references/configuration/cli/trivy_convert.md
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
