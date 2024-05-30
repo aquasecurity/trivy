@@ -20,7 +20,6 @@ func TestEncoder_Encode(t *testing.T) {
 	tests := []struct {
 		name           string
 		report         types.Report
-		addBOMFunc     func() *core.BOM
 		wantComponents map[uuid.UUID]*core.Component
 		wantRels       map[uuid.UUID][]core.Relationship
 		wantVulns      map[uuid.UUID][]core.Vulnerability
@@ -537,8 +536,7 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
-			name:       "SBOM file",
-			addBOMFunc: newTestBOM,
+			name: "SBOM file",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
@@ -566,19 +564,20 @@ func TestEncoder_Encode(t *testing.T) {
 						},
 					},
 				},
+				BOM: newTestBOM(t),
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): appComponent,
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponent,
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): appComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): libComponent,
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): {
 					{
-						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"),
 						Type:       core.RelationshipContains,
 					},
 				},
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): nil,
 			},
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
@@ -654,9 +653,6 @@ func TestEncoder_Encode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			if tt.addBOMFunc != nil {
-				tt.report.BOM = tt.addBOMFunc()
-			}
 			opts := core.Options{GenerateBOMRef: true}
 			got, err := sbomio.NewEncoder(opts).Encode(tt.report)
 			if tt.wantErr != "" {
@@ -732,7 +728,8 @@ var (
 	}
 )
 
-func newTestBOM() *core.BOM {
+func newTestBOM(t *testing.T) *core.BOM {
+	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(appComponent)
 	return bom
