@@ -9,11 +9,12 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pip"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -46,7 +47,7 @@ func newPipLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
-	sitePackagesDir, err := pythonSitePackagesDir()
+	sitePackagesDir, err := a.pythonSitePackagesDir()
 	if err != nil {
 		a.logger.Warn("Unable to find python `site-packages` directory. License detection is skipped.", log.Err(err))
 	}
@@ -126,7 +127,7 @@ func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
 }
 
 // pythonSitePackagesDir returns path to site-packages dir
-func pythonSitePackagesDir() (string, error) {
+func (a pipLibraryAnalyzer) pythonSitePackagesDir() (string, error) {
 	// check VIRTUAL_ENV first
 	if venv := os.Getenv("VIRTUAL_ENV"); venv != "" {
 		libDir := filepath.Join(venv, "lib")
@@ -134,7 +135,7 @@ func pythonSitePackagesDir() (string, error) {
 			return "", xerrors.Errorf("Unable to detect `lib` dir for %q venv: %w", venv, err)
 		}
 
-		spDir, err := findSitePackagesDir(libDir)
+		spDir, err := a.findSitePackagesDir(libDir)
 		if err != nil {
 			return "", xerrors.Errorf("Unable to detect `site-packages` dir for %q venv: %w", spDir, err)
 		}
@@ -153,7 +154,7 @@ func pythonSitePackagesDir() (string, error) {
 
 	// Search for a directory starting with "python" in the lib directory
 	libDir := filepath.Join(pythonExecDir, "..", "lib")
-	spDir, err := findSitePackagesDir(libDir)
+	spDir, err := a.findSitePackagesDir(libDir)
 	if err != nil {
 		return "", xerrors.Errorf("Unable to detect `site-packages` dir for %q: %w", pythonExecPath, err)
 	}
@@ -184,7 +185,7 @@ func pythonExecutablePath() (string, error) {
 }
 
 // findSitePackagesDir finds `site-packages` dir in `lib` dir
-func findSitePackagesDir(libDir string) (string, error) {
+func (a pipLibraryAnalyzer) findSitePackagesDir(libDir string) (string, error) {
 	entries, err := os.ReadDir(libDir)
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -193,55 +194,39 @@ func findSitePackagesDir(libDir string) (string, error) {
 		return "", nil
 	}
 
-	// Use latest python dir
-	var spDir string
-	for _, pythonDir := range sortPythonDirs(entries) {
-		// Found a directory starting with "python", assume it's the Python library directory
-		dir := filepath.Join(libDir, pythonDir, "site-packages")
+	// Find python dir which contains `site-packages` dir
+	// First check for newer versions
+	pythonDirs := a.sortPythonDirs(entries)
+	for i := len(pythonDirs) - 1; i >= 0; i-- {
+		dir := filepath.Join(libDir, pythonDirs[i], "site-packages")
 		if _, err = os.Stat(dir); !os.IsNotExist(err) {
-			spDir = filepath.Join(libDir, pythonDir, "site-packages")
+			return filepath.Join(libDir, pythonDirs[i], "site-packages"), nil
 		}
-
 	}
-	return spDir, nil
+	return "", nil
 }
 
-// sortPythonDirs finds `python` dirs and sorts them according to major and minor versions.
+// sortPythonDirs finds dirs starting with `python` and sorts them
 // e.g. python2.7 => python3.9 => python3.11
-func sortPythonDirs(entries []os.DirEntry) []string {
-	var pythonDirs []string
+func (a pipLibraryAnalyzer) sortPythonDirs(entries []os.DirEntry) []string {
+	var pythonVers []goversion.Version
 	for _, entry := range entries {
+		// Found a directory starting with "python", assume it's the Python library directory
 		if entry.IsDir() && strings.HasPrefix(entry.Name(), "python") {
-			pythonDirs = append(pythonDirs, entry.Name())
+			ver := strings.TrimPrefix(entry.Name(), "python")
+			v, err := goversion.Parse(ver)
+			if err != nil {
+				a.logger.Debug("Unable to parse version from Python dir name", log.String("dir", entry.Name()), log.Err(err))
+				continue
+			}
+			pythonVers = append(pythonVers, v)
 		}
 	}
 
-	sort.Slice(pythonDirs, func(i, j int) bool {
-		majorVer1, minorVer1, found1 := strings.Cut(pythonDirs[i], ".")
-		majorVer2, minorVer2, found2 := strings.Cut(pythonDirs[j], ".")
+	// Sort Python version
+	sort.Sort(goversion.Collection(pythonVers))
 
-		// if one of dir doesn't contain minor version => sort as strings
-		if !found1 || !found2 {
-			return pythonDirs[i] < pythonDirs[j]
-		}
-
-		// Sort major versions as strings
-		// e.g. `python2.7` and `python3.10`
-		if majorVer1 != majorVer2 {
-			return majorVer1 < majorVer2
-		}
-
-		// Convert minor versions
-		ver1, err1 := strconv.Atoi(minorVer1)
-		ver2, err2 := strconv.Atoi(minorVer2)
-
-		// If we can't convert minor versions => sort as strings
-		if err1 != nil || err2 != nil {
-			return pythonDirs[i] < pythonDirs[j]
-		}
-
-		return ver1 < ver2
+	return lo.Map(pythonVers, func(v goversion.Version, _ int) string {
+		return "python" + v.String()
 	})
-
-	return pythonDirs
 }

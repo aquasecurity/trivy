@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func Test_pipAnalyzer_Analyze(t *testing.T) {
@@ -271,6 +272,7 @@ func Test_sortPythonDirs(t *testing.T) {
 		"python3.9",
 		"python3",
 		"python2",
+		"pythonBadVer",
 	}
 	wantDirs := []string{
 		"python2",
@@ -290,6 +292,9 @@ func Test_sortPythonDirs(t *testing.T) {
 	tmpDir, err := os.ReadDir(tmp)
 	require.NoError(t, err)
 
-	got := sortPythonDirs(tmpDir)
+	a := pipLibraryAnalyzer{
+		logger: log.WithPrefix("pip"),
+	}
+	got := a.sortPythonDirs(tmpDir)
 	require.Equal(t, wantDirs, got)
 }
