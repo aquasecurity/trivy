@@ -36,6 +36,7 @@
           "PkgName": "k8s.io/kubelet",
           "PkgIdentifier": {
             "PURL": "pkg:k8s/k8s.io%2Fkubelet@1.27.0",
+            "UID": "4cb15d0a98eeae67",
             "BOMRef": "pkg:k8s/k8s.io%2Fkubelet@1.27.0"
           },
           "InstalledVersion": "1.27.0",

@@ -38,12 +38,10 @@ func NewScanner() *Scanner {
 }
 
 // Detect vulnerabilities in package using AlmaLinux scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting AlmaLinux vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = osver.Major(osVer)
-	log.Logger.Debugf("AlmaLinux: os version: %s", osVer)
-	log.Logger.Debugf("AlmaLinux: the number of packages: %d", len(pkgs))
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	var skipPkgs []string
@@ -79,7 +77,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 		}
 	}
 	if len(skipPkgs) > 0 {
-		log.Logger.Infof("Skipped detection of these packages: %q because modular packages cannot be detected correctly due to a bug in AlmaLinux. See also: https://bugs.almalinux.org/view.php?id=173", skipPkgs)
+		log.InfoContext(ctx, "Skipped detection of the packages because modular packages cannot be detected correctly due to a bug in AlmaLinux. See also: https://bugs.almalinux.org/view.php?id=173",
+			log.Any("packages", skipPkgs))
 	}
 
 	return vulns, nil

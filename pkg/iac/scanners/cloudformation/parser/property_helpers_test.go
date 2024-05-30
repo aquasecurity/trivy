@@ -3,9 +3,10 @@ package parser
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func newProp(inner PropertyInner) *Property {
@@ -21,7 +22,7 @@ func Test_EqualTo(t *testing.T) {
 	tests := []struct {
 		name       string
 		property   *Property
-		checkValue interface{}
+		checkValue any
 		opts       []EqualityOptions
 		isEqual    bool
 	}{

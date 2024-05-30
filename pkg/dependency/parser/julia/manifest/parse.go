@@ -8,7 +8,7 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -27,17 +27,18 @@ type primitiveDependency struct {
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var oldDeps map[string][]primitiveDependency
 	var primMan primitiveManifest
 	var manMetadata toml.MetaData
 	decoder := toml.NewDecoder(r)
-	// Try to read the old Manifest format. If that fails, try the new format.
-	if _, err := decoder.Decode(&oldDeps); err != nil {
+	// Try to read the old Manifest format. This can also read the v1.0 Manifest format, which we parse out later.
+	var err error
+	if manMetadata, err = decoder.Decode(&oldDeps); err != nil {
 		if _, err = r.Seek(0, io.SeekStart); err != nil {
 			return nil, nil, xerrors.Errorf("seek error: %w", err)
 		}
@@ -68,19 +69,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	pkgParser := naivePkgParser{r: r}
 	lineNumIdx := pkgParser.parse()
 
-	var libs []types.Library
-	var deps []types.Dependency
+	var pkgs ftypes.Packages
+	var deps ftypes.Dependencies
 	for name, manifestDeps := range man.Dependencies {
 		for _, manifestDep := range manifestDeps {
 			version := depVersion(manifestDep.Version, man.JuliaVersion)
 			pkgID := manifestDep.UUID
-			lib := types.Library{
+			pkg := ftypes.Package{
 				ID:      pkgID,
 				Name:    name,
 				Version: version,
 			}
 			if pos, ok := lineNumIdx[manifestDep.UUID]; ok {
-				lib.Locations = []types.Location{
+				pkg.Locations = []ftypes.Location{
 					{
 						StartLine: pos.start,
 						EndLine:   pos.end,
@@ -88,19 +89,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				}
 			}
 
-			libs = append(libs, lib)
+			pkgs = append(pkgs, pkg)
 
 			if len(manifestDep.DependsOn) > 0 {
-				deps = append(deps, types.Dependency{
+				deps = append(deps, ftypes.Dependency{
 					ID:        pkgID,
 					DependsOn: manifestDep.DependsOn,
 				})
 			}
 		}
 	}
-	sort.Sort(types.Libraries(libs))
-	sort.Sort(types.Dependencies(deps))
-	return libs, deps, nil
+	sort.Sort(pkgs)
+	sort.Sort(deps)
+	return pkgs, deps, nil
 }
 
 // Returns the effective version of the `dep`.

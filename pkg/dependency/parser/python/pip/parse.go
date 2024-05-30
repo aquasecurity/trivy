@@ -10,7 +10,9 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	version "github.com/aquasecurity/go-pep440-version"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -22,13 +24,17 @@ const (
 	endExtras     string = "]"
 )
 
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("pip"),
+	}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// `requirements.txt` can use byte order marks (BOM)
 	// e.g. on Windows `requirements.txt` can use UTF-16LE with BOM
 	// We need to override them to avoid the file being read incorrectly
@@ -36,10 +42,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	decodedReader := transform.NewReader(r, transformer)
 
 	scanner := bufio.NewScanner(decodedReader)
-	var libs []types.Library
+	var pkgs []ftypes.Package
+	var lineNumber int
 	for scanner.Scan() {
-		line := scanner.Text()
-		line = strings.ReplaceAll(line, " ", "")
+		lineNumber++
+		text := scanner.Text()
+		line := strings.ReplaceAll(text, " ", "")
 		line = strings.ReplaceAll(line, `\`, "")
 		line = removeExtras(line)
 		line = rStripByKey(line, commentMarker)
@@ -49,15 +57,27 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		if len(s) != 2 {
 			continue
 		}
-		libs = append(libs, types.Library{
+
+		if !isValidName(s[0]) || !isValidVersion(s[1]) {
+			p.logger.Debug("Invalid package name/version in requirements.txt.", log.String("line", text))
+			continue
+		}
+
+		pkgs = append(pkgs, ftypes.Package{
 			Name:    s[0],
 			Version: s[1],
+			Locations: []ftypes.Location{
+				{
+					StartLine: lineNumber,
+					EndLine:   lineNumber,
+				},
+			},
 		})
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, nil, xerrors.Errorf("scan error: %w", err)
 	}
-	return libs, nil, nil
+	return pkgs, nil, nil
 }
 
 func rStripByKey(line, key string) string {
@@ -74,4 +94,20 @@ func removeExtras(line string) string {
 		line = line[:startIndex] + line[endIndex:]
 	}
 	return line
+}
+
+func isValidName(name string) bool {
+	for _, r := range name {
+		// only characters [A-Z0-9._-] are allowed (case insensitive)
+		// cf. https://peps.python.org/pep-0508/#names
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '.' && r != '_' && r != '-' {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidVersion(ver string) bool {
+	_, err := version.Parse(ver)
+	return err == nil
 }

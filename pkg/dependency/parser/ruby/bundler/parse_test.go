@@ -9,59 +9,97 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/ruby/bundler"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
-	NormalLibs = []types.Library{
+	NormalPkgs = []ftypes.Package{
 		{
-			ID:        "coderay@1.1.2",
-			Name:      "coderay",
-			Version:   "1.1.2",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 4, EndLine: 4}},
+			ID:           "dotenv@2.7.2",
+			Name:         "dotenv",
+			Version:      "2.7.2",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 6,
+					EndLine:   6,
+				},
+			},
 		},
 		{
-			ID:        "concurrent-ruby@1.1.5",
-			Name:      "concurrent-ruby",
-			Version:   "1.1.5",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 5, EndLine: 5}},
+			ID:           "faker@1.9.3",
+			Name:         "faker",
+			Version:      "1.9.3",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 7,
+					EndLine:   7,
+				},
+			},
 		},
 		{
-			ID:        "dotenv@2.7.2",
-			Name:      "dotenv",
-			Version:   "2.7.2",
-			Locations: []types.Location{{StartLine: 6, EndLine: 6}},
+			ID:           "pry@0.12.2",
+			Name:         "pry",
+			Version:      "0.12.2",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 12,
+					EndLine:   12,
+				},
+			},
 		},
 		{
-			ID:        "faker@1.9.3",
-			Name:      "faker",
-			Version:   "1.9.3",
-			Locations: []types.Location{{StartLine: 7, EndLine: 7}},
+			ID:           "coderay@1.1.2",
+			Name:         "coderay",
+			Version:      "1.1.2",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 4,
+					EndLine:   4,
+				},
+			},
 		},
 		{
-			ID:        "i18n@1.6.0",
-			Name:      "i18n",
-			Version:   "1.6.0",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 9, EndLine: 9}},
+			ID:           "concurrent-ruby@1.1.5",
+			Name:         "concurrent-ruby",
+			Version:      "1.1.5",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 5,
+					EndLine:   5,
+				},
+			},
 		},
 		{
-			ID:        "method_source@0.9.2",
-			Name:      "method_source",
-			Version:   "0.9.2",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 11, EndLine: 11}},
+			ID:           "i18n@1.6.0",
+			Name:         "i18n",
+			Version:      "1.6.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 9,
+					EndLine:   9,
+				},
+			},
 		},
 		{
-			ID:        "pry@0.12.2",
-			Name:      "pry",
-			Version:   "0.12.2",
-			Locations: []types.Location{{StartLine: 12, EndLine: 12}},
+			ID:           "method_source@0.9.2",
+			Name:         "method_source",
+			Version:      "0.9.2",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 11,
+					EndLine:   11,
+				},
+			},
 		},
 	}
-	NormalDeps = []types.Dependency{
+	NormalDeps = []ftypes.Dependency{
 		{
 			ID:        "faker@1.9.3",
 			DependsOn: []string{"i18n@1.6.0"},
@@ -78,61 +116,105 @@ var (
 			},
 		},
 	}
-	Bundler2Libs = []types.Library{
+	Bundler2Pkgs = []ftypes.Package{
 		{
-			ID:        "coderay@1.1.3",
-			Name:      "coderay",
-			Version:   "1.1.3",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 4, EndLine: 4}},
+			ID:           "dotenv@2.7.6",
+			Name:         "dotenv",
+			Version:      "2.7.6",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 6,
+					EndLine:   6,
+				},
+			},
 		},
 		{
-			ID:        "concurrent-ruby@1.1.10",
-			Name:      "concurrent-ruby",
-			Version:   "1.1.10",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 5, EndLine: 5}},
+			ID:           "faker@2.21.0",
+			Name:         "faker",
+			Version:      "2.21.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 7,
+					EndLine:   7,
+				},
+			},
 		},
 		{
-			ID:        "dotenv@2.7.6",
-			Name:      "dotenv",
-			Version:   "2.7.6",
-			Locations: []types.Location{{StartLine: 6, EndLine: 6}},
+			ID:           "json@2.6.2",
+			Name:         "json",
+			Version:      "2.6.2",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 11,
+					EndLine:   11,
+				},
+			},
 		},
 		{
-			ID:        "faker@2.21.0",
-			Name:      "faker",
-			Version:   "2.21.0",
-			Locations: []types.Location{{StartLine: 7, EndLine: 7}},
+			ID:           "pry@0.14.1",
+			Name:         "pry",
+			Version:      "0.14.1",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 13,
+					EndLine:   13,
+				},
+			},
 		},
 		{
-			ID:        "i18n@1.10.0",
-			Name:      "i18n",
-			Version:   "1.10.0",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 9, EndLine: 9}},
+			ID:           "coderay@1.1.3",
+			Name:         "coderay",
+			Version:      "1.1.3",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 4,
+					EndLine:   4,
+				},
+			},
 		},
 		{
-			ID:        "json@2.6.2",
-			Name:      "json",
-			Version:   "2.6.2",
-			Locations: []types.Location{{StartLine: 11, EndLine: 11}},
+			ID:           "concurrent-ruby@1.1.10",
+			Name:         "concurrent-ruby",
+			Version:      "1.1.10",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 5,
+					EndLine:   5,
+				},
+			},
 		},
 		{
-			ID:        "method_source@1.0.0",
-			Name:      "method_source",
-			Version:   "1.0.0",
-			Indirect:  true,
-			Locations: []types.Location{{StartLine: 12, EndLine: 12}},
+			ID:           "i18n@1.10.0",
+			Name:         "i18n",
+			Version:      "1.10.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 9,
+					EndLine:   9,
+				},
+			},
 		},
 		{
-			ID:        "pry@0.14.1",
-			Name:      "pry",
-			Version:   "0.14.1",
-			Locations: []types.Location{{StartLine: 13, EndLine: 13}},
+			ID:           "method_source@1.0.0",
+			Name:         "method_source",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 12,
+					EndLine:   12,
+				},
+			},
 		},
 	}
-	Bundler2Deps = []types.Dependency{
+	Bundler2Deps = []ftypes.Dependency{
 		{
 			ID:        "faker@2.21.0",
 			DependsOn: []string{"i18n@1.10.0"},
@@ -155,28 +237,28 @@ func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string
-		wantLibs []types.Library
-		wantDeps []types.Dependency
+		wantPkgs []ftypes.Package
+		wantDeps []ftypes.Dependency
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
 			name:     "normal",
 			file:     "testdata/Gemfile_normal.lock",
-			wantLibs: NormalLibs,
+			wantPkgs: NormalPkgs,
 			wantDeps: NormalDeps,
 			wantErr:  assert.NoError,
 		},
 		{
 			name:     "bundler2",
 			file:     "testdata/Gemfile_bundler2.lock",
-			wantLibs: Bundler2Libs,
+			wantPkgs: Bundler2Pkgs,
 			wantDeps: Bundler2Deps,
 			wantErr:  assert.NoError,
 		},
 		{
 			name:     "malformed",
 			file:     "testdata/Gemfile_malformed.lock",
-			wantLibs: []types.Library{},
+			wantPkgs: []ftypes.Package{},
 			wantErr:  assert.NoError,
 		},
 	}
@@ -187,11 +269,11 @@ func TestParser_Parse(t *testing.T) {
 			defer f.Close()
 
 			p := &bundler.Parser{}
-			gotLibs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
 				return
 			}
-			assert.Equalf(t, tt.wantLibs, gotLibs, "Parse(%v)", tt.file)
+			assert.Equalf(t, tt.wantPkgs, gotPkgs, "Parse(%v)", tt.file)
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}

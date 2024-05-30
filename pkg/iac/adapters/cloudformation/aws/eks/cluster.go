@@ -2,30 +2,21 @@ package eks
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/eks"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
+func getClusters(ctx parser.FileContext) (clusters []eks.Cluster) {
 
 	clusterResources := ctx.GetResourcesByType("AWS::EKS::Cluster")
 
 	for _, r := range clusterResources {
 		cluster := eks.Cluster{
-			Metadata: r.Metadata(),
-			// Logging not supported for cloudformation https://github.com/aws/containers-roadmap/issues/242
-			Logging: eks.Logging{
-				Metadata:          r.Metadata(),
-				API:               iacTypes.BoolUnresolvable(r.Metadata()),
-				Audit:             iacTypes.BoolUnresolvable(r.Metadata()),
-				Authenticator:     iacTypes.BoolUnresolvable(r.Metadata()),
-				ControllerManager: iacTypes.BoolUnresolvable(r.Metadata()),
-				Scheduler:         iacTypes.BoolUnresolvable(r.Metadata()),
-			},
-			Encryption: getEncryptionConfig(r),
-			// endpoint protection not supported - https://github.com/aws/containers-roadmap/issues/242
-			PublicAccessEnabled: iacTypes.BoolUnresolvable(r.Metadata()),
-			PublicAccessCIDRs:   nil,
+			Metadata:            r.Metadata(),
+			Logging:             getLogging(r),
+			Encryption:          getEncryptionConfig(r),
+			PublicAccessEnabled: r.GetBoolProperty("ResourcesVpcConfig.EndpointPublicAccess"),
+			PublicAccessCIDRs:   getPublicCIDRs(r),
 		}
 
 		clusters = append(clusters, cluster)
@@ -33,24 +24,71 @@ func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
 	return clusters
 }
 
-func getEncryptionConfig(r *parser2.Resource) eks.Encryption {
-
-	encryption := eks.Encryption{
-		Metadata: r.Metadata(),
-		Secrets:  iacTypes.BoolDefault(false, r.Metadata()),
-		KMSKeyID: iacTypes.StringDefault("", r.Metadata()),
+func getPublicCIDRs(r *parser.Resource) []iacTypes.StringValue {
+	publicAccessCidrs := r.GetProperty("ResourcesVpcConfig.PublicAccessCidrs")
+	if publicAccessCidrs.IsNotList() {
+		return nil
 	}
 
-	if encProp := r.GetProperty("EncryptionConfig"); encProp.IsNotNil() {
-		encryption.Metadata = encProp.Metadata()
-		encryption.KMSKeyID = encProp.GetStringProperty("Provider.KeyArn")
-		resourcesProp := encProp.GetProperty("Resources")
-		if resourcesProp.IsList() {
-			if resourcesProp.Contains("secrets") {
-				encryption.Secrets = iacTypes.Bool(true, resourcesProp.Metadata())
-			}
+	var cidrs []iacTypes.StringValue
+	for _, el := range publicAccessCidrs.AsList() {
+		cidrs = append(cidrs, el.AsStringValue())
+	}
+
+	return cidrs
+}
+
+func getEncryptionConfig(r *parser.Resource) eks.Encryption {
+
+	encryptionConfigs := r.GetProperty("EncryptionConfig")
+	if encryptionConfigs.IsNotList() {
+		return eks.Encryption{
+			Metadata: r.Metadata(),
 		}
 	}
 
-	return encryption
+	for _, encryptionConfig := range encryptionConfigs.AsList() {
+		resources := encryptionConfig.GetProperty("Resources")
+		hasSecrets := resources.IsList() && resources.Contains("secrets")
+		return eks.Encryption{
+			Metadata: encryptionConfig.Metadata(),
+			KMSKeyID: encryptionConfig.GetStringProperty("Provider.KeyArn"),
+			Secrets:  iacTypes.Bool(hasSecrets, resources.Metadata()),
+		}
+	}
+
+	return eks.Encryption{
+		Metadata: r.Metadata(),
+	}
+}
+
+func getLogging(r *parser.Resource) eks.Logging {
+	enabledTypes := r.GetProperty("Logging.ClusterLogging.EnabledTypes")
+	if enabledTypes.IsNotList() {
+		return eks.Logging{
+			Metadata: r.Metadata(),
+		}
+	}
+
+	logging := eks.Logging{
+		Metadata: enabledTypes.Metadata(),
+	}
+
+	for _, typeConf := range enabledTypes.AsList() {
+		switch typ := typeConf.GetProperty("Type"); typ.AsString() {
+		case "api":
+			logging.API = iacTypes.Bool(true, typ.Metadata())
+		case "audit":
+			logging.Audit = iacTypes.Bool(true, typ.Metadata())
+		case "authenticator":
+			logging.Authenticator = iacTypes.Bool(true, typ.Metadata())
+		case "controllerManager":
+			logging.ControllerManager = iacTypes.Bool(true, typ.Metadata())
+		case "scheduler":
+			logging.Scheduler = iacTypes.Bool(true, typ.Metadata())
+		}
+
+	}
+
+	return logging
 }

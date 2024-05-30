@@ -10,12 +10,12 @@ func Test_PadLeft(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "pad left with a input smaller than length",
-			args: []interface{}{
+			args: []any{
 				"1234",
 				8,
 				"0",
@@ -24,7 +24,7 @@ func Test_PadLeft(t *testing.T) {
 		},
 		{
 			name: "pad left with a input larger than length",
-			args: []interface{}{
+			args: []any{
 				"1234",
 				2,
 				"0",
@@ -33,7 +33,7 @@ func Test_PadLeft(t *testing.T) {
 		},
 		{
 			name: "pad left with a input same as than length",
-			args: []interface{}{
+			args: []any{
 				"1234",
 				4,
 				"0",
@@ -42,7 +42,7 @@ func Test_PadLeft(t *testing.T) {
 		},
 		{
 			name: "pad left with larger padding character",
-			args: []interface{}{
+			args: []any{
 				"1234",
 				8,
 				"00",

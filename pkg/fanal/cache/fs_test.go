@@ -189,7 +189,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "php-app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "guzzlehttp/guzzle",
 									Version: "6.2.0",
@@ -235,7 +235,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				    {
 				      "Type": "composer",
 				      "FilePath": "php-app/composer.lock",
-				      "Libraries": [
+				      "Packages": [
                         {
                            "Name":"guzzlehttp/guzzle",
                            "Version":"6.2.0",
@@ -286,7 +286,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 
 			err = fs.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
@@ -366,7 +366,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 
 			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {

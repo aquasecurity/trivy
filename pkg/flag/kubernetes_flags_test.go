@@ -5,6 +5,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -44,8 +45,8 @@ func TestOptionToToleration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := optionToTolerations(tt.tolerationsOptions)
-			assert.NoError(t, err)
-			assert.Equal(t, got, tt.want)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

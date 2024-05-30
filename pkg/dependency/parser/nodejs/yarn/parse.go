@@ -11,7 +11,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -31,7 +30,7 @@ type Library struct {
 	Patterns []string
 	Name     string
 	Version  string
-	Location types.Location
+	Location ftypes.Location
 }
 type Dependency struct {
 	Pattern string
@@ -128,27 +127,31 @@ func ignoreProtocol(protocol string) bool {
 	return false
 }
 
-func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps []types.Dependency) {
+func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps []ftypes.Dependency) {
 	// find dependencies by patterns
-	for libID, depPatterns := range dependsOn {
+	for pkgID, depPatterns := range dependsOn {
 		depIDs := lo.Map(depPatterns, func(pattern string, index int) string {
 			return patternIDs[pattern]
 		})
-		deps = append(deps, types.Dependency{
-			ID:        libID,
+		deps = append(deps, ftypes.Dependency{
+			ID:        pkgID,
 			DependsOn: depIDs,
 		})
 	}
 	return deps
 }
 
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) {
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("yarn"),
+	}
+}
+
+func (p *Parser) scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
@@ -167,7 +170,7 @@ func scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) 
 	return 0, nil, nil
 }
 
-func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine int, err error) {
+func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine int, err error) {
 	var (
 		emptyLines int // lib can start with empty lines first
 		skipBlock  bool
@@ -228,11 +231,11 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 	// in case an unsupported protocol is detected
 	// show warning and continue parsing
 	if err != nil {
-		log.Logger.Warnf("Yarn protocol error: %s", err)
+		p.logger.Warn("Protocol error", log.Err(err))
 		return Library{}, nil, scanner.LineNum(lineNum), nil
 	}
 
-	lib.Location = types.Location{
+	lib.Location = ftypes.Location{
 		StartLine: lineNum + emptyLines,
 		EndLine:   scanner.LineNum(lineNum),
 	}
@@ -266,20 +269,20 @@ func parseDependency(line string) (string, error) {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	lineNumber := 1
-	var libs []types.Library
+	var pkgs []ftypes.Package
 
 	// patternIDs holds mapping between patterns and library IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
 	patternIDs := make(map[string]string)
 
 	scanner := bufio.NewScanner(r)
-	scanner.Split(scanBlocks)
+	scanner.Split(p.scanBlocks)
 	dependsOn := make(map[string][]string)
 	for scanner.Scan() {
 		block := scanner.Bytes()
-		lib, deps, newLine, err := parseBlock(block, lineNumber)
+		lib, deps, newLine, err := p.parseBlock(block, lineNumber)
 		lineNumber = newLine + 2
 		if err != nil {
 			return nil, nil, err
@@ -287,21 +290,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 
-		libID := packageID(lib.Name, lib.Version)
-		libs = append(libs, types.Library{
-			ID:        libID,
+		pkgID := packageID(lib.Name, lib.Version)
+		pkgs = append(pkgs, ftypes.Package{
+			ID:        pkgID,
 			Name:      lib.Name,
 			Version:   lib.Version,
-			Locations: []types.Location{lib.Location},
+			Locations: []ftypes.Location{lib.Location},
 		})
 
 		for _, pattern := range lib.Patterns {
 			// e.g.
 			//   combined-stream@^1.0.6 => combined-stream@1.0.8
 			//   combined-stream@~1.0.6 => combined-stream@1.0.8
-			patternIDs[pattern] = libID
+			patternIDs[pattern] = pkgID
 			if len(deps) > 0 {
-				dependsOn[libID] = deps
+				dependsOn[pkgID] = deps
 			}
 		}
 	}
@@ -313,7 +316,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// Replace dependency patterns with library IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
 	deps := parseResults(patternIDs, dependsOn)
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
 func packageID(name, version string) string {

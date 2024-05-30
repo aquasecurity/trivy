@@ -7,18 +7,22 @@ import (
 	"github.com/liamg/jfather"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("dotnet"),
+	}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var depsFile dotNetDependencies
 
 	input, err := io.ReadAll(r)
@@ -29,7 +33,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
-	var libraries []types.Library
+	var pkgs []ftypes.Package
 	for nameVer, lib := range depsFile.Libraries {
 		if !strings.EqualFold(lib.Type, "package") {
 			continue
@@ -38,14 +42,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		split := strings.Split(nameVer, "/")
 		if len(split) != 2 {
 			// Invalid name
-			log.Logger.Warnf("Cannot parse .NET library version from: %s", nameVer)
+			p.logger.Warn("Cannot parse .NET library version", log.String("library", nameVer))
 			continue
 		}
 
-		libraries = append(libraries, types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			Name:    split[0],
 			Version: split[1],
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: lib.StartLine,
 					EndLine:   lib.EndLine,
@@ -54,7 +58,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		})
 	}
 
-	return libraries, nil, nil
+	return pkgs, nil, nil
 }
 
 type dotNetDependencies struct {

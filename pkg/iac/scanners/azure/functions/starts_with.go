@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func StartsWith(args ...interface{}) interface{} {
+func StartsWith(args ...any) any {
 
 	if len(args) != 2 {
 		return false

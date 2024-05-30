@@ -1,6 +1,6 @@
 # Misconfiguration Scanning
-Trivy provides built-in policies to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
-In addition to built-in policies, you can write your own custom policies, as you can see [here][custom].
+Trivy provides built-in checks to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
+In addition to built-in checks, you can write your own custom checks, as you can see [here][custom].
 
 ## Quick start
 
@@ -94,7 +94,7 @@ In the above example, Trivy detected vulnerabilities of Python dependencies and 
 
 ## Type detection
 The specified directory can contain mixed types of IaC files.
-Trivy automatically detects config types and applies relevant policies.
+Trivy automatically detects config types and applies relevant checks.
 
 For example, the following example holds IaC files for Terraform, CloudFormation, Kubernetes, Helm Charts, and Dockerfile in the same directory.
 
@@ -326,8 +326,8 @@ trivy config --misconfig-scanners=terraform,dockerfile .
 
 Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
 
-### Passing custom policies
-You can pass policy files or directories including your custom policies through `--policy` option.
+### Passing custom checks
+You can pass policy files or directories including your custom checks through `--policy` option.
 This can be repeated for specifying multiple files or directories.
 
 ```bash
@@ -335,7 +335,7 @@ cd examplex/misconf/
 trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
 ```
 
-For more details, see [Custom Policies](./custom/index.md).
+For more details, see [Custom Checks](./custom/index.md).
 
 !!! tip
 You also need to specify `--namespaces` option.
@@ -352,8 +352,8 @@ trivy conf --policy ./policy --data ./data --namespaces user ./configs
 For more details, see [Custom Data](./custom/data.md).
 
 ### Passing namespaces
-By default, Trivy evaluates policies defined in `builtin.*`.
-If you want to evaluate custom policies in other packages, you have to specify package prefixes through `--namespaces` option.
+By default, Trivy evaluates checks defined in `builtin.*`.
+If you want to evaluate custom checks in other packages, you have to specify package prefixes through `--namespaces` option.
 This can be repeated for specifying multiple packages.
 
 ``` bash
@@ -381,7 +381,7 @@ If multiple variables evaluate to the same hostname, Trivy will choose the envir
 
 ### Skipping resources by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform configuration files only.
+Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
 
@@ -421,6 +421,17 @@ As an example, consider the following check metadata:
 ```
 
 Long ID would look like the following: `aws-s3-enable-logging`.
+
+Example for CloudFromation:
+```yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+#trivy:ignore:*
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
+```
 
 #### Expiration Date
 
@@ -494,8 +505,21 @@ resource "aws_security_group_rule" "example" {
 }
 ```
 
-!!! note
-    Currently nested attributes are not supported. For example you will not be able to reference the `each.key` attribute.
+Checks can also be ignored by nested attributes, but certain restrictions apply:
+
+- You cannot access an individual block using indexes, for example when working with dynamic blocks.
+- Special variables like [each](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each#the-each-object) and [count](https://developer.hashicorp.com/terraform/language/meta-arguments/count#the-count-object) cannot be accessed.
+
+```tf
+#trivy:ignore:*[logging_config.prefix=myprefix]
+resource "aws_cloudfront_distribution" "example" {
+  logging_config {
+    include_cookies = false
+    bucket          = "mylogs.s3.amazonaws.com"
+    prefix          = "myprefix"
+  }
+}
+```
 
 #### Ignoring module issues
 
@@ -523,4 +547,15 @@ module "s3_bucket" {
   bucket   = each.value
 }
 ```
+
+#### Support for Wildcards
+
+You can use wildcards in the `ws` (workspace) and `ignore` sections of the ignore rules.
+
+```tf
+# trivy:ignore:aws-s3-*:ws:dev-*
+```
+
+This example ignores all checks starting with `aws-s3-` for workspaces matching the pattern `dev-*`.
+
 [custom]: custom/index.md

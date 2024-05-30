@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -1423,7 +1424,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				SystemInstalledFiles: []string{
 					"/bin/tar",
-					"/etc",
+					"/etc/rmt",
 					"/usr/lib/mime/packages/tar",
 					"/usr/sbin/rmt-tar",
 					"/usr/sbin/tarcat",
@@ -1436,7 +1437,6 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 					"/usr/share/man/man1/tar.1.gz",
 					"/usr/share/man/man1/tarcat.1.gz",
 					"/usr/share/man/man8/rmt-tar.8.gz",
-					"/etc/rmt",
 				},
 			},
 		},
@@ -1444,21 +1444,21 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			ctx := context.Background()
 
 			mfs := mapfs.New()
 			for testPath, osPath := range tt.testFiles {
 				err = mfs.MkdirAll(filepath.Dir(osPath), os.ModePerm)
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				err = mfs.WriteFile(osPath, testPath)
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS: mfs,
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Sort the result for consistency
 			for i := range got.PackageInfos {
@@ -1510,7 +1510,7 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})

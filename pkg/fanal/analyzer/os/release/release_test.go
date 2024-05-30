@@ -120,12 +120,12 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				assert.Error(t, err)
+				require.Error(t, err)
 				assert.Equal(t, tt.wantErr, err.Error())
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, res)
 		})
 	}

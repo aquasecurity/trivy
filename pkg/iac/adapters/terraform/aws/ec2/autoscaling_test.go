@@ -3,14 +3,13 @@ package ec2
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_AdaptAutoscaling(t *testing.T) {

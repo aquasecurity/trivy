@@ -1,6 +1,6 @@
 package functions
 
-func Max(args ...interface{}) interface{} {
+func Max(args ...any) any {
 	switch args[0].(type) {
 	case int:
 		var ints []int
@@ -8,7 +8,7 @@ func Max(args ...interface{}) interface{} {
 			ints = append(ints, arg.(int))
 		}
 		return maxInt(ints)
-	case interface{}:
+	case any:
 		if iType, ok := args[0].([]int); ok {
 			return maxInt(iType)
 		}
@@ -21,12 +21,12 @@ func maxInt(args []int) int {
 		return 0
 	}
 
-	max := args[0]
+	maxN := args[0]
 
 	for i := 1; i < len(args); i++ {
-		if args[i] > max {
-			max = args[i]
+		if args[i] > maxN {
+			maxN = args[i]
 		}
 	}
-	return max
+	return maxN
 }

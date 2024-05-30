@@ -51,13 +51,13 @@ func Test_ParseLicenses(t *testing.T) {
 func Test_IsLicenseRefToFile(t *testing.T) {
 	tests := []struct {
 		name         string
-		input        string
+		input        []string
 		wantOk       bool
 		wantFileName string
 	}{
 		{
 			name:  "no ref to file",
-			input: "MIT",
+			input: []string{"MIT"},
 		},
 		{
 			name:         "empty input",
@@ -66,24 +66,24 @@ func Test_IsLicenseRefToFile(t *testing.T) {
 		},
 		{
 			name:         "happy `SEE LICENSE IN`",
-			input:        "SEE LICENSE IN LICENSE.md",
+			input:        []string{"SEE LICENSE IN LICENSE.md"},
 			wantOk:       true,
 			wantFileName: "LICENSE.md",
 		},
 		{
 			name:   "sad `SEE LICENSE IN`",
-			input:  "SEE LICENSE IN ",
+			input:  []string{"SEE LICENSE IN "},
 			wantOk: false,
 		},
 		{
 			name:         "happy `LicenseRef-`",
-			input:        "LicenseRef-LICENSE.txt",
+			input:        []string{"LicenseRef-LICENSE.txt"},
 			wantOk:       true,
 			wantFileName: "LICENSE.txt",
 		},
 		{
 			name:   "sad `LicenseRef-`",
-			input:  "LicenseRef-",
+			input:  []string{"LicenseRef-"},
 			wantOk: false,
 		},
 	}
@@ -91,8 +91,8 @@ func Test_IsLicenseRefToFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ok, licenseFileName := license.IsLicenseRefToFile(tt.input)
-			assert.Equal(t, ok, tt.wantOk)
-			assert.Equal(t, licenseFileName, tt.wantFileName)
+			assert.Equal(t, tt.wantOk, ok)
+			assert.Equal(t, tt.wantFileName, licenseFileName)
 		})
 	}
 }

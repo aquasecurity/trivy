@@ -1,6 +1,6 @@
 package functions
 
-func Min(args ...interface{}) interface{} {
+func Min(args ...any) any {
 	switch args[0].(type) {
 	case int:
 		var ints []int
@@ -8,7 +8,7 @@ func Min(args ...interface{}) interface{} {
 			ints = append(ints, arg.(int))
 		}
 		return minInt(ints)
-	case interface{}:
+	case any:
 		if iType, ok := args[0].([]int); ok {
 			return minInt(iType)
 		}
@@ -21,12 +21,12 @@ func minInt(args []int) int {
 		return 0
 	}
 
-	min := args[0]
+	minN := args[0]
 
 	for i := 1; i < len(args); i++ {
-		if args[i] < min {
-			min = args[i]
+		if args[i] < minN {
+			minN = args[i]
 		}
 	}
-	return min
+	return minN
 }

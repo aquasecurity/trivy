@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
@@ -27,11 +27,11 @@ func TestParse(t *testing.T) {
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
 			want: packagejson.Package{
-				Library: types.Library{
-					ID:      "bootstrap@5.0.2",
-					Name:    "bootstrap",
-					Version: "5.0.2",
-					License: "MIT",
+				Package: ftypes.Package{
+					ID:       "bootstrap@5.0.2",
+					Name:     "bootstrap",
+					Version:  "5.0.2",
+					Licenses: []string{"MIT"},
 				},
 				Dependencies: map[string]string{
 					"js-tokens": "^4.0.0",
@@ -53,13 +53,13 @@ func TestParse(t *testing.T) {
 			name:      "happy path - legacy license",
 			inputFile: "testdata/legacy_package.json",
 			want: packagejson.Package{
-				Library: types.Library{
-					ID:      "angular@4.1.2",
-					Name:    "angular",
-					Version: "4.1.2",
-					License: "ISC",
+				Package: ftypes.Package{
+					ID:       "angular@4.1.2",
+					Name:     "angular",
+					Version:  "4.1.2",
+					Licenses: []string{"ISC"},
 				},
-				Dependencies: map[string]string{},
+				Dependencies: make(map[string]string),
 				DevDependencies: map[string]string{
 					"@babel/cli":  "^7.14.5",
 					"@babel/core": "^7.14.6",
@@ -70,9 +70,23 @@ func TestParse(t *testing.T) {
 			name:      "happy path - version doesn't exist",
 			inputFile: "testdata/without_version_package.json",
 			want: packagejson.Package{
-				Library: types.Library{
+				Package: ftypes.Package{
 					ID:   "",
 					Name: "angular",
+				},
+			},
+		},
+		{
+			name:      "happy path - workspace as struct",
+			inputFile: "testdata/workspace_as_map_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:      "example@1.0.0",
+					Name:    "example",
+					Version: "1.0.0",
+				},
+				Workspaces: []string{
+					"packages/*",
 				},
 			},
 		},
@@ -95,8 +109,8 @@ func TestParse(t *testing.T) {
 			name:      "without name and version",
 			inputFile: "testdata/without_name_and_version_package.json",
 			want: packagejson.Package{
-				Library: types.Library{
-					License: "MIT",
+				Package: ftypes.Package{
+					Licenses: []string{"MIT"},
 				},
 			},
 		},
@@ -148,7 +162,8 @@ func TestIsValidName(t *testing.T) {
 		{
 			name: "test@package",
 			want: false,
-		}, {
+		},
+		{
 			name: "test?package",
 			want: false,
 		},

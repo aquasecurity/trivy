@@ -54,11 +54,14 @@ type ScannerOption struct {
 	DataPaths                []string
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
+	IncludeDeprecatedChecks  bool
 
 	HelmValues              []string
 	HelmValueFiles          []string
 	HelmFileValues          []string
 	HelmStringValues        []string
+	HelmAPIVersions         []string
+	HelmKubeVersion         string
 	TerraformTFVars         []string
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
@@ -151,12 +154,12 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
-	log.Logger.Debugf("Scanning %s files for misconfigurations...", s.scanner.Name())
+	log.Debug("Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
 		var invalidContentError *cfparser.InvalidContentError
 		if errors.As(err, &invalidContentError) {
-			log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", s.scanner.Name(), err)
+			log.Error("scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}
 		return nil, xerrors.Errorf("scan config error: %w", err)
@@ -215,6 +218,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
+		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -235,7 +239,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	)
 
 	if opt.Debug {
-		opts = append(opts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "misconf"}))
+		opts = append(opts, options.ScannerWithDebug(log.NewWriteLogger(log.WithPrefix("misconf"))))
 	}
 
 	if opt.Trace {
@@ -332,6 +336,14 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 		opts = append(opts, helm2.ScannerWithStringValues(scannerOption.HelmStringValues...))
 	}
 
+	if len(scannerOption.HelmAPIVersions) > 0 {
+		opts = append(opts, helm2.ScannerWithAPIVersions(scannerOption.HelmAPIVersions...))
+	}
+
+	if scannerOption.HelmKubeVersion != "" {
+		opts = append(opts, helm2.ScannerWithKubeVersion(scannerOption.HelmKubeVersion))
+	}
+
 	return opts
 }
 
@@ -380,7 +392,7 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 		}
 	}
 
-	// policy paths are no longer needed as fs.FS contains only needed files now.
+	// check paths are no longer needed as fs.FS contains only needed files now.
 	policyPaths = []string{"."}
 
 	return mfs, policyPaths, nil
@@ -493,20 +505,26 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 			},
 		})
 	}
-	if code, err := underlying.GetCode(); err == nil {
-		cause.Code = types.Code{
-			Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
-				return types.Line{
-					Number:      l.Number,
-					Content:     l.Content,
-					IsCause:     l.IsCause,
-					Annotation:  l.Annotation,
-					Truncated:   l.Truncated,
-					Highlighted: l.Highlighted,
-					FirstCause:  l.FirstCause,
-					LastCause:   l.LastCause,
-				}
-			}),
+
+	// only failures have a code cause
+	// failures can happen either due to lack of
+	// OR misconfiguration of something
+	if underlying.Status() == scan.StatusFailed {
+		if code, err := underlying.GetCode(); err == nil {
+			cause.Code = types.Code{
+				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
+					return types.Line{
+						Number:      l.Number,
+						Content:     l.Content,
+						IsCause:     l.IsCause,
+						Annotation:  l.Annotation,
+						Truncated:   l.Truncated,
+						Highlighted: l.Highlighted,
+						FirstCause:  l.FirstCause,
+						LastCause:   l.LastCause,
+					}
+				}),
+			}
 		}
 	}
 	return cause

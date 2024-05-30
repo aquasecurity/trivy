@@ -32,31 +32,35 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pub,
 						FilePath: "pubspec.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "collection@1.17.0",
-								Name:     "collection",
-								Version:  "1.17.0",
-								Indirect: true,
-							},
-							{
-								ID:      "crypto@3.0.3",
-								Name:    "crypto",
-								Version: "3.0.3",
+								ID:           "crypto@3.0.3",
+								Name:         "crypto",
+								Version:      "3.0.3",
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"typed_data@1.3.2",
 								},
 							},
 							{
-								ID:      "meta@1.11.0",
-								Name:    "meta",
-								Version: "1.11.0",
+								ID:           "meta@1.11.0",
+								Name:         "meta",
+								Version:      "1.11.0",
+								Relationship: types.RelationshipDirect,
 							},
 							{
-								ID:       "typed_data@1.3.2",
-								Name:     "typed_data",
-								Version:  "1.3.2",
-								Indirect: true,
+								ID:           "collection@1.17.0",
+								Name:         "collection",
+								Version:      "1.17.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "typed_data@1.3.2",
+								Name:         "typed_data",
+								Version:      "1.3.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								DependsOn: []string{
 									"collection@1.17.0",
 								},
@@ -76,28 +80,32 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pub,
 						FilePath: "pubspec.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "collection@1.17.0",
-								Name:     "collection",
-								Version:  "1.17.0",
-								Indirect: true,
+								ID:           "crypto@3.0.3",
+								Name:         "crypto",
+								Version:      "3.0.3",
+								Relationship: types.RelationshipDirect,
 							},
 							{
-								ID:      "crypto@3.0.3",
-								Name:    "crypto",
-								Version: "3.0.3",
+								ID:           "meta@1.11.0",
+								Name:         "meta",
+								Version:      "1.11.0",
+								Relationship: types.RelationshipDirect,
 							},
 							{
-								ID:      "meta@1.11.0",
-								Name:    "meta",
-								Version: "1.11.0",
+								ID:           "collection@1.17.0",
+								Name:         "collection",
+								Version:      "1.17.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:       "typed_data@1.3.2",
-								Name:     "typed_data",
-								Version:  "1.3.2",
-								Indirect: true,
+								ID:           "typed_data@1.3.2",
+								Name:         "typed_data",
+								Version:      "1.3.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 						},
 					},
@@ -129,7 +137,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

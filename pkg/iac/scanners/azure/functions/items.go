@@ -1,6 +1,6 @@
 package functions
 
-func Items(args ...interface{}) interface{} {
+func Items(args ...any) any {
 
 	return nil
 }

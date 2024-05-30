@@ -8,20 +8,20 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/config"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string // Test input file
 		inputFile string
-		want      []types.Library
+		want      []ftypes.Package
 		wantErr   string
 	}{
 		{
 			name:      "Config",
 			inputFile: "testdata/packages.config",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{Name: "Newtonsoft.Json", Version: "6.0.4"},
 				{Name: "Microsoft.AspNet.WebApi", Version: "5.2.2"},
 			},
@@ -29,7 +29,7 @@ func TestParse(t *testing.T) {
 		{
 			name:      "with development dependency",
 			inputFile: "testdata/dev_dependency.config",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{Name: "Newtonsoft.Json", Version: "8.0.3"},
 			},
 		},
@@ -46,12 +46,12 @@ func TestParse(t *testing.T) {
 
 			got, _, err := config.NewParser().Parse(f)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.ElementsMatch(t, tt.want, got)
 		})
 	}

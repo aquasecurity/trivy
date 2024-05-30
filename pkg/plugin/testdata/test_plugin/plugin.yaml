@@ -1,7 +1,7 @@
 name: "test_plugin"
-repository: github.com/aquasecurity/trivy-plugin-test
-version: "0.1.0"
-usage: test
+repository: testdata/test_plugin
+version: "0.2.0"
+summary: test
 description: test
 platforms:
   - selector:
@@ -9,6 +9,3 @@ platforms:
       arch: amd64
     uri: ./test.sh
     bin: ./test.sh
-# for testing
-_goos: linux
-_goarch: amd64

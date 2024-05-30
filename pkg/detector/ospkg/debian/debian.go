@@ -54,18 +54,17 @@ func NewScanner() *Scanner {
 }
 
 // Detect scans and return vulnerabilities using Debian scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Debian vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = osver.Major(osVer)
-	log.Logger.Debugf("debian: os version: %s", osVer)
-	log.Logger.Debugf("debian: the number of packages: %d", len(pkgs))
+
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
 		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
 		if err != nil {
-			log.Logger.Debugf("Debian installed package version error: %s", err)
+			log.DebugContext(ctx, "Installed package version error", log.Err(err))
 			continue
 		}
 
@@ -106,7 +105,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			var fixedVersion version.Version
 			fixedVersion, err = version.NewVersion(adv.FixedVersion)
 			if err != nil {
-				log.Logger.Debugf("Debian advisory package version error: %s", err)
+				log.DebugContext(ctx, "Failed to parse the fixed version",
+					log.String("version", adv.FixedVersion), log.Err(err))
 				continue
 			}
 

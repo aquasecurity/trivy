@@ -8,6 +8,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
@@ -230,8 +231,6 @@ func TestCalcKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			artifactOpt := artifact.Option{
-				SkipFiles:    tt.args.skipFiles,
-				SkipDirs:     tt.args.skipDirs,
 				FilePatterns: tt.args.patterns,
 
 				MisconfScannerOption: misconf.ScannerOption{
@@ -242,6 +241,11 @@ func TestCalcKey(t *testing.T) {
 				SecretScannerOption: analyzer.SecretScannerOption{
 					ConfigPath: tt.args.secretConfigPath,
 				},
+
+				WalkerOption: walker.Option{
+					SkipFiles: tt.args.skipFiles,
+					SkipDirs:  tt.args.skipDirs,
+				},
 			}
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
 			if tt.wantErr != "" {
@@ -249,7 +253,7 @@ func TestCalcKey(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

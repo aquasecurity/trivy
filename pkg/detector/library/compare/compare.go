@@ -31,7 +31,7 @@ func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) 
 	if len(advisory.VulnerableVersions) != 0 {
 		matched, err = match(pkgVer, strings.Join(advisory.VulnerableVersions, " || "))
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Version matching error", log.Err(err))
 			return false
 		} else if !matched {
 			// the version is not vulnerable
@@ -48,7 +48,7 @@ func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) 
 
 	matched, err = match(pkgVer, strings.Join(secureVersions, " || "))
 	if err != nil {
-		log.Logger.Warn(err)
+		log.Warn("Version matching error", log.Err(err))
 		return false
 	}
 	return !matched

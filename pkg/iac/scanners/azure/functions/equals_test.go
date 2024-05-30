@@ -9,19 +9,19 @@ import (
 func Test_Equals(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "equals with nil",
-			args: []interface{}{
+			args: []any{
 				nil,
 			},
 			expected: false,
 		},
 		{
 			name: "equals with nil and string",
-			args: []interface{}{
+			args: []any{
 				nil,
 				"test",
 			},
@@ -29,7 +29,7 @@ func Test_Equals(t *testing.T) {
 		},
 		{
 			name: "equals with nil and string and int",
-			args: []interface{}{
+			args: []any{
 				nil,
 				"test",
 				1,
@@ -38,16 +38,16 @@ func Test_Equals(t *testing.T) {
 		},
 		{
 			name: "equals with nil and nil and array",
-			args: []interface{}{
+			args: []any{
 				nil,
 				nil,
-				[]interface{}{"a", "b", "c"},
+				[]any{"a", "b", "c"},
 			},
 			expected: false,
 		},
 		{
 			name: "equals with nil and nil",
-			args: []interface{}{
+			args: []any{
 				nil,
 				nil,
 			},
@@ -55,7 +55,7 @@ func Test_Equals(t *testing.T) {
 		},
 		{
 			name: "equals with string and string",
-			args: []interface{}{
+			args: []any{
 				"test",
 				"test",
 			},
@@ -63,7 +63,7 @@ func Test_Equals(t *testing.T) {
 		},
 		{
 			name: "equals with string and string",
-			args: []interface{}{
+			args: []any{
 				"test",
 				"test1",
 			},
@@ -71,7 +71,7 @@ func Test_Equals(t *testing.T) {
 		},
 		{
 			name: "equals with int and int",
-			args: []interface{}{
+			args: []any{
 				1,
 				1,
 			},
@@ -79,7 +79,7 @@ func Test_Equals(t *testing.T) {
 		},
 		{
 			name: "equals with int and int",
-			args: []interface{}{
+			args: []any{
 				1,
 				2,
 			},
@@ -87,17 +87,17 @@ func Test_Equals(t *testing.T) {
 		},
 		{
 			name: "equals with array and array",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c"},
-				[]interface{}{"a", "b", "c"},
+			args: []any{
+				[]any{"a", "b", "c"},
+				[]any{"a", "b", "c"},
 			},
 			expected: true,
 		},
 		{
 			name: "equals with array and array",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c"},
-				[]interface{}{"a", "b", "d"},
+			args: []any{
+				[]any{"a", "b", "c"},
+				[]any{"a", "b", "d"},
 			},
 			expected: false,
 		},

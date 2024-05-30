@@ -1,6 +1,6 @@
 package functions
 
-func SubString(args ...interface{}) interface{} {
+func SubString(args ...any) any {
 	if len(args) < 2 {
 		return ""
 	}

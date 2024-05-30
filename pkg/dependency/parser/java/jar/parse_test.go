@@ -2,7 +2,6 @@ package jar_test
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,7 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
@@ -23,7 +23,7 @@ var (
 	// mvn dependency:list
 	// mvn dependency:tree -Dscope=compile -Dscope=runtime | awk '/:tree/,/BUILD SUCCESS/' | awk 'NR > 1 { print }' | head -n -2 | awk '{print $NF}' | awk -F":" '{printf("{\""$1":"$2"\", \""$4 "\", \"\"},\n")}'
 	// paths filled in manually
-	wantMaven = []types.Library{
+	wantMaven = []ftypes.Package{
 		{
 			Name:     "com.example:web-app",
 			Version:  "1.0-SNAPSHOT",
@@ -70,7 +70,7 @@ var (
 	// docker run --rm --name test -it test bash
 	// gradle app:dependencies --configuration implementation | grep "[+\]---" | cut -d" " -f2 | awk -F":" '{printf("{\""$1":"$2"\", \""$3"\", \"\"},\n")}'
 	// paths filled in manually
-	wantGradle = []types.Library{
+	wantGradle = []ftypes.Package{
 		{
 			Name:     "commons-dbcp:commons-dbcp",
 			Version:  "1.4",
@@ -94,7 +94,7 @@ var (
 	}
 
 	// manually created
-	wantSHA1 = []types.Library{
+	wantSHA1 = []ftypes.Package{
 		{
 			Name:     "org.springframework:spring-core",
 			Version:  "5.3.3",
@@ -103,7 +103,7 @@ var (
 	}
 
 	// offline
-	wantOffline = []types.Library{
+	wantOffline = []ftypes.Package{
 		{
 			Name:     "org.springframework:Spring Framework",
 			Version:  "2.5.6.SEC03",
@@ -112,7 +112,7 @@ var (
 	}
 
 	// manually created
-	wantHeuristic = []types.Library{
+	wantHeuristic = []ftypes.Package{
 		{
 			Name:     "com.example:heuristic",
 			Version:  "1.0.0-SNAPSHOT",
@@ -121,7 +121,7 @@ var (
 	}
 
 	// manually created
-	wantFatjar = []types.Library{
+	wantFatjar = []ftypes.Package{
 		{
 			Name:     "com.google.guava:failureaccess",
 			Version:  "1.0.1",
@@ -150,7 +150,7 @@ var (
 	}
 
 	// manually created
-	wantNestedJar = []types.Library{
+	wantNestedJar = []ftypes.Package{
 		{
 			Name:     "test:nested",
 			Version:  "0.0.1",
@@ -169,7 +169,7 @@ var (
 	}
 
 	// manually created
-	wantDuplicatesJar = []types.Library{
+	wantDuplicatesJar = []ftypes.Package{
 		{
 			Name:     "io.quarkus.gizmo:gizmo",
 			Version:  "1.1.1.Final",
@@ -203,7 +203,7 @@ type doc struct {
 	ArtifactID   string `json:"a"`
 	Version      string `json:"v"`
 	P            string `json:"p"`
-	VersionCount int    `json:versionCount`
+	VersionCount int    `json:"versionCount"`
 }
 
 func TestParse(t *testing.T) {
@@ -211,7 +211,7 @@ func TestParse(t *testing.T) {
 		name    string
 		file    string // Test input file
 		offline bool
-		want    []types.Library
+		want    []ftypes.Package
 	}{
 		{
 			name: "maven",
@@ -319,12 +319,8 @@ func TestParse(t *testing.T) {
 			got, _, err := p.Parse(f)
 			require.NoError(t, err)
 
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].Name < got[j].Name
-			})
-			sort.Slice(v.want, func(i, j int) bool {
-				return v.want[i].Name < v.want[j].Name
-			})
+			sort.Sort(ftypes.Packages(got))
+			sort.Sort(ftypes.Packages(v.want))
 
 			assert.Equal(t, v.want, got)
 		})

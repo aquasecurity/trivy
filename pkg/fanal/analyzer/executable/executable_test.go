@@ -47,6 +47,7 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 				Info:     stat,
 			})
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

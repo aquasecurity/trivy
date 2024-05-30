@@ -3,11 +3,11 @@ package compute
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/assert"
-
-	"github.com/stretchr/testify/require"
 )
 
 func Test_AdaptLinuxVM(t *testing.T) {
@@ -30,7 +30,7 @@ func Test_AdaptLinuxVM(t *testing.T) {
 	output := Adapt(input)
 
 	require.Len(t, output.LinuxVirtualMachines, 1)
-	require.Len(t, output.WindowsVirtualMachines, 0)
+	require.Empty(t, output.WindowsVirtualMachines)
 
 	linuxVM := output.LinuxVirtualMachines[0]
 	assert.True(t, linuxVM.OSProfileLinuxConfig.DisablePasswordAuthentication.IsTrue())
@@ -45,7 +45,7 @@ func Test_AdaptWindowsVM(t *testing.T) {
 				Type: azure2.NewValue("Microsoft.Compute/virtualMachines", types.NewTestMetadata()),
 				Properties: azure2.NewValue(map[string]azure2.Value{
 					"osProfile": azure2.NewValue(map[string]azure2.Value{
-						"windowsConfiguration": azure2.NewValue(map[string]azure2.Value{}, types.NewTestMetadata()),
+						"windowsConfiguration": azure2.NewValue(make(map[string]azure2.Value), types.NewTestMetadata()),
 					}, types.NewTestMetadata()),
 				}, types.NewTestMetadata()),
 			},
@@ -54,6 +54,6 @@ func Test_AdaptWindowsVM(t *testing.T) {
 
 	output := Adapt(input)
 
-	require.Len(t, output.LinuxVirtualMachines, 0)
+	require.Empty(t, output.LinuxVirtualMachines)
 	require.Len(t, output.WindowsVirtualMachines, 1)
 }

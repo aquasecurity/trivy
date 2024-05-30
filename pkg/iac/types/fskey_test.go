@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/liamg/memoryfs"
-
 	"github.com/stretchr/testify/assert"
 )
 

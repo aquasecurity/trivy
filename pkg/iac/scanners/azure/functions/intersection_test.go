@@ -10,88 +10,88 @@ func Test_Intersect(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "intersect two arrays",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c"},
-				[]interface{}{"b", "c", "d"},
+			args: []any{
+				[]any{"a", "b", "c"},
+				[]any{"b", "c", "d"},
 			},
-			expected: []interface{}{"b", "c"},
+			expected: []any{"b", "c"},
 		},
 		{
 			name: "intersect three arrays",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c", "d"},
-				[]interface{}{"b", "c", "d"},
-				[]interface{}{"b", "c"},
+			args: []any{
+				[]any{"a", "b", "c", "d"},
+				[]any{"b", "c", "d"},
+				[]any{"b", "c"},
 			},
-			expected: []interface{}{"b", "c"},
+			expected: []any{"b", "c"},
 		},
 		{
 			name: "intersect two arrays with one empty",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c"},
-				[]interface{}{},
+			args: []any{
+				[]any{"a", "b", "c"},
+				[]any{},
 			},
-			expected: []interface{}(nil),
+			expected: []any(nil),
 		},
 		{
 			name: "intersect two arrays with both empty",
-			args: []interface{}{
-				[]interface{}{},
-				[]interface{}{},
+			args: []any{
+				[]any{},
+				[]any{},
 			},
-			expected: []interface{}(nil),
+			expected: []any(nil),
 		},
 		{
 			name: "intersect two arrays with both nil",
-			args: []interface{}{
+			args: []any{
 				nil,
 				nil,
 			},
-			expected: []interface{}{},
+			expected: []any{},
 		},
 		{
 			name: "intersect two maps",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"a": "a",
 					"b": "b",
 					"c": "c",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"b": "b",
 					"c": "c",
 					"d": "d",
 				},
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"b": "b",
 				"c": "c",
 			},
 		},
 		{
 			name: "intersect three maps",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"a": "a",
 					"b": "b",
 					"c": "c",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"b": "b",
 					"c": "c",
 					"d": "d",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"b": "b",
 					"d": "d",
 				},
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"b": "b",
 			},
 		},

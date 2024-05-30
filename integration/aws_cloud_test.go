@@ -25,7 +25,7 @@ func TestAwsCommandRun(t *testing.T) {
 		{
 			name: "fail without region",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 			},
 			envs: map[string]string{
 				"AWS_ACCESS_KEY_ID":     "test",
@@ -39,7 +39,7 @@ func TestAwsCommandRun(t *testing.T) {
 				"AWS_PROFILE": "non-existent-profile",
 			},
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region: "us-east-1",
 				},
@@ -71,7 +71,7 @@ func TestAwsCommandRun(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 

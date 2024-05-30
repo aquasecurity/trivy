@@ -1,0 +1,6 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+  - bzip2=1.0.8=h998d150_5
+prefix: /opt/conda/envs/test-env

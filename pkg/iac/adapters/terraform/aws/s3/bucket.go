@@ -1,6 +1,10 @@
 package s3
 
 import (
+	"slices"
+
+	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -194,11 +198,13 @@ func isEncrypted(sseConfgihuration *terraform.Block) iacTypes.BoolValue {
 		sseConfgihuration,
 		"rule.apply_server_side_encryption_by_default.sse_algorithm",
 		func(attr *terraform.Attribute, parent *terraform.Block) iacTypes.BoolValue {
-			if attr.IsNil() {
+			if attr.IsNil() || !attr.IsString() {
 				return iacTypes.BoolDefault(false, parent.GetMetadata())
 			}
+			algoVal := attr.Value().AsString()
+			isValidAlgo := slices.Contains(s3types.ServerSideEncryption("").Values(), s3types.ServerSideEncryption(algoVal))
 			return iacTypes.Bool(
-				true,
+				isValidAlgo,
 				attr.GetMetadata(),
 			)
 		},

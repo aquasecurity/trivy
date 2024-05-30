@@ -86,6 +86,7 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		p = pkg.PURL.String()
 	}
 	return &common.PkgIdentifier{
+		Uid:    pkg.UID,
 		Purl:   p,
 		BomRef: pkg.BOMRef,
 	}
@@ -107,7 +108,7 @@ func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.Cu
 	for _, r := range resources {
 		data, err := structpb.NewValue(r.Data)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Custom resource conversion error", log.Err(err))
 		}
 		rpcResources = append(rpcResources, &common.CustomResource{
 			Type:     r.Type,
@@ -236,13 +237,14 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	}
 
 	pkgID := ftypes.PkgIdentifier{
-		BOMRef: pkg.BomRef,
+		UID:    pkg.GetUid(),
+		BOMRef: pkg.GetBomRef(),
 	}
 
 	if pkg.Purl != "" {
 		pu, err := packageurl.FromString(pkg.Purl)
 		if err != nil {
-			log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+			log.Error("Failed to parse PURL", log.String("purl", pkg.Purl), log.Err(err))
 		}
 		pkgID.PURL = &pu
 	}
@@ -267,7 +269,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 	for _, vuln := range vulns {
 		severity, err := dbTypes.NewSeverity(vuln.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity error", log.Err(err))
 		}
 		cvssMap := make(map[string]*common.CVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.CVSS {
@@ -336,7 +338,7 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 	for _, m := range misconfs {
 		severity, err := dbTypes.NewSeverity(m.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity conversion error", log.Err(err))
 		}
 
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
@@ -738,9 +740,9 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 	var apps []ftypes.Application
 	for _, rpcApp := range rpcApps {
 		apps = append(apps, ftypes.Application{
-			Type:      ftypes.LangType(rpcApp.Type),
-			FilePath:  rpcApp.FilePath,
-			Libraries: ConvertFromRPCPkgs(rpcApp.Libraries),
+			Type:     ftypes.LangType(rpcApp.Type),
+			FilePath: rpcApp.FilePath,
+			Packages: ConvertFromRPCPkgs(rpcApp.Packages),
 		})
 	}
 	return apps
@@ -834,7 +836,7 @@ func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *ca
 
 	t := timestamppb.New(imageInfo.Created)
 	if err := t.CheckValid(); err != nil {
-		log.Logger.Warnf("invalid timestamp: %s", err)
+		log.Warn("Invalid timestamp", log.Err(err))
 	}
 
 	return &cache.PutArtifactRequest{
@@ -863,9 +865,9 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	var applications []*common.Application
 	for _, app := range blobInfo.Applications {
 		applications = append(applications, &common.Application{
-			Type:      string(app.Type),
-			FilePath:  app.FilePath,
-			Libraries: ConvertToRPCPkgs(app.Libraries),
+			Type:     string(app.Type),
+			FilePath: app.FilePath,
+			Packages: ConvertToRPCPkgs(app.Packages),
 		})
 	}
 
@@ -973,7 +975,7 @@ func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLi
 	for _, l := range licenses {
 		severity, err := dbTypes.NewSeverity(l.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity conversion error", log.Err(err))
 		}
 		rpcLicenses = append(rpcLicenses, &common.DetectedLicense{
 			Severity:   common.Severity(severity),

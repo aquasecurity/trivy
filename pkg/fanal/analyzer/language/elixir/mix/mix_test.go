@@ -25,7 +25,7 @@ func Test_mixLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Hex,
 						FilePath: "testdata/happy.mix.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "bunt@0.2.0",
 								Name:    "bunt",
@@ -54,7 +54,7 @@ func Test_mixLockAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer func() {
 				err = f.Close()
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}()
 
 			a := mixLockAnalyzer{}
@@ -63,7 +63,7 @@ func Test_mixLockAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

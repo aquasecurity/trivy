@@ -5,9 +5,8 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/rdb"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptDBSecurityGroups(t *testing.T) {

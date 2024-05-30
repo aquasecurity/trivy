@@ -9,12 +9,12 @@ import (
 func Test_Contains(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected bool
 	}{
 		{
 			name: "simple true string contains",
-			args: []interface{}{
+			args: []any{
 				"hello, world",
 				"hell",
 			},
@@ -22,7 +22,7 @@ func Test_Contains(t *testing.T) {
 		},
 		{
 			name: "simple false string contains",
-			args: []interface{}{
+			args: []any{
 				"hello, world",
 				"help",
 			},
@@ -30,7 +30,7 @@ func Test_Contains(t *testing.T) {
 		},
 		{
 			name: "simple true string contains with case sensitivity",
-			args: []interface{}{
+			args: []any{
 				"hello, world",
 				"HELL",
 			},
@@ -38,7 +38,7 @@ func Test_Contains(t *testing.T) {
 		},
 		{
 			name: "simple true string contains with number",
-			args: []interface{}{
+			args: []any{
 				"You're my number 1",
 				1,
 			},
@@ -46,8 +46,8 @@ func Test_Contains(t *testing.T) {
 		},
 		{
 			name: "true object contains key",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"hello": "world",
 				},
 				"hello",
@@ -56,8 +56,8 @@ func Test_Contains(t *testing.T) {
 		},
 		{
 			name: "false object contains key",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"hello": "world",
 				},
 				"world",
@@ -66,8 +66,8 @@ func Test_Contains(t *testing.T) {
 		},
 		{
 			name: "true array contains value",
-			args: []interface{}{
-				[]interface{}{
+			args: []any{
+				[]any{
 					"hello", "world",
 				},
 				"hello",
@@ -76,8 +76,8 @@ func Test_Contains(t *testing.T) {
 		},
 		{
 			name: "false array contains value",
-			args: []interface{}{
-				[]interface{}{
+			args: []any{
+				[]any{
 					"hello", "world",
 				},
 				"help",

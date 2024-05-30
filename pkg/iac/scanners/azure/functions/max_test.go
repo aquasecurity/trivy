@@ -9,40 +9,40 @@ import (
 func Test_Max(t *testing.T) {
 	test := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name: "max of empty slice",
-			args: []interface{}{
+			args: []any{
 				[]int{},
 			},
 			expected: 0,
 		},
 		{
 			name: "max of slice",
-			args: []interface{}{
+			args: []any{
 				[]int{1, 2, 3},
 			},
 			expected: 3,
 		},
 		{
 			name: "max of slice with negative numbers",
-			args: []interface{}{
+			args: []any{
 				[]int{-1, -2, -3},
 			},
 			expected: -1,
 		},
 		{
 			name: "max of slice with negative and positive numbers",
-			args: []interface{}{
+			args: []any{
 				[]int{-1, 2, -3},
 			},
 			expected: 2,
 		},
 		{
 			name: "max of comma separated numbers",
-			args: []interface{}{
+			args: []any{
 				1, 2, 3, 4, 5,
 			},
 			expected: 5,

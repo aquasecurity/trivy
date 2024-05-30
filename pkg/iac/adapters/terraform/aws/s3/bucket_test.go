@@ -3,10 +3,10 @@ package s3
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 )
 
 func Test_GetBuckets(t *testing.T) {
@@ -21,7 +21,7 @@ resource "aws_s3_bucket" "bucket1" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 
 }
 
@@ -38,7 +38,7 @@ resource "aws_s3_bucket" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.Equal(t, "authenticated-read", s3.Buckets[0].ACL.Value())
 
 }
@@ -58,7 +58,7 @@ resource "aws_s3_bucket_acl" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.Equal(t, "authenticated-read", s3.Buckets[0].ACL.Value())
 
 }
@@ -80,7 +80,7 @@ resource "aws_s3_bucket" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Logging.Enabled.Value())
 
 }
@@ -110,7 +110,7 @@ resource "aws_s3_bucket_logging" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 2, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 2)
 	for _, bucket := range s3.Buckets {
 		switch bucket.Name.Value() {
 		case "yournamehere":
@@ -135,7 +135,7 @@ resource "aws_s3_bucket" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
 }
 
@@ -157,7 +157,7 @@ resource "aws_s3_bucket_versioning" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
 }
 
@@ -174,7 +174,7 @@ resource "aws_s3_bucket" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
 
 }
@@ -194,7 +194,7 @@ resource "aws_s3_bucket_object_lock_configuration" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
 
 }
@@ -220,7 +220,7 @@ resource "aws_s3_bucket_versioning" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Versioning.Enabled.Value())
 
 }
@@ -245,7 +245,7 @@ func Test_BucketGetEncryption(t *testing.T) {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Encryption.Enabled.Value())
 }
 
@@ -273,7 +273,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
 
 	s3 := Adapt(modules)
 
-	assert.Equal(t, 1, len(s3.Buckets))
+	assert.Len(t, s3.Buckets, 1)
 	assert.True(t, s3.Buckets[0].Encryption.Enabled.Value())
 }
 
@@ -312,19 +312,19 @@ data "aws_iam_policy_document" "allow_access_from_another_account" {
 
 	s3 := Adapt(modules)
 
-	require.Equal(t, 1, len(s3.Buckets))
-	require.Equal(t, 1, len(s3.Buckets[0].BucketPolicies))
+	require.Len(t, s3.Buckets, 1)
+	require.Len(t, s3.Buckets[0].BucketPolicies, 1)
 
 	policy := s3.Buckets[0].BucketPolicies[0]
 
 	statements, _ := policy.Document.Parsed.Statements()
-	require.Equal(t, 1, len(statements))
+	require.Len(t, statements, 1)
 
 	principals, _ := statements[0].Principals()
 	actions, _ := statements[0].Actions()
 
 	awsPrincipals, _ := principals.AWS()
-	require.Equal(t, 1, len(awsPrincipals))
-	require.Equal(t, 2, len(actions))
+	require.Len(t, awsPrincipals, 1)
+	require.Len(t, actions, 2)
 
 }

@@ -1,13 +1,13 @@
 package fsutils
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 
-	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -85,6 +85,14 @@ func DirExists(path string) bool {
 	return true
 }
 
+func FileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	if errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return err == nil
+}
+
 type WalkDirRequiredFunc func(path string, d fs.DirEntry) bool
 
 type WalkDirFunc func(path string, d fs.DirEntry, r io.Reader) error
@@ -104,7 +112,7 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		defer f.Close()
 
 		if err = fn(path, d, f); err != nil {
-			log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
+			log.Debug("Walk error", log.String("file_path", path), log.Err(err))
 		}
 		return nil
 	})

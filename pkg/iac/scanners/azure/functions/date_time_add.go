@@ -9,7 +9,7 @@ import (
 
 var pattern = regexp.MustCompile(`^P((?P<year>\d+)Y)?((?P<month>\d+)M)?((?P<week>\d+)W)?((?P<day>\d+)D)?(T((?P<hour>\d+)H)?((?P<minute>\d+)M)?((?P<second>\d+)S)?)?$`)
 
-func DateTimeAdd(args ...interface{}) interface{} {
+func DateTimeAdd(args ...any) any {
 	if len(args) < 2 {
 		return nil
 	}

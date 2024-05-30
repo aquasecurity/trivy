@@ -237,6 +237,9 @@ You can filter the results by
 
 To show the suppressed results, use the `--show-suppressed` flag.
 
+!!! note
+    This flag is currently available only in the table format.
+
 ```bash
 $ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
 ...
@@ -480,7 +483,7 @@ trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
 For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`.
 More info about the helper functions are in the library [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go).
 
-You can find more example policies [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
+You can find more example checks [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
 
 ### By Vulnerability Exploitability Exchange (VEX)
 |     Scanner      | Supported |

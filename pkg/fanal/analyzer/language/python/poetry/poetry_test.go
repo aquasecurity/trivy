@@ -26,29 +26,33 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Poetry,
 						FilePath: "poetry.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "certifi@2022.12.7",
-								Name:     "certifi",
-								Version:  "2022.12.7",
-								Indirect: true,
+								ID:           "certifi@2022.12.7",
+								Name:         "certifi",
+								Version:      "2022.12.7",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:       "charset-normalizer@2.1.1",
-								Name:     "charset-normalizer",
-								Version:  "2.1.1",
-								Indirect: true,
+								ID:           "charset-normalizer@2.1.1",
+								Name:         "charset-normalizer",
+								Version:      "2.1.1",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:       "click@7.1.2",
-								Name:     "click",
-								Version:  "7.1.2",
-								Indirect: true,
+								ID:           "click@7.1.2",
+								Name:         "click",
+								Version:      "7.1.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:      "flask@1.1.4",
-								Name:    "flask",
-								Version: "1.1.4",
+								ID:           "flask@1.1.4",
+								Name:         "flask",
+								Version:      "1.1.4",
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"click@7.1.2",
 									"itsdangerous@1.1.0",
@@ -57,36 +61,41 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "idna@3.4",
-								Name:     "idna",
-								Version:  "3.4",
-								Indirect: true,
+								ID:           "idna@3.4",
+								Name:         "idna",
+								Version:      "3.4",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:       "itsdangerous@1.1.0",
-								Name:     "itsdangerous",
-								Version:  "1.1.0",
-								Indirect: true,
+								ID:           "itsdangerous@1.1.0",
+								Name:         "itsdangerous",
+								Version:      "1.1.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:       "jinja2@2.11.3",
-								Name:     "jinja2",
-								Version:  "2.11.3",
-								Indirect: true,
+								ID:           "jinja2@2.11.3",
+								Name:         "jinja2",
+								Version:      "2.11.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								DependsOn: []string{
 									"markupsafe@2.1.2",
 								},
 							},
 							{
-								ID:       "markupsafe@2.1.2",
-								Name:     "markupsafe",
-								Version:  "2.1.2",
-								Indirect: true,
+								ID:           "markupsafe@2.1.2",
+								Name:         "markupsafe",
+								Version:      "2.1.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:      "requests@2.28.1",
-								Name:    "requests",
-								Version: "2.28.1",
+								ID:           "requests@2.28.1",
+								Name:         "requests",
+								Version:      "2.28.1",
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"certifi@2022.12.7",
 									"charset-normalizer@2.1.1",
@@ -95,16 +104,18 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "urllib3@1.26.14",
-								Name:     "urllib3",
-								Version:  "1.26.14",
-								Indirect: true,
+								ID:           "urllib3@1.26.14",
+								Name:         "urllib3",
+								Version:      "1.26.14",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:       "werkzeug@1.0.1",
-								Name:     "werkzeug",
-								Version:  "1.0.1",
-								Indirect: true,
+								ID:           "werkzeug@1.0.1",
+								Name:         "werkzeug",
+								Version:      "1.0.1",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 							},
 						},
 					},
@@ -119,7 +130,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Poetry,
 						FilePath: "poetry.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "click@8.1.3",
 								Name:    "click",
@@ -146,7 +157,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Poetry,
 						FilePath: "poetry.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "click@8.1.3",
 								Name:    "click",
@@ -181,7 +192,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

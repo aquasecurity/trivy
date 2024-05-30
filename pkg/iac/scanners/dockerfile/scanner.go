@@ -34,6 +34,8 @@ type Scanner struct { // nolint: gocritic
 	loadEmbeddedPolicies  bool
 }
 
+func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec
 }

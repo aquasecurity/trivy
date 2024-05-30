@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 func Test_Reset(t *testing.T) {
 	Reset()
 	rule := scan.Rule{}
 	_ = Register(rule)
-	assert.Equal(t, 1, len(GetFrameworkRules()))
+	assert.Len(t, GetFrameworkRules(), 1)
 	Reset()
-	assert.Equal(t, 0, len(GetFrameworkRules()))
+	assert.Empty(t, GetFrameworkRules())
 }
 
 func Test_Registration(t *testing.T) {
@@ -106,13 +107,13 @@ func Test_Deregistration(t *testing.T) {
 	registrationB := Register(scan.Rule{
 		AVDID: "B",
 	})
-	assert.Equal(t, 2, len(GetFrameworkRules()))
+	assert.Len(t, GetFrameworkRules(), 2)
 	Deregister(registrationA)
 	actual := GetFrameworkRules()
-	require.Equal(t, 1, len(actual))
+	require.Len(t, actual, 1)
 	assert.Equal(t, "B", actual[0].GetRule().AVDID)
 	Deregister(registrationB)
-	assert.Equal(t, 0, len(GetFrameworkRules()))
+	assert.Empty(t, GetFrameworkRules())
 }
 
 func Test_DeregistrationMultipleFrameworks(t *testing.T) {
@@ -129,11 +130,11 @@ func Test_DeregistrationMultipleFrameworks(t *testing.T) {
 			framework.Default: nil,
 		},
 	})
-	assert.Equal(t, 2, len(GetFrameworkRules()))
+	assert.Len(t, GetFrameworkRules(), 2)
 	Deregister(registrationA)
 	actual := GetFrameworkRules()
-	require.Equal(t, 1, len(actual))
+	require.Len(t, actual, 1)
 	assert.Equal(t, "B", actual[0].GetRule().AVDID)
 	Deregister(registrationB)
-	assert.Equal(t, 0, len(GetFrameworkRules()))
+	assert.Empty(t, GetFrameworkRules())
 }

@@ -5,7 +5,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
@@ -110,10 +109,7 @@ func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner
 
 // vmStandaloneScanner initializes a VM scanner in standalone mode
 func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	// TODO: The walker should be initialized in initializeVMScanner after https://github.com/aquasecurity/trivy/pull/5180
-	w := walker.NewVM(conf.ArtifactOption.SkipFiles, conf.ArtifactOption.SkipDirs)
-	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		w, conf.ArtifactOption)
+	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
 	}
@@ -122,9 +118,7 @@ func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scann
 
 // vmRemoteScanner initializes a VM scanner in client/server mode
 func vmRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	// TODO: The walker should be initialized in initializeVMScanner after https://github.com/aquasecurity/trivy/pull/5180
-	w := walker.NewVM(conf.ArtifactOption.SkipFiles, conf.ArtifactOption.SkipDirs)
-	s, cleanup, err := initializeRemoteVMScanner(ctx, conf.Target, conf.ArtifactCache, w, conf.ServerOption, conf.ArtifactOption)
+	s, cleanup, err := initializeRemoteVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a remote vm scanner: %w", err)
 	}

@@ -88,7 +88,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 			l := strings.TrimSpace(line[8:])
 
 			l = normalizeLicense(l)
-			if len(l) > 0 {
+			if l != "" {
 				for _, lic := range licensing.SplitLicenses(l) {
 					lic = licensing.Normalize(lic)
 					if !slices.Contains(licenses, lic) {

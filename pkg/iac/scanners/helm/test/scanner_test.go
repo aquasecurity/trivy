@@ -10,10 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_helm_scanner_with_archive(t *testing.T) {
@@ -51,7 +52,7 @@ func Test_helm_scanner_with_archive(t *testing.T) {
 		require.NotNil(t, results)
 
 		failed := results.GetFailed()
-		assert.Equal(t, 13, len(failed))
+		assert.Len(t, failed, 13)
 
 		visited := make(map[string]bool)
 		var errorCodes []string
@@ -135,7 +136,7 @@ func Test_helm_scanner_with_dir(t *testing.T) {
 		require.NotNil(t, results)
 
 		failed := results.GetFailed()
-		assert.Equal(t, 14, len(failed))
+		assert.Len(t, failed, 14)
 
 		visited := make(map[string]bool)
 		var errorCodes []string
@@ -227,7 +228,7 @@ deny[res] {
 			require.NotNil(t, results)
 
 			failed := results.GetFailed()
-			assert.Equal(t, 15, len(failed))
+			assert.Len(t, failed, 15)
 
 			visited := make(map[string]bool)
 			var errorCodes []string
@@ -317,4 +318,45 @@ deny[res] {
 	code, err := failed.GetCode()
 	require.NoError(t, err)
 	assert.NotNil(t, code)
+}
+
+func TestScanSubchartOnce(t *testing.T) {
+	check := `# METADATA
+# title: "Test rego"
+# description: "Test rego"
+# scope: package
+# schemas:
+# - input: schema["kubernetes"]
+# custom:
+#   id: ID001
+#   avd_id: AVD-USR-ID001
+#   severity: LOW
+#   input:
+#     selector:
+#     - type: kubernetes
+#       subtypes:
+#         - kind: pod
+package user.kubernetes.ID001
+
+import data.lib.kubernetes
+
+deny[res] {
+	container := kubernetes.containers[_]
+	container.securityContext.readOnlyRootFilesystem == false
+	res := result.new("set 'securityContext.readOnlyRootFilesystem' to true", container)
+}
+`
+
+	scanner := helm.New(
+		options.ScannerWithEmbeddedPolicies(false),
+		options.ScannerWithEmbeddedLibraries(true),
+		options.ScannerWithPolicyNamespaces("user"),
+		options.ScannerWithPolicyReader(strings.NewReader(check)),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), os.DirFS("testdata/with-subchart"), ".")
+	require.NoError(t, err)
+	require.Len(t, results, 1)
+
+	assert.Empty(t, results.GetFailed())
 }

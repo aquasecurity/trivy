@@ -194,7 +194,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := chainguard.NewScanner()
-			got, err := s.Detect("", tt.args.repo, tt.args.pkgs)
+			got, err := s.Detect(nil, "", tt.args.repo, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -204,7 +204,7 @@ func TestScanner_Detect(t *testing.T) {
 			sort.Slice(got, func(i, j int) bool {
 				return got[i].VulnerabilityID < got[j].VulnerabilityID
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

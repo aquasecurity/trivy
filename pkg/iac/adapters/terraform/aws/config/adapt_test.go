@@ -3,13 +3,12 @@ package config
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
-
-	"github.com/stretchr/testify/assert"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptConfigurationAggregrator(t *testing.T) {

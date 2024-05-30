@@ -3,12 +3,11 @@ package storage
 import (
 	"testing"
 
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/require"
+
+	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_AdaptStorageDefaults(t *testing.T) {
@@ -17,7 +16,7 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 		Resources: []azure2.Resource{
 			{
 				Type:       azure2.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
-				Properties: azure2.NewValue(map[string]azure2.Value{}, types.NewTestMetadata()),
+				Properties: azure2.NewValue(make(map[string]azure2.Value), types.NewTestMetadata()),
 			},
 		},
 	}
@@ -28,7 +27,7 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 
 	account := output.Accounts[0]
 	assert.Equal(t, "TLS1_0", account.MinimumTLSVersion.Value())
-	assert.Equal(t, false, account.EnforceHTTPS.Value())
+	assert.False(t, account.EnforceHTTPS.Value())
 
 }
 
@@ -53,6 +52,6 @@ func Test_AdaptStorage(t *testing.T) {
 
 	account := output.Accounts[0]
 	assert.Equal(t, "TLS1_2", account.MinimumTLSVersion.Value())
-	assert.Equal(t, true, account.EnforceHTTPS.Value())
+	assert.True(t, account.EnforceHTTPS.Value())
 
 }

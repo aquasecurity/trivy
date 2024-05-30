@@ -7,21 +7,26 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
+	directMain    = "direct main"
+	directDev     = "direct dev"
 	transitiveDep = "transitive"
 )
 
 // Parser is a parser for pubspec.lock
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
-func NewParser() types.Parser {
-	return &Parser{}
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("pub"),
+	}
 }
 
 type lock struct {
@@ -38,12 +43,12 @@ type Dep struct {
 
 type Description string
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	l := &lock{}
 	if err := yaml.NewDecoder(r).Decode(&l); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode pubspec.lock: %w", err)
 	}
-	var libs []types.Library
+	var pkgs []ftypes.Package
 	for name, dep := range l.Packages {
 		// Some dependencies use one of the SDK versions.
 		// In this case dep.Version == `0.0.0`.
@@ -54,7 +59,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		if version == "0.0.0" && dep.Source == "sdk" {
 			if constraint, ok := l.Sdks[string(dep.Description)]; ok {
 				if v := firstVersionOfConstrain(constraint); v != "" {
-					log.Logger.Infof("The first version of %q constraint was used for %q.", dep.Description, name)
+					p.logger.Info("The first version of the constraint from the sdk source was used.", log.String("dep", name), log.String("constraint", constraint))
 					version = v
 				}
 			}
@@ -65,16 +70,26 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		// as there are 3 dependency types, "direct main", "direct dev" and "transitive".
 		// It will be confusing if we exclude direct dev dependencies and include transitive dev dependencies.
 		// We decided to keep all dev dependencies until Pub will add support for "transitive main" and "transitive dev".
-		lib := types.Library{
-			ID:       dependency.ID(ftypes.Pub, name, version),
-			Name:     name,
-			Version:  version,
-			Indirect: dep.Dependency == transitiveDep,
+		pkg := ftypes.Package{
+			ID:           dependency.ID(ftypes.Pub, name, version),
+			Name:         name,
+			Version:      version,
+			Relationship: p.relationship(dep.Dependency),
 		}
-		libs = append(libs, lib)
+		pkgs = append(pkgs, pkg)
 	}
 
-	return libs, nil, nil
+	return pkgs, nil, nil
+}
+
+func (p Parser) relationship(dep string) ftypes.Relationship {
+	switch dep {
+	case directMain, directDev:
+		return ftypes.RelationshipDirect
+	case transitiveDep:
+		return ftypes.RelationshipIndirect
+	}
+	return ftypes.RelationshipUnknown
 }
 
 // firstVersionOfConstrain returns the first acceptable version for constraint

@@ -2,10 +2,10 @@ package sbom
 
 import (
 	"context"
-	"github.com/package-url/packageurl-go"
 	"os"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -29,7 +29,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: types.Jar,
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
@@ -91,7 +91,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Bitnami,
 						FilePath: "opt/bitnami/elasticsearch",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:       "Elasticsearch@8.9.1",
 								Name:     "Elasticsearch",
@@ -126,7 +126,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: types.Jar,
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								ID:       "co.elastic.apm:apm-agent:1.36.0",
@@ -172,7 +172,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Bitnami,
 						FilePath: "opt/bitnami/postgresql",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:       "GDAL@3.7.1",
 								Name:     "GDAL",

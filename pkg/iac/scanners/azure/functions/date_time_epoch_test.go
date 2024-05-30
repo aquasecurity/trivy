@@ -9,12 +9,12 @@ import (
 func Test_DateTimeFromEpoch(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "datetime from epoch",
-			args: []interface{}{
+			args: []any{
 				1683040573,
 			},
 			expected: "2023-05-02T15:16:13Z",
@@ -31,12 +31,12 @@ func Test_DateTimeFromEpoch(t *testing.T) {
 func Test_DateTimeToEpoch(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "datetime to epoch",
-			args: []interface{}{
+			args: []any{
 				"2023-05-02T15:16:13Z",
 			},
 			expected: 1683040573,

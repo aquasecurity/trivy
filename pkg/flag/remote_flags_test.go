@@ -1,14 +1,12 @@
 package flag_test
 
 import (
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -98,9 +96,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			level := zap.WarnLevel
-			core, obs := observer.New(level)
-			log.Logger = zap.New(core).Sugar()
+			out := newLogger(log.LevelWarn)
 
 			viper.Set(flag.ServerAddrFlag.ConfigName, tt.fields.Server)
 			viper.Set(flag.ServerCustomHeadersFlag.ConfigName, tt.fields.CustomHeaders)
@@ -119,11 +115,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
-			var gotMessages []string
-			for _, entry := range obs.AllUntimed() {
-				gotMessages = append(gotMessages, entry.Message)
-			}
-			assert.Equal(t, tt.wantLogs, gotMessages, tt.name)
+			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)
 		})
 	}
 }

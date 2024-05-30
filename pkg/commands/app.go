@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -111,25 +112,31 @@ func NewApp() *cobra.Command {
 }
 
 func loadPluginCommands() []*cobra.Command {
+	ctx := context.Background()
+	manager := plugin.NewManager()
+
 	var commands []*cobra.Command
-	plugins, err := plugin.LoadAll()
+	plugins, err := manager.LoadAll(ctx)
 	if err != nil {
-		log.Logger.Debugf("no plugins were loaded")
+		log.DebugContext(ctx, "No plugins loaded")
 		return nil
 	}
 	for _, p := range plugins {
 		p := p
 		cmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s [flags]", p.Name),
-			Short:   p.Usage,
+			Short:   p.Summary,
+			Long:    p.Description,
 			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err = p.Run(cmd.Context(), plugin.RunOptions{Args: args}); err != nil {
+				if err = p.Run(cmd.Context(), plugin.Options{Args: args}); err != nil {
 					return xerrors.Errorf("plugin error: %w", err)
 				}
 				return nil
 			},
 			DisableFlagParsing: true,
+			SilenceUsage:       true,
+			SilenceErrors:      true,
 		}
 		commands = append(commands, cmd)
 	}
@@ -142,12 +149,12 @@ func initConfig(configFile string) error {
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Logger.Debugf("config file %q not found", configFile)
+			log.Debug("Config file not found", log.String("file_path", configFile))
 			return nil
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
-	log.Logger.Infof("Loaded %s", configFile)
+	log.Info("Loaded", log.String("file_path", configFile))
 	return nil
 }
 
@@ -196,9 +203,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 
 			// Initialize logger
-			if err := log.InitLogger(globalOptions.Debug, globalOptions.Quiet); err != nil {
-				return err
-			}
+			log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
 
 			return nil
 		},
@@ -570,7 +575,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Logger.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
+			log.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
 			if err := clientFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -719,14 +724,23 @@ func NewPluginCommand() *cobra.Command {
 	}
 	cmd.AddCommand(
 		&cobra.Command{
-			Use:                   "install URL | FILE_PATH",
-			Aliases:               []string{"i"},
-			Short:                 "Install a plugin",
+			Use:     "install NAME | URL | FILE_PATH",
+			Aliases: []string{"i"},
+			Short:   "Install a plugin",
+			Example: `  # Install a plugin from the plugin index
+  $ trivy plugin install referrer
+
+  # Specify the version of the plugin to install
+  $ trivy plugin install referrer@v0.3.0
+
+  # Install a plugin from a URL
+  $ trivy plugin install github.com/aquasecurity/trivy-plugin-referrer`,
 			SilenceErrors:         true,
+			SilenceUsage:          true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if _, err := plugin.Install(cmd.Context(), args[0], true); err != nil {
+				if _, err := plugin.Install(cmd.Context(), args[0], plugin.Options{}); err != nil {
 					return xerrors.Errorf("plugin install error: %w", err)
 				}
 				return nil
@@ -735,12 +749,13 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "uninstall PLUGIN_NAME",
 			Aliases:               []string{"u"},
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Short:                 "Uninstall a plugin",
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Args:                  cobra.ExactArgs(1),
-			RunE: func(_ *cobra.Command, args []string) error {
-				if err := plugin.Uninstall(args[0]); err != nil {
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := plugin.Uninstall(cmd.Context(), args[0]); err != nil {
 					return xerrors.Errorf("plugin uninstall error: %w", err)
 				}
 				return nil
@@ -749,17 +764,14 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "list",
 			Aliases:               []string{"l"},
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Short:                 "List installed plugin",
 			Args:                  cobra.NoArgs,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				info, err := plugin.List()
-				if err != nil {
+				if err := plugin.List(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin list display error: %w", err)
-				}
-				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
-					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
 			},
@@ -767,40 +779,67 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "info PLUGIN_NAME",
 			Short:                 "Show information about the specified plugin",
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
-				info, err := plugin.Information(args[0])
-				if err != nil {
+				if err := plugin.Information(args[0]); err != nil {
 					return xerrors.Errorf("plugin information display error: %w", err)
-				}
-				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
-					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
 			},
 		},
 		&cobra.Command{
-			Use:                   "run URL | FILE_PATH",
+			Use:                   "run NAME | URL | FILE_PATH",
 			Aliases:               []string{"r"},
-			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
 			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return plugin.RunWithURL(cmd.Context(), args[0], plugin.RunOptions{Args: args[1:]})
+				return plugin.RunWithURL(cmd.Context(), args[0], plugin.Options{Args: args[1:]})
 			},
 		},
 		&cobra.Command{
-			Use:                   "update PLUGIN_NAME",
-			Short:                 "Update an existing plugin",
-			SilenceErrors:         true,
+			Use:                   "update",
+			Short:                 "Update the local copy of the plugin index",
 			DisableFlagsInUseLine: true,
-			Args:                  cobra.ExactArgs(1),
-			RunE: func(_ *cobra.Command, args []string) error {
-				if err := plugin.Update(args[0]); err != nil {
+			SilenceErrors:         true,
+			SilenceUsage:          true,
+			Args:                  cobra.NoArgs,
+			RunE: func(cmd *cobra.Command, _ []string) error {
+				if err := plugin.Update(cmd.Context()); err != nil {
 					return xerrors.Errorf("plugin update error: %w", err)
+				}
+				return nil
+			},
+		},
+		&cobra.Command{
+			Use:                   "search [KEYWORD]",
+			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
+			Short:                 "List Trivy plugins available on the plugin index and search among them",
+			Args:                  cobra.MaximumNArgs(1),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				var keyword string
+				if len(args) == 1 {
+					keyword = args[0]
+				}
+				return plugin.Search(cmd.Context(), keyword)
+			},
+		},
+		&cobra.Command{
+			Use:                   "upgrade [PLUGIN_NAMES]",
+			Short:                 "Upgrade installed plugins to newer versions",
+			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := plugin.Upgrade(cmd.Context(), args); err != nil {
+					return xerrors.Errorf("plugin upgrade error: %w", err)
 				}
 				return nil
 			},
@@ -936,22 +975,21 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 	cmd := &cobra.Command{
-		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
+		Use:     "kubernetes [flags] [CONTEXT]",
 		Aliases: []string{"k8s"},
 		GroupID: groupScanning,
 		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
+		Long:    `Default context in kube configuration will be used unless specified`,
 		Example: `  # cluster scanning
-  $ trivy k8s --report summary cluster
+  $ trivy k8s --report summary
 
-  # namespace scanning:
-  $ trivy k8s -n kube-system --report summary all
+  # cluster scanning with specific namespace:
+  $ trivy k8s --include-namespaces kube-system --report summary 
 
-  # resources scanning:
-  $ trivy k8s --report=summary deploy
-  $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
-
-  # resource scanning:
-  $ trivy k8s deployment/orion
+  # cluster with specific context:
+  $ trivy k8s kind-kind --report summary 
+  
+  
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := k8sFlags.Bind(cmd); err != nil {
@@ -1040,7 +1078,7 @@ The following services are supported:
 			}
 			if opts.Timeout < time.Hour {
 				opts.Timeout = time.Hour
-				log.Logger.Debug("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
+				log.Info("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
 			}
 			return awscommands.Run(cmd.Context(), opts)
 		},
@@ -1106,7 +1144,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			if options.Timeout < time.Minute*30 {
 				options.Timeout = time.Minute * 30
-				log.Logger.Debug("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
+				log.Info("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetVM)
 		},
@@ -1231,14 +1269,14 @@ func showVersion(cacheDir, outputFormat string, w io.Writer) error {
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
-	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset' and '--generate-default-config' don't conduct the subsequent scanning
+	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset', '--reset-checks-bundle' and '--generate-default-config' don't conduct the subsequent scanning
 	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
 		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
-		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetPolicyBundleFlag.ConfigName) {
+		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetChecksBundleFlag.ConfigName) {
 		return nil
 	}
 
-	if len(args) == 0 && viper.GetString(flag.InputFlag.ConfigName) == "" {
+	if len(args) == 0 && viper.GetString(flag.InputFlag.ConfigName) == "" && cmd.Name() != "kubernetes" {
 		if err := cmd.Help(); err != nil {
 			return err
 		}

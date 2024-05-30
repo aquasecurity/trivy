@@ -44,7 +44,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "gemlibrary1",
 									Version: "1.2.3",
@@ -54,7 +54,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Composer,
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -64,7 +64,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "usr/local/bundle/specifications/gon-6.3.2.gemspec",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:     "gon",
 									Version:  "6.3.2",
@@ -123,7 +123,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:     "activesupport",
 									Version:  "6.0.2.1",
@@ -145,6 +145,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.4",
 						Release: "4.5.8",
 						Identifier: types.PkgIdentifier{
+							UID: "108c0f3943d7bc9",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeApk,
 								Namespace: "alpine",
@@ -168,6 +169,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.3",
 						Release: "4.5.6",
 						Identifier: types.PkgIdentifier{
+							UID: "9d77cb17d1fc8736",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeApk,
 								Namespace: "alpine",
@@ -190,7 +192,7 @@ func TestApplyLayers(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: types.GemSpec,
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "activesupport",
 								Version:  "6.0.2.1",
@@ -200,6 +202,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
+									UID: "b3549e98a3094a66",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "activesupport",
@@ -216,6 +219,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
+									UID: "f27f3b46e09fc2e2",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "gon",
@@ -228,7 +232,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "gemlibrary1",
 								Version: "1.2.3",
@@ -237,6 +241,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
+									UID: "a3363562b587cfa2",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "gemlibrary1",
@@ -279,7 +284,7 @@ func TestApplyLayers(t *testing.T) {
 					Applications: []types.Application{
 						{
 							Type: types.PythonPkg,
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "pip",
 									Version: "23.0.1",
@@ -310,18 +315,45 @@ func TestApplyLayers(t *testing.T) {
 							Digest: "sha256:e67fdae3559346105027c63e7fb032bba57e62b1fe9f2da23e6fdfb56384e00b",
 							DiffID: "sha256:633f5bf471f7595b236a21e62dc60beef321db45916363a02ad5af02d794d497",
 						},
+						Identifier: types.PkgIdentifier{
+							UID: "e984be704d7e13ef",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "debian",
+								Name:      "adduser",
+								Version:   "3.118+deb11u1",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "arch",
+										Value: "all",
+									},
+									{
+										Key:   "distro",
+										Value: "debian-11.8",
+									},
+								},
+							},
+						},
 					},
 				},
 				Applications: []types.Application{
 					{
 						Type: types.PythonPkg,
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "pip",
 								Version:  "23.0.1",
 								FilePath: "usr/local/lib/python3.9/site-packages/pip-23.0.1.dist-info/METADATA",
 								Layer: types.Layer{
 									DiffID: "sha256:1def056a3160854c9395aa76282dd62172ec08c18a5fa03bb7d50a777c15ba99",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "8d8c54cecea3dd33",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "pip",
+										Version: "23.0.1",
+									},
 								},
 							},
 						},
@@ -374,7 +406,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "rails",
 									Version: "5.0.0",
@@ -388,7 +420,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Composer,
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -398,7 +430,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:     "activesupport",
 									Version:  "6.0.2.1",
@@ -416,7 +448,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "rails",
 									Version: "6.0.0",
@@ -430,7 +462,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer2.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -453,7 +485,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "rack",
 								Version: "4.0.0",
@@ -462,6 +494,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
+									UID: "9744e21755aea0ef",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "rack",
@@ -477,6 +510,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 								},
 								Identifier: types.PkgIdentifier{
+									UID: "7e9712137f044ffe",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "rails",
@@ -489,7 +523,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "app/composer2.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "phplibrary1",
 								Version: "6.6.6",
@@ -498,6 +532,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 								},
 								Identifier: types.PkgIdentifier{
+									UID: "940351428c1fed49",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeComposer,
 										Name:    "phplibrary1",
@@ -701,7 +736,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -761,6 +796,7 @@ func TestApplyLayers(t *testing.T) {
 						Release:  "4.5.7",
 						Licenses: []string{"GPL-2"},
 						Identifier: types.PkgIdentifier{
+							UID: "c3c9ea1442ead294",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,
 								Namespace: "debian",
@@ -785,6 +821,7 @@ func TestApplyLayers(t *testing.T) {
 						Release:  "4.5.6",
 						Licenses: []string{"OpenSSL"},
 						Identifier: types.PkgIdentifier{
+							UID: "9d77cb17d1fc8736",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,
 								Namespace: "debian",
@@ -817,7 +854,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -935,6 +972,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "5.6.7",
 						Release: "8",
 						Identifier: types.PkgIdentifier{
+							UID: "3982c06acacff066",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeRPM,
 								Namespace: "redhat",
@@ -962,6 +1000,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.4",
 						Release: "5",
 						Identifier: types.PkgIdentifier{
+							UID: "8a72001605297eac",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeRPM,
 								Namespace: "redhat",
@@ -991,6 +1030,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.3",
 						Release: "4",
 						Identifier: types.PkgIdentifier{
+							UID: "8de1ca1c33881bac",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeRPM,
 								Namespace: "redhat",
@@ -1018,6 +1058,86 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "same package but different file path", // different hashes
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 1,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					Applications: []types.Application{
+						{
+							Type:     types.Bundler,
+							FilePath: "app1/Gemfile.lock",
+							Packages: types.Packages{
+								{
+									Name:    "gemlibrary1",
+									Version: "1.2.3",
+								},
+							},
+						},
+						{
+							Type:     types.Bundler,
+							FilePath: "app2/Gemfile.lock",
+							Packages: types.Packages{
+								{
+									Name:    "gemlibrary1",
+									Version: "1.2.3",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Applications: []types.Application{
+					{
+						Type:     types.Bundler,
+						FilePath: "app1/Gemfile.lock",
+						Packages: types.Packages{
+							{
+								Name:    "gemlibrary1",
+								Version: "1.2.3",
+								Layer: types.Layer{
+									Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "176111c6c0c6488", // different hash
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "gemlibrary1",
+										Version: "1.2.3",
+									},
+								},
+							},
+						},
+					},
+					{
+						Type:     types.Bundler,
+						FilePath: "app2/Gemfile.lock",
+						Packages: types.Packages{
+							{
+								Name:    "gemlibrary1",
+								Version: "1.2.3",
+								Layer: types.Layer{
+									Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "e1416731a0829253", // different hash
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "gemlibrary1",
+										Version: "1.2.3",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -1028,7 +1148,7 @@ func TestApplyLayers(t *testing.T) {
 				return got.Applications[i].FilePath < got.Applications[j].FilePath
 			})
 			for _, app := range got.Applications {
-				sort.Sort(app.Libraries)
+				sort.Sort(app.Packages)
 			}
 			assert.Equal(t, tt.want, got, tt.name)
 		})

@@ -9,33 +9,33 @@ import (
 func Test_First(t *testing.T) {
 	test := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "first in empty string",
-			args: []interface{}{
+			args: []any{
 				"",
 			},
 			expected: "",
 		},
 		{
 			name: "first in string",
-			args: []interface{}{
+			args: []any{
 				"Hello",
 			},
 			expected: "H",
 		},
 		{
 			name: "first in empty slice",
-			args: []interface{}{
+			args: []any{
 				[]string{},
 			},
 			expected: "",
 		},
 		{
 			name: "first in slice",
-			args: []interface{}{
+			args: []any{
 				[]string{"Hello", "World"},
 			},
 			expected: "Hello",

@@ -22,7 +22,7 @@ type VersionInfo struct {
 	Version         string             `json:",omitempty"`
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
 	JavaDB          *metadata.Metadata `json:",omitempty"`
-	PolicyBundle    *policy.Metadata   `json:",omitempty"`
+	CheckBundle     *policy.Metadata   `json:",omitempty"`
 }
 
 func formatDBMetadata(title string, meta metadata.Metadata) string {
@@ -42,8 +42,8 @@ func (v *VersionInfo) String() string {
 	if v.JavaDB != nil {
 		output += formatDBMetadata("Java DB", *v.JavaDB)
 	}
-	if v.PolicyBundle != nil {
-		output += v.PolicyBundle.String()
+	if v.CheckBundle != nil {
+		output += v.CheckBundle.String()
 	}
 	return output
 }
@@ -55,7 +55,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	mc := metadata.NewClient(cacheDir)
 	meta, err := mc.Get()
 	if err != nil {
-		log.Logger.Debugw("Failed to get DB metadata", "error", err)
+		log.Debug("Failed to get DB metadata", log.Err(err))
 	}
 	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
 		dbMeta = &metadata.Metadata{
@@ -69,7 +69,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
 	metaJava, err := mcJava.Get()
 	if err != nil {
-		log.Logger.Debugw("Failed to get Java DB metadata", "error", err)
+		log.Debug("Failed to get Java DB metadata", log.Err(err))
 	}
 	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
 		javadbMeta = &metadata.Metadata{
@@ -83,13 +83,13 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	var pbMeta *policy.Metadata
 	pc, err := policy.NewClient(cacheDir, false, "")
 	if err != nil {
-		log.Logger.Debugw("Failed to instantiate policy client", "error", err)
+		log.Debug("Failed to instantiate policy client", log.Err(err))
 	}
 	if pc != nil && err == nil {
 		pbMetaRaw, err := pc.GetMetadata()
 
 		if err != nil {
-			log.Logger.Debugw("Failed to get policy metadata", "error", err)
+			log.Debug("Failed to get policy metadata", log.Err(err))
 		} else {
 			pbMeta = &policy.Metadata{
 				Digest:       pbMetaRaw.Digest,
@@ -102,6 +102,6 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 		Version:         ver,
 		VulnerabilityDB: dbMeta,
 		JavaDB:          javadbMeta,
-		PolicyBundle:    pbMeta,
+		CheckBundle:     pbMeta,
 	}
 }

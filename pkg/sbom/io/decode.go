@@ -5,11 +5,11 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"sync"
 
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
-	"go.uber.org/zap"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -33,13 +33,16 @@ type Decoder struct {
 	osID uuid.UUID
 	pkgs map[uuid.UUID]*ftypes.Package
 	apps map[uuid.UUID]*ftypes.Application
+
+	logger *log.Logger
 }
 
 func NewDecoder(bom *core.BOM) *Decoder {
 	return &Decoder{
-		bom:  bom,
-		pkgs: make(map[uuid.UUID]*ftypes.Package),
-		apps: make(map[uuid.UUID]*ftypes.Application),
+		bom:    bom,
+		pkgs:   make(map[uuid.UUID]*ftypes.Package),
+		apps:   make(map[uuid.UUID]*ftypes.Application),
+		logger: log.WithPrefix("sbom"),
 	}
 }
 
@@ -107,11 +110,16 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 }
 
 func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
+	onceMultiOSWarn := sync.OnceFunc(func() {
+		m.logger.Warn("Multiple OS components are not supported, taking the first one and ignoring the rest")
+	})
+
 	for id, c := range m.bom.Components() {
 		switch c.Type {
 		case core.TypeOS:
 			if m.osID != uuid.Nil {
-				return xerrors.New("multiple OS components are not supported")
+				onceMultiOSWarn()
+				continue
 			}
 			m.osID = id
 			sbom.Metadata.OS = &ftypes.OS{
@@ -127,7 +135,7 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 		}
 
 		// Third-party SBOMs may contain packages in types other than "Library"
-		if c.Type == core.TypeLibrary || c.PkgID.PURL != nil {
+		if c.Type == core.TypeLibrary || c.PkgIdentifier.PURL != nil {
 			pkg, err := m.decodeLibrary(c)
 			if errors.Is(err, ErrUnsupportedType) || errors.Is(err, ErrPURLEmpty) {
 				continue
@@ -176,17 +184,17 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 }
 
 func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
-	p := (*purl.PackageURL)(c.PkgID.PURL)
+	p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
 	if p == nil {
-		log.Logger.Debugw("Skipping a component without PURL",
-			zap.String("name", c.Name), zap.String("version", c.Version))
+		log.Debug("Skipping a component without PURL",
+			log.String("name", c.Name), log.String("version", c.Version))
 		return nil, ErrPURLEmpty
 	}
 
 	pkg := p.Package()
 	if p.Class() == types.ClassUnknown {
-		log.Logger.Debugw("Skipping a component with an unsupported type",
-			zap.String("name", c.Name), zap.String("version", c.Version), zap.String("type", p.Type))
+		log.Debug("Skipping a component with an unsupported type",
+			log.String("name", c.Name), log.String("version", c.Version), log.String("type", p.Type))
 		return nil, ErrUnsupportedType
 	}
 	pkg.Name = m.pkgName(pkg, c)
@@ -218,7 +226,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 		}
 	}
 
-	pkg.Identifier.BOMRef = c.PkgID.BOMRef
+	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
 	pkg.Licenses = c.Licenses
 
 	for _, f := range c.Files {
@@ -241,10 +249,10 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 // pkgName returns the package name.
 // PURL loses case-sensitivity (e.g. Go, Npm, PyPI), so we have to use an original package name.
 func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
-	p := c.PkgID.PURL
+	p := c.PkgIdentifier.PURL
 
 	// A name from PURL takes precedence for CocoaPods since it has subpath.
-	if c.PkgID.PURL.Type == packageurl.TypeCocoapods {
+	if c.PkgIdentifier.PURL.Type == packageurl.TypeCocoapods {
 		return pkg.Name
 	}
 
@@ -292,7 +300,7 @@ func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
 	case packageurl.TypeDebian:
 		v, err := debver.NewVersion(ver)
 		if err != nil {
-			log.Logger.Debugw("Failed to parse Debian version", zap.Error(err))
+			log.Debug("Failed to parse Debian version", log.Err(err))
 			return
 		}
 		pkg.SrcEpoch = v.Epoch()
@@ -326,7 +334,7 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 			if !ok {
 				continue
 			}
-			app.Libraries = append(app.Libraries, *pkg)
+			app.Packages = append(app.Packages, *pkg)
 			delete(m.pkgs, rel.Dependency) // Delete the added package
 		}
 		sbom.Applications = append(sbom.Applications, *app)
@@ -356,7 +364,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	// Add OS packages only when OS is detected.
 	for _, pkgs := range osPkgMap {
 		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			log.Logger.Warn("Ignore the OS package as no OS is detected.")
+			log.Warn("Ignore the OS package as no OS is detected.")
 			break
 		}
 
@@ -372,8 +380,8 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	for pkgType, pkgs := range langPkgMap {
 		sort.Sort(pkgs)
 		sbom.Applications = append(sbom.Applications, ftypes.Application{
-			Type:      pkgType,
-			Libraries: pkgs,
+			Type:     pkgType,
+			Packages: pkgs,
 		})
 	}
 	return nil

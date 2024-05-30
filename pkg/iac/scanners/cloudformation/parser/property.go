@@ -32,7 +32,7 @@ type Property struct {
 
 type PropertyInner struct {
 	Type  cftypes.CfType
-	Value interface{} `json:"Value" yaml:"Value"`
+	Value any `json:"Value" yaml:"Value"`
 }
 
 func (p *Property) Comment() string {
@@ -113,19 +113,8 @@ func (p *Property) Range() iacTypes.Range {
 }
 
 func (p *Property) Metadata() iacTypes.Metadata {
-	base := p
-	if p.isFunction() {
-		if resolved, ok := p.resolveValue(); ok {
-			base = resolved
-		}
-	}
-	ref := NewCFReferenceWithValue(p.parentRange, *base, p.logicalId)
-	return iacTypes.NewMetadata(p.Range(), ref.String())
-}
-
-func (p *Property) MetadataWithValue(resolvedValue *Property) iacTypes.Metadata {
-	ref := NewCFReferenceWithValue(p.parentRange, *resolvedValue, p.logicalId)
-	return iacTypes.NewMetadata(p.Range(), ref.String())
+	return iacTypes.NewMetadata(p.Range(), p.name).
+		WithParent(iacTypes.NewMetadata(p.parentRange, p.logicalId))
 }
 
 func (p *Property) isFunction() bool {
@@ -140,7 +129,7 @@ func (p *Property) isFunction() bool {
 	return false
 }
 
-func (p *Property) RawValue() interface{} {
+func (p *Property) RawValue() any {
 	return p.Inner.Value
 }
 
@@ -273,7 +262,7 @@ func (p *Property) GetProperty(path string) *Property {
 	return &Property{}
 }
 
-func (p *Property) deriveResolved(propType cftypes.CfType, propValue interface{}) *Property {
+func (p *Property) deriveResolved(propType cftypes.CfType, propValue any) *Property {
 	return &Property{
 		ctx:         p.ctx,
 		name:        p.name,
@@ -380,7 +369,7 @@ func (p *Property) GetJsonBytes(squashList ...bool) []byte {
 	lines = removeLeftMargin(lines)
 
 	yamlContent := strings.Join(lines, "\n")
-	var body interface{}
+	var body any
 	if err := yaml.Unmarshal([]byte(yamlContent), &body); err != nil {
 		return nil
 	}
@@ -410,18 +399,26 @@ func removeLeftMargin(lines []string) []string {
 	return lines
 }
 
-func convert(input interface{}) interface{} {
+func convert(input any) any {
 	switch x := input.(type) {
-	case map[interface{}]interface{}:
-		outpMap := make(map[string]interface{})
+	case map[any]any:
+		outpMap := make(map[string]any)
 		for k, v := range x {
 			outpMap[k.(string)] = convert(v)
 		}
 		return outpMap
-	case []interface{}:
+	case []any:
 		for i, v := range x {
 			x[i] = convert(v)
 		}
 	}
 	return input
+}
+
+func (p *Property) inferType() {
+	typ := cftypes.TypeFromGoValue(p.Inner.Value)
+	if typ == cftypes.Unknown {
+		return
+	}
+	p.Inner.Type = typ
 }

@@ -21,6 +21,10 @@ func TestCheckOptions(t *testing.T) {
 			domain:  "alpine:3.9",
 			wantErr: types.InvalidURLPattern,
 		},
+		"InvalidDomain": {
+			domain:  "not-gcr.io",
+			wantErr: types.InvalidURLPattern,
+		},
 		"NoOption": {
 			domain: "gcr.io",
 			gcr:    &Registry{domain: "gcr.io"},

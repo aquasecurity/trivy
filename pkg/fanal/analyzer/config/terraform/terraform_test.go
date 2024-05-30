@@ -42,6 +42,11 @@ func TestConfigAnalyzer_Required(t *testing.T) {
 			filePath: "deployment.yaml",
 			want:     false,
 		},
+		{
+			name:     "manifest snapshot file",
+			filePath: ".terraform/modules/modules.json",
+			want:     true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

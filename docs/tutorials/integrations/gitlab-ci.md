@@ -49,7 +49,7 @@ trivy:
   cache:
     paths:
       - .trivycache/
-  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab Ultimate)
   artifacts:
     reports:
       container_scanning: gl-container-scanning-report.json

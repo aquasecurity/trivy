@@ -168,7 +168,7 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 		return "", false
 	}
 
-	m, ok := s.Predicate.(map[string]interface{})
+	m, ok := s.Predicate.(map[string]any)
 	if !ok {
 		return "", false
 	}
@@ -182,7 +182,7 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 
 func Decode(f io.Reader, format Format) (types.SBOM, error) {
 	var (
-		v       interface{}
+		v       any
 		bom     = core.NewBOM(core.Options{})
 		decoder interface{ Decode(any) error }
 	)

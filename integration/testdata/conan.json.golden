@@ -22,80 +22,14 @@
       "Type": "conan",
       "Packages": [
         {
-          "ID": "bzip2/1.0.8",
-          "Name": "bzip2",
-          "Identifier": {
-            "PURL": "pkg:conan/bzip2@1.0.8"
-          },
-          "Version": "1.0.8",
-          "Indirect": true,
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 37,
-              "EndLine": 43
-            }
-          ]
-        },
-        {
-          "ID": "expat/2.4.8",
-          "Name": "expat",
-          "Identifier": {
-            "PURL": "pkg:conan/expat@2.4.8"
-          },
-          "Version": "2.4.8",
-          "Indirect": true,
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 51,
-              "EndLine": 57
-            }
-          ]
-        },
-        {
-          "ID": "openssl/1.1.1q",
-          "Name": "openssl",
-          "Identifier": {
-            "PURL": "pkg:conan/openssl@1.1.1q"
-          },
-          "Version": "1.1.1q",
-          "Indirect": true,
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 65,
-              "EndLine": 71
-            }
-          ]
-        },
-        {
-          "ID": "pcre/8.43",
-          "Name": "pcre",
-          "Identifier": {
-            "PURL": "pkg:conan/pcre@8.43"
-          },
-          "Version": "8.43",
-          "Indirect": true,
-          "DependsOn": [
-            "bzip2/1.0.8",
-            "zlib/1.2.12"
-          ],
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 26,
-              "EndLine": 36
-            }
-          ]
-        },
-        {
           "ID": "poco/1.9.4",
           "Name": "poco",
           "Identifier": {
-            "PURL": "pkg:conan/poco@1.9.4"
+            "PURL": "pkg:conan/poco@1.9.4",
+            "UID": "312753cebe80c0eb"
           },
           "Version": "1.9.4",
+          "Relationship": "direct",
           "DependsOn": [
             "pcre/8.43",
             "zlib/1.2.12",
@@ -112,13 +46,91 @@
           ]
         },
         {
+          "ID": "bzip2/1.0.8",
+          "Name": "bzip2",
+          "Identifier": {
+            "PURL": "pkg:conan/bzip2@1.0.8",
+            "UID": "6e2ff993df2d9107"
+          },
+          "Version": "1.0.8",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 37,
+              "EndLine": 43
+            }
+          ]
+        },
+        {
+          "ID": "expat/2.4.8",
+          "Name": "expat",
+          "Identifier": {
+            "PURL": "pkg:conan/expat@2.4.8",
+            "UID": "71c2d92d60f7f21c"
+          },
+          "Version": "2.4.8",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 51,
+              "EndLine": 57
+            }
+          ]
+        },
+        {
+          "ID": "openssl/1.1.1q",
+          "Name": "openssl",
+          "Identifier": {
+            "PURL": "pkg:conan/openssl@1.1.1q",
+            "UID": "13c605db6afa69dd"
+          },
+          "Version": "1.1.1q",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 65,
+              "EndLine": 71
+            }
+          ]
+        },
+        {
+          "ID": "pcre/8.43",
+          "Name": "pcre",
+          "Identifier": {
+            "PURL": "pkg:conan/pcre@8.43",
+            "UID": "4e01c692a67e12e4"
+          },
+          "Version": "8.43",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "bzip2/1.0.8",
+            "zlib/1.2.12"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 26,
+              "EndLine": 36
+            }
+          ]
+        },
+        {
           "ID": "sqlite3/3.39.2",
           "Name": "sqlite3",
           "Identifier": {
-            "PURL": "pkg:conan/sqlite3@3.39.2"
+            "PURL": "pkg:conan/sqlite3@3.39.2",
+            "UID": "43bc9c58092c7c9e"
           },
           "Version": "3.39.2",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -131,10 +143,12 @@
           "ID": "zlib/1.2.12",
           "Name": "zlib",
           "Identifier": {
-            "PURL": "pkg:conan/zlib@1.2.12"
+            "PURL": "pkg:conan/zlib@1.2.12",
+            "UID": "d6faf8d6dfd1985"
           },
           "Version": "1.2.12",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -150,7 +164,8 @@
           "PkgID": "pcre/8.43",
           "PkgName": "pcre",
           "PkgIdentifier": {
-            "PURL": "pkg:conan/pcre@8.43"
+            "PURL": "pkg:conan/pcre@8.43",
+            "UID": "4e01c692a67e12e4"
           },
           "InstalledVersion": "8.43",
           "FixedVersion": "8.45",

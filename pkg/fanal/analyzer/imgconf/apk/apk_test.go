@@ -202,7 +202,7 @@ var (
 			},
 			{
 				Created: v1.Time{
-					time.Date(2018, time.October, 15, 21, 28, 51, 35012363, time.UTC),
+					Time: time.Date(2018, time.October, 15, 21, 28, 51, 35012363, time.UTC),
 				},
 				CreatedBy:  "/bin/sh -c #(nop)  ENV COMPOSER_VERSION=1.7.2",
 				EmptyLayer: true,
@@ -234,7 +234,7 @@ var (
 			},
 			{
 				Created: v1.Time{
-					time.Date(2018, time.October, 15, 21, 28, 53, 798628678, time.UTC),
+					Time: time.Date(2018, time.October, 15, 21, 28, 53, 798628678, time.UTC),
 				},
 				CreatedBy:  "/bin/sh -c #(nop)  CMD [\"composer\"]",
 				EmptyLayer: true,
@@ -1261,9 +1261,9 @@ func TestResolveDependency(t *testing.T) {
 		if err = json.NewDecoder(f).Decode(&apkIndexArchive); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
-		circularDependencyCheck := map[string]struct{}{}
+		circularDependencyCheck := make(map[string]struct{})
 		pkgs := analyzer.resolveDependency(apkIndexArchive, v.pkgName, circularDependencyCheck)
-		actual := map[string]struct{}{}
+		actual := make(map[string]struct{})
 		for _, pkg := range pkgs {
 			actual[pkg] = struct{}{}
 		}

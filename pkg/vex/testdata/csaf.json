@@ -1,0 +1,90 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "notes": [
+      {
+        "category": "summary",
+        "text": "Example Company VEX document. Unofficial content for demonstration purposes only.",
+        "title": "Author comment"
+      }
+    ],
+    "publisher": {
+      "category": "vendor",
+      "name": "Example Company ProductCERT",
+      "namespace": "https://psirt.example.com"
+    },
+    "title": "Aqua Security example VEX document",
+    "tracking": {
+      "current_release_date": "2022-03-03T11:00:00.000Z",
+      "generator": {
+        "date": "2022-03-03T11:00:00.000Z",
+        "engine": {
+          "name": "Secvisogram",
+          "version": "1.11.0"
+        }
+      },
+      "id": "2022-EVD-UC-01-A-001",
+      "initial_release_date": "2022-03-03T11:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2022-03-03T11:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v0.24.2",
+                "product": {
+                  "name": "client-go v0.24.2",
+                  "product_id": "client-go-v0.24.2",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/k8s.io/client-go@0.24.2"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "client-go"
+          }
+        ],
+        "category": "vendor",
+        "name": "k8s.io"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2023-2727",
+      "notes": [
+        {
+          "category": "description",
+          "text": "Users may be able to launch containers using images that are restricted by ImagePolicyWebhook when using ephemeral containers. Kubernetes clusters are only affected if the ImagePolicyWebhook admission plugin is used together with ephemeral containers.",
+          "title": "CVE description"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "client-go-v0.24.2"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "The asset uses the component as a dependency in the code, but the vulnerability only affects Kubernetes clusters https://github.com/kubernetes/kubernetes/issues/118640"
+        }
+      ]
+    }
+  ]
+}

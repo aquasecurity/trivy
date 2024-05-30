@@ -78,8 +78,13 @@ func ResolveIntrinsicFunc(property *Property) (*Property, bool) {
 
 	for funcName := range property.AsMap() {
 		if fn := intrinsicFuncs[funcName]; fn != nil {
-			//
-			return fn(property)
+			prop, resolved := fn(property)
+			if prop == nil || !resolved {
+				return prop, false
+			}
+
+			prop.inferType()
+			return prop, true
 		}
 	}
 	return property, false

@@ -3,10 +3,10 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type TestParent struct {
