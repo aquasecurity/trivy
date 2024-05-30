@@ -18,6 +18,12 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 )
 
+var signature = &object.Signature{
+	Name:  "Test",
+	Email: "test@example.com",
+	When:  time.Now(),
+}
+
 func NewServer(t *testing.T, repo, dir string) *httptest.Server {
 	wtDir := t.TempDir()
 	fmt.Println(wtDir)
@@ -35,11 +41,7 @@ func NewServer(t *testing.T, repo, dir string) *httptest.Server {
 	require.NoError(t, err)
 
 	_, err = wt.Commit("initial commit", &git.CommitOptions{
-		Author: &object.Signature{
-			Name:  "Test",
-			Email: "test@example.com",
-			When:  time.Now(),
-		},
+		Author: signature,
 	})
 	require.NoError(t, err)
 
@@ -75,7 +77,9 @@ func CommitAll(t *testing.T, r *git.Repository, msg string) {
 	_, err = w.Add(".")
 	require.NoError(t, err)
 
-	_, err = w.Commit(msg, &git.CommitOptions{})
+	_, err = w.Commit(msg, &git.CommitOptions{
+		Author: signature,
+	})
 	require.NoError(t, err)
 }
 
@@ -85,6 +89,7 @@ func SetTag(t *testing.T, r *git.Repository, tag string) {
 
 	t.Logf("git tag -a %s %s -m \"%s\"", tag, h.Hash(), tag)
 	_, err = r.CreateTag(tag, h.Hash(), &git.CreateTagOptions{
+		Tagger:  signature,
 		Message: tag,
 	})
 	require.NoError(t, err)
