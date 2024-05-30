@@ -30,7 +30,12 @@ func init() {
 
 const version = 1
 
-var pythonExecNames = []string{"python3", "python", "python2", "python.exe"}
+var pythonExecNames = []string{
+	"python3",
+	"python",
+	"python2",
+	"python.exe",
+}
 
 type pipLibraryAnalyzer struct {
 	logger         *log.Logger
@@ -132,12 +137,12 @@ func (a pipLibraryAnalyzer) pythonSitePackagesDir() (string, error) {
 	if venv := os.Getenv("VIRTUAL_ENV"); venv != "" {
 		libDir := filepath.Join(venv, "lib")
 		if _, err := os.Stat(libDir); os.IsNotExist(err) {
-			return "", xerrors.Errorf("Unable to detect `lib` dir for %q venv: %w", venv, err)
+			return "", xerrors.Errorf("unable to detect `lib` dir for %q venv: %w", venv, err)
 		}
 
 		spDir, err := a.findSitePackagesDir(libDir)
 		if err != nil {
-			return "", xerrors.Errorf("Unable to detect `site-packages` dir for %q venv: %w", spDir, err)
+			return "", xerrors.Errorf("unable to detect `site-packages` dir for %q venv: %w", spDir, err)
 		}
 
 		if spDir != "" {
@@ -156,7 +161,7 @@ func (a pipLibraryAnalyzer) pythonSitePackagesDir() (string, error) {
 	libDir := filepath.Join(pythonExecDir, "..", "lib")
 	spDir, err := a.findSitePackagesDir(libDir)
 	if err != nil {
-		return "", xerrors.Errorf("Unable to detect `site-packages` dir for %q: %w", pythonExecPath, err)
+		return "", xerrors.Errorf("unable to detect `site-packages` dir for %q: %w", pythonExecPath, err)
 	}
 	if spDir != "" {
 		return spDir, nil
@@ -181,7 +186,7 @@ func pythonExecutablePath() (string, error) {
 		}
 		return pythonPath, nil
 	}
-	return "", xerrors.Errorf("Unable to find path to Python executable")
+	return "", xerrors.Errorf("unable to find path to Python executable")
 }
 
 // findSitePackagesDir finds `site-packages` dir in `lib` dir

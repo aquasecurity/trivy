@@ -233,7 +233,7 @@ func Test_pythonExecutablePath(t *testing.T) {
 		{
 			name:     "sad path. Python executable not found",
 			execName: "python-wrong",
-			wantErr:  "Unable to find path to Python executable",
+			wantErr:  "unable to find path to Python executable",
 		},
 	}
 	for _, tt := range tests {
