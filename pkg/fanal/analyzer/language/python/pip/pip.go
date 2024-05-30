@@ -169,7 +169,7 @@ func (a pipLibraryAnalyzer) pythonSitePackagesDir() (string, error) {
 
 	// Try another common pattern if the Python library directory is not found
 	spDir = filepath.Join(pythonExecDir, "..", "..", "lib", "site-packages")
-	if _, err = os.Stat(spDir); os.IsNotExist(err) {
+	if !fsutils.DirExists(spDir) {
 		return "", xerrors.Errorf("site-packages directory not found")
 	}
 
@@ -204,7 +204,7 @@ func (a pipLibraryAnalyzer) findSitePackagesDir(libDir string) (string, error) {
 	pythonDirs := a.sortPythonDirs(entries)
 	for i := len(pythonDirs) - 1; i >= 0; i-- {
 		dir := filepath.Join(libDir, pythonDirs[i], "site-packages")
-		if _, err = os.Stat(dir); !os.IsNotExist(err) {
+		if fsutils.DirExists(dir) {
 			return filepath.Join(libDir, pythonDirs[i], "site-packages"), nil
 		}
 	}
