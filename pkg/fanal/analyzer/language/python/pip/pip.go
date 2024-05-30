@@ -105,17 +105,12 @@ func (a pipLibraryAnalyzer) Version() int {
 
 // pkgLicense parses `METADATA` pkg file to look for licenses
 func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
-	// Don't look for licenses if `site-packages` directory is not found
-	if spDir == "" {
-		return nil
-	}
-
 	// METADATA path is `**/site-packages/<pkg_name>-<pkg_version>.dist-info/METADATA`
 	pkgDir := fmt.Sprintf("%s-%s.dist-info", pkgName, pkgVer)
 	metadataPath := filepath.Join(spDir, pkgDir, "METADATA")
 	metadataFile, err := os.Open(metadataPath)
 	if os.IsNotExist(err) {
-		a.logger.Debug("site-packages directory doesn't contain package", log.String("site-packages dir", pkgDir),
+		a.logger.Debug("No package metadata found", log.String("site-packages", pkgDir),
 			log.String("name", pkgName), log.String("version", pkgVer))
 		return nil
 	}
