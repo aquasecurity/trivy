@@ -154,13 +154,35 @@ $ TMPDIR=/my/custom/path trivy repo ...
     write /tmp/fanal-3323732142: no space left on device
     ```
 
-Trivy uses the `/tmp` directory during image scan, if the image is large or `/tmp` is of insufficient size then the scan fails You can set the `TMPDIR` environment variable to use redirect trivy to use a directory with adequate storage.
+Trivy uses the `$TMPDIR` directory during image scans.
+If the image is large or `$TMPDIR` has insufficient space, the scan will fail.
+You can set the `$TMPDIR` environment variable to redirect Trivy to a directory with adequate storage.
 
 Try:
 
 ```
 $ TMPDIR=/my/custom/path trivy image ...
 ```
+
+When scanning images from a container registry, Trivy processes each layer by streaming, loading only the necessary files for the scan into memory and discarding unnecessary files.
+If a layer contains large files that are necessary for the scan (such as JAR files or binary files), Trivy saves them to a temporary directory ($TMPDIR) on local storage to avoid increased memory consumption.
+Although these files are deleted after the scan is complete, they can temporarily increase disk consumption and potentially exhaust storage.
+In such cases, there are currently three workarounds:
+
+1. Specify `$TMPDIR` with sufficient capacity
+ 
+    This is the same as explained above.
+ 
+2. Specify a small value for `--parallel`
+ 
+    By default, multiple layers are processed in parallel.
+    If each layer contains large files, disk space may be consumed rapidly.
+    By specifying a small value such as `--parallel 1`, parallelism is reduced, which can mitigate the issue.
+
+3. Specify `--skip-files` or `--skip-dirs`
+ 
+    If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs. 
+    For more details, please refer to [this documentation](../configuration/skipping.md).
 
 ## DB
 ### Old DB schema
