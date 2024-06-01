@@ -81,6 +81,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
+	defer testfile.Close()
 
 	// load image into docker engine
 	resp, err := d.cli.ImageLoad(ctx, testfile, true)
