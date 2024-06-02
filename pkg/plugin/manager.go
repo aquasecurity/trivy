@@ -84,8 +84,8 @@ func Install(ctx context.Context, name string, opts Options) (Plugin, error) {
 func Start(ctx context.Context, name string, opts Options) (Wait, error) {
 	return defaultManager().Start(ctx, name, opts)
 }
-func RunWithURL(ctx context.Context, name string, opts Options) error {
-	return defaultManager().RunWithURL(ctx, name, opts)
+func Run(ctx context.Context, name string, opts Options) error {
+	return defaultManager().Run(ctx, name, opts)
 }
 func Upgrade(ctx context.Context, names []string) error { return defaultManager().Upgrade(ctx, names) }
 func Uninstall(ctx context.Context, name string) error  { return defaultManager().Uninstall(ctx, name) }
@@ -291,8 +291,8 @@ func (m *Manager) Start(ctx context.Context, name string, opts Options) (Wait, e
 	return wait, nil
 }
 
-// RunWithURL runs the plugin
-func (m *Manager) RunWithURL(ctx context.Context, name string, opts Options) error {
+// Run installs and runs the plugin
+func (m *Manager) Run(ctx context.Context, name string, opts Options) error {
 	plugin, err := m.Install(ctx, name, opts)
 	if err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)
