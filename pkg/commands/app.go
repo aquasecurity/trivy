@@ -799,7 +799,7 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return plugin.RunWithURL(cmd.Context(), args[0], plugin.Options{Args: args[1:]})
+				return plugin.Run(cmd.Context(), args[0], plugin.Options{Args: args[1:]})
 			},
 		},
 		&cobra.Command{
