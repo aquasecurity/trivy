@@ -59,7 +59,7 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency
 			if constraint, ok := l.Sdks[string(dep.Description)]; ok {
 				v, err := firstVersionOfConstrain(constraint)
 				if err != nil {
-					p.logger.Warn("unable to get sdk version from constraint: %w", err)
+					p.logger.Warn("unable to get sdk version from constraint: %w", log.Err(err))
 				} else if v != "" {
 					p.logger.Info("The first version of the constraint from the sdk source was used.", log.String("dep", name), log.String("constraint", constraint))
 					version = v
