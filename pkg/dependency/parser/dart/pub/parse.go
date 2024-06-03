@@ -1,11 +1,10 @@
 package pub
 
 import (
-	"strings"
-
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -58,7 +57,10 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency
 		version := dep.Version
 		if version == "0.0.0" && dep.Source == "sdk" {
 			if constraint, ok := l.Sdks[string(dep.Description)]; ok {
-				if v := firstVersionOfConstrain(constraint); v != "" {
+				v, err := firstVersionOfConstrain(constraint)
+				if err != nil {
+					p.logger.Warn("unable to get sdk version from constraint: %w", err)
+				} else if v != "" {
 					p.logger.Info("The first version of the constraint from the sdk source was used.", log.String("dep", name), log.String("constraint", constraint))
 					version = v
 				}
@@ -93,17 +95,21 @@ func (p Parser) relationship(dep string) ftypes.Relationship {
 }
 
 // firstVersionOfConstrain returns the first acceptable version for constraint
-func firstVersionOfConstrain(constraint string) string {
-	// cf. https://dart.dev/tools/pub/dependencies#traditional-syntax
-	switch {
-	case strings.HasPrefix(constraint, ">="):
-		constraint = strings.TrimPrefix(constraint, ">=")
-		constraint, _, _ = strings.Cut(constraint, " ")
-		return constraint
-	case strings.HasPrefix(constraint, "^"):
-		return strings.TrimPrefix(constraint, "^")
+func firstVersionOfConstrain(constraint string) (string, error) {
+	css, err := goversion.NewConstraints(constraint)
+	if err != nil {
+		return "", xerrors.Errorf("unable to parse constraints: %w", err)
 	}
-	return ""
+
+	// Dart uses only `>=` and `^` operators:
+	// cf. https://dart.dev/tools/pub/dependencies#traditional-syntax
+	constraints := css.List()
+	// We only need to get the first version from the range
+	if constraints[0][0].Operator() != ">=" && constraints[0][0].Operator() != "^" {
+		return "", nil
+	}
+
+	return constraints[0][0].Version(), nil
 }
 
 func (d *Description) UnmarshalYAML(value *yaml.Node) error {
