@@ -116,6 +116,14 @@ func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin
 	}
 	defer os.RemoveAll(tempDir)
 
+	if entries, err := os.ReadDir(tempDir); err != nil {
+		return Plugin{}, xerrors.Errorf("failed to read %s: %w", tempDir, err)
+	} else if len(entries) == 1 && entries[0].IsDir() {
+		//　A single directory may be contained within an archive file.
+		// e.g. https://github.com/aquasecurity/trivy-plugin-referrer/archive/refs/heads/main.zip
+		tempDir = filepath.Join(tempDir, entries[0].Name())
+	}
+
 	m.logger.DebugContext(ctx, "Loading the plugin metadata...")
 	plugin, err := m.loadMetadata(tempDir)
 	if err != nil {
