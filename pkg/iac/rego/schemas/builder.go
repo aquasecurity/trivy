@@ -3,7 +3,10 @@ package schemas
 import (
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
+
+	"golang.org/x/exp/maps"
 
 	"github.com/aquasecurity/trivy/pkg/iac/rego/convert"
 	"github.com/aquasecurity/trivy/pkg/iac/state"
@@ -22,6 +25,63 @@ type Property struct {
 	Items      *Property           `json:"items,omitempty"`
 }
 
+func (r *RawSchema) removeRecursion() {
+	var dfs func(k string, prop *Property, visited map[string]bool, recStack map[string]bool)
+	dfs = func(k string, prop *Property, visited map[string]bool, recStack map[string]bool) {
+
+		if prop == nil || k == "" {
+			return
+		}
+
+		if !visited[k] {
+			visited[k] = true
+			recStack[k] = true
+
+			keys := maps.Keys(prop.Properties)
+			sort.Strings(keys)
+
+			for _, propKey := range keys {
+				p := prop.Properties[propKey]
+				refname := refToKey(p.Ref)
+				if p.Items != nil {
+					refname = refToKey(p.Items.Ref)
+				}
+
+				if recStack[refname] {
+					// Delete the current property to break the recursion
+					delete(r.Defs[k].Properties, propKey)
+					recStack[k] = false
+					return
+				}
+
+				if !visited[refname] {
+					dfs(refname, r.Defs[refname], visited, recStack)
+				}
+			}
+		}
+
+		recStack[k] = false
+	}
+
+	visited := make(map[string]bool)
+	recStack := make(map[string]bool)
+
+	keys := maps.Keys(r.Defs)
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		def := r.Defs[k]
+		if !visited[k] {
+			dfs(k, def, visited, recStack)
+		}
+	}
+}
+
+func refToKey(ref string) string {
+	after, _ := strings.CutPrefix(ref, "#/definitions/")
+	return after
+}
+
 type builder struct {
 	schema RawSchema
 }
@@ -36,6 +96,8 @@ func Build() (*RawSchema, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	b.schema.removeRecursion()
 
 	return &b.schema, nil
 }

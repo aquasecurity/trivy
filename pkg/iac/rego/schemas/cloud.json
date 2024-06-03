@@ -2334,13 +2334,6 @@
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.iam.AccessKey"
           }
         },
-        "groups": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.iam.Group"
-          }
-        },
         "lastaccess": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.TimeValue"
@@ -5643,13 +5636,6 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Binding"
-          }
-        },
-        "folders": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Folder"
           }
         },
         "members": {
