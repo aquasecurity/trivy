@@ -115,8 +115,10 @@ require (
 	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xlab/treeprint v1.2.0
+	github.com/zclconf/go-cty v1.14.4
+	github.com/zclconf/go-cty-yaml v1.0.3
 	go.etcd.io/bbolt v1.3.10
-	go.uber.org/zap v1.27.0 // indirect
+	golang.org/x/crypto v0.23.0
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 	golang.org/x/mod v0.17.0
 	golang.org/x/net v0.25.0
@@ -126,16 +128,10 @@ require (
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 	google.golang.org/protobuf v1.34.1
 	gopkg.in/yaml.v3 v3.0.1
+	helm.sh/helm/v3 v3.15.1
 	k8s.io/api v0.30.1
 	k8s.io/utils v0.0.0-20231127182322-b307cd553661
 	modernc.org/sqlite v1.29.10
-)
-
-require (
-	github.com/zclconf/go-cty v1.14.4
-	github.com/zclconf/go-cty-yaml v1.0.3
-	golang.org/x/crypto v0.23.0
-	helm.sh/helm/v3 v3.15.1
 	sigs.k8s.io/yaml v1.4.0
 )
 
@@ -393,6 +389,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
