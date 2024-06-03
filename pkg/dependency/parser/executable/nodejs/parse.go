@@ -5,10 +5,10 @@ package nodejsparser
 import (
 	"bytes"
 	"regexp"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	exe "github.com/aquasecurity/trivy/pkg/dependency/parser/executable"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -20,12 +20,12 @@ var (
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
 // Parse scans file to try to report the NodeJS version.
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	x, err := exe.OpenExe(r)
 	if err != nil {
 		return nil, nil, ErrUnrecognizedExe
@@ -36,9 +36,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, nil
 	}
 
-	var libs []types.Library
-	libs = append(libs, types.Library{
-		ID: dependency.ID(ftypes.NodeJsExecutable, mod, vers),
+	var libs []ftypes.Package
+	libs = append(libs, ftypes.Package{
+		ID:      dependency.ID(ftypes.NodeJsExecutable, mod, vers),
 		Name:    mod,
 		Version: vers,
 	})

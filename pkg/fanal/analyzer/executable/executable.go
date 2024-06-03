@@ -8,8 +8,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/executable/nodejs"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/executable/python"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/executable/php"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/executable/python"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -29,19 +29,19 @@ type executableAnalyzer struct{}
 
 // Returns boolean argument in first argument, indicating whether the Executable version is detectable
 func isDetectableLibraryExecutable(fileInfo os.FileInfo) (bool, types.TargetType, error) {
-	isPythonExecutable := isDetectablePythonExecutable(fileInfo);
+	isPythonExecutable := isDetectablePythonExecutable(fileInfo)
 	if isPythonExecutable {
 		return true, types.PythonExecutable, nil
 	}
-	isNodeJsExecutable := isDetectableNodeJsExecutable(fileInfo);
+	isNodeJsExecutable := isDetectableNodeJsExecutable(fileInfo)
 	if isNodeJsExecutable {
 		return true, types.NodeJsExecutable, nil
 	}
-	isPhpExecutable := isDetectablePhpExecutable(fileInfo);
+	isPhpExecutable := isDetectablePhpExecutable(fileInfo)
 	if isPhpExecutable {
 		return true, types.PhpExecutable, nil
 	}
-	return false, types.TargetType("") , nil
+	return false, types.TargetType(""), nil
 }
 
 func isDetectablePythonExecutable(fileInfo os.FileInfo) bool {
@@ -85,6 +85,7 @@ func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 	isDetectableLib, binaryType, err := isDetectableLibraryExecutable(input.Info)
 	if isDetectableLib && binaryType != "" && err != nil {
 		switch binaryType {
+<<<<<<< HEAD
 			case types.PythonExecutable:
 				res, err := language.Analyze(types.PythonExecutable, input.FilePath, input.Content, pythonparser.NewParser())
 				if err != nil {
@@ -103,6 +104,26 @@ func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 					return nil, nil
 				}
 				return res, nil
+=======
+		case types.PythonExecutable:
+			res, err := language.Analyze(types.PythonExecutable, input.FilePath, input.Content, pythonparser.NewParser())
+			if err != nil {
+				return nil, nil
+			}
+			return res, nil
+		case types.NodeJsExecutable:
+			res, err := language.Analyze(types.NodeJsExecutable, input.FilePath, input.Content, nodejsparser.NewParser())
+			if err != nil {
+				return nil, nil
+			}
+			return res, nil
+		case types.PhpExecutable:
+			res, err := language.Analyze(types.PhpExecutable, input.FilePath, input.Content, phpparser.NewParser())
+			if err != nil {
+				return nil, nil
+			}
+			return res, nil
+>>>>>>> e6e316544450e1616ac1c27e0a9c027fa976fc79
 		}
 	}
 
