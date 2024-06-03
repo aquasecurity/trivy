@@ -45,22 +45,22 @@ func isDetectableLibraryExecutable(fileInfo os.FileInfo) (bool, types.TargetType
 }
 
 func isDetectablePythonExecutable(fileInfo os.FileInfo) bool {
-	pythonLibNameRegex := regexp.MustCompile("^libpython[0-9]+(?:[.0-9]+)+[a-z]?[.]so.*$")
-	pythonExecutableNameRegex := regexp.MustCompile("(?:.*/|^)python(?P<version>[0-9]+(?:[.0-9]+)+)?$")
+	pythonLibNameRegex := regexp.MustCompile("^libpython[0-9]+(?:[.0-9])+[a-z]?[.]so.*$")
+	pythonExecutableNameRegex := regexp.MustCompile("(?:.*/|^)python(?P<version>[0-9]+(?:[.0-9])+)?$")
 	isPythonExecutable := pythonExecutableNameRegex.FindSubmatch([]byte(fileInfo.Name()))
 	isPythonLibSo := pythonLibNameRegex.FindSubmatch([]byte(fileInfo.Name()))
 	return utils.IsExecutable(fileInfo) && (isPythonExecutable != nil || isPythonLibSo != nil)
 }
 
 func isDetectableNodeJsExecutable(fileInfo os.FileInfo) bool {
-	nodejsExecutableNameRegex := regexp.MustCompile("(?:.*/|^)node(?P<version>[0-9]+(?:[.0-9]+)+)?$")
+	nodejsExecutableNameRegex := regexp.MustCompile("(?:.*/|^)node(?P<version>[0-9]+(?:[.0-9])+)?$")
 	isNodeJsExecutable := nodejsExecutableNameRegex.FindSubmatch([]byte(fileInfo.Name()))
 	return utils.IsExecutable(fileInfo) && (isNodeJsExecutable != nil)
 }
 
 func isDetectablePhpExecutable(fileInfo os.FileInfo) bool {
 	phpExecutableNameRegex := regexp.MustCompile("(.*/|^)php[0-9]*$")
-	phpLibNameRegex := regexp.MustCompile("(.*/|^)libphp[0-9.-a-z]*[.]so$")
+	phpLibNameRegex := regexp.MustCompile("(.*/|^)libphp[0-9a-z.-]*[.]so$")
 	phpFpmNameRegex := regexp.MustCompile("(.*/|^)php-fpm[0-9]*$")
 	phpCgiNameRegex := regexp.MustCompile("(.*/|^)php-cgi[0-9]*$")
 
@@ -86,18 +86,18 @@ func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 	if isDetectableLib && binaryType != "" && err == nil {
 		var res *analyzer.AnalysisResult = nil
 		switch binaryType {
-			case types.PythonExecutable:
-				res, err = language.Analyze(types.PythonExecutable, input.FilePath, input.Content, pythonparser.NewParser())
-			case types.NodeJsExecutable:
-				res, err = language.Analyze(types.NodeJsExecutable, input.FilePath, input.Content, nodejsparser.NewParser())
-			case types.PhpExecutable:
-				res, err = language.Analyze(types.PhpExecutable, input.FilePath, input.Content, phpparser.NewParser())
+		case types.PythonExecutable:
+			res, err = language.Analyze(types.PythonExecutable, input.FilePath, input.Content, pythonparser.NewParser())
+		case types.NodeJsExecutable:
+			res, err = language.Analyze(types.NodeJsExecutable, input.FilePath, input.Content, nodejsparser.NewParser())
+		case types.PhpExecutable:
+			res, err = language.Analyze(types.PhpExecutable, input.FilePath, input.Content, phpparser.NewParser())
 		}
 		if err != nil {
 			return nil, err
 		}
 		if res != nil {
-			res.Digests = map[string]string{input.FilePath: dig.String()};
+			res.Digests = map[string]string{input.FilePath: dig.String()}
 			return res, nil
 		}
 	}

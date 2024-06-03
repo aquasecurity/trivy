@@ -35,7 +35,7 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 		{
 			name:     "Python binary",
 			filePath: "testdata/python2.7",
-			want:     &analyzer.AnalysisResult{
+			want: &analyzer.AnalysisResult{
 				Digests: map[string]string{
 					"testdata/python2.7": "sha256:c43714431f84c27aa30b4b2368d6570fcafdced12e2e9aa0efb10aeb5cbe5a6b",
 				},
@@ -45,9 +45,9 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/python2.7",
 						Packages: types.Packages{
 							{
-								ID:        "python@2.7.18",
-								Name:      "python",
-								Version:   "2.7.18",
+								ID:      "python@2.7.18",
+								Name:    "python",
+								Version: "2.7.18",
 							},
 						},
 					},
@@ -55,7 +55,7 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "Php Binary",
+			name:     "Php Binary",
 			filePath: "testdata/php",
 			want: &analyzer.AnalysisResult{
 				Digests: map[string]string{
@@ -67,9 +67,9 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/php",
 						Packages: types.Packages{
 							{
-								ID:        "php@8.0.7",
-								Name:      "php",
-								Version:   "8.0.7",
+								ID:      "php@8.0.7",
+								Name:    "php",
+								Version: "8.0.7",
 							},
 						},
 					},
@@ -77,7 +77,7 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "NodeJS Binary",
+			name:     "NodeJS Binary",
 			filePath: "testdata/node",
 			want: &analyzer.AnalysisResult{
 				Digests: map[string]string{
@@ -89,9 +89,9 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/node",
 						Packages: types.Packages{
 							{
-								ID:        "node@12.16.3",
-								Name:      "node",
-								Version:   "12.16.3",
+								ID:      "node@12.16.3",
+								Name:    "node",
+								Version: "12.16.3",
 							},
 						},
 					},

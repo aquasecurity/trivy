@@ -42,12 +42,12 @@ func TestParse(t *testing.T) {
 			parser := NewParser()
 			got, _, err := parser.Parse(f)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
