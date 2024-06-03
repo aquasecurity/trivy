@@ -40,7 +40,6 @@ func setupGitRepository(t *testing.T, repo, dir string) *httptest.Server {
 	modifyManifest(t, worktree, "0.3.0")
 	gittest.CommitAll(t, r, "bump up to 0.3.0")
 
-	t.Log("git push")
 	err := r.Push(&git.PushOptions{})
 	require.NoError(t, err)
 
