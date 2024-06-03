@@ -26,11 +26,7 @@ func NewParser() *Parser {
 }
 
 // Parse scans file to try to report the Python version.
-<<<<<<< HEAD
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-=======
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
->>>>>>> e6e316544450e1616ac1c27e0a9c027fa976fc79
 	x, err := exe.OpenExe(r)
 	if err != nil {
 		return nil, nil, ErrUnrecognizedExe
@@ -41,15 +37,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, nil
 	}
 
-<<<<<<< HEAD
-	var libs []types.Library
-	libs = append(libs, types.Library{
-		ID: dependency.ID(ftypes.PythonExecutable, name, vers),
-=======
 	var libs []ftypes.Package
 	libs = append(libs, ftypes.Package{
 		ID:      dependency.ID(ftypes.PythonExecutable, name, vers),
->>>>>>> e6e316544450e1616ac1c27e0a9c027fa976fc79
 		Name:    name,
 		Version: vers,
 	})
