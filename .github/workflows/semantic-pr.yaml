@@ -2,7 +2,6 @@ name: "Lint PR title"
 
 on:
   pull_request_target:
-    branches: [ main ]
     types:
       - opened
       - edited
