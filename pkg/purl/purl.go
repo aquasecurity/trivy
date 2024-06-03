@@ -460,7 +460,7 @@ func purlType(t ftypes.TargetType) string {
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
 		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.Photon:
 		return packageurl.TypeRPM
-	case ftypes.PythonGeneric, ftypes.PhpGeneric, ftypes.NodeJsGeneric:
+	case ftypes.PythonExecutable, ftypes.PhpExecutable, ftypes.NodeJsExecutable:
 		return packageurl.TypeGeneric
 	case TypeOCI:
 		return packageurl.TypeOCI
