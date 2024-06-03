@@ -4,7 +4,6 @@ package gittest
 
 import (
 	"errors"
-	"fmt"
 	"net/http/httptest"
 	"path/filepath"
 	"testing"
@@ -28,7 +27,6 @@ var signature = &object.Signature{
 
 func NewServer(t *testing.T, repo, dir string) *httptest.Server {
 	wtDir := t.TempDir()
-	fmt.Println(wtDir)
 
 	// git init
 	r, err := git.PlainInit(wtDir, false)
