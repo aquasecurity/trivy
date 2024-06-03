@@ -7,23 +7,23 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
+		want      []types.Package
 		wantDep   []types.Dependency
 		wantErr   string
 	}{
 		{
 			name:      "ELF12",
 			inputFile: "testdata/node.12.elf",
-			want: []types.Library{
+			want: []types.Package{
 				{
-					ID: 	 "node@12.16.3",
+					ID:      "node@12.16.3",
 					Name:    "node",
 					Version: "12.16.3",
 				},

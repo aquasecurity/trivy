@@ -7,22 +7,22 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
+		want      []types.Package
 		wantErr   string
 	}{
 		{
 			name:      "ELF",
 			inputFile: "testdata/php.elf",
-			want: []types.Library{
+			want: []types.Package{
 				{
-					ID: 	 "php@8.0.7",
+					ID:      "php@8.0.7",
 					Name:    "php",
 					Version: "8.0.7",
 				},
