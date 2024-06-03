@@ -2,6 +2,7 @@ package executable
 
 import (
 	"context"
+	"log"
 	"os"
 	"regexp"
 
@@ -83,47 +84,22 @@ func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 		return nil, xerrors.Errorf("sha256 error: %w", err)
 	}
 	isDetectableLib, binaryType, err := isDetectableLibraryExecutable(input.Info)
-	if isDetectableLib && binaryType != "" && err != nil {
+	if isDetectableLib && binaryType != "" && err == nil {
+		var res *analyzer.AnalysisResult = nil
 		switch binaryType {
-<<<<<<< HEAD
 			case types.PythonExecutable:
-				res, err := language.Analyze(types.PythonExecutable, input.FilePath, input.Content, pythonparser.NewParser())
-				if err != nil {
-					return nil, nil
-				}
-				return res, nil
+				res, err = language.Analyze(types.PythonExecutable, input.FilePath, input.Content, pythonparser.NewParser())
 			case types.NodeJsExecutable:
-				res, err := language.Analyze(types.NodeJsExecutable, input.FilePath, input.Content, nodejsparser.NewParser())
-				if err != nil {
-					return nil, nil
-				}
-				return res, nil
+				res, err = language.Analyze(types.NodeJsExecutable, input.FilePath, input.Content, nodejsparser.NewParser())
 			case types.PhpExecutable:
-				res, err := language.Analyze(types.PhpExecutable, input.FilePath, input.Content, phpparser.NewParser())
-				if err != nil {
-					return nil, nil
-				}
-				return res, nil
-=======
-		case types.PythonExecutable:
-			res, err := language.Analyze(types.PythonExecutable, input.FilePath, input.Content, pythonparser.NewParser())
-			if err != nil {
-				return nil, nil
-			}
+				res, err = language.Analyze(types.PhpExecutable, input.FilePath, input.Content, phpparser.NewParser())
+		}
+		if err != nil {
+			return nil, err
+		}
+		if res != nil {
+			res.Digests = map[string]string{input.FilePath: dig.String()};
 			return res, nil
-		case types.NodeJsExecutable:
-			res, err := language.Analyze(types.NodeJsExecutable, input.FilePath, input.Content, nodejsparser.NewParser())
-			if err != nil {
-				return nil, nil
-			}
-			return res, nil
-		case types.PhpExecutable:
-			res, err := language.Analyze(types.PhpExecutable, input.FilePath, input.Content, phpparser.NewParser())
-			if err != nil {
-				return nil, nil
-			}
-			return res, nil
->>>>>>> e6e316544450e1616ac1c27e0a9c027fa976fc79
 		}
 	}
 
