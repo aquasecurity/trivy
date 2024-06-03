@@ -2,7 +2,6 @@ package executable
 
 import (
 	"context"
-	"log"
 	"os"
 	"regexp"
 
