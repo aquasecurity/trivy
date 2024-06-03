@@ -49,8 +49,8 @@ const (
 	TypeCargo      Type = "cargo"
 
 	// PHP
-	TypeComposer   Type = "composer"
-	TypePHPGeneric Type = "php"
+	TypeComposer   	  Type = "composer"
+	TypePHPExecutable Type = "php"
 
 	// Java
 	TypeJar         Type = "jar"
@@ -58,11 +58,11 @@ const (
 	TypeGradleLock  Type = "gradle-lockfile"
 
 	// Node.js
-	TypeNpmPkgLock 	  Type = "npm"
-	TypeNodePkg    	  Type = "node-pkg"
-	TypeYarn       	  Type = "yarn"
-	TypePnpm       	  Type = "pnpm"
-	TypeNodeJsGeneric Type = "nodejs"
+	TypeNpmPkgLock 	  	 Type = "npm"
+	TypeNodePkg    	  	 Type = "node-pkg"
+	TypeYarn       	  	 Type = "yarn"
+	TypePnpm       	  	 Type = "pnpm"
+	TypeNodeJsExecutable Type = "nodejs"
 
 	// .NET
 	TypeNuget         Type = "nuget"
@@ -74,11 +74,11 @@ const (
 	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg 	  Type = "python-pkg"
-	TypePip       	  Type = "pip"
-	TypePipenv    	  Type = "pipenv"
-	TypePoetry    	  Type = "poetry"
-	TypePythonGeneric Type = "python"
+	TypePythonPkg 	  	 Type = "python-pkg"
+	TypePip       	  	 Type = "pip"
+	TypePipenv    	  	 Type = "pipenv"
+	TypePoetry    	  	 Type = "poetry"
+	TypePythonExecutalbe Type = "python"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -173,13 +173,11 @@ var (
 		TypeGemSpec,
 		TypeCargo,
 		TypeComposer,
-		TypePHPGeneric,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
 		TypeNpmPkgLock,
 		TypeNodePkg,
-		TypeNodeJsGeneric,
 		TypeYarn,
 		TypePnpm,
 		TypeNuget,
@@ -200,7 +198,6 @@ var (
 		TypePubSpecLock,
 		TypeMixLock,
 		TypeJulia,
-		TypePythonGeneric,
 	}
 
 	// TypeLockfiles has all lock file analyzers
