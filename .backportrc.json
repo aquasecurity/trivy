@@ -1,0 +1,4 @@
+{
+  "prTitle": "{{sourcePullRequest.title}} [backport: {{targetBranch}}]",
+  "targetPRLabels": ["backport"]
+}

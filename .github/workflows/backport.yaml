@@ -1,4 +1,4 @@
-name: Automatic backport action
+name: Automatic Backporting
 
 on:
   pull_request_target:
