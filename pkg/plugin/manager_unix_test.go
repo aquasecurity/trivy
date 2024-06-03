@@ -14,11 +14,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/google/go-containerregistry/pkg/v1"
-	"github.com/sosedoff/gitkit" // Not work on Windows
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/gittest"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -26,24 +27,43 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
-func setupGitServer() (*httptest.Server, error) {
-	service := gitkit.New(gitkit.Config{
-		Dir:        "./testdata",
-		AutoCreate: false,
-	})
+func setupGitRepository(t *testing.T, repo, dir string) *httptest.Server {
+	gs := gittest.NewServer(t, repo, dir)
 
-	if err := service.Setup(); err != nil {
-		return nil, err
-	}
+	worktree := t.TempDir()
+	r := gittest.Clone(t, gs, repo, worktree)
 
-	ts := httptest.NewServer(service)
+	// git tag
+	gittest.SetTag(t, r, "v0.2.0")
 
-	return ts, nil
+	// git commit
+	modifyManifest(t, worktree, "0.3.0")
+	gittest.CommitAll(t, r, "bump up to 0.3.0")
+
+	err := r.Push(&git.PushOptions{})
+	require.NoError(t, err)
+
+	// git tag
+	gittest.SetTag(t, r, "v0.3.0")
+
+	// git push --tags
+	gittest.PushTags(t, r)
+
+	return gs
+}
+
+func modifyManifest(t *testing.T, worktree, version string) {
+	manifestPath := filepath.Join(worktree, "plugin.yaml")
+	b, err := os.ReadFile(manifestPath)
+	require.NoError(t, err)
+
+	b = bytes.ReplaceAll(b, []byte("0.2.0"), []byte(version))
+	err = os.WriteFile(manifestPath, b, 0644)
+	require.NoError(t, err)
 }
 
 func TestManager_Install(t *testing.T) {
-	gs, err := setupGitServer()
-	require.NoError(t, err)
+	gs := setupGitRepository(t, "test_plugin", "testdata/test_plugin")
 	t.Cleanup(gs.Close)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -76,8 +96,8 @@ func TestManager_Install(t *testing.T) {
 			},
 		},
 	}
-	wantPluginWithVersion := wantPlugin
-	wantPluginWithVersion.Version = "0.1.0"
+	wantPluginWithGit := wantPlugin
+	wantPluginWithGit.Version = "0.3.0"
 
 	wantLogs := `2021-08-25T12:20:30Z	INFO	Installing the plugin...	src="%s"
 2021-08-25T12:20:30Z	INFO	Plugin successfully installed	name="test_plugin" version="%s"
@@ -109,16 +129,16 @@ func TestManager_Install(t *testing.T) {
 		{
 			name:       "git",
 			pluginName: "git::" + gs.URL + "/test_plugin.git",
-			want:       wantPlugin,
+			want:       wantPluginWithGit,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
-			wantLogs:   fmt.Sprintf(wantLogs, "git::"+gs.URL+"/test_plugin.git", "0.2.0"),
+			wantLogs:   fmt.Sprintf(wantLogs, "git::"+gs.URL+"/test_plugin.git", "0.3.0"),
 		},
 		{
 			name:       "with version",
-			pluginName: "git::" + gs.URL + "/test_plugin.git@v0.1.0",
-			want:       wantPluginWithVersion,
+			pluginName: "git::" + gs.URL + "/test_plugin.git@v0.2.0",
+			want:       wantPlugin,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
-			wantLogs:   fmt.Sprintf(wantLogs, "git::"+gs.URL+"/test_plugin.git", "0.1.0"),
+			wantLogs:   fmt.Sprintf(wantLogs, "git::"+gs.URL+"/test_plugin.git", "0.2.0"),
 		},
 		{
 			name:       "via index",
