@@ -49,18 +49,18 @@ const (
 	TypeCargo      Type = "cargo"
 
 	// PHP
-	TypeComposer   	  Type = "composer"
+	TypeComposer Type = "composer"
 
 	// Java
-	TypeJar         Type = "jar"
-	TypePom         Type = "pom"
-	TypeGradleLock  Type = "gradle-lockfile"
+	TypeJar        Type = "jar"
+	TypePom        Type = "pom"
+	TypeGradleLock Type = "gradle-lockfile"
 
 	// Node.js
-	TypeNpmPkgLock 	  	 Type = "npm"
-	TypeNodePkg    	  	 Type = "node-pkg"
-	TypeYarn       	  	 Type = "yarn"
-	TypePnpm       	  	 Type = "pnpm"
+	TypeNpmPkgLock Type = "npm"
+	TypeNodePkg    Type = "node-pkg"
+	TypeYarn       Type = "yarn"
+	TypePnpm       Type = "pnpm"
 
 	// .NET
 	TypeNuget         Type = "nuget"
@@ -72,10 +72,10 @@ const (
 	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg 	  	 Type = "python-pkg"
-	TypePip       	  	 Type = "pip"
-	TypePipenv    	  	 Type = "pipenv"
-	TypePoetry    	  	 Type = "poetry"
+	TypePythonPkg Type = "python-pkg"
+	TypePip       Type = "pip"
+	TypePipenv    Type = "pipenv"
+	TypePoetry    Type = "poetry"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
