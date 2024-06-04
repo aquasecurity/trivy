@@ -7,7 +7,9 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/poetry"
@@ -102,9 +104,18 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
+	// Convert package name to lower case
+	p = lo.MapKeys(p, func(_ any, key string) string {
+		return strings.ToLower(key)
+	})
+	// Identify the direct/transitive dependencies
 	for i, pkg := range app.Packages {
-		// Identify the direct/transitive dependencies
-		if _, ok := p[pkg.Name]; ok {
+		// There are cases where package names from `poetry.lock` and `pyproject.toml` use different case.
+		// e.g. `pyproject.toml` uses `Flask`, but `poetry.lock` uses `flask`
+		// cf. https://github.com/aquasecurity/trivy/issues/6817
+		// So we need to compare lowercase package names.
+		pkgName := strings.ToLower(pkg.Name)
+		if _, ok := p[pkgName]; ok {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
 			app.Packages[i].Indirect = true
