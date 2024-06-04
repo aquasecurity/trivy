@@ -50,7 +50,6 @@ const (
 
 	// PHP
 	TypeComposer   	  Type = "composer"
-	TypePHPExecutable Type = "php"
 
 	// Java
 	TypeJar         Type = "jar"
@@ -62,7 +61,6 @@ const (
 	TypeNodePkg    	  	 Type = "node-pkg"
 	TypeYarn       	  	 Type = "yarn"
 	TypePnpm       	  	 Type = "pnpm"
-	TypeNodeJsExecutable Type = "nodejs"
 
 	// .NET
 	TypeNuget         Type = "nuget"
@@ -78,7 +76,6 @@ const (
 	TypePip       	  	 Type = "pip"
 	TypePipenv    	  	 Type = "pipenv"
 	TypePoetry    	  	 Type = "poetry"
-	TypePythonExecutalbe Type = "python"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
