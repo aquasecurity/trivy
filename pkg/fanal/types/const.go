@@ -46,7 +46,6 @@ const (
 	Bundler          LangType = "bundler"
 	GemSpec          LangType = "gemspec"
 	Cargo            LangType = "cargo"
-	PhpExecutable    LangType = "php"
 	Composer         LangType = "composer"
 	Npm              LangType = "npm"
 	NuGet            LangType = "nuget"
@@ -58,8 +57,6 @@ const (
 	CondaPkg         LangType = "conda-pkg"
 	CondaEnv         LangType = "conda-environment"
 	PythonPkg        LangType = "python-pkg"
-	PythonExecutable LangType = "python"
-	NodeJsExecutable LangType = "nodejs"
 	NodePkg          LangType = "node-pkg"
 	Yarn             LangType = "yarn"
 	Pnpm             LangType = "pnpm"
@@ -150,4 +147,11 @@ const (
 
 	JuliaProject  = "Project.toml"
 	JuliaManifest = "Manifest.toml"
+)
+
+// Detectable executable types
+const (
+	PythonExecutable LangType = "python"
+	NodeJsExecutable LangType = "nodejs"
+	PhpExecutable    LangType = "php"
 )
