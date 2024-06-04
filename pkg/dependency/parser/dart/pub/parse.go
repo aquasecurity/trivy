@@ -104,6 +104,9 @@ func firstVersionOfConstrain(constraint string) (string, error) {
 	// Dart uses only `>=` and `^` operators:
 	// cf. https://dart.dev/tools/pub/dependencies#traditional-syntax
 	constraints := css.List()
+	if len(constraints) == 0 || len(constraints[0]) == 0 {
+		return "", nil
+	}
 	// We only need to get the first version from the range
 	if constraints[0][0].Operator() != ">=" && constraints[0][0].Operator() != "^" {
 		return "", nil
