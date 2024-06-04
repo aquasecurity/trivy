@@ -1,14 +1,16 @@
-// Ported from https://github.com/golang/go/blob/e9c96835971044aa4ace37c7787de231bbde05d9/src/cmd/go/internal/version/exe.go
+// Ported from https://github.com/golang/go/blob/b5a861782312d2b3a4f71e33d9a0c2b01a40fe5f/src/debug/buildinfo/buildinfo.go
 
 package executable
 
 import (
 	"bytes"
 	"debug/elf"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 )
+
+var errUnrecognizedFormat = errors.New("unrecognized file format")
 
 // An exe is a generic interface to an OS executable (ELF, Mach-O, PE, XCOFF).
 type Exe interface {
@@ -20,32 +22,24 @@ type Exe interface {
 }
 
 // openExe opens file and returns it as an exe.
-func OpenExe(r io.Reader) (Exe, error) {
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
+func OpenExe(r io.ReaderAt) (Exe, error) {
+	ident := make([]byte, 16)
+	if n, err := r.ReadAt(ident, 0); n < len(ident) || err != nil {
+		return nil, errUnrecognizedFormat
 	}
 
-	br := bytes.NewReader(b)
-
-	data := make([]byte, 16)
-	if _, err := io.ReadFull(br, data); err != nil {
-		return nil, err
-	}
-	_, err = br.Seek(0, 0)
-	if err != nil {
-		return nil, err
-	}
-
-	if bytes.HasPrefix(data, []byte("\x7FELF")) {
-		e, err := elf.NewFile(br)
+	switch {
+	case bytes.HasPrefix(ident, []byte("\x7FELF")):
+		f, err := elf.NewFile(r)
 		if err != nil {
-			return nil, err
+			return nil, errUnrecognizedFormat
 		}
-		return &elfExe{e}, nil
+		return &elfExe{f}, nil
+	default:
+		return nil, errUnrecognizedFormat
 	}
 
-	return nil, fmt.Errorf("unrecognized executable format")
+	return nil, errUnrecognizedFormat
 }
 
 // elfExe is the ELF implementation of the exe interface.
