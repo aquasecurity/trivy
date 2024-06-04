@@ -49,13 +49,13 @@ func isDetectablePythonExecutable(fileInfo os.FileInfo) bool {
 	pythonExecutableNameRegex := regexp.MustCompile("(?:.*/|^)python(?P<version>[0-9]+(?:[.0-9])+)?$")
 	isPythonExecutable := pythonExecutableNameRegex.FindSubmatch([]byte(fileInfo.Name()))
 	isPythonLibSo := pythonLibNameRegex.FindSubmatch([]byte(fileInfo.Name()))
-	return utils.IsExecutable(fileInfo) && (isPythonExecutable != nil || isPythonLibSo != nil)
+	return (isPythonExecutable != nil || isPythonLibSo != nil)
 }
 
 func isDetectableNodeJsExecutable(fileInfo os.FileInfo) bool {
 	nodejsExecutableNameRegex := regexp.MustCompile("(?:.*/|^)node(?P<version>[0-9]+(?:[.0-9])+)?$")
 	isNodeJsExecutable := nodejsExecutableNameRegex.FindSubmatch([]byte(fileInfo.Name()))
-	return utils.IsExecutable(fileInfo) && (isNodeJsExecutable != nil)
+	return (isNodeJsExecutable != nil)
 }
 
 func isDetectablePhpExecutable(fileInfo os.FileInfo) bool {
@@ -68,7 +68,7 @@ func isDetectablePhpExecutable(fileInfo os.FileInfo) bool {
 	isPHPLib := phpLibNameRegex.FindSubmatch([]byte(fileInfo.Name()))
 	isPHPFpm := phpFpmNameRegex.FindSubmatch([]byte(fileInfo.Name()))
 	isPHPCgi := phpCgiNameRegex.FindSubmatch([]byte(fileInfo.Name()))
-	return utils.IsExecutable(fileInfo) && (isPHPExecutable != nil || isPHPLib != nil || isPHPFpm != nil || isPHPCgi != nil)
+	return (isPHPExecutable != nil || isPHPLib != nil || isPHPFpm != nil || isPHPCgi != nil)
 }
 
 func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
