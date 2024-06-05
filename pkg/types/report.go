@@ -53,13 +53,15 @@ const (
 	ClassLicenseFile ResultClass = "license-file" // For detected licenses in files
 	ClassCustom      ResultClass = "custom"
 
-	ComplianceK8sNsa           = Compliance("k8s-nsa")
-	ComplianceK8sCIS           = Compliance("k8s-cis")
-	ComplianceK8sPSSBaseline   = Compliance("k8s-pss-baseline")
-	ComplianceK8sPSSRestricted = Compliance("k8s-pss-restricted")
-	ComplianceAWSCIS12         = Compliance("aws-cis-1.2")
-	ComplianceAWSCIS14         = Compliance("aws-cis-1.4")
-	ComplianceDockerCIS        = Compliance("docker-cis")
+	ComplianceK8sNsa10           = Compliance("k8s-nsa-1.0")
+	ComplianceK8sCIS123          = Compliance("k8s-cis-1.23")
+	ComplianceK8sPSSBaseline01   = Compliance("k8s-pss-baseline-0.1")
+	ComplianceK8sPSSRestricted01 = Compliance("k8s-pss-restricted-0.1")
+	ComplianceAWSCIS12           = Compliance("aws-cis-1.2")
+	ComplianceAWSCIS14           = Compliance("aws-cis-1.4")
+	ComplianceDockerCIS160       = Compliance("docker-cis-1.6.0")
+	ComplianceEksCIS14           = Compliance("eks-cis-1.4")
+	ComplianceRke2CIS124         = Compliance("rke2-cis-1.24")
 
 	FormatTable      Format = "table"
 	FormatJSON       Format = "json"
@@ -91,13 +93,13 @@ var (
 		FormatGitHub,
 	}
 	SupportedCompliances = []string{
-		ComplianceK8sNsa,
-		ComplianceK8sCIS,
-		ComplianceK8sPSSBaseline,
-		ComplianceK8sPSSRestricted,
+		ComplianceK8sNsa10,
+		ComplianceK8sCIS123,
+		ComplianceK8sPSSBaseline01,
+		ComplianceK8sPSSRestricted01,
 		ComplianceAWSCIS12,
 		ComplianceAWSCIS14,
-		ComplianceDockerCIS,
+		ComplianceDockerCIS160,
 	}
 )
 
