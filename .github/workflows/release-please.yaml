@@ -55,12 +55,29 @@ jobs:
         if: ${{ steps.extract_info.outputs.version }}
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.ORG_REPO_TOKEN }}
+          github-token: ${{ secrets.ORG_REPO_TOKEN }} # To trigger another workflow
           script: |
             await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/v${{ steps.extract_info.outputs.version }}`,
+              sha: context.sha
+            });
+
+      # When v0.50.0 is released, a release branch "release/v0.50" is created.
+      - name: Create release branch for patch versions
+        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
+          script: |
+            const version = '${{ steps.extract_info.outputs.version }}';
+            const minorVersion = version.slice(0, version.lastIndexOf('.'));
+            const releaseBranch = `release/v${minorVersion}`;
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/heads/${releaseBranch}`,
               sha: context.sha
             });
 
@@ -71,7 +88,7 @@ jobs:
         if: ${{ steps.extract_info.outputs.pr_number }}
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.ORG_REPO_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = parseInt('${{ steps.extract_info.outputs.pr_number }}', 10);
             github.rest.issues.removeLabel({
