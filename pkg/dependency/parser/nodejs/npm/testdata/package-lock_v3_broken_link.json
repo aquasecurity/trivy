@@ -1,0 +1,24 @@
+{
+  "name": "node_v3_without_direct_deps",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "node_v3_without_direct_deps",
+      "version": "1.0.0",
+      "license": "ISC"
+    },
+    "functions/func1": {
+      "version": "1.0.0",
+      "license": "ISC",
+      "dependencies": {
+        "debug": "^2.6.9"
+      }
+    },
+    "node_modules/func1": {
+      "resolved": "",
+      "link": true
+    }
+  }
+}
