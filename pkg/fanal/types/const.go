@@ -63,6 +63,7 @@ const (
 	Jar           LangType = "jar"
 	Pom           LangType = "pom"
 	Gradle        LangType = "gradle"
+	Sbt           LangType = "sbt"
 	GoBinary      LangType = "gobinary"
 	GoModule      LangType = "gomod"
 	JavaScript    LangType = "javascript"

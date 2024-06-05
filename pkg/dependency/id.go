@@ -25,7 +25,7 @@ func ID(ltype types.LangType, name, version string) string {
 		if !strings.HasPrefix(version, "v") {
 			version = "v" + version
 		}
-	case types.Jar, types.Pom, types.Gradle:
+	case types.Jar, types.Pom, types.Gradle, types.Sbt:
 		sep = ":"
 	}
 	return name + sep + version
