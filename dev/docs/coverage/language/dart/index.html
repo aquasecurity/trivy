@@ -1872,6 +1872,26 @@ You're not viewing the latest version.
     Dart
   </a>
   
+    <nav class="md-nav" aria-label="Dart">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sdk-dependencies" class="md-nav__link">
+    SDK dependencies
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-tree" class="md-nav__link">
+    Dependency tree
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3860,6 +3880,26 @@ You're not viewing the latest version.
     Dart
   </a>
   
+    <nav class="md-nav" aria-label="Dart">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sdk-dependencies" class="md-nav__link">
+    SDK dependencies
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-tree" class="md-nav__link">
+    Dependency tree
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3928,6 +3968,20 @@ You're not viewing the latest version.
 <p>In order to detect dependencies, Trivy searches for <code>pubspec.lock</code>.</p>
 <p>Trivy marks indirect dependencies, but <code>pubspec.lock</code> file doesn't have options to separate root and dev transitive dependencies.
 So Trivy includes all dependencies in report.</p>
+<h3 id="sdk-dependencies">SDK dependencies</h3>
+<p>Dart uses version <code>0.0.0</code> for SDK dependencies (e.g. Flutter). It is not possible to accurately determine the versions of these dependencies.</p>
+<p>Therefore, we use the first version of the constraint for the SDK.</p>
+<p>For example in this case the version of <code>flutter</code> should be <code>3.3.0</code>:
+<div class="highlight"><pre><span></span><code><span class="nt">flutter</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">dependency</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;direct</span><span class="nv"> </span><span class="s">main&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flutter</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sdk</span><span class="w"></span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.0.0&quot;</span><span class="w"></span>
+<span class="nt">sdks</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">dart</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&gt;=2.18.0</span><span class="nv"> </span><span class="s">&lt;3.0.0&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">flutter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^3.3.0&quot;</span><span class="w"></span>
+</code></pre></div></p>
+<h3 id="dependency-tree">Dependency tree</h3>
 <p>To build <code>dependency tree</code> Trivy parses <a href="https://dart.dev/tools/pub/glossary#system-cache">cache directory</a>. Currently supported default directories and <code>PUB_CACHE</code> environment (absolute path only).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
