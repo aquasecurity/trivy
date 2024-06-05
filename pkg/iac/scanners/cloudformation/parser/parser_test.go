@@ -370,5 +370,52 @@ Resources:
 			assert.Equal(t, "testbucket", bucketNameProp.AsString())
 		}
 	}
+}
 
+func TestJsonWithNumbers(t *testing.T) {
+	src := `
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "SomeIntParam": {
+            "Type": "Number",
+            "Default": 1
+        },
+        "SomeFloatParam": {
+            "Type": "Number",
+            "Default": 1.1
+        }
+    },
+    "Resources": {
+        "SomeResource": {
+            "Type": "Test::Resource",
+            "Properties": {
+                "SomeIntProp": 1,
+                "SomeFloatProp": 1.1
+            }
+        }
+    }
+}
+`
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.json": src,
+	})
+
+	files, err := New().ParseFS(context.TODO(), fsys, ".")
+
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+
+	file := files[0]
+
+	assert.Equal(t, 1, file.Parameters["SomeIntParam"].Default())
+	assert.Equal(t, 1.1, file.Parameters["SomeFloatParam"].Default())
+
+	res := file.GetResourcesByType("Test::Resource")
+	assert.NotNil(t, res)
+	assert.Len(t, res, 1)
+
+	assert.Equal(t, 1, res[0].GetProperty("SomeIntProp").AsIntValue().Value())
+	assert.Equal(t, 0, res[0].GetProperty("SomeFloatProp").AsIntValue().Value())
 }
