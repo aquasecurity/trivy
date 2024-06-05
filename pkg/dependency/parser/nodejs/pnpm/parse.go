@@ -208,7 +208,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		}
 	}
 
-	visited := map[string]struct{}{}
+	visited := make(map[string]struct{})
 	// Overwrite the `Dev` field for dev deps and their child dependencies.
 	for _, pkg := range resolvedPkgs {
 		if !pkg.Dev {
