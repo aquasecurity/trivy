@@ -2524,13 +2524,6 @@
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.iam.Policy"
           }
-        },
-        "users": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.iam.User"
-          }
         }
       }
     },
@@ -2694,13 +2687,6 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.iam.AccessKey"
-          }
-        },
-        "groups": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.iam.Group"
           }
         },
         "lastaccess": {
@@ -6639,25 +6625,11 @@
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Binding"
           }
         },
-        "folders": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Folder"
-          }
-        },
         "members": {
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Member"
-          }
-        },
-        "projects": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Project"
           }
         }
       }
@@ -6665,11 +6637,25 @@
     "github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.IAM": {
       "type": "object",
       "properties": {
+        "folders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Folder"
+          }
+        },
         "organizations": {
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Organization"
+          }
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Project"
           }
         },
         "workloadidentitypoolproviders": {
@@ -6716,25 +6702,11 @@
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Binding"
           }
         },
-        "folders": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Folder"
-          }
-        },
         "members": {
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Member"
-          }
-        },
-        "projects": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.iam.Project"
           }
         }
       }

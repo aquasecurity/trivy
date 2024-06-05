@@ -1,7 +1,7 @@
 package storage
 
 import (
-	iam2 "github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/iam"
 	iamTypes "github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 )
 
@@ -48,7 +48,7 @@ func (a *adapter) adaptBindings() {
 			continue
 		}
 
-		parented.bindings = iam2.ParsePolicyBlock(policyBlock)
+		parented.bindings = iam.ParsePolicyBlock(policyBlock)
 		a.bindings = append(a.bindings, parented)
 	}
 
@@ -56,7 +56,7 @@ func (a *adapter) adaptBindings() {
 
 		var parented parentedBinding
 		parented.blockID = iamBlock.ID()
-		parented.bindings = []iamTypes.Binding{iam2.AdaptBinding(iamBlock, a.modules)}
+		parented.bindings = []iamTypes.Binding{iam.AdaptBinding(iamBlock, a.modules)}
 
 		bucketAttr := iamBlock.GetAttribute("bucket")
 		if bucketAttr.IsString() {
@@ -79,7 +79,7 @@ func (a *adapter) adaptMembers() {
 
 		var parented parentedMember
 		parented.blockID = iamBlock.ID()
-		parented.member = iam2.AdaptMember(iamBlock, a.modules)
+		parented.member = iam.AdaptMember(iamBlock, a.modules)
 
 		bucketAttr := iamBlock.GetAttribute("bucket")
 		if bucketAttr.IsString() {
