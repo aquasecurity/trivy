@@ -49,22 +49,9 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency
 	}
 	var pkgs []ftypes.Package
 	for name, dep := range l.Packages {
-		// Some dependencies use one of the SDK versions.
-		// In this case dep.Version == `0.0.0`.
-		// We can't get versions for these dependencies.
-		// Therefore, we use the first version of the SDK constraint specified in the Description.
-		// See https://github.com/aquasecurity/trivy/issues/6017
 		version := dep.Version
 		if version == "0.0.0" && dep.Source == "sdk" {
-			if constraint, ok := l.Sdks[string(dep.Description)]; ok {
-				v, err := firstVersionOfConstrain(constraint)
-				if err != nil {
-					p.logger.Warn("unable to get sdk version from constraint: %w", log.Err(err))
-				} else if v != "" {
-					p.logger.Info("The first version of the constraint from the sdk source was used.", log.String("dep", name), log.String("constraint", constraint))
-					version = v
-				}
-			}
+			version = p.findSDKVersion(l, name, dep)
 		}
 
 		// We would like to exclude dev dependencies, but we cannot identify
@@ -82,6 +69,31 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency
 	}
 
 	return pkgs, nil, nil
+}
+
+// findSDKVersion detects the first version of the SDK constraint specified in the Description.
+// If the constraint is not found, it returns the original version.
+func (p Parser) findSDKVersion(l *lock, name string, dep Dep) string {
+	// Some dependencies use one of the SDK versions.
+	// In this case dep.Version == `0.0.0`.
+	// We can't get versions for these dependencies.
+	// Therefore, we use the first version of the SDK constraint specified in the Description.
+	// See https://github.com/aquasecurity/trivy/issues/6017
+	constraint, ok := l.Sdks[string(dep.Description)]
+	if !ok {
+		return dep.Version
+	}
+
+	v, err := firstVersionOfConstrain(constraint)
+	if err != nil {
+		p.logger.Warn("Unable to get sdk version from constraint", log.Err(err))
+		return dep.Version
+	} else if v == "" {
+		return dep.Version
+	}
+	p.logger.Info("Using the first version of the constraint from the sdk source", log.String("dep", name),
+		log.String("constraint", constraint))
+	return v
 }
 
 func (p Parser) relationship(dep string) ftypes.Relationship {
