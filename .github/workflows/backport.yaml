@@ -1,24 +1,37 @@
 name: Automatic Backporting
 
 on:
-  pull_request_target:
-    types: ["labeled", "closed"]
+  issue_comment:
+    types: [created]
 
 jobs:
   backport:
     name: Backport PR
+    if: |
+      github.event.issue.pull_request &&
+      github.event.issue.pull_request.merged_at != null &&
+      contains(github.event.comment.body, '@aqua-bot backport')
     runs-on: ubuntu-latest
+
     steps:
-      - name: Backport Action
-        uses: sorenlouv/backport-github-action@v9.5.1
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          github_token: ${{ secrets.ORG_REPO_TOKEN }}
-          auto_backport_label_prefix: backport-to-
+          fetch-depth: 0
 
-      - name: Info log
-        if: ${{ success() }}
-        run: cat ~/.backport/backport.info.log
+      - name: Extract branch name
+        run: |
+          BRANCH_NAME=$(echo ${{ github.event.comment.body }} | grep -oE '@aqua-bot backport\s+(\S+)' | awk '{print $3}')
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
-      - name: Debug log
-        if: ${{ failure() }}
-        run: cat ~/.backport/backport.debug.log
+      - name: Set up Git user
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Run backport script
+        run: ./misc/backport/backport.sh ${{ env.BRANCH_NAME }} ${{ github.event.issue.number }}
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows the created PR to trigger tests and other workflows
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
