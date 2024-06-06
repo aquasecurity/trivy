@@ -2,6 +2,7 @@ package io
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 	"sort"
 	"strconv"
@@ -200,6 +201,9 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	pkg.Name = m.pkgName(pkg, c)
 	pkg.ID = dependency.ID(p.LangType(), pkg.Name, p.Version) // Re-generate ID with the updated name
 
+	if pkg.Name == "bsdutils" {
+		fmt.Println()
+	}
 	var err error
 	for _, prop := range c.Properties {
 		switch prop.Name {
@@ -270,6 +274,11 @@ func (m *Decoder) fillSrcPkg(c *core.Component, pkg *ftypes.Package) {
 		pkg.SrcName = c.SrcName
 	}
 	m.parseSrcVersion(pkg, c.SrcVersion)
+
+	// Source info was added from component or properties
+	if pkg.SrcName != "" && pkg.SrcVersion != "" {
+		return
+	}
 
 	// Fill source package information for components in third-party SBOMs .
 	if pkg.SrcName == "" {
