@@ -1,0 +1,29 @@
+name: 'trivy-discussion-triage'
+description: 'automatic triage of Trivy discussions'
+inputs:
+  discussion_num:
+    description: 'Discussion number to triage'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Conditionally label discussions based on category and content
+      env:
+        GH_TOKEN: ${{ github.token }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const {detectDiscussionLabels, fetchDiscussion, labelDiscussion } = require('${{ github.action_path }}/helpers.js');
+          const config = require('${{ github.action_path }}/config.json');
+          discussionNum = parseInt(${{ inputs.discussion_num }});
+          let discussion;
+          if (discussionNum > 0) {
+              discussion = (await fetchDiscussion(github, context.repo.owner, context.repo.repo, discussionNum)).repository.discussion;
+          } else {
+              discussion = context.payload.discussion;
+          }
+          const labels = detectDiscussionLabels(discussion, config.discussionLabels);
+          if (labels.length > 0) {
+              console.log(`Adding labels ${labels} to discussion ${discussion.node_id}`);
+              labelDiscussion(github, discussion.node_id, labels);
+          }

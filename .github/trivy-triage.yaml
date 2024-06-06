@@ -1,0 +1,16 @@
+name: Triage Discussion
+on:
+  discussion:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      discussion_num:
+        required: true
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/trivy-triage
+        with:
+          discussion_num: ${{ github.event.inputs.discussion_num }}
