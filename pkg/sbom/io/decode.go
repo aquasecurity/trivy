@@ -2,7 +2,6 @@ package io
 
 import (
 	"errors"
-	"fmt"
 	"slices"
 	"sort"
 	"strconv"
@@ -201,9 +200,6 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	pkg.Name = m.pkgName(pkg, c)
 	pkg.ID = dependency.ID(p.LangType(), pkg.Name, p.Version) // Re-generate ID with the updated name
 
-	if pkg.Name == "bsdutils" {
-		fmt.Println()
-	}
 	var err error
 	for _, prop := range c.Properties {
 		switch prop.Name {
