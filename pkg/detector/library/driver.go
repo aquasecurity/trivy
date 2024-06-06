@@ -39,7 +39,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.GoBinary, ftypes.GoModule:
 		ecosystem = vulnerability.Go
 		comparer = compare.GenericComparer{}
-	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		ecosystem = vulnerability.Maven
 		comparer = maven.Comparer{}
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
