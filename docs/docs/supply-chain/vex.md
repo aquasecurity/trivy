@@ -510,6 +510,11 @@ Now, suppose a VEX statement is issued for `Module B` as follows:
 ```
 
 It declares that `Module B` is not affected by CVE-XXXX-YYYY on `Module C`.
+
+!!! note
+    The VEX in this example defines the relationship between `Module B` and `Module C`.
+    However, as Trivy traverses all parents from vulnerable packages, it is also possible to define a VEX for the relationship between a vulnerable package and any parent, such as `Module A` and `Module C`, etc.
+
 Mapping this VEX onto the dependency tree would look like this:
 
 ```mermaid
