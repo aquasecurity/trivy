@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
@@ -32,6 +35,7 @@ func setupPrivateRegistry() *httptest.Server {
 		},
 	})
 
+	tr.Config.Handler = newUserAgentsTrackingHandler(tr.Config.Handler)
 	return tr
 }
 
@@ -205,4 +209,64 @@ func TestGet(t *testing.T) {
 			require.NoError(t, err)
 		})
 	}
+}
+
+type userAgentsTrackingHandler struct {
+	hr http.Handler
+
+	mu     sync.Mutex
+	agents map[string]struct{}
+}
+
+func newUserAgentsTrackingHandler(hr http.Handler) *userAgentsTrackingHandler {
+	return &userAgentsTrackingHandler{hr: hr, agents: make(map[string]struct{})}
+}
+
+func (uh *userAgentsTrackingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	for _, agent := range r.Header["User-Agent"] {
+		// Skip test framework user agent
+		if agent != "Go-http-client/1.1" {
+			uh.agents[agent] = struct{}{}
+		}
+	}
+	uh.hr.ServeHTTP(rw, r)
+}
+
+func setupAgentTrackingRegistry() (*httptest.Server, *userAgentsTrackingHandler) {
+	imagePaths := map[string]string{
+		"v2/library/alpine:3.10": "../fanal/test/testdata/alpine-310.tar.gz",
+	}
+	tr := registry.NewDockerRegistry(registry.Option{
+		Images: imagePaths,
+	})
+
+	tracker := newUserAgentsTrackingHandler(tr.Config.Handler)
+	tr.Config.Handler = tracker
+
+	return tr, tracker
+}
+
+func TestUserAgents(t *testing.T) {
+	tr, tracker := setupAgentTrackingRegistry()
+	defer tr.Close()
+
+	serverAddr := tr.Listener.Addr().String()
+
+	n, err := name.ParseReference(fmt.Sprintf("%s/library/alpine:3.10", serverAddr))
+	require.NoError(t, err)
+
+	_, err = Get(context.Background(), n, types.RegistryOptions{
+		Credentials: []types.Credential{
+			{
+				Username: "test",
+				Password: "testpass",
+			},
+		},
+		Insecure: true,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, 1, len(tracker.agents))
+	_, ok := tracker.agents[fmt.Sprintf("trivy/%s go-containerregistry", app.Version())]
+	require.Equal(t, true, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
 }

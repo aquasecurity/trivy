@@ -8,15 +8,8 @@ import (
 	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
-
-var (
-	ver = "dev"
-)
-
-func AppVersion() string {
-	return ver
-}
 
 type VersionInfo struct {
 	Version         string             `json:",omitempty"`
@@ -99,7 +92,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	}
 
 	return VersionInfo{
-		Version:         ver,
+		Version:         app.Version(),
 		VulnerabilityDB: dbMeta,
 		JavaDB:          javadbMeta,
 		CheckBundle:     pbMeta,

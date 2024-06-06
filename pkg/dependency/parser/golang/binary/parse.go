@@ -217,7 +217,7 @@ func isValidSemVer(ver string) bool {
 
 // versionPrefix returns version prefix from `-ldflags` flag key
 // e.g.
-//   - `github.com/aquasecurity/trivy/pkg/version.version` => `version`
+//   - `github.com/aquasecurity/trivy/pkg/version/app.ver` => `version`
 //   - `github.com/google/go-containerregistry/cmd/crane/common.ver` => `common`
 func versionPrefix(s string) string {
 	// Trim module part.
