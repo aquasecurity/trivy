@@ -216,7 +216,8 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 	}
 
 	workspaces := rootPkg.Workspaces
-	// Clone packages to avoid cases when we check already updated packages
+	// Changing the map during the map iteration causes unexpected behavior,
+	// so we need to iterate over the cloned `packages` map, but change the original `packages` map.
 	for pkgPath, pkg := range maps.Clone(packages) {
 		for linkPath, link := range links {
 			if !strings.HasPrefix(pkgPath, link.Resolved) {
