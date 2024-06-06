@@ -2572,6 +2572,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#applying-vex-to-dependency-trees" class="md-nav__link">
+    Applying VEX to Dependency Trees
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4125,6 +4132,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#applying-vex-to-dependency-trees" class="md-nav__link">
+    Applying VEX to Dependency Trees
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4430,6 +4444,7 @@ The VEX statement will be applied when Trivy finds the Go binary within the cont
 </code></pre></div>
 <p>VEX documents can indeed be reused across different container images, eliminating the need to issue separate VEX documents for each image.
 This is particularly useful when there is a common component or library that is used across multiple projects or container images.</p>
+<p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
 <h3 id="scan-with-vex">Scan with VEX</h3>
 <p>Provide the VEX when scanning your target.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.openvex.json
@@ -4595,6 +4610,7 @@ At present, the specified relationship category is not taken into account and al
 <li>installed_on</li>
 <li>installed_with</li>
 </ul>
+<p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
 <h3 id="scan-with-csaf-vex">Scan with CSAF VEX</h3>
 <p>Provide the CSAF document when scanning your target.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.vex.csaf
@@ -4651,6 +4667,81 @@ This approach ensures broad matching capabilities, covering all architectural or
 </ul>
 </li>
 </ul>
+<h3 id="applying-vex-to-dependency-trees">Applying VEX to Dependency Trees</h3>
+<p>Trivy internally generates a dependency tree and applies VEX statements to this graph.
+Let's consider a project with the following dependency tree, where <code>Module C v2.0.0</code> is assumed to have a vulnerability CVE-XXXX-YYYY:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootA(Module Root A v1.0.0)
+  modB(Module B v1.0.0) 
+  modC(Module C v2.0.0)
+
+  modRootA--&gt;modB
+  modB--&gt;modC</code></pre>
+<p>Now, suppose a VEX statement is issued for <code>Module B</code> as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-XXXX-YYYY&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-b@1.0.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-c@2.0.0&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w">  </span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>It declares that <code>Module B</code> is not affected by CVE-XXXX-YYYY on <code>Module C</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The VEX in this example defines the relationship between <code>Module B</code> and <code>Module C</code>.
+However, as Trivy traverses all parents from vulnerable packages, it is also possible to define a VEX for the relationship between a vulnerable package and any parent, such as <code>Module A</code> and <code>Module C</code>, etc.</p>
+</div>
+<p>Mapping this VEX onto the dependency tree would look like this:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootA(Module Root A v1.0.0)
+
+  subgraph "VEX (Not Affected)"
+  modB(Module B v1.0.0)
+  modC(Module C v2.0.0)
+  end
+
+  modRootA--&gt;modB
+  modB--&gt;modC</code></pre>
+<p>In this case, it's clear that <code>Module Root A</code> is also not affected by CVE-XXXX-YYYY, so this vulnerability is suppressed.</p>
+<p>Now, let's consider another project:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootZ(Module Root Z v1.0.0)
+  modB'(Module B v1.0.0)
+  modC'(Module C v2.0.0)
+  modD'(Module D v3.0.0)
+
+  modRootZ--&gt;modB'
+  modRootZ--&gt;modD'
+  modB'--&gt;modC'
+  modD'--&gt;modC'</code></pre>
+<p>Assuming the same VEX as before, applying it to this dependency tree would look like:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootZ(Module Root Z v1.0.0)
+
+  subgraph "VEX (Not Affected)"
+  modB'(Module B v1.0.0)
+  modC'(Module C v2.0.0)
+  end
+
+  modD'(Module D v3.0.0)
+
+  modRootZ--&gt;modB'
+  modRootZ--&gt;modD'
+  modB'--&gt;modC'
+  modD'--&gt;modC'</code></pre>
+<p><code>Module Root Z</code> depends on <code>Module C</code> via multiple paths.
+While the VEX tells us that <code>Module B</code> is not affected by the vulnerability, <code>Module D</code> might be.
+In the absence of a VEX, the default assumption is that it is affected.
+Taking all of this into account, Trivy determines that <code>Module Root Z</code> is affected by this vulnerability.</p>
 
               
             </article>
