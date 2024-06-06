@@ -474,8 +474,6 @@ does not match:
 - `pkg:maven/com.google.guava/guava@24.1.1?classifier=sources`
     - `classifier` must have the same value.
 
-Here is a proposed addition to the Trivy VEX documentation, focusing on how VEX is applied to dependency graphs:
-
 ### Applying VEX to Dependency Trees
 
 Trivy internally generates a dependency tree and applies VEX statements to this graph.
