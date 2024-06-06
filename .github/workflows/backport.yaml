@@ -10,7 +10,7 @@ jobs:
     if: |
       github.event.issue.pull_request &&
       github.event.issue.pull_request.merged_at != null &&
-      contains(github.event.comment.body, '@aqua-bot backport')
+      startsWith(github.event.comment.body, '@aqua-bot backport release/')
     runs-on: ubuntu-latest
 
     steps:
