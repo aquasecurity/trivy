@@ -1,4 +1,4 @@
-name: trivy triage
+name: Triage Discussion
 on:
   discussion:
     types: [created]
@@ -10,7 +10,7 @@ jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/trivy-triage
         with:
           discussion_num: ${{ github.event.inputs.discussion_num }}
