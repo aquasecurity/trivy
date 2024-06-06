@@ -55,6 +55,7 @@ const (
 	TypeJar        Type = "jar"
 	TypePom        Type = "pom"
 	TypeGradleLock Type = "gradle-lockfile"
+	TypeSbtLock    Type = "sbt-lockfile"
 
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
