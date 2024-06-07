@@ -5,13 +5,33 @@ on:
     types: [created]
 
 jobs:
+  check_permission:
+    name: Check comment author permissions
+    runs-on: ubuntu-latest
+    outputs:
+      is_maintainer: ${{ steps.check_permission.outputs.is_maintainer }}
+    steps:
+      - name: Check permission
+        id: check_permission
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PERMISSION=$(gh api /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission --jq '.permission')
+          if [ "$PERMISSION" == "admin" ] || [ "$PERMISSION" == "write" ]; then
+           echo "is_maintainer=true" >> $GITHUB_OUTPUT
+          else
+           echo "is_maintainer=false" >> $GITHUB_OUTPUT
+          fi
+  
+
   backport:
     name: Backport PR
+    needs: check_permission # run this job after checking permissions
     if: |
+      needs.check_permission.outputs.is_maintainer == 'true' &&      
       github.event.issue.pull_request &&
       github.event.issue.pull_request.merged_at != null &&
-      startsWith(github.event.comment.body, '@aqua-bot backport release/') &&
-      (github.event.comment.author_association == 'OWNER' || github.event.comment.author_association == 'MEMBER')
+      startsWith(github.event.comment.body, '@aqua-bot backport release/')
     runs-on: ubuntu-latest
 
     steps:
