@@ -50,6 +50,7 @@ jobs:
         run: |
           echo "version=$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
           echo "pr_number=$( echo "${{ github.event.head_commit.message }}" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "release_branch=release/v$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
 
       - name: Tag release
         if: ${{ steps.extract_info.outputs.version }}
@@ -71,15 +72,24 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
           script: |
-            const version = '${{ steps.extract_info.outputs.version }}';
-            const minorVersion = version.slice(0, version.lastIndexOf('.'));
-            const releaseBranch = `release/v${minorVersion}`;
+            const releaseBranch = '${{ steps.extract_info.outputs.release_branch }}';
             await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/heads/${releaseBranch}`,
               sha: context.sha
             });
+      
+
+      # Add release branch to rulesets to enable merge queue
+      - name: Add release branch to rulesets
+        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        shell: bash
+        run: |
+          RULESET_ID=$(gh api /repos/${{ github.repository }}/rulesets --jq '.[] | select(.name=="release") | .id')
+          gh api /repos/${{ github.repository }}/rulesets/$RULESET_ID | jq '{conditions}' | jq '.conditions.ref_name.include += ["refs/heads/${{ steps.extract_info.outputs.release_branch }}"]' | gh api --method put --input - /repos/${{ github.repository }}/rulesets/$RULESET_ID
 
       # Since skip-github-release is specified, googleapis/release-please-action doesn't delete the label from PR.
       # This label prevents the subsequent PRs from being created. Therefore, we need to delete it ourselves.
