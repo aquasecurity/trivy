@@ -38,6 +38,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Java](java.md)      | JAR/WAR/PAR/EAR[^4]                                                                        |     ✅     |     ✅      |       -        |       -        |
 |                      | pom.xml                                                                                    |     -     |     -      |       ✅        |       ✅        |
 |                      | *gradle.lockfile                                                                           |     -     |     -      |       ✅        |       ✅        |
+|                      | *.sbt.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
 | [Go](golang.md)      | Binaries built by Go                                                                       |     ✅     |     ✅      |       -        |       -        |
 |                      | go.mod                                                                                     |     -     |     -      |       ✅        |       ✅        |
 | [Rust](rust.md)      | Cargo.lock                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |

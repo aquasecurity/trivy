@@ -1,5 +1,5 @@
 # Java
-Trivy supports three types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml` and `*gradle.lockfile` files.
+Trivy supports four types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml`, `*gradle.lockfile` and `*.sbt.lock` files.
 
 Each artifact supports the following scanners:
 
@@ -8,6 +8,7 @@ Each artifact supports the following scanners:
 | JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    -    |
 | pom.xml          |  ✓   |       ✓       |    ✓    |
 | *gradle.lockfile |  ✓   |       ✓       |    ✓    |
+| *.sbt.lock       |  ✓   |       ✓       |    -    |
 
 The following table provides an outline of the features Trivy offers.
 
@@ -16,6 +17,7 @@ The following table provides an outline of the features Trivy offers.
 | JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |    -     |
 | pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |  ✓[^7]   |
 | *gradle.lockfile |           -           |     Exclude      |                  ✓                   |    ✓     |
+| *.sbt.lock       |          -            |     Exclude      |                  ✓                   |    ✓     |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -94,6 +96,15 @@ Trity also can detect licenses for dependencies.
 
 Make sure that you have cache[^8] directory to find licenses from `*.pom` dependency files.
 
+
+## SBT
+
+`build.sbt.lock` files only contain information about used dependencies. This requires a lockfile generated using the
+[sbt-dependency-lock][sbt-dependency-lock] plugin.
+
+!!!note
+    All necessary files are checked locally. SBT file scanning doesn't require internet access.
+
 [^1]: Uses maven repository to get information about dependencies. Internet access required.
 [^2]: It means `*.jar`, `*.war`, `*.par` and `*.ear` file
 [^3]: `ArtifactID`, `GroupID` and `Version`
@@ -107,3 +118,4 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
 [maven-central]: https://repo.maven.apache.org/maven2/
 [maven-pom-repos]: https://maven.apache.org/settings.html#repositories
+[sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
