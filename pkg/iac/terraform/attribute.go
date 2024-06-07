@@ -27,19 +27,40 @@ type Attribute struct {
 }
 
 func (a *Attribute) DecodeVarType() (cty.Type, *typeexpr.Defaults, error) {
+	return decodeVarType(a.hclAttribute.Expr)
+}
+
+func decodeVarType(expr hcl.Expression) (cty.Type, *typeexpr.Defaults, error) {
 	// Special-case the shortcuts for list(any) and map(any) which aren't hcl.
-	switch hcl.ExprAsKeyword(a.hclAttribute.Expr) {
+	switch hcl.ExprAsKeyword(expr) {
 	case "list":
 		return cty.List(cty.DynamicPseudoType), nil, nil
 	case "map":
 		return cty.Map(cty.DynamicPseudoType), nil, nil
 	}
 
-	t, def, diag := typeexpr.TypeConstraintWithDefaults(a.hclAttribute.Expr)
-	if diag.HasErrors() {
-		return cty.NilType, nil, diag
+	t, def, diag := typeexpr.TypeConstraintWithDefaults(expr)
+	if !diag.HasErrors() {
+		return t, def, nil
 	}
-	return t, def, nil
+
+	// Fall back to evaluating as an expression, and *if* we get a string out,
+	// try evaluating *that* as above, to kinda-support TF 0.11 and earlier –
+	// which used HCL v1, not v2.
+	if unquoted := maybeUnquote(expr); unquoted != nil {
+		return decodeVarType(unquoted)
+	}
+	return cty.NilType, nil, diag
+}
+
+func maybeUnquote(expr hcl.Expression) hcl.Expression {
+	val, diag := expr.Value(&hcl.EvalContext{})
+	if diag.HasErrors() || val.Type() != cty.String {
+		return nil
+	}
+	raw := []byte(val.AsString())
+	unquoted, _ := hclsyntax.ParseExpression(raw, "", expr.Range().Start)
+	return unquoted
 }
 
 func NewAttribute(attr *hcl.Attribute, ctx *context.Context, module string, parent iacTypes.Metadata, parentRef Reference, moduleSource string, moduleFS fs.FS) *Attribute {
