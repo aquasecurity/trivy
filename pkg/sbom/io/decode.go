@@ -271,6 +271,11 @@ func (m *Decoder) fillSrcPkg(c *core.Component, pkg *ftypes.Package) {
 	}
 	m.parseSrcVersion(pkg, c.SrcVersion)
 
+	// Source info was added from component or properties
+	if pkg.SrcName != "" && pkg.SrcVersion != "" {
+		return
+	}
+
 	// Fill source package information for components in third-party SBOMs .
 	if pkg.SrcName == "" {
 		pkg.SrcName = pkg.Name
