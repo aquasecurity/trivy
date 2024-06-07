@@ -6,7 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getApis(cfFile parser.FileContext) (apis []v2.API) {
+func adaptAPIsV2(cfFile parser.FileContext) (apis []v2.API) {
 
 	apiResources := cfFile.GetResourcesByType("AWS::ApiGatewayV2::Api")
 	for _, apiRes := range apiResources {
@@ -65,4 +65,27 @@ func getAccessLogging(r *parser.Resource) v2.AccessLogging {
 		Metadata:              destinationProp.Metadata(),
 		CloudwatchLogGroupARN: destinationProp.AsStringValue(),
 	}
+}
+
+func adaptDomainNamesV2(fctx parser.FileContext) []v2.DomainName {
+	var domainNames []v2.DomainName
+
+	for _, domainNameResource := range fctx.GetResourcesByType("AWS::ApiGateway::DomainName") {
+
+		domainName := v2.DomainName{
+			Metadata:       domainNameResource.Metadata(),
+			Name:           domainNameResource.GetStringProperty("DomainName"),
+			SecurityPolicy: domainNameResource.GetStringProperty("SecurityPolicy"),
+		}
+
+		if domainNameCfgs := domainNameResource.GetProperty("DomainNameConfigurations"); domainNameCfgs.IsList() {
+			for _, domainNameCfg := range domainNameCfgs.AsList() {
+				domainName.SecurityPolicy = domainNameCfg.GetStringProperty("SecurityPolicy")
+			}
+		}
+
+		domainNames = append(domainNames, domainName)
+	}
+
+	return domainNames
 }
