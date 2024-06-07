@@ -510,6 +510,14 @@ func TestSecretScanner(t *testing.T) {
 					FirstCause:  true,
 					LastCause:   true,
 				},
+				{
+					Number:      2,
+					Content:     "",
+					Highlighted: "",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
 			},
 		},
 	}
