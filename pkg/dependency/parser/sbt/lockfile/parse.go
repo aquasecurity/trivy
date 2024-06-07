@@ -1,13 +1,38 @@
 package lockfile
 
 import (
+	"io"
+
+	"github.com/liamg/jfather"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
-	"github.com/liamg/jfather"
-	"golang.org/x/xerrors"
-	"io"
 )
+
+// lockfile format defined at: https://stringbean.github.io/sbt-dependency-lock/file-formats/version-1.html
+type sbtLockfile struct {
+	Version        int                     `json:"lockVersion"`
+	Timestamp      string                  `json:"timestamp"`
+	Configurations []string                `json:"configurations"`
+	Dependencies   []sbtLockfileDependency `json:"dependencies"`
+}
+
+type sbtLockfileDependency struct {
+	Organization   string                `json:"org"`
+	Name           string                `json:"name"`
+	Version        string                `json:"version"`
+	Artifacts      []sbtLockfileArtifact `json:"artifacts"`
+	Configurations []string              `json:"configurations"`
+	StartLine      int
+	EndLine        int
+}
+
+type sbtLockfileArtifact struct {
+	Name string `json:"name"`
+	Hash string `json:"hash"`
+}
 
 type Parser struct{}
 
@@ -49,27 +74,4 @@ func (t *sbtLockfileDependency) UnmarshalJSONWithMetadata(node jfather.Node) err
 	t.StartLine = node.Range().Start.Line
 	t.EndLine = node.Range().End.Line
 	return nil
-}
-
-// lockfile format defined at: https://stringbean.github.io/sbt-dependency-lock/file-formats/version-1.html
-type sbtLockfile struct {
-	Version        int                     `json:"lockVersion"`
-	Timestamp      string                  `json:"timestamp"`
-	Configurations []string                `json:"configurations"`
-	Dependencies   []sbtLockfileDependency `json:"dependencies"`
-}
-
-type sbtLockfileDependency struct {
-	Organization   string                `json:"org"`
-	Name           string                `json:"name"`
-	Version        string                `json:"version"`
-	Artifacts      []sbtLockfileArtifact `json:"artifacts"`
-	Configurations []string              `json:"configurations"`
-	StartLine      int
-	EndLine        int
-}
-
-type sbtLockfileArtifact struct {
-	Name string `json:"name"`
-	Hash string `json:"hash"`
 }

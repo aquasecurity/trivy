@@ -2,18 +2,19 @@ package sbt
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
 	"os"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/sbt/lockfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func init() {

@@ -1,12 +1,15 @@
 package lockfile
 
 import (
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParser_Parse(t *testing.T) {
@@ -65,10 +68,10 @@ func TestParser_Parse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewParser()
 			f, err := os.Open(tt.inputFile)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			libs, _, err := parser.Parse(f)
-			assert.Equal(t, nil, err)
+			require.NoError(t, err)
 
 			sortLibs(libs)
 			assert.Equal(t, tt.want, libs)
