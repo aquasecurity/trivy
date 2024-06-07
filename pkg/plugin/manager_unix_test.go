@@ -63,12 +63,17 @@ func modifyManifest(t *testing.T, worktree, version string) {
 }
 
 func TestManager_Install(t *testing.T) {
-	gs := setupGitRepository(t, "test_plugin", "testdata/test_plugin")
+	gs := setupGitRepository(t, "test_plugin", "testdata/test_plugin/test_plugin")
 	t.Cleanup(gs.Close)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		zr := zip.NewWriter(w)
-		require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin")))
+		switch r.URL.Path {
+		case "/test_plugin.zip":
+			require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin/test_plugin")))
+		case "/test_nested.zip":
+			require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin")))
+		}
 		require.NoError(t, zr.Close())
 	}))
 	t.Cleanup(ts.Close)
@@ -118,6 +123,13 @@ func TestManager_Install(t *testing.T) {
 			want:       wantPlugin,
 			wantFile:   ".trivy/plugins/test_plugin/test.sh",
 			wantLogs:   fmt.Sprintf(wantLogs, ts.URL+"/test_plugin.zip", "0.2.0"),
+		},
+		{
+			name:       "nested archive",
+			pluginName: ts.URL + "/test_nested.zip",
+			want:       wantPlugin,
+			wantFile:   ".trivy/plugins/test_plugin/test.sh",
+			wantLogs:   fmt.Sprintf(wantLogs, ts.URL+"/test_nested.zip", "0.2.0"),
 		},
 		{
 			name:       "local path",
