@@ -11,7 +11,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/version/app"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
@@ -20,6 +19,7 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/registry"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 func setupPrivateRegistry() *httptest.Server {
@@ -266,7 +266,7 @@ func TestUserAgents(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(tracker.agents))
+	require.Len(t, tracker.agents, 1)
 	_, ok := tracker.agents[fmt.Sprintf("trivy/%s go-containerregistry", app.Version())]
-	require.Equal(t, true, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
+	require.True(t, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
 }
