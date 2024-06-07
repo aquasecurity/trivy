@@ -4040,7 +4040,9 @@ The preference order is as follows:</p>
 <p>Furthermore, it is possible to download plugins that are not registered in the index by specifying the URL directly or by specifying the file path.</p>
 <p><div class="highlight"><pre><span></span><code>$ trivy plugin install github.com/aquasecurity/trivy-plugin-kubectl
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>$ trivy plugin install myplugin.tar.gz
+<div class="highlight"><pre><span></span><code>$ trivy plugin install https://github.com/aquasecurity/trivy-plugin-kubectl/archive/refs/heads/main.zip
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>$ trivy plugin install ./myplugin.tar.gz
 </code></pre></div></p>
 <p>If the plugin's Git repository is <a href="../developer-guide/#tagging-plugin-repositories">properly tagged</a>, you can specify the version to install like this:</p>
 <div class="highlight"><pre><span></span><code>$ trivy plugin install referrer@v0.3.0
