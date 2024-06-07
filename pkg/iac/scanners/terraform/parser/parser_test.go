@@ -1705,6 +1705,104 @@ resource "test" "values" {
 	})))
 }
 
+func TestEmptyVarBlock(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+variable "untyped" {
+}
+
+resource "test" "values" {
+	v = var.untyped
+}
+`,
+		"v.tfvars": `
+untyped = "zzz"
+`,
+	}
+	fs := testutil.CreateFS(t, files)
+	slog.SetDefault(log.New(log.NewHandler(os.Stderr, nil)))
+	parser := New(fs, "",
+		OptionStopOnHCLError(true),
+		OptionWithTFVarsPaths("v.tfvars"),
+	)
+
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	resources := modules.GetResourcesByType("test")
+	require.Len(t, resources, 1)
+
+	str_attr := resources[0].GetAttribute("v")
+	require.NotNil(t, str_attr)
+	assert.Equal(t, "zzz", str_attr.GetRawValue())
+
+}
+
+func TestVarTypeQuoted(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+variable "quote_list" {
+	type    = "list"
+	default = ["x", "y"]
+}
+
+variable "quote_map" {
+	type    = "map(number)"
+	default = {a = 1, b = 2}
+}
+
+variable "quote_string" {
+	type    = "string"
+	default = "zzz"
+}
+
+variable "quote_garbage" {
+	type    = "lol"
+	default = "wut"
+}
+
+variable "quote_empty" {
+	type    = ""
+	default = 99
+}
+
+resource "test" "values" {
+	l = var.quote_list
+	m = var.quote_map
+	n = var.quote_string
+	o = var.quote_garbage
+	p = var.quote_empty
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+
+	str_attr := resources[0].GetAttribute("n")
+	require.NotNil(t, str_attr)
+	assert.Equal(t, "zzz", str_attr.GetRawValue())
+
+	list_attr := resources[0].GetAttribute("l")
+	require.NotNil(t, list_attr)
+	assert.Equal(t, []string{"x", "y"}, list_attr.GetRawValue())
+
+	map_attr := resources[0].GetAttribute("m")
+	require.NotNil(t, map_attr)
+	assert.True(t, map_attr.Value().RawEquals(cty.MapVal(map[string]cty.Value{
+		"a": cty.NumberIntVal(1), "b": cty.NumberIntVal(2),
+	})))
+
+	bad_attr_1 := resources[0].GetAttribute("o")
+	require.NotNil(t, bad_attr_1)
+	assert.Nil(t, bad_attr_1.GetRawValue())
+
+	bad_attr_2 := resources[0].GetAttribute("p")
+	require.NotNil(t, bad_attr_2)
+	assert.Nil(t, bad_attr_2.GetRawValue())
+}
+
 func Test_LoadLocalCachedModule(t *testing.T) {
 	fsys := os.DirFS(filepath.Join("testdata", "cached-modules"))
 
