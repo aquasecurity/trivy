@@ -11,11 +11,12 @@ import (
 func Adapt(cfFile parser.FileContext) apigateway.APIGateway {
 	return apigateway.APIGateway{
 		V1: v1.APIGateway{
-			APIs:        nil,
-			DomainNames: nil,
+			APIs:        adaptAPIsV1(cfFile),
+			DomainNames: adaptDomainNamesV1(cfFile),
 		},
 		V2: v2.APIGateway{
-			APIs: getApis(cfFile),
+			APIs:        adaptAPIsV2(cfFile),
+			DomainNames: adaptDomainNamesV2(cfFile),
 		},
 	}
 }
