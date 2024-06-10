@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -28,13 +27,11 @@ const (
 
 // sbtDependencyLockAnalyzer analyzes '*.sbt.lock'
 type sbtDependencyLockAnalyzer struct {
-	logger *log.Logger
 	parser language.Parser
 }
 
 func newSbtDependencyLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &sbtDependencyLockAnalyzer{
-		logger: log.WithPrefix("sbt"),
 		parser: lockfile.NewParser(),
 	}, nil
 }
