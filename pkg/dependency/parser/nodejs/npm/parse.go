@@ -194,8 +194,16 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 // node_modules/func1 -> link to target
 // see `package-lock_v3_with_workspace.json` to better understanding
 func (p *Parser) resolveLinks(packages map[string]Package) {
-	links := lo.PickBy(packages, func(_ string, pkg Package) bool {
-		return pkg.Link
+	links := lo.PickBy(packages, func(pkgPath string, pkg Package) bool {
+		if !pkg.Link {
+			return false
+		}
+		if pkg.Resolved == "" {
+			p.logger.Warn("`package-lock.json` contains broken link with empty `resolved` field. This package will be skipped to avoid receiving an empty package", log.String("pkg", pkgPath))
+			delete(packages, pkgPath)
+			return false
+		}
+		return true
 	})
 	// Early return
 	if len(links) == 0 {
@@ -208,7 +216,9 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 	}
 
 	workspaces := rootPkg.Workspaces
-	for pkgPath, pkg := range packages {
+	// Changing the map during the map iteration causes unexpected behavior,
+	// so we need to iterate over the cloned `packages` map, but change the original `packages` map.
+	for pkgPath, pkg := range maps.Clone(packages) {
 		for linkPath, link := range links {
 			if !strings.HasPrefix(pkgPath, link.Resolved) {
 				continue
