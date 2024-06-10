@@ -98,9 +98,9 @@ jobs:
           mkdir tmp    
 
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
-          version: v1.20.0
+          version: v2.0.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
