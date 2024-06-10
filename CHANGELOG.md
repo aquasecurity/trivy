@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.52.1](https://github.com/aquasecurity/trivy/compare/v0.52.0...v0.52.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* **nodejs:** fix infinite loop when package link from `package-lock.json` file is broken [backport: release/v0.52] ([#6888](https://github.com/aquasecurity/trivy/issues/6888)) ([01dbb42](https://github.com/aquasecurity/trivy/commit/01dbb42ae9ecff21d1c71f095a27f47a6ac9adaa))
+* **nodejs:** fix infinity loops for `pnpm` with cyclic imports ([#6857](https://github.com/aquasecurity/trivy/issues/6857)) ([a614b69](https://github.com/aquasecurity/trivy/commit/a614b693d7b948df7d4ed3516e79573cb8424406))
+* **python:** compare pkg names from `poetry.lock` and `pyproject.toml` in lowercase [backport: release/v0.52] ([#6878](https://github.com/aquasecurity/trivy/issues/6878)) ([093c0ae](https://github.com/aquasecurity/trivy/commit/093c0ae020548bf6f3d1896d4d55210eb42c7b0e))
+* **sbom:** don't overwrite `srcEpoch` when decoding SBOM files [backport: release/v0.52] ([#6881](https://github.com/aquasecurity/trivy/issues/6881)) ([f186d22](https://github.com/aquasecurity/trivy/commit/f186d22bf275e872bd664f07131604f6a0216f20))
+
 ## [0.52.0](https://github.com/aquasecurity/trivy/compare/v0.51.1...v0.52.0) (2024-06-03)
 
 
