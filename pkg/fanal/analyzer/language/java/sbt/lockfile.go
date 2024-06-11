@@ -2,11 +2,12 @@ package sbt
 
 import (
 	"context"
-	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/sbt/lockfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
