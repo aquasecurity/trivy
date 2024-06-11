@@ -2,8 +2,6 @@ package lockfile
 
 import (
 	"os"
-	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -73,18 +71,7 @@ func TestParser_Parse(t *testing.T) {
 			libs, _, err := parser.Parse(f)
 			require.NoError(t, err)
 
-			sortLibs(libs)
 			assert.Equal(t, tt.want, libs)
 		})
 	}
-}
-
-func sortLibs(libs []ftypes.Package) {
-	sort.Slice(libs, func(i, j int) bool {
-		ret := strings.Compare(libs[i].Name, libs[j].Name)
-		if ret == 0 {
-			return libs[i].Version < libs[j].Version
-		}
-		return ret < 0
-	})
 }

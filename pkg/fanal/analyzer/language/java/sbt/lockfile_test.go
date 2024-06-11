@@ -19,19 +19,6 @@ func Test_sbtDependencyLockAnalyzer(t *testing.T) {
 		want *analyzer.AnalysisResult
 	}{
 		{
-			name: "empty lockfile",
-			dir:  "testdata/empty",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.Sbt,
-						FilePath: "build.sbt.lock",
-						Packages: types.Packages{},
-					},
-				},
-			},
-		},
-		{
 			name: "v1 lockfile",
 			dir:  "testdata/v1",
 			want: &analyzer.AnalysisResult{
@@ -77,6 +64,11 @@ func Test_sbtDependencyLockAnalyzer(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name: "empty lockfile",
+			dir:  "testdata/empty",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 

@@ -2,12 +2,11 @@ package sbt
 
 import (
 	"context"
+	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
 	"os"
-	"strings"
-
-	"golang.org/x/xerrors"
+	"path/filepath"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/sbt/lockfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -21,8 +20,8 @@ func init() {
 }
 
 const (
-	version        = 1
-	fileNameSuffix = "sbt.lock"
+	version      = 1
+	requiredFile = "build.sbt.lock"
 )
 
 // sbtDependencyLockAnalyzer analyzes '*.sbt.lock'
@@ -50,16 +49,10 @@ func (a sbtDependencyLockAnalyzer) PostAnalyze(_ context.Context, input analyzer
 			return xerrors.Errorf("%s parse error: %w", filePath, err)
 		}
 
-		if app == nil {
-			// no dependencies - add empty application
-			app = &types.Application{
-				Type:     types.Sbt,
-				FilePath: filePath,
-				Packages: types.Packages{},
-			}
-		}
+		if app != nil {
 
-		apps = append(apps, *app)
+			apps = append(apps, *app)
+		}
 
 		return nil
 	})
@@ -74,7 +67,7 @@ func (a sbtDependencyLockAnalyzer) PostAnalyze(_ context.Context, input analyzer
 }
 
 func (a sbtDependencyLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasSuffix(filePath, fileNameSuffix)
+	return requiredFile == filepath.Base(filePath)
 }
 
 func (a sbtDependencyLockAnalyzer) Type() analyzer.Type {

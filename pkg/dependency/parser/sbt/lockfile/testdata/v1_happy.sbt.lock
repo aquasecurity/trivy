@@ -54,6 +54,20 @@
         "runtime",
         "test"
       ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-core_2.13",
+      "version" : "3.2.15",
+      "artifacts" : [
+        {
+          "name" : "scalatest-core_2.13.jar",
+          "hash" : "sha1:231d1f4049a9fa4bd65c17b806a58180b9f4abe1"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
     }
   ]
 }
