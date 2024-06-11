@@ -26,6 +26,13 @@ const (
 	CloudStackProvider   Provider = "cloudstack"
 )
 
+func AllProviders() []Provider {
+	return []Provider{
+		AWSProvider, AzureProvider, DigitalOceanProvider, GitHubProvider, GoogleProvider,
+		KubernetesProvider, OracleProvider, OpenStackProvider, NifcloudProvider, CloudStackProvider,
+	}
+}
+
 func RuleProviderToString(provider Provider) string {
 	return strings.ToUpper(string(provider))
 }
