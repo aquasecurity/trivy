@@ -34,7 +34,7 @@ updates:
           - "github.com/testcontainers/*"
       trivy:
         patterns:
-          - "aquasecurity/trivy-*"
+          - "github.com/aquasecurity/trivy-*"
       common:
         patterns:
           - "*"
