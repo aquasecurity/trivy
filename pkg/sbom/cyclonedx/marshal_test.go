@@ -254,10 +254,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000014",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -909,10 +909,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1293,10 +1293,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1518,10 +1518,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				BOM: testSBOM,
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1770,10 +1770,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1956,10 +1956,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000003",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -2044,10 +2044,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Results:       types.Results{},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{
