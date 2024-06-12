@@ -27,7 +27,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20240419073403-90bd43849334
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-aws v0.9.0
-	github.com/aquasecurity/trivy-checks v0.11.0
+	github.com/aquasecurity/trivy-checks v0.12.1-0.20240612044741-699832d324bd
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20240516051533-4c5a4aad13b7
