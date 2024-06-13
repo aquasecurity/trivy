@@ -304,7 +304,14 @@ func TestDockerEngine(t *testing.T) {
 			osArgs = append(osArgs, tt.input)
 
 			// Run Trivy
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{wantErr: tt.wantErr})
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				wantErr: tt.wantErr,
+				// Container field was removed in Docker Engine v26.0
+				// cf. https://github.com/docker/cli/blob/v26.1.3/docs/deprecated.md#container-and-containerconfig-fields-in-image-inspect
+				override: overrideFuncs(overrideUID, func(t *testing.T, want, _ *types.Report) {
+					want.Metadata.ImageConfig.Container = ""
+				}),
+			})
 		})
 	}
 }
