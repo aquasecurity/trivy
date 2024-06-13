@@ -2,6 +2,7 @@ package meta
 
 import (
 	"encoding/json"
+
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
