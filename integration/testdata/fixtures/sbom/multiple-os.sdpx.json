@@ -1,0 +1,86 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "2024-06-10T14:07:15Z",
+    "creators": [
+      "Organization: foo",
+      "Tool: bar"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://tanzu.vmware.com/application-catalog/spdx/295c513b-b6cc-44c2-b19b-dc7196cdad9d",
+  "name": "SPDX document for nginx:18.0.3",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-OperatingSystem-gnrtd1",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "debian",
+      "primaryPackagePurpose": "OPERATING_SYSTEM",
+      "versionInfo": "12.5"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gnrtd7",
+      "downloadLocation": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.5",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "libedit2",
+      "primaryPackagePurpose": "LIBRARY",
+      "sourceInfo": "built package from: libedit 3.1-20221030-2",
+      "supplier": "Organization: LLVM Packaging Team \u003cpkg-llvm-team@lists.alioth.debian.org\u003e",
+      "versionInfo": "3.1-20221030-2"
+    },
+    {
+      "SPDXID": "SPDXRef-OperatingSystem-gnrtd143",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "debian",
+      "primaryPackagePurpose": "OPERATING_SYSTEM",
+      "versionInfo": "12.5"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gnrtd259",
+      "downloadLocation": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:deb/debian/libmount1@2.38.1-5%2Bdeb12u1?arch=arm64\u0026distro=debian-12.5",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "(LicenseRef-public-domain AND LGPL-2.0-only AND LGPL-3.0-only AND BSD-4-Clause AND LGPL-2.1-only AND BSD-3-Clause AND MIT AND GPL-3.0-only AND GPL-2.0-only AND LicenseRef-BSLA)",
+      "licenseDeclared": "(LicenseRef-public-domain AND LGPL-2.0-only AND LGPL-3.0-only AND BSD-4-Clause AND LGPL-2.1-only AND BSD-3-Clause AND MIT AND GPL-3.0-only AND GPL-2.0-only AND LicenseRef-BSLA)",
+      "name": "libmount1",
+      "primaryPackagePurpose": "LIBRARY",
+      "sourceInfo": "built package from: util-linux 2.38.1-5+deb12u1",
+      "supplier": "Organization: util-linux packagers \u003cutil-linux@packages.debian.org\u003e",
+      "versionInfo": "2.38.1-5+deb12u1"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-Package-gnrtd7",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-OperatingSystem-gnrtd1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-gnrtd259",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-OperatingSystem-gnrtd143"
+    }
+  ],
+  "spdxVersion": "SPDX-2.3"
+}

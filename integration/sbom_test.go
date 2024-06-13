@@ -20,6 +20,7 @@ func TestSBOM(t *testing.T) {
 		format       string
 		artifactType string
 		scanners     string
+		listAllPkgs  bool
 	}
 	tests := []struct {
 		name     string
@@ -129,6 +130,16 @@ func TestSBOM(t *testing.T) {
 			},
 			golden: "testdata/license-cyclonedx.json.golden",
 		},
+		{
+			name: "multiple OSes",
+			args: args{
+				input:        "testdata/fixtures/sbom/multiple-os.sdpx.json",
+				format:       "json",
+				artifactType: "spdx",
+				listAllPkgs:  true,
+			},
+			golden: "testdata/multiple-os.json.golden",
+		},
 	}
 
 	// Set up testing DB
@@ -161,6 +172,10 @@ func TestSBOM(t *testing.T) {
 
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, tt.args.input)
+
+			if tt.args.listAllPkgs {
+				osArgs = append(osArgs, "--list-all-pkgs")
+			}
 
 			// Run "trivy sbom"
 			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
