@@ -2,11 +2,10 @@ package meta
 
 import (
 	"encoding/json"
-
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -40,7 +39,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		{
 			Name:     data.Name,
 			Version:  data.Version,
-			Licenses: lo.Ternary(data.License != "", []string{data.License}, nil),
+			Licenses: licensing.SplitLicenses(data.License),
 		},
 	}, nil, nil
 }
