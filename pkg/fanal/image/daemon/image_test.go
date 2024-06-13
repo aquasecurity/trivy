@@ -25,7 +25,7 @@ var imagePaths = map[string]string{
 
 // for Docker
 var opt = engine.Option{
-	APIVersion: "1.38",
+	APIVersion: "1.45",
 	ImagePaths: imagePaths,
 }
 
@@ -167,7 +167,6 @@ func Test_image_ConfigFile(t *testing.T) {
 			imageName: "alpine:3.11",
 			want: &v1.ConfigFile{
 				Architecture:  "amd64",
-				Container:     "fb71ddde5f6411a82eb056a9190f0cc1c80d7f77a8509ee90a2054428edb0024",
 				OS:            "linux",
 				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				DockerVersion: "18.09.7",

@@ -31,7 +31,7 @@ func setupPodmanSock(t *testing.T) *httptest.Server {
 	sockPath := filepath.Join(dir, "podman.sock")
 
 	opt := engine.Option{
-		APIVersion: "1.40",
+		APIVersion: "1.45",
 		ImagePaths: map[string]string{
 			"index.docker.io/library/alpine:3.11": "../../test/testdata/alpine-311.tar.gz",
 		},
