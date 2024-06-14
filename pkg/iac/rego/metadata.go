@@ -27,6 +27,7 @@ type StaticMetadata struct {
 	ShortCode          string
 	Aliases            []string
 	Description        string
+	Impact             string
 	Severity           string
 	RecommendedActions string
 	PrimaryURL         string
@@ -66,6 +67,7 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 	upd(&sm.Title, "title")
 	upd(&sm.ShortCode, "short_code")
 	upd(&sm.Description, "description")
+	upd(&sm.Impact, "impact")
 	upd(&sm.Service, "service")
 	upd(&sm.Provider, "provider")
 	upd(&sm.RecommendedActions, "recommended_actions")
@@ -147,7 +149,7 @@ func (sm *StaticMetadata) FromAnnotations(annotations *ast.Annotations) error {
 	}
 	if custom := annotations.Custom; custom != nil {
 		if err := sm.Update(custom); err != nil {
-			return err
+			return fmt.Errorf("failed to update static metadata: %w", err)
 		}
 	}
 	if len(annotations.RelatedResources) > 0 {
@@ -221,7 +223,7 @@ func (m StaticMetadata) ToRule() scan.Rule {
 		ShortCode:      m.ShortCode,
 		Summary:        m.Title,
 		Explanation:    m.Description,
-		Impact:         "",
+		Impact:         m.Impact,
 		Resolution:     m.RecommendedActions,
 		Provider:       providers.Provider(provider),
 		Service:        service,
