@@ -15,6 +15,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+
 	dbc "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -138,7 +139,7 @@ func newDBWorker(dbClient dbc.Operation) dbWorker {
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
 	log.Debug("Check for DB update...")
-	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
+	needsUpdate, err := w.dbClient.NeedsUpdate(ctx, appVersion, skipDBUpdate)
 	if err != nil {
 		return xerrors.Errorf("failed to check if db needs an update")
 	} else if !needsUpdate {

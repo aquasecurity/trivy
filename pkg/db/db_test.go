@@ -6,38 +6,17 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
-	"github.com/google/go-containerregistry/pkg/v1/tarball"
-	"github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	tdb "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 
+	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/db"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/oci"
 )
-
-const mediaType = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
-
-type fakeLayer struct {
-	v1.Layer
-}
-
-func (f fakeLayer) MediaType() (types.MediaType, error) {
-	return mediaType, nil
-}
-
-func newFakeLayer(t *testing.T, input string) v1.Layer {
-	layer, err := tarball.LayerFromFile(input)
-	require.NoError(t, err)
-
-	return fakeLayer{layer}
-}
 
 func TestClient_NeedsUpdate(t *testing.T) {
 	timeNextUpdateDay1 := time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC)
@@ -188,42 +167,18 @@ func TestClient_Download(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cacheDir := t.TempDir()
-
-			// Mock image
-			img := new(fakei.FakeImage)
-			img.LayersReturns([]v1.Layer{newFakeLayer(t, tt.input)}, nil)
-			img.ManifestReturns(&v1.Manifest{
-				Layers: []v1.Descriptor{
-					{
-						MediaType: "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip",
-						Size:      100,
-						Digest: v1.Hash{
-							Algorithm: "sha256",
-							Hex:       "aec482bc254b5dd025d3eaf5bb35997d3dba783e394e8f91d5a415963151bfb8",
-						},
-						Annotations: map[string]string{
-							"org.opencontainers.image.title": "db.tar.gz",
-						},
-					},
-				},
-			}, nil)
-
-			// Mock OCI artifact
-			opt := ftypes.RegistryOptions{
-				Insecure: false,
-			}
-			art, err := oci.NewArtifact("db", true, opt, oci.WithImage(img))
-			require.NoError(t, err)
-
 			// Set a fake time
 			ctx := clock.With(context.Background(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
 
+			// Fake DB
+			art := dbtest.NewFakeDB(t, tt.input, dbtest.FakeDBOptions{})
+
+			cacheDir := t.TempDir()
 			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art))
-			err = client.Download(ctx, cacheDir, opt)
+			err := client.Download(ctx, cacheDir, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

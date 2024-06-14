@@ -31,7 +31,7 @@ var (
 
 // Operation defines the DB operations
 type Operation interface {
-	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
+	NeedsUpdate(ctx context.Context, cliVersion string, skip bool) (need bool, err error)
 	Download(ctx context.Context, dst string, opt types.RegistryOptions) (err error)
 }
 

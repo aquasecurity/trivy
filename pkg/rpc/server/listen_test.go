@@ -5,166 +5,102 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"path"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	trivydb "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/google/go-containerregistry/pkg/v1/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/policy"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/aquasecurity/trivy/pkg/version"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
 func Test_dbWorker_update(t *testing.T) {
-	timeNextUpdate := time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
-	timeUpdateAt := time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
-
-	type needsUpdateInput struct {
-		appVersion string
-		skip       bool
-	}
-	type needsUpdateOutput struct {
-		needsUpdate bool
-		err         error
-	}
-	type needsUpdate struct {
-		input  needsUpdateInput
-		output needsUpdateOutput
+	cachedMetadata := metadata.Metadata{
+		Version:      db.SchemaVersion,
+		NextUpdate:   time.Date(2020, 10, 2, 0, 0, 0, 0, time.UTC),
+		UpdatedAt:    time.Date(2020, 10, 1, 0, 0, 0, 0, time.UTC),
+		DownloadedAt: time.Date(2020, 10, 1, 1, 0, 0, 0, time.UTC),
 	}
 
-	type download struct {
-		call bool
-		err  error
-	}
-
-	type args struct {
-		appVersion string
-	}
 	tests := []struct {
-		name        string
-		needsUpdate needsUpdate
-		download    download
-		args        args
-		want        metadata.Metadata
-		wantErr     string
+		name           string
+		now            time.Time
+		skipUpdate     bool
+		layerMediaType types.MediaType
+		want           metadata.Metadata
+		wantErr        string
 	}{
 		{
-			name: "happy path",
-			needsUpdate: needsUpdate{
-				input: needsUpdateInput{
-					appVersion: "1",
-					skip:       false,
-				},
-				output: needsUpdateOutput{needsUpdate: true},
-			},
-			download: download{
-				call: true,
-			},
-			args: args{appVersion: "1"},
+			name:       "update needed",
+			now:        time.Date(2021, 10, 1, 0, 0, 0, 0, time.UTC),
+			skipUpdate: false,
 			want: metadata.Metadata{
-				Version:    1,
-				NextUpdate: timeNextUpdate,
-				UpdatedAt:  timeUpdateAt,
+				Version:      db.SchemaVersion,
+				NextUpdate:   time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:    time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC),
+				DownloadedAt: time.Date(2021, 10, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
 		{
-			name: "not update",
-			needsUpdate: needsUpdate{
-				input: needsUpdateInput{
-					appVersion: "1",
-					skip:       false,
-				},
-				output: needsUpdateOutput{needsUpdate: false},
-			},
-			args: args{appVersion: "1"},
+			name:       "not update needed",
+			now:        time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC),
+			skipUpdate: false,
+			want:       cachedMetadata,
 		},
 		{
-			name: "skip update",
-			needsUpdate: needsUpdate{
-				input: needsUpdateInput{
-					appVersion: "1",
-					skip:       true,
-				},
-				output: needsUpdateOutput{needsUpdate: false},
-			},
-			args: args{appVersion: "1"},
+			name:       "skip update",
+			now:        time.Date(2021, 10, 1, 0, 0, 0, 0, time.UTC),
+			skipUpdate: true,
+			want:       cachedMetadata,
 		},
 		{
-			name: "NeedsUpdate returns an error",
-			needsUpdate: needsUpdate{
-				input: needsUpdateInput{
-					appVersion: "1",
-					skip:       false,
-				},
-				output: needsUpdateOutput{err: xerrors.New("fail")},
-			},
-			args:    args{appVersion: "1"},
-			wantErr: "failed to check if db needs an update",
-		},
-		{
-			name: "Download returns an error",
-			needsUpdate: needsUpdate{
-				input: needsUpdateInput{
-					appVersion: "1",
-					skip:       false,
-				},
-				output: needsUpdateOutput{needsUpdate: true},
-			},
-			download: download{
-				call: true,
-				err:  xerrors.New("fail"),
-			},
-			args:    args{appVersion: "1"},
-			wantErr: "failed DB hot update",
+			name:           "Download returns an error",
+			now:            time.Date(2021, 10, 1, 0, 0, 0, 0, time.UTC),
+			skipUpdate:     false,
+			layerMediaType: types.MediaType("unknown"),
+			wantErr:        "failed DB hot update",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cacheDir := t.TempDir()
 
-			require.NoError(t, db.Init(cacheDir), tt.name)
+			// Initialize the cache
+			meta := metadata.NewClient(cacheDir)
+			err := meta.Update(cachedMetadata)
+			require.NoError(t, err)
 
-			mockDBClient := new(dbFile.MockOperation)
-			mockDBClient.On("NeedsUpdate",
-				tt.needsUpdate.input.appVersion, tt.needsUpdate.input.skip).Return(
-				tt.needsUpdate.output.needsUpdate, tt.needsUpdate.output.err)
+			err = trivydb.Init(cacheDir)
+			require.NoError(t, err)
 
-			defer func() { _ = db.Close() }()
+			defer func() { _ = trivydb.Close() }()
 
-			if tt.download.call {
-				mockDBClient.On("Download", mock.Anything, mock.Anything, mock.Anything).Run(
-					func(args mock.Arguments) {
-						// fake download: copy testdata/new.db to tmpDir/db/trivy.db
-						tmpDir := args.String(1)
-						err := os.MkdirAll(db.Dir(tmpDir), 0744)
-						require.NoError(t, err)
+			// Set a fake time
+			ctx := clock.With(context.Background(), tt.now)
 
-						_, err = fsutils.CopyFile("testdata/new.db", db.Path(tmpDir))
-						require.NoError(t, err)
-
-						// fake download: copy testdata/metadata.json to tmpDir/db/metadata.json
-						_, err = fsutils.CopyFile("testdata/metadata.json", metadata.Path(tmpDir))
-						require.NoError(t, err)
-					}).Return(tt.download.err)
-			}
-
-			w := newDBWorker(mockDBClient)
+			// Set a fake DB
+			dbPath := dbtest.ArchiveDir(t, "testdata/newdb")
+			art := dbtest.NewFakeDB(t, dbPath, dbtest.FakeDBOptions{
+				MediaType: tt.layerMediaType,
+			})
+			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art))
+			w := newDBWorker(client)
 
 			var dbUpdateWg, requestWg sync.WaitGroup
-			err := w.update(context.Background(), tt.args.appVersion, cacheDir,
-				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
+			err = w.update(ctx, "1.2.3", cacheDir,
+				tt.skipUpdate, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -172,16 +108,10 @@ func Test_dbWorker_update(t *testing.T) {
 			}
 			require.NoError(t, err, tt.name)
 
-			if !tt.download.call {
-				return
-			}
-
 			mc := metadata.NewClient(cacheDir)
 			got, err := mc.Get()
 			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got, tt.name)
-
-			mockDBClient.AssertExpectations(t)
 		})
 	}
 }
