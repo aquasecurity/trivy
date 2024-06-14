@@ -6,6 +6,7 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json' ## don't run tests for release-please PRs
   merge_group:
 env:
   GO_VERSION: '1.22'
