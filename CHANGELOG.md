@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.52.2](https://github.com/aquasecurity/trivy/compare/v0.52.1...v0.52.2) (2024-06-14)
+
+
+### Bug Fixes
+
+* **debian:** take installed files from the origin layer [backport: release/v0.52] ([#6892](https://github.com/aquasecurity/trivy/issues/6892)) ([8f8c76a](https://github.com/aquasecurity/trivy/commit/8f8c76a2abd3987ad0dad03be29be479fc8308be))
+
 ## [0.52.1](https://github.com/aquasecurity/trivy/compare/v0.52.0...v0.52.1) (2024-06-10)
 
 
