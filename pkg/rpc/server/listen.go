@@ -15,7 +15,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-
 	dbc "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -129,10 +128,10 @@ func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 }
 
 type dbWorker struct {
-	dbClient dbc.Operation
+	dbClient *dbc.Client
 }
 
-func newDBWorker(dbClient dbc.Operation) dbWorker {
+func newDBWorker(dbClient *dbc.Client) dbWorker {
 	return dbWorker{dbClient: dbClient}
 }
 

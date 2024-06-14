@@ -15,7 +15,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"

@@ -12,7 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -28,12 +27,6 @@ var (
 	DefaultRepository    = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
 	defaultRepository, _ = name.NewTag(DefaultRepository)
 )
-
-// Operation defines the DB operations
-type Operation interface {
-	NeedsUpdate(ctx context.Context, cliVersion string, skip bool) (need bool, err error)
-	Download(ctx context.Context, dst string, opt types.RegistryOptions) (err error)
-}
 
 type options struct {
 	artifact     *oci.Artifact
