@@ -12,11 +12,11 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"k8s.io/utils/clock"
-	clocktesting "k8s.io/utils/clock/testing"
 
 	tdb "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/db"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/oci"
@@ -46,14 +46,12 @@ func TestClient_NeedsUpdate(t *testing.T) {
 	tests := []struct {
 		name     string
 		skip     bool
-		clock    clock.Clock
 		metadata metadata.Metadata
 		want     bool
 		wantErr  string
 	}{
 		{
-			name:  "happy path",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "happy path",
 			metadata: metadata.Metadata{
 				Version:    tdb.SchemaVersion,
 				NextUpdate: timeNextUpdateDay1,
@@ -62,13 +60,11 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		},
 		{
 			name:     "happy path for first run",
-			clock:    clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{},
 			want:     true,
 		},
 		{
-			name:  "happy path with old schema version",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "happy path with old schema version",
 			metadata: metadata.Metadata{
 				Version:    0,
 				NextUpdate: timeNextUpdateDay1,
@@ -76,8 +72,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name:  "happy path with --skip-update",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "happy path with --skip-update",
 			metadata: metadata.Metadata{
 				Version:    tdb.SchemaVersion,
 				NextUpdate: timeNextUpdateDay1,
@@ -86,8 +81,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: false,
 		},
 		{
-			name:  "skip downloading DB",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "skip downloading DB",
 			metadata: metadata.Metadata{
 				Version:    tdb.SchemaVersion,
 				NextUpdate: timeNextUpdateDay2,
@@ -95,8 +89,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: false,
 		},
 		{
-			name:  "newer schema version",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "newer schema version",
 			metadata: metadata.Metadata{
 				Version:    tdb.SchemaVersion + 1,
 				NextUpdate: timeNextUpdateDay2,
@@ -106,14 +99,12 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		},
 		{
 			name:     "--skip-update on the first run",
-			clock:    clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{},
 			skip:     true,
 			wantErr:  "--skip-update cannot be specified on the first run",
 		},
 		{
-			name:  "--skip-update with different schema version",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "--skip-update with different schema version",
 			metadata: metadata.Metadata{
 				Version:    0,
 				NextUpdate: timeNextUpdateDay1,
@@ -123,8 +114,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				0, tdb.SchemaVersion),
 		},
 		{
-			name:  "happy with old DownloadedAt",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "happy with old DownloadedAt",
 			metadata: metadata.Metadata{
 				Version:      tdb.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
@@ -133,8 +123,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			want: true,
 		},
 		{
-			name:  "skip downloading DB with recent DownloadedAt",
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			name: "skip downloading DB with recent DownloadedAt",
 			metadata: metadata.Metadata{
 				Version:      tdb.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
@@ -153,8 +142,11 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			client := db.NewClient(cacheDir, true, db.WithClock(tt.clock))
-			needsUpdate, err := client.NeedsUpdate("test", tt.skip)
+			// Set a fake time
+			ctx := clock.With(context.Background(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
+
+			client := db.NewClient(cacheDir, true)
+			needsUpdate, err := client.NeedsUpdate(ctx, "test", tt.skip)
 
 			switch {
 			case tt.wantErr != "":
@@ -170,7 +162,6 @@ func TestClient_NeedsUpdate(t *testing.T) {
 }
 
 func TestClient_Download(t *testing.T) {
-	timeDownloadedAt := clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
 
 	tests := []struct {
 		name    string
@@ -225,8 +216,11 @@ func TestClient_Download(t *testing.T) {
 			art, err := oci.NewArtifact("db", true, opt, oci.WithImage(img))
 			require.NoError(t, err)
 
-			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
-			err = client.Download(context.Background(), cacheDir, opt)
+			// Set a fake time
+			ctx := clock.With(context.Background(), time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
+
+			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art))
+			err = client.Download(ctx, cacheDir, opt)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

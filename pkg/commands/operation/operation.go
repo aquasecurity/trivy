@@ -15,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -117,7 +118,7 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 	defer mu.Unlock()
 
 	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
-	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
+	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
 	}
