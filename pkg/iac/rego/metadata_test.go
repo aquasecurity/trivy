@@ -46,8 +46,8 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 				"severity":            "s_n",
 				"library":             true,
 				"url":                 "r_n",
-				"frameworks": map[string][]string{
-					"all": {"aa"},
+				"frameworks": map[string]any{
+					"all": []any{"aa"},
 				},
 			},
 		))
@@ -137,7 +137,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 	})
 }
 
-func Test_getEngineMetadata(t *testing.T) {
+func Test_NewEngineMetadata(t *testing.T) {
 	inputSchema := map[string]any{
 		"terraform": map[string]any{
 			"good_examples": `resource "aws_cloudtrail" "good_example" {
@@ -153,8 +153,11 @@ func Test_getEngineMetadata(t *testing.T) {
      }
    }
  }`,
+
+			"links": "https://avd.aquasec.com/avd/183",
 		},
-		"cloud_formation": map[string]any{"good_examples": `---
+		"cloud_formation": map[string]any{
+			"good_examples": `---
 Resources:
   GoodExample:
     Type: AWS::CloudTrail::Trail
@@ -164,15 +167,19 @@ Resources:
       S3BucketName: "CloudtrailBucket"
       S3KeyPrefix: "/trailing"
       TrailName: "Cloudtrail"`,
-		}}
+			"links": []any{"https://avd.aquasec.com/avd/183"},
+		},
+	}
 
 	var testCases = []struct {
 		schema string
-		want   string
+		want   *scan.EngineMetadata
 	}{
 		{
 			schema: "terraform",
-			want: `resource "aws_cloudtrail" "good_example" {
+			want: &scan.EngineMetadata{
+				GoodExamples: []string{
+					`resource "aws_cloudtrail" "good_example" {
    is_multi_region_trail = true
  
    event_selector {
@@ -185,9 +192,15 @@ Resources:
      }
    }
  }`,
+				},
+				Links: []string{"https://avd.aquasec.com/avd/183"},
+			},
 		},
-		{schema: "cloud_formation",
-			want: `---
+		{
+			schema: "cloud_formation",
+			want: &scan.EngineMetadata{
+				GoodExamples: []string{
+					`---
 Resources:
   GoodExample:
     Type: AWS::CloudTrail::Trail
@@ -196,14 +209,18 @@ Resources:
       IsMultiRegionTrail: true     
       S3BucketName: "CloudtrailBucket"
       S3KeyPrefix: "/trailing"
-      TrailName: "Cloudtrail"`},
+      TrailName: "Cloudtrail"`,
+				},
+				Links: []string{"https://avd.aquasec.com/avd/183"},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.schema, func(t *testing.T) {
 			em, err := NewEngineMetadata(tc.schema, inputSchema)
 			require.NoError(t, err)
-			assert.Equal(t, tc.want, em.GoodExamples[0])
+			assert.Equal(t, tc.want, em)
 		})
 	}
 }
