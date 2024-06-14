@@ -19,7 +19,7 @@ env:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     permissions:
@@ -27,15 +27,6 @@ jobs:
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@v10
-        with:
-          root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
-          remove-android: 'true'
-          remove-docker-images: 'true'
-          remove-dotnet: 'true'
-          remove-haskell: 'true'
-
       - name: Cosign install
         uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20
 
