@@ -8,12 +8,14 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json' ## don't run tests for release-please PRs
   pull_request:
     paths:
       - '**.md'
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json' ## don't run tests for release-please PRs
 jobs:
   test:
     name: Test
