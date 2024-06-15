@@ -1,15 +1,19 @@
 package terraform
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
@@ -747,4 +751,57 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 			})
 		}
 	}
+}
+
+func TestIgnoreRemoteTerraformResource(t *testing.T) {
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.tf": `module "bucket" {
+  source = "git::https://github.com/test/bucket"
+}`,
+		".terraform/modules/modules.json": `{
+    "Modules": [
+        { "Key": "", "Source": "", "Dir": "." },
+        {
+            "Key": "bucket",
+            "Source": "git::https://github.com/test/bucket",
+            "Dir": ".terraform/modules/bucket"
+        }
+    ]
+}
+`,
+		".terraform/modules/bucket/main.tf": `
+# trivy:ignore:test-0001
+resource "aws_s3_bucket" "test" {
+  bucket = ""
+}
+`,
+	})
+
+	check := `# METADATA
+# title: Test
+# custom:
+#   id: test-0001
+#   avdid: test-0001
+
+package user.test0001
+
+deny[res] {
+	bucket := input.aws.s3.buckets[_]
+	bucket.name.value == ""
+	res := result.new("Empty bucket name!", bucket)
+}`
+
+	localScanner := New(
+		options.ScannerWithEmbeddedPolicies(false),
+		options.ScannerWithEmbeddedLibraries(true),
+		options.ScannerWithRegoOnly(true),
+		options.ScannerWithPolicyNamespaces("user"),
+		options.ScannerWithPolicyReader(strings.NewReader(check)),
+		ScannerWithDownloadsAllowed(false),
+		ScannerWithSkipCachedModules(true),
+	)
+	results, err := localScanner.ScanFS(context.TODO(), fsys, ".")
+	require.NoError(t, err)
+	assert.Empty(t, results.GetFailed())
 }

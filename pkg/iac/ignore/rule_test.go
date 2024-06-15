@@ -239,7 +239,7 @@ test #trivy:ignore:rule-4
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rules := ignore.Parse(tt.src, filename)
+			rules := ignore.Parse(tt.src, "", filename)
 			got := rules.Ignore(tt.args.metadata, tt.args.ids, nil)
 			assert.Equal(t, tt.shouldIgnore, got)
 		})
@@ -329,7 +329,7 @@ func TestRules_IgnoreWithCustomIgnorer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rules := ignore.Parse(tt.src, filename, tt.parser)
+			rules := ignore.Parse(tt.src, filename, "", tt.parser)
 			got := rules.Ignore(tt.args.metadata, tt.args.ids, tt.args.ignorers)
 			assert.Equal(t, tt.shouldIgnore, got)
 		})
