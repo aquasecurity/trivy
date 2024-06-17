@@ -44,7 +44,8 @@ func newConanLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, er
 
 func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	required := func(filePath string, d fs.DirEntry) bool {
-		return a.Required(filePath, nil)
+		// we need all file got from `a.Required` function (conan.lock files) and from file-patterns.
+		return true
 	}
 
 	licenses, err := licensesFromCache()
