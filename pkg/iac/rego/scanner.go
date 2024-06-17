@@ -30,14 +30,15 @@ var checkTypesWithSubtype = map[types.Source]struct{}{
 	types.SourceKubernetes: {},
 }
 
-var supportedProviders map[string]struct{}
+var supportedProviders = makeSupportedProviders()
 
-func init() {
-	supportedProviders = make(map[string]struct{})
+func makeSupportedProviders() map[string]struct{} {
+	m := make(map[string]struct{})
 	for _, p := range providers.AllProviders() {
-		supportedProviders[string(p)] = struct{}{}
+		m[string(p)] = struct{}{}
 	}
-	supportedProviders["kind"] = struct{}{} // kubernetes
+	m["kind"] = struct{}{} // kubernetes
+	return m
 }
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
