@@ -201,11 +201,11 @@ func TestPom_Parse(t *testing.T) {
 				{
 					ID: "com.example:happy:1.0.0",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3-SNAPSHOT",
+						"org.example:example-dependency:2.17.0-SNAPSHOT",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3-SNAPSHOT",
+					ID: "org.example:example-dependency:2.17.0-SNAPSHOT",
 					DependsOn: []string{
 						"org.example:example-api:2.0.0",
 					},
