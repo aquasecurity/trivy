@@ -143,12 +143,71 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipIndirect,
+				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
 					ID: "com.example:happy:1.0.0",
 					DependsOn: []string{
 						"org.example:example-dependency:1.2.3-SNAPSHOT",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:1.2.3-SNAPSHOT",
+					DependsOn: []string{
+						"org.example:example-api:2.0.0",
+					},
+				},
+			},
+		},
+		{
+			name:      "snapshot repository with maven-metadata.xml",
+			inputFile: filepath.Join("testdata", "snapshot", "with-maven-metadata", "pom.xml"),
+			local:     false,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:happy:1.0.0",
+					Name:         "com.example:happy",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-dependency:2.17.0-SNAPSHOT",
+					Name:         "org.example:example-dependency",
+					Version:      "2.17.0-SNAPSHOT",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 14,
+							EndLine:   18,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:happy:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:1.2.3-SNAPSHOT",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:1.2.3-SNAPSHOT",
+					DependsOn: []string{
+						"org.example:example-api:2.0.0",
 					},
 				},
 			},
@@ -1404,7 +1463,7 @@ func TestPom_Parse(t *testing.T) {
 				remoteRepos = []string{ts.URL}
 			}
 
-			p := pom.NewParser(tt.inputFile, pom.WithReleaseRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
+			p := pom.NewParser(tt.inputFile, pom.WithReleaseRemoteRepos(remoteRepos), pom.WithSnapshotRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
 
 			gotPkgs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {

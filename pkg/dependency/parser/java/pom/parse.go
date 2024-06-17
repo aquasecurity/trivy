@@ -48,6 +48,12 @@ func WithReleaseRemoteRepos(repos []string) option {
 	}
 }
 
+func WithSnapshotRemoteRepos(repos []string) option {
+	return func(opts *options) {
+		opts.snapshotRemoteRepos = repos
+	}
+}
+
 type Parser struct {
 	logger              *log.Logger
 	rootPath            string
