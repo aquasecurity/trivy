@@ -52,7 +52,7 @@ func findLicenseFromEnvDir(pkg types.Package) ([]string, error) {
 	condaMetaDir := filepath.Join(pkg.FilePath, "conda-meta")
 	entries, err := os.ReadDir(condaMetaDir)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("unable to read conda-meta dir: %w", err)
 	}
 	for _, entry := range entries {
 		if entry.IsDir() {
@@ -63,15 +63,15 @@ func findLicenseFromEnvDir(pkg types.Package) ([]string, error) {
 		if matched, _ := doublestar.Match(pattern, entry.Name()); matched {
 			file, err := os.Open(filepath.Join(condaMetaDir, entry.Name()))
 			if err != nil {
-				return nil, err
+				return nil, xerrors.Errorf("unable to open packageJSON file: %w", err)
 			}
 			packageJson, _, err := meta.NewParser().Parse(file)
 			if err != nil {
-				return nil, err
+				return nil, xerrors.Errorf("unable to parse packageJSON file: %w", err)
 			}
 			// packageJson always contain only 1 element
 			// cf. https://github.com/aquasecurity/trivy/blob/c3192f061d7e84eaf38df8df7c879dc00b4ca137/pkg/dependency/parser/conda/meta/parse.go#L39-L45
-			return packageJson[0].Licenses, err
+			return packageJson[0].Licenses, nil
 		}
 	}
 	return nil, xerrors.Errorf("meta file didn't find")
