@@ -847,8 +847,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										},
 									},
 									References: []string{
-										"http://www.openwall.com/lists/oss-security/2022/02/11/5",
-										"https://access.redhat.com/security/cve/CVE-2022-23633",
+										"  extraPrefix http://www.openwall.com/lists/oss-security/2022/02/11/5",
+										"https://access.redhat.com/security/cve/CVE-2022-23633 (extra suffix)",
 									},
 									PublishedDate:    lo.ToPtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
 									LastModifiedDate: lo.ToPtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
