@@ -425,7 +425,9 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 Rego is part of the popular [Open Policy Agent (OPA)](https://www.openpolicyagent.org) CNCF project.
 For advanced filtering, Trivy allows you to use Rego language to filter vulnerabilities.
 
-Use the `--ignore-policy` flag which takes a path to a Rego file that defines the filtering policy.
+Use the `--ignore-policy` flag which takes a path to a Rego file that defines the filtering policy. The flag can also take
+a directory path containing Rego policy files (each `.rego` file found in the directory is applied for the filtering).
+
 The Rego package name must be `trivy` and it must include a "rule" named `ignore` which determines if each individual scan result should be excluded (ignore=true) or not (ignore=false).
 The `input` for the evaluation is each [DetectedVulnerability](https://github.com/aquasecurity/trivy/blob/00f2059e5d7bc2ca2e3e8b1562bdfede1ed570e3/pkg/types/vulnerability.go#L9) and [DetectedMisconfiguration](https://github.com/aquasecurity/trivy/blob/00f2059e5d7bc2ca2e3e8b1562bdfede1ed570e3/pkg/types/misconfiguration.go#L6).
 
