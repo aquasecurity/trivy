@@ -173,6 +173,23 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "golang package with major version",
+			typ:  ftypes.GoModule,
+			pkg: ftypes.Package{
+				Name:    "github.com/coreos/go-systemd/v22",
+				Version: "v22.1.0",
+			},
+			want: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeGolang,
+					Namespace: "github.com/coreos/",
+					Name:      "go-systemd",
+					Version:   "v22.1.0",
+					Subpath:   "v22",
+				},
+			},
+		},
+		{
 			name: "golang package with a local path",
 			typ:  ftypes.GoModule,
 			pkg: ftypes.Package{
