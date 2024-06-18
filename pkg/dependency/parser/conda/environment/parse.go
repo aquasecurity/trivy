@@ -16,6 +16,7 @@ import (
 
 type environment struct {
 	Entries []Entry `yaml:"dependencies"`
+	Prefix  string  `yaml:"prefix"`
 }
 
 type Entry struct {
@@ -48,7 +49,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var pkgs ftypes.Packages
 	for _, entry := range env.Entries {
 		for _, dep := range entry.Dependencies {
-			pkg := p.toPackage(dep)
+			pkg := p.toPackage(dep, env.Prefix)
 			// Skip empty pkgs
 			if pkg.Name == "" {
 				continue
@@ -61,7 +62,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	return pkgs, nil, nil
 }
 
-func (p *Parser) toPackage(dep Dependency) ftypes.Package {
+func (p *Parser) toPackage(dep Dependency, prefix string) ftypes.Package {
 	name, ver := p.parseDependency(dep.Value)
 	if ver == "" {
 		p.once.Do(func() {
@@ -77,6 +78,7 @@ func (p *Parser) toPackage(dep Dependency) ftypes.Package {
 				EndLine:   dep.Line,
 			},
 		},
+		FilePath: prefix,
 	}
 }
 
