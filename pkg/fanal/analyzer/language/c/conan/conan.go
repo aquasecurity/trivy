@@ -150,36 +150,28 @@ func detectAttribute(attributeName, line string) string {
 }
 
 func detectCacheDir() (string, error) {
-	// conan v2 uses `CONAN_HOME` env
-	// cf. https://docs.conan.io/2/reference/environment.html#conan-home
-	// `.conan2` dir is omitted for this env
-	dir := path.Join(os.Getenv("CONAN_HOME"), "p")
-	if fsutils.DirExists(dir) {
-		return dir, nil
-	}
-
-	// conan v1 uses `CONAN_USER_HOME` env
-	// cf. https://docs.conan.io/en/1.64/reference/env_vars.html#conan-user-home
-	// `.conan` dir is used for this env
-	dir = path.Join(os.Getenv("CONAN_USER_HOME"), ".conan", "data")
-	if fsutils.DirExists(dir) {
-		return dir, nil
-	}
-
-	// check default dirs:
 	home, _ := os.UserHomeDir()
-	// `<username>/.conan2` is default directory for conan v2
-	// cf. https://docs.conan.io/2/reference/environment.html#conan-home
-	dir = path.Join(home, ".conan2", "p")
-	if fsutils.DirExists(dir) {
-		return dir, nil
+	dirs := []string{
+		// conan v2 uses `CONAN_HOME` env
+		// cf. https://docs.conan.io/2/reference/environment.html#conan-home
+		// `.conan2` dir is omitted for this env
+		path.Join(os.Getenv("CONAN_HOME"), "p"),
+		// conan v1 uses `CONAN_USER_HOME` env
+		// cf. https://docs.conan.io/en/1.64/reference/env_vars.html#conan-user-home
+		// `.conan` dir is used for this env
+		path.Join(os.Getenv("CONAN_USER_HOME"), ".conan", "data"),
+		// `<username>/.conan2` is default directory for conan v2
+		// cf. https://docs.conan.io/2/reference/environment.html#conan-home
+		path.Join(home, ".conan2", "p"),
+		// `<username>/.conan` is default directory for conan v1
+		// cf. https://docs.conan.io/1/mastering/custom_cache.html
+		path.Join(home, ".conan", "data"),
 	}
 
-	// `<username>/.conan` is default directory for conan v1
-	// cf. https://docs.conan.io/1/mastering/custom_cache.html
-	dir = path.Join(home, ".conan", "data")
-	if fsutils.DirExists(dir) {
-		return dir, nil
+	for _, dir := range dirs {
+		if fsutils.DirExists(dir) {
+			return dir, nil
+		}
 	}
 
 	return "", xerrors.Errorf("the Conan cache directory was not found.")
