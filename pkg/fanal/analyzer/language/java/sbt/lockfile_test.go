@@ -14,18 +14,18 @@ import (
 
 func Test_sbtDependencyLockAnalyzer(t *testing.T) {
 	tests := []struct {
-		name string
-		dir  string
-		want *analyzer.AnalysisResult
+		name      string
+		inputFile string
+		want      *analyzer.AnalysisResult
 	}{
 		{
-			name: "v1 lockfile",
-			dir:  "testdata/v1",
+			name:      "v1 lockfile",
+			inputFile: "testdata/v1/build.sbt.lock",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Sbt,
-						FilePath: "build.sbt.lock",
+						FilePath: "testdata/v1/build.sbt.lock",
 						Packages: types.Packages{
 							{
 								ID:      "org.apache.commons:commons-lang3:3.9",
@@ -66,19 +66,23 @@ func Test_sbtDependencyLockAnalyzer(t *testing.T) {
 			},
 		},
 		{
-			name: "empty lockfile",
-			dir:  "testdata/empty",
-			want: &analyzer.AnalysisResult{},
+			name:      "empty lockfile",
+			inputFile: "testdata/empty/build.sbt.lock",
+			want:      nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newSbtDependencyLockAnalyzer(analyzer.AnalyzerOptions{})
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
-				FS: os.DirFS(tt.dir),
+			a := sbtDependencyLockAnalyzer{}
+			ctx := context.Background()
+
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
+				FilePath: tt.inputFile,
+				Content:  f,
 			})
 
 			require.NoError(t, err)
