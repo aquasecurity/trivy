@@ -366,6 +366,9 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	}
 
 	mfs := mapfs.New()
+
+	schemas := make(map[string]struct{})
+
 	for _, p := range policyPaths {
 		abs, err := filepath.Abs(p)
 		if err != nil {
@@ -382,6 +385,10 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 			if err = mfs.CopyFilesUnder(abs); err != nil {
 				return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
 			}
+
+			if err := fs.WalkDir(os.DirFS(abs), ".", findRegoSchemas(abs, schemas)); err != nil {
+				return nil, nil, xerrors.Errorf("walk dir error: %w", err)
+			}
 		} else {
 			if err := mfs.MkdirAll(filepath.Dir(abs), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
 				return nil, nil, xerrors.Errorf("mapfs mkdir error: %w", err)
@@ -389,6 +396,16 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 			if err := mfs.WriteFile(abs, abs); err != nil {
 				return nil, nil, xerrors.Errorf("mapfs write error: %w", err)
 			}
+			baseDir := filepath.Dir(abs)
+			if err := fs.WalkDir(os.DirFS(baseDir), ".", findRegoSchemas(baseDir, schemas)); err != nil {
+				return nil, nil, xerrors.Errorf("walk dir error: %w", err)
+			}
+		}
+	}
+
+	for schema := range schemas {
+		if err := mfs.WriteFile(filepath.Base(schema), schema); err != nil {
+			return nil, nil, xerrors.Errorf("failed copy Rego schemas: %w", err)
 		}
 	}
 
@@ -396,6 +413,18 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	policyPaths = []string{"."}
 
 	return mfs, policyPaths, nil
+}
+
+func findRegoSchemas(basePath string, schemas map[string]struct{}) fs.WalkDirFunc {
+	return func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if filepath.Ext(p) == ".jsonschema" {
+			schemas[filepath.Join(basePath, p)] = struct{}{}
+		}
+		return nil
+	}
 }
 
 func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {

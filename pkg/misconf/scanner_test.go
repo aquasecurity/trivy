@@ -2,8 +2,10 @@ package misconf
 
 import (
 	"context"
+	"errors"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"testing"
 
@@ -197,4 +199,42 @@ func assertFS(t *testing.T, tmpDir string, f fs.FS, got []string, err error) {
 	stat, err := d.Stat()
 	require.NoError(t, err)
 	assert.True(t, stat.IsDir())
+}
+
+func Test_CreatePolicyFS(t *testing.T) {
+
+	paths := []string{
+		filepath.Join("testdata", "test.rego"),
+		filepath.Join("testdata", "checks"),
+	}
+	policyFS, policyPaths, err := CreatePolicyFS(paths)
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"."}, policyPaths)
+
+	expectedFiles := []string{
+		"testdata/test.rego",
+		"test.jsonschema",
+		"test1.jsonschema",
+		"testdata/checks/test.rego",
+		"test3.jsonschema",
+		"test4.jsonschema",
+	}
+
+	for _, expectedFile := range expectedFiles {
+		if path.Ext(expectedFile) == ".rego" {
+			abs, err := filepath.Abs(expectedFile)
+			require.NoError(t, err)
+			expectedFile = abs
+		}
+		assert.True(t, fileExists(policyFS, expectedFile), expectedFile)
+	}
+}
+
+func fileExists(fsys fs.FS, filename string) bool {
+	_, err := fs.Stat(fsys, filename)
+	if errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return err == nil
 }

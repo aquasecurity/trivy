@@ -1,11 +1,9 @@
 # Input Schema
 
 ## Overview
-Policies can be defined with custom schemas that allow inputs to be verified against them. Adding a policy schema
-enables Trivy to show more detailed error messages when an invalid input is encountered.
+Checks can be defined with custom schemas that allow inputs to be verified against them. Using check with schema allows Trivy to show more detailed error messages when invalid input is encountered.
 
-In Trivy we have been able to define a schema for a [Dockerfile](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas)
-Without input schemas, a policy would be as follows:
+In Trivy, we have been able to define a schema for a [Dockerfile](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas). Without input schemas, a check would be as follows:
 
 !!! example
     ```
@@ -17,11 +15,10 @@ Without input schemas, a policy would be as follows:
     }
     ```
 
-If this policy is run against offending Dockerfile(s), there will not be any issues as the policy will fail to evaluate.
-Although the policy's failure to evaluate is legitimate, this should not result in a positive result for the scan.
+If this check is run against offending Dockerfile(s), there will not be any issues as the check will fail to evaluate.
+Although the check's failure to evaluate is legitimate, this should not result in a positive result for the scan.
 
-For instance if we have a policy that checks for misconfigurations in a `Dockerfile`, we could define the
-schema as such
+For instance, if we have a check that checks for misconfigurations in a `Dockerfile`, we could define the schema as such:
 
 !!! example
     ```
@@ -35,10 +32,9 @@ schema as such
     }
     ```
 
-Here `input: schema["dockerfile"]` points to a schema that expects a valid `Dockerfile` as input. An example of this
-can be found [here](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/dockerfile.json).
+Here `input: schema["dockerfile"]` points to a schema that expects a valid `Dockerfile` as input. An example of this can be found [here](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/dockerfile.json).
 
-Now if this policy is evaluated against, a more descriptive error will be available to help fix the problem.
+Now if this check is evaluated against, a more descriptive error will be available to help fix the problem.
 
 ```bash
 1 error occurred: testpolicy.rego:8: rego_type_error: undefined ref: input.evil
@@ -57,7 +53,7 @@ Currently, out of the box the following schemas are supported natively:
 
 ## Custom Checks with Custom Schemas
 
-You can also bring a custom policy that defines one or more custom schema. 
+You can also bring a custom check that uses one or more custom schemas. 
 
 !!! example
     ```
@@ -72,21 +68,24 @@ You can also bring a custom policy that defines one or more custom schema.
     }
     ```
 
-The checks can be placed in a structure as follows
+The checks and schemas can be placed in a structure as follows:
 
 !!! example
     ```
     /Users/user/my-custom-checks
     ├── my_policy.rego
     └── schemas
-        └── fooschema.json
-        └── barschema.json
+        └── fooschema.jsonschema
+        └── barschema.jsonschema
     ```
 
-To use such a policy with Trivy, use the `--config-policy` flag that points to the policy file or to the directory where the schemas and checks are contained.
+To use such a check with Trivy, use the `--config-check` flag that points to the check file or to the directory where the schemas and checks are contained. Trivy will automatically detect and load schemas in a directory or subdirectories near the checks.
 
 ```bash
-$ trivy --config-policy=/Users/user/my-custom-checks <path/to/iac>
+$ trivy --config-check=/Users/user/my-custom-checks <path/to/iac>
 ```
+
+!!! note
+    The extension of the schema file must be `.jsonschema`.
 
 For more details on how to define schemas within Rego checks, please see the [OPA guide](https://www.openpolicyagent.org/docs/latest/policy-language/#schema-annotations) that describes it in more detail.

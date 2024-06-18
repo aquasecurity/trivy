@@ -66,10 +66,11 @@ func findSchemaInFS(paths []string, srcFS fs.FS, schemaName string) ([]byte, err
 			if info.IsDir() {
 				return nil
 			}
-			if !IsJSONFile(info.Name()) {
+			if !(strings.HasSuffix(info.Name(), ".json") ||
+				strings.HasSuffix(info.Name(), ".jsonschema")) {
 				return nil
 			}
-			if info.Name() == schemaName+".json" {
+			if schemaName == strings.TrimSuffix(info.Name(), filepath.Ext(info.Name())) {
 				schema, err = fs.ReadFile(srcFS, filepath.ToSlash(path))
 				if err != nil {
 					return err
@@ -82,10 +83,6 @@ func findSchemaInFS(paths []string, srcFS fs.FS, schemaName string) ([]byte, err
 		}
 	}
 	return schema, nil
-}
-
-func IsJSONFile(name string) bool {
-	return strings.HasSuffix(name, ".json")
 }
 
 func sanitisePath(path string) string {

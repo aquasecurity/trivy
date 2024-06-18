@@ -1535,6 +1535,67 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "with custom Rego schema",
+			fields: fields{
+				dir: "./testdata/misconfig/dockerfile/custom-rego-schema/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RegoOnly:                 true,
+					Namespaces:               []string{"user"},
+					PolicyPaths:              []string{"./testdata/misconfig/dockerfile/custom-rego-schema/rego"},
+					DisableEmbeddedPolicies:  true,
+					DisableEmbeddedLibraries: true,
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "dockerfile",
+								FilePath: "Dockerfile",
+								Failures: types.MisconfResults{
+									types.MisconfResult{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No commands allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Dockerfile Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   1,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: artifact.Reference{
+				Name: "testdata/misconfig/dockerfile/custom-rego-schema/src",
+				Type: artifact.TypeFilesystem,
+				ID:   "sha256:877ccd78bace236edde3c7a92268ae0834e7d7b52c295acfe5007added51a2d5",
+				BlobIDs: []string{
+					"sha256:877ccd78bace236edde3c7a92268ae0834e7d7b52c295acfe5007added51a2d5",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
