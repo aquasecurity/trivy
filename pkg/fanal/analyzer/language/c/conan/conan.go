@@ -3,6 +3,7 @@ package conan
 import (
 	"bufio"
 	"context"
+	"github.com/samber/lo"
 	"io"
 	"io/fs"
 	"os"
@@ -155,11 +156,11 @@ func detectCacheDir() (string, error) {
 		// conan v2 uses `CONAN_HOME` env
 		// cf. https://docs.conan.io/2/reference/environment.html#conan-home
 		// `.conan2` dir is omitted for this env
-		path.Join(os.Getenv("CONAN_HOME"), "p"),
+		lo.Ternary(os.Getenv("CONAN_HOME") != "", path.Join(os.Getenv("CONAN_HOME"), "p"), ""),
 		// conan v1 uses `CONAN_USER_HOME` env
 		// cf. https://docs.conan.io/en/1.64/reference/env_vars.html#conan-user-home
 		// `.conan` dir is used for this env
-		path.Join(os.Getenv("CONAN_USER_HOME"), ".conan", "data"),
+		lo.Ternary(os.Getenv("CONAN_USER_HOME") != "", path.Join(os.Getenv("CONAN_USER_HOME"), ".conan", "data"), ""),
 		// `<username>/.conan2` is default directory for conan v2
 		// cf. https://docs.conan.io/2/reference/environment.html#conan-home
 		path.Join(home, ".conan2", "p"),
@@ -169,8 +170,10 @@ func detectCacheDir() (string, error) {
 	}
 
 	for _, dir := range dirs {
-		if fsutils.DirExists(dir) {
-			return dir, nil
+		if dir != "" {
+			if fsutils.DirExists(dir) {
+				return dir, nil
+			}
 		}
 	}
 
