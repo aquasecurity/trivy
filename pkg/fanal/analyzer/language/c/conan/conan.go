@@ -3,7 +3,6 @@ package conan
 import (
 	"bufio"
 	"context"
-	"github.com/samber/lo"
 	"io"
 	"io/fs"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/c/conan"
