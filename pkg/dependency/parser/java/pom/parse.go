@@ -677,7 +677,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
 
-func (p *Parser) repoRequest(repo string, paths []string) (*http.Request, error) {
+func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, error) {
 	repoURL, err := url.Parse(repo)
 	if err != nil {
 		p.logger.Error("URL parse error", log.String("repo", repo))
@@ -707,7 +707,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 	mavenMetadataPaths := slices.Clone(paths[:len(paths)-1]) // Clone slice to avoid shadow overwriting last element of `paths`
 	mavenMetadataPaths = append(mavenMetadataPaths, "maven-metadata.xml")
 
-	req, err := p.repoRequest(repo, mavenMetadataPaths)
+	req, err := p.remoteRepoRequest(repo, mavenMetadataPaths)
 	if err != nil {
 		return "", xerrors.Errorf("unable to create request for maven-metadata.xml file")
 	}
@@ -722,13 +722,13 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 
 	mavenMetadata, err := parseMavenMetadata(resp.Body)
 	if err != nil {
-		return "", xerrors.Errorf("failed to parse the remote POM: %w", err)
+		return "", xerrors.Errorf("failed to parse maven-metadata.xml file: %w", err)
 	}
 
 	var pomFileName string
 	for _, sv := range mavenMetadata.Versioning.SnapshotVersions {
 		if sv.Extension == "pom" {
-			// mavenMetadataPaths[len(mavenMetadataPaths)-3] is artifactID
+			// mavenMetadataPaths[len(mavenMetadataPaths)-3] is always artifactID
 			pomFileName = fmt.Sprintf("%s-%s.pom", mavenMetadataPaths[len(mavenMetadataPaths)-3], sv.Value)
 		}
 	}
@@ -737,7 +737,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 }
 
 func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
-	req, err := p.repoRequest(repo, paths)
+	req, err := p.remoteRepoRequest(repo, paths)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create request for pom file")
 	}
