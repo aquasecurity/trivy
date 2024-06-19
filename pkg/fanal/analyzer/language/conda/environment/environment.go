@@ -36,14 +36,18 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 		once := sync.Once{}
 		// For `environment.yaml` Applications always contains only 1 Application
 		for i, pkg := range res.Applications[0].Packages {
-			licenses, err := findLicenseFromEnvDir(pkg)
-			if err != nil {
-				// Show warning once per file
-				once.Do(func() {
-					log.WithPrefix("conda").Debug("License didn't found", log.String("file", input.FilePath), log.Err(err))
-				})
+			// Skip packages without a version, because in this case we will not be able to get the correct file name.
+			if pkg.Version != "" {
+				licenses, err := findLicenseFromEnvDir(pkg)
+				if err != nil {
+					// Show log once per file
+					once.Do(func() {
+						log.WithPrefix("conda").Debug("License not found. For more information, see https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#environmentyml2.”",
+							log.String("file", input.FilePath), log.String("pkg", pkg.Name), log.Err(err))
+					})
+				}
+				pkg.Licenses = licenses
 			}
-			pkg.Licenses = licenses
 			pkg.FilePath = "" // remove `prefix` from FilePath
 			res.Applications[0].Packages[i] = pkg
 		}
@@ -54,6 +58,9 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 }
 
 func findLicenseFromEnvDir(pkg types.Package) ([]string, error) {
+	if pkg.FilePath == "" {
+		return nil, xerrors.Errorf("`prefix` field doesn't exist")
+	}
 	condaMetaDir := filepath.Join(pkg.FilePath, "conda-meta")
 	entries, err := os.ReadDir(condaMetaDir)
 	if err != nil {
