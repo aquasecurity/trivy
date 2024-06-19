@@ -323,6 +323,14 @@ func TestTar(t *testing.T) {
 			golden: "testdata/opensuse-leap-151.json.golden",
 		},
 		{
+			name: "opensuse tumbleweed",
+			args: args{
+				Format: types.FormatJSON,
+				Input:  "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
+			},
+			golden: "testdata/opensuse-tumbleweed.json.golden",
+		},
+		{
 			name: "photon 3.0",
 			args: args{
 				Format: types.FormatJSON,

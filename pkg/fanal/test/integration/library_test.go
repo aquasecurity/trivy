@@ -99,6 +99,15 @@ var tests = []testCase{
 		},
 	},
 	{
+		name:            "happy path, opensuse tumbleweed",
+		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:opensuse-tumbleweed",
+		imageFile:       "../../../../integration/testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
+		wantOS: types.OS{
+			Name:   "20240607",
+			Family: "opensuse.tumbleweed",
+		},
+	},
+	{
 		// from registry.suse.com/suse/sle15:15.3.17.8.16
 		name:            "happy path, suse 15.3 (NDB)",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:suse-15.3_ndb",
