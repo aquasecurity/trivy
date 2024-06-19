@@ -1,0 +1,29 @@
+{
+  "lockVersion" : 1,
+  "timestamp" : "2024-06-06T11:03:09.964557Z",
+  "configurations" : [
+    "compile",
+    "optional",
+    "provided",
+    "runtime",
+    "test"
+  ],
+  "dependencies" : [
+    {
+      "org" : "com.fasterxml.jackson.core",
+      "name" : "jackson-databind",
+      "version" : "2.9.1",
+      "artifacts" : [
+        {
+          "name" : "jackson-databind.jar",
+          "hash" : "sha1:716da1830a2043f18882fc036ec26eb32cbe5aff"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    }
+  ]
+}
