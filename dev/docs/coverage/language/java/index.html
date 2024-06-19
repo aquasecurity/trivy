@@ -1984,6 +1984,13 @@ You're not viewing the latest version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#sbt" class="md-nav__link">
+    SBT
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3984,6 +3991,13 @@ You're not viewing the latest version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#sbt" class="md-nav__link">
+    SBT
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4003,7 +4017,7 @@ You're not viewing the latest version.
 
 
 <h1 id="java">Java</h1>
-<p>Trivy supports three types of Java scanning: <code>JAR/WAR/PAR/EAR</code>, <code>pom.xml</code> and <code>*gradle.lockfile</code> files.</p>
+<p>Trivy supports four types of Java scanning: <code>JAR/WAR/PAR/EAR</code>, <code>pom.xml</code>, <code>*gradle.lockfile</code> and <code>*.sbt.lock</code> files.</p>
 <p>Each artifact supports the following scanners:</p>
 <table>
 <thead>
@@ -4032,6 +4046,12 @@ You're not viewing the latest version.
 <td align="center">✓</td>
 <td align="center">✓</td>
 <td align="center">✓</td>
+</tr>
+<tr>
+<td>*.sbt.lock</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">-</td>
 </tr>
 </tbody>
 </table>
@@ -4066,6 +4086,13 @@ You're not viewing the latest version.
 <td align="center">-</td>
 <td align="center">Exclude</td>
 <td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td>*.sbt.lock</td>
+<td align="center">-</td>
+<td align="center">Exclude</td>
+<td align="center">-</td>
 <td align="center">✓</td>
 </tr>
 </tbody>
@@ -4142,6 +4169,13 @@ Therefore, we mark all dependencies as indirect to use logic to guess direct dep
 <h3 id="licenses">Licenses</h3>
 <p>Trity also can detect licenses for dependencies.</p>
 <p>Make sure that you have cache<sup id="fnref2:8"><a class="footnote-ref" href="#fn:8">8</a></sup> directory to find licenses from <code>*.pom</code> dependency files.</p>
+<h2 id="sbt">SBT</h2>
+<p><code>build.sbt.lock</code> files only contain information about used dependencies. This requires a lockfile generated using the
+<a href="https://stringbean.github.io/sbt-dependency-lock">sbt-dependency-lock</a> plugin.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All necessary files are checked locally. SBT file scanning doesn't require internet access.</p>
+</div>
 <div class="footnote">
 <hr />
 <ol>
