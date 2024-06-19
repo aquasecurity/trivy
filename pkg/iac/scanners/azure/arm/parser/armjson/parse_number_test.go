@@ -33,7 +33,7 @@ func Test_Number_FloatToFloat(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	err := Unmarshal(example, &output, &metadata)
 	require.NoError(t, err)
-	assert.Equal(t, 123.456, output, 0.0001)
+	assert.InEpsilon(t, 123.456, output, 0.0001)
 }
 
 func Test_Number_FloatToInt(t *testing.T) {
