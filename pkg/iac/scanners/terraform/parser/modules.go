@@ -16,6 +16,10 @@ import (
 // It builds a graph based on the module dependencies and determines the modules that have no incoming dependencies,
 // considering them as root modules.
 func (p *Parser) FindRootModules(ctx context.Context, dirs []string) ([]string, error) {
+	// skip cached terraform modules as they cannot be root modules
+	dirs = lo.Filter(dirs, func(dir string, _ int) bool {
+		return !strings.Contains(dir, ".terraform/modules/")
+	})
 	for _, dir := range dirs {
 		if err := p.ParseFS(ctx, dir); err != nil {
 			return nil, err

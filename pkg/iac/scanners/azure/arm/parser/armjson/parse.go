@@ -89,7 +89,7 @@ func (p *parser) undo() error {
 	return nil
 }
 
-func (p *parser) makeError(format string, args ...interface{}) error {
+func (p *parser) makeError(format string, args ...any) error {
 	return fmt.Errorf(
 		"error at line %d, column %d: %s",
 		p.position.Line,

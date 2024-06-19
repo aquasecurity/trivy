@@ -1,5 +1,9 @@
 # Go
 
+## Data Sources
+The data sources are listed [here](../../scanner/vulnerability.md#data-sources-1).
+Trivy uses Go Vulnerability Database for standard packages, such as `net/http`, and uses GitHub Advisory Database for third-party packages.
+
 ## Features
 Trivy supports two types of Go scanning, Go Modules and binaries built by Go.
 
@@ -12,10 +16,10 @@ The following scanners are supported.
 
 The table below provides an outline of the features Trivy offers.
 
-| Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] |
-|----------|:-----------:|:-----------------|:----------------------------------:|
-| Modules  |      ✅      | Include          |               ✅[^2]                |
-| Binaries |      ✅      | Exclude          |                 -                  |
+| Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] | Stdlib |
+|----------|:-----------:|:-----------------|:------------------------------------:|:------:|
+| Modules  |      ✅      | Include          |                ✅[^2]                 |   -    |
+| Binaries |      ✅      | Exclude          |                  -                   | ✅[^4]  |
 
 !!! note
     Trivy scans only dependencies of the Go project.
@@ -74,7 +78,20 @@ $ trivy rootfs ./your_binary
 !!! note
     It doesn't work with UPX-compressed binaries.
 
+#### Empty versions
+There are times when Go uses the `(devel)` version for modules/dependencies.
+
+- Only Go binaries installed using the `go install` command contain correct (semver) version for the main module. 
+  In other cases, Go uses the `(devel)` version[^3].
+- Dependencies replaced with local ones use the `(devel)` versions.
+
+In the first case, Trivy will attempt to parse any `-ldflags` as a secondary source, and will leave the version
+empty if it cannot do so[^5]. For the second case, the version of such packages is empty.
+
 [^1]: It doesn't require the Internet access.
 [^2]: Need to download modules to local cache beforehand
+[^3]: See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477
+[^4]: Identify the Go version used to compile the binary and detect its vulnerabilities
+[^5]: See https://github.com/golang/go/issues/63432#issuecomment-1751610604
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

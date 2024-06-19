@@ -19,7 +19,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -45,11 +44,11 @@ var (
 
 type gomodAnalyzer struct {
 	// root go.mod/go.sum
-	modParser godeptypes.Parser
-	sumParser godeptypes.Parser
+	modParser language.Parser
+	sumParser language.Parser
 
 	// go.mod/go.sum in dependencies
-	leafModParser godeptypes.Parser
+	leafModParser language.Parser
 
 	licenseClassifierConfidenceLevel float64
 
@@ -139,13 +138,13 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	licenses := make(map[string][]string)
 	for i, app := range apps {
 		// Actually used dependencies
-		usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+		usedPkgs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 			return pkg.Name, pkg
 		})
-		for j, lib := range app.Libraries {
+		for j, lib := range app.Packages {
 			if l, ok := licenses[lib.ID]; ok {
 				// Fill licenses
-				apps[i].Libraries[j].Licenses = l
+				apps[i].Packages[j].Licenses = l
 				continue
 			}
 
@@ -160,7 +159,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 				licenses[lib.ID] = licenseNames
 
 				// Fill licenses
-				apps[i].Libraries[j].Licenses = licenseNames
+				apps[i].Packages[j].Licenses = licenseNames
 			}
 
 			// Collect dependencies of the direct dependency
@@ -171,8 +170,8 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 				continue
 			} else {
 				// Filter out unused dependencies and convert module names to module IDs
-				apps[i].Libraries[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
-					if m, ok := usedLibs[modName]; !ok {
+				apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
+					if m, ok := usedPkgs[modName]; !ok {
 						return "", false
 					} else {
 						return m.ID, true
@@ -184,37 +183,37 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	return nil
 }
 
-func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (godeptypes.Dependency, error) {
+func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, error) {
 	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/go.mod
 	modPath := filepath.Join(modDir, "go.mod")
 	f, err := os.Open(modPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		a.logger.Debug("Unable to identify dependencies as it doesn't support Go modules",
 			log.String("module", pkgID))
-		return godeptypes.Dependency{}, nil
+		return types.Dependency{}, nil
 	} else if err != nil {
-		return godeptypes.Dependency{}, xerrors.Errorf("file open error: %w", err)
+		return types.Dependency{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	// Parse go.mod under $GOPATH/pkg/mod
-	libs, _, err := a.leafModParser.Parse(f)
+	pkgs, _, err := a.leafModParser.Parse(f)
 	if err != nil {
-		return godeptypes.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
+		return types.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
 	}
 
 	// Filter out indirect dependencies
-	dependsOn := lo.FilterMap(libs, func(lib godeptypes.Library, index int) (string, bool) {
-		return lib.Name, !lib.Indirect
+	dependsOn := lo.FilterMap(pkgs, func(lib types.Package, index int) (string, bool) {
+		return lib.Name, lib.Relationship == types.RelationshipDirect
 	})
 
-	return godeptypes.Dependency{
+	return types.Dependency{
 		ID:        pkgID,
 		DependsOn: dependsOn,
 	}, nil
 }
 
-func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Application, error) {
+func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
 	f, err := fsys.Open(path)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
@@ -231,9 +230,9 @@ func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Applicatio
 }
 
 func lessThanGo117(gomod *types.Application) bool {
-	for _, lib := range gomod.Libraries {
+	for _, lib := range gomod.Packages {
 		// The indirect field is populated only in Go 1.17+
-		if lib.Indirect {
+		if lib.Relationship == types.RelationshipIndirect {
 			return false
 		}
 	}
@@ -245,13 +244,13 @@ func mergeGoSum(gomod, gosum *types.Application) {
 		return
 	}
 	uniq := make(map[string]types.Package)
-	for _, lib := range gomod.Libraries {
+	for _, lib := range gomod.Packages {
 		// It will be used for merging go.sum.
 		uniq[lib.Name] = lib
 	}
 
 	// For Go 1.16 or less, we need to merge go.sum into go.mod.
-	for _, lib := range gosum.Libraries {
+	for _, lib := range gosum.Packages {
 		// Skip dependencies in go.mod so that go.mod should be preferred.
 		if _, ok := uniq[lib.Name]; ok {
 			continue
@@ -259,10 +258,11 @@ func mergeGoSum(gomod, gosum *types.Application) {
 
 		// This dependency doesn't exist in go.mod, so it must be an indirect dependency.
 		lib.Indirect = true
+		lib.Relationship = types.RelationshipIndirect
 		uniq[lib.Name] = lib
 	}
 
-	gomod.Libraries = maps.Values(uniq)
+	gomod.Packages = maps.Values(uniq)
 }
 
 func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {

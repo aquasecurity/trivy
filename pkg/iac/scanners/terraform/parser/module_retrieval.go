@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"io/fs"
 
-	resolvers2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 )
 
 type ModuleResolver interface {
-	Resolve(context.Context, fs.FS, resolvers2.Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error)
+	Resolve(context.Context, fs.FS, resolvers.Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error)
 }
 
 var defaultResolvers = []ModuleResolver{
-	resolvers2.Cache,
-	resolvers2.Local,
-	resolvers2.Remote,
-	resolvers2.Registry,
+	resolvers.Local,
+	resolvers.Cache,
+	resolvers.Remote,
+	resolvers.Registry,
 }
 
-func resolveModule(ctx context.Context, current fs.FS, opt resolvers2.Options) (filesystem fs.FS, sourcePrefix, downloadPath string, err error) {
+func resolveModule(ctx context.Context, current fs.FS, opt resolvers.Options) (filesystem fs.FS, sourcePrefix, downloadPath string, err error) {
 	opt.Debug("Resolving module '%s' with source: '%s'...", opt.Name, opt.Source)
 	for _, resolver := range defaultResolvers {
 		if filesystem, prefix, path, applies, err := resolver.Resolve(ctx, current, opt); err != nil {

@@ -14,6 +14,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
 )
 
 const (
@@ -144,6 +146,11 @@ func (h *ColorHandler) Handle(ctx context.Context, r slog.Record) error {
 		*bufp = buf
 		freeBuf(bufp)
 	}()
+
+	// For tests, use the fake clock's time.
+	if c, ok := clock.Clock(ctx).(*clock.FakeClock); ok {
+		r.Time = c.Now()
+	}
 
 	buf = h.handle(ctx, buf, r)
 

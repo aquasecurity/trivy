@@ -25,7 +25,7 @@ var imagePaths = map[string]string{
 
 // for Docker
 var opt = engine.Option{
-	APIVersion: "1.38",
+	APIVersion: "1.45",
 	ImagePaths: imagePaths,
 }
 
@@ -112,7 +112,7 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 		Algorithm: "sha256",
 		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 	}, conf)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 }
 
 func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
@@ -152,7 +152,7 @@ func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
 		Algorithm: "sha256",
 		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 	}, conf)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 }
 
 func Test_image_ConfigFile(t *testing.T) {
@@ -167,7 +167,6 @@ func Test_image_ConfigFile(t *testing.T) {
 			imageName: "alpine:3.11",
 			want: &v1.ConfigFile{
 				Architecture:  "amd64",
-				Container:     "fb71ddde5f6411a82eb056a9190f0cc1c80d7f77a8509ee90a2054428edb0024",
 				OS:            "linux",
 				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				DockerVersion: "18.09.7",

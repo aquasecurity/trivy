@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_Detection(t *testing.T) {
@@ -389,7 +390,7 @@ rules:
 
 func BenchmarkIsType_SmallFile(b *testing.B) {
 	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", "small.file"))
-	assert.Nil(b, err)
+	require.NoError(b, err)
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -400,7 +401,7 @@ func BenchmarkIsType_SmallFile(b *testing.B) {
 
 func BenchmarkIsType_BigFile(b *testing.B) {
 	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", "big.file"))
-	assert.Nil(b, err)
+	require.NoError(b, err)
 
 	b.ReportAllocs()
 	b.ResetTimer()

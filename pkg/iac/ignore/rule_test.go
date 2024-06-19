@@ -3,9 +3,10 @@ package ignore_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func metadataWithLine(path string, line int) types.Metadata {
@@ -190,11 +191,55 @@ func TestRules_Ignore(t *testing.T) {
 			},
 			shouldIgnore: false,
 		},
+		{
+			name: "multiple ignore rules on the same line",
+			src: `test #trivy:ignore:rule-1
+test #trivy:ignore:rule-2
+		`,
+			args: args{
+				metadata: metadataWithLine(filename, 1),
+				ids:      []string{"rule-1"},
+			},
+			shouldIgnore: true,
+		},
+		{
+			name: "multiple ignore rules on the same line",
+			src: `# trivy:ignore:rule-1
+# trivy:ignore:rule-2
+test #trivy:ignore:rule-3
+`,
+			args: args{
+				metadata: metadataWithLine(filename, 3),
+				ids:      []string{"rule-1"},
+			},
+			shouldIgnore: true,
+		},
+		{
+			name: "multiple ignore rules on the same line",
+			src: `# trivy:ignore:rule-1 # trivy:ignore:rule-2
+# trivy:ignore:rule-3
+test #trivy:ignore:rule-4
+`,
+			args: args{
+				metadata: metadataWithLine(filename, 3),
+				ids:      []string{"rule-2"},
+			},
+			shouldIgnore: true,
+		},
+		{
+			name: "multiple ids",
+			src:  `# trivy:ignore:rule-1`,
+			args: args{
+				metadata: metadataWithLine(filename, 1),
+				ids:      []string{"rule-1", "rule-2"},
+			},
+			shouldIgnore: true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rules := ignore.Parse(tt.src, filename)
+			rules := ignore.Parse(tt.src, "", filename)
 			got := rules.Ignore(tt.args.metadata, tt.args.ids, nil)
 			assert.Equal(t, tt.shouldIgnore, got)
 		})
@@ -284,7 +329,7 @@ func TestRules_IgnoreWithCustomIgnorer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rules := ignore.Parse(tt.src, filename, tt.parser)
+			rules := ignore.Parse(tt.src, filename, "", tt.parser)
 			got := rules.Ignore(tt.args.metadata, tt.args.ids, tt.args.ignorers)
 			assert.Equal(t, tt.shouldIgnore, got)
 		})

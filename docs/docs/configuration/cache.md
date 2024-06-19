@@ -3,7 +3,7 @@ The cache directory includes
 
 - [Vulnerability Database][trivy-db][^1]
 - [Java Index Database][trivy-java-db][^2]
-- [Misconfiguration Policies][misconf-policies][^3]
+- [Misconfiguration Checks][misconf-checks][^3]
 - Cache of previous scans.
  
 The cache option is common to all scanners.
@@ -70,7 +70,7 @@ $ trivy server --cache-backend redis://localhost:6379 \
 
 [trivy-db]: ./db.md#vulnerability-database
 [trivy-java-db]: ./db.md#java-index-database
-[misconf-policies]: ../scanner/misconfiguration/policy/builtin.md
+[misconf-checks]: ../scanner/misconfiguration/check/builtin.md
 
 [^1]: Downloaded when scanning for vulnerabilities
 [^2]: Downloaded when scanning `jar/war/par/ear` files

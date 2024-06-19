@@ -77,17 +77,17 @@ func handleBitnamiImages(componentPath string, bom types.SBOM) {
 		if app.Type == ftypes.Bitnami {
 			// Set the component dir path to the application
 			bom.Applications[i].FilePath = componentPath
-			// Either Application.FilePath or Application.Libraries[].FilePath should be set
+			// Either Application.FilePath or Application.Packages[].FilePath should be set
 			continue
 		}
 
-		for j, pkg := range app.Libraries {
+		for j, pkg := range app.Packages {
 			// Set the absolute path since SBOM in Bitnami images contain a relative path
 			// e.g. modules/apm/elastic-apm-agent-1.36.0.jar
 			//      => opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar
 			// If the file path is empty, the file path will be set to the component dir path.
 			filePath := path.Join(componentPath, pkg.FilePath)
-			bom.Applications[i].Libraries[j].FilePath = filePath
+			bom.Applications[i].Packages[j].FilePath = filePath
 		}
 	}
 }

@@ -249,11 +249,9 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 				path = filepath.Join(baseDir, path)
 			}
 
-			// Join the path to the glob pattern, while ensuring the full
-			// pattern is canonical for the host OS. The joined path is
-			// automatically cleaned during this operation.
-			pattern = filepath.Join(path, pattern)
-			// Trivy uses a virtual file system
+			// Join the path to the glob pattern, and ensure both path and pattern
+			// agree on path separators, so the globbing works as expected.
+			pattern = filepath.ToSlash(filepath.Join(path, pattern))
 			path = filepath.ToSlash(path)
 
 			matches, err := doublestar.Glob(target, pattern)
@@ -263,7 +261,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 
 			var matchVals []cty.Value
 			for _, match := range matches {
-				fi, err := os.Stat(match)
+				fi, err := fs.Stat(target, match)
 
 				if err != nil {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to stat (%s): %s", match, err)

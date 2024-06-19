@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-func Base64(args ...interface{}) interface{} {
+func Base64(args ...any) any {
 
 	if len(args) == 0 {
 		return nil
@@ -16,7 +16,7 @@ func Base64(args ...interface{}) interface{} {
 	return base64.StdEncoding.EncodeToString([]byte(input))
 }
 
-func Base64ToString(args ...interface{}) interface{} {
+func Base64ToString(args ...any) any {
 	if len(args) == 0 {
 		return nil
 	}
@@ -30,7 +30,7 @@ func Base64ToString(args ...interface{}) interface{} {
 	return string(result)
 }
 
-func Base64ToJson(args ...interface{}) interface{} {
+func Base64ToJson(args ...any) any {
 
 	if len(args) == 0 {
 		return nil
@@ -43,7 +43,7 @@ func Base64ToJson(args ...interface{}) interface{} {
 		return nil
 	}
 
-	var result map[string]interface{}
+	var result map[string]any
 
 	if err := json.Unmarshal(decoded, &result); err != nil {
 		return nil

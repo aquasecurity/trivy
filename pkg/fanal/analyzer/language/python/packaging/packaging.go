@@ -16,7 +16,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -56,7 +55,7 @@ var (
 
 type packagingAnalyzer struct {
 	logger                           *log.Logger
-	pkgParser                        godeptypes.Parser
+	pkgParser                        language.Parser
 	licenseClassifierConfidenceLevel float64
 }
 
@@ -117,9 +116,9 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 }
 
 func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application) error {
-	for i, lib := range app.Libraries {
+	for i, pkg := range app.Packages {
 		var licenses []string
-		for _, lic := range lib.Licenses {
+		for _, lic := range pkg.Licenses {
 			// Parser adds `file://` prefix to filepath from `License-File` field
 			// We need to read this file to find licenses
 			// Otherwise, this is the name of the license
@@ -142,7 +141,7 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application
 			})
 			licenses = append(licenses, foundLicenses...)
 		}
-		app.Libraries[i].Licenses = licenses
+		app.Packages[i].Licenses = licenses
 	}
 
 	return nil

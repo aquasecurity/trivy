@@ -4,41 +4,44 @@ package repo
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/sosedoff/gitkit"
+	"github.com/go-git/go-git/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/gittest"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 )
 
-func setupGitServer() (*httptest.Server, error) {
-	service := gitkit.New(gitkit.Config{
-		Dir:        "./testdata",
-		AutoCreate: false,
-	})
+func setupGitRepository(t *testing.T, repo, dir string) (*httptest.Server, *git.Repository) {
+	gs := gittest.NewServer(t, repo, dir)
 
-	if err := service.Setup(); err != nil {
-		return nil, err
-	}
+	worktree := t.TempDir()
+	r := gittest.Clone(t, gs, repo, worktree)
 
-	ts := httptest.NewServer(service)
+	// Branch
+	gittest.CreateRemoteBranch(t, r, "valid-branch")
 
-	return ts, nil
+	// Tag
+	gittest.SetTag(t, r, "v1.0.0")
+	gittest.PushTags(t, r)
+
+	return gs, r
 }
 
 func TestNewArtifact(t *testing.T) {
-	ts, err := setupGitServer()
-	require.NoError(t, err)
+	ts, repo := setupGitRepository(t, "test-repo", "testdata/test-repo")
 	defer ts.Close()
+
+	head, err := repo.Head()
+	require.NoError(t, err)
 
 	type args struct {
 		target     string
@@ -56,7 +59,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "remote repo",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				noProgress: false,
 			},
@@ -72,9 +75,9 @@ func TestNewArtifact(t *testing.T) {
 			assertion: assert.NoError,
 		},
 		{
-			name: "happy noProgress",
+			name: "no progress",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				noProgress: true,
 			},
@@ -83,7 +86,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "branch",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				repoBranch: "valid-branch",
 			},
@@ -92,7 +95,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "tag",
 			args: args{
-				target:  ts.URL + "/test.git",
+				target:  ts.URL + "/test-repo.git",
 				c:       nil,
 				repoTag: "v1.0.0",
 			},
@@ -101,9 +104,9 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "commit",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
-				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778d",
+				repoCommit: head.String(),
 			},
 			assertion: assert.NoError,
 		},
@@ -114,7 +117,7 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: false,
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "repository not found")
 			},
 		},
@@ -125,40 +128,40 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: false,
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "url parse error")
 			},
 		},
 		{
 			name: "invalid branch",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				repoBranch: "invalid-branch",
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, `couldn't find remote ref "refs/heads/invalid-branch"`)
 			},
 		},
 		{
 			name: "invalid tag",
 			args: args{
-				target:  ts.URL + "/test.git",
+				target:  ts.URL + "/test-repo.git",
 				c:       nil,
 				repoTag: "v1.0.9",
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, `couldn't find remote ref "refs/tags/v1.0.9"`)
 			},
 		},
 		{
 			name: "invalid commit",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778e",
 			},
-			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+			assertion: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "git checkout error: object not found")
 			},
 		},
@@ -179,22 +182,21 @@ func TestNewArtifact(t *testing.T) {
 }
 
 func TestArtifact_Inspect(t *testing.T) {
-	ts, err := setupGitServer()
-	require.NoError(t, err)
+	ts, _ := setupGitRepository(t, "test-repo", "testdata/test-repo")
 	defer ts.Close()
 
 	tests := []struct {
 		name    string
 		rawurl  string
-		want    types.ArtifactReference
+		want    artifact.Reference
 		wantErr bool
 	}{
 		{
 			name:   "happy path",
-			rawurl: ts.URL + "/test.git",
-			want: types.ArtifactReference{
-				Name: ts.URL + "/test.git",
-				Type: types.ArtifactRepository,
+			rawurl: ts.URL + "/test-repo.git",
+			want: artifact.Reference{
+				Name: ts.URL + "/test-repo.git",
+				Type: artifact.TypeRepository,
 				ID:   "sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
 				BlobIDs: []string{
 					"sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
@@ -213,7 +215,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			defer cleanup()
 
 			ref, err := art.Inspect(context.Background())
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, ref)
 		})
 	}
@@ -255,7 +257,7 @@ func Test_newURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := newURL(tt.args.rawurl)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			} else {

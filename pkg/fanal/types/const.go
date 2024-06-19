@@ -55,6 +55,7 @@ const (
 	Pipenv        LangType = "pipenv"
 	Poetry        LangType = "poetry"
 	CondaPkg      LangType = "conda-pkg"
+	CondaEnv      LangType = "conda-environment"
 	PythonPkg     LangType = "python-pkg"
 	NodePkg       LangType = "node-pkg"
 	Yarn          LangType = "yarn"
@@ -72,6 +73,7 @@ const (
 	Pub           LangType = "pub"
 	Hex           LangType = "hex"
 	Bitnami       LangType = "bitnami"
+	Julia         LangType = "julia"
 
 	K8sUpstream LangType = "kubernetes"
 	EKS         LangType = "eks" // Amazon Elastic Kubernetes Service
@@ -139,4 +141,10 @@ const (
 	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
+
+	CondaEnvYaml = "environment.yaml"
+	CondaEnvYml  = "environment.yml"
+
+	JuliaProject  = "Project.toml"
+	JuliaManifest = "Manifest.toml"
 )

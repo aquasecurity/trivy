@@ -3,10 +3,10 @@ package binary
 
 import (
 	rustaudit "github.com/microsoft/go-rustaudit"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -31,30 +31,30 @@ func convertError(err error) error {
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
 // Parse scans files to try to report Rust crates and version injected into Rust binaries
 // via https://github.com/rust-secure-code/cargo-auditable
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	info, err := rustaudit.GetDependencyInfo(r)
 	if err != nil {
 		return nil, nil, convertError(err)
 	}
 
-	var libs []types.Library
-	var deps []types.Dependency
+	var pkgs []ftypes.Package
+	var deps []ftypes.Dependency
 	for _, pkg := range info.Packages {
 		if pkg.Kind != rustaudit.Runtime {
 			continue
 		}
 		pkgID := packageID(pkg.Name, pkg.Version)
-		libs = append(libs, types.Library{
-			ID:       pkgID,
-			Name:     pkg.Name,
-			Version:  pkg.Version,
-			Indirect: !pkg.Root,
+		pkgs = append(pkgs, ftypes.Package{
+			ID:           pkgID,
+			Name:         pkg.Name,
+			Version:      pkg.Version,
+			Relationship: lo.Ternary(pkg.Root, ftypes.RelationshipRoot, ftypes.RelationshipUnknown), // TODO: Determine the direct dependencies by checking the dependencies of the root crate
 		})
 
 		var childDeps []string
@@ -65,14 +65,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			}
 		}
 		if len(childDeps) > 0 {
-			deps = append(deps, types.Dependency{
+			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: childDeps,
 			})
 		}
 	}
 
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
 func packageID(name, version string) string {

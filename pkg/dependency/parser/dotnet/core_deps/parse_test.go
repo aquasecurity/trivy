@@ -4,25 +4,24 @@ import (
 	"os"
 	"path"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
 		file    string // Test input file
-		want    []types.Library
+		want    []ftypes.Package
 		wantErr string
 	}{
 		{
 			file: "testdata/ExampleApp1.deps.json",
-			want: []types.Library{
-				{Name: "Newtonsoft.Json", Version: "13.0.1", Locations: []types.Location{{StartLine: 33, EndLine: 39}}},
+			want: []ftypes.Package{
+				{Name: "Newtonsoft.Json", Version: "13.0.1", Locations: []ftypes.Location{{StartLine: 33, EndLine: 39}}},
 			},
 		},
 		{
@@ -42,26 +41,13 @@ func TestParse(t *testing.T) {
 
 			got, _, err := NewParser().Parse(f)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 			} else {
 				require.NoError(t, err)
 
-				sort.Slice(got, func(i, j int) bool {
-					ret := strings.Compare(got[i].Name, got[j].Name)
-					if ret == 0 {
-						return got[i].Version < got[j].Version
-					}
-					return ret < 0
-				})
-
-				sort.Slice(tt.want, func(i, j int) bool {
-					ret := strings.Compare(tt.want[i].Name, tt.want[j].Name)
-					if ret == 0 {
-						return tt.want[i].Version < tt.want[j].Version
-					}
-					return ret < 0
-				})
+				sort.Sort(ftypes.Packages(got))
+				sort.Sort(ftypes.Packages(tt.want))
 
 				assert.Equal(t, tt.want, got)
 			}

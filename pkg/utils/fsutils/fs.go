@@ -1,6 +1,7 @@
 package fsutils
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -82,6 +83,14 @@ func DirExists(path string) bool {
 		return false
 	}
 	return true
+}
+
+func FileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	if errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return err == nil
 }
 
 type WalkDirRequiredFunc func(path string, d fs.DirEntry) bool

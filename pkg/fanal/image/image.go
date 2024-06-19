@@ -55,7 +55,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 		errs = multierror.Append(errs, err)
 	}
 
-	return nil, func() {}, errs
+	return nil, func() {}, xerrors.Errorf("unable to find the specified image %q in %q: %w", imageName, opt.ImageSources, errs)
 }
 
 func ID(img v1.Image) (string, error) {

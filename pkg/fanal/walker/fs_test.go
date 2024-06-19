@@ -2,7 +2,6 @@ package walker_test
 
 import (
 	"errors"
-	"golang.org/x/exp/slices"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
@@ -84,7 +84,7 @@ func TestFS_Walk(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
 }

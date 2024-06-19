@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -24,20 +23,20 @@ const (
 
 type parser struct{}
 
-func (*parser) Parse(r xio.ReadSeekerAt) ([]godeptypes.Library, []godeptypes.Dependency, error) {
+func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
 	p := packagejson.NewParser()
 	pkg, err := p.Parse(r)
 	if err != nil {
 		return nil, nil, err
 	}
 	// skip packages without name/version
-	if pkg.Library.ID == "" {
+	if pkg.Package.ID == "" {
 		return nil, nil, nil
 	}
 	// package.json may contain version range in `dependencies` fields
 	// e.g.   "devDependencies": { "mocha": "^5.2.0", }
 	// so we get only information about project
-	return []godeptypes.Library{pkg.Library}, nil, nil
+	return []types.Package{pkg.Package}, nil, nil
 }
 
 type nodePkgLibraryAnalyzer struct{}

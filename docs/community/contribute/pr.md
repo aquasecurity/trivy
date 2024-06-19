@@ -114,6 +114,7 @@ mode:
 - server
 - aws
 - vm
+- plugin
 
 os:
 
@@ -142,6 +143,7 @@ language:
 - go
 - elixir
 - dart
+- julia
 
 vuln:
 

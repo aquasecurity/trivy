@@ -81,7 +81,7 @@ type Marshaler struct {
 	appVersion string // Trivy version. It needed for `creator` field
 }
 
-type Hash func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
+type Hash func(v any, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
 
 type marshalOption func(*Marshaler)
 
@@ -229,8 +229,8 @@ func (m *Marshaler) packageDownloadLocation(root *core.Component) string {
 func (m *Marshaler) rootSPDXPackage(root *core.Component, pkgDownloadLocation string) (*spdx.Package, error) {
 	var externalReferences []*spdx.PackageExternalReference
 	// When the target is a container image, add PURL to the external references of the root package.
-	if root.PkgID.PURL != nil {
-		externalReferences = append(externalReferences, m.purlExternalReference(root.PkgID.PURL.String()))
+	if root.PkgIdentifier.PURL != nil {
+		externalReferences = append(externalReferences, m.purlExternalReference(root.PkgIdentifier.PURL.String()))
 	}
 
 	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", root.Name, root.Type))
@@ -304,8 +304,8 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 	}
 
 	var pkgExtRefs []*spdx.PackageExternalReference
-	if c.PkgID.PURL != nil {
-		pkgExtRefs = []*spdx.PackageExternalReference{m.purlExternalReference(c.PkgID.PURL.String())}
+	if c.PkgIdentifier.PURL != nil {
+		pkgExtRefs = []*spdx.PackageExternalReference{m.purlExternalReference(c.PkgIdentifier.PURL.String())}
 	}
 
 	var digests []digest.Digest
@@ -338,7 +338,7 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 }
 
 func spdxPkgName(component *core.Component) string {
-	if p := component.PkgID.PURL; p != nil && component.Group != "" {
+	if p := component.PkgIdentifier.PURL; p != nil && component.Group != "" {
 		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
 			return component.Group + ":" + component.Name
 		}
@@ -487,7 +487,7 @@ func getDocumentNamespace(root *core.Component) string {
 	)
 }
 
-func calcPkgID(h Hash, v interface{}) (string, error) {
+func calcPkgID(h Hash, v any) (string, error) {
 	f, err := h(v, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:      true,
 		SlicesAsSets: true,

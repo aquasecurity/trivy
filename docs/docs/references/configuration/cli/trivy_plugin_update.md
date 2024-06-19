@@ -1,9 +1,9 @@
 ## trivy plugin update
 
-Update an existing plugin
+Update the local copy of the plugin index
 
 ```
-trivy plugin update PLUGIN_NAME
+trivy plugin update
 ```
 
 ### Options

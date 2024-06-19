@@ -14,7 +14,7 @@ var (
 	managingResourceID = uuid.NewString()
 )
 
-func ManagementGroup(_ ...interface{}) interface{} {
+func ManagementGroup(_ ...any) any {
 
 	return fmt.Sprintf(`{
     "id": "/providers/Microsoft.Management/managementGroups/mgPlaceholder",
@@ -38,7 +38,7 @@ func ManagementGroup(_ ...interface{}) interface{} {
 `, groupID, updaterID, tenantID)
 }
 
-func ManagementGroupResourceID(args ...interface{}) interface{} {
+func ManagementGroupResourceID(args ...any) any {
 	if len(args) < 2 {
 		return ""
 	}
@@ -54,7 +54,7 @@ func ManagementGroupResourceID(args ...interface{}) interface{} {
 
 }
 
-func Subscription(_ ...interface{}) interface{} {
+func Subscription(_ ...any) any {
 	return fmt.Sprintf(`{
   "id": "/subscriptions/%[1]s",
   "subscriptionId": "%[1]s",
@@ -63,7 +63,7 @@ func Subscription(_ ...interface{}) interface{} {
 }`, subscriptionID, tenantID)
 }
 
-func SubscriptionResourceID(args ...interface{}) interface{} {
+func SubscriptionResourceID(args ...any) any {
 	if len(args) < 2 {
 		return nil
 	}
@@ -81,7 +81,7 @@ func SubscriptionResourceID(args ...interface{}) interface{} {
 	}
 }
 
-func Tenant(_ ...interface{}) interface{} {
+func Tenant(_ ...any) any {
 	return fmt.Sprintf(`{
     "countryCode": "US",
     "displayName": "Placeholder Tenant Name",
@@ -90,7 +90,7 @@ func Tenant(_ ...interface{}) interface{} {
   }`, tenantID)
 }
 
-func TenantResourceID(args ...interface{}) interface{} {
+func TenantResourceID(args ...any) any {
 	if len(args) < 2 {
 		return nil
 	}

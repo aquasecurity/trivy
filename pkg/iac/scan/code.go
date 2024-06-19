@@ -1,6 +1,8 @@
 package scan
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -149,7 +151,14 @@ func (r *Result) GetCode(opts ...CodeOption) (*Code, error) {
 		Lines: nil,
 	}
 
-	rawLines := strings.Split(string(content), "\n")
+	var rawLines []string
+	bs := bufio.NewScanner(bytes.NewReader(content))
+	for bs.Scan() {
+		rawLines = append(rawLines, bs.Text())
+	}
+	if bs.Err() != nil {
+		return nil, fmt.Errorf("failed to scan file : %w", err)
+	}
 
 	var highlightedLines []string
 	if settings.includeHighlighted {

@@ -22,7 +22,7 @@ import (
 	"helm.sh/helm/v3/pkg/releaseutil"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	detection2 "github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -133,7 +133,7 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
 			return nil
 		}
 
-		if detection2.IsArchive(path) {
+		if detection.IsArchive(path) {
 			tarFS, err := p.addTarToFS(path)
 			if errors.Is(err, errSkipFS) {
 				// an unpacked Chart already exists
@@ -186,7 +186,7 @@ func (p *Parser) extractChartName(chartPath string) error {
 	}
 	defer func() { _ = chrt.Close() }()
 
-	var chartContent map[string]interface{}
+	var chartContent map[string]any
 	if err := yaml.NewDecoder(chrt).Decode(&chartContent); err != nil {
 		// the chart likely has the name templated and so cannot be parsed as yaml - use a temporary name
 		if dir := filepath.Dir(chartPath); dir != "" && dir != "." {
@@ -320,5 +320,5 @@ func (p *Parser) required(path string, workingFS fs.FS) bool {
 		return false
 	}
 
-	return detection2.IsType(path, bytes.NewReader(content), detection2.FileTypeHelm)
+	return detection.IsType(path, bytes.NewReader(content), detection.FileTypeHelm)
 }

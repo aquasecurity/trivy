@@ -8,6 +8,11 @@ import (
 	clocktesting "k8s.io/utils/clock/testing"
 )
 
+type (
+	RealClock = clock.RealClock
+	FakeClock = clocktesting.FakeClock
+)
+
 // clockKey is the context key for clock. It is unexported to prevent collisions with context keys defined in
 // other packages.
 type clockKey struct{}
@@ -27,7 +32,7 @@ func Now(ctx context.Context) time.Time {
 func Clock(ctx context.Context) clock.Clock {
 	t, ok := ctx.Value(clockKey{}).(clock.Clock)
 	if !ok {
-		return clock.RealClock{}
+		return RealClock{}
 	}
 	return t
 }

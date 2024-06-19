@@ -34,8 +34,8 @@ func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*
 	// Mark integration test pom files for `maven-invoker-plugin` as Dev to skip them by default.
 	if isIntegrationTestDir(filePath) {
 		for i := range res.Applications {
-			for j := range res.Applications[i].Libraries {
-				res.Applications[i].Libraries[j].Dev = true
+			for j := range res.Applications[i].Packages {
+				res.Applications[i].Packages[j].Dev = true
 			}
 		}
 	}

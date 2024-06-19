@@ -13,7 +13,7 @@ import (
 
 	"golang.org/x/net/idna"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/go-version/pkg/version"
 )
 
 type registryResolver struct {
@@ -45,7 +45,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	}
 
 	inputVersion := opt.Version
-	source, relativePath, _ := strings.Cut(opt.Source, "//")
+	source := removeSubdirFromSource(opt.Source)
 	parts := strings.Split(source, "/")
 	if len(parts) < 3 || len(parts) > 4 {
 		return
@@ -122,13 +122,31 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		return nil, "", "", true, err
 	}
 	defer func() { _ = resp.Body.Close() }()
-	if resp.StatusCode != http.StatusNoContent {
+
+	// OpenTofu may return 200 with body
+	switch resp.StatusCode {
+	case http.StatusOK:
+		// https://opentofu.org/docs/internals/module-registry-protocol/#sample-response-1
+		var downloadResponse struct {
+			Location string `json:"location"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&downloadResponse); err != nil {
+			return nil, "", "", true, fmt.Errorf("failed to decode download response: %w", err)
+		}
+
+		opt.Source = downloadResponse.Location
+	case http.StatusNoContent:
+		opt.Source = resp.Header.Get("X-Terraform-Get")
+	default:
 		return nil, "", "", true, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	opt.Source = resp.Header.Get("X-Terraform-Get")
+	if opt.Source == "" {
+		return nil, "", "", true, fmt.Errorf("no source was found for the registry at %s", hostname)
+	}
+
 	opt.Debug("Module '%s' resolved via registry to new source: '%s'", opt.Name, opt.Source)
-	opt.RelativePath = relativePath
+
 	filesystem, prefix, downloadPath, _, err = Remote.Resolve(ctx, target, opt)
 	if err != nil {
 		return nil, "", "", true, err
@@ -167,13 +185,13 @@ func resolveVersion(input string, versions moduleVersions) (string, error) {
 		return "", fmt.Errorf("no available versions for module")
 	}
 
-	constraints, err := semver.NewConstraints(input)
+	constraints, err := version.NewConstraints(input)
 	if err != nil {
 		return "", err
 	}
-	var realVersions semver.Collection
+	var realVersions version.Collection
 	for _, rawVersion := range versions.Modules[0].Versions {
-		realVersion, err := semver.Parse(rawVersion.Version)
+		realVersion, err := version.Parse(rawVersion.Version)
 		if err != nil {
 			continue
 		}

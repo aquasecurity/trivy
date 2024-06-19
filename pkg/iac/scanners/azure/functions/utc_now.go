@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func UTCNow(args ...interface{}) interface{} {
+func UTCNow(args ...any) any {
 	if len(args) > 1 {
 		return nil
 	}

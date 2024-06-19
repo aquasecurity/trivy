@@ -2,12 +2,13 @@ package table_test
 
 import (
 	"bytes"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -85,7 +86,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 				},
 			}
 			err := writer.Write(nil, types.Report{Results: tc.results})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}

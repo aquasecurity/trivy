@@ -42,7 +42,8 @@
           "VulnerabilityID": "CVE-2022-0261",
           "PkgName": "vim",
           "PkgIdentifier": {
-            "PURL": "pkg:cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64"
+            "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0.20220122",
+            "UID": "3f08cd76fa5ba73d"
           },
           "InstalledVersion": "8.2.4081-1.cm1",
           "Status": "affected",
@@ -78,7 +79,8 @@
           "VulnerabilityID": "CVE-2022-0158",
           "PkgName": "vim",
           "PkgIdentifier": {
-            "PURL": "pkg:cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64"
+            "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0.20220122",
+            "UID": "3f08cd76fa5ba73d"
           },
           "InstalledVersion": "8.2.4081-1.cm1",
           "FixedVersion": "8.2.4082-1.cm1",

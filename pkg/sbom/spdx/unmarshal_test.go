@@ -2,16 +2,16 @@ package spdx_test
 
 import (
 	"encoding/json"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/package-url/packageurl-go"
 	"os"
 	"sort"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -77,7 +77,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "app/composer/composer.lock",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
@@ -115,7 +115,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "gobinary",
 						FilePath: "app/gobinary/gobinary",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 								Name:    "github.com/package-url/packageurl-go",
@@ -136,7 +136,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: "jar",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:   "org.codehaus.mojo:child-project:1.0",
 								Name: "org.codehaus.mojo:child-project",
@@ -157,7 +157,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: "node-pkg",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "bootstrap@5.0.2",
 								Name:    "bootstrap",
@@ -186,7 +186,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: ftypes.NodePkg,
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:       "yargs-parser@21.1.1",
 								Name:     "yargs-parser",
@@ -213,7 +213,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: "node-pkg",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:       "yargs-parser@21.1.1",
 								Name:     "yargs-parser",
@@ -241,7 +241,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "app/composer/composer.lock",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
@@ -280,7 +280,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: ftypes.Jar,
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",

@@ -18,13 +18,14 @@ type Registry struct {
 }
 
 // Google container registry
-const gcrURL = "gcr.io"
+const gcrURLDomain = "gcr.io"
+const gcrURLSuffix = ".gcr.io"
 
 // Google artifact registry
-const garURL = "docker.pkg.dev"
+const garURLSuffix = "-docker.pkg.dev"
 
 func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) error {
-	if !strings.HasSuffix(domain, gcrURL) && !strings.HasSuffix(domain, garURL) {
+	if domain != gcrURLDomain && !strings.HasSuffix(domain, gcrURLSuffix) && !strings.HasSuffix(domain, garURLSuffix) {
 		return xerrors.Errorf("Google registry: %w", types.InvalidURLPattern)
 	}
 	g.domain = domain

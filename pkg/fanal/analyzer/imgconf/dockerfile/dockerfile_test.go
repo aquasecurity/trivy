@@ -33,7 +33,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 					},
 					History: []v1.History{
 						{
-							// this is fine, see https://github.com/aquasecurity/trivy-policies/pull/60 for details
+							// this is fine, see https://github.com/aquasecurity/trivy-checks/pull/60 for details
 							CreatedBy:  "/bin/sh -c #(nop) ADD file:e4d600fc4c9c293efe360be7b30ee96579925d1b4634c94332e2ec73f7d8eca1 in /",
 							EmptyLayer: false,
 						},
@@ -291,7 +291,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			got, err := a.Analyze(context.Background(), tt.input)
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
 			if got != nil && got.Misconfiguration != nil {

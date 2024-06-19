@@ -1,0 +1,12 @@
+{
+    "version": "0.5",
+    "requires": [
+        "sound32/1.0#83d4b7bf607b3b60a6546f8b58b5cdd7%1675278904.0791488",
+        "matrix/1.3#905c3f0babc520684c84127378fefdd0%1675278900.0103245"
+    ],
+    "build_requires": [
+        "automake/1.16.5#058bda3e21c36c9aa8425daf3c1faf50%1701120593.68",
+        "autoconf/2.71#00a1e46d8ba5baaf7f10d64c1a6a0342%1709043523.063"
+    ],
+    "python_requires": []
+}

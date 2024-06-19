@@ -25,12 +25,14 @@
           "ID": "jquery@3.2.1",
           "Name": "jquery",
           "Identifier": {
-            "PURL": "pkg:npm/jquery@3.2.1"
+            "PURL": "pkg:npm/jquery@3.2.1",
+            "UID": "c7da6fd622178ea0"
           },
           "Version": "3.2.1",
           "Licenses": [
             "MIT"
           ],
+          "Relationship": "direct",
           "Layer": {},
           "Locations": [
             {
@@ -46,7 +48,8 @@
           "PkgID": "jquery@3.2.1",
           "PkgName": "jquery",
           "PkgIdentifier": {
-            "PURL": "pkg:npm/jquery@3.2.1"
+            "PURL": "pkg:npm/jquery@3.2.1",
+            "UID": "c7da6fd622178ea0"
           },
           "InstalledVersion": "3.2.1",
           "FixedVersion": "3.4.0",

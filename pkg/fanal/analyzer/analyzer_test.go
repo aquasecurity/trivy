@@ -3,11 +3,11 @@ package analyzer_test
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-containerregistry/pkg/name"
 	"os"
 	"sync"
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/semaphore"
@@ -69,7 +69,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "rails",
 								Version: "5.0.0",
@@ -95,7 +95,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 						{
 							Type:     "bundler",
 							FilePath: "app2/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "nokogiri",
 									Version: "1.0.0",
@@ -134,7 +134,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "rails",
 								Version: "5.0.0",
@@ -144,7 +144,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app2/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "nokogiri",
 								Version: "1.0.0",
@@ -378,12 +378,13 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "/app/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "actioncable@5.2.3",
-								Name:     "actioncable",
-								Version:  "5.2.3",
-								Indirect: false,
+								ID:           "actioncable@5.2.3",
+								Name:         "actioncable",
+								Version:      "5.2.3",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"actionpack@5.2.3",
 								},
@@ -395,10 +396,11 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								},
 							},
 							{
-								ID:       "actionpack@5.2.3",
-								Name:     "actionpack",
-								Version:  "5.2.3",
-								Indirect: true,
+								ID:           "actionpack@5.2.3",
+								Name:         "actionpack",
+								Version:      "5.2.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 6,
@@ -439,12 +441,13 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "/app/Gemfile-dev.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "actioncable@5.2.3",
-								Name:     "actioncable",
-								Version:  "5.2.3",
-								Indirect: false,
+								ID:           "actioncable@5.2.3",
+								Name:         "actioncable",
+								Version:      "5.2.3",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"actionpack@5.2.3",
 								},
@@ -456,10 +459,11 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								},
 							},
 							{
-								ID:       "actionpack@5.2.3",
-								Name:     "actionpack",
-								Version:  "5.2.3",
-								Indirect: true,
+								ID:           "actionpack@5.2.3",
+								Name:         "actionpack",
+								Version:      "5.2.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 6,
@@ -518,7 +522,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 				DisabledAnalyzers: tt.args.disabledAnalyzers,
 			})
 			if err != nil && tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
@@ -545,7 +549,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 
 			wg.Wait()
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
@@ -572,7 +576,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-annotations",
 								Version:  "2.15.0-rc2",
@@ -592,7 +596,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Poetry,
 						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "certifi@2022.12.7",
 								Name:    "certifi",

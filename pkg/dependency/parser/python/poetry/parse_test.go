@@ -8,34 +8,34 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string
-		wantLibs []types.Library
-		wantDeps []types.Dependency
+		wantPkgs []ftypes.Package
+		wantDeps []ftypes.Dependency
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
 			name:     "normal",
 			file:     "testdata/poetry_normal.lock",
-			wantLibs: poetryNormal,
+			wantPkgs: poetryNormal,
 			wantErr:  assert.NoError,
 		},
 		{
 			name:     "many",
 			file:     "testdata/poetry_many.lock",
-			wantLibs: poetryMany,
+			wantPkgs: poetryMany,
 			wantDeps: poetryManyDeps,
 			wantErr:  assert.NoError,
 		},
 		{
 			name:     "flask",
 			file:     "testdata/poetry_flask.lock",
-			wantLibs: poetryFlask,
+			wantPkgs: poetryFlask,
 			wantDeps: poetryFlaskDeps,
 			wantErr:  assert.NoError,
 		},
@@ -47,11 +47,11 @@ func TestParser_Parse(t *testing.T) {
 			defer f.Close()
 
 			p := NewParser()
-			gotLibs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
 				return
 			}
-			assert.Equalf(t, tt.wantLibs, gotLibs, "Parse(%v)", tt.file)
+			assert.Equalf(t, tt.wantPkgs, gotPkgs, "Parse(%v)", tt.file)
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}
@@ -61,8 +61,8 @@ func TestParseDependency(t *testing.T) {
 	tests := []struct {
 		name         string
 		packageName  string
-		versionRange interface{}
-		libsVersions map[string][]string
+		versionRange any
+		pkgsVersions map[string][]string
 		want         string
 		wantErr      string
 	}{
@@ -70,7 +70,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "handle package name",
 			packageName:  "Test_project.Name",
 			versionRange: "*",
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test-project-name": {"1.0.0"},
 			},
 			want: "test-project-name@1.0.0",
@@ -79,7 +79,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "version range as string",
 			packageName:  "test",
 			versionRange: ">=1.0.0",
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test": {"2.0.0"},
 			},
 			want: "test@2.0.0",
@@ -88,7 +88,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "version range == *",
 			packageName:  "test",
 			versionRange: "*",
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test": {"3.0.0"},
 			},
 			want: "test@3.0.0",
@@ -96,33 +96,33 @@ func TestParseDependency(t *testing.T) {
 		{
 			name:        "version range as json",
 			packageName: "test",
-			versionRange: map[string]interface{}{
+			versionRange: map[string]any{
 				"version": ">=4.8.3",
 				"markers": "python_version < \"3.8\"",
 			},
-			libsVersions: map[string][]string{
+			pkgsVersions: map[string][]string{
 				"test": {"5.0.0"},
 			},
 			want: "test@5.0.0",
 		},
 		{
-			name:         "libsVersions doesn't contain required version",
+			name:         "pkgsVersions doesn't contain required version",
 			packageName:  "test",
 			versionRange: ">=1.0.0",
-			libsVersions: map[string][]string{},
+			pkgsVersions: make(map[string][]string),
 			wantErr:      "no version found",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewParser().parseDependency(tt.packageName, tt.versionRange, tt.libsVersions)
+			got, err := NewParser().parseDependency(tt.packageName, tt.versionRange, tt.pkgsVersions)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

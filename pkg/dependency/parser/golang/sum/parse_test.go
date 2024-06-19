@@ -9,13 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
 		file string
-		want []types.Library
+		want []ftypes.Package
 	}{
 		{
 			file: "testdata/gomod_normal.sum",
@@ -48,12 +48,8 @@ func TestParse(t *testing.T) {
 				got[i].ID = "" // Not compare IDs, tested in mod.TestModuleID()
 			}
 
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].Name < got[j].Name
-			})
-			sort.Slice(v.want, func(i, j int) bool {
-				return v.want[i].Name < v.want[j].Name
-			})
+			sort.Sort(ftypes.Packages(got))
+			sort.Sort(ftypes.Packages(v.want))
 
 			assert.Equal(t, v.want, got)
 		})

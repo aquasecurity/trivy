@@ -3,7 +3,6 @@ package report_test
 import (
 	"bytes"
 	"context"
-	"os"
 	"testing"
 	"time"
 
@@ -168,7 +167,7 @@ func TestReportWriter_Template(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := clock.With(context.Background(), time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
 
-			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
+			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}
 			inputReport := types.Report{
 				Results: types.Results{
@@ -183,7 +182,7 @@ func TestReportWriter_Template(t *testing.T) {
 			w, err := report.NewTemplateWriter(&got, tc.template, "dev")
 			require.NoError(t, err)
 			err = w.Write(ctx, inputReport)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, got.String())
 		})
 	}

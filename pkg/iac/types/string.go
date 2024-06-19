@@ -59,14 +59,14 @@ func (l StringValueList) AsStrings() (output []string) {
 type stringCheckFunc func(string, string) bool
 
 func (b StringValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"value":    b.value,
 		"metadata": b.metadata,
 	})
 }
 
 func (b *StringValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -87,8 +87,8 @@ func (b *StringValue) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s StringValue) ToRego() interface{} {
-	m := s.metadata.ToRego().(map[string]interface{})
+func (s StringValue) ToRego() any {
+	m := s.metadata.ToRego().(map[string]any)
 	m["value"] = s.Value()
 	return m
 }
@@ -113,7 +113,7 @@ func (s StringValue) Value() string {
 	return s.value
 }
 
-func (b StringValue) GetRawValue() interface{} {
+func (b StringValue) GetRawValue() any {
 	return b.value
 }
 

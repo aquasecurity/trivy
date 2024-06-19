@@ -49,6 +49,22 @@
       ]
     },
     {
+      "bom-ref": "b6f66546-5a5c-4fe8-a30f-acb04013c151",
+      "type": "operating-system",
+      "name": "ubuntu",
+      "version": "22.04.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "ubuntu"
+        }
+      ]
+    },
+    {
       "bom-ref": "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2",
       "type": "application",
       "name": "node-core-components"
@@ -326,6 +342,10 @@
       "dependsOn": []
     },
     {
+      "ref": "b6f66546-5a5c-4fe8-a30f-acb04013c151",
+      "dependsOn": []
+    },
+    {
       "ref": "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2",
       "dependsOn": [
         "pkg:golang/docker@24.0.4",
@@ -336,6 +356,7 @@
       "ref": "a6350ac3-52f6-4c5f-a3e3-184b9a634bef",
       "dependsOn": [
         "5262e708-f1a3-4fca-a1c3-0a8384f7f4a5",
+        "b6f66546-5a5c-4fe8-a30f-acb04013c151",
         "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2"
       ]
     },

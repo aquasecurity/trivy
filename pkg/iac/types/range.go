@@ -56,7 +56,7 @@ type Range struct {
 }
 
 func (r Range) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"filename":        r.filename,
 		"startLine":       r.startLine,
 		"endLine":         r.endLine,
@@ -67,7 +67,7 @@ func (r Range) MarshalJSON() ([]byte, error) {
 }
 
 func (r *Range) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}

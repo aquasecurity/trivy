@@ -7,7 +7,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -18,14 +17,14 @@ type Parser struct {
 	logger *log.Logger
 }
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{
 		logger: log.WithPrefix("mix"),
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	var libs []types.Library
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	var pkgs []ftypes.Package
 	scanner := bufio.NewScanner(r)
 	var lineNumber int // It is used to save dependency location
 	for scanner.Scan() {
@@ -54,11 +53,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 		version := strings.Trim(ss[2], `"`)
-		libs = append(libs, types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			ID:      dependency.ID(ftypes.Hex, name, version),
 			Name:    name,
 			Version: version,
-			Locations: []types.Location{
+			Locations: []ftypes.Location{
 				{
 					StartLine: lineNumber,
 					EndLine:   lineNumber,
@@ -67,5 +66,5 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		})
 
 	}
-	return utils.UniqueLibraries(libs), nil, nil
+	return utils.UniquePackages(pkgs), nil, nil
 }

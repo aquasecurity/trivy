@@ -3,8 +3,9 @@ package azure
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_ValueAsInt(t *testing.T) {

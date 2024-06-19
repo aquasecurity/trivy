@@ -10,11 +10,10 @@ In this section you will find an aggregation of the different ways to install Tr
     Add repository setting to `/etc/yum.repos.d`.
 
     ``` bash
-    RELEASE_VERSION=$(grep -Po '(?<=VERSION_ID=")[0-9]' /etc/os-release)
     cat << EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
     [trivy]
     name=Trivy repository
-    baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$RELEASE_VERSION/\$basearch/
+    baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
     gpgcheck=1
     enabled=1
     gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
@@ -35,9 +34,9 @@ In this section you will find an aggregation of the different ways to install Tr
     Add repository setting to `/etc/apt/sources.list.d`.
 
     ``` bash
-    sudo apt-get install wget apt-transport-https gnupg lsb-release
+    sudo apt-get install wget apt-transport-https gnupg
     wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-    echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+    echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
     sudo apt-get update
     sudo apt-get install trivy
     ```
@@ -86,31 +85,29 @@ References:
 Nix package manager for Linux and MacOS.
 
 === "Command line"
-
-`nix-env --install -A nixpkgs.trivy`
+    `nix-env --install -A nixpkgs.trivy`
 
 === "Configuration"
-
-```nix
-  # your other config ...
-  environment.systemPackages = with pkgs; [
-    # your other packages ...
-    trivy
-  ];
-```
+    ```nix
+    # your other config ...
+    environment.systemPackages = with pkgs; [
+      # your other packages ...
+      trivy
+    ];
+    ```
 
 === "Home Manager"
-
-```nix
-  # your other config ...
-  home.packages = with pkgs; [
-    # your other packages ...
-    trivy
-  ];
-```
+    ```nix
+    # your other config ...
+    home.packages = with pkgs; [
+      # your other packages ...
+      trivy
+    ];
+    ```
 
 References: 
--  <https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix>
+
+-  https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix
 
 ### FreeBSD (Official)
 
@@ -119,6 +116,48 @@ References:
 ```bash
 pkg install trivy
 ```
+
+### asdf/mise (Community)
+
+[asdf](https://github.com/asdf-vm/asdf) and [mise](https://github.com/jdx/mise) are quite similar tools you can use to install trivy.
+See their respective documentation for more information of how to install them and use them:
+
+- [asdf](https://asdf-vm.com/guide/getting-started.html)
+- [mise](https://mise.jdx.dev/getting-started.html)
+
+The plugin used by both tools is developped [here](https://github.com/zufardhiyaulhaq/asdf-trivy)
+
+
+=== "asdf"
+    A basic global installation is shown below, for specific version or/and local version to a directory see "asdf" documentation.
+
+    ```shell
+    # Install plugin
+    asdf plugin add trivy https://github.com/zufardhiyaulhaq/asdf-trivy.git
+
+    # Install latest version
+    asdf install trivy latest
+
+    # Set a version globally (on your ~/.tool-versions file)
+    asdf global trivy latest
+
+    # Now trivy commands are available
+    trivy --version
+    ```
+
+=== "mise"
+    A basic global installation is shown below, for specific version or/and local version to a directory see "mise" documentation.
+
+    ``` shell
+    # Install plugin and install latest version
+    mise install trivy@latest
+
+    # Set a version globally (on your ~/.tool-versions file)
+    mise use -g trivy@latest
+
+    # Now trivy commands are available
+    trivy --version
+    ```
 
 ## Install from GitHub Release (Official)
 

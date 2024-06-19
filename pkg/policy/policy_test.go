@@ -70,15 +70,15 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			name:     "happy path",
 			cacheDir: "testdata/happy",
 			want: []string{
-				filepath.Join("testdata/happy/policy/content/kubernetes"),
-				filepath.Join("testdata/happy/policy/content/docker"),
+				filepath.Join("testdata", "happy", "policy", "content", "kubernetes"),
+				filepath.Join("testdata", "happy", "policy", "content", "docker"),
 			},
 		},
 		{
 			name:     "empty roots",
 			cacheDir: "testdata/empty",
 			want: []string{
-				filepath.Join("testdata/empty/policy/content"),
+				filepath.Join("testdata", "empty", "policy", "content"),
 			},
 		},
 		{
@@ -124,11 +124,11 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 
 			got, err := c.LoadBuiltinPolicies()
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -143,7 +143,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		name          string
 		clock         clock.Clock
 		digestReturns digestReturns
-		metadata      interface{}
+		metadata      any
 		want          bool
 		wantErr       bool
 	}{
@@ -243,7 +243,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				},
 			}, nil)
 
-			// Create a policy directory
+			// Create a check directory
 			err := os.MkdirAll(filepath.Join(tmpDir, "policy"), os.ModePerm)
 			require.NoError(t, err)
 
@@ -369,11 +369,11 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 
 			err = c.DownloadBuiltinPolicies(context.Background(), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Assert metadata.json
 			metadata := filepath.Join(tempDir, "policy", "metadata.json")

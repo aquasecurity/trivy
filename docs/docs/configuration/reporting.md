@@ -399,7 +399,7 @@ $ trivy <target> [--format <format>] --output plugin=<plugin_name> [--output-plu
 ```
 
 This is useful for cases where you want to convert the output into a custom format, or when you want to send the output somewhere.
-For more details, please check [here](../advanced/plugins.md#output-plugins).
+For more details, please check [here](../plugin/user-guide.md#output-mode-support).
 
 ## Converting
 To generate multiple reports, you can generate the JSON report first and convert it to other formats with the `convert` subcommand.

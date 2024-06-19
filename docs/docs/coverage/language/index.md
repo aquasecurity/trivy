@@ -47,6 +47,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
+| [Julia](julia.md)    | Manifest.toml                                                                              |     ✅     |     ✅      |       ✅        |       ✅        |
 
 The path of these files does not matter.
 

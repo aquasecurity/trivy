@@ -134,6 +134,16 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 		}
 	}
 
+	for _, r := range module.GetReferencingResources(resource, "aws_vpc_security_group_ingress_rule", "security_group_id") {
+		a.sgRuleIDs.Resolve(r.ID())
+		ingressRules = append(ingressRules, adaptSingleSGRule(r))
+	}
+
+	for _, r := range module.GetReferencingResources(resource, "aws_vpc_security_group_egress_rule", "security_group_id") {
+		a.sgRuleIDs.Resolve(r.ID())
+		egressRules = append(egressRules, adaptSingleSGRule(r))
+	}
+
 	return ec2.SecurityGroup{
 		Metadata:     resource.GetMetadata(),
 		Description:  descriptionVal,
@@ -174,6 +184,24 @@ func adaptSGRule(resource *terraform.Block, modules terraform.Modules) ec2.Secur
 	return ec2.SecurityGroupRule{
 		Metadata:    resource.GetMetadata(),
 		Description: ruleDescVal,
+		CIDRs:       cidrs,
+	}
+}
+
+func adaptSingleSGRule(resource *terraform.Block) ec2.SecurityGroupRule {
+	description := resource.GetAttribute("description").AsStringValueOrDefault("", resource)
+
+	var cidrs []iacTypes.StringValue
+	if ipv4 := resource.GetAttribute("cidr_ipv4"); ipv4.IsNotNil() {
+		cidrs = append(cidrs, ipv4.AsStringValueOrDefault("", resource))
+	}
+	if ipv6 := resource.GetAttribute("cidr_ipv6"); ipv6.IsNotNil() {
+		cidrs = append(cidrs, ipv6.AsStringValueOrDefault("", resource))
+	}
+
+	return ec2.SecurityGroupRule{
+		Metadata:    resource.GetMetadata(),
+		Description: description,
 		CIDRs:       cidrs,
 	}
 }

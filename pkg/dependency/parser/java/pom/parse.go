@@ -14,12 +14,12 @@ import (
 
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -49,7 +49,13 @@ func WithReleaseRemoteRepos(repos []string) option {
 	}
 }
 
-type parser struct {
+func WithSnapshotRemoteRepos(repos []string) option {
+	return func(opts *options) {
+		opts.snapshotRemoteRepos = repos
+	}
+}
+
+type Parser struct {
 	logger              *log.Logger
 	rootPath            string
 	cache               pomCache
@@ -60,7 +66,7 @@ type parser struct {
 	servers             []Server
 }
 
-func NewParser(filePath string, opts ...option) types.Parser {
+func NewParser(filePath string, opts ...option) *Parser {
 	o := &options{
 		offline:            false,
 		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
@@ -77,7 +83,7 @@ func NewParser(filePath string, opts ...option) types.Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
-	return &parser{
+	return &Parser{
 		logger:              log.WithPrefix("pom"),
 		rootPath:            filepath.Clean(filePath),
 		cache:               newPOMCache(),
@@ -89,7 +95,7 @@ func NewParser(filePath string, opts ...option) types.Parser {
 	}
 }
 
-func (p *parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	content, err := parsePom(r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)
@@ -112,18 +118,18 @@ func (p *parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	return p.parseRoot(root.artifact(), make(map[string]struct{}))
 }
 
-func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
 	// Enqueue root POM
-	root.Root = true
+	root.Relationship = ftypes.RelationshipRoot
 	root.Module = false
 	queue.enqueue(root)
 
 	var (
-		libs              []types.Library
-		deps              []types.Dependency
+		pkgs              ftypes.Packages
+		deps              ftypes.Dependencies
 		rootDepManagement []pomDependency
 		uniqArtifacts     = make(map[string]artifact)
 		uniqDeps          = make(map[string][]string)
@@ -141,12 +147,12 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 			}
 			uniqModules[art.String()] = struct{}{}
 
-			moduleLibs, moduleDeps, err := p.parseRoot(art, uniqModules)
+			modulePkgs, moduleDeps, err := p.parseRoot(art, uniqModules)
 			if err != nil {
 				return nil, nil, err
 			}
 
-			libs = append(libs, moduleLibs...)
+			pkgs = append(pkgs, modulePkgs...)
 			if moduleDeps != nil {
 				deps = append(deps, moduleDeps...)
 			}
@@ -160,8 +166,8 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 			}
 			// mark artifact as Direct, if saved artifact is Direct
 			// take a look `hard requirement for the specified version` test
-			if uniqueArt.Direct {
-				art.Direct = true
+			if uniqueArt.Relationship == ftypes.RelationshipRoot || uniqueArt.Relationship == ftypes.RelationshipDirect {
+				art.Relationship = uniqueArt.Relationship
 			}
 			// We don't need to overwrite dependency location for hard links
 			if uniqueArt.Locations != nil {
@@ -174,14 +180,13 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
 		}
 
-		if art.Root {
+		if art.Relationship == ftypes.RelationshipRoot {
 			// Managed dependencies in the root POM affect transitive dependencies
 			rootDepManagement = p.resolveDepManagement(result.properties, result.dependencyManagement)
 
-			// mark root artifact and its dependencies as Direct
-			art.Direct = true
+			// mark its dependencies as "direct"
 			result.dependencies = lo.Map(result.dependencies, func(dep artifact, _ int) artifact {
-				dep.Direct = true
+				dep.Relationship = ftypes.RelationshipDirect
 				return dep
 			})
 		}
@@ -205,11 +210,10 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 		if !art.IsEmpty() {
 			// Override the version
 			uniqArtifacts[art.Name()] = artifact{
-				Version:   art.Version,
-				Licenses:  result.artifact.Licenses,
-				Direct:    art.Direct,
-				Root:      art.Root,
-				Locations: art.Locations,
+				Version:      art.Version,
+				Licenses:     result.artifact.Licenses,
+				Relationship: art.Relationship,
+				Locations:    art.Locations,
 			}
 
 			// save only dependency names
@@ -221,37 +225,37 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 		}
 	}
 
-	// Convert to []types.Library and []types.Dependency
+	// Convert to []ftypes.Package and []ftypes.Dependency
 	for name, art := range uniqArtifacts {
-		lib := types.Library{
-			ID:        packageID(name, art.Version.String()),
-			Name:      name,
-			Version:   art.Version.String(),
-			License:   art.JoinLicenses(),
-			Indirect:  !art.Direct,
-			Locations: art.Locations,
+		pkg := ftypes.Package{
+			ID:           packageID(name, art.Version.String()),
+			Name:         name,
+			Version:      art.Version.String(),
+			Licenses:     art.Licenses,
+			Relationship: art.Relationship,
+			Locations:    art.Locations,
 		}
-		libs = append(libs, lib)
+		pkgs = append(pkgs, pkg)
 
 		// Convert dependency names into dependency IDs
-		dependsOn := lo.FilterMap(uniqDeps[lib.ID], func(dependOnName string, _ int) (string, bool) {
+		dependsOn := lo.FilterMap(uniqDeps[pkg.ID], func(dependOnName string, _ int) (string, bool) {
 			ver := depVersion(dependOnName, uniqArtifacts)
 			return packageID(dependOnName, ver), ver != ""
 		})
 
 		sort.Strings(dependsOn)
 		if len(dependsOn) > 0 {
-			deps = append(deps, types.Dependency{
-				ID:        lib.ID,
+			deps = append(deps, ftypes.Dependency{
+				ID:        pkg.ID,
 				DependsOn: dependsOn,
 			})
 		}
 	}
 
-	sort.Sort(types.Libraries(libs))
-	sort.Sort(types.Dependencies(deps))
+	sort.Sort(pkgs)
+	sort.Sort(deps)
 
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
 // depVersion finds dependency in uniqArtifacts and return its version
@@ -262,7 +266,7 @@ func depVersion(depName string, uniqArtifacts map[string]artifact) string {
 	return ""
 }
 
-func (p *parser) parseModule(currentPath, relativePath string) (artifact, error) {
+func (p *Parser) parseModule(currentPath, relativePath string) (artifact, error) {
 	// modulePath: "root/" + "module/" => "root/module"
 	module, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
@@ -275,14 +279,14 @@ func (p *parser) parseModule(currentPath, relativePath string) (artifact, error)
 	}
 
 	moduleArtifact := module.artifact()
-	moduleArtifact.Module = true
+	moduleArtifact.Module = true // TODO: introduce RelationshipModule?
 
 	p.cache.put(moduleArtifact, result)
 
 	return moduleArtifact, nil
 }
 
-func (p *parser) resolve(art artifact, rootDepManagement []pomDependency) (analysisResult, error) {
+func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analysisResult, error) {
 	// If the artifact is found in cache, it is returned.
 	if result := p.cache.get(art); result != nil {
 		return *result, nil
@@ -321,7 +325,7 @@ type analysisOptions struct {
 	lineNumber    bool            // Save line numbers
 }
 
-func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
+func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
 	if pom == nil || pom.content == nil {
 		return analysisResult{}, nil
 	}
@@ -364,7 +368,7 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}, nil
 }
 
-func (p *parser) mergeDependencyManagements(depManagements ...[]pomDependency) []pomDependency {
+func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) []pomDependency {
 	uniq := make(map[string]struct{})
 	var depManagement []pomDependency
 	// The preceding argument takes precedence.
@@ -380,7 +384,7 @@ func (p *parser) mergeDependencyManagements(depManagements ...[]pomDependency) [
 	return depManagement
 }
 
-func (p *parser) parseDependencies(deps []pomDependency, props map[string]string, depManagement []pomDependency,
+func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string, depManagement []pomDependency,
 	opts analysisOptions) []artifact {
 	// Imported POMs often have no dependencies, so dependencyManagement resolution can be skipped.
 	if len(deps) == 0 {
@@ -405,7 +409,7 @@ func (p *parser) parseDependencies(deps []pomDependency, props map[string]string
 	return dependencies
 }
 
-func (p *parser) resolveDepManagement(props map[string]string, depManagement []pomDependency) []pomDependency {
+func (p *Parser) resolveDepManagement(props map[string]string, depManagement []pomDependency) []pomDependency {
 	var newDepManagement, imports []pomDependency
 	for _, dep := range depManagement {
 		// cf. https://howtodoinjava.com/maven/maven-dependency-scopes/#import
@@ -439,7 +443,7 @@ func (p *parser) resolveDepManagement(props map[string]string, depManagement []p
 	return newDepManagement
 }
 
-func (p *parser) mergeDependencies(parent, child []artifact, exclusions map[string]struct{}) []artifact {
+func (p *Parser) mergeDependencies(parent, child []artifact, exclusions map[string]struct{}) []artifact {
 	var deps []artifact
 	unique := make(map[string]struct{})
 
@@ -473,7 +477,7 @@ func excludeDep(exclusions map[string]struct{}, art artifact) bool {
 	return false
 }
 
-func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResult, error) {
+func (p *Parser) parseParent(currentPath string, parent pomParent) (analysisResult, error) {
 	// Pass nil properties so that variables in <parent> are not evaluated.
 	target := newArtifact(parent.GroupId, parent.ArtifactId, parent.Version, nil, nil)
 	// if version is property (e.g. ${revision}) - we still need to parse this pom
@@ -505,7 +509,7 @@ func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResu
 	return result, nil
 }
 
-func (p *parser) retrieveParent(currentPath, relativePath string, target artifact) (*pom, error) {
+func (p *Parser) retrieveParent(currentPath, relativePath string, target artifact) (*pom, error) {
 	var errs error
 
 	// Try relativePath
@@ -538,7 +542,7 @@ func (p *parser) retrieveParent(currentPath, relativePath string, target artifac
 	return nil, errs
 }
 
-func (p *parser) tryRelativePath(parentArtifact artifact, currentPath, relativePath string) (*pom, error) {
+func (p *Parser) tryRelativePath(parentArtifact artifact, currentPath, relativePath string) (*pom, error) {
 	pom, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
 		return nil, err
@@ -565,7 +569,7 @@ func (p *parser) tryRelativePath(parentArtifact artifact, currentPath, relativeP
 	return pom, nil
 }
 
-func (p *parser) openRelativePom(currentPath, relativePath string) (*pom, error) {
+func (p *Parser) openRelativePom(currentPath, relativePath string) (*pom, error) {
 	// e.g. child/pom.xml => child/
 	dir := filepath.Dir(currentPath)
 
@@ -587,7 +591,7 @@ func (p *parser) openRelativePom(currentPath, relativePath string) (*pom, error)
 	return pom, nil
 }
 
-func (p *parser) openPom(filePath string) (*pom, error) {
+func (p *Parser) openPom(filePath string) (*pom, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error (%s): %w", filePath, err)
@@ -603,7 +607,7 @@ func (p *parser) openPom(filePath string) (*pom, error) {
 		content:  content,
 	}, nil
 }
-func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error) {
+func (p *Parser) tryRepository(groupID, artifactID, version string) (*pom, error) {
 	if version == "" {
 		return nil, xerrors.Errorf("Version missing for %s:%s", groupID, artifactID)
 	}
@@ -629,14 +633,14 @@ func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error
 	return nil, xerrors.Errorf("%s:%s:%s was not found in local/remote repositories", groupID, artifactID, version)
 }
 
-func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
+func (p *Parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 	paths = append([]string{p.localRepository}, paths...)
 	localPath := filepath.Join(paths...)
 
 	return p.openPom(localPath)
 }
 
-func (p *parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (*pom, error) {
+func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
 		p.logger.Debug("Fetching the remote pom.xml is skipped")
@@ -651,7 +655,18 @@ func (p *parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 
 	// try all remoteRepositories
 	for _, repo := range remoteRepos {
-		fetched, err := p.fetchPOMFromRemoteRepository(repo, paths)
+		repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
+		if snapshot {
+			pomFileName, err := p.fetchPomFileNameFromMavenMetadata(repo, repoPaths)
+			if err != nil {
+				return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
+			}
+			// Use file name from `maven-metadata.xml` if it exists
+			if pomFileName != "" {
+				repoPaths[len(repoPaths)-1] = pomFileName
+			}
+		}
+		fetched, err := p.fetchPOMFromRemoteRepository(repo, repoPaths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)
 		} else if fetched == nil {
@@ -662,7 +677,7 @@ func (p *parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
 
-func (p *parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, error) {
 	repoURL, err := url.Parse(repo)
 	if err != nil {
 		p.logger.Error("URL parse error", log.String("repo", repo))
@@ -673,7 +688,6 @@ func (p *parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 	repoURL.Path = path.Join(paths...)
 
 	logger := p.logger.With(log.String("host", repoURL.Host), log.String("path", repoURL.Path))
-	client := &http.Client{}
 	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
 	if err != nil {
 		logger.Debug("HTTP request failed")
@@ -684,9 +698,54 @@ func (p *parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 		req.SetBasicAuth(repoURL.User.Username(), password)
 	}
 
+	return req, nil
+}
+
+// fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
+func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) (string, error) {
+	// Overwrite pom file name to `maven-metadata.xml`
+	mavenMetadataPaths := slices.Clone(paths[:len(paths)-1]) // Clone slice to avoid shadow overwriting last element of `paths`
+	mavenMetadataPaths = append(mavenMetadataPaths, "maven-metadata.xml")
+
+	req, err := p.remoteRepoRequest(repo, mavenMetadataPaths)
+	if err != nil {
+		return "", xerrors.Errorf("unable to create request for maven-metadata.xml file")
+	}
+
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
-		logger.Debug("Failed to fetch")
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+		return "", nil
+	}
+	defer resp.Body.Close()
+
+	mavenMetadata, err := parseMavenMetadata(resp.Body)
+	if err != nil {
+		return "", xerrors.Errorf("failed to parse maven-metadata.xml file: %w", err)
+	}
+
+	var pomFileName string
+	for _, sv := range mavenMetadata.Versioning.SnapshotVersions {
+		if sv.Extension == "pom" {
+			// mavenMetadataPaths[len(mavenMetadataPaths)-3] is always artifactID
+			pomFileName = fmt.Sprintf("%s-%s.pom", mavenMetadataPaths[len(mavenMetadataPaths)-3], sv.Value)
+		}
+	}
+
+	return pomFileName, nil
+}
+
+func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+	req, err := p.remoteRepoRequest(repo, paths)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to create request for pom file")
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
 		return nil, nil
 	}
 	defer resp.Body.Close()
@@ -704,6 +763,16 @@ func (p *parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 
 func parsePom(r io.Reader) (*pomXML, error) {
 	parsed := &pomXML{}
+	decoder := xml.NewDecoder(r)
+	decoder.CharsetReader = charset.NewReaderLabel
+	if err := decoder.Decode(parsed); err != nil {
+		return nil, xerrors.Errorf("xml decode error: %w", err)
+	}
+	return parsed, nil
+}
+
+func parseMavenMetadata(r io.Reader) (*Metadata, error) {
+	parsed := &Metadata{}
 	decoder := xml.NewDecoder(r)
 	decoder.CharsetReader = charset.NewReaderLabel
 	if err := decoder.Decode(parsed); err != nil {

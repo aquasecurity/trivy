@@ -161,7 +161,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 			default:
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			assert.Equal(t, tt.want, needsUpdate)
@@ -232,7 +232,7 @@ func TestClient_Download(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			meta := metadata.NewClient(cacheDir)
 			got, err := meta.Get()

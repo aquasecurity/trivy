@@ -149,7 +149,7 @@ type Results []Result
 
 type MetadataProvider interface {
 	GetMetadata() iacTypes.Metadata
-	GetRawValue() interface{}
+	GetRawValue() any
 }
 
 func (r *Results) GetPassed() Results {
@@ -177,7 +177,7 @@ func (r *Results) filterStatus(status Status) Results {
 	return filtered
 }
 
-func (r *Results) Add(description string, source interface{}) {
+func (r *Results) Add(description string, source any) {
 	result := Result{
 		description: description,
 	}
@@ -207,7 +207,7 @@ func (r *Results) AddRego(description, namespace, rule string, traces []string, 
 	*r = append(*r, result)
 }
 
-func (r *Results) AddPassed(source interface{}, descriptions ...string) {
+func (r *Results) AddPassed(source any, descriptions ...string) {
 	res := Result{
 		description: strings.Join(descriptions, " "),
 		status:      StatusPassed,
@@ -218,7 +218,7 @@ func (r *Results) AddPassed(source interface{}, descriptions ...string) {
 	*r = append(*r, res)
 }
 
-func getMetadataFromSource(source interface{}) iacTypes.Metadata {
+func getMetadataFromSource(source any) iacTypes.Metadata {
 	if provider, ok := source.(MetadataProvider); ok {
 		return provider.GetMetadata()
 	}
@@ -231,14 +231,14 @@ func getMetadataFromSource(source interface{}) iacTypes.Metadata {
 	return metaVal.Interface().(iacTypes.Metadata)
 }
 
-func getAnnotation(source interface{}) string {
+func getAnnotation(source any) string {
 	if provider, ok := source.(MetadataProvider); ok {
 		return rawToString(provider.GetRawValue())
 	}
 	return ""
 }
 
-func (r *Results) AddPassedRego(namespace, rule string, traces []string, source interface{}) {
+func (r *Results) AddPassedRego(namespace, rule string, traces []string, source any) {
 	res := Result{
 		status:        StatusPassed,
 		regoNamespace: namespace,
@@ -251,7 +251,7 @@ func (r *Results) AddPassedRego(namespace, rule string, traces []string, source 
 	*r = append(*r, res)
 }
 
-func (r *Results) AddIgnored(source interface{}, descriptions ...string) {
+func (r *Results) AddIgnored(source any, descriptions ...string) {
 	res := Result{
 		description: strings.Join(descriptions, " "),
 		status:      StatusIgnored,
@@ -311,7 +311,7 @@ func (r *Results) SetSourceAndFilesystem(source string, f fs.FS, logicalSource b
 	}
 }
 
-func rawToString(raw interface{}) string {
+func rawToString(raw any) string {
 	if raw == nil {
 		return ""
 	}

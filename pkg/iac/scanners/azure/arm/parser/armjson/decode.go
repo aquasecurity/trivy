@@ -7,7 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func (n *node) Decode(target interface{}) error {
+func (n *node) Decode(target any) error {
 	v := reflect.ValueOf(target)
 	return n.decodeToValue(v)
 }

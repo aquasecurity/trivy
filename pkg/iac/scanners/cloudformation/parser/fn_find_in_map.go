@@ -28,14 +28,14 @@ func ResolveFindInMap(property *Property) (resolved *Property, success bool) {
 		return abortIntrinsic(property, "could not find map %s, returning original Property")
 	}
 
-	mapContents := m.(map[string]interface{})
+	mapContents := m.(map[string]any)
 
 	k, ok := mapContents[topLevelKey]
 	if !ok {
 		return abortIntrinsic(property, "could not find %s in the %s map, returning original Property", topLevelKey, mapName)
 	}
 
-	mapValues := k.(map[string]interface{})
+	mapValues := k.(map[string]any)
 
 	if prop, ok := mapValues[secondaryLevelKey]; !ok {
 		return abortIntrinsic(property, "could not find a value for %s in %s, returning original Property", secondaryLevelKey, topLevelKey)

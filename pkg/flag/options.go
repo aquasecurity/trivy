@@ -23,7 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/version"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 type FlagType interface {
@@ -353,21 +353,61 @@ type Options struct {
 }
 
 // Align takes consistency of options
-func (o *Options) Align() {
+func (o *Options) Align() error {
+	o.enableSBOM()
+
+	if o.Compliance.Spec.ID != "" {
+		if viper.IsSet(ScannersFlag.ConfigName) {
+			log.Info(`The option to change scanners is disabled for scanning with the "--compliance" flag. Default scanners used.`)
+		}
+		if viper.IsSet(ImageConfigScannersFlag.ConfigName) {
+			log.Info(`The option to change image config scanners is disabled for scanning with the "--compliance" flag. Default image config scanners used.`)
+		}
+
+		// set scanners types by spec
+		scanners, err := o.Compliance.Scanners()
+		if err != nil {
+			return xerrors.Errorf("scanner error: %w", err)
+		}
+
+		o.Scanners = scanners
+		o.ImageConfigScanners = nil
+		// TODO: define image-config-scanners in the spec
+		if o.Compliance.Spec.ID == types.ComplianceDockerCIS {
+			o.Scanners = types.Scanners{types.VulnerabilityScanner}
+			o.ImageConfigScanners = types.Scanners{
+				types.MisconfigScanner,
+				types.SecretScanner,
+			}
+		}
+	}
+
+	return nil
+}
+
+func (o *Options) enableSBOM() {
+	// Always need packages when the vulnerability scanner is enabled
+	if o.Scanners.Enabled(types.VulnerabilityScanner) {
+		o.Scanners.Enable(types.SBOMScanner)
+	}
+
+	// Enable the SBOM scanner when a list of packages is necessary.
+	if o.ListAllPkgs || slices.Contains(types.SupportedSBOMFormats, o.Format) {
+		o.Scanners.Enable(types.SBOMScanner)
+	}
+
 	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
 		log.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
-		o.Scanners = nil
+		o.Scanners = types.Scanners{types.SBOMScanner}
 	}
 
-	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
-		log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-		o.Scanners = nil
-	}
-
-	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
-		log.Info(`"k8s with --format cyclonedx" disable security scanning`)
-		o.Scanners = nil
+	if o.Format == types.FormatCycloneDX {
+		// Vulnerability scanning is disabled by default for CycloneDX.
+		if !viper.IsSet(ScannersFlag.ConfigName) {
+			log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+			o.Scanners = nil
+		}
+		o.Scanners.Enable(types.SBOMScanner)
 	}
 }
 
@@ -424,7 +464,7 @@ func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() err
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
 	pr, pw := io.Pipe()
-	wait, err := plugin.Start(ctx, pluginName, plugin.RunOptions{
+	wait, err := plugin.Start(ctx, pluginName, plugin.Options{
 		Args:  o.OutputPluginArgs,
 		Stdin: pr,
 	})
@@ -562,7 +602,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 func (f *Flags) ToOptions(args []string) (Options, error) {
 	var err error
 	opts := Options{
-		AppVersion: version.AppVersion(),
+		AppVersion: app.Version(),
 	}
 
 	if f.GlobalFlagGroup != nil {
@@ -698,7 +738,9 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		}
 	}
 
-	opts.Align()
+	if err := opts.Align(); err != nil {
+		return Options{}, xerrors.Errorf("align options error: %w", err)
+	}
 
 	return opts, nil
 }

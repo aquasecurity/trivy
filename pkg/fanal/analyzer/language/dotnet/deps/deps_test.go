@@ -27,7 +27,7 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.DotNetCore,
 						FilePath: "testdata/datacollector.deps.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
@@ -63,12 +63,12 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

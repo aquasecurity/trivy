@@ -82,7 +82,7 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 			fields: fields{
 				CacheBackend: "unknown",
 			},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+			assertion: func(t require.TestingT, err error, msgs ...any) {
 				require.ErrorContains(t, err, "unsupported cache backend")
 			},
 		},
@@ -92,7 +92,7 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 				CacheBackend: "redis://localhost:6379",
 				RedisCACert:  "ca-cert.pem",
 			},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+			assertion: func(t require.TestingT, err error, msgs ...any) {
 				require.ErrorContains(t, err, "you must provide Redis CA")
 			},
 		},

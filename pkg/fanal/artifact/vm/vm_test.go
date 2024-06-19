@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
@@ -22,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
@@ -79,14 +79,14 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name:   "sad path unsupported vm format",
 			target: "testdata/monolithicSparse.vmdk",
-			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+			wantErr: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "unsupported type error")
 			},
 		},
 		{
 			name:   "sad path file not found",
 			target: "testdata/no-file",
-			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+			wantErr: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "file open error")
 			},
 		},
@@ -112,7 +112,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		missingBlobsExpectation cache.ArtifactCacheMissingBlobsExpectation
 		putBlobExpectation      cache.ArtifactCachePutBlobExpectation
 		putArtifactExpectations []cache.ArtifactCachePutArtifactExpectation
-		want                    types.ArtifactReference
+		want                    artifact.Reference
 		wantErr                 string
 	}{
 		{
@@ -136,9 +136,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "rawdata.img",
-				Type: types.ArtifactVM,
+				Type: artifact.TypeVM,
 				ID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 				BlobIDs: []string{
 					"sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
@@ -172,9 +172,9 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "ebs-012345",
-				Type: types.ArtifactVM,
+				Type: artifact.TypeVM,
 				ID:   "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
 				BlobIDs: []string{
 					"sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",

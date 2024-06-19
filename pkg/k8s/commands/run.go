@@ -20,48 +20,30 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	clusterArtifact = "cluster"
-	allArtifact     = "all"
-)
-
 // Run runs a k8s scan
 func Run(ctx context.Context, args []string, opts flag.Options) error {
-	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
-	defer cancel()
-
-	ctx = log.WithContextPrefix(ctx, "k8s")
-
-	cluster, err := k8s.GetCluster(
-		k8s.WithContext(opts.K8sOptions.ClusterContext),
+	clusterOptions := []k8s.ClusterOption{
 		k8s.WithKubeConfig(opts.K8sOptions.KubeConfig),
 		k8s.WithBurst(opts.K8sOptions.Burst),
 		k8s.WithQPS(opts.K8sOptions.QPS),
-	)
+	}
+	if len(args) > 0 {
+		clusterOptions = append(clusterOptions, k8s.WithContext(args[0]))
+	}
+	cluster, err := k8s.GetCluster(clusterOptions...)
 	if err != nil {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
 	}
+	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 
 	defer func() {
+		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Increase --timeout value")
+			log.WarnContext(ctx, "Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
 		}
 	}()
 	opts.K8sVersion = cluster.GetClusterVersion()
-	switch args[0] {
-	case clusterArtifact:
-		return clusterRun(ctx, opts, cluster)
-	case allArtifact:
-		if opts.Format == types.FormatCycloneDX {
-			return xerrors.Errorf("KBOM with CycloneDX format is not supported for all namespace scans")
-		}
-		return namespaceRun(ctx, opts, cluster)
-	default: // resourceArtifact
-		if opts.Format == types.FormatCycloneDX {
-			return xerrors.Errorf("KBOM with CycloneDX format is not supported for resource scans")
-		}
-		return resourceRun(ctx, args, opts, cluster)
-	}
+	return clusterRun(ctx, opts, cluster)
 }
 
 type runner struct {
@@ -71,8 +53,8 @@ type runner struct {
 
 func newRunner(flagOpts flag.Options, cluster string) *runner {
 	return &runner{
-		flagOpts: flagOpts,
-		cluster:  cluster,
+		flagOpts,
+		cluster,
 	}
 }
 
@@ -86,7 +68,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 	}
 	defer func() {
 		if err := runner.Close(ctx); err != nil {
-			log.ErrorContext(ctx, "Failed to close runner", log.Err(err))
+			log.ErrorContext(ctx, "failed to close runner: %s", err)
 		}
 	}()
 
@@ -133,16 +115,13 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		Report:     r.flagOpts.ReportFormat,
 		Output:     output,
 		Severities: r.flagOpts.Severities,
-		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
 		APIVersion: r.flagOpts.AppVersion,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.Exit(r.flagOpts, rpt.Failed())
-
-	return nil
+	return operation.Exit(r.flagOpts, rpt.Failed(), types.Metadata{})
 }
 
 // Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.

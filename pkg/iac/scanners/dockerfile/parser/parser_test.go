@@ -18,13 +18,13 @@ CMD python /app/app.py
 	df, err := New().parse("Dockerfile", strings.NewReader(input))
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(df.Stages))
+	assert.Len(t, df.Stages, 1)
 
 	require.Len(t, df.Stages, 1)
 
 	assert.Equal(t, "ubuntu:18.04", df.Stages[0].Name)
 	commands := df.Stages[0].Commands
-	assert.Equal(t, 4, len(commands))
+	assert.Len(t, commands, 4)
 
 	// FROM ubuntu:18.04
 	assert.Equal(t, "from", commands[0].Cmd)

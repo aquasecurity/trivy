@@ -202,12 +202,12 @@ func TestRegistry(t *testing.T) {
 			// Run Trivy
 			runTest(t, osArgs, tc.golden, "", types.FormatJSON, runOptions{
 				wantErr: tc.wantErr,
-				override: func(_, got *types.Report) {
+				override: overrideFuncs(overrideUID, func(t *testing.T, _, got *types.Report) {
 					got.ArtifactName = tc.imageName
 					for i := range got.Results {
 						got.Results[i].Target = fmt.Sprintf("%s (alpine 3.10.2)", tc.imageName)
 					}
-				},
+				}),
 			})
 		})
 	}

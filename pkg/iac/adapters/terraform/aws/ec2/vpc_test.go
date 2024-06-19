@@ -3,14 +3,13 @@ package ec2
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_AdaptVPC(t *testing.T) {
@@ -218,6 +217,50 @@ resource "aws_flow_log" "this" {
 						IsDefault:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						ID:              iacTypes.String("", iacTypes.NewTestMetadata()),
 						FlowLogsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					},
+				},
+			},
+		},
+		{
+			name: "ingress and egress rules",
+			terraform: `
+resource "aws_security_group" "example" {
+  name        = "example"
+  description = "example"
+}
+
+resource "aws_vpc_security_group_egress_rule" "test" {
+  security_group_id = aws_security_group.example.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
+resource "aws_vpc_security_group_ingress_rule" "test" {
+  security_group_id = aws_security_group.example.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = "22"
+  to_port           = "22"
+  ip_protocol       = "tcp"
+}
+`,
+			expected: ec2.EC2{
+				SecurityGroups: []ec2.SecurityGroup{
+					{
+						Description: iacTypes.StringTest("example"),
+						IngressRules: []ec2.SecurityGroupRule{
+							{
+								CIDRs: []iacTypes.StringValue{
+									iacTypes.StringTest("0.0.0.0/0"),
+								},
+							},
+						},
+						EgressRules: []ec2.SecurityGroupRule{
+							{
+								CIDRs: []iacTypes.StringValue{
+									iacTypes.StringTest("0.0.0.0/0"),
+								},
+							},
+						},
 					},
 				},
 			},

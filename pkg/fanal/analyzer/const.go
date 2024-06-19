@@ -69,6 +69,7 @@ const (
 
 	// Conda
 	TypeCondaPkg Type = "conda-pkg"
+	TypeCondaEnv Type = "conda-environment"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
@@ -92,6 +93,9 @@ const (
 
 	// Dart
 	TypePubSpecLock Type = "pubspec-lock"
+
+	// Julia
+	TypeJulia Type = "julia"
 
 	// ============
 	// Non-packaged
@@ -177,6 +181,7 @@ var (
 		TypeDotNetCore,
 		TypePackagesProps,
 		TypeCondaPkg,
+		TypeCondaEnv,
 		TypePythonPkg,
 		TypePip,
 		TypePipenv,
@@ -189,6 +194,7 @@ var (
 		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeJulia,
 	}
 
 	// TypeLockfiles has all lock file analyzers
@@ -208,6 +214,7 @@ var (
 		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeCondaEnv,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func LastIndexOf(args ...interface{}) interface{} {
+func LastIndexOf(args ...any) any {
 
 	if len(args) != 2 {
 		return -1

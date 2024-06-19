@@ -54,7 +54,8 @@
           "PkgID": "git@2.35.1-r2",
           "PkgName": "git",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/alpine/git@2.35.1-r2?arch=x86_64\u0026distro=3.16"
+            "PURL": "pkg:apk/alpine/git@2.35.1-r2?arch=x86_64\u0026distro=3.16",
+            "UID": "d44ac4666246b919"
           },
           "InstalledVersion": "2.35.1-r2",
           "FixedVersion": "2.35.2-r0",

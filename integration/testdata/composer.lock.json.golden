@@ -25,12 +25,14 @@
           "ID": "guzzlehttp/guzzle@7.4.4",
           "Name": "guzzlehttp/guzzle",
           "Identifier": {
-            "PURL": "pkg:composer/guzzlehttp/guzzle@7.4.4"
+            "PURL": "pkg:composer/guzzlehttp/guzzle@7.4.4",
+            "UID": "c26bf8868607a91c"
           },
           "Version": "7.4.4",
           "Licenses": [
             "MIT"
           ],
+          "Relationship": "direct",
           "DependsOn": [
             "guzzlehttp/psr7@1.8.3"
           ],
@@ -46,13 +48,15 @@
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
           "Identifier": {
-            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "1730859e3ff83ab9"
           },
           "Version": "1.8.3",
           "Licenses": [
             "MIT"
           ],
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -68,7 +72,8 @@
           "PkgID": "guzzlehttp/psr7@1.8.3",
           "PkgName": "guzzlehttp/psr7",
           "PkgIdentifier": {
-            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "1730859e3ff83ab9"
           },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",

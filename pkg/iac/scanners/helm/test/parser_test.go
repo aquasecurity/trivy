@@ -7,10 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 )
 
 func Test_helm_parser(t *testing.T) {
@@ -111,16 +112,14 @@ func Test_tar_is_chart(t *testing.T) {
 	}
 
 	for _, test := range tests {
+		t.Run(test.testName, func(t *testing.T) {
+			testPath := filepath.Join("testdata", test.archiveFile)
+			file, err := os.Open(testPath)
+			require.NoError(t, err)
+			defer file.Close()
 
-		t.Logf("Running test: %s", test.testName)
-		testPath := filepath.Join("testdata", test.archiveFile)
-		file, err := os.Open(testPath)
-		defer func() { _ = file.Close() }()
-		require.NoError(t, err)
-
-		assert.Equal(t, test.isHelmChart, detection.IsHelmChartArchive(test.archiveFile, file))
-
-		_ = file.Close()
+			assert.Equal(t, test.isHelmChart, detection.IsHelmChartArchive(test.archiveFile, file))
+		})
 	}
 }
 

@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func Join(args ...interface{}) interface{} {
+func Join(args ...any) any {
 
 	if len(args) != 2 {
 		return ""

@@ -12,6 +12,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
@@ -69,7 +70,7 @@ func (b *BOM) parseBOM(bom *cdx.BOM) error {
 	if err != nil {
 		return xerrors.Errorf("failed to parse root component: %w", err)
 	} else if mComponent != nil {
-		components[mComponent.PkgID.BOMRef] = mComponent
+		components[mComponent.PkgIdentifier.BOMRef] = mComponent
 	}
 
 	// Parse dependencies and build relationships
@@ -147,7 +148,7 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 				Digests: b.unmarshalHashes(c.Hashes),
 			},
 		},
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			PURL:   &purl,
 			BOMRef: c.BOMRef,
 		},

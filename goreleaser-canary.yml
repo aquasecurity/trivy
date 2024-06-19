@@ -1,3 +1,5 @@
+version: 2
+
 project_name: trivy_canary_build
 builds:
   -
@@ -6,7 +8,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:

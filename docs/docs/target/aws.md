@@ -99,11 +99,11 @@ If you want to force the cache to be refreshed with the latest data, you can use
 Or if you'd like to use cached data for a different timeframe, you can specify `--max-cache-age` (e.g. `--max-cache-age 2h`.).
 Regardless of whether the cache is used or not, rules will be evaluated again with each run of `trivy aws`.
 
-## Custom Policies
+## Custom Checks
 
-You can write custom policies for Trivy to evaluate against your AWS account.
-These policies are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/), the same language used by [Open Policy Agent](https://www.openpolicyagent.org/).
-See the [Custom Policies](../scanner/misconfiguration/custom/index.md) page for more information on how to write custom policies.
+You can write custom checks for Trivy to evaluate against your AWS account.
+These checks are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/), the same language used by [Open Policy Agent](https://www.openpolicyagent.org/).
+See the [Custom Checks](../scanner/misconfiguration/custom/index.md) page for more information on how to write custom checks.
 
-Custom policies in cloud scanning also support passing in custom data. This can be useful when you want to selectively enable/disable certain aspects of your cloud policies.
-See the [Custom Data](../scanner/misconfiguration/custom/data.md) page for more information on how to provide custom data to custom policies.
+Custom checks in cloud scanning also support passing in custom data. This can be useful when you want to selectively enable/disable certain aspects of your cloud checks.
+See the [Custom Data](../scanner/misconfiguration/custom/data.md) page for more information on how to provide custom data to custom checks.

@@ -3,10 +3,10 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_Boolean_True(t *testing.T) {
@@ -46,7 +46,7 @@ func Test_Bool_ToUninitialisedPointer(t *testing.T) {
 
 func Test_Bool_ToInterface(t *testing.T) {
 	example := []byte(`true`)
-	var output interface{}
+	var output any
 	metadata := types.NewTestMetadata()
 	err := Unmarshal(example, &output, &metadata)
 	require.NoError(t, err)

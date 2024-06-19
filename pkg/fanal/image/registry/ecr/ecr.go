@@ -14,7 +14,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-const ecrURL = "amazonaws.com"
+const ecrURLSuffix = ".amazonaws.com"
+const ecrURLPartial = ".dkr.ecr"
 
 type ecrAPI interface {
 	GetAuthorizationToken(ctx context.Context, params *ecr.GetAuthorizationTokenInput, optFns ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error)
@@ -37,7 +38,7 @@ func getSession(option types.RegistryOptions) (aws.Config, error) {
 }
 
 func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) error {
-	if !strings.HasSuffix(domain, ecrURL) {
+	if !strings.HasSuffix(domain, ecrURLSuffix) && !strings.Contains(domain, ecrURLPartial) {
 		return xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
 	}
 

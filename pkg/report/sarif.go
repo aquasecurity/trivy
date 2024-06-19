@@ -13,6 +13,7 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -131,7 +132,7 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 	sw.locationCache = make(map[string][]location)
-	if report.ArtifactType == ftypes.ArtifactContainerImage {
+	if report.ArtifactType == artifact.TypeContainerImage {
 		sw.run.Properties = sarif.Properties{
 			"imageName":   report.ArtifactName,
 			"repoTags":    report.Metadata.RepoTags,

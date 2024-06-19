@@ -7,66 +7,82 @@ package flag
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
-	SkipPolicyUpdateFlag = Flag[bool]{
-		Name:       "skip-policy-update",
-		ConfigName: "rego.skip-policy-update",
-		Usage:      "skip fetching rego policy updates",
+	IncludeDeprecatedChecksFlag = Flag[bool]{
+		Name:       "include-deprecated-checks",
+		ConfigName: "rego.include-deprecated-checks",
+		Usage:      "include deprecated checks",
+	}
+	SkipCheckUpdateFlag = Flag[bool]{
+		Name:       "skip-check-update",
+		ConfigName: "rego.skip-check-update",
+		Usage:      "skip fetching rego check updates",
+		Aliases: []Alias{
+			{
+				Name:       "skip-policy-update",
+				Deprecated: true,
+			},
+		},
 	}
 	TraceFlag = Flag[bool]{
 		Name:       "trace",
 		ConfigName: "rego.trace",
 		Usage:      "enable more verbose trace output for custom queries",
 	}
-	ConfigPolicyFlag = Flag[[]string]{
-		Name:       "config-policy",
-		ConfigName: "rego.policy",
-		Usage:      "specify the paths to the Rego policy files or to the directories containing them, applying config files",
+	ConfigCheckFlag = Flag[[]string]{
+		Name:       "config-check",
+		ConfigName: "rego.check",
+		Usage:      "specify the paths to the Rego check files or to the directories containing them, applying config files",
 		Aliases: []Alias{
-			{Name: "policy"},
+			{Name: "policy", Deprecated: true},
+			{Name: "config-policy", Deprecated: true},
 		},
 	}
 	ConfigDataFlag = Flag[[]string]{
 		Name:       "config-data",
 		ConfigName: "rego.data",
-		Usage:      "specify paths from which data for the Rego policies will be recursively loaded",
+		Usage:      "specify paths from which data for the Rego checks will be recursively loaded",
 		Aliases: []Alias{
 			{Name: "data"},
 		},
 	}
-	PolicyNamespaceFlag = Flag[[]string]{
-		Name:       "policy-namespaces",
+	CheckNamespaceFlag = Flag[[]string]{
+		Name:       "check-namespaces",
 		ConfigName: "rego.namespaces",
 		Usage:      "Rego namespaces",
 		Aliases: []Alias{
 			{Name: "namespaces"},
+			{Name: "policy-namespaces", Deprecated: true},
 		},
 	}
 )
 
 // RegoFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
 type RegoFlagGroup struct {
-	SkipPolicyUpdate *Flag[bool]
-	Trace            *Flag[bool]
-	PolicyPaths      *Flag[[]string]
-	DataPaths        *Flag[[]string]
-	PolicyNamespaces *Flag[[]string]
+	IncludeDeprecatedChecks *Flag[bool]
+	SkipCheckUpdate         *Flag[bool]
+	Trace                   *Flag[bool]
+	CheckPaths              *Flag[[]string]
+	DataPaths               *Flag[[]string]
+	CheckNamespaces         *Flag[[]string]
 }
 
 type RegoOptions struct {
-	SkipPolicyUpdate bool
-	Trace            bool
-	PolicyPaths      []string
-	DataPaths        []string
-	PolicyNamespaces []string
+	IncludeDeprecatedChecks bool
+	SkipCheckUpdate         bool
+	Trace                   bool
+	CheckPaths              []string
+	DataPaths               []string
+	CheckNamespaces         []string
 }
 
 func NewRegoFlagGroup() *RegoFlagGroup {
 	return &RegoFlagGroup{
-		SkipPolicyUpdate: SkipPolicyUpdateFlag.Clone(),
-		Trace:            TraceFlag.Clone(),
-		PolicyPaths:      ConfigPolicyFlag.Clone(),
-		DataPaths:        ConfigDataFlag.Clone(),
-		PolicyNamespaces: PolicyNamespaceFlag.Clone(),
+		IncludeDeprecatedChecks: IncludeDeprecatedChecksFlag.Clone(),
+		SkipCheckUpdate:         SkipCheckUpdateFlag.Clone(),
+		Trace:                   TraceFlag.Clone(),
+		CheckPaths:              ConfigCheckFlag.Clone(),
+		DataPaths:               ConfigDataFlag.Clone(),
+		CheckNamespaces:         CheckNamespaceFlag.Clone(),
 	}
 }
 
@@ -76,11 +92,12 @@ func (f *RegoFlagGroup) Name() string {
 
 func (f *RegoFlagGroup) Flags() []Flagger {
 	return []Flagger{
-		f.SkipPolicyUpdate,
+		f.IncludeDeprecatedChecks,
+		f.SkipCheckUpdate,
 		f.Trace,
-		f.PolicyPaths,
+		f.CheckPaths,
 		f.DataPaths,
-		f.PolicyNamespaces,
+		f.CheckNamespaces,
 	}
 }
 
@@ -90,10 +107,11 @@ func (f *RegoFlagGroup) ToOptions() (RegoOptions, error) {
 	}
 
 	return RegoOptions{
-		SkipPolicyUpdate: f.SkipPolicyUpdate.Value(),
-		Trace:            f.Trace.Value(),
-		PolicyPaths:      f.PolicyPaths.Value(),
-		DataPaths:        f.DataPaths.Value(),
-		PolicyNamespaces: f.PolicyNamespaces.Value(),
+		IncludeDeprecatedChecks: f.IncludeDeprecatedChecks.Value(),
+		SkipCheckUpdate:         f.SkipCheckUpdate.Value(),
+		Trace:                   f.Trace.Value(),
+		CheckPaths:              f.CheckPaths.Value(),
+		DataPaths:               f.DataPaths.Value(),
+		CheckNamespaces:         f.CheckNamespaces.Value(),
 	}, nil
 }

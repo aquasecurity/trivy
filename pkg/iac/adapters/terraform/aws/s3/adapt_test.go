@@ -3,15 +3,15 @@ package s3
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/liamg/iamgo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_PublicAccessBlock(t *testing.T) {
@@ -56,7 +56,7 @@ resource "aws_s3_bucket_public_access_block" "example_access_block"{
 			modules := tftestutil.CreateModulesFromSource(t, tC.source, ".tf")
 			s3Ctx := Adapt(modules)
 
-			assert.Equal(t, tC.expectedBuckets, len(s3Ctx.Buckets))
+			assert.Len(t, s3Ctx.Buckets, tC.expectedBuckets)
 
 			for _, bucket := range s3Ctx.Buckets {
 				if tC.hasPublicAccess {

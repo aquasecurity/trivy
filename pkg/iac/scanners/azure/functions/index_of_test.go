@@ -10,12 +10,12 @@ func Test_IndexOf(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name: "get index of string that is there",
-			args: []interface{}{
+			args: []any{
 				"Hello world!",
 				"Hell",
 			},
@@ -23,7 +23,7 @@ func Test_IndexOf(t *testing.T) {
 		},
 		{
 			name: "get index of string that is there as well",
-			args: []interface{}{
+			args: []any{
 				"Hello world!",
 				"world",
 			},
@@ -31,7 +31,7 @@ func Test_IndexOf(t *testing.T) {
 		},
 		{
 			name: "get index of string that isn't there",
-			args: []interface{}{
+			args: []any{
 				"Hello world!",
 				"planet!",
 			},

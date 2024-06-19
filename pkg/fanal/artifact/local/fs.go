@@ -68,7 +68,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 	}, nil
 }
 
-func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)
@@ -80,7 +80,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	// Prepare filesystem for post analysis
 	composite, err := a.analyzer.PostAnalyzerFS()
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
 	}
 
 	err = a.walker.Walk(a.rootPath, a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
@@ -110,7 +110,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return nil
 	})
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("walk filesystem: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("walk filesystem: %w", err)
 	}
 
 	// Wait for all the goroutine to finish.
@@ -118,7 +118,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 
 	// Post-analysis
 	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("post analysis error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
 	// Sort the analysis result for consistent results
@@ -137,16 +137,16 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to call hooks: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
 	cacheKey, err := a.calcCacheKey(blobInfo)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
 	// get hostname
@@ -159,15 +159,15 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		hostName = filepath.ToSlash(a.rootPath)
 	}
 
-	return types.ArtifactReference{
+	return artifact.Reference{
 		Name:    hostName,
-		Type:    types.ArtifactFilesystem,
+		Type:    artifact.TypeFilesystem,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
 }
 
-func (a Artifact) Clean(reference types.ArtifactReference) error {
+func (a Artifact) Clean(reference artifact.Reference) error {
 	return a.cache.DeleteBlobs(reference.BlobIDs)
 }
 

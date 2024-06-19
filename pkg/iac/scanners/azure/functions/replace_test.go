@@ -9,12 +9,12 @@ import (
 func Test_Replace(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "replace a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				"l",
 				"p",
@@ -23,7 +23,7 @@ func Test_Replace(t *testing.T) {
 		},
 		{
 			name: "replace a string with invalid replacement",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				"q",
 				"p",

@@ -4,13 +4,13 @@ package integration
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/require"
 )
 
 // TestRepository tests `trivy repo` with the local code repositories
@@ -37,7 +37,7 @@ func TestRepository(t *testing.T) {
 		name     string
 		args     args
 		golden   string
-		override func(want, got *types.Report)
+		override func(t *testing.T, want, got *types.Report)
 	}{
 		{
 			name: "gomod",
@@ -235,6 +235,14 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/composer.lock.json.golden",
 		},
 		{
+			name: "multiple lockfiles",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/trivy-ci-test",
+			},
+			golden: "testdata/test-repo.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				scanner:    types.MisconfigScanner,
@@ -342,6 +350,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/conda-cyclonedx.json.golden",
 		},
 		{
+			name: "conda environment.yaml generating CycloneDX SBOM",
+			args: args{
+				command: "fs",
+				format:  "cyclonedx",
+				input:   "testdata/fixtures/repo/conda-environment",
+			},
+			golden: "testdata/conda-environment-cyclonedx.json.golden",
+		},
+		{
 			name: "pom.xml generating CycloneDX SBOM (with vulnerabilities)",
 			args: args{
 				command: "fs",
@@ -369,8 +386,8 @@ func TestRepository(t *testing.T) {
 				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
-			override: func(want, _ *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+			override: func(_ *testing.T, want, _ *types.Report) {
+				want.ArtifactType = artifact.TypeFilesystem
 			},
 		},
 		{
@@ -383,9 +400,18 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/custom-policy",
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
-			override: func(want, got *types.Report) {
-				want.ArtifactType = ftypes.ArtifactFilesystem
+			override: func(_ *testing.T, want, got *types.Report) {
+				want.ArtifactType = artifact.TypeFilesystem
 			},
+		},
+		{
+			name: "julia generating SPDX SBOM",
+			args: args{
+				command: "rootfs",
+				format:  "spdx-json",
+				input:   "testdata/fixtures/repo/julia",
+			},
+			golden: "testdata/julia-spdx.json.golden",
 		},
 	}
 
@@ -441,7 +467,7 @@ func TestRepository(t *testing.T) {
 			if len(tt.args.ignoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
 				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.ignoreIDs, "\n")), 0444)
-				assert.NoError(t, err, "failed to write .trivyignore")
+				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
 

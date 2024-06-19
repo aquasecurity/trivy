@@ -3,8 +3,9 @@ package parser
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
 func Test_GetProperty_PropIsFunction(t *testing.T) {

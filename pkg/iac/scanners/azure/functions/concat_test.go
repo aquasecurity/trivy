@@ -9,12 +9,12 @@ import (
 func Test_StringConcatenation(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "simple string concatenation",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				", ",
 				"world",
@@ -24,7 +24,7 @@ func Test_StringConcatenation(t *testing.T) {
 		},
 		{
 			name: "string concatenation with non strings",
-			args: []interface{}{
+			args: []any{
 				"pi to 3 decimal places is ",
 				3.142,
 			},
@@ -32,7 +32,7 @@ func Test_StringConcatenation(t *testing.T) {
 		},
 		{
 			name: "string concatenation with multiple primitives",
-			args: []interface{}{
+			args: []any{
 				"to say that ",
 				3,
 				" is greater than ",
@@ -55,33 +55,33 @@ func Test_StringConcatenation(t *testing.T) {
 func Test_ArrayConcatenation(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected []interface{}
+		args     []any
+		expected []any
 	}{
 		{
 			name: "simple array concatenation",
-			args: []interface{}{
-				[]interface{}{1, 2, 3},
-				[]interface{}{4, 5, 6},
+			args: []any{
+				[]any{1, 2, 3},
+				[]any{4, 5, 6},
 			},
-			expected: []interface{}{1, 2, 3, 4, 5, 6},
+			expected: []any{1, 2, 3, 4, 5, 6},
 		},
 		{
 			name: "array concatenation with non arrays",
-			args: []interface{}{
-				[]interface{}{1, 2, 3},
+			args: []any{
+				[]any{1, 2, 3},
 				4,
 			},
-			expected: []interface{}{1, 2, 3},
+			expected: []any{1, 2, 3},
 		},
 		{
 			name: "array concatenation with multiple primitives",
-			args: []interface{}{
-				[]interface{}{1, 2, 3},
+			args: []any{
+				[]any{1, 2, 3},
 				4,
-				[]interface{}{5, 6, 7},
+				[]any{5, 6, 7},
 			},
-			expected: []interface{}{1, 2, 3, 5, 6, 7},
+			expected: []any{1, 2, 3, 5, 6, 7},
 		},
 	}
 

@@ -82,7 +82,7 @@ func (r pkgLicenseRenderer) countSeverities() map[string]int {
 	return severityCount
 }
 
-func (r *pkgLicenseRenderer) printf(format string, args ...interface{}) {
+func (r *pkgLicenseRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }
@@ -167,7 +167,7 @@ func (r fileLicenseRenderer) countSeverities() map[string]int {
 	return severityCount
 }
 
-func (r *fileLicenseRenderer) printf(format string, args ...interface{}) {
+func (r *fileLicenseRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }

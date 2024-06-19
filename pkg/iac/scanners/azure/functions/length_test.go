@@ -10,33 +10,33 @@ func Test_Length(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name: "length of a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 			},
 			expected: 5,
 		},
 		{
 			name: "length of an empty string",
-			args: []interface{}{
+			args: []any{
 				"",
 			},
 			expected: 0,
 		},
 		{
 			name: "length of an empty slice",
-			args: []interface{}{
+			args: []any{
 				[]string{},
 			},
 			expected: 0,
 		},
 		{
 			name: "length of an slice with items",
-			args: []interface{}{
+			args: []any{
 				[]string{
 					"hello", "world",
 				},

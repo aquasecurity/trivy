@@ -5,22 +5,24 @@ on:
       - 'misc/triage/labels.yaml'
     branches:
       - main
-
+env:
+  GO_VERSION: '1.22'
 jobs:
   deploy:
     name: Auto-update labels
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4.1.2
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          # cf. https://github.com/aquasecurity/trivy/pull/6711
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install aqua tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 

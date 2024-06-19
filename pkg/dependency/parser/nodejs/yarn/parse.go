@@ -11,7 +11,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -31,7 +30,7 @@ type Library struct {
 	Patterns []string
 	Name     string
 	Version  string
-	Location types.Location
+	Location ftypes.Location
 }
 type Dependency struct {
 	Pattern string
@@ -128,14 +127,14 @@ func ignoreProtocol(protocol string) bool {
 	return false
 }
 
-func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps []types.Dependency) {
+func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps []ftypes.Dependency) {
 	// find dependencies by patterns
-	for libID, depPatterns := range dependsOn {
+	for pkgID, depPatterns := range dependsOn {
 		depIDs := lo.Map(depPatterns, func(pattern string, index int) string {
 			return patternIDs[pattern]
 		})
-		deps = append(deps, types.Dependency{
-			ID:        libID,
+		deps = append(deps, ftypes.Dependency{
+			ID:        pkgID,
 			DependsOn: depIDs,
 		})
 	}
@@ -146,7 +145,7 @@ type Parser struct {
 	logger *log.Logger
 }
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{
 		logger: log.WithPrefix("yarn"),
 	}
@@ -236,7 +235,7 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 		return Library{}, nil, scanner.LineNum(lineNum), nil
 	}
 
-	lib.Location = types.Location{
+	lib.Location = ftypes.Location{
 		StartLine: lineNum + emptyLines,
 		EndLine:   scanner.LineNum(lineNum),
 	}
@@ -270,9 +269,9 @@ func parseDependency(line string) (string, error) {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	lineNumber := 1
-	var libs []types.Library
+	var pkgs []ftypes.Package
 
 	// patternIDs holds mapping between patterns and library IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
@@ -291,21 +290,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 
-		libID := packageID(lib.Name, lib.Version)
-		libs = append(libs, types.Library{
-			ID:        libID,
+		pkgID := packageID(lib.Name, lib.Version)
+		pkgs = append(pkgs, ftypes.Package{
+			ID:        pkgID,
 			Name:      lib.Name,
 			Version:   lib.Version,
-			Locations: []types.Location{lib.Location},
+			Locations: []ftypes.Location{lib.Location},
 		})
 
 		for _, pattern := range lib.Patterns {
 			// e.g.
 			//   combined-stream@^1.0.6 => combined-stream@1.0.8
 			//   combined-stream@~1.0.6 => combined-stream@1.0.8
-			patternIDs[pattern] = libID
+			patternIDs[pattern] = pkgID
 			if len(deps) > 0 {
-				dependsOn[libID] = deps
+				dependsOn[pkgID] = deps
 			}
 		}
 	}
@@ -317,7 +316,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// Replace dependency patterns with library IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
 	deps := parseResults(patternIDs, dependsOn)
-	return libs, deps, nil
+	return pkgs, deps, nil
 }
 
 func packageID(name, version string) string {

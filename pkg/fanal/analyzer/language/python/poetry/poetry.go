@@ -8,11 +8,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/poetry"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -29,7 +29,7 @@ const version = 1
 type poetryAnalyzer struct {
 	logger          *log.Logger
 	pyprojectParser *pyproject.Parser
-	lockParser      godeptypes.Parser
+	lockParser      language.Parser
 }
 
 func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -103,17 +103,20 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	for i, lib := range app.Libraries {
-		// Identify the direct/transitive dependencies
-		if _, ok := p[lib.Name]; !ok {
-			app.Libraries[i].Indirect = true
+	// Identify the direct/transitive dependencies
+	for i, pkg := range app.Packages {
+		if _, ok := p[pkg.Name]; ok {
+			app.Packages[i].Relationship = types.RelationshipDirect
+		} else {
+			app.Packages[i].Indirect = true
+			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
 
 	return nil
 }
 
-func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]interface{}, error) {
+func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]any, error) {
 	// Parse pyproject.toml
 	f, err := fsys.Open(path)
 	if err != nil {
@@ -125,5 +128,11 @@ func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]inte
 	if err != nil {
 		return nil, err
 	}
+
+	// Packages from `pyproject.toml` can use uppercase characters, `.` and `_`.
+	parsed = lo.MapKeys(parsed, func(_ any, pkgName string) string {
+		return poetry.NormalizePkgName(pkgName)
+	})
+
 	return parsed, nil
 }

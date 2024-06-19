@@ -10,12 +10,12 @@ func Test_EndsWith(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected bool
 	}{
 		{
 			name: "string ends with",
-			args: []interface{}{
+			args: []any{
 				"Hello world!",
 				"world!",
 			},
@@ -23,7 +23,7 @@ func Test_EndsWith(t *testing.T) {
 		},
 		{
 			name: "string does not end with",
-			args: []interface{}{
+			args: []any{
 				"Hello world!",
 				"world",
 			},

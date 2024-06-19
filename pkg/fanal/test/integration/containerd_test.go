@@ -63,7 +63,7 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 			return err, true
 		}
 		t.Cleanup(func() {
-			assert.NoError(t, client.Close())
+			require.NoError(t, client.Close())
 		})
 		return nil, false
 	})
@@ -105,7 +105,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
-		assert.NoError(t, containerdC.Terminate(ctx))
+		require.NoError(t, containerdC.Terminate(ctx))
 	})
 }
 
@@ -295,13 +295,13 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 		name         string
 		imageName    string
 		tarArchive   string
-		wantMetadata types.ImageMetadata
+		wantMetadata artifact.ImageMetadata
 	}{
 		{
 			name:       "alpine 3.10",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			tarArchive: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
@@ -349,7 +349,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			name:       "vulnimage",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
 			tarArchive: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
 				DiffIDs: []string{
 					"sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
@@ -746,12 +746,12 @@ func TestContainerd_PullImage(t *testing.T) {
 	tests := []struct {
 		name         string
 		imageName    string
-		wantMetadata types.ImageMetadata
+		wantMetadata artifact.ImageMetadata
 	}{
 		{
 			name:      "remote alpine 3.10",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",

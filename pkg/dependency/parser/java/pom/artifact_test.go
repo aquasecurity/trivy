@@ -1,7 +1,6 @@
 package pom
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -87,8 +86,7 @@ func Test_evaluateVariable(t *testing.T) {
 	}
 
 	envName := "TEST_GO_DEP_PARSER"
-	os.Setenv(envName, "1.2.3")
-	defer os.Unsetenv(envName)
+	t.Setenv(envName, "1.2.3")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

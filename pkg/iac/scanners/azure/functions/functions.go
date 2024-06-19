@@ -1,12 +1,12 @@
 package functions
 
-var deploymentFuncs = map[string]func(dp DeploymentData, args ...interface{}) interface{}{
+var deploymentFuncs = map[string]func(dp DeploymentData, args ...any) any{
 	"parameters":  Parameters,
 	"deployment":  Deployment,
 	"environment": Environment,
 	"variables":   Variables,
 }
-var generalFuncs = map[string]func(...interface{}) interface{}{
+var generalFuncs = map[string]func(...any) any{
 
 	"add":                 Add,
 	"and":                 And,
@@ -85,7 +85,7 @@ var generalFuncs = map[string]func(...interface{}) interface{}{
 	"utcNow":                    UTCNow,
 }
 
-func Evaluate(deploymentProvider DeploymentData, name string, args ...interface{}) interface{} {
+func Evaluate(deploymentProvider DeploymentData, name string, args ...any) any {
 
 	if f, ok := deploymentFuncs[name]; ok {
 		return f(deploymentProvider, args...)

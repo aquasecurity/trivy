@@ -45,7 +45,7 @@ func init() {
 			return true
 		}
 
-		var content interface{}
+		var content any
 		return json.NewDecoder(r).Decode(&content) == nil
 	}
 
@@ -58,7 +58,7 @@ func init() {
 			return true
 		}
 
-		var content interface{}
+		var content any
 		return yaml.NewDecoder(r).Decode(&content) == nil
 	}
 
@@ -85,7 +85,7 @@ func init() {
 				return false
 			}
 
-			contents := make(map[string]interface{})
+			contents := make(map[string]any)
 			err := json.NewDecoder(r).Decode(&contents)
 			if err == nil {
 				if _, ok := contents["terraform_version"]; ok {
@@ -103,7 +103,7 @@ func init() {
 
 	matchers[FileTypeCloudFormation] = func(name string, r io.ReadSeeker) bool {
 		sniff := struct {
-			Resources map[string]map[string]interface{} `json:"Resources" yaml:"Resources"`
+			Resources map[string]map[string]any `json:"Resources" yaml:"Resources"`
 		}{}
 
 		switch {
@@ -135,9 +135,9 @@ func init() {
 		}
 
 		sniff := struct {
-			ContentType string                 `json:"contentType"`
-			Parameters  map[string]interface{} `json:"parameters"`
-			Resources   []interface{}          `json:"resources"`
+			ContentType string         `json:"contentType"`
+			Parameters  map[string]any `json:"parameters"`
+			Resources   []any          `json:"resources"`
 		}{}
 		metadata := types.NewUnmanagedMetadata()
 		if err := armjson.UnmarshalFromReader(r, &sniff, &metadata); err != nil {
@@ -196,7 +196,7 @@ func init() {
 				return false
 			}
 
-			var result map[string]interface{}
+			var result map[string]any
 			if err := json.NewDecoder(r).Decode(&result); err != nil {
 				return false
 			}
@@ -223,7 +223,7 @@ func init() {
 		}
 
 		for _, partial := range strings.Split(string(data), marker) {
-			var result map[string]interface{}
+			var result map[string]any
 			if err := yaml.Unmarshal([]byte(partial), &result); err != nil {
 				continue
 			}
@@ -244,6 +244,10 @@ func init() {
 }
 
 func IsTerraformFile(path string) bool {
+	if strings.HasSuffix(path, filepath.ToSlash(".terraform/modules/modules.json")) {
+		return true
+	}
+
 	for _, ext := range []string{".tf", ".tf.json", ".tfvars"} {
 		if strings.HasSuffix(path, ext) {
 			return true

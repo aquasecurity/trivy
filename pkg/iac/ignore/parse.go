@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -17,11 +19,11 @@ type RuleSectionParser interface {
 }
 
 // Parse parses the configuration file and returns the Rules
-func Parse(src, path string, parsers ...RuleSectionParser) Rules {
+func Parse(src, path, sourcePrefix string, parsers ...RuleSectionParser) Rules {
 	var rules Rules
 	for i, line := range strings.Split(src, "\n") {
 		line = strings.TrimSpace(line)
-		rng := types.NewRange(path, i+1, i+1, "", nil)
+		rng := types.NewRange(path, i+1, i+1, sourcePrefix, nil)
 		lineIgnores := parseLine(line, rng, parsers)
 		for _, lineIgnore := range lineIgnores {
 			rules = append(rules, lineIgnore)
@@ -36,23 +38,34 @@ func Parse(src, path string, parsers ...RuleSectionParser) Rules {
 func parseLine(line string, rng types.Range, parsers []RuleSectionParser) []Rule {
 	var rules []Rule
 
-	sections := strings.Split(strings.TrimSpace(line), " ")
-	for _, section := range sections {
-		section := strings.TrimSpace(section)
-		section = strings.TrimLeftFunc(section, func(r rune) bool {
+	parts := strings.Split(strings.TrimSpace(line), " ")
+	parts = lo.FilterMap(parts, func(part string, _ int) (string, bool) {
+		part = strings.TrimSpace(part)
+		part = strings.TrimLeftFunc(part, func(r rune) bool {
 			return r == '#' || r == '/' || r == '*'
 		})
 
-		section, exists := hasIgnoreRulePrefix(section)
+		return part, part != ""
+	})
+
+	for i, part := range parts {
+		part, exists := hasIgnoreRulePrefix(part)
 		if !exists {
 			continue
 		}
 
-		rule, err := parseComment(section, rng, parsers)
+		sections, err := parseRuleSections(part, rng, parsers)
 		if err != nil {
 			log.Debug("Failed to parse rule", log.String("range", rng.String()), log.Err(err))
 			continue
 		}
+
+		rule := Rule{
+			rng:         rng,
+			isStartLine: i == 0 || (len(rules) > 0 && rules[0].isStartLine),
+			sections:    sections,
+		}
+
 		rules = append(rules, rule)
 	}
 
@@ -72,11 +85,8 @@ func hasIgnoreRulePrefix(s string) (string, bool) {
 	return "", false
 }
 
-func parseComment(input string, rng types.Range, parsers []RuleSectionParser) (Rule, error) {
-	rule := Rule{
-		rng:      rng,
-		sections: make(map[string]any),
-	}
+func parseRuleSections(input string, rng types.Range, parsers []RuleSectionParser) (map[string]any, error) {
+	sections := make(map[string]any)
 
 	parsers = append(parsers, &expiryDateParser{
 		rng: rng,
@@ -93,7 +103,7 @@ func parseComment(input string, rng types.Range, parsers []RuleSectionParser) (R
 				StringMatchParser{SectionKey: "id"},
 			}
 			if idParser.Parse(val) {
-				rule.sections[idParser.Key()] = idParser.Param()
+				sections[idParser.Key()] = idParser.Param()
 			}
 		}
 
@@ -103,16 +113,16 @@ func parseComment(input string, rng types.Range, parsers []RuleSectionParser) (R
 			}
 
 			if parser.Parse(val) {
-				rule.sections[parser.Key()] = parser.Param()
+				sections[parser.Key()] = parser.Param()
 			}
 		}
 	}
 
-	if _, exists := rule.sections["id"]; !exists {
-		return Rule{}, errors.New("rule section with the `ignore` key is required")
+	if _, exists := sections["id"]; !exists {
+		return nil, errors.New("rule section with the `ignore` key is required")
 	}
 
-	return rule, nil
+	return sections, nil
 }
 
 type StringMatchParser struct {

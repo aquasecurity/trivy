@@ -76,7 +76,8 @@
           "PkgID": "bash@4.4.18-2ubuntu1.2",
           "PkgName": "bash",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/ubuntu/bash@4.4.18-2ubuntu1.2?arch=amd64\u0026distro=ubuntu-18.04"
+            "PURL": "pkg:deb/ubuntu/bash@4.4.18-2ubuntu1.2?arch=amd64\u0026distro=ubuntu-18.04",
+            "UID": "da318bd19a304cc0"
           },
           "InstalledVersion": "4.4.18-2ubuntu1.2",
           "Status": "affected",
@@ -138,7 +139,8 @@
           "PkgID": "e2fsprogs@1.44.1-1ubuntu1.1",
           "PkgName": "e2fsprogs",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/ubuntu/e2fsprogs@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+            "PURL": "pkg:deb/ubuntu/e2fsprogs@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
+            "UID": "ae80ec86b8816b6c"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -208,7 +210,8 @@
           "PkgID": "libcom-err2@1.44.1-1ubuntu1.1",
           "PkgName": "libcom-err2",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/ubuntu/libcom-err2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+            "PURL": "pkg:deb/ubuntu/libcom-err2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
+            "UID": "3c28244e063693a2"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -278,7 +281,8 @@
           "PkgID": "libext2fs2@1.44.1-1ubuntu1.1",
           "PkgName": "libext2fs2",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/ubuntu/libext2fs2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+            "PURL": "pkg:deb/ubuntu/libext2fs2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
+            "UID": "937ce6e3021ed568"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
@@ -348,7 +352,8 @@
           "PkgID": "libss2@1.44.1-1ubuntu1.1",
           "PkgName": "libss2",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/ubuntu/libss2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+            "PURL": "pkg:deb/ubuntu/libss2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
+            "UID": "7a50c6bc4279c93b"
           },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",

@@ -2,18 +2,18 @@ package cyclonedx_test
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/package-url/packageurl-go"
 	"os"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestUnmarshaler_Unmarshal(t *testing.T) {
@@ -77,7 +77,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     ftypes.Composer,
 						FilePath: "app/composer/composer.lock",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
@@ -117,7 +117,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     ftypes.GoBinary,
 						FilePath: "app/gobinary/gobinary",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 								Name:    "github.com/package-url/packageurl-go",
@@ -140,7 +140,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     ftypes.Gradle,
 						FilePath: "app/gradle/target/gradle.lockfile",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:   "com.example:example:0.0.1",
 								Name: "com.example:example",
@@ -162,7 +162,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: ftypes.Jar,
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:   "org.codehaus.mojo:child-project:1.0",
 								Name: "org.codehaus.mojo:child-project",
@@ -186,7 +186,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     ftypes.NodePkg,
 						FilePath: "",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "@example/bootstrap@5.0.2",
 								Name:    "@example/bootstrap",
@@ -224,7 +224,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: ftypes.GoBinary,
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "docker@v24.0.4",
 								Name:    "docker",
@@ -242,7 +242,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: ftypes.K8sUpstream,
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "k8s.io/apiserver@1.27.4",
 								Name:    "k8s.io/apiserver",
@@ -474,7 +474,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
@@ -517,7 +517,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
@@ -545,7 +545,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
@@ -587,7 +587,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/core@1.13.1",
 								Name:    "pear/core",
@@ -646,7 +646,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: "jar",
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "org.springframework:spring-web:5.3.22",
 								Name:    "org.springframework:spring-web",
@@ -715,7 +715,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: ftypes.Composer,
-						Libraries: ftypes.Packages{
+						Packages: ftypes.Packages{
 							{
 								ID:      "pear/core@1.13.1",
 								Name:    "pear/core",

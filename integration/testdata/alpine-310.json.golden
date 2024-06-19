@@ -59,7 +59,8 @@
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "c6c116a4441ec6de"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -131,7 +132,8 @@
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "c6c116a4441ec6de"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
@@ -213,7 +215,8 @@
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "e132dcfcc51772ef"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -285,7 +288,8 @@
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "e132dcfcc51772ef"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",

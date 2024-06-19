@@ -169,7 +169,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	}
 
 	// Layer makes sense only when scanning container images
-	if artifactInfo.Type != ftypes.ArtifactContainerImage {
+	if artifactInfo.Type != artifact.TypeContainerImage {
 		removeLayer(results)
 	}
 

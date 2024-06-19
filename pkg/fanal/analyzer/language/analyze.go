@@ -2,11 +2,9 @@ package language
 
 import (
 	"io"
-	"strings"
 
 	"golang.org/x/xerrors"
 
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -15,8 +13,13 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
+type Parser interface {
+	// Parse parses the dependency file
+	Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error)
+}
+
 // Analyze returns an analysis result of the lock file
-func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
+func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
 	app, err := Parse(fileType, filePath, r, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -30,7 +33,7 @@ func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parse
 }
 
 // AnalyzePackage returns an analysis result of the package file other than lock files
-func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*analyzer.AnalysisResult, error) {
+func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
 	app, err := ParsePackage(fileType, filePath, r, parser, checksum)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -44,24 +47,24 @@ func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt
 }
 
 // Parse returns a parsed result of the lock file
-func Parse(fileType types.LangType, filePath string, r io.Reader, parser godeptypes.Parser) (*types.Application, error) {
+func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser) (*types.Application, error) {
 	rr, err := xio.NewReadSeekerAt(r)
 	if err != nil {
 		return nil, xerrors.Errorf("reader error: %w", err)
 	}
-	parsedLibs, parsedDependencies, err := parser.Parse(rr)
+	parsedPkgs, parsedDependencies, err := parser.Parse(rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return toApplication(fileType, filePath, "", nil, parsedLibs, parsedDependencies), nil
+	return toApplication(fileType, filePath, "", nil, parsedPkgs, parsedDependencies), nil
 }
 
 // ParsePackage returns a parsed result of the package file
-func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*types.Application, error) {
-	parsedLibs, parsedDependencies, err := parser.Parse(r)
+func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
+	parsedPkgs, parsedDependencies, err := parser.Parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -73,11 +76,11 @@ func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, 
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return toApplication(fileType, filePath, filePath, r, parsedLibs, parsedDependencies), nil
+	return toApplication(fileType, filePath, filePath, r, parsedPkgs, parsedDependencies), nil
 }
 
-func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
-	if len(libs) == 0 {
+func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.ReadSeekerAt, pkgs []types.Package, depGraph []types.Dependency) *types.Application {
+	if len(pkgs) == 0 {
 		return nil
 	}
 
@@ -92,49 +95,24 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		deps[dep.ID] = dep.DependsOn
 	}
 
-	var pkgs []types.Package
-	for _, lib := range libs {
-		var licenses []string
-		if lib.License != "" {
-			licenses = licensing.SplitLicenses(lib.License)
-			for i, license := range licenses {
-				licenses[i] = licensing.Normalize(strings.TrimSpace(license))
-			}
-		}
-		var locs []types.Location
-		for _, loc := range lib.Locations {
-			l := types.Location{
-				StartLine: loc.StartLine,
-				EndLine:   loc.EndLine,
-			}
-			locs = append(locs, l)
-		}
-
+	for i, pkg := range pkgs {
 		// This file path is populated for virtual file paths within archives, such as nested JAR files.
-		libPath := libFilePath
-		if lib.FilePath != "" {
-			libPath = lib.FilePath
+		if pkg.FilePath == "" {
+			pkgs[i].FilePath = libFilePath
 		}
+		pkgs[i].DependsOn = deps[pkg.ID]
+		pkgs[i].Digest = d
+		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
 
-		newPkg := types.Package{
-			ID:        lib.ID,
-			Name:      lib.Name,
-			Version:   lib.Version,
-			Dev:       lib.Dev,
-			FilePath:  libPath,
-			Indirect:  lib.Indirect,
-			Licenses:  licenses,
-			DependsOn: deps[lib.ID],
-			Locations: locs,
-			Digest:    d,
+		for j, license := range pkg.Licenses {
+			pkgs[i].Licenses[j] = licensing.Normalize(license)
 		}
-		pkgs = append(pkgs, newPkg)
 	}
 
 	return &types.Application{
-		Type:      fileType,
-		FilePath:  filePath,
-		Libraries: pkgs,
+		Type:     fileType,
+		FilePath: filePath,
+		Packages: pkgs,
 	}
 }
 
@@ -148,4 +126,13 @@ func calculateDigest(r xio.ReadSeekerAt) (digest.Digest, error) {
 	}
 
 	return digest.CalcSHA1(r)
+}
+
+func isIndirect(rel types.Relationship) bool {
+	switch rel {
+	case types.RelationshipIndirect:
+		return true
+	default:
+		return false
+	}
 }

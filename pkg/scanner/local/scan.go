@@ -14,9 +14,11 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
@@ -104,39 +106,19 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 }
 
 func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
-	var eosl bool
-	var results, pkgResults types.Results
-	var err error
+	var results types.Results
 
 	// By default, we need to remove dev dependencies from the result
 	// IncludeDevDeps option allows you not to remove them
 	excludeDevDeps(target.Applications, options.IncludeDevDeps)
 
-	// Fill OS packages and language-specific packages
-	if options.ListAllPackages {
-		if res := s.osPkgScanner.Packages(target, options); len(res.Packages) != 0 {
-			pkgResults = append(pkgResults, res)
-		}
-		pkgResults = append(pkgResults, s.langPkgScanner.Packages(target, options)...)
+	// Add packages if needed and scan packages for vulnerabilities
+	vulnResults, eosl, err := s.scanVulnerabilities(ctx, target, options)
+	if err != nil {
+		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 	}
-
-	// Scan packages for vulnerabilities
-	if options.Scanners.Enabled(types.VulnerabilityScanner) {
-		var vulnResults types.Results
-		vulnResults, eosl, err = s.scanVulnerabilities(ctx, target, options)
-		if err != nil {
-			return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
-		}
-		target.OS.Eosl = eosl
-
-		// Merge package results into vulnerability results
-		mergedResults := s.fillPkgsInVulns(pkgResults, vulnResults)
-
-		results = append(results, mergedResults...)
-	} else {
-		// If vulnerability scanning is not enabled, it just adds package results.
-		results = append(results, pkgResults...)
-	}
+	target.OS.Eosl = eosl
+	results = append(results, vulnResults...)
 
 	// Store misconfigurations
 	results = append(results, s.misconfsToResults(target.Misconfigurations, options)...)
@@ -171,21 +153,28 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
+	if !options.Scanners.AnyEnabled(types.SBOMScanner, types.VulnerabilityScanner) {
+		return nil, false, nil
+	}
+
 	var eosl bool
 	var results types.Results
 
 	if slices.Contains(options.VulnType, types.VulnTypeOS) {
 		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
-		if err != nil {
+		switch {
+		case errors.Is(err, ospkgDetector.ErrUnsupportedOS):
+		// do nothing
+		case err != nil:
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
-		} else if vuln.Target != "" {
+		case vuln.Target != "":
 			results = append(results, vuln)
+			eosl = detectedEOSL
 		}
-		eosl = detectedEOSL
 	}
 
 	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
-		vulns, err := s.langPkgScanner.Scan(target, options)
+		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
@@ -193,24 +182,6 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	}
 
 	return results, eosl, nil
-}
-
-func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Results {
-	var results types.Results
-	if len(pkgResults) == 0 { // '--list-all-pkgs' == false or packages not found
-		return vulnResults
-	}
-	for _, result := range pkgResults {
-		if r, found := lo.Find(vulnResults, func(r types.Result) bool {
-			return r.Class == result.Class && r.Target == result.Target && r.Type == result.Type
-		}); found {
-			r.Packages = result.Packages
-			results = append(results, r)
-		} else { // when package result has no vulnerabilities we still need to add it to result(for 'list-all-pkgs')
-			results = append(results, result)
-		}
-	}
-	return results
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
@@ -310,7 +281,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	// License - language-specific packages
 	for _, app := range target.Applications {
 		var langLicenses []types.DetectedLicense
-		for _, lib := range app.Libraries {
+		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
 				langLicenses = append(langLicenses, types.DetectedLicense{
@@ -383,7 +354,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 
 	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
 	// this ensures we don't generate bad links for custom policies
-	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
+	if res.Namespace == "" || rego.IsBuiltinNamespace(res.Namespace) {
 		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
 	}
@@ -434,7 +405,7 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
 	})
 	for i := range apps {
-		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+		apps[i].Packages = lo.Filter(apps[i].Packages, func(lib ftypes.Package, index int) bool {
 			if lib.Dev {
 				onceInfo()
 			}

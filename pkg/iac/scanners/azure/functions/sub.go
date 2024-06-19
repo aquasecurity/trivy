@@ -1,6 +1,6 @@
 package functions
 
-func Sub(args ...interface{}) interface{} {
+func Sub(args ...any) any {
 
 	if len(args) != 2 {
 		return nil

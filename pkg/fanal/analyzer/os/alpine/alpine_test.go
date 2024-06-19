@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -39,10 +40,10 @@ func TestAlpineReleaseOSAnalyzer_Required(t *testing.T) {
 			res, err := a.Analyze(context.Background(), test.input)
 
 			if test.wantError != "" {
-				assert.NotNil(t, err)
+				require.Error(t, err)
 				assert.Equal(t, test.wantError, err.Error())
 			} else {
-				assert.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, test.wantResult, res)
 			}
 		})

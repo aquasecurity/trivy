@@ -9,13 +9,13 @@ import (
 func Test_Less(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 
 		{
 			name: "less with nil and string",
-			args: []interface{}{
+			args: []any{
 				nil,
 				"test",
 			},
@@ -23,7 +23,7 @@ func Test_Less(t *testing.T) {
 		},
 		{
 			name: "less with nil and nil",
-			args: []interface{}{
+			args: []any{
 				nil,
 				nil,
 			},
@@ -31,7 +31,7 @@ func Test_Less(t *testing.T) {
 		},
 		{
 			name: "less with string and string",
-			args: []interface{}{
+			args: []any{
 				"test",
 				"test",
 			},
@@ -39,7 +39,7 @@ func Test_Less(t *testing.T) {
 		},
 		{
 			name: "less with string and int",
-			args: []interface{}{
+			args: []any{
 				"test",
 				1,
 			},
@@ -47,7 +47,7 @@ func Test_Less(t *testing.T) {
 		},
 		{
 			name: "less with int and int",
-			args: []interface{}{
+			args: []any{
 				1,
 				1,
 			},
@@ -65,13 +65,13 @@ func Test_Less(t *testing.T) {
 func Test_LessThanOrEqual(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 
 		{
 			name: "less with nil and string",
-			args: []interface{}{
+			args: []any{
 				nil,
 				"test",
 			},
@@ -79,7 +79,7 @@ func Test_LessThanOrEqual(t *testing.T) {
 		},
 		{
 			name: "less with nil and nil",
-			args: []interface{}{
+			args: []any{
 				nil,
 				nil,
 			},
@@ -87,7 +87,7 @@ func Test_LessThanOrEqual(t *testing.T) {
 		},
 		{
 			name: "less with string and string",
-			args: []interface{}{
+			args: []any{
 				"test",
 				"test",
 			},
@@ -95,7 +95,7 @@ func Test_LessThanOrEqual(t *testing.T) {
 		},
 		{
 			name: "less with string and int",
-			args: []interface{}{
+			args: []any{
 				"test",
 				1,
 			},
@@ -103,7 +103,7 @@ func Test_LessThanOrEqual(t *testing.T) {
 		},
 		{
 			name: "less with int and int",
-			args: []interface{}{
+			args: []any{
 				1,
 				1,
 			},

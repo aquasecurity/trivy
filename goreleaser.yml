@@ -1,12 +1,14 @@
+version: 2
+
 project_name: trivy
 builds:
   - id: build-linux
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -21,12 +23,12 @@ builds:
     goarm:
       - 7
   - id: build-bsd
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -36,12 +38,12 @@ builds:
       - 386
       - amd64
   - id: build-macos
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -52,12 +54,12 @@ builds:
     goarm:
       - 7
   - id: build-windows
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:

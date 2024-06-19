@@ -81,7 +81,8 @@
           "PkgID": "bash@4.2.46-33.el7.x86_64",
           "PkgName": "bash",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/redhat/bash@4.2.46-33.el7?arch=x86_64\u0026distro=redhat-7.7"
+            "PURL": "pkg:rpm/redhat/bash@4.2.46-33.el7?arch=x86_64\u0026distro=redhat-7.7",
+            "UID": "f5b786381193ad1b"
           },
           "InstalledVersion": "4.2.46-33.el7",
           "Status": "will_not_fix",

@@ -55,9 +55,9 @@ nav:
           - Misconfiguration:
               - Overview: docs/scanner/misconfiguration/index.md
               - Policy:
-                  - Built-in Policies: docs/scanner/misconfiguration/policy/builtin.md
-                  - Exceptions: docs/scanner/misconfiguration/policy/exceptions.md
-              - Custom Policies:
+                  - Built-in Checks: docs/scanner/misconfiguration/check/builtin.md
+                  - Exceptions: docs/scanner/misconfiguration/check/exceptions.md
+              - Custom Checks:
                   - Overview: docs/scanner/misconfiguration/custom/index.md
                   - Data: docs/scanner/misconfiguration/custom/data.md
                   - Combine: docs/scanner/misconfiguration/custom/combine.md
@@ -65,6 +65,7 @@ nav:
                   - Schemas: docs/scanner/misconfiguration/custom/schema.md
                   - Testing: docs/scanner/misconfiguration/custom/testing.md
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
+                  - Contribute Checks: docs/scanner/misconfiguration/custom/contribute-checks.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
       - Coverage:
@@ -77,6 +78,7 @@ nav:
               - CBL-Mariner: docs/coverage/os/cbl-mariner.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
+              - Conda: docs/coverage/os/conda.md
               - Debian: docs/coverage/os/debian.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
@@ -101,6 +103,7 @@ nav:
               - Ruby: docs/coverage/language/ruby.md
               - Rust: docs/coverage/language/rust.md
               - Swift: docs/coverage/language/swift.md
+              - Julia: docs/coverage/language/julia.md
           - IaC:
               - Overview: docs/coverage/iac/index.md
               - Azure ARM Template: docs/coverage/iac/azure-arm.md
@@ -126,10 +129,14 @@ nav:
                 - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
           - VEX: docs/supply-chain/vex.md
       - Compliance:
-          - Reports:  docs/compliance/compliance.md
+          - Built-in Compliance:  docs/compliance/compliance.md
+          - Custom Compliance: docs/compliance/contrib-compliance.md
+      - Plugins:
+          - Overview: docs/plugin/index.md
+          - User guide: docs/plugin/user-guide.md
+          - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Plugins: docs/advanced/plugins.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
@@ -151,16 +158,20 @@ nav:
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
                   - Image: docs/references/configuration/cli/trivy_image.md
                   - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
-                  - Module: docs/references/configuration/cli/trivy_module.md
-                  - Module Install: docs/references/configuration/cli/trivy_module_install.md
-                  - Module Uninstall: docs/references/configuration/cli/trivy_module_uninstall.md
-                  - Plugin: docs/references/configuration/cli/trivy_plugin.md
-                  - Plugin Info: docs/references/configuration/cli/trivy_plugin_info.md
-                  - Plugin Install: docs/references/configuration/cli/trivy_plugin_install.md
-                  - Plugin List: docs/references/configuration/cli/trivy_plugin_list.md
-                  - Plugin Run: docs/references/configuration/cli/trivy_plugin_run.md
-                  - Plugin Uninstall: docs/references/configuration/cli/trivy_plugin_uninstall.md
-                  - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
+                  - Module:
+                      - Module: docs/references/configuration/cli/trivy_module.md
+                      - Module Install: docs/references/configuration/cli/trivy_module_install.md
+                      - Module Uninstall: docs/references/configuration/cli/trivy_module_uninstall.md
+                  - Plugin:
+                      - Plugin: docs/references/configuration/cli/trivy_plugin.md
+                      - Plugin Info: docs/references/configuration/cli/trivy_plugin_info.md
+                      - Plugin Install: docs/references/configuration/cli/trivy_plugin_install.md
+                      - Plugin List: docs/references/configuration/cli/trivy_plugin_list.md
+                      - Plugin Run: docs/references/configuration/cli/trivy_plugin_run.md
+                      - Plugin Uninstall: docs/references/configuration/cli/trivy_plugin_uninstall.md
+                      - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
+                      - Plugin Upgrade: docs/references/configuration/cli/trivy_plugin_upgrade.md
+                      - Plugin Search: docs/references/configuration/cli/trivy_plugin_search.md
                   - Repository: docs/references/configuration/cli/trivy_repository.md
                   - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
                   - SBOM: docs/references/configuration/cli/trivy_sbom.md
@@ -184,7 +195,12 @@ nav:
           - Issues: community/contribute/issue.md
           - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
+      - Contribute Rego Checks:
+          - Overview: community/contribute/checks/overview.md
+          - Add Service Support: community/contribute/checks/service-support.md
       - Maintainer:
+          - Release Flow: community/maintainer/release-flow.md
+          - Backporting: community/maintainer/backporting.md
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
 theme:

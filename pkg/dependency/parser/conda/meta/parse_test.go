@@ -8,25 +8,36 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/conda/meta"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    []types.Library
+		want    []ftypes.Package
 		wantErr string
 	}{
 		{
 			name:  "_libgcc_mutex",
 			input: "testdata/_libgcc_mutex-0.1-main.json",
-			want:  []types.Library{{Name: "_libgcc_mutex", Version: "0.1"}},
+			want: []ftypes.Package{
+				{
+					Name:    "_libgcc_mutex",
+					Version: "0.1",
+				},
+			},
 		},
 		{
 			name:  "libgomp",
 			input: "testdata/libgomp-11.2.0-h1234567_1.json",
-			want:  []types.Library{{Name: "libgomp", Version: "11.2.0", License: "GPL-3.0-only WITH GCC-exception-3.1"}},
+			want: []ftypes.Package{
+				{
+					Name:     "libgomp",
+					Version:  "11.2.0",
+					Licenses: []string{"GPL-3.0-only WITH GCC-exception-3.1"},
+				},
+			},
 		},
 		{
 			name:    "invalid_json",
@@ -52,7 +63,7 @@ func TestParse(t *testing.T) {
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

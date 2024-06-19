@@ -28,10 +28,16 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "testdata/executable_gobinary",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								Name:    "stdlib",
-								Version: "1.15.2",
+								Name:         "github.com/aquasecurity/test",
+								Version:      "",
+								Relationship: types.RelationshipRoot,
+							},
+							{
+								Name:         "stdlib",
+								Version:      "1.15.2",
+								Relationship: types.RelationshipDirect,
 							},
 							{
 								Name:    "github.com/aquasecurity/go-pep440-version",
@@ -72,7 +78,7 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

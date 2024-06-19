@@ -10,7 +10,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -30,13 +29,13 @@ type Parser struct {
 	logger *log.Logger
 }
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{
 		logger: log.WithPrefix("cargo"),
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockfile Lockfile
 	decoder := toml.NewDecoder(r)
 	if _, err := decoder.Decode(&lockfile); err != nil {
@@ -52,21 +51,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	lineNumIdx := pkgParser.parse()
 
 	// We need to get version for unique dependencies for lockfile v3 from lockfile.Packages
-	pkgs := lo.SliceToMap(lockfile.Packages, func(pkg cargoPkg) (string, cargoPkg) {
+	pkgMap := lo.SliceToMap(lockfile.Packages, func(pkg cargoPkg) (string, cargoPkg) {
 		return pkg.Name, pkg
 	})
 
-	var libs []types.Library
-	var deps []types.Dependency
-	for _, pkg := range lockfile.Packages {
-		pkgID := packageID(pkg.Name, pkg.Version)
-		lib := types.Library{
+	var pkgs ftypes.Packages
+	var deps ftypes.Dependencies
+	for _, lpkg := range lockfile.Packages {
+		pkgID := packageID(lpkg.Name, lpkg.Version)
+		pkg := ftypes.Package{
 			ID:      pkgID,
-			Name:    pkg.Name,
-			Version: pkg.Version,
+			Name:    lpkg.Name,
+			Version: lpkg.Version,
 		}
 		if pos, ok := lineNumIdx[pkgID]; ok {
-			lib.Locations = []types.Location{
+			pkg.Locations = []ftypes.Location{
 				{
 					StartLine: pos.start,
 					EndLine:   pos.end,
@@ -74,17 +73,17 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			}
 		}
 
-		libs = append(libs, lib)
-		dep := p.parseDependencies(pkgID, pkg, pkgs)
+		pkgs = append(pkgs, pkg)
+		dep := p.parseDependencies(pkgID, lpkg, pkgMap)
 		if dep != nil {
 			deps = append(deps, *dep)
 		}
 	}
-	sort.Sort(types.Libraries(libs))
-	sort.Sort(types.Dependencies(deps))
-	return libs, deps, nil
+	sort.Sort(pkgs)
+	sort.Sort(deps)
+	return pkgs, deps, nil
 }
-func (p *Parser) parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *types.Dependency {
+func (p *Parser) parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *ftypes.Dependency {
 	var dependOn []string
 
 	for _, pkgDep := range pkg.Dependencies {
@@ -118,7 +117,7 @@ func (p *Parser) parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]c
 	}
 	if len(dependOn) > 0 {
 		sort.Strings(dependOn)
-		return &types.Dependency{
+		return &ftypes.Dependency{
 			ID:        pkgId,
 			DependsOn: dependOn,
 		}

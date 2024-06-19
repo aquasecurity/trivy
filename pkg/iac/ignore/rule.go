@@ -30,11 +30,16 @@ func (r Rules) shift() {
 	)
 
 	for i := len(r) - 1; i > 0; i-- {
-		currentIgnore, nextIgnore := r[i], r[i-1]
-		if currentRange == nil {
-			currentRange = &currentIgnore.rng
+		currentRule, prevRule := r[i], r[i-1]
+
+		if !prevRule.isStartLine {
+			continue
 		}
-		if nextIgnore.rng.GetStartLine()+1+offset == currentIgnore.rng.GetStartLine() {
+
+		if currentRange == nil {
+			currentRange = &currentRule.rng
+		}
+		if prevRule.rng.GetStartLine()+1+offset == currentRule.rng.GetStartLine() {
 			r[i-1].rng = *currentRange
 			offset++
 		} else {
@@ -46,8 +51,9 @@ func (r Rules) shift() {
 
 // Rule represents a rule for ignoring vulnerabilities.
 type Rule struct {
-	rng      types.Range
-	sections map[string]any
+	rng         types.Range
+	isStartLine bool
+	sections    map[string]any
 }
 
 func (r Rule) ignore(m types.Metadata, ids []string, ignorers map[string]Ignorer) bool {
