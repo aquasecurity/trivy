@@ -980,6 +980,52 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "exclusions in child and parent dependency management",
+			inputFile: filepath.Join("testdata", "exclusions-parent-dependency-management", "child", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:child:3.0.0",
+					Name:         "com.example:child",
+					Version:      "3.0.0",
+					Licenses:     []string{"Apache 2.0"},
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-nested:3.3.3",
+					Name:         "org.example:example-nested",
+					Version:      "3.3.3",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 26,
+							EndLine:   35,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-dependency:1.2.3",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.3",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:child:3.0.0",
+					DependsOn: []string{
+						"org.example:example-nested:3.3.3",
+					},
+				},
+				{
+					ID: "org.example:example-nested:3.3.3",
+					DependsOn: []string{
+						"org.example:example-dependency:1.2.3",
+					},
+				},
+			},
+		},
+		{
 			name:      "exclusions with wildcards",
 			inputFile: filepath.Join("testdata", "wildcard-exclusions", "pom.xml"),
 			local:     true,
