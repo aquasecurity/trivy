@@ -16,11 +16,11 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name     string
 		dir      string
-		cacheDir string
+		cacheDir map[string]string
 		want     *analyzer.AnalysisResult
 	}{
 		{
-			name: "happy path",
+			name: "happy path V1",
 			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -62,9 +62,11 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:     "happy path with cache dir",
-			dir:      "testdata/happy",
-			cacheDir: "testdata/cacheDir",
+			name: "happy path V1 with cache dir",
+			dir:  "testdata/happy",
+			cacheDir: map[string]string{
+				"CONAN_USER_HOME": "testdata/cacheDir",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -111,6 +113,92 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path V2",
+			dir:  "testdata/happy_v2",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Conan,
+						FilePath: "release.lock",
+						Packages: types.Packages{
+							{
+								ID:           "openssl/3.2.2",
+								Name:         "openssl",
+								Version:      "3.2.2",
+								Relationship: types.RelationshipUnknown,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   5,
+									},
+								},
+							},
+							{
+								ID:           "zlib/1.3.1",
+								Name:         "zlib",
+								Version:      "1.3.1",
+								Relationship: types.RelationshipUnknown,
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path V2 with cache dir",
+			dir:  "testdata/happy_v2",
+			cacheDir: map[string]string{
+				"CONAN_HOME": "testdata/cacheDir_v2",
+			},
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Conan,
+						FilePath: "release.lock",
+						Packages: types.Packages{
+
+							{
+								ID:           "openssl/3.2.2",
+								Name:         "openssl",
+								Version:      "3.2.2",
+								Relationship: types.RelationshipUnknown,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   5,
+									},
+								},
+								Licenses: []string{
+									"Apache-2.0",
+								},
+							},
+							{
+								ID:           "zlib/1.3.1",
+								Name:         "zlib",
+								Version:      "1.3.1",
+								Relationship: types.RelationshipUnknown,
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
+								Licenses: []string{
+									"Zlib",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "empty file",
 			dir:  "testdata/empty",
 			want: &analyzer.AnalysisResult{},
@@ -119,8 +207,11 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.cacheDir != "" {
-				t.Setenv("CONAN_USER_HOME", tt.cacheDir)
+			if len(tt.cacheDir) > 0 {
+				for env, path := range tt.cacheDir {
+					t.Setenv(env, path)
+					break
+				}
 			}
 			a, err := newConanLockAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
