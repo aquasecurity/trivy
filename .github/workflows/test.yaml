@@ -31,7 +31,7 @@ jobs:
             echo "Run 'go mod tidy' and push it"
             exit 1
           fi
-        if: matrix.operating-system == 'ubuntu-latest'
+        if: matrix.operating-system == 'ubuntu-latest-m'
 
       - name: Lint
         id: lint
