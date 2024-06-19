@@ -23,13 +23,12 @@ const version = 1
 type sbtDependencyLockAnalyzer struct{}
 
 func (a sbtDependencyLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	filePath := filepath.Join(input.Dir, input.FilePath)
 	parser := lockfile.NewParser()
 
-	res, err := language.Analyze(types.Sbt, filePath, input.Content, parser)
+	res, err := language.Analyze(types.Sbt, input.FilePath, input.Content, parser)
 
 	if err != nil {
-		return nil, xerrors.Errorf("%s parse error: %w", filePath, err)
+		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 
 	return res, nil
