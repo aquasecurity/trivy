@@ -410,7 +410,7 @@ func TestJsonWithNumbers(t *testing.T) {
 	file := files[0]
 
 	assert.Equal(t, 1, file.Parameters["SomeIntParam"].Default())
-	assert.Equal(t, 1.1, file.Parameters["SomeFloatParam"].Default())
+	assert.InEpsilon(t, 1.1, file.Parameters["SomeFloatParam"].Default(), 0.0001)
 
 	res := file.GetResourcesByType("Test::Resource")
 	assert.NotNil(t, res)
