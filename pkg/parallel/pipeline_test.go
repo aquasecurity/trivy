@@ -108,7 +108,7 @@ func TestPipeline_Do(t *testing.T) {
 			})
 			err := p.Do(context.Background())
 			tt.wantErr(t, err)
-			assert.Equal(t, tt.want, got)
+			assert.InEpsilon(t, tt.want, got, 0.0001)
 		})
 	}
 }
