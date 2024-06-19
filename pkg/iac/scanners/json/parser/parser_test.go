@@ -34,7 +34,7 @@ func Test_Parser(t *testing.T) {
 	y, ok := yRaw.(float64)
 	require.True(t, ok)
 
-	assert.Equal(t, 123.0, y)
+	assert.InEpsilon(t, 123.0, y, 0.0001)
 
 	zRaw, ok := xMsi["z"]
 	require.True(t, ok)
