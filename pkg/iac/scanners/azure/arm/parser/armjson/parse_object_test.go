@@ -21,7 +21,7 @@ func Test_Object(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Equal(t, "testing", target.Name)
-	assert.Equal(t, 3.14, target.Balance)
+	assert.InEpsilon(t, 3.14, target.Balance, 0.0001)
 }
 
 func Test_ObjectWithPointers(t *testing.T) {
@@ -36,7 +36,7 @@ func Test_ObjectWithPointers(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Equal(t, "testing", *target.Name)
-	assert.Equal(t, 3.14, *target.Balance)
+	assert.InEpsilon(t, 3.14, *target.Balance, 0.0001)
 }
 
 type nestedParent struct {
