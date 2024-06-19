@@ -29,6 +29,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				ArtifactName: "debian:9",
 				ArtifactType: ftypes.ArtifactContainerImage,
 				Metadata: types.Metadata{
+					ImageID: "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
 					RepoTags: []string{
 						"debian:9",
 					},
@@ -175,6 +176,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						PropertyBag: sarif.PropertyBag{
 							Properties: map[string]interface{}{
 								"imageName":   "debian:9",
+								"imageID":     "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
 								"repoDigests": []interface{}{"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534"},
 								"repoTags":    []interface{}{"debian:9"},
 							},

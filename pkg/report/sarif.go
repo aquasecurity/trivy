@@ -136,7 +136,7 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 			"imageName":   report.ArtifactName,
 			"repoTags":    report.Metadata.RepoTags,
 			"repoDigests": report.Metadata.RepoDigests,
-			"imageID": report.Metadata.ImageID
+			"imageID":     report.Metadata.ImageID,
 		}
 	}
 	if sw.Target != "" {
