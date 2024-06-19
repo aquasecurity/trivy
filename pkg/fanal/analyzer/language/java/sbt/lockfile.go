@@ -17,10 +17,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&sbtDependencyLockAnalyzer{})
 }
 
-const (
-	version      = 1
-	requiredFile = "build.sbt.lock"
-)
+const version = 1
 
 // sbtDependencyLockAnalyzer analyzes '*.sbt.lock'
 type sbtDependencyLockAnalyzer struct{}
@@ -39,7 +36,7 @@ func (a sbtDependencyLockAnalyzer) Analyze(_ context.Context, input analyzer.Ana
 }
 
 func (a sbtDependencyLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return requiredFile == filepath.Base(filePath)
+	return types.SbtLock == filepath.Base(filePath)
 }
 
 func (a sbtDependencyLockAnalyzer) Type() analyzer.Type {

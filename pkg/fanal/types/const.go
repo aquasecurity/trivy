@@ -115,6 +115,7 @@ const (
 	GoSum = "go.sum"
 
 	MavenPom = "pom.xml"
+	SbtLock  = "build.sbt.lock"
 
 	NpmPkg     = "package.json"
 	NpmPkgLock = "package-lock.json"
