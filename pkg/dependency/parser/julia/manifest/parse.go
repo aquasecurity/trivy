@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	"github.com/BurntSushi/toml"
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -156,7 +156,7 @@ func decodeDependency(man *primitiveManifest, dep primitiveDependency, metadata 
 	var possibleDepsMap map[string]string
 	err = metadata.PrimitiveDecode(dep.Dependencies, &possibleDepsMap)
 	if err == nil {
-		possibleUuids := maps.Values(possibleDepsMap)
+		possibleUuids := lo.Values(possibleDepsMap)
 		sort.Strings(possibleUuids)
 		dep.DependsOn = possibleUuids
 		return dep, nil

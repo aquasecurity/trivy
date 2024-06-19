@@ -3,6 +3,7 @@ package npm
 import (
 	"fmt"
 	"io"
+	"maps"
 	"path"
 	"slices"
 	"sort"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -186,7 +186,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 
 	}
 
-	return maps.Values(pkgs), deps
+	return lo.Values(pkgs), deps
 }
 
 // for local package npm uses links. e.g.:

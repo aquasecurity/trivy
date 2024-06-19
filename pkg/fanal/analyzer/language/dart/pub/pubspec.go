@@ -10,7 +10,6 @@ import (
 	"sort"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -166,7 +165,7 @@ func parsePubSpecYaml(r io.Reader) (string, []string, error) {
 
 	// pubspec.yaml uses version ranges
 	// save only dependencies names
-	dependsOn := maps.Keys(spec.Dependencies)
+	dependsOn := lo.Keys(spec.Dependencies)
 
 	return dependency.ID(types.Pub, spec.Name, spec.Version), dependsOn, nil
 }

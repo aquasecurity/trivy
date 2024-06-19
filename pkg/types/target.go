@@ -1,7 +1,7 @@
 package types
 
 import (
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 // VulnType represents vulnerability type

@@ -5,13 +5,13 @@ import (
 	"errors"
 	"io/fs"
 	"reflect"
+	"slices"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
@@ -273,7 +273,12 @@ func (e *evaluator) expandDynamicBlock(b *terraform.Block) {
 }
 
 func isBlockSupportsForEachMetaArgument(block *terraform.Block) bool {
-	return slices.Contains([]string{"module", "resource", "data", "dynamic"}, block.Type())
+	return slices.Contains([]string{
+		"module",
+		"resource",
+		"data",
+		"dynamic",
+	}, block.Type())
 }
 
 func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool) terraform.Blocks {
@@ -357,7 +362,11 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 }
 
 func isBlockSupportsCountMetaArgument(block *terraform.Block) bool {
-	return slices.Contains([]string{"module", "resource", "data"}, block.Type())
+	return slices.Contains([]string{
+		"module",
+		"resource",
+		"data",
+	}, block.Type())
 }
 
 func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks {

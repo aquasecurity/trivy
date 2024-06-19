@@ -1,7 +1,7 @@
 package ec2
 
 import (
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
@@ -43,7 +43,7 @@ func getSecurityGroups(ctx parser.FileContext) []ec2.SecurityGroup {
 	}
 
 	if len(mGroups) > 0 {
-		return maps.Values(mGroups)
+		return lo.Values(mGroups)
 	}
 	return nil
 }

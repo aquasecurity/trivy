@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -39,7 +39,7 @@ func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
 			scannerTypes[scannerType] = struct{}{}
 		}
 	}
-	return maps.Keys(scannerTypes), nil
+	return lo.Keys(scannerTypes), nil
 }
 
 // CheckIDs return list of compliance check IDs
