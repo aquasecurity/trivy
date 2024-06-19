@@ -72,6 +72,46 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy tumbleweed path",
+			fixtures: []string{
+				"testdata/fixtures/tumbleweed.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			distribution: suse.OpenSUSETumbleweed,
+			args: args{
+				osVer: "",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "singularity-ce",
+						Version:    "4.1.3",
+						Release:    "1.0",
+						SrcName:    "postgresql",
+						SrcVersion: "4.1.3",
+						SrcRelease: "1.1",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "singularity-ce",
+					VulnerabilityID:  "openSUSE-SU-2024:14059-1",
+					InstalledVersion: "4.1.3-1.0",
+					FixedVersion:     "4.1.3-1.1",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.SuseCVRF,
+						Name: "SUSE CVRF",
+						URL:  "https://ftp.suse.com/pub/projects/security/cvrf/",
+					},
+				},
+			},
+		},
+		{
 			name: "broken bucket",
 			fixtures: []string{
 				"testdata/fixtures/invalid.yaml",
