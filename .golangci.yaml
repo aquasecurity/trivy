@@ -74,8 +74,6 @@ linters-settings:
     ignore-generated-header: true
   testifylint:
     enable-all: true
-    disable:
-      - float-compare
 
 linters:
   disable-all: true
