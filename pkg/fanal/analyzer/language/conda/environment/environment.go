@@ -42,7 +42,7 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 				if err != nil {
 					// Show log once per file
 					once.Do(func() {
-						log.WithPrefix("conda").Debug("License not found. For more information, see https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#environmentyml2.”",
+						log.WithPrefix("conda").Debug("License not found. For more information, see https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#licenses",
 							log.String("file", input.FilePath), log.String("pkg", pkg.Name), log.Err(err))
 					})
 				}
