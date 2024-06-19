@@ -30,6 +30,7 @@ func TestParse(t *testing.T) {
 							EndLine:   6,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "asgiref",
@@ -40,6 +41,7 @@ func TestParse(t *testing.T) {
 							EndLine:   21,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "blas",
@@ -50,6 +52,7 @@ func TestParse(t *testing.T) {
 							EndLine:   5,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "bzip2",
@@ -60,6 +63,7 @@ func TestParse(t *testing.T) {
 							EndLine:   19,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "ca-certificates",
@@ -70,6 +74,7 @@ func TestParse(t *testing.T) {
 							EndLine:   7,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "django",
@@ -80,6 +85,7 @@ func TestParse(t *testing.T) {
 							EndLine:   22,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name: "ld_impl_linux-aarch64",
@@ -89,6 +95,7 @@ func TestParse(t *testing.T) {
 							EndLine:   8,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name: "libblas",
@@ -98,6 +105,7 @@ func TestParse(t *testing.T) {
 							EndLine:   9,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name: "libcblas",
@@ -107,6 +115,7 @@ func TestParse(t *testing.T) {
 							EndLine:   10,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "libexpat",
@@ -117,6 +126,7 @@ func TestParse(t *testing.T) {
 							EndLine:   11,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "libffi",
@@ -127,6 +137,7 @@ func TestParse(t *testing.T) {
 							EndLine:   12,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name: "libgcc-ng",
@@ -136,6 +147,7 @@ func TestParse(t *testing.T) {
 							EndLine:   13,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name: "libgfortran-ng",
@@ -145,6 +157,7 @@ func TestParse(t *testing.T) {
 							EndLine:   14,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name: "libgfortran5",
@@ -154,6 +167,7 @@ func TestParse(t *testing.T) {
 							EndLine:   15,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "libgomp",
@@ -164,6 +178,7 @@ func TestParse(t *testing.T) {
 							EndLine:   16,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name: "liblapack",
@@ -173,6 +188,7 @@ func TestParse(t *testing.T) {
 							EndLine:   17,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 				{
 					Name:    "libnsl",
@@ -183,6 +199,7 @@ func TestParse(t *testing.T) {
 							EndLine:   18,
 						},
 					},
+					FilePath: "/opt/conda/envs/test-env",
 				},
 			},
 		},
