@@ -108,7 +108,11 @@ func TestPipeline_Do(t *testing.T) {
 			})
 			err := p.Do(context.Background())
 			tt.wantErr(t, err)
-			assert.InEpsilon(t, tt.want, got, 0.0001)
+			if tt.want == float64(0) {
+				assert.Zero(t, got)
+			} else {
+				assert.InEpsilon(t, tt.want, got, 0.0001)
+			}
 		})
 	}
 }
