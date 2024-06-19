@@ -64,6 +64,7 @@ The following languages are currently supported:
 | PHP      | [composer.lock][composer-lock]             |
 | Java     | [pom.xml][pom-xml]                         |
 |          | [*gradle.lockfile][gradle-lockfile]        |
+|          | [*.sbt.lock][sbt-lockfile]                 |
 | Dart     | [pubspec.lock][pubspec-lock]               |
 
 This tree is the reverse of the dependency graph.
@@ -447,5 +448,6 @@ $ trivy convert --format table --severity CRITICAL result.json
 [composer-lock]: ../coverage/language/php.md#composer
 [pom-xml]: ../coverage/language/java.md#pomxml
 [gradle-lockfile]: ../coverage/language/java.md#gradlelock
+[sbt-lockfile]: ../coverage/language/java.md#sbt
 [pubspec-lock]: ../coverage/language/dart.md#dart
 [cargo-binaries]: ../coverage/language/rust.md#binaries

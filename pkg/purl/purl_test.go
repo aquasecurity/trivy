@@ -52,6 +52,20 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "sbt package",
+			typ:  ftypes.Sbt,
+			pkg: ftypes.Package{
+				Name:    "org.typelevel:cats-core_2.12",
+				Version: "2.9.0",
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.typelevel",
+				Name:      "cats-core_2.12",
+				Version:   "2.9.0",
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
