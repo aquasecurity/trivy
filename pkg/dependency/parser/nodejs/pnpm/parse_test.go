@@ -59,6 +59,18 @@ func TestParse(t *testing.T) {
 			want:     pnpmV9,
 			wantDeps: pnpmV9Deps,
 		},
+		{
+			name:     "v9",
+			file:     "testdata/pnpm-lock_v9.yaml",
+			want:     pnpmV9,
+			wantDeps: pnpmV9Deps,
+		},
+		{
+			name:     "v9 with cyclic dependencies import",
+			file:     "testdata/pnpm-lock_v9_cyclic_import.yaml",
+			want:     pnpmV9CyclicImport,
+			wantDeps: pnpmV9CyclicImportDeps,
+		},
 	}
 
 	for _, tt := range tests {

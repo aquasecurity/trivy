@@ -7,10 +7,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/sosedoff/gitkit"
+	"github.com/go-git/go-git/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/gittest"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
@@ -19,25 +20,28 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 )
 
-func setupGitServer() (*httptest.Server, error) {
-	service := gitkit.New(gitkit.Config{
-		Dir:        "./testdata",
-		AutoCreate: false,
-	})
+func setupGitRepository(t *testing.T, repo, dir string) (*httptest.Server, *git.Repository) {
+	gs := gittest.NewServer(t, repo, dir)
 
-	if err := service.Setup(); err != nil {
-		return nil, err
-	}
+	worktree := t.TempDir()
+	r := gittest.Clone(t, gs, repo, worktree)
 
-	ts := httptest.NewServer(service)
+	// Branch
+	gittest.CreateRemoteBranch(t, r, "valid-branch")
 
-	return ts, nil
+	// Tag
+	gittest.SetTag(t, r, "v1.0.0")
+	gittest.PushTags(t, r)
+
+	return gs, r
 }
 
 func TestNewArtifact(t *testing.T) {
-	ts, err := setupGitServer()
-	require.NoError(t, err)
+	ts, repo := setupGitRepository(t, "test-repo", "testdata/test-repo")
 	defer ts.Close()
+
+	head, err := repo.Head()
+	require.NoError(t, err)
 
 	type args struct {
 		target     string
@@ -55,7 +59,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "remote repo",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				noProgress: false,
 			},
@@ -71,9 +75,9 @@ func TestNewArtifact(t *testing.T) {
 			assertion: assert.NoError,
 		},
 		{
-			name: "happy noProgress",
+			name: "no progress",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				noProgress: true,
 			},
@@ -82,7 +86,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "branch",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				repoBranch: "valid-branch",
 			},
@@ -91,7 +95,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "tag",
 			args: args{
-				target:  ts.URL + "/test.git",
+				target:  ts.URL + "/test-repo.git",
 				c:       nil,
 				repoTag: "v1.0.0",
 			},
@@ -100,9 +104,9 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "commit",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
-				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778d",
+				repoCommit: head.String(),
 			},
 			assertion: assert.NoError,
 		},
@@ -131,7 +135,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "invalid branch",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				repoBranch: "invalid-branch",
 			},
@@ -142,7 +146,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "invalid tag",
 			args: args{
-				target:  ts.URL + "/test.git",
+				target:  ts.URL + "/test-repo.git",
 				c:       nil,
 				repoTag: "v1.0.9",
 			},
@@ -153,7 +157,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "invalid commit",
 			args: args{
-				target:     ts.URL + "/test.git",
+				target:     ts.URL + "/test-repo.git",
 				c:          nil,
 				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778e",
 			},
@@ -178,8 +182,7 @@ func TestNewArtifact(t *testing.T) {
 }
 
 func TestArtifact_Inspect(t *testing.T) {
-	ts, err := setupGitServer()
-	require.NoError(t, err)
+	ts, _ := setupGitRepository(t, "test-repo", "testdata/test-repo")
 	defer ts.Close()
 
 	tests := []struct {
@@ -190,9 +193,9 @@ func TestArtifact_Inspect(t *testing.T) {
 	}{
 		{
 			name:   "happy path",
-			rawurl: ts.URL + "/test.git",
+			rawurl: ts.URL + "/test-repo.git",
 			want: artifact.Reference{
-				Name: ts.URL + "/test.git",
+				Name: ts.URL + "/test-repo.git",
 				Type: artifact.TypeRepository,
 				ID:   "sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
 				BlobIDs: []string{

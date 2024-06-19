@@ -3,6 +3,7 @@ package cyclonedx
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"slices"
 	"sort"
 	"strconv"
@@ -332,6 +333,10 @@ func (*Marshaler) affects(ref, version string) cdx.Affects {
 func (*Marshaler) advisories(refs []string) *[]cdx.Advisory {
 	refs = lo.Uniq(refs)
 	advs := lo.FilterMap(refs, func(ref string, _ int) (cdx.Advisory, bool) {
+		// There are cases when `ref` contains extra info
+		// But we need to use only URL.
+		// cf. https://github.com/aquasecurity/trivy/issues/6801
+		ref = trimNonUrlInfo(ref)
 		return cdx.Advisory{URL: ref}, ref != ""
 	})
 
@@ -343,6 +348,17 @@ func (*Marshaler) advisories(refs []string) *[]cdx.Advisory {
 	}
 
 	return &advs
+}
+
+// trimNonUrlInfo returns first valid URL.
+func trimNonUrlInfo(ref string) string {
+	ss := strings.Split(ref, " ")
+	for _, s := range ss {
+		if u, err := url.Parse(s); err == nil && u.Scheme != "" && u.Host != "" {
+			return s
+		}
+	}
+	return ""
 }
 
 func (m *Marshaler) marshalVulnerability(bomRef string, vuln core.Vulnerability) *cdx.Vulnerability {

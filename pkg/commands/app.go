@@ -28,6 +28,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -178,7 +179,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Args: cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// Set the Trivy version here so that we can override version printer.
-			cmd.Version = version.AppVersion()
+			cmd.Version = app.Version()
 
 			// viper.BindPFlag cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
@@ -799,7 +800,7 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return plugin.RunWithURL(cmd.Context(), args[0], plugin.Options{Args: args[1:]})
+				return plugin.Run(cmd.Context(), args[0], plugin.Options{Args: args[1:]})
 			},
 		},
 		&cobra.Command{

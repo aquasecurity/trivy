@@ -13,8 +13,8 @@ type ModuleResolver interface {
 }
 
 var defaultResolvers = []ModuleResolver{
-	resolvers.Cache,
 	resolvers.Local,
+	resolvers.Cache,
 	resolvers.Remote,
 	resolvers.Registry,
 }

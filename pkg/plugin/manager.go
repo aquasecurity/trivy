@@ -84,8 +84,8 @@ func Install(ctx context.Context, name string, opts Options) (Plugin, error) {
 func Start(ctx context.Context, name string, opts Options) (Wait, error) {
 	return defaultManager().Start(ctx, name, opts)
 }
-func RunWithURL(ctx context.Context, name string, opts Options) error {
-	return defaultManager().RunWithURL(ctx, name, opts)
+func Run(ctx context.Context, name string, opts Options) error {
+	return defaultManager().Run(ctx, name, opts)
 }
 func Upgrade(ctx context.Context, names []string) error { return defaultManager().Upgrade(ctx, names) }
 func Uninstall(ctx context.Context, name string) error  { return defaultManager().Uninstall(ctx, name) }
@@ -115,6 +115,14 @@ func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin
 		return Plugin{}, xerrors.Errorf("download failed: %w", err)
 	}
 	defer os.RemoveAll(tempDir)
+
+	if entries, err := os.ReadDir(tempDir); err != nil {
+		return Plugin{}, xerrors.Errorf("failed to read %s: %w", tempDir, err)
+	} else if len(entries) == 1 && entries[0].IsDir() {
+		//　A single directory may be contained within an archive file.
+		// e.g. https://github.com/aquasecurity/trivy-plugin-referrer/archive/refs/heads/main.zip
+		tempDir = filepath.Join(tempDir, entries[0].Name())
+	}
 
 	m.logger.DebugContext(ctx, "Loading the plugin metadata...")
 	plugin, err := m.loadMetadata(tempDir)
@@ -291,8 +299,8 @@ func (m *Manager) Start(ctx context.Context, name string, opts Options) (Wait, e
 	return wait, nil
 }
 
-// RunWithURL runs the plugin
-func (m *Manager) RunWithURL(ctx context.Context, name string, opts Options) error {
+// Run installs and runs the plugin
+func (m *Manager) Run(ctx context.Context, name string, opts Options) error {
 	plugin, err := m.Install(ctx, name, opts)
 	if err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)

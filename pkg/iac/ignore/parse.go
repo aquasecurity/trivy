@@ -19,11 +19,11 @@ type RuleSectionParser interface {
 }
 
 // Parse parses the configuration file and returns the Rules
-func Parse(src, path string, parsers ...RuleSectionParser) Rules {
+func Parse(src, path, sourcePrefix string, parsers ...RuleSectionParser) Rules {
 	var rules Rules
 	for i, line := range strings.Split(src, "\n") {
 		line = strings.TrimSpace(line)
-		rng := types.NewRange(path, i+1, i+1, "", nil)
+		rng := types.NewRange(path, i+1, i+1, sourcePrefix, nil)
 		lineIgnores := parseLine(line, rng, parsers)
 		for _, lineIgnore := range lineIgnores {
 			rules = append(rules, lineIgnore)

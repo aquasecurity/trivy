@@ -23,7 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/version"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 type FlagType interface {
@@ -602,7 +602,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 func (f *Flags) ToOptions(args []string) (Options, error) {
 	var err error
 	opts := Options{
-		AppVersion: version.AppVersion(),
+		AppVersion: app.Version(),
 	}
 
 	if f.GlobalFlagGroup != nil {

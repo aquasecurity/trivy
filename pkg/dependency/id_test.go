@@ -48,6 +48,15 @@ func TestID(t *testing.T) {
 			want: "test:1.0.0",
 		},
 		{
+			name: "sbt",
+			args: args{
+				ltype:   types.Sbt,
+				name:    "test",
+				version: "1.0.0",
+			},
+			want: "test:1.0.0",
+		},
+		{
 			name: "pip",
 			args: args{
 				ltype:   types.Pip,

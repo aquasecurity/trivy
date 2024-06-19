@@ -272,6 +272,57 @@ Resources:
 				},
 			},
 		},
+		{
+			name: "security group with ingress and egress rules",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: MySecurityGroup
+      GroupDescription: MySecurityGroup
+  InboundRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref MySecurityGroup
+      Description: Inbound
+      CidrIp: 0.0.0.0/0
+  OutboundRule:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !GetAtt MySecurityGroup.GroupId
+      Description: Outbound
+      CidrIp: 0.0.0.0/0
+  RuleWithoutGroup:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      CidrIpv6: ::/0
+      Description: Inbound
+`,
+			expected: ec2.EC2{
+				SecurityGroups: []ec2.SecurityGroup{
+					{
+						Description: types.StringTest("MySecurityGroup"),
+						IngressRules: []ec2.SecurityGroupRule{
+							{
+								Description: types.StringTest("Inbound"),
+								CIDRs: []types.StringValue{
+									types.StringTest("0.0.0.0/0"),
+								},
+							},
+						},
+						EgressRules: []ec2.SecurityGroupRule{
+							{
+								Description: types.StringTest("Outbound"),
+								CIDRs: []types.StringValue{
+									types.StringTest("0.0.0.0/0"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

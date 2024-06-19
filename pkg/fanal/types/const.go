@@ -63,6 +63,7 @@ const (
 	Jar           LangType = "jar"
 	Pom           LangType = "pom"
 	Gradle        LangType = "gradle"
+	Sbt           LangType = "sbt"
 	GoBinary      LangType = "gobinary"
 	GoModule      LangType = "gomod"
 	JavaScript    LangType = "javascript"
@@ -114,6 +115,7 @@ const (
 	GoSum = "go.sum"
 
 	MavenPom = "pom.xml"
+	SbtLock  = "build.sbt.lock"
 
 	NpmPkg     = "package.json"
 	NpmPkgLock = "package-lock.json"

@@ -38,10 +38,11 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 		return nil, "", "", false, nil
 	}
 
-	key := cacheKey(opt.OriginalSource, opt.OriginalVersion, opt.RelativePath)
+	src := removeSubdirFromSource(opt.OriginalSource)
+	key := cacheKey(src, opt.OriginalVersion)
 	opt.Debug("Storing with cache key %s", key)
 
-	baseCacheDir, err := locateCacheDir()
+	baseCacheDir, err := locateCacheDir(opt.CacheDir)
 	if err != nil {
 		return nil, "", "", true, fmt.Errorf("failed to locate cache directory: %w", err)
 	}

@@ -21,6 +21,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "github.com/aquasecurity/trivy-*" ## `trivy-*` dependencies are updated manually
     groups:
       aws:
         patterns:
@@ -33,5 +35,7 @@ updates:
         patterns:
           - "github.com/testcontainers/*"
       common:
+        exclude-patterns:
+          - "github.com/aquasecurity/trivy-*"
         patterns:
           - "*"

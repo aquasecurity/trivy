@@ -183,7 +183,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		if dep, ok := lockFile.Importers.Root.DevDependencies[name]; ok && dep.Version == ver {
 			relationship = ftypes.RelationshipDirect
 		}
-		if dep, ok := lockFile.Importers.Root.Dependencies[name]; ok && dep.Version == ver {
+		if dep, ok := lockFile.Importers.Root.Dependencies[name]; ok && p.trimPeerDeps(dep.Version, lockVer) == ver {
 			relationship = ftypes.RelationshipDirect
 			dev = false // mark root direct deps to update `dev` field of their child deps.
 		}
@@ -208,10 +208,11 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		}
 	}
 
+	visited := make(map[string]struct{})
 	// Overwrite the `Dev` field for dev deps and their child dependencies.
 	for _, pkg := range resolvedPkgs {
 		if !pkg.Dev {
-			p.markRootPkgs(pkg.ID, resolvedPkgs, resolvedDeps)
+			p.markRootPkgs(pkg.ID, resolvedPkgs, resolvedDeps, visited)
 		}
 	}
 
@@ -219,7 +220,10 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 }
 
 // markRootPkgs sets `Dev` to false for non dev dependency.
-func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency) {
+func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited map[string]struct{}) {
+	if _, ok := visited[id]; ok {
+		return
+	}
 	pkg, ok := pkgs[id]
 	if !ok {
 		return
@@ -227,10 +231,11 @@ func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps ma
 
 	pkg.Dev = false
 	pkgs[id] = pkg
+	visited[id] = struct{}{}
 
 	// Update child deps
 	for _, depID := range deps[id].DependsOn {
-		p.markRootPkgs(depID, pkgs, deps)
+		p.markRootPkgs(depID, pkgs, deps, visited)
 	}
 	return
 }

@@ -59,14 +59,12 @@ func (d Document) ToRego() any {
 type Group struct {
 	Metadata iacTypes.Metadata
 	Name     iacTypes.StringValue
-	Users    []User
 	Policies []Policy
 }
 
 type User struct {
 	Metadata   iacTypes.Metadata
 	Name       iacTypes.StringValue
-	Groups     []Group
 	Policies   []Policy
 	AccessKeys []AccessKey
 	MFADevices []MFADevice

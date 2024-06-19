@@ -31,9 +31,9 @@ func TestParser_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:           "flutter_test@0.0.0",
+					ID:           "flutter_test@3.3.0",
 					Name:         "flutter_test",
-					Version:      "0.0.0",
+					Version:      "3.3.0",
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{

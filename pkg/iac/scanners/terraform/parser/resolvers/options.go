@@ -12,6 +12,7 @@ type Options struct {
 	AllowDownloads                                                                 bool
 	SkipCache                                                                      bool
 	RelativePath                                                                   string
+	CacheDir                                                                       string
 }
 
 func (o *Options) hasPrefix(prefixes ...string) bool {

@@ -45,7 +45,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	}
 
 	inputVersion := opt.Version
-	source, relativePath, _ := strings.Cut(opt.Source, "//")
+	source := removeSubdirFromSource(opt.Source)
 	parts := strings.Split(source, "/")
 	if len(parts) < 3 || len(parts) > 4 {
 		return
@@ -146,7 +146,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	}
 
 	opt.Debug("Module '%s' resolved via registry to new source: '%s'", opt.Name, opt.Source)
-	opt.RelativePath = relativePath
+
 	filesystem, prefix, downloadPath, _, err = Remote.Resolve(ctx, target, opt)
 	if err != nil {
 		return nil, "", "", true, err

@@ -263,6 +263,8 @@ $ trivy image ghcr.io/aquasecurity/trivy:0.50.0 --vex trivy.openvex.json
 VEX documents can indeed be reused across different container images, eliminating the need to issue separate VEX documents for each image.
 This is particularly useful when there is a common component or library that is used across multiple projects or container images.
 
+You can see [the appendix](#applying-vex-to-dependency-trees) for more details on how VEX is applied in Trivy.
+
 ### Scan with VEX
 Provide the VEX when scanning your target.
 
@@ -412,6 +414,8 @@ At present, the specified relationship category is not taken into account and al
 - installed_on
 - installed_with
 
+You can see [the appendix](#applying-vex-to-dependency-trees) for more details on how VEX is applied in Trivy.
+
 ### Scan with CSAF VEX
 Provide the CSAF document when scanning your target.
 
@@ -469,6 +473,103 @@ does not match:
     - `classifier=x86` is missing.
 - `pkg:maven/com.google.guava/guava@24.1.1?classifier=sources`
     - `classifier` must have the same value.
+
+### Applying VEX to Dependency Trees
+
+Trivy internally generates a dependency tree and applies VEX statements to this graph.
+Let's consider a project with the following dependency tree, where `Module C v2.0.0` is assumed to have a vulnerability CVE-XXXX-YYYY:
+
+```mermaid
+graph TD;
+  modRootA(Module Root A v1.0.0)
+  modB(Module B v1.0.0) 
+  modC(Module C v2.0.0)
+
+  modRootA-->modB
+  modB-->modC
+```
+
+Now, suppose a VEX statement is issued for `Module B` as follows:
+
+```json
+"statements": [
+  {
+    "vulnerability": {"name": "CVE-XXXX-YYYY"},
+    "products": [
+      {
+        "@id": "pkg:golang/module-b@1.0.0",
+        "subcomponents": [
+          { "@id": "pkg:golang/module-c@2.0.0" }
+        ]
+      }
+    ],
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_in_execute_path"  
+  }
+]
+```
+
+It declares that `Module B` is not affected by CVE-XXXX-YYYY on `Module C`.
+
+!!! note
+    The VEX in this example defines the relationship between `Module B` and `Module C`.
+    However, as Trivy traverses all parents from vulnerable packages, it is also possible to define a VEX for the relationship between a vulnerable package and any parent, such as `Module A` and `Module C`, etc.
+
+Mapping this VEX onto the dependency tree would look like this:
+
+```mermaid
+graph TD;
+  modRootA(Module Root A v1.0.0)
+  
+  subgraph "VEX (Not Affected)"
+  modB(Module B v1.0.0)
+  modC(Module C v2.0.0)
+  end
+
+  modRootA-->modB
+  modB-->modC
+```
+
+In this case, it's clear that `Module Root A` is also not affected by CVE-XXXX-YYYY, so this vulnerability is suppressed.
+
+Now, let's consider another project:
+
+```mermaid
+graph TD;
+  modRootZ(Module Root Z v1.0.0)
+  modB'(Module B v1.0.0)
+  modC'(Module C v2.0.0)
+  modD'(Module D v3.0.0)
+
+  modRootZ-->modB'
+  modRootZ-->modD'
+  modB'-->modC'
+  modD'-->modC'
+```
+
+Assuming the same VEX as before, applying it to this dependency tree would look like:
+
+```mermaid
+graph TD;
+  modRootZ(Module Root Z v1.0.0)
+  
+  subgraph "VEX (Not Affected)"
+  modB'(Module B v1.0.0)
+  modC'(Module C v2.0.0)
+  end
+  
+  modD'(Module D v3.0.0)
+
+  modRootZ-->modB'
+  modRootZ-->modD'
+  modB'-->modC'
+  modD'-->modC'
+```
+
+`Module Root Z` depends on `Module C` via multiple paths.
+While the VEX tells us that `Module B` is not affected by the vulnerability, `Module D` might be.
+In the absence of a VEX, the default assumption is that it is affected.
+Taking all of this into account, Trivy determines that `Module Root Z` is affected by this vulnerability.
 
 
 [csaf]: https://oasis-open.github.io/csaf-documentation/specification.html

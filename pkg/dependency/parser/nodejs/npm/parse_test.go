@@ -53,6 +53,12 @@ func TestParse(t *testing.T) {
 			want:     npmV3WithoutRootDepsField,
 			wantDeps: npmV3WithoutRootDepsFieldDeps,
 		},
+		{
+			name:     "lock version v3 with broken link",
+			file:     "testdata/package-lock_v3_broken_link.json",
+			want:     nil,
+			wantDeps: nil,
+		},
 	}
 
 	for _, tt := range tests {

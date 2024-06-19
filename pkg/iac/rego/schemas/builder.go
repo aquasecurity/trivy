@@ -75,13 +75,12 @@ func sanitize(s string) string {
 }
 
 func (b *builder) readProperty(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-
 	if inputType.Kind() == reflect.Ptr {
 		inputType = inputType.Elem()
 	}
 
 	switch inputType.String() {
-	case "types.Metadata", "types.Range", "types.Reference":
+	case "types.Range", "types.Reference":
 		return nil, nil
 	}
 
@@ -181,7 +180,8 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 		b.schema.Defs[refName(name, parent, inputType)] = def
 	}
 
-	if inputType.Implements(converterInterface) {
+	if inputType.Implements(converterInterface) ||
+		inputType.String() == "types.Metadata" {
 		if inputType.Kind() == reflect.Ptr {
 			inputType = inputType.Elem()
 		}
@@ -192,6 +192,7 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 	} else {
 
 		for i := 0; i < inputType.NumField(); i++ {
+
 			field := inputType.Field(i)
 			prop, err := b.readProperty(field.Name, inputType, field.Type, indent+1)
 			if err != nil {
@@ -201,9 +202,12 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 				continue
 			}
 			key := strings.ToLower(field.Name)
+
+			// metadata exported as "__defsec_metadata"
 			if key == "metadata" {
-				continue
+				key = "__defsec_metadata"
 			}
+
 			def.Properties[key] = *prop
 		}
 	}

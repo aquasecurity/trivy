@@ -127,10 +127,15 @@ labels:
   color: 0ebdb0
   description: Issues relating to virtual machine scanning
 
-# others
+# community
 - name: good first issue
   color: 7057ff
   description: Denotes an issue ready for a new contributor, according to the "help wanted" guidelines.
 - name: help wanted
   color: 006b75
   description: Denotes an issue that needs help from a contributor. Must meet "help wanted" guidelines.
+
+# release
+- name: backport
+  color: A8F7BC
+  description: Backport PRs

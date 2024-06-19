@@ -32,20 +32,21 @@ func StructToRego(inputValue reflect.Value) map[string]any {
 		field := inputValue.Field(i)
 		typ := inputValue.Type().Field(i)
 		name := typ.Name
-		if !typ.IsExported() {
+
+		if !typ.IsExported() || field.Interface() == nil {
 			continue
 		}
-		if field.Interface() == nil {
+
+		if _, ok := field.Interface().(types.Metadata); ok && name == "Metadata" {
 			continue
 		}
+
 		val := anonymousToRego(reflect.ValueOf(field.Interface()))
+
 		if val == nil {
 			continue
 		}
-		key := strings.ToLower(name)
-		if _, ok := field.Interface().(types.Metadata); key == "metadata" && ok {
-			continue
-		}
+
 		output[strings.ToLower(name)] = val
 	}
 

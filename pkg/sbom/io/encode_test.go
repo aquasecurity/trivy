@@ -536,6 +536,97 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
+			name: "SBOM file",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "report.cdx.json",
+				ArtifactType:  artifact.TypeCycloneDX,
+				Results: []types.Result{
+					{
+						Target: "Java",
+						Type:   ftypes.Jar,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "org.apache.logging.log4j:log4j-core:2.23.1",
+								Name:    "org.apache.logging.log4j:log4j-core",
+								Version: "2.23.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.logging.log4j",
+										Name:      "log4j-core",
+										Version:   "2.23.1",
+									},
+								},
+								FilePath: "log4j-core-2.23.1.jar",
+							},
+						},
+					},
+				},
+				BOM: newTestBOM(t),
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): appComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): libComponent,
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
+			name: "json file created from SBOM file (BOM is empty)",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "report.cdx.json",
+				ArtifactType:  artifact.TypeCycloneDX,
+				Results: []types.Result{
+					{
+						Target: "Java",
+						Type:   ftypes.Jar,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "org.apache.logging.log4j:log4j-core:2.23.1",
+								Name:    "org.apache.logging.log4j:log4j-core",
+								Version: "2.23.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.logging.log4j",
+										Name:      "log4j-core",
+										Version:   "2.23.1",
+									},
+								},
+								FilePath: "log4j-core-2.23.1.jar",
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): fsComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponent,
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
 			name: "invalid digest",
 			report: types.Report{
 				SchemaVersion: 2,
@@ -579,4 +670,67 @@ func TestEncoder_Encode(t *testing.T) {
 			assert.Equal(t, tt.wantVulns, got.Vulnerabilities())
 		})
 	}
+}
+
+var (
+	appComponent = &core.Component{
+		Root: true,
+		Type: core.TypeApplication,
+		Name: "log4j-core-2.23.1.jar",
+	}
+	fsComponent = &core.Component{
+		Root: true,
+		Type: core.TypeFilesystem,
+		Name: "report.cdx.json",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+		},
+		Properties: core.Properties{
+			{
+				Name:  "SchemaVersion",
+				Value: "2",
+			},
+		},
+	}
+	libComponent = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "log4j-core",
+		Group:   "org.apache.logging.log4j",
+		Version: "2.23.1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			BOMRef: "pkg:maven/org.apache.logging.log4j/log4j-core@2.23.1",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.apache.logging.log4j",
+				Name:      "log4j-core",
+				Version:   "2.23.1",
+			},
+		},
+		Files: []core.File{
+			{
+				Path: "log4j-core-2.23.1.jar",
+			},
+		},
+		Properties: core.Properties{
+			{
+				Name:  "FilePath",
+				Value: "log4j-core-2.23.1.jar",
+			},
+			{
+				Name:  "PkgID",
+				Value: "org.apache.logging.log4j:log4j-core:2.23.1",
+			},
+			{
+				Name:  "PkgType",
+				Value: "jar",
+			},
+		},
+	}
+)
+
+func newTestBOM(t *testing.T) *core.BOM {
+	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(appComponent)
+	return bom
 }

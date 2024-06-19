@@ -154,6 +154,14 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/gradle.json.golden",
 		},
 		{
+			name: "sbt",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/sbt",
+			},
+			golden: "testdata/sbt.json.golden",
+		},
+		{
 			name: "conan",
 			args: args{
 				scanner:     types.VulnerabilityScanner,
