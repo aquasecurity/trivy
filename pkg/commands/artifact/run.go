@@ -11,7 +11,6 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -33,6 +32,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -397,7 +397,8 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration/
+			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
 
@@ -593,10 +594,10 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// Do not load config file for secret scanning
 	if opts.Scanners.Enabled(types.SecretScanner) {
-		ver := canonicalVersion(opts.AppVersion)
 		log.Info("Secret scanning is enabled")
 		log.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
-		log.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/scanner/secret/#recommendation for faster secret detection", ver)
+		// e.g. https://aquasecurity.github.io/trivy/latest/docs/scanner/secret/#recommendation
+		log.Infof("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation"))
 	} else {
 		opts.SecretConfigPath = ""
 	}
@@ -693,21 +694,4 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
-}
-
-func canonicalVersion(ver string) string {
-	if ver == devVersion {
-		return ver
-	}
-	v, err := semver.Parse(ver)
-	if err != nil {
-		return devVersion
-	}
-	// Replace pre-release with "dev"
-	// e.g. v0.34.0-beta1+snapshot-1
-	if v.IsPreRelease() || v.Metadata() != "" {
-		return devVersion
-	}
-	// Add "v" prefix and cut a patch number, "0.34.0" => "v0.34" for the url
-	return fmt.Sprintf("v%d.%d", v.Major(), v.Minor())
 }

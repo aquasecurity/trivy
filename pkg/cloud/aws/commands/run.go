@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 
@@ -20,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
@@ -140,7 +142,8 @@ func Run(ctx context.Context, opt flag.Options) error {
 	var err error
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration/
+			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
 
