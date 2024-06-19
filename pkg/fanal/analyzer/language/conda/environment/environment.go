@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"golang.org/x/xerrors"
@@ -32,14 +33,18 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}
 
 	if res != nil && len(res.Applications) > 0 {
+		once := sync.Once{}
 		// For `environment.yaml` Applications always contains only 1 Application
 		for i, pkg := range res.Applications[0].Packages {
 			licenses, err := findLicenseFromEnvDir(pkg)
 			if err != nil {
-				log.WithPrefix("conda").Debug("License didn't found", log.String("pkgName", pkg.Name), log.String("version", pkg.Version), log.Err(err))
+				// Show warning once per file
+				once.Do(func() {
+					log.WithPrefix("conda").Debug("License didn't found", log.String("file", input.FilePath), log.Err(err))
+				})
 			}
 			pkg.Licenses = licenses
-			pkg.FilePath = "" // remove path to env dir
+			pkg.FilePath = "" // remove `prefix` from FilePath
 			res.Applications[0].Packages[i] = pkg
 		}
 
@@ -60,7 +65,11 @@ func findLicenseFromEnvDir(pkg types.Package) ([]string, error) {
 		}
 
 		pattern := fmt.Sprintf("%s-%s-*.json", pkg.Name, pkg.Version)
-		if matched, _ := doublestar.Match(pattern, entry.Name()); matched {
+		matched, err := doublestar.Match(pattern, entry.Name())
+		if err != nil {
+			return nil, xerrors.Errorf("incorrect packageJSON file pattern: %w", err)
+		}
+		if matched {
 			file, err := os.Open(filepath.Join(condaMetaDir, entry.Name()))
 			if err != nil {
 				return nil, xerrors.Errorf("unable to open packageJSON file: %w", err)
