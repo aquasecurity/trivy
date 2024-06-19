@@ -96,9 +96,8 @@ func (e *evaluator) evaluateStep() {
 	e.ctx.Set(e.getValuesByBlockType("locals"), "local")
 	e.ctx.Set(e.getValuesByBlockType("provider"), "provider")
 
-	resources := e.getValuesByBlockType("resource")
-	for key, resource := range resources.AsValueMap() {
-		e.ctx.Set(resource, key)
+	for typ, resource := range e.getResources() {
+		e.ctx.Set(resource, typ)
 	}
 
 	e.ctx.Set(e.getValuesByBlockType("data"), "data")
@@ -224,10 +223,12 @@ func (e *evaluator) evaluateSteps() {
 	var lastContext hcl.EvalContext
 	for i := 0; i < maxContextIterations; i++ {
 
+		e.debug.Log("Starting iteration %d", i)
 		e.evaluateStep()
 
 		// if ctx matches the last evaluation, we can bail, nothing left to resolve
 		if i > 0 && reflect.DeepEqual(lastContext.Variables, e.ctx.Inner().Variables) {
+			e.debug.Log("Context unchanged at i=%d", i)
 			break
 		}
 		if len(e.ctx.Inner().Variables) != len(lastContext.Variables) {
@@ -325,21 +326,20 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 			}
 
 			clone := block.Clone(idx)
-
 			ctx := clone.Context()
-
 			e.copyVariables(block, clone)
 
-			ctx.SetByDot(idx, "each.key")
-			ctx.SetByDot(val, "each.value")
-			ctx.Set(idx, block.TypeLabel(), "key")
-			ctx.Set(val, block.TypeLabel(), "value")
+			eachObj := cty.ObjectVal(map[string]cty.Value{
+				"key":   idx,
+				"value": val,
+			})
+
+			ctx.Set(eachObj, "each")
+			ctx.Set(eachObj, block.TypeLabel())
 
 			forEachFiltered = append(forEachFiltered, clone)
 
-			values := clone.Values()
-			clones[idx.AsString()] = values
-			e.ctx.SetByDot(values, clone.GetMetadata().Reference())
+			clones[idx.AsString()] = clone.Values()
 		})
 
 		metadata := block.GetMetadata()
@@ -413,11 +413,12 @@ func (e *evaluator) copyVariables(from, to *terraform.Block) {
 		return
 	}
 
-	srcValue := e.ctx.Root().Get(fromBase, fromRel)
+	rootCtx := e.ctx.Root()
+	srcValue := rootCtx.Get(fromBase, fromRel)
 	if srcValue == cty.NilVal {
 		return
 	}
-	e.ctx.Root().Set(srcValue, fromBase, toRel)
+	rootCtx.Set(srcValue, fromBase, toRel)
 }
 
 func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
@@ -509,7 +510,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 				continue
 			}
 			values[b.Label()] = b.Values()
-		case "resource", "data":
+		case "data":
 			if len(b.Labels()) < 2 {
 				continue
 			}
@@ -531,4 +532,29 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 	}
 
 	return cty.ObjectVal(values)
+}
+
+func (e *evaluator) getResources() map[string]cty.Value {
+	values := make(map[string]map[string]cty.Value)
+
+	for _, b := range e.blocks {
+		if b.Type() != "resource" {
+			continue
+		}
+
+		if len(b.Labels()) < 2 {
+			continue
+		}
+
+		val, exists := values[b.Labels()[0]]
+		if !exists {
+			val = make(map[string]cty.Value)
+			values[b.Labels()[0]] = val
+		}
+		val[b.Labels()[1]] = b.Values()
+	}
+
+	return lo.MapValues(values, func(v map[string]cty.Value, _ string) cty.Value {
+		return cty.ObjectVal(v)
+	})
 }
