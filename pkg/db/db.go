@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 const (
@@ -188,7 +189,8 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 			for _, diagnostic := range terr.Errors {
 				// For better user experience
 				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-					log.Warn("See https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db")
+					// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
+					log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
 					break
 				}
 			}
