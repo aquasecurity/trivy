@@ -128,17 +128,17 @@ func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 }
 
 type dbWorker struct {
-	dbClient dbc.Operation
+	dbClient *dbc.Client
 }
 
-func newDBWorker(dbClient dbc.Operation) dbWorker {
+func newDBWorker(dbClient *dbc.Client) dbWorker {
 	return dbWorker{dbClient: dbClient}
 }
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
 	log.Debug("Check for DB update...")
-	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
+	needsUpdate, err := w.dbClient.NeedsUpdate(ctx, appVersion, skipDBUpdate)
 	if err != nil {
 		return xerrors.Errorf("failed to check if db needs an update")
 	} else if !needsUpdate {
