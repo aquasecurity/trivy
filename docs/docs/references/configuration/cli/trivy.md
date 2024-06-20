@@ -43,7 +43,6 @@ trivy [global flags] command [flags] target
 
 ### SEE ALSO
 
-* [trivy aws](trivy_aws.md)	 - [EXPERIMENTAL] Scan AWS account
 * [trivy config](trivy_config.md)	 - Scan config files for misconfigurations
 * [trivy convert](trivy_convert.md)	 - Convert Trivy JSON report into a different format
 * [trivy filesystem](trivy_filesystem.md)	 - Scan local filesystem
