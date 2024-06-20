@@ -10,11 +10,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"unicode"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
@@ -262,7 +261,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 		uniq[lib.Name] = lib
 	}
 
-	gomod.Packages = maps.Values(uniq)
+	gomod.Packages = lo.Values(uniq)
 }
 
 func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {

@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -216,7 +215,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		}
 	}
 
-	return maps.Values(resolvedPkgs), maps.Values(resolvedDeps)
+	return lo.Values(resolvedPkgs), lo.Values(resolvedDeps)
 }
 
 // markRootPkgs sets `Dev` to false for non dev dependency.

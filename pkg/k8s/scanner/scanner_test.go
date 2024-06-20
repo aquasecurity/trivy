@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/maps"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -284,7 +284,7 @@ func TestScanner_Scan(t *testing.T) {
 			got, err := scanner.Scan(ctx, tt.artifacts)
 			require.NoError(t, err)
 
-			gotComponents := maps.Values(got.BOM.Components())
+			gotComponents := lo.Values(got.BOM.Components())
 			require.Equal(t, len(tt.wantComponents), len(gotComponents))
 
 			sort.Slice(gotComponents, func(i, j int) bool {

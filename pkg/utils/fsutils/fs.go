@@ -7,8 +7,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"

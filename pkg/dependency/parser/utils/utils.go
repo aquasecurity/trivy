@@ -2,9 +2,10 @@ package utils
 
 import (
 	"fmt"
+	"maps"
 	"sort"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -48,7 +49,7 @@ func UniquePackages(pkgs []ftypes.Package) []ftypes.Package {
 			}
 		}
 	}
-	pkgSlice := maps.Values(unique)
+	pkgSlice := lo.Values(unique)
 	sort.Sort(ftypes.Packages(pkgSlice))
 
 	return pkgSlice

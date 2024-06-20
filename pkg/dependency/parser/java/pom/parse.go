@@ -9,12 +9,12 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 

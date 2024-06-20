@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"golang.org/x/exp/slices"
+	"slices"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 )

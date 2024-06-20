@@ -1,10 +1,9 @@
 package azure
 
 import (
+	"slices"
 	"strings"
 	"time"
-
-	"golang.org/x/exp/slices"
 
 	armjson2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -249,7 +248,13 @@ func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.Boo
 	v.Resolve()
 	if v.Kind == KindString {
 		possibleValue := strings.ToLower(v.rLit.(string))
-		if slices.Contains([]string{"true", "1", "yes", "on", "enabled"}, possibleValue) {
+		if slices.Contains([]string{
+			"true",
+			"1",
+			"yes",
+			"on",
+			"enabled",
+		}, possibleValue) {
 			return types.Bool(true, metadata)
 		}
 	}

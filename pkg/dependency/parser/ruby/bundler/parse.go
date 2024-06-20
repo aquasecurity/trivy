@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -103,7 +103,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(ftypes.Packages(pkgSlice))
 	return pkgSlice, deps, nil
 }
