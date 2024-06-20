@@ -46,8 +46,6 @@ const (
 	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
-
-	devVersion = "dev"
 )
 
 var (
