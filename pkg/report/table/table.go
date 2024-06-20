@@ -6,10 +6,10 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"slices"
 	"strings"
 
 	"github.com/fatih/color"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"

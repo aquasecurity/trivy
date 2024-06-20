@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -135,7 +134,7 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 	}
 
 	// Override the detected vulnerabilities
-	result.Vulnerabilities = maps.Values(uniqVulns)
+	result.Vulnerabilities = lo.Values(uniqVulns)
 	if len(result.Vulnerabilities) == 0 {
 		result.Vulnerabilities = nil
 	}

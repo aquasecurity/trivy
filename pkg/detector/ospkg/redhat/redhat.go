@@ -3,13 +3,13 @@ package redhat
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -176,7 +176,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		}
 	}
 
-	vulns := maps.Values(uniqVulns)
+	vulns := lo.Values(uniqVulns)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].VulnerabilityID < vulns[j].VulnerabilityID
 	})

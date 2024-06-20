@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -86,7 +86,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	sort.Sort(deps)
-	return utils.UniquePackages(maps.Values(parsedDeps)), deps, nil
+	return utils.UniquePackages(lo.Values(parsedDeps)), deps, nil
 }
 
 func parseDep(dep string) (ftypes.Package, error) {

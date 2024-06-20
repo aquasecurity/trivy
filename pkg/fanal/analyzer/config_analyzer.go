@@ -2,9 +2,9 @@ package analyzer
 
 import (
 	"context"
+	"slices"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

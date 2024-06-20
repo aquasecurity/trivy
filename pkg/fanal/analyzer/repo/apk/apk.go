@@ -5,8 +5,8 @@ import (
 	"context"
 	"os"
 	"regexp"
+	"slices"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	ver "github.com/aquasecurity/go-version/pkg/version"

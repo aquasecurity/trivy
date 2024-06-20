@@ -8,7 +8,6 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/maps"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 )
@@ -43,7 +42,10 @@ module "this" {
   source = "../modules/s3"
 }`,
 			},
-			expected: []string{"code", "code/example"},
+			expected: []string{
+				"code",
+				"code/example",
+			},
 		},
 		{
 			name: "without module block",
@@ -51,7 +53,10 @@ module "this" {
 				"code/infra1/main.tf": `resource "test" "this" {}`,
 				"code/infra2/main.tf": `resource "test" "this" {}`,
 			},
-			expected: []string{"code/infra1", "code/infra2"},
+			expected: []string{
+				"code/infra1",
+				"code/infra2",
+			},
 		},
 	}
 
@@ -60,7 +65,7 @@ module "this" {
 			fsys := testutil.CreateFS(t, tt.files)
 			parser := New(fsys, "", OptionStopOnHCLError(true))
 
-			modules := lo.Map(maps.Keys(tt.files), func(p string, _ int) string {
+			modules := lo.Map(lo.Keys(tt.files), func(p string, _ int) string {
 				return path.Dir(p)
 			})
 
