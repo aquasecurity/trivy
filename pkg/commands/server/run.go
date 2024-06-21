@@ -6,6 +6,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -20,15 +21,15 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 
 	// configure cache dir
 	fsutils.SetCacheDir(opts.CacheDir)
-	cache, err := operation.NewCache(opts.CacheOptions)
+	cacheClient, err := cache.NewClient(opts.CacheOptions.CacheBackendOptions)
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
-	defer cache.Close()
+	defer cacheClient.Close()
 	log.Debug("Cache", log.String("dir", fsutils.CacheDir()))
 
 	if opts.Reset {
-		return cache.ClearDB()
+		return cacheClient.ClearDB()
 	}
 
 	// download the database file
@@ -57,5 +58,5 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 
 	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader,
 		opts.DBRepository, opts.RegistryOpts())
-	return server.ListenAndServe(ctx, cache, opts.SkipDBUpdate)
+	return server.ListenAndServe(ctx, cacheClient, opts.SkipDBUpdate)
 }

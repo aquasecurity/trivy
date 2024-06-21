@@ -15,14 +15,13 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
-	fcache "github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
 type mockCacheServer struct {
-	cache fcache.Cache
+	cache cache.Cache
 }
 
 func (s *mockCacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*emptypb.Empty, error) {
@@ -47,7 +46,10 @@ func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBl
 		}
 		layerIDs = append(layerIDs, layerID)
 	}
-	return &rpcCache.MissingBlobsResponse{MissingArtifact: true, MissingBlobIds: layerIDs}, nil
+	return &rpcCache.MissingBlobsResponse{
+		MissingArtifact: true,
+		MissingBlobIds:  layerIDs,
+	}, nil
 }
 
 func (s *mockCacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*emptypb.Empty, error) {
