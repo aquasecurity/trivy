@@ -256,6 +256,14 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 		return pkg.Name
 	}
 
+	// TODO(backward compatibility): Remove after 03/2025
+	// Bitnami used different pkg.Name and the name from PURL.
+	// For backwards compatibility - we need to use PURL.
+	// cf. https://github.com/aquasecurity/trivy/issues/6981
+	if c.PkgIdentifier.PURL.Type == packageurl.TypeBitnami {
+		return pkg.Name
+	}
+
 	if c.Group != "" {
 		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
 			return c.Group + ":" + c.Name
