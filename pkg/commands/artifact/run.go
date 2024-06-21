@@ -30,7 +30,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
@@ -351,12 +350,12 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	// standalone mode
-	fsutils.SetCacheDir(opts.CacheDir)
+	cache.SetDir(opts.CacheDir)
 	cacheClient, err := cache.NewClient(opts.CacheOptions.CacheBackendOptions)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	log.Debug("Cache dir", log.String("dir", fsutils.CacheDir()))
+	log.Debug("Cache dir", log.String("dir", cache.Dir()))
 
 	if opts.Reset {
 		defer cacheClient.Close()
@@ -367,7 +366,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	if opts.ResetChecksBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.ChecksBundleRepository)
+		c, err := policy.NewClient(cache.Dir(), true, opts.MisconfOptions.ChecksBundleRepository)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate check client: %w", err)
 		}

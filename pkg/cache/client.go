@@ -13,7 +13,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 const (
@@ -150,7 +149,7 @@ func NewClient(opts Options) (*Client, error) {
 	}
 
 	// standalone mode
-	fsCache, err := NewFSCache(fsutils.CacheDir())
+	fsCache, err := NewFSCache(Dir())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to initialize fs cache: %w", err)
 	}
@@ -171,8 +170,8 @@ func (c *Client) Reset() (err error) {
 // ClearDB clears the DB cache
 func (c *Client) ClearDB() (err error) {
 	log.Info("Removing DB file...")
-	if err = os.RemoveAll(fsutils.CacheDir()); err != nil {
-		return xerrors.Errorf("failed to remove the directory (%s) : %w", fsutils.CacheDir(), err)
+	if err = os.RemoveAll(Dir()); err != nil {
+		return xerrors.Errorf("failed to remove the directory (%s) : %w", Dir(), err)
 	}
 	return nil
 }

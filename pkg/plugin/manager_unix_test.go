@@ -20,11 +20,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/gittest"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func setupGitRepository(t *testing.T, repo, dir string) *httptest.Server {
@@ -200,7 +200,7 @@ func TestManager_Install(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", dst)
 
 			// For plugin index
-			fsutils.SetCacheDir("testdata")
+			cache.SetDir("testdata")
 
 			if tt.installed != nil {
 				setupInstalledPlugin(t, dst, *tt.installed)
