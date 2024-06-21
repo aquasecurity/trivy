@@ -66,7 +66,7 @@ such as `go mod download`, `go mod tidy`, etc.
 Trivy traverses `$GOPATH/pkg/mod` and collects those extra information.
 
 ### Go binaries
-Trivy scans binaries built by Go.
+Trivy scans binaries built by Go, which include [module information](https://tip.golang.org/doc/go1.18#go-version).
 If there is a Go binary in your container image, Trivy automatically finds and scans it.
 
 Also, you can scan your local binaries.
