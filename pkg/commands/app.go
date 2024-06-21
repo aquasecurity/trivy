@@ -110,10 +110,9 @@ func NewApp() *cobra.Command {
 
 func loadPluginCommands() []*cobra.Command {
 	ctx := context.Background()
-	manager := plugin.NewManager()
 
 	var commands []*cobra.Command
-	plugins, err := manager.LoadAll(ctx)
+	plugins, err := plugin.NewManager().LoadAll(ctx)
 	if err != nil {
 		log.DebugContext(ctx, "No plugins loaded")
 		return nil

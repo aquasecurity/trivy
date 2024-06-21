@@ -12,13 +12,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 )
 
 func TestManager_Update(t *testing.T) {
 	tempDir := t.TempDir()
-	cache.SetDir(tempDir)
+	t.Setenv("XDG_DATA_HOME", tempDir)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte(`this is index`))
@@ -30,7 +29,7 @@ func TestManager_Update(t *testing.T) {
 	err := manager.Update(context.Background())
 	require.NoError(t, err)
 
-	indexPath := filepath.Join(tempDir, "plugin", "index.yaml")
+	indexPath := filepath.Join(tempDir, ".trivy", "plugins", "index.yaml")
 	assert.FileExists(t, indexPath)
 
 	b, err := os.ReadFile(indexPath)
@@ -73,7 +72,7 @@ bar                  A bar plugin                                               
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cache.SetDir(tt.dir)
+			t.Setenv("XDG_DATA_HOME", tt.dir)
 
 			var got bytes.Buffer
 			m := plugin.NewManager(plugin.WithWriter(&got))
