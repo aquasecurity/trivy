@@ -12,13 +12,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/plugin"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func TestManager_Update(t *testing.T) {
 	tempDir := t.TempDir()
-	fsutils.SetCacheDir(tempDir)
+	cache.SetDir(tempDir)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte(`this is index`))
@@ -73,7 +73,7 @@ bar                  A bar plugin                                               
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsutils.SetCacheDir(tt.dir)
+			cache.SetDir(tt.dir)
 
 			var got bytes.Buffer
 			m := plugin.NewManager(plugin.WithWriter(&got))

@@ -14,6 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -63,7 +64,7 @@ func NewManager(opts ...ManagerOption) *Manager {
 		indexURL:   indexURL,
 		logger:     log.WithPrefix("plugin"),
 		pluginRoot: filepath.Join(fsutils.HomeDir(), pluginsRelativeDir),
-		indexPath:  filepath.Join(fsutils.CacheDir(), "plugin", "index.yaml"),
+		indexPath:  filepath.Join(cache.Dir(), "plugin", "index.yaml"),
 	}
 	for _, opt := range opts {
 		opt(m)

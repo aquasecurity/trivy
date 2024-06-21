@@ -12,11 +12,10 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	tcache "github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -31,7 +30,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
@@ -92,8 +90,9 @@ type Runner interface {
 }
 
 type runner struct {
-	cache  cache.Cache
-	dbOpen bool
+	cache      cache.ArtifactCache
+	localCache cache.LocalArtifactCache
+	dbOpen     bool
 
 	// WASM modules
 	module *module.Manager
@@ -106,6 +105,7 @@ type runnerOption func(*runner)
 func WithCacheClient(c cache.Cache) runnerOption {
 	return func(r *runner) {
 		r.cache = c
+		r.localCache = c
 	}
 }
 
@@ -143,7 +143,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 // Close closes everything
 func (r *runner) Close(ctx context.Context) error {
 	var errs error
-	if err := r.cache.Close(); err != nil {
+	if err := r.localCache.Close(); err != nil {
 		errs = multierror.Append(errs, err)
 	}
 
@@ -259,7 +259,7 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	report, err := scan(ctx, opts, initializeScanner, r.cache)
+	report, err := r.scan(ctx, opts, initializeScanner)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
@@ -344,18 +344,18 @@ func (r *runner) initCache(opts flag.Options) error {
 
 	// client/server mode
 	if opts.ServerAddr != "" {
-		remoteCache := tcache.NewRemoteCache(opts.ServerAddr, opts.CustomHeaders, opts.Insecure)
-		r.cache = tcache.NopCache(remoteCache)
+		r.cache = cache.NewRemoteCache(opts.ServerAddr, opts.CustomHeaders, opts.Insecure)
+		r.localCache = cache.NewNopCache() // No need to use local cache in client/server mode
 		return nil
 	}
 
 	// standalone mode
-	fsutils.SetCacheDir(opts.CacheDir)
-	cacheClient, err := operation.NewCache(opts.CacheOptions)
+	cache.SetDir(opts.CacheDir)
+	cacheClient, err := cache.NewClient(opts.CacheOptions.CacheBackendOptions)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	log.Debug("Cache dir", log.String("dir", fsutils.CacheDir()))
+	log.Debug("Cache dir", log.String("dir", cache.Dir()))
 
 	if opts.Reset {
 		defer cacheClient.Close()
@@ -366,7 +366,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	if opts.ResetChecksBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.ChecksBundleRepository)
+		c, err := policy.NewClient(cache.Dir(), true, opts.MisconfOptions.ChecksBundleRepository)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate check client: %w", err)
 		}
@@ -384,7 +384,8 @@ func (r *runner) initCache(opts flag.Options) error {
 		return SkipScan
 	}
 
-	r.cache = cacheClient
+	r.cache = cacheClient.Cache
+	r.localCache = cacheClient.Cache
 	return nil
 }
 
@@ -526,7 +527,7 @@ func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, e
 	return lo.Without(all, included...), nil
 }
 
-func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
+func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
 	target := opts.Target
 	if opts.Input != "" {
 		target = opts.Input
@@ -616,8 +617,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	return ScannerConfig{
 		Target:             target,
-		ArtifactCache:      cacheClient,
-		LocalArtifactCache: cacheClient,
+		ArtifactCache:      r.cache,
+		LocalArtifactCache: r.localCache,
 		ServerOption: client.ScannerOption{
 			RemoteURL:     opts.ServerAddr,
 			CustomHeaders: opts.CustomHeaders,
@@ -675,9 +676,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	}, scanOptions, nil
 }
 
-func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner, cacheClient cache.Cache) (
-	types.Report, error) {
-	scannerConfig, scanOptions, err := initScannerConfig(opts, cacheClient)
+func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
+	scannerConfig, scanOptions, err := r.initScannerConfig(opts)
 	if err != nil {
 		return types.Report{}, err
 	}
