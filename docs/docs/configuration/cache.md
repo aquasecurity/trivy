@@ -9,23 +9,22 @@ The cache directory includes
 The cache option is common to all scanners.
 
 ## Clear Caches
-The `--clear-cache` option removes caches.
-
-**The scan is not performed.**
+`trivy clean` subcommand removes caches.
 
 ```
-$ trivy image --clear-cache
+$ trivy clean --scan-cache
 ```
 
 <details>
 <summary>Result</summary>
 
 ```
-2019-11-15T15:13:26.209+0200    INFO    Reopening vulnerability DB
-2019-11-15T15:13:26.209+0200    INFO    Removing image caches...
+2024-06-21T21:58:21+04:00       INFO    Removing vulnerability database...
 ```
 
 </details>
+
+See `trivy clean --help` for details.
 
 ## Cache Directory
 Specify where the cache is stored with `--cache-dir`.

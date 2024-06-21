@@ -59,7 +59,10 @@ type Flag[T FlagType] struct {
 	Persistent bool
 
 	// Deprecated represents if the flag is deprecated
-	Deprecated bool
+	Deprecated string
+
+	// Removed represents if the flag is removed and no longer works
+	Removed string
 
 	// Aliases represents aliases
 	Aliases []Alias
@@ -105,6 +108,14 @@ func (f *Flag[T]) Parse() error {
 
 	if f.isSet() && !f.allowedValue(value) {
 		return xerrors.Errorf(`invalid argument "%s" for "--%s" flag: must be one of %q`, value, f.Name, f.Values)
+	}
+
+	if f.Deprecated != "" && f.isSet() {
+		log.Warnf(`"--%s" is deprecated. %s`, f.Name, f.Deprecated)
+	}
+	if f.Removed != "" && f.isSet() {
+		log.Errorf(`"--%s" was removed. %s`, f.Name, f.Removed)
+		return xerrors.Errorf(`"--%s" was removed`, f.Name)
 	}
 
 	f.value = value
@@ -229,8 +240,8 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 		flags.Float64P(f.Name, f.Shorthand, v, f.Usage)
 	}
 
-	if f.Deprecated {
-		flags.MarkHidden(f.Name) // nolint: gosec
+	if f.Deprecated != "" || f.Removed != "" {
+		_ = flags.MarkHidden(f.Name)
 	}
 }
 
@@ -301,6 +312,7 @@ type Flags struct {
 	GlobalFlagGroup        *GlobalFlagGroup
 	AWSFlagGroup           *AWSFlagGroup
 	CacheFlagGroup         *CacheFlagGroup
+	CleanFlagGroup         *CleanFlagGroup
 	CloudFlagGroup         *CloudFlagGroup
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
@@ -324,6 +336,7 @@ type Options struct {
 	GlobalOptions
 	AWSOptions
 	CacheOptions
+	CleanOptions
 	CloudOptions
 	DBOptions
 	ImageOptions
@@ -497,6 +510,12 @@ func (f *Flags) groups() []FlagGroup {
 	if f.CacheFlagGroup != nil {
 		groups = append(groups, f.CacheFlagGroup)
 	}
+	if f.CleanFlagGroup != nil {
+		groups = append(groups, f.CleanFlagGroup)
+	}
+	if f.CloudFlagGroup != nil {
+		groups = append(groups, f.CloudFlagGroup)
+	}
 	if f.DBFlagGroup != nil {
 		groups = append(groups, f.DBFlagGroup)
 	}
@@ -526,9 +545,6 @@ func (f *Flags) groups() []FlagGroup {
 	}
 	if f.RegoFlagGroup != nil {
 		groups = append(groups, f.RegoFlagGroup)
-	}
-	if f.CloudFlagGroup != nil {
-		groups = append(groups, f.CloudFlagGroup)
 	}
 	if f.AWSFlagGroup != nil {
 		groups = append(groups, f.AWSFlagGroup)
@@ -619,17 +635,24 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		}
 	}
 
-	if f.CloudFlagGroup != nil {
-		opts.CloudOptions, err = f.CloudFlagGroup.ToOptions()
-		if err != nil {
-			return Options{}, xerrors.Errorf("cloud flag error: %w", err)
-		}
-	}
-
 	if f.CacheFlagGroup != nil {
 		opts.CacheOptions, err = f.CacheFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("cache flag error: %w", err)
+		}
+	}
+
+	if f.CleanFlagGroup != nil {
+		opts.CleanOptions, err = f.CleanFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("clean flag error: %w", err)
+		}
+	}
+
+	if f.CloudFlagGroup != nil {
+		opts.CloudOptions, err = f.CloudFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("cloud flag error: %w", err)
 		}
 	}
 

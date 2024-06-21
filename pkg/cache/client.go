@@ -20,11 +20,6 @@ const (
 	TypeRedis Type = "redis"
 )
 
-type Client struct {
-	dir string
-	Cache
-}
-
 type Type string
 
 type Options struct {
@@ -115,9 +110,8 @@ func NewType(backend string) (Type, error) {
 	}
 }
 
-// NewClient returns a new cache client
-func NewClient(dir string, opts Options) (*Client, error) {
-	client := &Client{dir: dir}
+// New returns a new cache client
+func New(dir string, opts Options) (Cache, error) {
 	if opts.Type == TypeRedis {
 		log.Info("Redis cache", log.String("url", opts.Redis.BackendMasked()))
 		options, err := redis.ParseURL(opts.Redis.Backend)
@@ -142,38 +136,15 @@ func NewClient(dir string, opts Options) (*Client, error) {
 			}
 		}
 
-		client.Cache = NewRedisCache(options, opts.TTL)
-		return client, nil
+		return NewRedisCache(options, opts.TTL), nil
 	}
 
 	// standalone mode
-	var err error
-	client.Cache, err = NewFSCache(dir)
+	fsCache, err := NewFSCache(dir)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to initialize fs cache: %w", err)
 	}
-	return client, nil
-}
-
-// Reset resets the cache
-func (c *Client) Reset() error {
-	log.Info("Removing all caches...")
-	if err := c.Clear(); err != nil {
-		return xerrors.Errorf("failed to remove the cache: %w", err)
-	}
-	if err := os.RemoveAll(c.dir); err != nil {
-		return xerrors.Errorf("failed to remove the directory (%s) : %w", c.dir, err)
-	}
-	return nil
-}
-
-// ClearArtifacts clears the artifact cache
-func (c *Client) ClearArtifacts() error {
-	log.Info("Removing artifact caches...")
-	if err := c.Clear(); err != nil {
-		return xerrors.Errorf("failed to remove the cache: %w", err)
-	}
-	return nil
+	return fsCache, nil
 }
 
 // GetTLSConfig gets tls config from CA, Cert and Key file

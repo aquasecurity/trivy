@@ -22,6 +22,7 @@ var (
 		Name:       "clear-cache",
 		ConfigName: "cache.clear",
 		Usage:      "clear image caches without scanning",
+		Removed:    `Use "trivy clean --scan-cache" instead`,
 	}
 	CacheBackendFlag = Flag[string]{
 		Name:       "cache-backend",

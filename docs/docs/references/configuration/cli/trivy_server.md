@@ -22,7 +22,6 @@ trivy server [flags]
 ```
       --cache-backend string     cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration       cache TTL when using redis as cache backend
-      --clear-cache              clear image caches without scanning
       --db-repository string     OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --download-db-only         download/update vulnerability database but don't run a scan
       --enable-modules strings   [EXPERIMENTAL] module names to enable
@@ -36,7 +35,6 @@ trivy server [flags]
       --redis-key string         redis key file location, if using redis as cache backend
       --redis-tls                enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string    registry token
-      --reset                    remove all caches and database
       --skip-db-update           skip updating vulnerability database
       --token string             for authentication in client/server mode
       --token-header string      specify a header name for token in client/server mode (default "Trivy-Token")

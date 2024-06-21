@@ -78,8 +78,8 @@ $ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-produ
     `java-db-registry:latest` => `java-db-registry:latest`, but `java-db-registry` => `java-db-registry:1`.
 
 ## Remove DBs
-The `--reset` flag removes all caches and databases.
+"trivy clean" command removes caches and databases.
 
 ```
-$ trivy image --reset
+$ trivy clean --all
 ```
