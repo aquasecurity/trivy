@@ -1,6 +1,8 @@
 package cache_test
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -126,4 +128,52 @@ func TestRedisOptions_BackendMasked(t *testing.T) {
 			assert.Equal(t, tt.want, tt.fields.BackendMasked())
 		})
 	}
+}
+
+func TestClient_Reset(t *testing.T) {
+	// Create a temporary directory for testing
+	tempDir := t.TempDir()
+
+	// Create test files and subdirectories
+	subDir := filepath.Join(tempDir, "subdir")
+	err := os.MkdirAll(subDir, 0755)
+	require.NoError(t, err)
+
+	testFile := filepath.Join(tempDir, "testfile.txt")
+	err = os.WriteFile(testFile, []byte("test content"), 0644)
+	require.NoError(t, err)
+
+	// Create a cache client
+	client, err := cache.NewClient(tempDir, cache.Options{Type: cache.TypeFS})
+	require.NoError(t, err)
+
+	// Call Reset method
+	err = client.Reset()
+	require.NoError(t, err)
+
+	// Verify that the subdirectory no longer exists
+	require.NoDirExists(t, subDir, "Subdirectory should not exist after Reset")
+
+	// Verify that the test file no longer exists
+	require.NoFileExists(t, testFile, "Test file should not exist after Reset")
+
+	// Verify that the cache directory no longer exists
+	require.NoDirExists(t, tempDir, "Cache directory should not exist after Reset")
+}
+
+func TestClient_ClearArtifacts(t *testing.T) {
+	// Create a temporary directory for testing
+	tempDir := t.TempDir()
+
+	// Create a client
+	client, err := cache.NewClient(tempDir, cache.Options{Type: cache.TypeFS})
+	require.NoError(t, err)
+
+	require.FileExists(t, filepath.Join(tempDir, "fanal", "fanal.db"), "Database file should exist")
+
+	// Call ClearArtifacts method
+	err = client.ClearArtifacts()
+	require.NoError(t, err)
+
+	require.NoDirExists(t, filepath.Join(tempDir, "fanal"), "Artifact cache should not exist after ClearArtifacts")
 }

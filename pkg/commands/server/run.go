@@ -19,16 +19,15 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	log.InitLogger(opts.Debug, opts.Quiet)
 
 	// configure cache dir
-	cache.SetDir(opts.CacheDir)
-	cacheClient, err := cache.NewClient(opts.CacheOptions.CacheBackendOptions)
+	cacheClient, err := cache.NewClient(opts.CacheDir, opts.CacheOptions.CacheBackendOptions)
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
 	defer cacheClient.Close()
-	log.Debug("Cache", log.String("dir", cache.Dir()))
+	log.Debug("Cache", log.String("dir", opts.CacheDir))
 
 	if opts.Reset {
-		return cacheClient.ClearDB()
+		return cacheClient.Reset()
 	}
 
 	// download the database file

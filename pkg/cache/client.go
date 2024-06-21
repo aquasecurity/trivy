@@ -21,6 +21,7 @@ const (
 )
 
 type Client struct {
+	dir string
 	Cache
 }
 
@@ -115,7 +116,8 @@ func NewType(backend string) (Type, error) {
 }
 
 // NewClient returns a new cache client
-func NewClient(opts Options) (*Client, error) {
+func NewClient(dir string, opts Options) (*Client, error) {
+	client := &Client{dir: dir}
 	if opts.Type == TypeRedis {
 		log.Info("Redis cache", log.String("url", opts.Redis.BackendMasked()))
 		options, err := redis.ParseURL(opts.Redis.Backend)
@@ -140,34 +142,27 @@ func NewClient(opts Options) (*Client, error) {
 			}
 		}
 
-		redisCache := NewRedisCache(options, opts.TTL)
-		return &Client{Cache: redisCache}, nil
+		client.Cache = NewRedisCache(options, opts.TTL)
+		return client, nil
 	}
 
 	// standalone mode
-	fsCache, err := NewFSCache(Dir())
+	var err error
+	client.Cache, err = NewFSCache(dir)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to initialize fs cache: %w", err)
 	}
-	return &Client{Cache: fsCache}, nil
+	return client, nil
 }
 
 // Reset resets the cache
-func (c *Client) Reset() (err error) {
-	if err := c.ClearDB(); err != nil {
-		return xerrors.Errorf("failed to clear the database: %w", err)
+func (c *Client) Reset() error {
+	log.Info("Removing all caches...")
+	if err := c.Clear(); err != nil {
+		return xerrors.Errorf("failed to remove the cache: %w", err)
 	}
-	if err := c.ClearArtifacts(); err != nil {
-		return xerrors.Errorf("failed to clear the artifact cache: %w", err)
-	}
-	return nil
-}
-
-// ClearDB clears the DB cache
-func (c *Client) ClearDB() (err error) {
-	log.Info("Removing DB file...")
-	if err = os.RemoveAll(Dir()); err != nil {
-		return xerrors.Errorf("failed to remove the directory (%s) : %w", Dir(), err)
+	if err := os.RemoveAll(c.dir); err != nil {
+		return xerrors.Errorf("failed to remove the directory (%s) : %w", c.dir, err)
 	}
 	return nil
 }

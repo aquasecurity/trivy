@@ -350,12 +350,11 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	// standalone mode
-	cache.SetDir(opts.CacheDir)
-	cacheClient, err := cache.NewClient(opts.CacheOptions.CacheBackendOptions)
+	cacheClient, err := cache.NewClient(opts.CacheDir, opts.CacheOptions.CacheBackendOptions)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	log.Debug("Cache dir", log.String("dir", cache.Dir()))
+	log.Debug("Cache dir", log.String("dir", opts.CacheDir))
 
 	if opts.Reset {
 		defer cacheClient.Close()
@@ -366,7 +365,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	if opts.ResetChecksBundle {
-		c, err := policy.NewClient(cache.Dir(), true, opts.MisconfOptions.ChecksBundleRepository)
+		c, err := policy.NewClient(opts.CacheDir, true, opts.MisconfOptions.ChecksBundleRepository)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate check client: %w", err)
 		}
