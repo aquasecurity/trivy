@@ -158,6 +158,9 @@ func NewClient(dir string, opts Options) (*Client, error) {
 // Reset resets the cache
 func (c *Client) Reset() error {
 	log.Info("Removing all caches...")
+	if err := c.Clear(); err != nil {
+		return xerrors.Errorf("failed to remove the cache: %w", err)
+	}
 	if err := os.RemoveAll(c.dir); err != nil {
 		return xerrors.Errorf("failed to remove the directory (%s) : %w", c.dir, err)
 	}
