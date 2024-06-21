@@ -2412,6 +2412,33 @@ You're not viewing the latest version.
     Scanning
   </a>
   
+    <nav class="md-nav" aria-label="Scanning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sbom-as-target" class="md-nav__link">
+    SBOM as Target
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbom-detection-inside-targets" class="md-nav__link">
+    SBOM Detection inside Targets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbom-discovery-for-container-images" class="md-nav__link">
+    SBOM Discovery for Container Images
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3966,6 +3993,33 @@ You're not viewing the latest version.
     Scanning
   </a>
   
+    <nav class="md-nav" aria-label="Scanning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sbom-as-target" class="md-nav__link">
+    SBOM as Target
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbom-detection-inside-targets" class="md-nav__link">
+    SBOM Detection inside Targets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbom-discovery-for-container-images" class="md-nav__link">
+    SBOM Discovery for Container Images
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -4689,14 +4743,17 @@ PackageLicenseDeclared: GPL-2.0-only
 </details>
 
 <h2 id="scanning">Scanning</h2>
-<p>Trivy can take SBOM documents as input for scanning.
+<h3 id="sbom-as-target">SBOM as Target</h3>
+<p>Trivy can take SBOM documents as input for scanning, e.g <code>trivy sbom ./sbom.spdx</code>.
 See <a href="../../target/sbom/">here</a> for more details.</p>
-<p>Also, Trivy searches for SBOM files in container images.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image bitnami/elasticsearch:8.7.1
-</code></pre></div>
-<p>For example, <a href="https://github.com/bitnami/containers">Bitnami images</a> contain SBOM files in <code>/opt/bitnami</code> directory.
-Trivy automatically detects the SBOM files and uses them for scanning.
-It is enabled in the following targets.</p>
+<h3 id="sbom-detection-inside-targets">SBOM Detection inside Targets</h3>
+<p>Trivy searches for SBOM files in container images with the following extensions:
+- <code>.spdx</code>
+- <code>.spdx.json</code>
+- <code>.cdx</code>
+- <code>.cdx.json</code></p>
+<p>In addition, Trivy automatically detects SBOM files in <a href="https://github.com/bitnami/containers">Bitnami images</a>, <a href="../../coverage/os/bitnami/">see here</a> for more details.</p>
+<p>It is enabled in the following targets.</p>
 <table>
 <thead>
 <tr>
@@ -4739,6 +4796,8 @@ It is enabled in the following targets.</p>
 </tr>
 </tbody>
 </table>
+<h3 id="sbom-discovery-for-container-images">SBOM Discovery for Container Images</h3>
+<p>When scanning container images, Trivy can discover SBOM for those images. <a href="../../target/container_image/">See here</a> for more details.</p>
 
               
             </article>

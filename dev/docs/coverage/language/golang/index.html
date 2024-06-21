@@ -4073,7 +4073,7 @@ require (
 such as <code>go mod download</code>, <code>go mod tidy</code>, etc.
 Trivy traverses <code>$GOPATH/pkg/mod</code> and collects those extra information.</p>
 <h3 id="go-binaries">Go binaries</h3>
-<p>Trivy scans binaries built by Go.
+<p>Trivy scans binaries built by Go, which include <a href="https://tip.golang.org/doc/go1.18#go-version">module information</a>.
 If there is a Go binary in your container image, Trivy automatically finds and scans it.</p>
 <p>Also, you can scan your local binaries.</p>
 <div class="highlight"><pre><span></span><code>$ trivy rootfs ./your_binary
