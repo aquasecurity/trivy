@@ -144,10 +144,6 @@ func NewClient(opts Options) (*Client, error) {
 		return &Client{Cache: redisCache}, nil
 	}
 
-	if opts.TTL != 0 {
-		log.Warn("'--cache-ttl' is only available with Redis cache backend")
-	}
-
 	// standalone mode
 	fsCache, err := NewFSCache(Dir())
 	if err != nil {
