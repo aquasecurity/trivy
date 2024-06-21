@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -45,6 +46,12 @@ func WithOffline(offline bool) option {
 func WithReleaseRemoteRepos(repos []string) option {
 	return func(opts *options) {
 		opts.releaseRemoteRepos = repos
+	}
+}
+
+func WithSnapshotRemoteRepos(repos []string) option {
+	return func(opts *options) {
+		opts.snapshotRemoteRepos = repos
 	}
 }
 
@@ -648,7 +655,18 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 
 	// try all remoteRepositories
 	for _, repo := range remoteRepos {
-		fetched, err := p.fetchPOMFromRemoteRepository(repo, paths)
+		repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
+		if snapshot {
+			pomFileName, err := p.fetchPomFileNameFromMavenMetadata(repo, repoPaths)
+			if err != nil {
+				return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
+			}
+			// Use file name from `maven-metadata.xml` if it exists
+			if pomFileName != "" {
+				repoPaths[len(repoPaths)-1] = pomFileName
+			}
+		}
+		fetched, err := p.fetchPOMFromRemoteRepository(repo, repoPaths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)
 		} else if fetched == nil {
@@ -659,7 +677,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
 
-func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, error) {
 	repoURL, err := url.Parse(repo)
 	if err != nil {
 		p.logger.Error("URL parse error", log.String("repo", repo))
@@ -670,7 +688,6 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 	repoURL.Path = path.Join(paths...)
 
 	logger := p.logger.With(log.String("host", repoURL.Host), log.String("path", repoURL.Path))
-	client := &http.Client{}
 	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
 	if err != nil {
 		logger.Debug("HTTP request failed")
@@ -681,9 +698,54 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 		req.SetBasicAuth(repoURL.User.Username(), password)
 	}
 
+	return req, nil
+}
+
+// fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
+func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) (string, error) {
+	// Overwrite pom file name to `maven-metadata.xml`
+	mavenMetadataPaths := slices.Clone(paths[:len(paths)-1]) // Clone slice to avoid shadow overwriting last element of `paths`
+	mavenMetadataPaths = append(mavenMetadataPaths, "maven-metadata.xml")
+
+	req, err := p.remoteRepoRequest(repo, mavenMetadataPaths)
+	if err != nil {
+		return "", xerrors.Errorf("unable to create request for maven-metadata.xml file")
+	}
+
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
-		logger.Debug("Failed to fetch")
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+		return "", nil
+	}
+	defer resp.Body.Close()
+
+	mavenMetadata, err := parseMavenMetadata(resp.Body)
+	if err != nil {
+		return "", xerrors.Errorf("failed to parse maven-metadata.xml file: %w", err)
+	}
+
+	var pomFileName string
+	for _, sv := range mavenMetadata.Versioning.SnapshotVersions {
+		if sv.Extension == "pom" {
+			// mavenMetadataPaths[len(mavenMetadataPaths)-3] is always artifactID
+			pomFileName = fmt.Sprintf("%s-%s.pom", mavenMetadataPaths[len(mavenMetadataPaths)-3], sv.Value)
+		}
+	}
+
+	return pomFileName, nil
+}
+
+func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+	req, err := p.remoteRepoRequest(repo, paths)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to create request for pom file")
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
 		return nil, nil
 	}
 	defer resp.Body.Close()
@@ -701,6 +763,16 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 
 func parsePom(r io.Reader) (*pomXML, error) {
 	parsed := &pomXML{}
+	decoder := xml.NewDecoder(r)
+	decoder.CharsetReader = charset.NewReaderLabel
+	if err := decoder.Decode(parsed); err != nil {
+		return nil, xerrors.Errorf("xml decode error: %w", err)
+	}
+	return parsed, nil
+}
+
+func parseMavenMetadata(r io.Reader) (*Metadata, error) {
+	parsed := &Metadata{}
 	decoder := xml.NewDecoder(r)
 	decoder.CharsetReader = charset.NewReaderLabel
 	if err := decoder.Decode(parsed); err != nil {

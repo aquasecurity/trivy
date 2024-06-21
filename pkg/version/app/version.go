@@ -1,8 +1,6 @@
 package app
 
-var (
-	ver = "dev"
-)
+var ver = "dev"
 
 func Version() string {
 	return ver

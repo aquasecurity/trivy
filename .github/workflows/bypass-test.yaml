@@ -8,24 +8,26 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json'
   pull_request:
     paths:
       - '**.md'
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json'
 jobs:
   test:
     name: Test
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
     steps:
       - run: 'echo "No test required"'
 
   integration:
     name: Integration Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - run: 'echo "No test required"'

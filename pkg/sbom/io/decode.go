@@ -11,7 +11,6 @@ import (
 	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -364,7 +363,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	}
 
 	if len(osPkgMap) > 1 {
-		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", maps.Keys(osPkgMap))
+		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", lo.Keys(osPkgMap))
 	}
 
 	// Add OS packages only when OS is detected.

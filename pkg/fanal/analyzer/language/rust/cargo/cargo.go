@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
@@ -148,7 +148,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
 	}
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
 	// Save only prod packages

@@ -1,4 +1,14 @@
 linters-settings:
+  depguard:
+    rules:
+      main:
+        list-mode: lax
+        deny:
+          # Cannot use gomodguard, which examines go.mod, as "golang.org/x/exp/slices" is not a module and doesn't appear in go.mod.
+          - pkg: "golang.org/x/exp/slices"
+            desc: "Use 'slices' instead"
+          - pkg: "golang.org/x/exp/maps"
+            desc: "Use 'maps' or 'github.com/samber/lo' instead"
   dupl:
     threshold: 100
   errcheck:
@@ -81,6 +91,7 @@ linters:
   disable-all: true
   enable:
     - bodyclose
+    - depguard
     - gci
     - goconst
     - gocritic

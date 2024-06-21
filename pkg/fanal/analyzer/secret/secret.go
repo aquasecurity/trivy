@@ -7,10 +7,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -34,10 +34,26 @@ var (
 		"Pipfile.lock",
 		"Gemfile.lock",
 	}
-	skipDirs = []string{".git", "node_modules"}
+	skipDirs = []string{
+		".git",
+		"node_modules",
+	}
 	skipExts = []string{
-		".jpg", ".png", ".gif", ".doc", ".pdf", ".bin", ".svg", ".socket", ".deb", ".rpm",
-		".zip", ".gz", ".gzip", ".tar", ".pyc",
+		".jpg",
+		".png",
+		".gif",
+		".doc",
+		".pdf",
+		".bin",
+		".svg",
+		".socket",
+		".deb",
+		".rpm",
+		".zip",
+		".gz",
+		".gzip",
+		".tar",
+		".pyc",
 	}
 )
 

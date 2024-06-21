@@ -7,16 +7,12 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sort"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	awsScanner "github.com/aquasecurity/trivy-aws/pkg/scanner"
-	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
@@ -97,7 +93,7 @@ func NewApp() *cobra.Command {
 		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
-		NewAWSCommand(globalFlags),
+		NewAWSCommand(),
 		NewVMCommand(globalFlags),
 	)
 
@@ -1019,77 +1015,11 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	reportFlagGroup := flag.NewReportFlagGroup()
-	compliance := flag.ComplianceFlag
-	compliance.Values = []string{
-		types.ComplianceAWSCIS12,
-		types.ComplianceAWSCIS14,
-	}
-	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
-	reportFlagGroup.ShowSuppressed = nil     // disable '--show-suppressed'
-
-	awsFlags := &flag.Flags{
-		GlobalFlagGroup:  globalFlags,
-		AWSFlagGroup:     flag.NewAWSFlagGroup(),
-		CloudFlagGroup:   flag.NewCloudFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RegoFlagGroup:    flag.NewRegoFlagGroup(),
-		ReportFlagGroup:  reportFlagGroup,
-	}
-
-	services := awsScanner.AllSupportedServices()
-	sort.Strings(services)
-
+func NewAWSCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "aws [flags]",
-		Aliases: []string{},
-		GroupID: groupScanning,
-		Args:    cobra.ExactArgs(0),
-		Short:   "[EXPERIMENTAL] Scan AWS account",
-		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
-
-The following services are supported:
-
-- %s
-`, strings.Join(services, "\n- ")),
-		Example: `  # basic scanning
-  $ trivy aws --region us-east-1
-
-  # limit scan to a single service:
-  $ trivy aws --region us-east-1 --service s3
-
-  # limit scan to multiple services:
-  $ trivy aws --region us-east-1 --service s3 --service ec2
-
-  # force refresh of cache for fresh results
-  $ trivy aws --region us-east-1 --update-cache
-`,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := awsFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := awsFlags.ToOptions(args)
-			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
-			}
-			if opts.Timeout < time.Hour {
-				opts.Timeout = time.Hour
-				log.Info("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
-			}
-			return awscommands.Run(cmd.Context(), opts)
-		},
-		SilenceErrors: true,
-		SilenceUsage:  true,
+		Deprecated: "Trivy AWS is now available as an optional plugin. See github.com/aquasecurity/trivy-aws for details",
+		Use:        "aws [flags]",
 	}
-	cmd.SetFlagErrorFunc(flagErrorFunc)
-	awsFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, awsFlags.Usages(cmd)))
-
 	return cmd
 }
 

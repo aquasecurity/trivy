@@ -55,6 +55,7 @@ const (
 	TypeJar        Type = "jar"
 	TypePom        Type = "pom"
 	TypeGradleLock Type = "gradle-lockfile"
+	TypeSbtLock    Type = "sbt-lockfile"
 
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
@@ -173,6 +174,7 @@ var (
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
+		TypeSbtLock,
 		TypeNpmPkgLock,
 		TypeNodePkg,
 		TypeYarn,
@@ -210,6 +212,7 @@ var (
 		TypePom,
 		TypeConanLock,
 		TypeGradleLock,
+		TypeSbtLock,
 		TypeCocoaPods,
 		TypeSwift,
 		TypePubSpecLock,

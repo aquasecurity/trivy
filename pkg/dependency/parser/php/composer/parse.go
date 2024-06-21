@@ -6,11 +6,12 @@ import (
 	"strings"
 
 	"github.com/liamg/jfather"
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -22,7 +23,7 @@ type packageInfo struct {
 	Name      string            `json:"name"`
 	Version   string            `json:"version"`
 	Require   map[string]string `json:"require"`
-	License   []string          `json:"license"`
+	License   any               `json:"license"`
 	StartLine int
 	EndLine   int
 }
@@ -55,7 +56,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Name:         lpkg.Name,
 			Version:      lpkg.Version,
 			Relationship: ftypes.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
-			Licenses:     lpkg.License,
+			Licenses:     licenses(lpkg.License),
 			Locations: []ftypes.Location{
 				{
 					StartLine: lpkg.StartLine,
@@ -97,7 +98,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		})
 	}
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(ftypes.Packages(pkgSlice))
 	sort.Sort(deps)
 
@@ -112,5 +113,25 @@ func (t *packageInfo) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	// Decode func will overwrite line numbers if we save them first
 	t.StartLine = node.Range().Start.Line
 	t.EndLine = node.Range().End.Line
+	return nil
+}
+
+// licenses returns slice of licenses from string, string with separators (`or`, `and`, etc.) or string array
+// cf. https://getcomposer.org/doc/04-schema.md#license
+func licenses(val any) []string {
+	switch v := val.(type) {
+	case string:
+		if v != "" {
+			return licensing.SplitLicenses(v)
+		}
+	case []any:
+		var lics []string
+		for _, l := range v {
+			if lic, ok := l.(string); ok {
+				lics = append(lics, lic)
+			}
+		}
+		return lics
+	}
 	return nil
 }

@@ -35,9 +35,11 @@ func TestParse(t *testing.T) {
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
 			want: []ftypes.Package{
 				{
-					Name:     "setuptools",
-					Version:  "51.3.3",
-					Licenses: []string{"UNKNOWN"},
+					Name:    "setuptools",
+					Version: "51.3.3",
+					Licenses: []string{
+						"UNKNOWN",
+					},
 				},
 			},
 		},
@@ -46,9 +48,11 @@ func TestParse(t *testing.T) {
 			input: "testdata/unidecode-egg-info.PKG-INFO",
 			want: []ftypes.Package{
 				{
-					Name:     "Unidecode",
-					Version:  "0.4.1",
-					Licenses: []string{"UNKNOWN"},
+					Name:    "Unidecode",
+					Version: "0.4.1",
+					Licenses: []string{
+						"UNKNOWN",
+					},
 				},
 			},
 		},
@@ -63,9 +67,11 @@ func TestParse(t *testing.T) {
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
 			want: []ftypes.Package{
 				{
-					Name:     "distlib",
-					Version:  "0.3.1",
-					Licenses: []string{"Python license"},
+					Name:    "distlib",
+					Version: "0.3.1",
+					Licenses: []string{
+						"Python license",
+					},
 				},
 			},
 		},
@@ -96,9 +102,11 @@ func TestParse(t *testing.T) {
 			input: "testdata/distlib-0.3.1.METADATA",
 			want: []ftypes.Package{
 				{
-					Name:     "distlib",
-					Version:  "0.3.1",
-					Licenses: []string{"Python Software Foundation License"},
+					Name:    "distlib",
+					Version: "0.3.1",
+					Licenses: []string{
+						"Python Software Foundation License",
+					},
 				},
 			},
 		},
@@ -109,9 +117,11 @@ func TestParse(t *testing.T) {
 
 			want: []ftypes.Package{
 				{
-					Name:     "asyncssh",
-					Version:  "2.14.2",
-					Licenses: []string{"Eclipse Public License v2.0"},
+					Name:    "asyncssh",
+					Version: "2.14.2",
+					Licenses: []string{
+						"Eclipse Public License v2.0",
+					},
 				},
 			},
 		},
@@ -122,9 +132,13 @@ func TestParse(t *testing.T) {
 
 			want: []ftypes.Package{
 				{
-					Name:     "pyphen",
-					Version:  "0.14.0",
-					Licenses: []string{"GNU General Public License v2 or later (GPLv2+), GNU Lesser General Public License v2 or later (LGPLv2+), Mozilla Public License 1.1 (MPL 1.1)"},
+					Name:    "pyphen",
+					Version: "0.14.0",
+					Licenses: []string{
+						"GNU General Public License v2 or later (GPLv2+)",
+						"GNU Lesser General Public License v2 or later (LGPLv2+)",
+						"Mozilla Public License 1.1 (MPL 1.1)",
+					},
 				},
 			},
 		},
@@ -138,9 +152,11 @@ func TestParse(t *testing.T) {
 			input: "testdata/iniconfig-2.0.0.METADATA",
 			want: []ftypes.Package{
 				{
-					Name:     "iniconfig",
-					Version:  "2.0.0",
-					Licenses: []string{"MIT"},
+					Name:    "iniconfig",
+					Version: "2.0.0",
+					Licenses: []string{
+						"MIT",
+					},
 				},
 			},
 		},
@@ -149,9 +165,11 @@ func TestParse(t *testing.T) {
 			input: "testdata/zipp-3.12.1.METADATA",
 			want: []ftypes.Package{
 				{
-					Name:     "zipp",
-					Version:  "3.12.1",
-					Licenses: []string{"MIT License"},
+					Name:    "zipp",
+					Version: "3.12.1",
+					Licenses: []string{
+						"MIT License",
+					},
 				},
 			},
 		},
@@ -160,9 +178,11 @@ func TestParse(t *testing.T) {
 			input: "testdata/networkx-3.0.METADATA",
 			want: []ftypes.Package{
 				{
-					Name:     "networkx",
-					Version:  "3.0",
-					Licenses: []string{"file://LICENSE.txt"},
+					Name:    "networkx",
+					Version: "3.0",
+					Licenses: []string{
+						"file://LICENSE.txt",
+					},
 				},
 			},
 		},

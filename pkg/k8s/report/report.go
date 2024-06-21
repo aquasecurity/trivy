@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"strings"
 
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
+	"github.com/samber/lo"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -114,7 +114,7 @@ func (r Report) consolidate() ConsolidatedReport {
 		index[key] = v
 	}
 
-	consolidated.Findings = maps.Values(index)
+	consolidated.Findings = lo.Values(index)
 
 	return consolidated
 }

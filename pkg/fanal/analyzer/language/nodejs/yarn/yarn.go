@@ -15,7 +15,6 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
@@ -186,7 +185,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	// If the same package is found in both prod and dev dependencies, use the one in prod.
 	pkgs = lo.Assign(devPkgs, pkgs)
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
 	// Save packages

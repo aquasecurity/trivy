@@ -17,11 +17,29 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
+
+var checkTypesWithSubtype = map[types.Source]struct{}{
+	types.SourceCloud:      {},
+	types.SourceDefsec:     {},
+	types.SourceKubernetes: {},
+}
+
+var supportedProviders = makeSupportedProviders()
+
+func makeSupportedProviders() map[string]struct{} {
+	m := make(map[string]struct{})
+	for _, p := range providers.AllProviders() {
+		m[string(p)] = struct{}{}
+	}
+	m["kind"] = struct{}{} // kubernetes
+	return m
+}
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
@@ -295,12 +313,8 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 }
 
 func isPolicyWithSubtype(sourceType types.Source) bool {
-	for _, s := range []types.Source{types.SourceCloud, types.SourceDefsec, types.SourceKubernetes} {
-		if sourceType == s {
-			return true
-		}
-	}
-	return false
+	_, exists := checkTypesWithSubtype[sourceType]
+	return exists
 }
 
 func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
@@ -311,10 +325,11 @@ func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 	for _, st := range subTypes {
 		switch services := ii[provider].(type) {
 		case map[string]any:
-			for service := range services {
-				if (service == st.Service) && (st.Provider == provider) {
-					return true
-				}
+			if st.Provider != provider {
+				continue
+			}
+			if _, exists := services[st.Service]; exists {
+				return true
 			}
 		case string: // k8s - logic can be improved
 			if strings.EqualFold(services, st.Group) ||
@@ -331,8 +346,7 @@ func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	for _, input := range inputs {
 		if ii, ok := input.Contents.(map[string]any); ok {
 			for provider := range ii {
-				// TODO(simar): Add other providers
-				if !strings.Contains(strings.Join([]string{"kind", "aws", "azure"}, ","), provider) {
+				if _, exists := supportedProviders[provider]; !exists {
 					continue
 				}
 

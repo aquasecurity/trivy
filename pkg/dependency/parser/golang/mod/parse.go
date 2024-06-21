@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
 
@@ -148,7 +147,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 	}
 
-	return maps.Values(pkgs), nil, nil
+	return lo.Values(pkgs), nil, nil
 }
 
 // Check if the Go version is less than 1.17

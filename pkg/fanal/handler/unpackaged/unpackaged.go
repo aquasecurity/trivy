@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"slices"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
