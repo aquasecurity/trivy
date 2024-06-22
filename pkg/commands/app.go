@@ -93,7 +93,6 @@ func NewApp() *cobra.Command {
 		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
-		NewAWSCommand(),
 		NewVMCommand(globalFlags),
 	)
 
@@ -1011,14 +1010,6 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	k8sFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, k8sFlags.Usages(cmd)))
 
-	return cmd
-}
-
-func NewAWSCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Deprecated: "Trivy AWS is now available as an optional plugin. See github.com/aquasecurity/trivy-aws for details",
-		Use:        "aws [flags]",
-	}
 	return cmd
 }
 
