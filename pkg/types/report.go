@@ -100,6 +100,8 @@ var (
 		ComplianceAWSCIS12,
 		ComplianceAWSCIS14,
 		ComplianceDockerCIS160,
+		ComplianceEksCIS14,
+		ComplianceRke2CIS124,
 	}
 )
 
