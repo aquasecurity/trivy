@@ -39,7 +39,7 @@ var (
 	NodeCollectorImageRef = Flag[string]{
 		Name:       "node-collector-imageref",
 		ConfigName: "kubernetes.node-collector.imageref",
-		Default:    "ghcr.io/aquasecurity/node-collector:0.3.0",
+		Default:    "ghcr.io/aquasecurity/node-collector:0.3.1",
 		Usage:      "indicate the image reference for the node-collector scan job",
 	}
 	ExcludeOwned = Flag[bool]{
