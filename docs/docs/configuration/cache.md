@@ -19,11 +19,13 @@ $ trivy clean --scan-cache
 <summary>Result</summary>
 
 ```
-2024-06-21T21:58:21+04:00       INFO    Removing vulnerability database...
+2024-06-21T21:58:21+04:00       INFO    Removing scan cache...
 ```
 
 </details>
 
+If you want to delete cached vulnerability databases, use `--vuln-db`.
+You can also delete all caches with `--all`.
 See `trivy clean --help` for details.
 
 ## Cache Directory
