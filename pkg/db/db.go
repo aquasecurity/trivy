@@ -160,7 +160,6 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 }
 
 func (c *Client) Clear(ctx context.Context) error {
-	log.InfoContext(ctx, "Removing vulnerability database...")
 	if err := os.RemoveAll(db.Dir(c.cacheDir)); err != nil {
 		return xerrors.Errorf("failed to remove vulnerability database: %w", err)
 	}

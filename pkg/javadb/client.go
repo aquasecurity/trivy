@@ -108,7 +108,6 @@ func Update() error {
 }
 
 func Clear(ctx context.Context, cacheDir string) error {
-	log.InfoContext(ctx, "Removing Java database...")
 	return os.RemoveAll(dbDir(cacheDir))
 }
 

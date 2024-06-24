@@ -73,6 +73,7 @@ func cleanScanCache(ctx context.Context, opts flag.Options) error {
 }
 
 func cleanVulnerabilityDB(ctx context.Context, opts flag.Options) error {
+	log.InfoContext(ctx, "Removing vulnerability database...")
 	if err := db.NewClient(opts.CacheDir, true).Clear(ctx); err != nil {
 		return xerrors.Errorf("clear vulnerability database: %w", err)
 
@@ -81,6 +82,7 @@ func cleanVulnerabilityDB(ctx context.Context, opts flag.Options) error {
 }
 
 func cleanJavaDB(ctx context.Context, opts flag.Options) error {
+	log.InfoContext(ctx, "Removing Java database...")
 	if err := javadb.Clear(ctx, opts.CacheDir); err != nil {
 		return xerrors.Errorf("clear Java database: %w", err)
 	}
@@ -88,6 +90,7 @@ func cleanJavaDB(ctx context.Context, opts flag.Options) error {
 }
 
 func cleanCheckBundle(opts flag.Options) error {
+	log.Info("Removing check bundle...")
 	c, err := policy.NewClient(opts.CacheDir, true, opts.MisconfOptions.ChecksBundleRepository)
 	if err != nil {
 		return xerrors.Errorf("failed to instantiate check client: %w", err)
