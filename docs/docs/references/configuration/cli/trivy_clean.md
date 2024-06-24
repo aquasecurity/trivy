@@ -23,7 +23,7 @@ trivy clean [flags]
 ### Options
 
 ```
-      --all             remove all caches
+  -a, --all             remove all caches
       --checks-bundle   remove checks bundle
   -h, --help            help for clean
       --java-db         remove Java database
