@@ -18,6 +18,7 @@ import (
 //	  cert: cert.pem
 //	  key: key.pem
 var (
+	// Deprecated
 	ClearCacheFlag = Flag[bool]{
 		Name:       "clear-cache",
 		ConfigName: "cache.clear",

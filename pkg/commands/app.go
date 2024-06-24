@@ -1242,9 +1242,11 @@ func showVersion(cacheDir, outputFormat string, w io.Writer) error {
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
-	// '--download-db-only', '--download-java-db-only', and '--generate-default-config' don't conduct the subsequent scanning
-	if viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
-		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) {
+	// '--clear-cache' (removed), '--download-db-only' (removed), '--download-java-db-only', '--reset',
+	// '--reset-checks-bundle' and '--generate-default-config' don't conduct the subsequent scanning
+	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
+		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
+		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetChecksBundleFlag.ConfigName) {
 		return nil
 	}
 

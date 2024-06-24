@@ -18,6 +18,7 @@ var (
 		Usage:      "remove all caches and database",
 		Removed:    `Use "trivy clean --all" instead.`,
 	}
+	// Deprecated
 	DownloadDBOnlyFlag = Flag[bool]{
 		Name:       "download-db-only",
 		ConfigName: "db.download-only",
