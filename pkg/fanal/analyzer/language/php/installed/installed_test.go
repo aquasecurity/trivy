@@ -1,12 +1,13 @@
 package installed
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
@@ -24,7 +25,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.ComposerInstalled,
 						FilePath: "testdata/happy/installed.json",
-						Libraries: []types.Package{
+						Packages: []types.Package{
 							{
 								ID:       "pear/log@1.13.3",
 								Name:     "pear/log",
@@ -70,7 +71,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer func() {
 				err = f.Close()
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}()
 
 			a := composerInstalledAnalyzer{}
@@ -80,12 +81,12 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -111,7 +112,7 @@ func Test_composerInstalledAnalyzer_Required(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := composerInstalledAnalyzer{}
 			got := a.Required(tt.filePath, nil)
-			assert.Equal(t, tt.want, got)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

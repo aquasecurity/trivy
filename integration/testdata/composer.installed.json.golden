@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/composer-installed",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/composer-installed",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {
@@ -23,6 +24,9 @@
         {
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+          },
           "Version": "1.8.3",
           "Licenses": [
             "MIT"
@@ -42,6 +46,9 @@
         {
           "ID": "psr/http-message@1.1",
           "Name": "psr/http-message",
+          "Identifier": {
+            "PURL": "pkg:composer/psr/http-message@1.1"
+          },
           "Version": "1.1",
           "Licenses": [
             "MIT"
@@ -57,6 +64,9 @@
         {
           "ID": "ralouphie/getallheaders@3.0.3",
           "Name": "ralouphie/getallheaders",
+          "Identifier": {
+            "PURL": "pkg:composer/ralouphie/getallheaders@3.0.3"
+          },
           "Version": "3.0.3",
           "Licenses": [
             "MIT"
@@ -75,6 +85,9 @@
           "VulnerabilityID": "CVE-2022-24775",
           "PkgID": "guzzlehttp/psr7@1.8.3",
           "PkgName": "guzzlehttp/psr7",
+          "PkgIdentifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+          },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Status": "fixed",
@@ -92,6 +105,9 @@
           "CweIDs": [
             "CWE-20"
           ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
