@@ -10,7 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
+func Test_composerVendorAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
@@ -93,7 +93,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 	}
 }
 
-func Test_composerInstalledAnalyzer_Required(t *testing.T) {
+func Test_composerVendorAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string

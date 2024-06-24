@@ -14,7 +14,7 @@ The following table provides an outline of the features Trivy offers.
 | Package manager | File           | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
 |-----------------|----------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
 | Composer        | composer.lock  |            ✓            |     Excluded     |                  ✓                   |    ✓     |
-| Composer        | installed.json |            ✅            |     Excluded     |                  -                   |    ✓     |
+| Composer        | installed.json |            ✓            |     Excluded     |                  -                   |    ✓     |
 
 ## composer.lock
 In order to detect dependencies, Trivy searches for `composer.lock`.
