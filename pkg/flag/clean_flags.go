@@ -3,6 +3,7 @@ package flag
 var (
 	CleanAll = Flag[bool]{
 		Name:       "all",
+		Shorthand:  "a",
 		ConfigName: "clean.all",
 		Usage:      "remove all caches",
 	}
