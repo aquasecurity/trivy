@@ -34,7 +34,7 @@ func Run(ctx context.Context, opts flag.Options) error {
 
 	if opts.CleanVulnerabilityDB {
 		if err := cleanVulnerabilityDB(ctx, opts); err != nil {
-			return xerrors.Errorf("db clean error: %w", err)
+			return xerrors.Errorf("vuln db clean error: %w", err)
 		}
 	}
 
