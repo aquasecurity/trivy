@@ -2,7 +2,6 @@ package cache_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -10,120 +9,113 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 )
 
-func TestNewOptions(t *testing.T) {
-	type args struct {
-		backend     string
-		redisCACert string
-		redisCert   string
-		redisKey    string
-		redisTLS    bool
-		ttl         time.Duration
-	}
+func TestNew(t *testing.T) {
 	tests := []struct {
-		name      string
-		args      args
-		want      cache.Options
-		assertion require.ErrorAssertionFunc
+		name     string
+		opts     cache.Options
+		wantType any
+		wantErr  string
 	}{
 		{
-			name:      "fs",
-			args:      args{backend: "fs"},
-			want:      cache.Options{Type: cache.TypeFS},
-			assertion: require.NoError,
+			name: "fs backend",
+			opts: cache.Options{
+				Backend:  "fs",
+				CacheDir: "/tmp/cache",
+			},
+			wantType: cache.FSCache{},
 		},
 		{
-			name: "redis",
-			args: args{backend: "redis://localhost:6379"},
-			want: cache.Options{
-				Type:  cache.TypeRedis,
-				Redis: cache.RedisOptions{Backend: "redis://localhost:6379"},
+			name: "redis backend",
+			opts: cache.Options{
+				Backend: "redis://localhost:6379",
 			},
-			assertion: require.NoError,
-		},
-		{
-			name: "redis tls",
-			args: args{
-				backend:     "redis://localhost:6379",
-				redisCACert: "ca-cert.pem",
-				redisCert:   "cert.pem",
-				redisKey:    "key.pem",
-			},
-			want: cache.Options{
-				Type: cache.TypeRedis,
-				Redis: cache.RedisOptions{
-					Backend: "redis://localhost:6379",
-					TLSOptions: cache.RedisTLSOptions{
-						CACert: "ca-cert.pem",
-						Cert:   "cert.pem",
-						Key:    "key.pem",
-					},
-				},
-			},
-			assertion: require.NoError,
-		},
-		{
-			name: "redis tls with public certificates",
-			args: args{
-				backend:  "redis://localhost:6379",
-				redisTLS: true,
-			},
-			want: cache.Options{
-				Type: cache.TypeRedis,
-				Redis: cache.RedisOptions{
-					Backend: "redis://localhost:6379",
-					TLS:     true,
-				},
-			},
-			assertion: require.NoError,
+			wantType: cache.RedisCache{},
 		},
 		{
 			name: "unknown backend",
-			args: args{backend: "unknown"},
-			assertion: func(t require.TestingT, err error, msgs ...any) {
-				require.ErrorContains(t, err, "unknown cache backend")
+			opts: cache.Options{
+				Backend: "unknown",
 			},
+			wantErr: "unknown cache type",
 		},
 		{
-			name: "sad redis tls",
-			args: args{
-				backend:     "redis://localhost:6379",
-				redisCACert: "ca-cert.pem",
+			name: "invalid redis URL",
+			opts: cache.Options{
+				Backend: "redis://invalid-url:foo/bar",
 			},
-			assertion: func(t require.TestingT, err error, msgs ...any) {
-				require.ErrorContains(t, err, "you must provide Redis CA, cert and key file path when using TLS")
+			wantErr: "failed to parse Redis URL",
+		},
+		{
+			name: "incomplete TLS options",
+			opts: cache.Options{
+				Backend:     "redis://localhost:6379",
+				RedisCACert: "testdata/ca-cert.pem",
+				RedisTLS:    true,
 			},
+			wantErr: "you must provide Redis CA, cert and key file path when using TLS",
+		},
+		{
+			name: "invalid TLS file paths",
+			opts: cache.Options{
+				Backend:     "redis://localhost:6379",
+				RedisCACert: "testdata/non-existent-ca-cert.pem",
+				RedisCert:   "testdata/non-existent-cert.pem",
+				RedisKey:    "testdata/non-existent-key.pem",
+				RedisTLS:    true,
+			},
+			wantErr: "failed to get TLS config",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := cache.NewOptions(tt.args.backend, tt.args.redisCACert, tt.args.redisCert, tt.args.redisKey, tt.args.redisTLS, tt.args.ttl)
-			tt.assertion(t, err)
-			assert.Equal(t, tt.want, got)
+			c, cleanup, err := cache.New(tt.opts)
+			defer cleanup()
+
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+
+			require.NoError(t, err)
+			assert.NotNil(t, c)
+			assert.IsType(t, tt.wantType, c)
 		})
 	}
 }
 
-func TestRedisOptions_BackendMasked(t *testing.T) {
+func TestNewType(t *testing.T) {
 	tests := []struct {
-		name   string
-		fields cache.RedisOptions
-		want   string
+		name     string
+		backend  string
+		wantType cache.Type
 	}{
 		{
-			name:   "redis cache backend masked",
-			fields: cache.RedisOptions{Backend: "redis://root:password@localhost:6379"},
-			want:   "redis://****@localhost:6379",
+			name:     "redis backend",
+			backend:  "redis://localhost:6379",
+			wantType: cache.TypeRedis,
 		},
 		{
-			name:   "redis cache backend masked does nothing",
-			fields: cache.RedisOptions{Backend: "redis://localhost:6379"},
-			want:   "redis://localhost:6379",
+			name:     "fs backend",
+			backend:  "fs",
+			wantType: cache.TypeFS,
+		},
+		{
+			name:     "empty backend",
+			backend:  "",
+			wantType: cache.TypeFS,
+		},
+		{
+			name:     "unknown backend",
+			backend:  "unknown",
+			wantType: cache.TypeUnknown,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.fields.BackendMasked())
+			got := cache.NewType(tt.backend)
+			assert.Equal(t, tt.wantType, got)
 		})
 	}
 }

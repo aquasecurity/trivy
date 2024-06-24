@@ -62,10 +62,12 @@ func cleanAll(ctx context.Context, opts flag.Options) error {
 
 func cleanScanCache(ctx context.Context, opts flag.Options) error {
 	log.InfoContext(ctx, "Removing scan cache...")
-	c, err := cache.New(opts.CacheDir, opts.CacheBackendOptions)
+	c, cleanup, err := cache.New(opts.CacheOpts())
 	if err != nil {
 		return xerrors.Errorf("failed to instantiate cache client: %w", err)
 	}
+	defer cleanup()
+
 	if err = c.Clear(); err != nil {
 		return xerrors.Errorf("clear scan cache: %w", err)
 	}

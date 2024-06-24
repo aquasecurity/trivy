@@ -17,6 +17,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -443,6 +444,28 @@ func (o *Options) FilterOpts() result.FilterOption {
 		PolicyFile:         o.IgnorePolicy,
 		IgnoreLicenses:     o.IgnoredLicenses,
 		VEXPath:            o.VEXPath,
+	}
+}
+
+// CacheOpts returns options for scan cache
+func (o *Options) CacheOpts() cache.Options {
+	return cache.Options{
+		Backend:     o.CacheBackend,
+		CacheDir:    o.CacheDir,
+		RedisCACert: o.RedisCACert,
+		RedisCert:   o.RedisCert,
+		RedisKey:    o.RedisKey,
+		RedisTLS:    o.RedisTLS,
+		TTL:         o.CacheTTL,
+	}
+}
+
+// RemoteCacheOpts returns options for remote scan cache
+func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
+	return cache.RemoteOptions{
+		ServerAddr:    o.ServerAddr,
+		CustomHeaders: o.CustomHeaders,
+		Insecure:      o.Insecure,
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -143,6 +144,8 @@ func (f *GlobalFlagGroup) ToOptions() (GlobalOptions, error) {
 
 	// Keep TRIVY_NON_SSL for backward compatibility
 	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
+
+	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
 	return GlobalOptions{
 		ConfigFile:            f.ConfigFile.Value(),
