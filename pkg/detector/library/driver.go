@@ -33,7 +33,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.RustBinary, ftypes.Cargo:
 		ecosystem = vulnerability.Cargo
 		comparer = compare.GenericComparer{}
-	case ftypes.Composer, ftypes.ComposerInstalled:
+	case ftypes.Composer, ftypes.ComposerVendor:
 		ecosystem = vulnerability.Composer
 		comparer = compare.GenericComparer{}
 	case ftypes.GoBinary, ftypes.GoModule:

@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
-  "ArtifactName": "testdata/fixtures/repo/composer-installed",
+  "ArtifactName": "testdata/fixtures/repo/composer-vendor",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {
@@ -19,13 +19,14 @@
     {
       "Target": "installed.json",
       "Class": "lang-pkgs",
-      "Type": "composer-installed",
+      "Type": "composer-vendor",
       "Packages": [
         {
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
           "Identifier": {
-            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "25fca97fe23aa7b1"
           },
           "Version": "1.8.3",
           "Licenses": [
@@ -47,7 +48,8 @@
           "ID": "psr/http-message@1.1",
           "Name": "psr/http-message",
           "Identifier": {
-            "PURL": "pkg:composer/psr/http-message@1.1"
+            "PURL": "pkg:composer/psr/http-message@1.1",
+            "UID": "299d8ff4461e894"
           },
           "Version": "1.1",
           "Licenses": [
@@ -65,7 +67,8 @@
           "ID": "ralouphie/getallheaders@3.0.3",
           "Name": "ralouphie/getallheaders",
           "Identifier": {
-            "PURL": "pkg:composer/ralouphie/getallheaders@3.0.3"
+            "PURL": "pkg:composer/ralouphie/getallheaders@3.0.3",
+            "UID": "c383e94d979a209c"
           },
           "Version": "3.0.3",
           "Licenses": [
@@ -86,7 +89,8 @@
           "PkgID": "guzzlehttp/psr7@1.8.3",
           "PkgName": "guzzlehttp/psr7",
           "PkgIdentifier": {
-            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "25fca97fe23aa7b1"
           },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",

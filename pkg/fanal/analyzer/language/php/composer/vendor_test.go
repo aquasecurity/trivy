@@ -1,4 +1,4 @@
-package installed
+package composer
 
 import (
 	"os"
@@ -19,19 +19,20 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/happy/installed.json",
+			inputFile: "testdata/composer-vendor/happy/installed.json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.ComposerInstalled,
-						FilePath: "testdata/happy/installed.json",
+						Type:     types.ComposerVendor,
+						FilePath: "testdata/composer-vendor/happy/installed.json",
 						Packages: []types.Package{
 							{
-								ID:       "pear/log@1.13.3",
-								Name:     "pear/log",
-								Version:  "1.13.3",
-								Indirect: false,
-								Licenses: []string{"MIT"},
+								ID:           "pear/log@1.13.3",
+								Name:         "pear/log",
+								Version:      "1.13.3",
+								Indirect:     false,
+								Relationship: types.RelationshipUnknown,
+								Licenses:     []string{"MIT"},
 								Locations: []types.Location{
 									{
 										StartLine: 3,
@@ -41,11 +42,12 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"pear/pear_exception@v1.0.2"},
 							},
 							{
-								ID:       "pear/pear_exception@v1.0.2",
-								Name:     "pear/pear_exception",
-								Version:  "v1.0.2",
-								Indirect: false,
-								Licenses: []string{"BSD-2-Clause"},
+								ID:           "pear/pear_exception@v1.0.2",
+								Name:         "pear/pear_exception",
+								Version:      "v1.0.2",
+								Indirect:     false,
+								Relationship: types.RelationshipUnknown,
+								Licenses:     []string{"BSD-2-Clause"},
 								Locations: []types.Location{
 									{
 										StartLine: 66,
@@ -60,7 +62,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: "testdata/sad/installed.json",
+			inputFile: "testdata/composer-vendor/sad/installed.json",
 			wantErr:   "decode error",
 		},
 	}
@@ -74,7 +76,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 				require.NoError(t, err)
 			}()
 
-			a := composerInstalledAnalyzer{}
+			a := composerVendorAnalyzer{}
 			got, err := a.Analyze(nil, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
@@ -110,7 +112,7 @@ func Test_composerInstalledAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := composerInstalledAnalyzer{}
+			a := composerVendorAnalyzer{}
 			got := a.Required(tt.filePath, nil)
 			require.Equal(t, tt.want, got)
 		})

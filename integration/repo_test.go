@@ -256,9 +256,9 @@ func TestRepository(t *testing.T) {
 				command:     "rootfs",
 				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/composer-installed",
+				input:       "testdata/fixtures/repo/composer-vendor",
 			},
-			golden: "testdata/composer.installed.json.golden",
+			golden: "testdata/composer.vendor.json.golden",
 		},
 		{
 			name: "dockerfile",

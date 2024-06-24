@@ -27,7 +27,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/pnpm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/yarn"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/php/composer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/php/installed"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/packaging"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pip"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pipenv"
