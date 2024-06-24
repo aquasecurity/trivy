@@ -15,6 +15,7 @@ import (
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
+	// Deprecated
 	ResetChecksBundleFlag = Flag[bool]{
 		Name:       "reset-checks-bundle",
 		ConfigName: "misconfiguration.reset-checks-bundle",
