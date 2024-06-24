@@ -81,5 +81,7 @@ $ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-produ
 "trivy clean" command removes caches and databases.
 
 ```
-$ trivy clean --all
+$ trivy clean --vuln-db --java-db
+2024-06-24T11:42:31+06:00       INFO    Removing vulnerability database...
+2024-06-24T11:42:31+06:00       INFO    Removing Java database...
 ```
