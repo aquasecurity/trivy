@@ -115,7 +115,7 @@ func (f *Flag[T]) Parse() error {
 	}
 	if f.Removed != "" && f.isSet() {
 		log.Errorf(`"--%s" was removed. %s`, f.Name, f.Removed)
-		return xerrors.Errorf(`"--%s" was removed`, f.Name)
+		return xerrors.Errorf(`removed flag ("--%s")`, f.Name)
 	}
 
 	f.value = value
