@@ -22,12 +22,12 @@
         <dependencies>
             <dependency>
                 <groupId>org.example</groupId>
-                <artifactId>example-nested</artifactId>
-                <version>3.3.3</version>
+                <artifactId>example-exclusions</artifactId>
+                <version>3.0.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.example</groupId>
-                        <artifactId>example-api</artifactId>
+                        <artifactId>example-dependency2</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

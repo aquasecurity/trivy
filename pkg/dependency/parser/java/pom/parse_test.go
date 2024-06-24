@@ -979,6 +979,14 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// ➜ mvn dependency:tree
+		// ...
+		// [INFO]
+		// [INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ child ---
+		// [INFO] com.example:child:jar:3.0.0
+		// [INFO] \- org.example:example-exclusions:jar:3.0.0:compile
+		// [INFO]    \- org.example:example-nested:jar:3.3.3:compile
+		// [INFO] ------------------------------------------------------------------------
 		{
 			name:      "exclusions in child and parent dependency management",
 			inputFile: filepath.Join("testdata", "exclusions-parent-dependency-management", "child", "pom.xml"),
@@ -992,9 +1000,9 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-nested:3.3.3",
-					Name:         "org.example:example-nested",
-					Version:      "3.3.3",
+					ID:           "org.example:example-exclusions:3.0.0",
+					Name:         "org.example:example-exclusions",
+					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipDirect,
 					Locations: ftypes.Locations{
 						{
@@ -1004,9 +1012,9 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
-					Name:         "org.example:example-dependency",
-					Version:      "1.2.3",
+					ID:           "org.example:example-nested:3.3.3",
+					Name:         "org.example:example-nested",
+					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
@@ -1014,13 +1022,13 @@ func TestPom_Parse(t *testing.T) {
 				{
 					ID: "com.example:child:3.0.0",
 					DependsOn: []string{
-						"org.example:example-nested:3.3.3",
+						"org.example:example-exclusions:3.0.0",
 					},
 				},
 				{
-					ID: "org.example:example-nested:3.3.3",
+					ID: "org.example:example-exclusions:3.0.0",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
+						"org.example:example-nested:3.3.3",
 					},
 				},
 			},

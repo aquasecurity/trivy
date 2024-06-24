@@ -25,11 +25,11 @@
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
-            <artifactId>example-nested</artifactId>
+            <artifactId>example-exclusions</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.example</groupId>
-                    <artifactId>example-api-common</artifactId>
+                    <artifactId>example-dependency</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
