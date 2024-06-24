@@ -1,15 +1,16 @@
 package alpine
 
 import (
+	"context"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
+	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -45,61 +46,39 @@ var (
 		"3.16": time.Date(2024, 5, 23, 23, 59, 59, 0, time.UTC),
 		"3.17": time.Date(2024, 11, 22, 23, 59, 59, 0, time.UTC),
 		"3.18": time.Date(2025, 5, 9, 23, 59, 59, 0, time.UTC),
+		"3.19": time.Date(2025, 11, 1, 23, 59, 59, 0, time.UTC),
+		"3.20": time.Date(2026, 04, 1, 23, 59, 59, 0, time.UTC),
 		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(clock clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = clock
-	}
-}
-
 // Scanner implements the Alpine scanner
 type Scanner struct {
 	vs alpine.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      alpine.NewVulnSrc(),
-		options: o,
+		vs: alpine.NewVulnSrc(),
 	}
 }
 
 // Detect vulnerabilities in package using Alpine scanner
-func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Alpine vulnerabilities...")
-	if strings.Count(osVer, ".") > 1 {
-		osVer = osVer[:strings.LastIndex(osVer, ".")]
-	}
+func (s *Scanner) Detect(ctx context.Context, osVer string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+	osVer = osver.Minor(osVer)
 	repoRelease := s.repoRelease(repo)
 
-	log.Logger.Debugf("alpine: os version: %s", osVer)
-	log.Logger.Debugf("alpine: package repository: %s", repoRelease)
-	log.Logger.Debugf("alpine: the number of packages: %d", len(pkgs))
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.String("repository", repoRelease), log.Int("pkg_num", len(pkgs)))
 
 	stream := osVer
 	if repoRelease != "" && osVer != repoRelease {
 		// Prefer the repository release. Use OS version only when the repository is not detected.
 		stream = repoRelease
 		if repoRelease != "edge" { // TODO: we should detect the current edge version.
-			log.Logger.Warnf("Mixing Alpine versions is unsupported, OS: '%s', repository: '%s'", osVer, repoRelease)
+			log.WarnContext(ctx, "Mixing Alpine versions is unsupported",
+				log.String("os", osVer), log.String("repository", repoRelease))
 		}
 	}
 
@@ -116,12 +95,12 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 
 		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
 		if err != nil {
-			log.Logger.Debugf("failed to parse Alpine Linux installed package version: %s", err)
+			log.DebugContext(ctx, "Failed to parse the installed package version", log.Err(err))
 			continue
 		}
 
 		for _, adv := range advisories {
-			if !s.isVulnerable(sourceVersion, adv) {
+			if !s.isVulnerable(ctx, sourceVersion, adv) {
 				continue
 			}
 			vulns = append(vulns, types.DetectedVulnerability{
@@ -131,7 +110,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})
@@ -140,7 +119,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 	return vulns, nil
 }
 
-func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Advisory) bool {
+func (s *Scanner) isVulnerable(ctx context.Context, installedVersion version.Version, adv dbTypes.Advisory) bool {
 	// This logic is for unfixed vulnerabilities, but Trivy DB doesn't have advisories for unfixed vulnerabilities for now
 	// because Alpine just provides potentially vulnerable packages. It will cause a lot of false positives.
 	// This is for Aqua commercial products.
@@ -148,7 +127,8 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 		// AffectedVersion means which version introduced this vulnerability.
 		affectedVersion, err := version.NewVersion(adv.AffectedVersion)
 		if err != nil {
-			log.Logger.Debugf("failed to parse Alpine Linux affected package version: %s", err)
+			log.DebugContext(ctx, "Failed to parse the affected package version",
+				log.String("version", adv.AffectedVersion), log.Err(err))
 			return false
 		}
 		if affectedVersion.GreaterThan(installedVersion) {
@@ -165,7 +145,8 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 	// Compare versions for fixed vulnerabilities
 	fixedVersion, err := version.NewVersion(adv.FixedVersion)
 	if err != nil {
-		log.Logger.Debugf("failed to parse Alpine Linux fixed version: %s", err)
+		log.DebugContext(ctx, "Failed to parse the fixed version",
+			log.String("version", adv.FixedVersion), log.Err(err))
 		return false
 	}
 
@@ -173,19 +154,9 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 	return installedVersion.LessThan(fixedVersion)
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using Alpine scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	if strings.Count(osVer, ".") > 1 {
-		osVer = osVer[:strings.LastIndex(osVer, ".")]
-	}
-
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Infof("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return true // may be the latest version
-	}
-
-	return s.clock.Now().Before(eol)
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osver.Minor(osVer))
 }
 
 func (s *Scanner) repoRelease(repo *ftypes.Repository) string {

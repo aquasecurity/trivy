@@ -1,9 +1,8 @@
 package maven
 
 import (
-	"golang.org/x/xerrors"
-
 	version "github.com/masahiro331/go-mvn-version"
+	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"

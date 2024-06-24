@@ -21,13 +21,17 @@ import (
 // "mage test:k8s" will run this test.
 
 func TestK8s(t *testing.T) {
+	// Set up testing DB
+	cacheDir := initDB(t)
 	t.Run("misconfig and vulnerability scan", func(t *testing.T) {
 		// Set up the output file
 		outputFile := filepath.Join(t.TempDir(), "output.json")
 
 		osArgs := []string{
+			"--cache-dir",
+			cacheDir,
 			"k8s",
-			"cluster",
+			"kind-kind-test",
 			"--report",
 			"summary",
 			"-q",
@@ -35,10 +39,6 @@ func TestK8s(t *testing.T) {
 			"5m0s",
 			"--format",
 			"json",
-			"--components",
-			"workload",
-			"--context",
-			"kind-kind-test",
 			"--output",
 			outputFile,
 		}
@@ -75,12 +75,10 @@ func TestK8s(t *testing.T) {
 		outputFile := filepath.Join(t.TempDir(), "output.json")
 		osArgs := []string{
 			"k8s",
-			"cluster",
+			"kind-kind-test",
 			"--format",
 			"cyclonedx",
 			"-q",
-			"--context",
-			"kind-kind-test",
 			"--output",
 			outputFile,
 		}
@@ -97,7 +95,7 @@ func TestK8s(t *testing.T) {
 		err = json.NewDecoder(f).Decode(&got)
 		require.NoError(t, err)
 
-		assert.Equal(t, got.Metadata.Component.Name, "kind-kind-test")
+		assert.Equal(t, got.Metadata.Component.Name, "k8s.io/kubernetes")
 		assert.Equal(t, got.Metadata.Component.Type, cdx.ComponentType("platform"))
 
 		// Has components
@@ -107,6 +105,5 @@ func TestK8s(t *testing.T) {
 		assert.True(t, lo.SomeBy(*got.Dependencies, func(r cdx.Dependency) bool {
 			return len(*r.Dependencies) > 0
 		}))
-
 	})
 }

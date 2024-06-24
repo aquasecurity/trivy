@@ -1,0 +1,60 @@
+lockfileVersion: '6.0'
+
+dependencies:
+  debug:
+    specifier: https://github.com/debug-js/debug/tarball/4.3.4
+    version: '@github.com/debug-js/debug/tarball/4.3.4'
+  is-negative:
+    specifier: https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5
+    version: '@codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5'
+  lodash:
+    specifier: file:foo/bar/lodash.tgz
+    version: file:foo/bar/lodash.tgz
+  package1:
+    specifier: file:package1
+    version: file:package1
+
+packages:
+
+  /asynckit@0.4.0:
+    resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+    dev: false
+
+  /ms@2.1.2:
+    resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
+    dev: false
+
+  '@codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5':
+    resolution: {tarball: https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5}
+    name: is-negative
+    version: 2.0.1
+    engines: {node: '>=0.10.0'}
+    dev: false
+
+  '@github.com/debug-js/debug/tarball/4.3.4':
+    resolution: {tarball: https://github.com/debug-js/debug/tarball/4.3.4}
+    name: debug
+    version: 4.3.4
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+    dependencies:
+      ms: 2.1.2
+    dev: false
+
+  file:foo/bar/lodash.tgz:
+    resolution: {integrity: sha512-fPftOkGbplay6FszUHWPJ8wV7liS+n2gB/UVN0Wv4G71KJWx+8trhGYsbekWqz6TTzkKur67bAdSIIccmKIyLA==, tarball: file:foo/bar/lodash.tgz}
+    name: lodash
+    version: 4.17.21
+    dev: false
+
+  file:package1:
+    resolution: {directory: package1, type: directory}
+    name: package1
+    version: 1.0.0
+    dependencies:
+      asynckit: 0.4.0
+    dev: false

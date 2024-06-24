@@ -1,18 +1,18 @@
 package redhat_test
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -138,8 +138,11 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 				{
-					VulnerabilityID:  "CVE-2020-12403",
-					VendorIDs:        []string{"RHSA-2021:0538", "RHSA-2021:0876"},
+					VulnerabilityID: "CVE-2020-12403",
+					VendorIDs: []string{
+						"RHSA-2021:0538",
+						"RHSA-2021:0876",
+					},
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.53.1-17.el7_3",
@@ -367,7 +370,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer func() { _ = dbtest.Close() }()
 
 			s := redhat.NewScanner()
-			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			require.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
@@ -376,7 +379,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -422,19 +425,20 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "unknown",
+			name: "latest",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "unknown",
-				osVer:    "8.0",
+				osFamily: "redhat",
+				osVer:    "999.0",
 			},
-			want: false,
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := redhat.NewScanner(redhat.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(context.Background(), tt.now)
+			s := redhat.NewScanner()
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

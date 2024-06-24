@@ -58,13 +58,14 @@ func normalize(expr Expression, fn ...NormalizeFunc) Expression {
 func NormalizeForSPDX(s string) string {
 	var b strings.Builder
 	for _, c := range s {
-		// idstring = 1*(ALPHA / DIGIT / "-" / "." )
-		if isAlphabet(c) || unicode.IsNumber(c) || c == '-' || c == '.' {
+		switch {
+		// spec: idstring = 1*(ALPHA / DIGIT / "-" / "." )
+		case isAlphabet(c) || unicode.IsNumber(c) || c == '-' || c == '.':
 			_, _ = b.WriteRune(c)
-		} else if c == ':' {
+		case c == ':':
 			// TODO: Support DocumentRef
 			_, _ = b.WriteRune(c)
-		} else {
+		default:
 			// Replace invalid characters with '-'
 			_, _ = b.WriteRune('-')
 		}

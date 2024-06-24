@@ -3,6 +3,7 @@ package rekor
 import (
 	"context"
 	"net/url"
+	"slices"
 
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -10,7 +11,6 @@ import (
 	eclient "github.com/sigstore/rekor/pkg/generated/client/entries"
 	"github.com/sigstore/rekor/pkg/generated/client/index"
 	"github.com/sigstore/rekor/pkg/generated/models"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -37,9 +37,15 @@ type EntryID struct {
 func NewEntryID(entryID string) (EntryID, error) {
 	switch len(entryID) {
 	case treeIDLen + uuidLen:
-		return EntryID{TreeID: entryID[:treeIDLen], UUID: entryID[treeIDLen:]}, nil
+		return EntryID{
+			TreeID: entryID[:treeIDLen],
+			UUID:   entryID[treeIDLen:],
+		}, nil
 	case uuidLen:
-		return EntryID{TreeID: "", UUID: entryID}, nil
+		return EntryID{
+			TreeID: "",
+			UUID:   entryID,
+		}, nil
 	default:
 		return EntryID{}, xerrors.New("invalid Entry ID length")
 	}
@@ -71,7 +77,7 @@ func NewClient(rekorURL string) (*Client, error) {
 }
 
 func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
-	log.Logger.Debugf("Search for %s in Rekor", hash)
+	log.Debug("Searching index in Rekor", log.String("hash", hash))
 	params := index.NewSearchIndexParamsWithContext(ctx).WithQuery(&models.SearchIndex{Hash: hash})
 	resp, err := c.Index.SearchIndex(params)
 	if err != nil {

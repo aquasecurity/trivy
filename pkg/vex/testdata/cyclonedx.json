@@ -15,9 +15,30 @@
       },
       "affects": [
         {
-          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#jackson-databind-2.8.0"
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0"
         }
       ]
+    },
+    {
+      "id": "CVE-2022-27943",
+      "source": {
+        "name": "ubuntu",
+        "url": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "affects": [
+        {
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:deb/ubuntu/libstdc%2B%2B6@12.3.0-1ubuntu1~22.04?arch=amd64&distro=ubuntu-22.04",
+          "versions": [
+            {
+              "version": "12.3.0-1ubuntu1~22.04",
+              "status": "affected"
+            }
+          ]
+        }
+      ],
+      "analysis": {
+        "state": "not_affected"
+      }
     }
   ]
 }

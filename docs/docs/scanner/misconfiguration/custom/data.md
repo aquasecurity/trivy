@@ -1,6 +1,6 @@
 # Custom Data
 
-Custom policies may require additional data in order to determine an answer.
+Custom checks may require additional data in order to determine an answer.
 
 For example, an allowed list of resources that can be created. 
 Instead of hardcoding this information inside your policy, Trivy allows passing paths to data files with the `--data` flag.

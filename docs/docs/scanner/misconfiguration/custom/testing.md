@@ -1,9 +1,9 @@
 # Testing
-It is highly recommended to write tests for your custom policies.
+It is highly recommended to write tests for your custom checks.
 
 ## Rego testing
-To help you verify the correctness of your custom policies, OPA gives you a framework that you can use to write tests for your policies. 
-By writing tests for your custom policies you can speed up the development process of new rules and reduce the amount of time it takes to modify rules as requirements evolve.
+To help you verify the correctness of your custom checks, OPA gives you a framework that you can use to write tests for your checks. 
+By writing tests for your custom checks you can speed up the development process of new rules and reduce the amount of time it takes to modify rules as requirements evolve.
 
 For more details, see [Policy Testing][opa-testing].
 
@@ -22,12 +22,12 @@ For more details, see [Policy Testing][opa-testing].
     }
     ```
 
-To write tests for custom policies, you can refer to existing tests under [defsec][defsec].
+To write tests for custom checks, you can refer to existing tests under [trivy-checks][trivy-checks].
 
 ## Go testing
 [Fanal][fanal] which is a core library of Trivy can be imported as a Go library.
-You can scan config files in Go and test your custom policies using Go's testing methods, such as [table-driven tests][table].
-This allows you to use the actual configuration file as input, making it easy to prepare test data and ensure that your custom policies work in practice.
+You can scan config files in Go and test your custom checks using Go's testing methods, such as [table-driven tests][table].
+This allows you to use the actual configuration file as input, making it easy to prepare test data and ensure that your custom checks work in practice.
 
 In particular, Dockerfile and HCL need to be converted to structural data as input, which may be different from the expected input format.
 
@@ -85,6 +85,6 @@ The following example stores allowed and denied configuration files in a directo
 `Dockerfile.allowed` has one successful result in `Successes`, while `Dockerfile.denied` has one failure result in `Failures`.
 
 [opa-testing]: https://www.openpolicyagent.org/docs/latest/policy-testing/
-[defsec]: https://github.com/aquasecurity/defsec
+[defsec]: https://github.com/aquasecurity/trivy-checks/tree/main
 [table]: https://github.com/golang/go/wiki/TableDrivenTests
 [fanal]: https://github.com/aquasecurity/fanal

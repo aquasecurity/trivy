@@ -5,13 +5,16 @@
   "version": 1,
   "metadata": {
     "timestamp": "2023-06-01T13:10:23+00:00",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "0.41.0-80-g1c03982fe"
-      }
-    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "0.41.0-80-g1c03982fe"
+        }
+      ]
+    },
     "component": {
       "bom-ref": "pkg:oci/elasticsearch@sha256:d4b68b602eb3d92ea3256886761752ae1159dc01fd391f4c4a87ebf6ba9d3895?repository_url=index.docker.io%2Fbitnami%2Felasticsearch\u0026arch=arm64",
       "type": "container",

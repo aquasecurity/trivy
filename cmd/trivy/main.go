@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"golang.org/x/xerrors"
@@ -9,33 +10,32 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	_ "modernc.org/sqlite" // sqlite driver for RPM DB and Java DB
 )
 
-var (
-	version = "dev"
-)
-
 func main() {
 	if err := run(); err != nil {
-		log.Fatal(err)
+		var exitError *types.ExitError
+		if errors.As(err, &exitError) {
+			os.Exit(exitError.Code)
+		}
+		log.Fatal("Fatal error", log.Err(err))
 	}
 }
 
 func run() error {
 	// Trivy behaves as the specified plugin.
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
-		if !plugin.IsPredefined(runAsPlugin) {
-			return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
-		}
-		if err := plugin.RunWithArgs(context.Background(), runAsPlugin, os.Args[1:]); err != nil {
+		log.InitLogger(false, false)
+		if err := plugin.Run(context.Background(), runAsPlugin, plugin.Options{Args: os.Args[1:]}); err != nil {
 			return xerrors.Errorf("plugin error: %w", err)
 		}
 		return nil
 	}
 
-	app := commands.NewApp(version)
+	app := commands.NewApp()
 	if err := app.Execute(); err != nil {
 		return err
 	}

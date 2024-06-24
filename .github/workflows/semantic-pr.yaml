@@ -28,6 +28,7 @@ jobs:
             ci
             chore
             revert
+            release
             BREAKING
 
           scopes: |
@@ -44,6 +45,7 @@ jobs:
             k8s
             aws
             vm
+            plugin
 
             alpine
             wolfi
@@ -73,6 +75,10 @@ jobs:
             c\+\+
             elixir
             dart
+            swift
+            bitnami
+            conda
+            julia
 
             os
             lang
@@ -93,8 +99,10 @@ jobs:
             cyclonedx
             spdx
             purl
+            vex
 
             helm
             report
             db
+            parser
             deps

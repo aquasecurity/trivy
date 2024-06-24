@@ -5,8 +5,8 @@ import (
 
 	"github.com/samber/lo"
 
-	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	iacRules "github.com/aquasecurity/trivy/pkg/iac/rules"
 )
 
 var (
@@ -49,6 +49,7 @@ var (
 	CategoryHubSpot              = types.SecretRuleCategory("HubSpot")
 	CategoryIntercom             = types.SecretRuleCategory("Intercom")
 	CategoryIonic                = types.SecretRuleCategory("Ionic")
+	CategoryJWT                  = types.SecretRuleCategory("JWT")
 	CategoryLinear               = types.SecretRuleCategory("Linear")
 	CategoryLob                  = types.SecretRuleCategory("Lob")
 	CategoryMailchimp            = types.SecretRuleCategory("Mailchimp")
@@ -67,22 +68,24 @@ var (
 	CategoryLinkedIn             = types.SecretRuleCategory("LinkedIn")
 	CategoryTwitch               = types.SecretRuleCategory("Twitch")
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
+	CategoryDocker               = types.SecretRuleCategory("Docker")
+	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 )
 
 // Reusable regex patterns
 const (
 	quote       = `["']?`
-	connect     = `\s*(:|=>|=)\s*`
+	connect     = `\s*(:|=>|=)?\s*`
 	startSecret = `(^|\s+)`
-	endSecret   = `(\s+|$)`
+	endSecret   = `[.,]?(\s+|$)`
 
-	aws = `(aws)?_?`
+	aws = `aws_?`
 )
 
 // This function is exported for trivy-plugin-aqua purposes only
-func GetSecretRulesMetadata() []defsecRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, i int) defsecRules.Check {
-		return defsecRules.Check{
+func GetSecretRulesMetadata() []iacRules.Check {
+	return lo.Map(builtinRules, func(rule Rule, i int) iacRules.Check {
+		return iacRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,
 		}
@@ -104,7 +107,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Secret Access Key",
-		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%s(secret)?_?(access)?_?key%s%s%s(?P<secret>[A-Za-z0-9\/\+=]{40})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
+		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%s(sec(ret)?)?_?(access)?_?key%s%s%s(?P<secret>[A-Za-z0-9\/\+=]{40})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"key"},
 	},
@@ -141,6 +144,14 @@ var builtinRules = []Rule{
 		Keywords: []string{"ghr_"},
 	},
 	{
+		ID:       "github-fine-grained-pat",
+		Category: CategoryGitHub,
+		Title:    "GitHub Fine-grained personal access tokens",
+		Severity: "CRITICAL",
+		Regex:    MustCompile(`github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}`),
+		Keywords: []string{"github_pat_"},
+	},
+	{
 		ID:       "gitlab-pat",
 		Category: CategoryGitLab,
 		Title:    "GitLab Personal Access Token",
@@ -149,11 +160,20 @@ var builtinRules = []Rule{
 		Keywords: []string{"glpat-"},
 	},
 	{
+		// cf. https://huggingface.co/docs/hub/en/security-tokens
+		ID:       "hugging-face-access-token",
+		Category: CategoryHuggingFace,
+		Severity: "CRITICAL",
+		Title:    "Hugging Face Access Token",
+		Regex:    MustCompile(`hf_[A-Za-z0-9]{39}`),
+		Keywords: []string{"hf_"},
+	},
+	{
 		ID:              "private-key",
 		Category:        CategoryAsymmetricPrivateKey,
 		Title:           "Asymmetric Private Key",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----[\s]*?(?P<secret>[\sA-Za-z0-9=+/\\\r\n]+)[\s]*?-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
+		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----[\s]*?(?P<secret>[A-Za-z0-9=+/\\\r\n][A-Za-z0-9=+/\\\s]+)[\s]*?-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"-----"},
 	},
@@ -278,7 +298,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAlibaba,
 		Title:           "Alibaba AccessKey ID",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`([^0-9a-z]|^)(?P<secret>(LTAI)(?i)[a-z0-9]{20})([^0-9a-z]|$)`),
+		Regex:           MustCompile(`([^0-9A-Za-z]|^)(?P<secret>(LTAI)(?i)[a-z0-9]{20})([^0-9A-Za-z]|$)`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"LTAI"},
 	},
@@ -563,6 +583,14 @@ var builtinRules = []Rule{
 		Keywords: []string{"ionic"},
 	},
 	{
+		ID:       "jwt-token",
+		Category: CategoryJWT,
+		Title:    "JWT token",
+		Severity: "MEDIUM",
+		Regex:    MustCompile(`ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?`),
+		Keywords: []string{"jwt"},
+	},
+	{
 		ID:       "linear-api-token",
 		Category: CategoryLinear,
 		Title:    "Linear API token",
@@ -782,5 +810,14 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(`(?i)(?P<key>typeform[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}(?P<secret>tfp_[a-z0-9\-_\.=]{59})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"typeform"},
+	},
+	{
+		ID:              "dockerconfig-secret",
+		Category:        CategoryDocker,
+		Title:           "Dockerconfig secret exposed",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)(\.(dockerconfigjson|dockercfg):\s*\|*\s*(?P<secret>(ey|ew)+[A-Za-z0-9\/\+=]+))`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"dockerc"},
 	},
 }

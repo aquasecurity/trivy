@@ -50,7 +50,7 @@ func TestResults_Failed(t *testing.T) {
 						{
 							Type:   "Docker Security Check",
 							ID:     "ID-001",
-							Status: types.StatusFailure,
+							Status: types.MisconfStatusFailure,
 						},
 					},
 				},
@@ -67,7 +67,7 @@ func TestResults_Failed(t *testing.T) {
 						{
 							Type:   "Docker Security Check",
 							ID:     "ID-001",
-							Status: types.StatusPassed,
+							Status: types.MisconfStatusPassed,
 						},
 					},
 				},

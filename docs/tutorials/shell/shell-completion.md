@@ -58,7 +58,7 @@ image       -- Scan a container image
 kubernetes  -- scan kubernetes cluster
 module      -- Manage modules
 plugin      -- Manage plugins
-repository  -- Scan a remote repository
+repository  -- Scan a repository
 rootfs      -- Scan rootfs
 sbom        -- Scan SBOM for vulnerabilities
 server      -- Server mode

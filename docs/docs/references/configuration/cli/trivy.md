@@ -43,7 +43,6 @@ trivy [global flags] command [flags] target
 
 ### SEE ALSO
 
-* [trivy aws](trivy_aws.md)	 - [EXPERIMENTAL] Scan AWS account
 * [trivy config](trivy_config.md)	 - Scan config files for misconfigurations
 * [trivy convert](trivy_convert.md)	 - Convert Trivy JSON report into a different format
 * [trivy filesystem](trivy_filesystem.md)	 - Scan local filesystem
@@ -51,9 +50,9 @@ trivy [global flags] command [flags] target
 * [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
-* [trivy repository](trivy_repository.md)	 - Scan a remote repository
+* [trivy repository](trivy_repository.md)	 - Scan a repository
 * [trivy rootfs](trivy_rootfs.md)	 - Scan rootfs
-* [trivy sbom](trivy_sbom.md)	 - Scan SBOM for vulnerabilities
+* [trivy sbom](trivy_sbom.md)	 - Scan SBOM for vulnerabilities and licenses
 * [trivy server](trivy_server.md)	 - Server mode
 * [trivy version](trivy_version.md)	 - Print the version
 * [trivy vm](trivy_vm.md)	 - [EXPERIMENTAL] Scan a virtual machine image

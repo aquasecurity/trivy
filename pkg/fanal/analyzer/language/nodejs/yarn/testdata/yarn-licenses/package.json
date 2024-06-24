@@ -1,0 +1,9 @@
+{
+  "name": "yarn-3-licenses",
+  "version": "1.0.0",
+  "packageManager": "yarn@3.4.1",
+  "dependencies": {
+    "is-callable": "1.2.7",
+    "is-odd": "^3.0.1"
+  }
+}

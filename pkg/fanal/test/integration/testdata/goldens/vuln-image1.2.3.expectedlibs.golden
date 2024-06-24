@@ -2,256 +2,16 @@
   {
     "Type": "bundler",
     "FilePath": "ruby-app/Gemfile.lock",
-    "Libraries": [
-      {
-        "ID": "actioncable@5.2.3",
-        "Name": "actioncable",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "actionpack@5.2.3",
-          "nio4r@2.3.1",
-          "websocket-driver@0.7.0"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 4,
-            "EndLine": 4
-          }
-        ]
-      },
-      {
-        "ID": "actionmailer@5.2.3",
-        "Name": "actionmailer",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "actionpack@5.2.3",
-          "actionview@5.2.3",
-          "activejob@5.2.3",
-          "mail@2.7.1",
-          "rails-dom-testing@2.0.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 8,
-            "EndLine": 8
-          }
-        ]
-      },
-      {
-        "ID": "actionpack@5.2.3",
-        "Name": "actionpack",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "actionview@5.2.3",
-          "activesupport@5.2.3",
-          "rack-test@1.1.0",
-          "rack@2.0.7",
-          "rails-dom-testing@2.0.3",
-          "rails-html-sanitizer@1.0.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 14,
-            "EndLine": 14
-          }
-        ]
-      },
-      {
-        "ID": "actionview@5.2.3",
-        "Name": "actionview",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "activesupport@5.2.3",
-          "builder@3.2.3",
-          "erubi@1.8.0",
-          "rails-dom-testing@2.0.3",
-          "rails-html-sanitizer@1.0.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 21,
-            "EndLine": 21
-          }
-        ]
-      },
-      {
-        "ID": "activejob@5.2.3",
-        "Name": "activejob",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "activesupport@5.2.3",
-          "globalid@0.4.2"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 27,
-            "EndLine": 27
-          }
-        ]
-      },
-      {
-        "ID": "activemodel@5.2.3",
-        "Name": "activemodel",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "activesupport@5.2.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 30,
-            "EndLine": 30
-          }
-        ]
-      },
-      {
-        "ID": "activerecord@5.2.3",
-        "Name": "activerecord",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "activemodel@5.2.3",
-          "activesupport@5.2.3",
-          "arel@9.0.0"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 32,
-            "EndLine": 32
-          }
-        ]
-      },
-      {
-        "ID": "activestorage@5.2.3",
-        "Name": "activestorage",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "actionpack@5.2.3",
-          "activerecord@5.2.3",
-          "marcel@0.3.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 36,
-            "EndLine": 36
-          }
-        ]
-      },
-      {
-        "ID": "activesupport@5.2.3",
-        "Name": "activesupport",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "concurrent-ruby@1.1.5",
-          "i18n@1.6.0",
-          "minitest@5.11.3",
-          "tzinfo@1.2.5"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 40,
-            "EndLine": 40
-          }
-        ]
-      },
-      {
-        "ID": "arel@9.0.0",
-        "Name": "arel",
-        "Version": "9.0.0",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 45,
-            "EndLine": 45
-          }
-        ]
-      },
-      {
-        "ID": "ast@2.4.0",
-        "Name": "ast",
-        "Version": "2.4.0",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 46,
-            "EndLine": 46
-          }
-        ]
-      },
-      {
-        "ID": "builder@3.2.3",
-        "Name": "builder",
-        "Version": "3.2.3",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 47,
-            "EndLine": 47
-          }
-        ]
-      },
-      {
-        "ID": "coderay@1.1.2",
-        "Name": "coderay",
-        "Version": "1.1.2",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 48,
-            "EndLine": 48
-          }
-        ]
-      },
-      {
-        "ID": "concurrent-ruby@1.1.5",
-        "Name": "concurrent-ruby",
-        "Version": "1.1.5",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 49,
-            "EndLine": 49
-          }
-        ]
-      },
-      {
-        "ID": "crass@1.0.4",
-        "Name": "crass",
-        "Version": "1.0.4",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 50,
-            "EndLine": 50
-          }
-        ]
-      },
+    "Packages": [
       {
         "ID": "dotenv@2.7.2",
         "Name": "dotenv",
+        "Identifier": {
+          "PURL": "pkg:gem/dotenv@2.7.2",
+          "UID": "bf323ef200ea177a"
+        },
         "Version": "2.7.2",
+        "Relationship": "direct",
         "Layer": {},
         "Locations": [
           {
@@ -261,22 +21,14 @@
         ]
       },
       {
-        "ID": "erubi@1.8.0",
-        "Name": "erubi",
-        "Version": "1.8.0",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 52,
-            "EndLine": 52
-          }
-        ]
-      },
-      {
         "ID": "faker@1.9.3",
         "Name": "faker",
+        "Identifier": {
+          "PURL": "pkg:gem/faker@1.9.3",
+          "UID": "b5ac01b24ab4ed39"
+        },
         "Version": "1.9.3",
+        "Relationship": "direct",
         "DependsOn": [
           "i18n@1.6.0"
         ],
@@ -289,54 +41,14 @@
         ]
       },
       {
-        "ID": "globalid@0.4.2",
-        "Name": "globalid",
-        "Version": "0.4.2",
-        "Indirect": true,
-        "DependsOn": [
-          "activesupport@5.2.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 55,
-            "EndLine": 55
-          }
-        ]
-      },
-      {
-        "ID": "i18n@1.6.0",
-        "Name": "i18n",
-        "Version": "1.6.0",
-        "Indirect": true,
-        "DependsOn": [
-          "concurrent-ruby@1.1.5"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 57,
-            "EndLine": 57
-          }
-        ]
-      },
-      {
-        "ID": "jaro_winkler@1.5.2",
-        "Name": "jaro_winkler",
-        "Version": "1.5.2",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 59,
-            "EndLine": 59
-          }
-        ]
-      },
-      {
         "ID": "json@2.2.0",
         "Name": "json",
+        "Identifier": {
+          "PURL": "pkg:gem/json@2.2.0",
+          "UID": "cb6c1eb54f8c6e9d"
+        },
         "Version": "2.2.0",
+        "Relationship": "direct",
         "Layer": {},
         "Locations": [
           {
@@ -346,181 +58,14 @@
         ]
       },
       {
-        "ID": "loofah@2.2.3",
-        "Name": "loofah",
-        "Version": "2.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "crass@1.0.4",
-          "nokogiri@1.10.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 61,
-            "EndLine": 61
-          }
-        ]
-      },
-      {
-        "ID": "mail@2.7.1",
-        "Name": "mail",
-        "Version": "2.7.1",
-        "Indirect": true,
-        "DependsOn": [
-          "mini_mime@1.0.1"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 64,
-            "EndLine": 64
-          }
-        ]
-      },
-      {
-        "ID": "marcel@0.3.3",
-        "Name": "marcel",
-        "Version": "0.3.3",
-        "Indirect": true,
-        "DependsOn": [
-          "mimemagic@0.3.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 66,
-            "EndLine": 66
-          }
-        ]
-      },
-      {
-        "ID": "method_source@0.9.2",
-        "Name": "method_source",
-        "Version": "0.9.2",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 68,
-            "EndLine": 68
-          }
-        ]
-      },
-      {
-        "ID": "mimemagic@0.3.3",
-        "Name": "mimemagic",
-        "Version": "0.3.3",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 69,
-            "EndLine": 69
-          }
-        ]
-      },
-      {
-        "ID": "mini_mime@1.0.1",
-        "Name": "mini_mime",
-        "Version": "1.0.1",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 70,
-            "EndLine": 70
-          }
-        ]
-      },
-      {
-        "ID": "mini_portile2@2.4.0",
-        "Name": "mini_portile2",
-        "Version": "2.4.0",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 71,
-            "EndLine": 71
-          }
-        ]
-      },
-      {
-        "ID": "minitest@5.11.3",
-        "Name": "minitest",
-        "Version": "5.11.3",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 72,
-            "EndLine": 72
-          }
-        ]
-      },
-      {
-        "ID": "nio4r@2.3.1",
-        "Name": "nio4r",
-        "Version": "2.3.1",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 73,
-            "EndLine": 73
-          }
-        ]
-      },
-      {
-        "ID": "nokogiri@1.10.3",
-        "Name": "nokogiri",
-        "Version": "1.10.3",
-        "Indirect": true,
-        "DependsOn": [
-          "mini_portile2@2.4.0"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 74,
-            "EndLine": 74
-          }
-        ]
-      },
-      {
-        "ID": "parallel@1.17.0",
-        "Name": "parallel",
-        "Version": "1.17.0",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 76,
-            "EndLine": 76
-          }
-        ]
-      },
-      {
-        "ID": "parser@2.6.3.0",
-        "Name": "parser",
-        "Version": "2.6.3.0",
-        "Indirect": true,
-        "DependsOn": [
-          "ast@2.4.0"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 77,
-            "EndLine": 77
-          }
-        ]
-      },
-      {
         "ID": "pry@0.12.2",
         "Name": "pry",
+        "Identifier": {
+          "PURL": "pkg:gem/pry@0.12.2",
+          "UID": "1349a1afdbbc80bc"
+        },
         "Version": "0.12.2",
+        "Relationship": "direct",
         "DependsOn": [
           "coderay@1.1.2",
           "method_source@0.9.2"
@@ -534,51 +79,14 @@
         ]
       },
       {
-        "ID": "psych@3.1.0",
-        "Name": "psych",
-        "Version": "3.1.0",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 82,
-            "EndLine": 82
-          }
-        ]
-      },
-      {
-        "ID": "rack@2.0.7",
-        "Name": "rack",
-        "Version": "2.0.7",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 83,
-            "EndLine": 83
-          }
-        ]
-      },
-      {
-        "ID": "rack-test@1.1.0",
-        "Name": "rack-test",
-        "Version": "1.1.0",
-        "Indirect": true,
-        "DependsOn": [
-          "rack@2.0.7"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 84,
-            "EndLine": 84
-          }
-        ]
-      },
-      {
         "ID": "rails@5.2.0",
         "Name": "rails",
+        "Identifier": {
+          "PURL": "pkg:gem/rails@5.2.0",
+          "UID": "edef417a0d4c73e"
+        },
         "Version": "5.2.0",
+        "Relationship": "direct",
         "DependsOn": [
           "actioncable@5.2.3",
           "actionmailer@5.2.3",
@@ -601,88 +109,14 @@
         ]
       },
       {
-        "ID": "rails-dom-testing@2.0.3",
-        "Name": "rails-dom-testing",
-        "Version": "2.0.3",
-        "Indirect": true,
-        "DependsOn": [
-          "activesupport@5.2.3",
-          "nokogiri@1.10.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 99,
-            "EndLine": 99
-          }
-        ]
-      },
-      {
-        "ID": "rails-html-sanitizer@1.0.3",
-        "Name": "rails-html-sanitizer",
-        "Version": "1.0.3",
-        "Indirect": true,
-        "DependsOn": [
-          "loofah@2.2.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 102,
-            "EndLine": 102
-          }
-        ]
-      },
-      {
-        "ID": "railties@5.2.3",
-        "Name": "railties",
-        "Version": "5.2.3",
-        "Indirect": true,
-        "DependsOn": [
-          "actionpack@5.2.3",
-          "activesupport@5.2.3",
-          "method_source@0.9.2",
-          "rake@12.3.2",
-          "thor@0.20.3"
-        ],
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 104,
-            "EndLine": 104
-          }
-        ]
-      },
-      {
-        "ID": "rainbow@3.0.0",
-        "Name": "rainbow",
-        "Version": "3.0.0",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 110,
-            "EndLine": 110
-          }
-        ]
-      },
-      {
-        "ID": "rake@12.3.2",
-        "Name": "rake",
-        "Version": "12.3.2",
-        "Indirect": true,
-        "Layer": {},
-        "Locations": [
-          {
-            "StartLine": 111,
-            "EndLine": 111
-          }
-        ]
-      },
-      {
         "ID": "rubocop@0.67.2",
         "Name": "rubocop",
+        "Identifier": {
+          "PURL": "pkg:gem/rubocop@0.67.2",
+          "UID": "68a7b25b67dfb858"
+        },
         "Version": "0.67.2",
+        "Relationship": "direct",
         "DependsOn": [
           "jaro_winkler@1.5.2",
           "parallel@1.17.0",
@@ -701,10 +135,806 @@
         ]
       },
       {
+        "ID": "actioncable@5.2.3",
+        "Name": "actioncable",
+        "Identifier": {
+          "PURL": "pkg:gem/actioncable@5.2.3",
+          "UID": "a2f0009734c47a50"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "nio4r@2.3.1",
+          "websocket-driver@0.7.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 4,
+            "EndLine": 4
+          }
+        ]
+      },
+      {
+        "ID": "actionmailer@5.2.3",
+        "Name": "actionmailer",
+        "Identifier": {
+          "PURL": "pkg:gem/actionmailer@5.2.3",
+          "UID": "957dd2cc6d970211"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "actionview@5.2.3",
+          "activejob@5.2.3",
+          "mail@2.7.1",
+          "rails-dom-testing@2.0.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 8,
+            "EndLine": 8
+          }
+        ]
+      },
+      {
+        "ID": "actionpack@5.2.3",
+        "Name": "actionpack",
+        "Identifier": {
+          "PURL": "pkg:gem/actionpack@5.2.3",
+          "UID": "b4e4b4e5f7967b8a"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "actionview@5.2.3",
+          "activesupport@5.2.3",
+          "rack-test@1.1.0",
+          "rack@2.0.7",
+          "rails-dom-testing@2.0.3",
+          "rails-html-sanitizer@1.0.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 14,
+            "EndLine": 14
+          }
+        ]
+      },
+      {
+        "ID": "actionview@5.2.3",
+        "Name": "actionview",
+        "Identifier": {
+          "PURL": "pkg:gem/actionview@5.2.3",
+          "UID": "e303cfc150443baf"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "activesupport@5.2.3",
+          "builder@3.2.3",
+          "erubi@1.8.0",
+          "rails-dom-testing@2.0.3",
+          "rails-html-sanitizer@1.0.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 21,
+            "EndLine": 21
+          }
+        ]
+      },
+      {
+        "ID": "activejob@5.2.3",
+        "Name": "activejob",
+        "Identifier": {
+          "PURL": "pkg:gem/activejob@5.2.3",
+          "UID": "107f18a1d47c926e"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "activesupport@5.2.3",
+          "globalid@0.4.2"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 27,
+            "EndLine": 27
+          }
+        ]
+      },
+      {
+        "ID": "activemodel@5.2.3",
+        "Name": "activemodel",
+        "Identifier": {
+          "PURL": "pkg:gem/activemodel@5.2.3",
+          "UID": "22b9bacf4efb92d7"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "activesupport@5.2.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 30,
+            "EndLine": 30
+          }
+        ]
+      },
+      {
+        "ID": "activerecord@5.2.3",
+        "Name": "activerecord",
+        "Identifier": {
+          "PURL": "pkg:gem/activerecord@5.2.3",
+          "UID": "a30ec4dd4f1cad0d"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "activemodel@5.2.3",
+          "activesupport@5.2.3",
+          "arel@9.0.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 32,
+            "EndLine": 32
+          }
+        ]
+      },
+      {
+        "ID": "activestorage@5.2.3",
+        "Name": "activestorage",
+        "Identifier": {
+          "PURL": "pkg:gem/activestorage@5.2.3",
+          "UID": "4e3f0e59a70b38a9"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "activerecord@5.2.3",
+          "marcel@0.3.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 36,
+            "EndLine": 36
+          }
+        ]
+      },
+      {
+        "ID": "activesupport@5.2.3",
+        "Name": "activesupport",
+        "Identifier": {
+          "PURL": "pkg:gem/activesupport@5.2.3",
+          "UID": "b83d5718f12b7df1"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "concurrent-ruby@1.1.5",
+          "i18n@1.6.0",
+          "minitest@5.11.3",
+          "tzinfo@1.2.5"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 40,
+            "EndLine": 40
+          }
+        ]
+      },
+      {
+        "ID": "arel@9.0.0",
+        "Name": "arel",
+        "Identifier": {
+          "PURL": "pkg:gem/arel@9.0.0",
+          "UID": "9a68b51c670c5d28"
+        },
+        "Version": "9.0.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 45,
+            "EndLine": 45
+          }
+        ]
+      },
+      {
+        "ID": "ast@2.4.0",
+        "Name": "ast",
+        "Identifier": {
+          "PURL": "pkg:gem/ast@2.4.0",
+          "UID": "fad54f55dc524edc"
+        },
+        "Version": "2.4.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 46,
+            "EndLine": 46
+          }
+        ]
+      },
+      {
+        "ID": "builder@3.2.3",
+        "Name": "builder",
+        "Identifier": {
+          "PURL": "pkg:gem/builder@3.2.3",
+          "UID": "4998ad08ac24b078"
+        },
+        "Version": "3.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 47,
+            "EndLine": 47
+          }
+        ]
+      },
+      {
+        "ID": "coderay@1.1.2",
+        "Name": "coderay",
+        "Identifier": {
+          "PURL": "pkg:gem/coderay@1.1.2",
+          "UID": "a48fa0679d10835e"
+        },
+        "Version": "1.1.2",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 48,
+            "EndLine": 48
+          }
+        ]
+      },
+      {
+        "ID": "concurrent-ruby@1.1.5",
+        "Name": "concurrent-ruby",
+        "Identifier": {
+          "PURL": "pkg:gem/concurrent-ruby@1.1.5",
+          "UID": "bca3d9447a1c8032"
+        },
+        "Version": "1.1.5",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 49,
+            "EndLine": 49
+          }
+        ]
+      },
+      {
+        "ID": "crass@1.0.4",
+        "Name": "crass",
+        "Identifier": {
+          "PURL": "pkg:gem/crass@1.0.4",
+          "UID": "63d9762f8a29e52"
+        },
+        "Version": "1.0.4",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 50,
+            "EndLine": 50
+          }
+        ]
+      },
+      {
+        "ID": "erubi@1.8.0",
+        "Name": "erubi",
+        "Identifier": {
+          "PURL": "pkg:gem/erubi@1.8.0",
+          "UID": "de475f0ffcba457d"
+        },
+        "Version": "1.8.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 52,
+            "EndLine": 52
+          }
+        ]
+      },
+      {
+        "ID": "globalid@0.4.2",
+        "Name": "globalid",
+        "Identifier": {
+          "PURL": "pkg:gem/globalid@0.4.2",
+          "UID": "daff7877b36bd14b"
+        },
+        "Version": "0.4.2",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "activesupport@5.2.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 55,
+            "EndLine": 55
+          }
+        ]
+      },
+      {
+        "ID": "i18n@1.6.0",
+        "Name": "i18n",
+        "Identifier": {
+          "PURL": "pkg:gem/i18n@1.6.0",
+          "UID": "66065208a829ff94"
+        },
+        "Version": "1.6.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "concurrent-ruby@1.1.5"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 57,
+            "EndLine": 57
+          }
+        ]
+      },
+      {
+        "ID": "jaro_winkler@1.5.2",
+        "Name": "jaro_winkler",
+        "Identifier": {
+          "PURL": "pkg:gem/jaro_winkler@1.5.2",
+          "UID": "9a5b22728e40960b"
+        },
+        "Version": "1.5.2",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 59,
+            "EndLine": 59
+          }
+        ]
+      },
+      {
+        "ID": "loofah@2.2.3",
+        "Name": "loofah",
+        "Identifier": {
+          "PURL": "pkg:gem/loofah@2.2.3",
+          "UID": "61fc41b2f5521a64"
+        },
+        "Version": "2.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "crass@1.0.4",
+          "nokogiri@1.10.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 61,
+            "EndLine": 61
+          }
+        ]
+      },
+      {
+        "ID": "mail@2.7.1",
+        "Name": "mail",
+        "Identifier": {
+          "PURL": "pkg:gem/mail@2.7.1",
+          "UID": "edee06a4b6e79f92"
+        },
+        "Version": "2.7.1",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "mini_mime@1.0.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 64,
+            "EndLine": 64
+          }
+        ]
+      },
+      {
+        "ID": "marcel@0.3.3",
+        "Name": "marcel",
+        "Identifier": {
+          "PURL": "pkg:gem/marcel@0.3.3",
+          "UID": "4695d691e0d7ac17"
+        },
+        "Version": "0.3.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "mimemagic@0.3.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 66,
+            "EndLine": 66
+          }
+        ]
+      },
+      {
+        "ID": "method_source@0.9.2",
+        "Name": "method_source",
+        "Identifier": {
+          "PURL": "pkg:gem/method_source@0.9.2",
+          "UID": "b96872ad7feeedb2"
+        },
+        "Version": "0.9.2",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 68,
+            "EndLine": 68
+          }
+        ]
+      },
+      {
+        "ID": "mimemagic@0.3.3",
+        "Name": "mimemagic",
+        "Identifier": {
+          "PURL": "pkg:gem/mimemagic@0.3.3",
+          "UID": "54089ae8801a3144"
+        },
+        "Version": "0.3.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 69,
+            "EndLine": 69
+          }
+        ]
+      },
+      {
+        "ID": "mini_mime@1.0.1",
+        "Name": "mini_mime",
+        "Identifier": {
+          "PURL": "pkg:gem/mini_mime@1.0.1",
+          "UID": "ea53b65af3f9c07c"
+        },
+        "Version": "1.0.1",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 70,
+            "EndLine": 70
+          }
+        ]
+      },
+      {
+        "ID": "mini_portile2@2.4.0",
+        "Name": "mini_portile2",
+        "Identifier": {
+          "PURL": "pkg:gem/mini_portile2@2.4.0",
+          "UID": "503f9a3009616732"
+        },
+        "Version": "2.4.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 71,
+            "EndLine": 71
+          }
+        ]
+      },
+      {
+        "ID": "minitest@5.11.3",
+        "Name": "minitest",
+        "Identifier": {
+          "PURL": "pkg:gem/minitest@5.11.3",
+          "UID": "1d1c12205a5ea0c1"
+        },
+        "Version": "5.11.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 72,
+            "EndLine": 72
+          }
+        ]
+      },
+      {
+        "ID": "nio4r@2.3.1",
+        "Name": "nio4r",
+        "Identifier": {
+          "PURL": "pkg:gem/nio4r@2.3.1",
+          "UID": "1f214c910b2d6498"
+        },
+        "Version": "2.3.1",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 73,
+            "EndLine": 73
+          }
+        ]
+      },
+      {
+        "ID": "nokogiri@1.10.3",
+        "Name": "nokogiri",
+        "Identifier": {
+          "PURL": "pkg:gem/nokogiri@1.10.3",
+          "UID": "4cadfe4426354933"
+        },
+        "Version": "1.10.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "mini_portile2@2.4.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 74,
+            "EndLine": 74
+          }
+        ]
+      },
+      {
+        "ID": "parallel@1.17.0",
+        "Name": "parallel",
+        "Identifier": {
+          "PURL": "pkg:gem/parallel@1.17.0",
+          "UID": "f31aa3a8599717a1"
+        },
+        "Version": "1.17.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 76,
+            "EndLine": 76
+          }
+        ]
+      },
+      {
+        "ID": "parser@2.6.3.0",
+        "Name": "parser",
+        "Identifier": {
+          "PURL": "pkg:gem/parser@2.6.3.0",
+          "UID": "fa2f74869e82d572"
+        },
+        "Version": "2.6.3.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "ast@2.4.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 77,
+            "EndLine": 77
+          }
+        ]
+      },
+      {
+        "ID": "psych@3.1.0",
+        "Name": "psych",
+        "Identifier": {
+          "PURL": "pkg:gem/psych@3.1.0",
+          "UID": "34bd03308f382650"
+        },
+        "Version": "3.1.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 82,
+            "EndLine": 82
+          }
+        ]
+      },
+      {
+        "ID": "rack@2.0.7",
+        "Name": "rack",
+        "Identifier": {
+          "PURL": "pkg:gem/rack@2.0.7",
+          "UID": "d9f77162d5199665"
+        },
+        "Version": "2.0.7",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 83,
+            "EndLine": 83
+          }
+        ]
+      },
+      {
+        "ID": "rack-test@1.1.0",
+        "Name": "rack-test",
+        "Identifier": {
+          "PURL": "pkg:gem/rack-test@1.1.0",
+          "UID": "ce77144d56bbfcc7"
+        },
+        "Version": "1.1.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "rack@2.0.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 84,
+            "EndLine": 84
+          }
+        ]
+      },
+      {
+        "ID": "rails-dom-testing@2.0.3",
+        "Name": "rails-dom-testing",
+        "Identifier": {
+          "PURL": "pkg:gem/rails-dom-testing@2.0.3",
+          "UID": "f86753ba2b01f92d"
+        },
+        "Version": "2.0.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "activesupport@5.2.3",
+          "nokogiri@1.10.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 99,
+            "EndLine": 99
+          }
+        ]
+      },
+      {
+        "ID": "rails-html-sanitizer@1.0.3",
+        "Name": "rails-html-sanitizer",
+        "Identifier": {
+          "PURL": "pkg:gem/rails-html-sanitizer@1.0.3",
+          "UID": "ca9d0e53040b92a7"
+        },
+        "Version": "1.0.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "loofah@2.2.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 102,
+            "EndLine": 102
+          }
+        ]
+      },
+      {
+        "ID": "railties@5.2.3",
+        "Name": "railties",
+        "Identifier": {
+          "PURL": "pkg:gem/railties@5.2.3",
+          "UID": "79238ef7535ec96f"
+        },
+        "Version": "5.2.3",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "activesupport@5.2.3",
+          "method_source@0.9.2",
+          "rake@12.3.2",
+          "thor@0.20.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 104,
+            "EndLine": 104
+          }
+        ]
+      },
+      {
+        "ID": "rainbow@3.0.0",
+        "Name": "rainbow",
+        "Identifier": {
+          "PURL": "pkg:gem/rainbow@3.0.0",
+          "UID": "b370837d83c44cb7"
+        },
+        "Version": "3.0.0",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 110,
+            "EndLine": 110
+          }
+        ]
+      },
+      {
+        "ID": "rake@12.3.2",
+        "Name": "rake",
+        "Identifier": {
+          "PURL": "pkg:gem/rake@12.3.2",
+          "UID": "4f4252bdb5e59b57"
+        },
+        "Version": "12.3.2",
+        "Indirect": true,
+        "Relationship": "indirect",
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 111,
+            "EndLine": 111
+          }
+        ]
+      },
+      {
         "ID": "ruby-progressbar@1.10.0",
         "Name": "ruby-progressbar",
+        "Identifier": {
+          "PURL": "pkg:gem/ruby-progressbar@1.10.0",
+          "UID": "3955293b43d2fd52"
+        },
         "Version": "1.10.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -716,8 +946,13 @@
       {
         "ID": "sprockets@3.7.2",
         "Name": "sprockets",
+        "Identifier": {
+          "PURL": "pkg:gem/sprockets@3.7.2",
+          "UID": "116e2747536e43f5"
+        },
         "Version": "3.7.2",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "concurrent-ruby@1.1.5",
           "rack@2.0.7"
@@ -733,8 +968,13 @@
       {
         "ID": "sprockets-rails@3.2.1",
         "Name": "sprockets-rails",
+        "Identifier": {
+          "PURL": "pkg:gem/sprockets-rails@3.2.1",
+          "UID": "24b0c150e29c714e"
+        },
         "Version": "3.2.1",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "actionpack@5.2.3",
           "activesupport@5.2.3",
@@ -751,8 +991,13 @@
       {
         "ID": "thor@0.20.3",
         "Name": "thor",
+        "Identifier": {
+          "PURL": "pkg:gem/thor@0.20.3",
+          "UID": "85877345b4057dc4"
+        },
         "Version": "0.20.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -764,8 +1009,13 @@
       {
         "ID": "thread_safe@0.3.6",
         "Name": "thread_safe",
+        "Identifier": {
+          "PURL": "pkg:gem/thread_safe@0.3.6",
+          "UID": "2851ab474c97947e"
+        },
         "Version": "0.3.6",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -777,8 +1027,13 @@
       {
         "ID": "tzinfo@1.2.5",
         "Name": "tzinfo",
+        "Identifier": {
+          "PURL": "pkg:gem/tzinfo@1.2.5",
+          "UID": "1ef6e099466a3dd"
+        },
         "Version": "1.2.5",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "thread_safe@0.3.6"
         ],
@@ -793,8 +1048,13 @@
       {
         "ID": "unicode-display_width@1.5.0",
         "Name": "unicode-display_width",
+        "Identifier": {
+          "PURL": "pkg:gem/unicode-display_width@1.5.0",
+          "UID": "5212ef154d81feeb"
+        },
         "Version": "1.5.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -806,8 +1066,13 @@
       {
         "ID": "websocket-driver@0.7.0",
         "Name": "websocket-driver",
+        "Identifier": {
+          "PURL": "pkg:gem/websocket-driver@0.7.0",
+          "UID": "6d4862fcfa71d8db"
+        },
         "Version": "0.7.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "websocket-extensions@0.1.3"
         ],
@@ -822,8 +1087,13 @@
       {
         "ID": "websocket-extensions@0.1.3",
         "Name": "websocket-extensions",
+        "Identifier": {
+          "PURL": "pkg:gem/websocket-extensions@0.1.3",
+          "UID": "84dd4f30cc911d14"
+        },
         "Version": "0.1.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -837,10 +1107,14 @@
   {
     "Type": "cargo",
     "FilePath": "rust-app/Cargo.lock",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "ammonia@1.9.0",
         "Name": "ammonia",
+        "Identifier": {
+          "PURL": "pkg:cargo/ammonia@1.9.0",
+          "UID": "3f782b3907f82c00"
+        },
         "Version": "1.9.0",
         "DependsOn": [
           "html5ever@0.23.0",
@@ -861,6 +1135,10 @@
       {
         "ID": "autocfg@0.1.2",
         "Name": "autocfg",
+        "Identifier": {
+          "PURL": "pkg:cargo/autocfg@0.1.2",
+          "UID": "527fae74cf16ee7b"
+        },
         "Version": "0.1.2",
         "Layer": {},
         "Locations": [
@@ -873,6 +1151,10 @@
       {
         "ID": "bitflags@0.7.0",
         "Name": "bitflags",
+        "Identifier": {
+          "PURL": "pkg:cargo/bitflags@0.7.0",
+          "UID": "7ed30462ad4d3f73"
+        },
         "Version": "0.7.0",
         "Layer": {},
         "Locations": [
@@ -885,6 +1167,10 @@
       {
         "ID": "bitflags@1.0.4",
         "Name": "bitflags",
+        "Identifier": {
+          "PURL": "pkg:cargo/bitflags@1.0.4",
+          "UID": "923d02b9471117a4"
+        },
         "Version": "1.0.4",
         "Layer": {},
         "Locations": [
@@ -897,6 +1183,10 @@
       {
         "ID": "cfg-if@0.1.7",
         "Name": "cfg-if",
+        "Identifier": {
+          "PURL": "pkg:cargo/cfg-if@0.1.7",
+          "UID": "534d592a586af917"
+        },
         "Version": "0.1.7",
         "Layer": {},
         "Locations": [
@@ -909,6 +1199,10 @@
       {
         "ID": "cloudabi@0.0.3",
         "Name": "cloudabi",
+        "Identifier": {
+          "PURL": "pkg:cargo/cloudabi@0.0.3",
+          "UID": "7d95ca530080060e"
+        },
         "Version": "0.0.3",
         "DependsOn": [
           "bitflags@1.0.4"
@@ -924,6 +1218,10 @@
       {
         "ID": "fuchsia-cprng@0.1.1",
         "Name": "fuchsia-cprng",
+        "Identifier": {
+          "PURL": "pkg:cargo/fuchsia-cprng@0.1.1",
+          "UID": "31513de656860d15"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -936,6 +1234,10 @@
       {
         "ID": "futf@0.1.4",
         "Name": "futf",
+        "Identifier": {
+          "PURL": "pkg:cargo/futf@0.1.4",
+          "UID": "d94fed27065b26e6"
+        },
         "Version": "0.1.4",
         "DependsOn": [
           "mac@0.1.1",
@@ -952,6 +1254,10 @@
       {
         "ID": "gdi32-sys@0.2.0",
         "Name": "gdi32-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/gdi32-sys@0.2.0",
+          "UID": "f26b4cb6a1dc0271"
+        },
         "Version": "0.2.0",
         "DependsOn": [
           "winapi-build@0.1.1",
@@ -968,6 +1274,10 @@
       {
         "ID": "html5ever@0.23.0",
         "Name": "html5ever",
+        "Identifier": {
+          "PURL": "pkg:cargo/html5ever@0.23.0",
+          "UID": "1da853b746306a1b"
+        },
         "Version": "0.23.0",
         "DependsOn": [
           "log@0.4.6",
@@ -988,6 +1298,10 @@
       {
         "ID": "idna@0.1.5",
         "Name": "idna",
+        "Identifier": {
+          "PURL": "pkg:cargo/idna@0.1.5",
+          "UID": "f128a40f0ba385a8"
+        },
         "Version": "0.1.5",
         "DependsOn": [
           "matches@0.1.8",
@@ -1005,6 +1319,10 @@
       {
         "ID": "itoa@0.4.4",
         "Name": "itoa",
+        "Identifier": {
+          "PURL": "pkg:cargo/itoa@0.4.4",
+          "UID": "4aff7ab01356bada"
+        },
         "Version": "0.4.4",
         "Layer": {},
         "Locations": [
@@ -1017,6 +1335,10 @@
       {
         "ID": "kernel32-sys@0.2.2",
         "Name": "kernel32-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/kernel32-sys@0.2.2",
+          "UID": "2d5abd219ee22df7"
+        },
         "Version": "0.2.2",
         "DependsOn": [
           "winapi-build@0.1.1",
@@ -1033,6 +1355,10 @@
       {
         "ID": "lazy_static@0.2.11",
         "Name": "lazy_static",
+        "Identifier": {
+          "PURL": "pkg:cargo/lazy_static@0.2.11",
+          "UID": "dc8cd0220cdde21c"
+        },
         "Version": "0.2.11",
         "Layer": {},
         "Locations": [
@@ -1045,6 +1371,10 @@
       {
         "ID": "lazy_static@1.3.0",
         "Name": "lazy_static",
+        "Identifier": {
+          "PURL": "pkg:cargo/lazy_static@1.3.0",
+          "UID": "2e4334f512c2da87"
+        },
         "Version": "1.3.0",
         "Layer": {},
         "Locations": [
@@ -1057,6 +1387,10 @@
       {
         "ID": "libc@0.2.54",
         "Name": "libc",
+        "Identifier": {
+          "PURL": "pkg:cargo/libc@0.2.54",
+          "UID": "269b1cde2d08166e"
+        },
         "Version": "0.2.54",
         "Layer": {},
         "Locations": [
@@ -1069,6 +1403,10 @@
       {
         "ID": "libressl-pnacl-sys@2.1.6",
         "Name": "libressl-pnacl-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/libressl-pnacl-sys@2.1.6",
+          "UID": "8c256bb7e4378d69"
+        },
         "Version": "2.1.6",
         "DependsOn": [
           "pnacl-build-helper@1.4.11"
@@ -1084,6 +1422,10 @@
       {
         "ID": "log@0.4.6",
         "Name": "log",
+        "Identifier": {
+          "PURL": "pkg:cargo/log@0.4.6",
+          "UID": "e8bdfac27c5210ae"
+        },
         "Version": "0.4.6",
         "DependsOn": [
           "cfg-if@0.1.7"
@@ -1099,6 +1441,10 @@
       {
         "ID": "mac@0.1.1",
         "Name": "mac",
+        "Identifier": {
+          "PURL": "pkg:cargo/mac@0.1.1",
+          "UID": "1185b2b0745c221"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -1111,6 +1457,10 @@
       {
         "ID": "maplit@1.0.1",
         "Name": "maplit",
+        "Identifier": {
+          "PURL": "pkg:cargo/maplit@1.0.1",
+          "UID": "8c23f27efaff6301"
+        },
         "Version": "1.0.1",
         "Layer": {},
         "Locations": [
@@ -1123,6 +1473,10 @@
       {
         "ID": "markup5ever@0.8.1",
         "Name": "markup5ever",
+        "Identifier": {
+          "PURL": "pkg:cargo/markup5ever@0.8.1",
+          "UID": "f55027c499fea0c9"
+        },
         "Version": "0.8.1",
         "DependsOn": [
           "log@0.4.6",
@@ -1146,6 +1500,10 @@
       {
         "ID": "matches@0.1.8",
         "Name": "matches",
+        "Identifier": {
+          "PURL": "pkg:cargo/matches@0.1.8",
+          "UID": "81da4fade350ea84"
+        },
         "Version": "0.1.8",
         "Layer": {},
         "Locations": [
@@ -1158,6 +1516,10 @@
       {
         "ID": "new_debug_unreachable@1.0.3",
         "Name": "new_debug_unreachable",
+        "Identifier": {
+          "PURL": "pkg:cargo/new_debug_unreachable@1.0.3",
+          "UID": "a4666c488ce7b5cb"
+        },
         "Version": "1.0.3",
         "Layer": {},
         "Locations": [
@@ -1170,6 +1532,10 @@
       {
         "ID": "normal@0.1.0",
         "Name": "normal",
+        "Identifier": {
+          "PURL": "pkg:cargo/normal@0.1.0",
+          "UID": "7553ca394bde0964"
+        },
         "Version": "0.1.0",
         "DependsOn": [
           "ammonia@2.0.0",
@@ -1187,6 +1553,10 @@
       {
         "ID": "openssl@0.8.3",
         "Name": "openssl",
+        "Identifier": {
+          "PURL": "pkg:cargo/openssl@0.8.3",
+          "UID": "4b76d62a38b7e8be"
+        },
         "Version": "0.8.3",
         "DependsOn": [
           "bitflags@0.7.0",
@@ -1205,6 +1575,10 @@
       {
         "ID": "openssl-sys@0.7.17",
         "Name": "openssl-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/openssl-sys@0.7.17",
+          "UID": "c53e41230020f3"
+        },
         "Version": "0.7.17",
         "DependsOn": [
           "gdi32-sys@0.2.0",
@@ -1224,6 +1598,10 @@
       {
         "ID": "percent-encoding@1.0.1",
         "Name": "percent-encoding",
+        "Identifier": {
+          "PURL": "pkg:cargo/percent-encoding@1.0.1",
+          "UID": "c442dfa6d6be550d"
+        },
         "Version": "1.0.1",
         "Layer": {},
         "Locations": [
@@ -1236,6 +1614,10 @@
       {
         "ID": "phf@0.7.24",
         "Name": "phf",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf@0.7.24",
+          "UID": "af388c2916670a2b"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "phf_shared@0.7.24"
@@ -1251,6 +1633,10 @@
       {
         "ID": "phf_codegen@0.7.24",
         "Name": "phf_codegen",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf_codegen@0.7.24",
+          "UID": "b5a34c00896c8a2d"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "phf_generator@0.7.24",
@@ -1267,6 +1653,10 @@
       {
         "ID": "phf_generator@0.7.24",
         "Name": "phf_generator",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf_generator@0.7.24",
+          "UID": "2ddb8ab0af22fc74"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "phf_shared@0.7.24",
@@ -1283,6 +1673,10 @@
       {
         "ID": "phf_shared@0.7.24",
         "Name": "phf_shared",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf_shared@0.7.24",
+          "UID": "afb775d34fd007ad"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "siphasher@0.2.3"
@@ -1298,6 +1692,10 @@
       {
         "ID": "pkg-config@0.3.14",
         "Name": "pkg-config",
+        "Identifier": {
+          "PURL": "pkg:cargo/pkg-config@0.3.14",
+          "UID": "5cf1d9ec06ce2165"
+        },
         "Version": "0.3.14",
         "Layer": {},
         "Locations": [
@@ -1310,6 +1708,10 @@
       {
         "ID": "pnacl-build-helper@1.4.11",
         "Name": "pnacl-build-helper",
+        "Identifier": {
+          "PURL": "pkg:cargo/pnacl-build-helper@1.4.11",
+          "UID": "86af875650c6f361"
+        },
         "Version": "1.4.11",
         "DependsOn": [
           "tempdir@0.3.7",
@@ -1326,6 +1728,10 @@
       {
         "ID": "precomputed-hash@0.1.1",
         "Name": "precomputed-hash",
+        "Identifier": {
+          "PURL": "pkg:cargo/precomputed-hash@0.1.1",
+          "UID": "3324b417bef2a649"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -1338,6 +1744,10 @@
       {
         "ID": "proc-macro2@0.4.30",
         "Name": "proc-macro2",
+        "Identifier": {
+          "PURL": "pkg:cargo/proc-macro2@0.4.30",
+          "UID": "743ee84514cbfaa2"
+        },
         "Version": "0.4.30",
         "DependsOn": [
           "unicode-xid@0.1.0"
@@ -1353,6 +1763,10 @@
       {
         "ID": "quote@0.6.12",
         "Name": "quote",
+        "Identifier": {
+          "PURL": "pkg:cargo/quote@0.6.12",
+          "UID": "616e047380490e91"
+        },
         "Version": "0.6.12",
         "DependsOn": [
           "proc-macro2@0.4.30"
@@ -1368,6 +1782,10 @@
       {
         "ID": "rand@0.4.6",
         "Name": "rand",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand@0.4.6",
+          "UID": "36ea3ab1d79f2eff"
+        },
         "Version": "0.4.6",
         "DependsOn": [
           "fuchsia-cprng@0.1.1",
@@ -1387,6 +1805,10 @@
       {
         "ID": "rand@0.6.5",
         "Name": "rand",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand@0.6.5",
+          "UID": "189ce5e3b97b9086"
+        },
         "Version": "0.6.5",
         "DependsOn": [
           "autocfg@0.1.2",
@@ -1412,6 +1834,10 @@
       {
         "ID": "rand_chacha@0.1.1",
         "Name": "rand_chacha",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_chacha@0.1.1",
+          "UID": "1898cad64a773a50"
+        },
         "Version": "0.1.1",
         "DependsOn": [
           "autocfg@0.1.2",
@@ -1428,6 +1854,10 @@
       {
         "ID": "rand_core@0.3.1",
         "Name": "rand_core",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_core@0.3.1",
+          "UID": "b89466bd93821e2c"
+        },
         "Version": "0.3.1",
         "DependsOn": [
           "rand_core@0.4.0"
@@ -1443,6 +1873,10 @@
       {
         "ID": "rand_core@0.4.0",
         "Name": "rand_core",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_core@0.4.0",
+          "UID": "a17be2d5af86e701"
+        },
         "Version": "0.4.0",
         "Layer": {},
         "Locations": [
@@ -1455,6 +1889,10 @@
       {
         "ID": "rand_hc@0.1.0",
         "Name": "rand_hc",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_hc@0.1.0",
+          "UID": "876ebd10af20419d"
+        },
         "Version": "0.1.0",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1470,6 +1908,10 @@
       {
         "ID": "rand_isaac@0.1.1",
         "Name": "rand_isaac",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_isaac@0.1.1",
+          "UID": "c82e2542dd4c548b"
+        },
         "Version": "0.1.1",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1485,6 +1927,10 @@
       {
         "ID": "rand_jitter@0.1.4",
         "Name": "rand_jitter",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_jitter@0.1.4",
+          "UID": "f2fd4d5475b3e46"
+        },
         "Version": "0.1.4",
         "DependsOn": [
           "libc@0.2.54",
@@ -1502,6 +1948,10 @@
       {
         "ID": "rand_os@0.1.3",
         "Name": "rand_os",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_os@0.1.3",
+          "UID": "f18975abcf140a0d"
+        },
         "Version": "0.1.3",
         "DependsOn": [
           "cloudabi@0.0.3",
@@ -1522,6 +1972,10 @@
       {
         "ID": "rand_pcg@0.1.2",
         "Name": "rand_pcg",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_pcg@0.1.2",
+          "UID": "2643a3fc473cf1e8"
+        },
         "Version": "0.1.2",
         "DependsOn": [
           "autocfg@0.1.2",
@@ -1538,6 +1992,10 @@
       {
         "ID": "rand_xorshift@0.1.1",
         "Name": "rand_xorshift",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_xorshift@0.1.1",
+          "UID": "d196ca24b2df097a"
+        },
         "Version": "0.1.1",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1553,6 +2011,10 @@
       {
         "ID": "rdrand@0.4.0",
         "Name": "rdrand",
+        "Identifier": {
+          "PURL": "pkg:cargo/rdrand@0.4.0",
+          "UID": "1669ce8589bdb635"
+        },
         "Version": "0.4.0",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1568,6 +2030,10 @@
       {
         "ID": "remove_dir_all@0.5.1",
         "Name": "remove_dir_all",
+        "Identifier": {
+          "PURL": "pkg:cargo/remove_dir_all@0.5.1",
+          "UID": "754bd8e2f6347b0d"
+        },
         "Version": "0.5.1",
         "DependsOn": [
           "winapi@0.3.7"
@@ -1583,6 +2049,10 @@
       {
         "ID": "ryu@0.2.8",
         "Name": "ryu",
+        "Identifier": {
+          "PURL": "pkg:cargo/ryu@0.2.8",
+          "UID": "4aae5dd6e37bffdb"
+        },
         "Version": "0.2.8",
         "Layer": {},
         "Locations": [
@@ -1595,6 +2065,10 @@
       {
         "ID": "same-file@0.1.3",
         "Name": "same-file",
+        "Identifier": {
+          "PURL": "pkg:cargo/same-file@0.1.3",
+          "UID": "cdadbdb5b52c4959"
+        },
         "Version": "0.1.3",
         "DependsOn": [
           "kernel32-sys@0.2.2",
@@ -1611,6 +2085,10 @@
       {
         "ID": "serde@1.0.91",
         "Name": "serde",
+        "Identifier": {
+          "PURL": "pkg:cargo/serde@1.0.91",
+          "UID": "5a88cd7c139193aa"
+        },
         "Version": "1.0.91",
         "Layer": {},
         "Locations": [
@@ -1623,6 +2101,10 @@
       {
         "ID": "serde_derive@1.0.91",
         "Name": "serde_derive",
+        "Identifier": {
+          "PURL": "pkg:cargo/serde_derive@1.0.91",
+          "UID": "afb0ddf32fd9ad05"
+        },
         "Version": "1.0.91",
         "DependsOn": [
           "proc-macro2@0.4.30",
@@ -1640,6 +2122,10 @@
       {
         "ID": "serde_json@1.0.39",
         "Name": "serde_json",
+        "Identifier": {
+          "PURL": "pkg:cargo/serde_json@1.0.39",
+          "UID": "9b8a47a8820505f"
+        },
         "Version": "1.0.39",
         "DependsOn": [
           "itoa@0.4.4",
@@ -1657,6 +2143,10 @@
       {
         "ID": "siphasher@0.2.3",
         "Name": "siphasher",
+        "Identifier": {
+          "PURL": "pkg:cargo/siphasher@0.2.3",
+          "UID": "b790a7dc3920aecc"
+        },
         "Version": "0.2.3",
         "Layer": {},
         "Locations": [
@@ -1669,6 +2159,10 @@
       {
         "ID": "smallvec@0.6.9",
         "Name": "smallvec",
+        "Identifier": {
+          "PURL": "pkg:cargo/smallvec@0.6.9",
+          "UID": "f222b109875a6950"
+        },
         "Version": "0.6.9",
         "Layer": {},
         "Locations": [
@@ -1681,6 +2175,10 @@
       {
         "ID": "string_cache@0.7.3",
         "Name": "string_cache",
+        "Identifier": {
+          "PURL": "pkg:cargo/string_cache@0.7.3",
+          "UID": "f4fc88e341199b93"
+        },
         "Version": "0.7.3",
         "DependsOn": [
           "lazy_static@1.3.0",
@@ -1702,6 +2200,10 @@
       {
         "ID": "string_cache_codegen@0.4.2",
         "Name": "string_cache_codegen",
+        "Identifier": {
+          "PURL": "pkg:cargo/string_cache_codegen@0.4.2",
+          "UID": "325b6a21ff049d27"
+        },
         "Version": "0.4.2",
         "DependsOn": [
           "phf_generator@0.7.24",
@@ -1721,6 +2223,10 @@
       {
         "ID": "string_cache_shared@0.3.0",
         "Name": "string_cache_shared",
+        "Identifier": {
+          "PURL": "pkg:cargo/string_cache_shared@0.3.0",
+          "UID": "eaf649152096f011"
+        },
         "Version": "0.3.0",
         "Layer": {},
         "Locations": [
@@ -1733,6 +2239,10 @@
       {
         "ID": "syn@0.15.34",
         "Name": "syn",
+        "Identifier": {
+          "PURL": "pkg:cargo/syn@0.15.34",
+          "UID": "dec15b88d2b96dc6"
+        },
         "Version": "0.15.34",
         "DependsOn": [
           "proc-macro2@0.4.30",
@@ -1750,6 +2260,10 @@
       {
         "ID": "tempdir@0.3.7",
         "Name": "tempdir",
+        "Identifier": {
+          "PURL": "pkg:cargo/tempdir@0.3.7",
+          "UID": "5199d2330f7fbafa"
+        },
         "Version": "0.3.7",
         "DependsOn": [
           "rand@0.4.6",
@@ -1766,6 +2280,10 @@
       {
         "ID": "tendril@0.4.1",
         "Name": "tendril",
+        "Identifier": {
+          "PURL": "pkg:cargo/tendril@0.4.1",
+          "UID": "7d6ea579b9fd4cc2"
+        },
         "Version": "0.4.1",
         "DependsOn": [
           "futf@0.1.4",
@@ -1783,6 +2301,10 @@
       {
         "ID": "unicode-bidi@0.3.4",
         "Name": "unicode-bidi",
+        "Identifier": {
+          "PURL": "pkg:cargo/unicode-bidi@0.3.4",
+          "UID": "7c952948878fa2d2"
+        },
         "Version": "0.3.4",
         "DependsOn": [
           "matches@0.1.8"
@@ -1798,6 +2320,10 @@
       {
         "ID": "unicode-normalization@0.1.8",
         "Name": "unicode-normalization",
+        "Identifier": {
+          "PURL": "pkg:cargo/unicode-normalization@0.1.8",
+          "UID": "a4be6e256079f76a"
+        },
         "Version": "0.1.8",
         "DependsOn": [
           "smallvec@0.6.9"
@@ -1813,6 +2339,10 @@
       {
         "ID": "unicode-xid@0.1.0",
         "Name": "unicode-xid",
+        "Identifier": {
+          "PURL": "pkg:cargo/unicode-xid@0.1.0",
+          "UID": "812bfb20444d6773"
+        },
         "Version": "0.1.0",
         "Layer": {},
         "Locations": [
@@ -1825,6 +2355,10 @@
       {
         "ID": "url@1.7.2",
         "Name": "url",
+        "Identifier": {
+          "PURL": "pkg:cargo/url@1.7.2",
+          "UID": "7d7ba75dcebda226"
+        },
         "Version": "1.7.2",
         "DependsOn": [
           "idna@0.1.5",
@@ -1842,6 +2376,10 @@
       {
         "ID": "user32-sys@0.2.0",
         "Name": "user32-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/user32-sys@0.2.0",
+          "UID": "49dd6794a7a6486"
+        },
         "Version": "0.2.0",
         "DependsOn": [
           "winapi-build@0.1.1",
@@ -1858,6 +2396,10 @@
       {
         "ID": "utf-8@0.7.5",
         "Name": "utf-8",
+        "Identifier": {
+          "PURL": "pkg:cargo/utf-8@0.7.5",
+          "UID": "4bd5c4499e77b190"
+        },
         "Version": "0.7.5",
         "Layer": {},
         "Locations": [
@@ -1870,6 +2412,10 @@
       {
         "ID": "walkdir@1.0.7",
         "Name": "walkdir",
+        "Identifier": {
+          "PURL": "pkg:cargo/walkdir@1.0.7",
+          "UID": "46be56ccb4ce809f"
+        },
         "Version": "1.0.7",
         "DependsOn": [
           "kernel32-sys@0.2.2",
@@ -1887,6 +2433,10 @@
       {
         "ID": "winapi@0.2.8",
         "Name": "winapi",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi@0.2.8",
+          "UID": "2b9eef53fe7d8358"
+        },
         "Version": "0.2.8",
         "Layer": {},
         "Locations": [
@@ -1899,6 +2449,10 @@
       {
         "ID": "winapi@0.3.7",
         "Name": "winapi",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi@0.3.7",
+          "UID": "3be65d501e44878f"
+        },
         "Version": "0.3.7",
         "DependsOn": [
           "winapi-i686-pc-windows-gnu@0.4.0",
@@ -1915,6 +2469,10 @@
       {
         "ID": "winapi-build@0.1.1",
         "Name": "winapi-build",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi-build@0.1.1",
+          "UID": "96ec9e9d498b4ef7"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -1927,6 +2485,10 @@
       {
         "ID": "winapi-i686-pc-windows-gnu@0.4.0",
         "Name": "winapi-i686-pc-windows-gnu",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi-i686-pc-windows-gnu@0.4.0",
+          "UID": "1b230d529eec4e4f"
+        },
         "Version": "0.4.0",
         "Layer": {},
         "Locations": [
@@ -1939,6 +2501,10 @@
       {
         "ID": "winapi-x86_64-pc-windows-gnu@0.4.0",
         "Name": "winapi-x86_64-pc-windows-gnu",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi-x86_64-pc-windows-gnu@0.4.0",
+          "UID": "94fafef2976facb5"
+        },
         "Version": "0.4.0",
         "Layer": {},
         "Locations": [
@@ -1953,10 +2519,14 @@
   {
     "Type": "composer",
     "FilePath": "php-app/composer.lock",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "guzzlehttp/guzzle@6.2.0",
         "Name": "guzzlehttp/guzzle",
+        "Identifier": {
+          "PURL": "pkg:composer/guzzlehttp/guzzle@6.2.0",
+          "UID": "9dfe1e5591642f22"
+        },
         "Version": "6.2.0",
         "Licenses": [
           "MIT"
@@ -1976,6 +2546,10 @@
       {
         "ID": "guzzlehttp/promises@v1.3.1",
         "Name": "guzzlehttp/promises",
+        "Identifier": {
+          "PURL": "pkg:composer/guzzlehttp/promises@v1.3.1",
+          "UID": "24c8c4cc0bc32a5a"
+        },
         "Version": "v1.3.1",
         "Licenses": [
           "MIT"
@@ -1991,6 +2565,10 @@
       {
         "ID": "guzzlehttp/psr7@1.5.2",
         "Name": "guzzlehttp/psr7",
+        "Identifier": {
+          "PURL": "pkg:composer/guzzlehttp/psr7@1.5.2",
+          "UID": "5a2f37cb99b96e3b"
+        },
         "Version": "1.5.2",
         "Licenses": [
           "MIT"
@@ -2010,6 +2588,10 @@
       {
         "ID": "laravel/installer@v2.0.1",
         "Name": "laravel/installer",
+        "Identifier": {
+          "PURL": "pkg:composer/laravel/installer@v2.0.1",
+          "UID": "5b2b8cb546357a8e"
+        },
         "Version": "v2.0.1",
         "Licenses": [
           "MIT"
@@ -2031,6 +2613,10 @@
       {
         "ID": "pear/log@1.13.1",
         "Name": "pear/log",
+        "Identifier": {
+          "PURL": "pkg:composer/pear/log@1.13.1",
+          "UID": "a5defa6d09ddcecd"
+        },
         "Version": "1.13.1",
         "Licenses": [
           "MIT"
@@ -2049,6 +2635,10 @@
       {
         "ID": "pear/pear_exception@v1.0.0",
         "Name": "pear/pear_exception",
+        "Identifier": {
+          "PURL": "pkg:composer/pear/pear_exception@v1.0.0",
+          "UID": "9f4d1b12a2cdbcb0"
+        },
         "Version": "v1.0.0",
         "Licenses": [
           "BSD-2-Clause"
@@ -2064,6 +2654,10 @@
       {
         "ID": "psr/http-message@1.0.1",
         "Name": "psr/http-message",
+        "Identifier": {
+          "PURL": "pkg:composer/psr/http-message@1.0.1",
+          "UID": "2157df4f82a58274"
+        },
         "Version": "1.0.1",
         "Licenses": [
           "MIT"
@@ -2079,6 +2673,10 @@
       {
         "ID": "ralouphie/getallheaders@2.0.5",
         "Name": "ralouphie/getallheaders",
+        "Identifier": {
+          "PURL": "pkg:composer/ralouphie/getallheaders@2.0.5",
+          "UID": "51f513d42ea55b0a"
+        },
         "Version": "2.0.5",
         "Licenses": [
           "MIT"
@@ -2094,6 +2692,10 @@
       {
         "ID": "symfony/console@v4.2.7",
         "Name": "symfony/console",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/console@v4.2.7",
+          "UID": "f441e47bb09da6e3"
+        },
         "Version": "v4.2.7",
         "Licenses": [
           "MIT"
@@ -2113,6 +2715,10 @@
       {
         "ID": "symfony/contracts@v1.0.2",
         "Name": "symfony/contracts",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/contracts@v1.0.2",
+          "UID": "42d464c36bfccb7"
+        },
         "Version": "v1.0.2",
         "Licenses": [
           "MIT"
@@ -2128,6 +2734,10 @@
       {
         "ID": "symfony/filesystem@v4.2.7",
         "Name": "symfony/filesystem",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/filesystem@v4.2.7",
+          "UID": "f56f8da2772fc03c"
+        },
         "Version": "v4.2.7",
         "Licenses": [
           "MIT"
@@ -2146,6 +2756,10 @@
       {
         "ID": "symfony/polyfill-ctype@v1.11.0",
         "Name": "symfony/polyfill-ctype",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/polyfill-ctype@v1.11.0",
+          "UID": "12e7a3c47387acbe"
+        },
         "Version": "v1.11.0",
         "Licenses": [
           "MIT"
@@ -2161,6 +2775,10 @@
       {
         "ID": "symfony/polyfill-mbstring@v1.11.0",
         "Name": "symfony/polyfill-mbstring",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/polyfill-mbstring@v1.11.0",
+          "UID": "3089180417b349cc"
+        },
         "Version": "v1.11.0",
         "Licenses": [
           "MIT"
@@ -2176,6 +2794,10 @@
       {
         "ID": "symfony/process@v4.2.7",
         "Name": "symfony/process",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/process@v4.2.7",
+          "UID": "3c70597c19dc7546"
+        },
         "Version": "v4.2.7",
         "Licenses": [
           "MIT"
@@ -2193,12 +2815,15 @@
   {
     "Type": "npm",
     "FilePath": "node-app/package-lock.json",
-    "Libraries": [
+    "Packages": [
       {
         "ID": "asap@2.0.6",
         "Name": "asap",
+        "Identifier": {
+          "PURL": "pkg:npm/asap@2.0.6",
+          "UID": "abb547f5589e4959"
+        },
         "Version": "2.0.6",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2210,8 +2835,11 @@
       {
         "ID": "jquery@3.3.9",
         "Name": "jquery",
+        "Identifier": {
+          "PURL": "pkg:npm/jquery@3.3.9",
+          "UID": "1126bc6bfa8295d8"
+        },
         "Version": "3.3.9",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2223,8 +2851,11 @@
       {
         "ID": "js-tokens@4.0.0",
         "Name": "js-tokens",
+        "Identifier": {
+          "PURL": "pkg:npm/js-tokens@4.0.0",
+          "UID": "fbee11c088549b29"
+        },
         "Version": "4.0.0",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2236,8 +2867,11 @@
       {
         "ID": "lodash@4.17.4",
         "Name": "lodash",
+        "Identifier": {
+          "PURL": "pkg:npm/lodash@4.17.4",
+          "UID": "4473a912b2b0d935"
+        },
         "Version": "4.17.4",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2249,8 +2883,11 @@
       {
         "ID": "loose-envify@1.4.0",
         "Name": "loose-envify",
+        "Identifier": {
+          "PURL": "pkg:npm/loose-envify@1.4.0",
+          "UID": "3ebeb6506cca5763"
+        },
         "Version": "1.4.0",
-        "Indirect": true,
         "DependsOn": [
           "js-tokens@4.0.0"
         ],
@@ -2265,8 +2902,11 @@
       {
         "ID": "object-assign@4.1.1",
         "Name": "object-assign",
+        "Identifier": {
+          "PURL": "pkg:npm/object-assign@4.1.1",
+          "UID": "23ceee882eda18a4"
+        },
         "Version": "4.1.1",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2278,8 +2918,11 @@
       {
         "ID": "promise@8.0.3",
         "Name": "promise",
+        "Identifier": {
+          "PURL": "pkg:npm/promise@8.0.3",
+          "UID": "41a88be886ae90fe"
+        },
         "Version": "8.0.3",
-        "Indirect": true,
         "DependsOn": [
           "asap@2.0.6"
         ],
@@ -2294,8 +2937,11 @@
       {
         "ID": "prop-types@15.7.2",
         "Name": "prop-types",
+        "Identifier": {
+          "PURL": "pkg:npm/prop-types@15.7.2",
+          "UID": "f0609ce5dbe652fc"
+        },
         "Version": "15.7.2",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "object-assign@4.1.1",
@@ -2312,8 +2958,11 @@
       {
         "ID": "react@16.8.6",
         "Name": "react",
+        "Identifier": {
+          "PURL": "pkg:npm/react@16.8.6",
+          "UID": "f0d9536f5c050d74"
+        },
         "Version": "16.8.6",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "object-assign@4.1.1",
@@ -2331,8 +2980,11 @@
       {
         "ID": "react-is@16.8.6",
         "Name": "react-is",
+        "Identifier": {
+          "PURL": "pkg:npm/react-is@16.8.6",
+          "UID": "cb2875411ead1f9a"
+        },
         "Version": "16.8.6",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2344,8 +2996,11 @@
       {
         "ID": "redux@4.0.1",
         "Name": "redux",
+        "Identifier": {
+          "PURL": "pkg:npm/redux@4.0.1",
+          "UID": "e463b04a52085d00"
+        },
         "Version": "4.0.1",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "symbol-observable@1.2.0"
@@ -2361,8 +3016,11 @@
       {
         "ID": "scheduler@0.13.6",
         "Name": "scheduler",
+        "Identifier": {
+          "PURL": "pkg:npm/scheduler@0.13.6",
+          "UID": "cdc29e2ca0a03edf"
+        },
         "Version": "0.13.6",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "object-assign@4.1.1"
@@ -2378,8 +3036,11 @@
       {
         "ID": "symbol-observable@1.2.0",
         "Name": "symbol-observable",
+        "Identifier": {
+          "PURL": "pkg:npm/symbol-observable@1.2.0",
+          "UID": "5318f6146dc0264"
+        },
         "Version": "1.2.0",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2393,9 +3054,13 @@
   {
     "Type": "pipenv",
     "FilePath": "python-app/Pipfile.lock",
-    "Libraries": [
+    "Packages": [
       {
         "Name": "amqp",
+        "Identifier": {
+          "PURL": "pkg:pypi/amqp@2.4.2",
+          "UID": "eaf235720b7bd6d4"
+        },
         "Version": "2.4.2",
         "Layer": {},
         "Locations": [
@@ -2407,6 +3072,10 @@
       },
       {
         "Name": "autopep8",
+        "Identifier": {
+          "PURL": "pkg:pypi/autopep8@1.4.3",
+          "UID": "c72404a556d5fefc"
+        },
         "Version": "1.4.3",
         "Layer": {},
         "Locations": [
@@ -2418,6 +3087,10 @@
       },
       {
         "Name": "babel",
+        "Identifier": {
+          "PURL": "pkg:pypi/babel@2.6.0",
+          "UID": "4d4043fc18530c4e"
+        },
         "Version": "2.6.0",
         "Layer": {},
         "Locations": [
@@ -2429,6 +3102,10 @@
       },
       {
         "Name": "billiard",
+        "Identifier": {
+          "PURL": "pkg:pypi/billiard@3.6.0.0",
+          "UID": "a49012bdf0aa6572"
+        },
         "Version": "3.6.0.0",
         "Layer": {},
         "Locations": [
@@ -2440,6 +3117,10 @@
       },
       {
         "Name": "boto3",
+        "Identifier": {
+          "PURL": "pkg:pypi/boto3@1.9.130",
+          "UID": "4bc185d0ab442a72"
+        },
         "Version": "1.9.130",
         "Layer": {},
         "Locations": [
@@ -2451,6 +3132,10 @@
       },
       {
         "Name": "botocore",
+        "Identifier": {
+          "PURL": "pkg:pypi/botocore@1.12.130",
+          "UID": "c13ca226c8938c5d"
+        },
         "Version": "1.12.130",
         "Layer": {},
         "Locations": [
@@ -2462,6 +3147,10 @@
       },
       {
         "Name": "celery",
+        "Identifier": {
+          "PURL": "pkg:pypi/celery@4.3.0",
+          "UID": "f1e0486cb7f807fd"
+        },
         "Version": "4.3.0",
         "Layer": {},
         "Locations": [
@@ -2473,6 +3162,10 @@
       },
       {
         "Name": "certifi",
+        "Identifier": {
+          "PURL": "pkg:pypi/certifi@2019.3.9",
+          "UID": "56ffce20ab1cfcbf"
+        },
         "Version": "2019.3.9",
         "Layer": {},
         "Locations": [
@@ -2484,6 +3177,10 @@
       },
       {
         "Name": "chardet",
+        "Identifier": {
+          "PURL": "pkg:pypi/chardet@3.0.4",
+          "UID": "f459dfb7e38575b6"
+        },
         "Version": "3.0.4",
         "Layer": {},
         "Locations": [
@@ -2495,6 +3192,10 @@
       },
       {
         "Name": "decorator",
+        "Identifier": {
+          "PURL": "pkg:pypi/decorator@4.4.0",
+          "UID": "5453b8bdb53908f4"
+        },
         "Version": "4.4.0",
         "Layer": {},
         "Locations": [
@@ -2506,6 +3207,10 @@
       },
       {
         "Name": "django",
+        "Identifier": {
+          "PURL": "pkg:pypi/django@2.0.9",
+          "UID": "ae1afb5dd98fda8d"
+        },
         "Version": "2.0.9",
         "Layer": {},
         "Locations": [
@@ -2517,6 +3222,10 @@
       },
       {
         "Name": "django-celery-beat",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-celery-beat@1.4.0",
+          "UID": "2456816e402bc4b2"
+        },
         "Version": "1.4.0",
         "Layer": {},
         "Locations": [
@@ -2528,6 +3237,10 @@
       },
       {
         "Name": "django-cors-headers",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-cors-headers@2.5.2",
+          "UID": "6b0c11924c07350"
+        },
         "Version": "2.5.2",
         "Layer": {},
         "Locations": [
@@ -2539,6 +3252,10 @@
       },
       {
         "Name": "django-extensions",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-extensions@2.1.6",
+          "UID": "8837120b637a8fd3"
+        },
         "Version": "2.1.6",
         "Layer": {},
         "Locations": [
@@ -2550,6 +3267,10 @@
       },
       {
         "Name": "django-postgres-extra",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-postgres-extra",
+          "UID": "ef80d693bc9e6b51"
+        },
         "Layer": {},
         "Locations": [
           {
@@ -2560,6 +3281,10 @@
       },
       {
         "Name": "django-redis-cache",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-redis-cache@2.0.0",
+          "UID": "d87630c5a30c9d3"
+        },
         "Version": "2.0.0",
         "Layer": {},
         "Locations": [
@@ -2571,6 +3296,10 @@
       },
       {
         "Name": "django-silk",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-silk@3.0.1",
+          "UID": "3d7f4ecf81af4fc3"
+        },
         "Version": "3.0.1",
         "Layer": {},
         "Locations": [
@@ -2582,6 +3311,10 @@
       },
       {
         "Name": "django-timezone-field",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-timezone-field@3.0",
+          "UID": "2ed5c8d7d921f353"
+        },
         "Version": "3.0",
         "Layer": {},
         "Locations": [
@@ -2593,6 +3326,10 @@
       },
       {
         "Name": "djangorestframework",
+        "Identifier": {
+          "PURL": "pkg:pypi/djangorestframework@3.9.2",
+          "UID": "b9818850a6395a78"
+        },
         "Version": "3.9.2",
         "Layer": {},
         "Locations": [
@@ -2604,6 +3341,10 @@
       },
       {
         "Name": "djangorestframework-jwt",
+        "Identifier": {
+          "PURL": "pkg:pypi/djangorestframework-jwt@1.11.0",
+          "UID": "e0716ea8c627d52f"
+        },
         "Version": "1.11.0",
         "Layer": {},
         "Locations": [
@@ -2615,6 +3356,10 @@
       },
       {
         "Name": "docutils",
+        "Identifier": {
+          "PURL": "pkg:pypi/docutils@0.14",
+          "UID": "10ac97ed7a098f18"
+        },
         "Version": "0.14",
         "Layer": {},
         "Locations": [
@@ -2626,6 +3371,10 @@
       },
       {
         "Name": "flower",
+        "Identifier": {
+          "PURL": "pkg:pypi/flower@0.9.3",
+          "UID": "9faba86de45abcc5"
+        },
         "Version": "0.9.3",
         "Layer": {},
         "Locations": [
@@ -2637,6 +3386,10 @@
       },
       {
         "Name": "gprof2dot",
+        "Identifier": {
+          "PURL": "pkg:pypi/gprof2dot@2016.10.13",
+          "UID": "41a5745039319984"
+        },
         "Version": "2016.10.13",
         "Layer": {},
         "Locations": [
@@ -2648,6 +3401,10 @@
       },
       {
         "Name": "gunicorn",
+        "Identifier": {
+          "PURL": "pkg:pypi/gunicorn@19.9.0",
+          "UID": "3feb80b6855d93fc"
+        },
         "Version": "19.9.0",
         "Layer": {},
         "Locations": [
@@ -2659,6 +3416,10 @@
       },
       {
         "Name": "hiredis",
+        "Identifier": {
+          "PURL": "pkg:pypi/hiredis@1.0.0",
+          "UID": "bb90d823e31cc905"
+        },
         "Version": "1.0.0",
         "Layer": {},
         "Locations": [
@@ -2670,6 +3431,10 @@
       },
       {
         "Name": "httplib2",
+        "Identifier": {
+          "PURL": "pkg:pypi/httplib2@0.12.1",
+          "UID": "cf158fa53fec4809"
+        },
         "Version": "0.12.1",
         "Layer": {},
         "Locations": [
@@ -2681,6 +3446,10 @@
       },
       {
         "Name": "idna",
+        "Identifier": {
+          "PURL": "pkg:pypi/idna@2.8",
+          "UID": "b14fc2f2a7ef1e0d"
+        },
         "Version": "2.8",
         "Layer": {},
         "Locations": [
@@ -2692,6 +3461,10 @@
       },
       {
         "Name": "jinja2",
+        "Identifier": {
+          "PURL": "pkg:pypi/jinja2@2.10.1",
+          "UID": "882fe2359f6ae7d"
+        },
         "Version": "2.10.1",
         "Layer": {},
         "Locations": [
@@ -2703,6 +3476,10 @@
       },
       {
         "Name": "jmespath",
+        "Identifier": {
+          "PURL": "pkg:pypi/jmespath@0.9.4",
+          "UID": "82ca41bff20ffe7"
+        },
         "Version": "0.9.4",
         "Layer": {},
         "Locations": [
@@ -2714,6 +3491,10 @@
       },
       {
         "Name": "kombu",
+        "Identifier": {
+          "PURL": "pkg:pypi/kombu@4.5.0",
+          "UID": "16131f9ec1debbab"
+        },
         "Version": "4.5.0",
         "Layer": {},
         "Locations": [
@@ -2725,6 +3506,10 @@
       },
       {
         "Name": "markupsafe",
+        "Identifier": {
+          "PURL": "pkg:pypi/markupsafe@1.1.1",
+          "UID": "ccd31f5b6cf3b87b"
+        },
         "Version": "1.1.1",
         "Layer": {},
         "Locations": [
@@ -2736,6 +3521,10 @@
       },
       {
         "Name": "oauth2",
+        "Identifier": {
+          "PURL": "pkg:pypi/oauth2@1.9.0.post1",
+          "UID": "6ec03a1175710be8"
+        },
         "Version": "1.9.0.post1",
         "Layer": {},
         "Locations": [
@@ -2747,6 +3536,10 @@
       },
       {
         "Name": "psycopg2-binary",
+        "Identifier": {
+          "PURL": "pkg:pypi/psycopg2-binary@2.8.1",
+          "UID": "24ca65b34656f4fe"
+        },
         "Version": "2.8.1",
         "Layer": {},
         "Locations": [
@@ -2758,6 +3551,10 @@
       },
       {
         "Name": "py",
+        "Identifier": {
+          "PURL": "pkg:pypi/py@1.8.0",
+          "UID": "cace845a08062384"
+        },
         "Version": "1.8.0",
         "Layer": {},
         "Locations": [
@@ -2769,6 +3566,10 @@
       },
       {
         "Name": "pycodestyle",
+        "Identifier": {
+          "PURL": "pkg:pypi/pycodestyle@2.5.0",
+          "UID": "5ab70d21f916b062"
+        },
         "Version": "2.5.0",
         "Layer": {},
         "Locations": [
@@ -2780,6 +3581,10 @@
       },
       {
         "Name": "pycurl",
+        "Identifier": {
+          "PURL": "pkg:pypi/pycurl@7.43.0.2",
+          "UID": "1196e92ba0352e75"
+        },
         "Version": "7.43.0.2",
         "Layer": {},
         "Locations": [
@@ -2791,6 +3596,10 @@
       },
       {
         "Name": "pygments",
+        "Identifier": {
+          "PURL": "pkg:pypi/pygments@2.3.1",
+          "UID": "ce312b70022257a2"
+        },
         "Version": "2.3.1",
         "Layer": {},
         "Locations": [
@@ -2802,6 +3611,10 @@
       },
       {
         "Name": "pyjwt",
+        "Identifier": {
+          "PURL": "pkg:pypi/pyjwt@1.7.1",
+          "UID": "ca80b0e4aec9de5d"
+        },
         "Version": "1.7.1",
         "Layer": {},
         "Locations": [
@@ -2813,6 +3626,10 @@
       },
       {
         "Name": "python-crontab",
+        "Identifier": {
+          "PURL": "pkg:pypi/python-crontab@2.3.6",
+          "UID": "bc6992ae46534e3"
+        },
         "Version": "2.3.6",
         "Layer": {},
         "Locations": [
@@ -2824,6 +3641,10 @@
       },
       {
         "Name": "python-dateutil",
+        "Identifier": {
+          "PURL": "pkg:pypi/python-dateutil@2.8.0",
+          "UID": "b2ebaa709e6a347b"
+        },
         "Version": "2.8.0",
         "Layer": {},
         "Locations": [
@@ -2835,6 +3656,10 @@
       },
       {
         "Name": "python-http-client",
+        "Identifier": {
+          "PURL": "pkg:pypi/python-http-client@3.1.0",
+          "UID": "2917289cbf9e4763"
+        },
         "Version": "3.1.0",
         "Layer": {},
         "Locations": [
@@ -2846,6 +3671,10 @@
       },
       {
         "Name": "pytz",
+        "Identifier": {
+          "PURL": "pkg:pypi/pytz@2019.1",
+          "UID": "4ee3e390bf941d50"
+        },
         "Version": "2019.1",
         "Layer": {},
         "Locations": [
@@ -2857,6 +3686,10 @@
       },
       {
         "Name": "pyyaml",
+        "Identifier": {
+          "PURL": "pkg:pypi/pyyaml@5.1",
+          "UID": "61b1761eb9c760ae"
+        },
         "Version": "5.1",
         "Layer": {},
         "Locations": [
@@ -2868,6 +3701,10 @@
       },
       {
         "Name": "redis",
+        "Identifier": {
+          "PURL": "pkg:pypi/redis@3.2.1",
+          "UID": "265e9c7eea13d22d"
+        },
         "Version": "3.2.1",
         "Layer": {},
         "Locations": [
@@ -2879,6 +3716,10 @@
       },
       {
         "Name": "requests",
+        "Identifier": {
+          "PURL": "pkg:pypi/requests@2.21.0",
+          "UID": "bfa4f165c40babce"
+        },
         "Version": "2.21.0",
         "Layer": {},
         "Locations": [
@@ -2890,6 +3731,10 @@
       },
       {
         "Name": "retry",
+        "Identifier": {
+          "PURL": "pkg:pypi/retry@0.9.2",
+          "UID": "1a4ba07f9995e4ec"
+        },
         "Version": "0.9.2",
         "Layer": {},
         "Locations": [
@@ -2901,6 +3746,10 @@
       },
       {
         "Name": "s3transfer",
+        "Identifier": {
+          "PURL": "pkg:pypi/s3transfer@0.2.0",
+          "UID": "eb74f26bb04808e9"
+        },
         "Version": "0.2.0",
         "Layer": {},
         "Locations": [
@@ -2912,6 +3761,10 @@
       },
       {
         "Name": "sendgrid",
+        "Identifier": {
+          "PURL": "pkg:pypi/sendgrid@6.0.4",
+          "UID": "21f7c84bdff019e5"
+        },
         "Version": "6.0.4",
         "Layer": {},
         "Locations": [
@@ -2923,6 +3776,10 @@
       },
       {
         "Name": "sentry-sdk",
+        "Identifier": {
+          "PURL": "pkg:pypi/sentry-sdk@0.7.10",
+          "UID": "2608107c1c7a60c5"
+        },
         "Version": "0.7.10",
         "Layer": {},
         "Locations": [
@@ -2934,6 +3791,10 @@
       },
       {
         "Name": "six",
+        "Identifier": {
+          "PURL": "pkg:pypi/six@1.12.0",
+          "UID": "2f910bba245384"
+        },
         "Version": "1.12.0",
         "Layer": {},
         "Locations": [
@@ -2945,6 +3806,10 @@
       },
       {
         "Name": "sqlparse",
+        "Identifier": {
+          "PURL": "pkg:pypi/sqlparse@0.3.0",
+          "UID": "8a41dce5ceb6e25d"
+        },
         "Version": "0.3.0",
         "Layer": {},
         "Locations": [
@@ -2956,6 +3821,10 @@
       },
       {
         "Name": "tornado",
+        "Identifier": {
+          "PURL": "pkg:pypi/tornado@5.1.1",
+          "UID": "7cb12caf440e98d3"
+        },
         "Version": "5.1.1",
         "Layer": {},
         "Locations": [
@@ -2967,6 +3836,10 @@
       },
       {
         "Name": "urllib3",
+        "Identifier": {
+          "PURL": "pkg:pypi/urllib3@1.24.1",
+          "UID": "e6ed0d9bee45f366"
+        },
         "Version": "1.24.1",
         "Layer": {},
         "Locations": [
@@ -2978,6 +3851,10 @@
       },
       {
         "Name": "vine",
+        "Identifier": {
+          "PURL": "pkg:pypi/vine@1.3.0",
+          "UID": "143f2a81995593aa"
+        },
         "Version": "1.3.0",
         "Layer": {},
         "Locations": [
@@ -2989,6 +3866,10 @@
       },
       {
         "Name": "xmltodict",
+        "Identifier": {
+          "PURL": "pkg:pypi/xmltodict@0.12.0",
+          "UID": "c672df016be1530b"
+        },
         "Version": "0.12.0",
         "Layer": {},
         "Locations": [

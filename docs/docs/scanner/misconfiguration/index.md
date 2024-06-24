@@ -1,12 +1,12 @@
 # Misconfiguration Scanning
-Trivy provides built-in policies to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
-In addition to built-in policies, you can write your own custom policies, as you can see [here][custom].
+Trivy provides built-in checks to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
+In addition to built-in checks, you can write your own custom checks, as you can see [here][custom].
 
 ## Quick start
 
 Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm Charts and Dockerfile.
 
-``` bash
+```bash
 $ trivy config [YOUR_IaC_DIRECTORY]
 ```
 
@@ -35,28 +35,28 @@ $ trivy config [YOUR_IaC_DIRECTORY]
     ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ```
 
-You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--scanners config`.
+You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--scanners misconfig`.
 
 ```bash
-$ trivy image --scanners config IMAGE_NAME
+$ trivy image --scanners misconfig IMAGE_NAME
 ```
 
 ```bash
-$ trivy fs --scanners config /path/to/dir
+$ trivy fs --scanners misconfig /path/to/dir
 ```
 
 !!! note
     Misconfiguration detection is not enabled by default in `image`, `fs` and `repo` subcommands.
 
 Unlike the `config` subcommand, `image`, `fs` and `repo` subcommands can also scan for vulnerabilities and secrets at the same time. 
-You can specify `--scanners vuln,config,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
+You can specify `--scanners vuln,misconfig,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
 
 
 !!! example
     ``` bash
     $ ls myapp/
     Dockerfile Pipfile.lock
-    $ trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL myapp/
+    $ trivy fs --scanners vuln,misconfig,secret --severity HIGH,CRITICAL myapp/
     2022-05-16T13:42:21.440+0100	INFO	Number of language-specific files: 1
     2022-05-16T13:42:21.440+0100	INFO	Detecting pipenv vulnerabilities...
     2022-05-16T13:42:21.440+0100	INFO	Detected config files: 1
@@ -94,7 +94,7 @@ In the above example, Trivy detected vulnerabilities of Python dependencies and 
 
 ## Type detection
 The specified directory can contain mixed types of IaC files.
-Trivy automatically detects config types and applies relevant policies.
+Trivy automatically detects config types and applies relevant checks.
 
 For example, the following example holds IaC files for Terraform, CloudFormation, Kubernetes, Helm Charts, and Dockerfile in the same directory.
 
@@ -315,8 +315,19 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
-### Pass custom policies
-You can pass policy files or directories including your custom policies through `--policy` option.
+### Enabling a subset of misconfiguration scanners
+It's possible to only enable certain misconfiguration scanners if you prefer.
+You can do so by passing the `--misconfig-scanners` option.
+This flag takes a comma-separated list of configuration scanner types.
+
+```bash
+trivy config --misconfig-scanners=terraform,dockerfile .
+```
+
+Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
+
+### Passing custom checks
+You can pass policy files or directories including your custom checks through `--policy` option.
 This can be repeated for specifying multiple files or directories.
 
 ```bash
@@ -324,12 +335,12 @@ cd examplex/misconf/
 trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
 ```
 
-For more details, see [Custom Policies](./custom/index.md).
+For more details, see [Custom Checks](./custom/index.md).
 
 !!! tip
 You also need to specify `--namespaces` option.
 
-### Pass custom data
+### Passing custom data
 You can pass directories including your custom data through `--data` option.
 This can be repeated for specifying multiple directories.
 
@@ -340,64 +351,211 @@ trivy conf --policy ./policy --data ./data --namespaces user ./configs
 
 For more details, see [Custom Data](./custom/data.md).
 
-### Pass namespaces
-By default, Trivy evaluates policies defined in `builtin.*`.
-If you want to evaluate custom policies in other packages, you have to specify package prefixes through `--namespaces` option.
+### Passing namespaces
+By default, Trivy evaluates checks defined in `builtin.*`.
+If you want to evaluate custom checks in other packages, you have to specify package prefixes through `--namespaces` option.
 This can be repeated for specifying multiple packages.
 
 ``` bash
 trivy conf --policy ./policy --namespaces main --namespaces user ./configs
 ```
 
-### Terraform value overrides
-You can pass `tf-vars` files to Trivy to override default values found in the Terraform HCL code.
+### Private terraform registries
+Trivy can download terraform code from private registries.
+To pass credentials you must use the `TF_TOKEN_` environment variables.
+You cannot use a `.terraformrc` or `terraform.rc` file, these are not supported by trivy yet.
 
-```bash
-trivy conf --tf-vars dev.terraform.tfvars ./infrastructure/tf
+From the terraform [docs](https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials):
+
+> Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
+> For example, the value of a variable named `TF_TOKEN_app_terraform_io` will be used as a bearer authorization token when the CLI makes service requests to the hostname `app.terraform.io`.
+>
+> You must convert domain names containing non-ASCII characters to their punycode equivalent with an ACE prefix.
+> For example, token credentials for `例えば.com` must be set in a variable called `TF_TOKEN_xn--r8j3dr99h_com`.
+>
+> Hyphens are also valid within host names but usually invalid as variable names and may be encoded as double underscores.
+> For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--caf-dma_fr or TF_TOKEN_xn____caf__dma_fr.
+
+If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.
+
+
+### Skipping resources by inline comments
+
+Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.
+
+In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
+
+The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AVD-AWS-0089` or `avd-aws-0089`.
+
+For example, to ignore a misconfiguration ID `AVD-GCP-0051` in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051
+resource "google_container_cluster" "example" {
+  name     = var.cluster_name
+  location = var.region
+}
 ```
 
-### Exclude downloaded Terraform modules
-You can remove results for downloaded modules in `.terraform` folder.
-```bash
-trivy conf --tf-exclude-downloaded-modules ./configs
+You can add multiple ignores on the same comment line:
+```terraform
+#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053
+resource "google_container_cluster" "example" {
+  name     = var.cluster_name
+  location = var.region
+}
 ```
 
-### Helm value overrides
-There are a number of options for overriding values in Helm charts. When override values are passed to the Helm scanner, the values will be used during the Manifest rendering process and will become part of the scanned artifact.
+You can also specify a long ID, which is formed as follows: `<provider>-<service>-<short-code>`.
 
-#### Setting inline value overrides
-Overrides can be set inline on the command line
-
-```bash
-trivy conf --helm-set securityContext.runAsUser=0 ./charts/mySql
-```
-
-#### Setting value file overrides
-Overrides can be in a file that has the key=value set.
+As an example, consider the following check metadata:
 
 ```yaml
-# Example override file (overrides.yaml)
-
-securityContext:
-  runAsUser: 0
+# custom:
+  # id: AVD-AWS-0089
+  # avd_id: AVD-AWS-0089
+  # provider: aws
+  # service: s3
+  # severity: LOW
+  # short_code: enable-logging
 ```
 
-```bash
-trivy conf --helm-values overrides.yaml ./charts/mySql
-``` 
+Long ID would look like the following: `aws-s3-enable-logging`.
 
-#### Setting value as explicit string
-the `--helm-set-string` is the same as `--helm-set` but explicitly retains the value as a string
-
-```bash
-trivy config --helm-set-string name=false ./infrastructure/tf
+Example for CloudFromation:
+```yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+#trivy:ignore:*
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
 ```
 
-#### Setting specific values from files
-Specific override values can come from specific files
+#### Expiration Date
 
-```bash
-trivy conf --helm-set-file environment=dev.values.yaml ./charts/mySql
+You can specify the expiration date of the ignore rule in `yyyy-mm-dd` format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
+```tf
+#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10
+resource "aws_s3_bucket" "example" {
+  bucket = "test"
+}
 ```
+
+The `aws-s3-enable-logging` check will be ignored until `2024-03-10` until the ignore rule expires.
+
+#### Ignoring by attributes
+
+You can ignore a resource by its attribute value. This is useful when using the `for-each` meta-argument. For example:
+
+```tf
+locals {
+  ports = ["3306", "5432"]
+}
+
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]
+resource "aws_security_group_rule" "example" {
+  for_each                 = toset(local.ports)
+  type                     = "ingress"
+  from_port                = each.key
+  to_port                  = each.key
+  protocol                 = "TCP"
+  cidr_blocks              = ["0.0.0.0/0"]
+  security_group_id        = aws_security_group.example.id
+  source_security_group_id = aws_security_group.example.id
+}
+```
+
+The `aws-ec2-no-public-ingress-sgr` check will be ignored only for the `aws_security_group_rule` resource with port number `5432`. It is important to note that the ignore rule should not enclose the attribute value in quotes, despite the fact that the port is represented as a string.
+
+If you want to ignore multiple resources on different attributes, you can specify multiple ignore rules:
+
+```tf
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]
+```
+
+You can also ignore a resource on multiple attributes:
+```tf
+locals {
+  rules = {
+    first = {
+      port = 1000
+      type = "ingress"
+    },
+    second = {
+      port = 1000
+      type = "egress"
+    }
+  }
+}
+
+#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=1000,type=egress]
+resource "aws_security_group_rule" "example" {
+  for_each = { for k, v in local.rules : k => v }
+
+  type                     = each.value.type
+  from_port                = each.value.port
+  to_port                  = each.value.port
+  protocol                 = "TCP"
+  cidr_blocks              = ["0.0.0.0/0"]
+  security_group_id        = aws_security_group.example.id
+  source_security_group_id = aws_security_group.example.id
+}
+```
+
+Checks can also be ignored by nested attributes, but certain restrictions apply:
+
+- You cannot access an individual block using indexes, for example when working with dynamic blocks.
+- Special variables like [each](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each#the-each-object) and [count](https://developer.hashicorp.com/terraform/language/meta-arguments/count#the-count-object) cannot be accessed.
+
+```tf
+#trivy:ignore:*[logging_config.prefix=myprefix]
+resource "aws_cloudfront_distribution" "example" {
+  logging_config {
+    include_cookies = false
+    bucket          = "mylogs.s3.amazonaws.com"
+    prefix          = "myprefix"
+  }
+}
+```
+
+#### Ignoring module issues
+
+Issues in third-party modules cannot be ignored using the method described above, because you may not have access to modify the module source code. In such a situation you can add ignore rules above the module block, for example:
+
+```tf
+#trivy:ignore:aws-s3-enable-logging
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = "my-s3-bucket"
+}
+```
+
+An example of ignoring checks for a specific bucket in a module:
+```tf
+locals {
+  bucket = ["test1", "test2"]
+}
+
+#trivy:ignore:*[bucket=test1]
+module "s3_bucket" {
+  for_each = toset(local.bucket)
+  source   = "terraform-aws-modules/s3-bucket/aws"
+  bucket   = each.value
+}
+```
+
+#### Support for Wildcards
+
+You can use wildcards in the `ws` (workspace) and `ignore` sections of the ignore rules.
+
+```tf
+# trivy:ignore:aws-s3-*:ws:dev-*
+```
+
+This example ignores all checks starting with `aws-s3-` for workspaces matching the pattern `dev-*`.
 
 [custom]: custom/index.md

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	max       = int64(10) << 30 // 10GB
+	maxSize   = int64(10) << 30 // 10GB
 	blockSize = 4096
 )
 
@@ -27,7 +27,7 @@ func DecompressGzip(t *testing.T, src, dst string) {
 	gr, err := gzip.NewReader(f)
 	require.NoError(t, err)
 
-	_, err = io.CopyN(w, gr, max)
+	_, err = io.CopyN(w, gr, maxSize)
 	require.ErrorIs(t, err, io.EOF)
 }
 
@@ -69,7 +69,7 @@ func DecompressSparseGzip(t *testing.T, src, dst string) {
 				require.NoError(t, err)
 			}
 			written += int64(wn)
-			if written > max {
+			if written > maxSize {
 				require.Fail(t, "written size exceeds max")
 			}
 		}

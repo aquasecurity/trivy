@@ -36,12 +36,14 @@ trivy image [flags] IMAGE_NAME
 ```
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --check-namespaces strings          Rego namespaces
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate (docker-cis)
-      --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
+      --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --custom-headers strings            custom headers in client mode
-      --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
+      --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --docker-host string                unix domain socket path to use for docker scanning
       --download-db-only                  download/update vulnerability database but don't run a scan
@@ -51,6 +53,8 @@ trivy image [flags] IMAGE_NAME
       --exit-on-eol int                   exit with the specified code when the OS reaches end of service/life
       --file-patterns strings             specify config file patterns
   -f, --format string                     format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
+      --helm-api-versions strings         Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)
+      --helm-kube-version string          Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -61,22 +65,25 @@ trivy image [flags] IMAGE_NAME
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignored-licenses strings          specify a list of license to ignore
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
-      --image-config-scanners strings     comma-separated list of what security issues to detect on container image configurations (config,secret)
+      --image-config-scanners strings     comma-separated list of what security issues to detect on container image configurations (misconfig,secret)
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
-      --include-non-failures              include successes and exceptions, available with '--scanners config'
+      --include-deprecated-checks         include deprecated checks
+      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --input string                      input file path instead of image name
-      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
+      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
-      --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
+      --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
+      --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
+      --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --platform string                   set platform in the form os/arch if image is multi-platform capable
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
-      --policy-namespaces strings         Rego namespaces
+      --podman-host string                unix podman socket path to use for podman scanning
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -86,25 +93,25 @@ trivy image [flags] IMAGE_NAME
       --removed-pkgs                      detect vulnerabilities of removed packages (only for Alpine)
       --report string                     specify a format for the compliance report. (all,summary) (default "summary")
       --reset                             remove all caches and database
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
-      --scanners strings                  comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
+      --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+      --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
+      --skip-check-update                 skip fetching rego check updates
       --skip-db-update                    skip updating vulnerability database
-      --skip-dirs strings                 specify the directories where the traversal is skipped
-      --skip-files strings                specify the file paths to skip traversal
+      --skip-dirs strings                 specify the directories or glob patterns to skip
+      --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
-      --skip-policy-update                skip fetching rego policy updates
-      --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
-      --tf-vars strings                   specify paths to override the Terraform tfvars files
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
+      --vex string                        [EXPERIMENTAL] file path to VEX
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 

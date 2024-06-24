@@ -1,31 +1,30 @@
 package flag
 
 import (
+	"fmt"
+
+	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-const defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
-const defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
-
 var (
-	ResetFlag = Flag{
+	ResetFlag = Flag[bool]{
 		Name:       "reset",
 		ConfigName: "reset",
-		Default:    false,
 		Usage:      "remove all caches and database",
 	}
-	DownloadDBOnlyFlag = Flag{
+	DownloadDBOnlyFlag = Flag[bool]{
 		Name:       "download-db-only",
 		ConfigName: "db.download-only",
-		Default:    false,
 		Usage:      "download/update vulnerability database but don't run a scan",
 	}
-	SkipDBUpdateFlag = Flag{
+	SkipDBUpdateFlag = Flag[bool]{
 		Name:       "skip-db-update",
 		ConfigName: "db.skip-update",
-		Default:    false,
 		Usage:      "skip updating vulnerability database",
 		Aliases: []Alias{
 			{
@@ -34,40 +33,36 @@ var (
 			},
 		},
 	}
-	DownloadJavaDBOnlyFlag = Flag{
+	DownloadJavaDBOnlyFlag = Flag[bool]{
 		Name:       "download-java-db-only",
 		ConfigName: "db.download-java-only",
-		Default:    false,
 		Usage:      "download/update Java index database but don't run a scan",
 	}
-	SkipJavaDBUpdateFlag = Flag{
+	SkipJavaDBUpdateFlag = Flag[bool]{
 		Name:       "skip-java-db-update",
 		ConfigName: "db.java-skip-update",
-		Default:    false,
 		Usage:      "skip updating Java index database",
 	}
-	NoProgressFlag = Flag{
+	NoProgressFlag = Flag[bool]{
 		Name:       "no-progress",
 		ConfigName: "db.no-progress",
-		Default:    false,
 		Usage:      "suppress progress bar",
 	}
-	DBRepositoryFlag = Flag{
+	DBRepositoryFlag = Flag[string]{
 		Name:       "db-repository",
 		ConfigName: "db.repository",
-		Default:    defaultDBRepository,
+		Default:    db.DefaultRepository,
 		Usage:      "OCI repository to retrieve trivy-db from",
 	}
-	JavaDBRepositoryFlag = Flag{
+	JavaDBRepositoryFlag = Flag[string]{
 		Name:       "java-db-repository",
 		ConfigName: "db.java-repository",
-		Default:    defaultJavaDBRepository,
+		Default:    javadb.DefaultRepository,
 		Usage:      "OCI repository to retrieve trivy-java-db from",
 	}
-	LightFlag = Flag{
+	LightFlag = Flag[bool]{
 		Name:       "light",
 		ConfigName: "db.light",
-		Default:    false,
 		Usage:      "deprecated",
 		Deprecated: true,
 	}
@@ -75,15 +70,15 @@ var (
 
 // DBFlagGroup composes common printer flag structs used for commands requiring DB logic.
 type DBFlagGroup struct {
-	Reset              *Flag
-	DownloadDBOnly     *Flag
-	SkipDBUpdate       *Flag
-	DownloadJavaDBOnly *Flag
-	SkipJavaDBUpdate   *Flag
-	NoProgress         *Flag
-	DBRepository       *Flag
-	JavaDBRepository   *Flag
-	Light              *Flag // deprecated
+	Reset              *Flag[bool]
+	DownloadDBOnly     *Flag[bool]
+	SkipDBUpdate       *Flag[bool]
+	DownloadJavaDBOnly *Flag[bool]
+	SkipJavaDBUpdate   *Flag[bool]
+	NoProgress         *Flag[bool]
+	DBRepository       *Flag[string]
+	JavaDBRepository   *Flag[string]
+	Light              *Flag[bool] // deprecated
 }
 
 type DBOptions struct {
@@ -93,23 +88,23 @@ type DBOptions struct {
 	DownloadJavaDBOnly bool
 	SkipJavaDBUpdate   bool
 	NoProgress         bool
-	DBRepository       string
-	JavaDBRepository   string
+	DBRepository       name.Reference
+	JavaDBRepository   name.Reference
 	Light              bool // deprecated
 }
 
 // NewDBFlagGroup returns a default DBFlagGroup
 func NewDBFlagGroup() *DBFlagGroup {
 	return &DBFlagGroup{
-		Reset:              &ResetFlag,
-		DownloadDBOnly:     &DownloadDBOnlyFlag,
-		SkipDBUpdate:       &SkipDBUpdateFlag,
-		DownloadJavaDBOnly: &DownloadJavaDBOnlyFlag,
-		SkipJavaDBUpdate:   &SkipJavaDBUpdateFlag,
-		Light:              &LightFlag,
-		NoProgress:         &NoProgressFlag,
-		DBRepository:       &DBRepositoryFlag,
-		JavaDBRepository:   &JavaDBRepositoryFlag,
+		Reset:              ResetFlag.Clone(),
+		DownloadDBOnly:     DownloadDBOnlyFlag.Clone(),
+		SkipDBUpdate:       SkipDBUpdateFlag.Clone(),
+		DownloadJavaDBOnly: DownloadJavaDBOnlyFlag.Clone(),
+		SkipJavaDBUpdate:   SkipJavaDBUpdateFlag.Clone(),
+		Light:              LightFlag.Clone(),
+		NoProgress:         NoProgressFlag.Clone(),
+		DBRepository:       DBRepositoryFlag.Clone(),
+		JavaDBRepository:   JavaDBRepositoryFlag.Clone(),
 	}
 }
 
@@ -117,8 +112,8 @@ func (f *DBFlagGroup) Name() string {
 	return "DB"
 }
 
-func (f *DBFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *DBFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.Reset,
 		f.DownloadDBOnly,
 		f.SkipDBUpdate,
@@ -132,11 +127,15 @@ func (f *DBFlagGroup) Flags() []*Flag {
 }
 
 func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
-	skipDBUpdate := getBool(f.SkipDBUpdate)
-	skipJavaDBUpdate := getBool(f.SkipJavaDBUpdate)
-	downloadDBOnly := getBool(f.DownloadDBOnly)
-	downloadJavaDBOnly := getBool(f.DownloadJavaDBOnly)
-	light := getBool(f.Light)
+	if err := parseFlags(f); err != nil {
+		return DBOptions{}, err
+	}
+
+	skipDBUpdate := f.SkipDBUpdate.Value()
+	skipJavaDBUpdate := f.SkipJavaDBUpdate.Value()
+	downloadDBOnly := f.DownloadDBOnly.Value()
+	downloadJavaDBOnly := f.DownloadJavaDBOnly.Value()
+	light := f.Light.Value()
 
 	if downloadDBOnly && skipDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
@@ -145,18 +144,44 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 	if light {
-		log.Logger.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
+		log.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
+	}
+
+	var dbRepository, javaDBRepository name.Reference
+	var err error
+	if f.DBRepository != nil {
+		if dbRepository, err = name.ParseReference(f.DBRepository.Value(), name.WithDefaultTag("")); err != nil {
+			return DBOptions{}, xerrors.Errorf("invalid db repository: %w", err)
+		}
+		// Add the schema version if the tag is not specified for backward compatibility.
+		if t, ok := dbRepository.(name.Tag); ok && t.TagStr() == "" {
+			dbRepository = t.Tag(fmt.Sprint(db.SchemaVersion))
+			log.Info("Adding schema version to the DB repository for backward compatibility",
+				log.String("repository", dbRepository.String()))
+		}
+	}
+
+	if f.JavaDBRepository != nil {
+		if javaDBRepository, err = name.ParseReference(f.JavaDBRepository.Value(), name.WithDefaultTag("")); err != nil {
+			return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
+		}
+		// Add the schema version if the tag is not specified for backward compatibility.
+		if t, ok := javaDBRepository.(name.Tag); ok && t.TagStr() == "" {
+			javaDBRepository = t.Tag(fmt.Sprint(javadb.SchemaVersion))
+			log.Info("Adding schema version to the Java DB repository for backward compatibility",
+				log.String("repository", javaDBRepository.String()))
+		}
 	}
 
 	return DBOptions{
-		Reset:              getBool(f.Reset),
+		Reset:              f.Reset.Value(),
 		DownloadDBOnly:     downloadDBOnly,
 		SkipDBUpdate:       skipDBUpdate,
 		DownloadJavaDBOnly: downloadJavaDBOnly,
 		SkipJavaDBUpdate:   skipJavaDBUpdate,
 		Light:              light,
-		NoProgress:         getBool(f.NoProgress),
-		DBRepository:       getString(f.DBRepository),
-		JavaDBRepository:   getString(f.JavaDBRepository),
+		NoProgress:         f.NoProgress.Value(),
+		DBRepository:       dbRepository,
+		JavaDBRepository:   javaDBRepository,
 	}, nil
 }

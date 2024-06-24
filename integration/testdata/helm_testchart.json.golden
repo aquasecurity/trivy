@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/helm_testchart",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/helm_testchart",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -20,8 +21,8 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 143,
-        "Failures": 2,
+        "Successes": 135,
+        "Failures": 4,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -29,7 +30,7 @@
           "Type": "Helm Security Check",
           "ID": "KSV001",
           "AVDID": "AVD-KSV-0001",
-          "Title": "Process can elevate its own privileges",
+          "Title": "Can elevate its own privileges",
           "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
           "Message": "Container 'testchart' of Deployment 'testchart' should set 'securityContext.allowPrivilegeEscalation' to false",
           "Namespace": "builtin.kubernetes.KSV001",
@@ -56,6 +57,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
                   "FirstCause": true,
                   "LastCause": false
                 },
@@ -65,6 +67,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -74,6 +77,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -83,6 +87,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -92,6 +97,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              - ALL",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -101,6 +107,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -110,6 +117,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -119,6 +127,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -128,6 +137,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": true
                 },
@@ -148,8 +158,8 @@
           "Type": "Helm Security Check",
           "ID": "KSV030",
           "AVDID": "AVD-KSV-0030",
-          "Title": "Default Seccomp profile not set",
-          "Description": "The RuntimeDefault/Localhost seccomp profile must be required, or allow specific additional profiles.",
+          "Title": "Runtime/Default Seccomp profile not set",
+          "Description": "According to pod security standard 'Seccomp', the RuntimeDefault seccomp profile must be required, or allow specific additional profiles.",
           "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
           "Namespace": "builtin.kubernetes.KSV030",
           "Query": "data.builtin.kubernetes.KSV030.deny",
@@ -175,6 +185,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
                   "FirstCause": true,
                   "LastCause": false
                 },
@@ -184,6 +195,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -193,6 +205,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -202,6 +215,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -211,6 +225,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              - ALL",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -220,6 +235,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -229,6 +245,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -238,6 +255,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -247,6 +265,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": true
                 },
@@ -262,6 +281,58 @@
               ]
             }
           }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV104",
+          "AVDID": "AVD-KSV-0104",
+          "Title": "Seccomp policies disabled",
+          "Description": "A program inside the container can bypass Seccomp protection policies.",
+          "Message": "container \"testchart\" of deployment \"testchart\" in \"default\" namespace should specify a seccomp profile",
+          "Namespace": "builtin.kubernetes.KSV104",
+          "Query": "data.builtin.kubernetes.KSV104.deny",
+          "Resolution": "Specify seccomp either by annotation or by seccomp profile type having allowed values as per pod security standards",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv104",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
+            "https://avd.aquasec.com/misconfig/ksv104"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV117",
+          "AVDID": "AVD-KSV-0117",
+          "Title": "Prevent binding to privileged ports",
+          "Description": "The ports which are lower than 1024 receive and transmit various sensitive and privileged data. Allowing containers to use them can bring serious implications.",
+          "Message": "deployment testchart in default namespace should not set spec.template.spec.containers.ports.containerPort to less than 1024",
+          "Namespace": "builtin.kubernetes.KSV117",
+          "Query": "data.builtin.kubernetes.KSV117.deny",
+          "Resolution": "Do not map the container ports to privileged host ports when starting a container.",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv117",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+            "https://avd.aquasec.com/misconfig/ksv117"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
         }
       ]
     },
@@ -270,7 +341,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 145,
+        "Successes": 106,
         "Failures": 0,
         "Exceptions": 0
       }
@@ -280,7 +351,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 145,
+        "Successes": 105,
         "Failures": 0,
         "Exceptions": 0
       }

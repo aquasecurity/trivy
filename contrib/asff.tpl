@@ -91,7 +91,7 @@
             "Severity": {
                 "Label": "{{ $severity }}"
             },
-            "Title": "Trivy found a misconfiguration in {{ $target }}: {{ .Title }}",
+            "Title": "Trivy found a misconfiguration in {{ $target }}: {{ escapeString .Title }}",
             "Description": {{ escapeString $description | printf "%q" }},
             "Remediation": {
                 "Recommendation": {
@@ -128,7 +128,7 @@
         {
             "SchemaVersion": "2018-10-08",
             "Id": "{{ $target }}",
-            "ProductArn": "arn:aws:securityhub:{{ env "AWS_DEFAULT_REGION" }}::product/aquasecurity/aquasecurity",
+            "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
             "GeneratorId": "Trivy",
             "AwsAccountId": "{{ env "AWS_ACCOUNT_ID" }}",
             "Types": [ "Sensitive Data Identifications" ],
@@ -145,7 +145,7 @@
                     "Type": "Other",
                     "Id": "{{ $target }}",
                     "Partition": "aws",
-                    "Region": "{{ env "AWS_DEFAULT_REGION" }}",
+                    "Region": "{{ env "AWS_REGION" }}",
                     "Details": {
                         "Other": {
                             "Filename": "{{ $target }}"

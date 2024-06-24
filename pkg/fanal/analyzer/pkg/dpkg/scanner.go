@@ -15,6 +15,11 @@ type dpkgScanner struct {
 // NewScanner returns a new scanner that splits on empty lines.
 func NewScanner(r io.Reader) *dpkgScanner {
 	s := bufio.NewScanner(r)
+	// Package data may exceed default buffer size
+	// Increase the buffer default size by 2 times
+	buf := make([]byte, 0, 128*1024)
+	s.Buffer(buf, 128*1024)
+
 	s.Split(emptyLineSplit)
 	return &dpkgScanner{Scanner: s}
 }

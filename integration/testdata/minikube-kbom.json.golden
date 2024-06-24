@@ -1,0 +1,73 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/sbom/minikube-kbom.json",
+  "ArtifactType": "cyclonedx",
+  "Metadata": {
+    "OS": {
+      "Family": "ubuntu",
+      "Name": "22.04.2"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/sbom/minikube-kbom.json (ubuntu 22.04.2)",
+      "Class": "os-pkgs",
+      "Type": "ubuntu"
+    },
+    {
+      "Target": "Kubernetes",
+      "Class": "lang-pkgs",
+      "Type": "kubernetes",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2023-2431",
+          "PkgID": "k8s.io/kubelet@1.27.0",
+          "PkgName": "k8s.io/kubelet",
+          "PkgIdentifier": {
+            "PURL": "pkg:k8s/k8s.io%2Fkubelet@1.27.0",
+            "UID": "4cb15d0a98eeae67",
+            "BOMRef": "pkg:k8s/k8s.io%2Fkubelet@1.27.0"
+          },
+          "InstalledVersion": "1.27.0",
+          "FixedVersion": "1.24.14, 1.25.9, 1.26.4, 1.27.1",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "k8s",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-2431",
+          "DataSource": {
+            "ID": "k8s",
+            "Name": "Official Kubernetes CVE Feed",
+            "URL": "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"
+          },
+          "Title": "Bypass of seccomp profile enforcement ",
+          "Description": "A security issue was discovered in Kubelet that allows pods to bypass the seccomp profile enforcement...",
+          "Severity": "LOW",
+          "VendorSeverity": {
+            "k8s": 1
+          },
+          "CVSS": {
+            "k8s": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N",
+              "V3Score": 3.4
+            }
+          },
+          "References": [
+            "https://github.com/kubernetes/kubernetes/issues/118690",
+            "https://www.cve.org/cverecord?id=CVE-2023-2431"
+          ]
+        }
+      ]
+    }
+  ]
+}

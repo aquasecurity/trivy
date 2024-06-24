@@ -3,7 +3,9 @@ package flag
 import (
 	"fmt"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // e.g. config yaml:
@@ -13,103 +15,143 @@ import (
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
-	ResetPolicyBundleFlag = Flag{
-		Name:       "reset-policy-bundle",
-		ConfigName: "misconfiguration.reset-policy-bundle",
-		Default:    false,
-		Usage:      "remove policy bundle",
+	ResetChecksBundleFlag = Flag[bool]{
+		Name:       "reset-checks-bundle",
+		ConfigName: "misconfiguration.reset-checks-bundle",
+		Usage:      "remove checks bundle",
+		Aliases: []Alias{
+			{
+				Name:       "reset-policy-bundle",
+				ConfigName: "misconfiguration.reset-policy-bundle",
+				Deprecated: true,
+			},
+		},
 	}
-	IncludeNonFailuresFlag = Flag{
+	IncludeNonFailuresFlag = Flag[bool]{
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
-		Default:    false,
-		Usage:      "include successes and exceptions, available with '--scanners config'",
+		Usage:      "include successes and exceptions, available with '--scanners misconfig'",
 	}
-	HelmValuesFileFlag = Flag{
+	HelmValuesFileFlag = Flag[[]string]{
 		Name:       "helm-values",
 		ConfigName: "misconfiguration.helm.values",
-		Default:    []string{},
 		Usage:      "specify paths to override the Helm values.yaml files",
 	}
-	HelmSetFlag = Flag{
+	HelmSetFlag = Flag[[]string]{
 		Name:       "helm-set",
 		ConfigName: "misconfiguration.helm.set",
-		Default:    []string{},
 		Usage:      "specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)",
 	}
-	HelmSetFileFlag = Flag{
+	HelmSetFileFlag = Flag[[]string]{
 		Name:       "helm-set-file",
 		ConfigName: "misconfiguration.helm.set-file",
-		Default:    []string{},
 		Usage:      "specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)",
 	}
-	HelmSetStringFlag = Flag{
+	HelmSetStringFlag = Flag[[]string]{
 		Name:       "helm-set-string",
 		ConfigName: "misconfiguration.helm.set-string",
-		Default:    []string{},
 		Usage:      "specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)",
 	}
-	TfVarsFlag = Flag{
+	HelmAPIVersionsFlag = Flag[[]string]{
+		Name:       "helm-api-versions",
+		ConfigName: "misconfiguration.helm.api-versions",
+		Usage:      "Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)",
+	}
+	HelmKubeVersionFlag = Flag[string]{
+		Name:       "helm-kube-version",
+		ConfigName: "misconfiguration.helm.kube-version",
+		Usage:      "Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.",
+	}
+	TfVarsFlag = Flag[[]string]{
 		Name:       "tf-vars",
 		ConfigName: "misconfiguration.terraform.vars",
-		Default:    []string{},
 		Usage:      "specify paths to override the Terraform tfvars files",
 	}
-	TerraformExcludeDownloaded = Flag{
+	CfParamsFlag = Flag[[]string]{
+		Name:       "cf-params",
+		ConfigName: "misconfiguration.cloudformation.params",
+		Default:    []string{},
+		Usage:      "specify paths to override the CloudFormation parameters files",
+	}
+	TerraformExcludeDownloaded = Flag[bool]{
 		Name:       "tf-exclude-downloaded-modules",
 		ConfigName: "misconfiguration.terraform.exclude-downloaded-modules",
-		Default:    false,
-		Usage:      "remove results for downloaded modules in .terraform folder",
+		Usage:      "exclude misconfigurations for downloaded terraform modules",
 	}
-	PolicyBundleRepositoryFlag = Flag{
-		Name:       "policy-bundle-repository",
-		ConfigName: "misconfiguration.policy-bundle-repository",
+	ChecksBundleRepositoryFlag = Flag[string]{
+		Name:       "checks-bundle-repository",
+		ConfigName: "misconfiguration.checks-bundle-repository",
 		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
-		Usage:      "OCI registry URL to retrieve policy bundle from",
+		Usage:      "OCI registry URL to retrieve checks bundle from",
+		Aliases: []Alias{
+			{
+				Name:       "policy-bundle-repository",
+				ConfigName: "misconfiguration.policy-bundle-repository",
+				Deprecated: true,
+			},
+		},
+	}
+	MisconfigScannersFlag = Flag[[]string]{
+		Name:       "misconfig-scanners",
+		ConfigName: "misconfiguration.scanners",
+		Default:    xstrings.ToStringSlice(analyzer.TypeConfigFiles),
+		Usage:      "comma-separated list of misconfig scanners to use for misconfiguration scanning",
 	}
 )
 
-// MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
+// MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
 type MisconfFlagGroup struct {
-	IncludeNonFailures     *Flag
-	ResetPolicyBundle      *Flag
-	PolicyBundleRepository *Flag
+	IncludeNonFailures     *Flag[bool]
+	ResetChecksBundle      *Flag[bool]
+	ChecksBundleRepository *Flag[string]
 
 	// Values Files
-	HelmValues                 *Flag
-	HelmValueFiles             *Flag
-	HelmFileValues             *Flag
-	HelmStringValues           *Flag
-	TerraformTFVars            *Flag
-	TerraformExcludeDownloaded *Flag
+	HelmValues                 *Flag[[]string]
+	HelmValueFiles             *Flag[[]string]
+	HelmFileValues             *Flag[[]string]
+	HelmStringValues           *Flag[[]string]
+	HelmAPIVersions            *Flag[[]string]
+	HelmKubeVersion            *Flag[string]
+	TerraformTFVars            *Flag[[]string]
+	CloudformationParamVars    *Flag[[]string]
+	TerraformExcludeDownloaded *Flag[bool]
+	MisconfigScanners          *Flag[[]string]
 }
 
 type MisconfOptions struct {
 	IncludeNonFailures     bool
-	ResetPolicyBundle      bool
-	PolicyBundleRepository string
+	ResetChecksBundle      bool
+	ChecksBundleRepository string
 
 	// Values Files
-	HelmValues          []string
-	HelmValueFiles      []string
-	HelmFileValues      []string
-	HelmStringValues    []string
-	TerraformTFVars     []string
-	TfExcludeDownloaded bool
+	HelmValues              []string
+	HelmValueFiles          []string
+	HelmFileValues          []string
+	HelmStringValues        []string
+	HelmAPIVersions         []string
+	HelmKubeVersion         string
+	TerraformTFVars         []string
+	CloudFormationParamVars []string
+	TfExcludeDownloaded     bool
+	MisconfigScanners       []analyzer.Type
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
-		IncludeNonFailures:     &IncludeNonFailuresFlag,
-		ResetPolicyBundle:      &ResetPolicyBundleFlag,
-		PolicyBundleRepository: &PolicyBundleRepositoryFlag,
+		IncludeNonFailures:     IncludeNonFailuresFlag.Clone(),
+		ResetChecksBundle:      ResetChecksBundleFlag.Clone(),
+		ChecksBundleRepository: ChecksBundleRepositoryFlag.Clone(),
 
-		HelmValues:                 &HelmSetFlag,
-		HelmFileValues:             &HelmSetFileFlag,
-		HelmStringValues:           &HelmSetStringFlag,
-		HelmValueFiles:             &HelmValuesFileFlag,
-		TerraformTFVars:            &TfVarsFlag,
-		TerraformExcludeDownloaded: &TerraformExcludeDownloaded,
+		HelmValues:                 HelmSetFlag.Clone(),
+		HelmFileValues:             HelmSetFileFlag.Clone(),
+		HelmStringValues:           HelmSetStringFlag.Clone(),
+		HelmValueFiles:             HelmValuesFileFlag.Clone(),
+		HelmAPIVersions:            HelmAPIVersionsFlag.Clone(),
+		HelmKubeVersion:            HelmKubeVersionFlag.Clone(),
+		TerraformTFVars:            TfVarsFlag.Clone(),
+		CloudformationParamVars:    CfParamsFlag.Clone(),
+		TerraformExcludeDownloaded: TerraformExcludeDownloaded.Clone(),
+		MisconfigScanners:          MisconfigScannersFlag.Clone(),
 	}
 }
 
@@ -117,30 +159,42 @@ func (f *MisconfFlagGroup) Name() string {
 	return "Misconfiguration"
 }
 
-func (f *MisconfFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *MisconfFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.IncludeNonFailures,
-		f.ResetPolicyBundle,
-		f.PolicyBundleRepository,
+		f.ResetChecksBundle,
+		f.ChecksBundleRepository,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
 		f.HelmStringValues,
+		f.HelmAPIVersions,
+		f.HelmKubeVersion,
 		f.TerraformTFVars,
 		f.TerraformExcludeDownloaded,
+		f.CloudformationParamVars,
+		f.MisconfigScanners,
 	}
 }
 
 func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return MisconfOptions{}, err
+	}
+
 	return MisconfOptions{
-		IncludeNonFailures:     getBool(f.IncludeNonFailures),
-		ResetPolicyBundle:      getBool(f.ResetPolicyBundle),
-		PolicyBundleRepository: getString(f.PolicyBundleRepository),
-		HelmValues:             getStringSlice(f.HelmValues),
-		HelmValueFiles:         getStringSlice(f.HelmValueFiles),
-		HelmFileValues:         getStringSlice(f.HelmFileValues),
-		HelmStringValues:       getStringSlice(f.HelmStringValues),
-		TerraformTFVars:        getStringSlice(f.TerraformTFVars),
-		TfExcludeDownloaded:    getBool(f.TerraformExcludeDownloaded),
+		IncludeNonFailures:      f.IncludeNonFailures.Value(),
+		ResetChecksBundle:       f.ResetChecksBundle.Value(),
+		ChecksBundleRepository:  f.ChecksBundleRepository.Value(),
+		HelmValues:              f.HelmValues.Value(),
+		HelmValueFiles:          f.HelmValueFiles.Value(),
+		HelmFileValues:          f.HelmFileValues.Value(),
+		HelmStringValues:        f.HelmStringValues.Value(),
+		HelmAPIVersions:         f.HelmAPIVersions.Value(),
+		HelmKubeVersion:         f.HelmKubeVersion.Value(),
+		TerraformTFVars:         f.TerraformTFVars.Value(),
+		CloudFormationParamVars: f.CloudformationParamVars.Value(),
+		TfExcludeDownloaded:     f.TerraformExcludeDownloaded.Value(),
+		MisconfigScanners:       xstrings.ToTSlice[analyzer.Type](f.MisconfigScanners.Value()),
 	}, nil
 }

@@ -4,12 +4,38 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: monthly
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: gomod
     open-pull-requests-limit: 10
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+    ignore:
+      - dependency-name: "github.com/aquasecurity/trivy-*" ## `trivy-*` dependencies are updated manually
+    groups:
+      aws:
+        patterns:
+          - "github.com/aws/*"
+      docker:
+        patterns:
+          - "github.com/docker/*"
+          - "github.com/moby/*"
+      testcontainers:
+        patterns:
+          - "github.com/testcontainers/*"
+      common:
+        exclude-patterns:
+          - "github.com/aquasecurity/trivy-*"
+        patterns:
+          - "*"

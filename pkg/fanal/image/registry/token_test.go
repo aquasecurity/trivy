@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/authn"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

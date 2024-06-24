@@ -1,17 +1,18 @@
 package suse_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -31,8 +32,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr      string
 	}{
 		{
-			name:         "happy path",
-			fixtures:     []string{"testdata/fixtures/suse.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/suse.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			distribution: suse.OpenSUSE,
 			args: args{
 				osVer: "15.3",
@@ -68,8 +72,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:         "broken bucket",
-			fixtures:     []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "broken bucket",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			distribution: suse.SUSEEnterpriseLinux,
 			args: args{
 				osVer: "15.3",
@@ -91,13 +98,13 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := suse.NewScanner(tt.distribution)
-			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -105,7 +112,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -136,19 +143,20 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want:         false,
 		},
 		{
-			name: "unknown",
+			name: "latest",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "unknown",
-				osVer:    "unknown",
+				osFamily: "opensuse.leap",
+				osVer:    "999.0",
 			},
-			want: false,
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := suse.NewScanner(tt.distribution, suse.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(context.Background(), tt.now)
+			s := suse.NewScanner(tt.distribution)
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

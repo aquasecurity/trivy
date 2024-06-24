@@ -1,18 +1,35 @@
 {
-  "version": "14.0.6",
+  "version": "15.0.7",
+  "scan": {
+    "analyzer": {
+      "id": "trivy",
+      "name": "Trivy",
+      "vendor": {
+        "name": "Aqua Security"
+      },
+      "version": "dev"
+    },
+    "end_time": "2021-08-25T12:20:30",
+    "scanner": {
+      "id": "trivy",
+      "name": "Trivy",
+      "url": "https://github.com/aquasecurity/trivy/",
+      "vendor": {
+        "name": "Aqua Security"
+      },
+      "version": "dev"
+    },
+    "start_time": "2021-08-25T12:20:30",
+    "status": "success",
+    "type": "container_scanning"
+  },
   "vulnerabilities": [
     {
       "id": "CVE-2019-1549",
-      "category": "container_scanning",
-      "message": "openssl: information disclosure in fork()",
+      "name": "openssl: information disclosure in fork()",
       "description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
-      "cve": "CVE-2019-1549",
       "severity": "Medium",
       "solution": "Upgrade libcrypto1.1 to 1.1.1d-r0",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
       "location": {
         "dependency": {
           "package": {
@@ -76,16 +93,10 @@
     },
     {
       "id": "CVE-2019-1551",
-      "category": "container_scanning",
-      "message": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "name": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
       "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
-      "cve": "CVE-2019-1551",
       "severity": "Medium",
       "solution": "Upgrade libcrypto1.1 to 1.1.1d-r2",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
       "location": {
         "dependency": {
           "package": {
@@ -169,16 +180,10 @@
     },
     {
       "id": "CVE-2019-1549",
-      "category": "container_scanning",
-      "message": "openssl: information disclosure in fork()",
+      "name": "openssl: information disclosure in fork()",
       "description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
-      "cve": "CVE-2019-1549",
       "severity": "Medium",
       "solution": "Upgrade libssl1.1 to 1.1.1d-r0",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
       "location": {
         "dependency": {
           "package": {
@@ -242,16 +247,10 @@
     },
     {
       "id": "CVE-2019-1551",
-      "category": "container_scanning",
-      "message": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "name": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
       "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
-      "cve": "CVE-2019-1551",
       "severity": "Medium",
       "solution": "Upgrade libssl1.1 to 1.1.1d-r2",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
       "location": {
         "dependency": {
           "package": {

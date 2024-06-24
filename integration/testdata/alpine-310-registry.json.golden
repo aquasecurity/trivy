@@ -1,6 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "localhost:55844/alpine:3.10",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "alpine:3.10",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
@@ -13,10 +14,10 @@
       "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     ],
     "RepoTags": [
-      "localhost:55844/alpine:3.10"
+      "alpine:3.10"
     ],
     "RepoDigests": [
-      "localhost:55844/alpine@sha256:b1c5a500182b21d0bfa5a584a8526b56d8be316f89e87d951be04abed2446e60"
+      "alpine@sha256:b1c5a500182b21d0bfa5a584a8526b56d8be316f89e87d951be04abed2446e60"
     ],
     "ImageConfig": {
       "architecture": "amd64",
@@ -55,7 +56,7 @@
   },
   "Results": [
     {
-      "Target": "localhost:55844/alpine:3.10 (alpine 3.10.2)",
+      "Target": "alpine:3.10 (alpine 3.10.2)",
       "Class": "os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
@@ -63,6 +64,9 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
           "Status": "fixed",
@@ -83,6 +87,14 @@
           "CweIDs": [
             "CWE-330"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -124,6 +136,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
           "Status": "fixed",
@@ -144,6 +159,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -195,6 +218,9 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
           "Status": "fixed",
@@ -215,6 +241,14 @@
           "CweIDs": [
             "CWE-330"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -256,6 +290,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
           "Status": "fixed",
@@ -276,6 +313,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",

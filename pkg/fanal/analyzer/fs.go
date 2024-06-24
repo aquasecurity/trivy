@@ -55,7 +55,8 @@ func (c *CompositeFS) CopyFileToTemp(opener Opener, info os.FileInfo) (string, e
 		return "", xerrors.Errorf("copy error: %w", err)
 	}
 
-	if err = os.Chmod(f.Name(), info.Mode()); err != nil {
+	// Use 0600 instead of file permissions to avoid errors when a file uses incorrect permissions (e.g. 0044).
+	if err = os.Chmod(f.Name(), 0600); err != nil {
 		return "", xerrors.Errorf("chmod error: %w", err)
 	}
 
@@ -87,8 +88,8 @@ func (c *CompositeFS) CreateLink(analyzerTypes []Type, rootDir, virtualPath, rea
 }
 
 // Set sets the fs.FS for the specified post-analyzer
-func (c *CompositeFS) Set(t Type, fs *mapfs.FS) {
-	c.files.Store(t, fs)
+func (c *CompositeFS) Set(t Type, mfs *mapfs.FS) {
+	c.files.Store(t, mfs)
 }
 
 // Get returns the fs.FS for the specified post-analyzer

@@ -1,13 +1,14 @@
 package photon
 
 import (
+	"context"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/photon"
+	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -25,44 +26,22 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(clock clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = clock
-	}
-}
-
 // Scanner implements the Photon scanner
 type Scanner struct {
 	vs photon.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      photon.NewVulnSrc(),
-		options: o,
+		vs: photon.NewVulnSrc(),
 	}
 }
 
 // Detect scans and returns vulnerabilities using photon scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Photon Linux vulnerabilities...")
-	log.Logger.Debugf("Photon Linux: os version: %s", osVer)
-	log.Logger.Debugf("Photon Linux: the number of packages: %d", len(pkgs))
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
@@ -80,7 +59,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
@@ -94,12 +73,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	return vulns, nil
 }
 
-// IsSupportedVersion checks if the OS version reached end-of-support.
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
-	}
-	return s.clock.Now().Before(eol)
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osVer)
 }

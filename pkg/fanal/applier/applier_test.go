@@ -4,11 +4,12 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -110,7 +111,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -149,6 +150,21 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Version:    "2.24-11+deb9u4",
 						SrcName:    "glibc",
 						SrcVersion: "2.24-11+deb9u4",
+						Identifier: types.PkgIdentifier{
+							UID: "1565c6a375877d3d",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "debian",
+								Name:      "libc6",
+								Version:   "2.24-11+deb9u4",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "debian-9.9",
+									},
+								},
+							},
+						},
 						Layer: types.Layer{
 							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
@@ -159,6 +175,21 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Version:    "2019a-0+deb9u1",
 						SrcName:    "tzdata",
 						SrcVersion: "2019a-0+deb9u1",
+						Identifier: types.PkgIdentifier{
+							UID: "15974c575bfa26a7",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "debian",
+								Name:      "tzdata",
+								Version:   "2019a-0+deb9u1",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "debian-9.9",
+									},
+								},
+							},
+						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -169,13 +200,22 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "38462330435c69bc",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "guzzlehttp",
+										Name:      "guzzle",
+										Version:   "6.2.0",
+									},
 								},
 							},
 							{
@@ -184,6 +224,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "ef7e3567678854cb",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "symfony",
+										Name:      "process",
+										Version:   "v4.2.7",
+									},
 								},
 							},
 						},
@@ -299,6 +348,21 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "busybox",
 						Version: "1.30.1-r3",
+						Identifier: types.PkgIdentifier{
+							UID: "3bfef897b9fcc058",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "busybox",
+								Version:   "1.30.1-r3",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
+									},
+								},
+							},
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -307,6 +371,21 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "libcrypto1.1",
 						Version: "1.1.1d-r2",
+						Identifier: types.PkgIdentifier{
+							UID: "a4495e1af163f55a",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "libcrypto1.1",
+								Version:   "1.1.1d-r2",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
+									},
+								},
+							},
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -315,6 +394,21 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "libssl1.1",
 						Version: "1.1.1d-r2",
+						Identifier: types.PkgIdentifier{
+							UID: "4c683a33e3b7899c",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "libssl1.1",
+								Version:   "1.1.1d-r2",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
+									},
+								},
+							},
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -323,6 +417,21 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "musl",
 						Version: "1.1.22-r3",
+						Identifier: types.PkgIdentifier{
+							UID: "bb9bd4dfce8858bf",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "musl",
+								Version:   "1.1.22-r3",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
+									},
+								},
+							},
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -331,6 +440,22 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "openssl",
 						Version: "1.1.1d-r2",
+						Identifier: types.PkgIdentifier{
+							UID: "3f6c865591e06595",
+							//PURL: "pkg:apk/alpine/openssl@1.1.1d-r2?distro=3.10.4",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "openssl",
+								Version:   "1.1.1d-r2",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
+									},
+								},
+							},
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -498,7 +623,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -525,6 +650,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 						},
+						Identifier: types.PkgIdentifier{
+							UID: "1565c6a375877d3d",
+						},
 					},
 					{
 						Name:       "tzdata",
@@ -535,19 +663,31 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 						},
+						Identifier: types.PkgIdentifier{
+							UID: "15974c575bfa26a7",
+						},
 					},
 				},
 				Applications: []types.Application{
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "38462330435c69bc",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "guzzlehttp",
+										Name:      "guzzle",
+										Version:   "6.2.0",
+									},
 								},
 							},
 							{
@@ -556,6 +696,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "ef7e3567678854cb",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "symfony",
+										Name:      "process",
+										Version:   "v4.2.7",
+									},
 								},
 							},
 						},
@@ -684,7 +833,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -727,19 +876,31 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 						},
+						Identifier: types.PkgIdentifier{
+							UID: "15974c575bfa26a7",
+						},
 					},
 				},
 				Applications: []types.Application{
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
 								Layer: types.Layer{
 									Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "38462330435c69bc",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "guzzlehttp",
+										Name:      "guzzle",
+										Version:   "6.2.0",
+									},
 								},
 							},
 							{
@@ -748,6 +909,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+								},
+								Identifier: types.PkgIdentifier{
+									UID: "ef7e3567678854cb",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "symfony",
+										Name:      "process",
+										Version:   "v4.2.7",
+									},
 								},
 							},
 						},
@@ -802,7 +972,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 
 			got, err := a.ApplyLayers(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 			} else {
 				require.NoError(t, err, tt.name)
@@ -810,7 +980,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 
 			sort.Sort(got.Packages)
 			for _, app := range got.Applications {
-				sort.Sort(app.Libraries)
+				sort.Sort(app.Packages)
 			}
 
 			sort.Slice(got.CustomResources, func(i, j int) bool {

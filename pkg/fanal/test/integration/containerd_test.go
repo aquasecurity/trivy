@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,32 +15,33 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/samber/lo"
 
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/images"
 	"github.com/containerd/containerd/namespaces"
+	dockercontainer "github.com/docker/docker/api/types/container"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func configureTestDataPaths(t *testing.T, namespace string) (string, string) {
+func setupContainerd(t *testing.T, ctx context.Context, namespace string) *containerd.Client {
 	t.Helper()
-	tmpDir, err := os.MkdirTemp("/tmp", "fanal")
-	require.NoError(t, err)
+	tmpDir := t.TempDir()
 
 	containerdDir := filepath.Join(tmpDir, "containerd")
-	err = os.MkdirAll(containerdDir, os.ModePerm)
+	err := os.MkdirAll(containerdDir, os.ModePerm)
 	require.NoError(t, err)
 
 	socketPath := filepath.Join(containerdDir, "containerd.sock")
@@ -48,11 +50,31 @@ func configureTestDataPaths(t *testing.T, namespace string) (string, string) {
 	t.Setenv("CONTAINERD_ADDRESS", socketPath)
 	t.Setenv("CONTAINERD_NAMESPACE", namespace)
 
-	return tmpDir, socketPath
+	startContainerd(t, ctx, tmpDir)
+
+	// Retry up to 3 times until containerd is ready
+	var client *containerd.Client
+	iteration, _, err := lo.AttemptWhileWithDelay(3, 1*time.Second, func(int, time.Duration) (error, bool) {
+		client, err = containerd.New(socketPath)
+		if err != nil {
+			if !errors.Is(err, os.ErrPermission) {
+				return err, false // unexpected error
+			}
+			return err, true
+		}
+		t.Cleanup(func() {
+			require.NoError(t, client.Close())
+		})
+		return nil, false
+	})
+	require.NoErrorf(t, err, "attempted %d times ", iteration)
+
+	return client
 }
 
-func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcontainers.Container {
+func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 	t.Helper()
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	req := testcontainers.ContainerRequest{
 		Name:  "containerd",
 		Image: "ghcr.io/aquasecurity/trivy-test-images/containerd:latest",
@@ -64,8 +86,9 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 		Mounts: testcontainers.Mounts(
 			testcontainers.BindMount(hostPath, "/run"),
 		),
-		SkipReaper: true,
-		AutoRemove: false,
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
 		WaitingFor: wait.ForLog("containerd successfully booted"),
 	}
 	containerdC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -81,18 +104,19 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 	})
 	require.NoError(t, err)
 
-	return containerdC
+	t.Cleanup(func() {
+		require.NoError(t, containerdC.Terminate(ctx))
+	})
 }
 
 // Each of these tests imports an image and tags it with the name found in the
 // `imageName` field. Then, the containerd store is searched by the reference
 // provided in the `searchName` field.
 func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
-	type testInstance struct {
-		name       string
-		imageName  string
-		searchName string
-		expectErr  bool
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
 	}
 
 	digest := "sha256:f12582b2f2190f350e3904462c1c23aaf366b4f76705e97b199f9bbded1d816a"
@@ -100,7 +124,12 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 	tag := "world"
 	importedImageOriginalName := "ghcr.io/aquasecurity/trivy-test-images:alpine-310"
 
-	tests := []testInstance{
+	tests := []struct {
+		name       string
+		imageName  string
+		searchName string
+		wantErr    bool
+	}{
 		{
 			name:       "familiarName:tag",
 			imageName:  fmt.Sprintf("%s:%s", basename, tag),
@@ -125,13 +154,13 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			name:       "other-registry.io/library/name:wrongTag should fail",
 			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
 			searchName: fmt.Sprintf("other-registry.io/library/%s:badtag", basename),
-			expectErr:  true,
+			wantErr:    true,
 		},
 		{
 			name:       "other-registry.io/library/wrongName:tag should fail",
 			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
 			searchName: fmt.Sprintf("other-registry.io/library/badname:%s", tag),
-			expectErr:  true,
+			wantErr:    true,
 		},
 		{
 			name:       "digest should succeed",
@@ -142,7 +171,7 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			name:       "wrong digest should fail",
 			imageName:  "",
 			searchName: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-			expectErr:  true,
+			wantErr:    true,
 		},
 		{
 			name:       "name@digest",
@@ -168,32 +197,19 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			name:       "wrongName@digest should fail",
 			imageName:  fmt.Sprintf("%s:%s", basename, tag),
 			searchName: fmt.Sprintf("badname@%s", digest),
-			expectErr:  true,
+			wantErr:    true,
 		},
 		{
 			name:       "compound/wrongName@digest should fail",
 			imageName:  fmt.Sprintf("compound/%s:%s", basename, tag),
 			searchName: fmt.Sprintf("compound/badname@%s", digest),
-			expectErr:  true,
+			wantErr:    true,
 		},
-	}
-	// Each architecture needs different images and test cases.
-	// Currently only amd64 architecture is supported
-	if runtime.GOARCH != "amd64" {
-		t.Skip("'Containerd' test only supports amd64 architecture")
 	}
 
 	namespace := "default"
 	ctx := namespaces.WithNamespace(context.Background(), namespace)
-	tmpDir, socketPath := configureTestDataPaths(t, namespace)
-	defer os.RemoveAll(tmpDir)
-
-	containerdC := startContainerd(t, ctx, tmpDir)
-	defer containerdC.Terminate(ctx)
-
-	client, err := containerd.New(socketPath)
-	require.NoError(t, err)
-	defer client.Close()
+	client := setupContainerd(t, ctx, namespace)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -237,7 +253,7 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			img, cleanup, err := image.NewContainerImage(ctx, tt.searchName,
 				types.ImageOptions{ImageSources: types.ImageSources{types.ContainerdImageSource}})
 			defer cleanup()
-			if tt.expectErr {
+			if tt.wantErr {
 				require.Error(t, err)
 				return
 			}
@@ -269,18 +285,23 @@ func TestContainerd_LocalImage_Alternative_Namespace(t *testing.T) {
 }
 
 func localImageTestWithNamespace(t *testing.T, namespace string) {
-	t.Helper()
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
+
 	tests := []struct {
 		name         string
 		imageName    string
 		tarArchive   string
-		wantMetadata types.ImageMetadata
+		wantMetadata artifact.ImageMetadata
 	}{
 		{
 			name:       "alpine 3.10",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			tarArchive: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
@@ -328,7 +349,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			name:       "vulnimage",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
 			tarArchive: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
 				DiffIDs: []string{
 					"sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
@@ -641,22 +662,10 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			},
 		},
 	}
-	// Each architecture needs different images and test cases.
-	// Currently only amd64 architecture is supported
-	if runtime.GOARCH != "amd64" {
-		t.Skip("'Containerd' test only supports amd64 architecture")
-	}
+
+	t.Helper()
 	ctx := namespaces.WithNamespace(context.Background(), namespace)
-
-	tmpDir, socketPath := configureTestDataPaths(t, namespace)
-	defer os.RemoveAll(tmpDir)
-
-	containerdC := startContainerd(t, ctx, tmpDir)
-	defer containerdC.Terminate(ctx)
-
-	client, err := containerd.New(socketPath)
-	require.NoError(t, err)
-	defer client.Close()
+	client := setupContainerd(t, ctx, namespace)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -728,15 +737,21 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 }
 
 func TestContainerd_PullImage(t *testing.T) {
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
+
 	tests := []struct {
 		name         string
 		imageName    string
-		wantMetadata types.ImageMetadata
+		wantMetadata artifact.ImageMetadata
 	}{
 		{
 			name:      "remote alpine 3.10",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
@@ -783,23 +798,9 @@ func TestContainerd_PullImage(t *testing.T) {
 		},
 	}
 
-	// Each architecture needs different images and test cases.
-	// Currently only amd64 architecture is supported
-	if runtime.GOARCH != "amd64" {
-		t.Skip("'Containerd' test only supports amd64 architecture")
-	}
-
 	namespace := "default"
 	ctx := namespaces.WithNamespace(context.Background(), namespace)
-
-	tmpDir, socketPath := configureTestDataPaths(t, namespace)
-
-	containerdC := startContainerd(t, ctx, tmpDir)
-	defer containerdC.Terminate(ctx)
-
-	cli, err := containerd.New(socketPath)
-	require.NoError(t, err)
-	defer cli.Close()
+	client := setupContainerd(t, ctx, namespace)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -812,7 +813,7 @@ func TestContainerd_PullImage(t *testing.T) {
 				c.Close()
 			}()
 
-			_, err = cli.Pull(ctx, tt.imageName)
+			_, err = client.Pull(ctx, tt.imageName)
 			require.NoError(t, err)
 
 			// Enable only containerd

@@ -3,11 +3,10 @@ package licensing_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func TestScanner_Scan(t *testing.T) {
@@ -47,7 +46,7 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name:         "unknown",
-			categories:   map[types.LicenseCategory][]string{},
+			categories:   make(map[types.LicenseCategory][]string),
 			licenseName:  licensing.BSD3Clause,
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",

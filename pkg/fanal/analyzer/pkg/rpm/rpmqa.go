@@ -4,14 +4,14 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -44,7 +44,7 @@ func (a rpmqaPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	}, nil
 }
 
-func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package, error) {
+func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r xio.ReadSeekerAt) ([]types.Package, error) {
 	var pkgs []types.Package
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -68,7 +68,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 		if err != nil {
 			return nil, xerrors.Errorf("failed to split source rpm: %w", err)
 		}
-		pkg := types.Package{
+		pkgs = append(pkgs, types.Package{
 			Name:       name,
 			Version:    ver,
 			Release:    rel,
@@ -76,8 +76,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 			SrcName:    srcName,
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
-		}
-		pkgs = append(pkgs, pkg)
+		})
 	}
 	return pkgs, nil
 }

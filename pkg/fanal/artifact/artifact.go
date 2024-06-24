@@ -4,27 +4,29 @@ import (
 	"context"
 	"sort"
 
+	"github.com/google/go-containerregistry/pkg/v1"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 type Option struct {
 	AnalyzerGroup     analyzer.Group // It is empty in OSS
 	DisabledAnalyzers []analyzer.Type
 	DisabledHandlers  []types.HandlerType
-	SkipFiles         []string
-	SkipDirs          []string
 	FilePatterns      []string
+	Parallel          int
 	NoProgress        bool
 	Insecure          bool
 	Offline           bool
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string
-	Slow              bool // Lower CPU and memory
 	AWSRegion         string
+	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
 
 	// Git repositories
@@ -39,26 +41,73 @@ type Option struct {
 	SecretScannerOption  analyzer.SecretScannerOption
 	LicenseScannerOption analyzer.LicenseScannerOption
 
-	// File walk
-	WalkOption WalkOption
+	WalkerOption walker.Option
 }
 
-// WalkOption is a struct that allows users to define a custom walking behavior.
-// This option is only available when using Trivy as an imported library and not through CLI flags.
-type WalkOption struct {
-	ErrorCallback walker.ErrorCallback
+func (o *Option) AnalyzerOptions() analyzer.AnalyzerOptions {
+	return analyzer.AnalyzerOptions{
+		Group:                o.AnalyzerGroup,
+		FilePatterns:         o.FilePatterns,
+		Parallel:             o.Parallel,
+		DisabledAnalyzers:    o.DisabledAnalyzers,
+		MisconfScannerOption: o.MisconfScannerOption,
+		SecretScannerOption:  o.SecretScannerOption,
+		LicenseScannerOption: o.LicenseScannerOption,
+	}
+}
+
+func (o *Option) ConfigAnalyzerOptions() analyzer.ConfigAnalyzerOptions {
+	return analyzer.ConfigAnalyzerOptions{
+		FilePatterns:         o.FilePatterns,
+		DisabledAnalyzers:    o.DisabledAnalyzers,
+		MisconfScannerOption: o.MisconfScannerOption,
+		SecretScannerOption:  o.SecretScannerOption,
+	}
 }
 
 func (o *Option) Sort() {
 	sort.Slice(o.DisabledAnalyzers, func(i, j int) bool {
 		return o.DisabledAnalyzers[i] < o.DisabledAnalyzers[j]
 	})
-	sort.Strings(o.SkipFiles)
-	sort.Strings(o.SkipDirs)
+	sort.Strings(o.WalkerOption.SkipFiles)
+	sort.Strings(o.WalkerOption.SkipDirs)
 	sort.Strings(o.FilePatterns)
 }
 
 type Artifact interface {
-	Inspect(ctx context.Context) (reference types.ArtifactReference, err error)
-	Clean(reference types.ArtifactReference) error
+	Inspect(ctx context.Context) (reference Reference, err error)
+	Clean(reference Reference) error
+}
+
+// Type represents a type of artifact
+type Type string
+
+const (
+	TypeContainerImage Type = "container_image"
+	TypeFilesystem     Type = "filesystem"
+	TypeRepository     Type = "repository"
+	TypeCycloneDX      Type = "cyclonedx"
+	TypeSPDX           Type = "spdx"
+	TypeAWSAccount     Type = "aws_account"
+	TypeVM             Type = "vm"
+)
+
+// Reference represents a reference of container image, local filesystem and repository
+type Reference struct {
+	Name          string // image name, tar file name, directory or repository name
+	Type          Type
+	ID            string
+	BlobIDs       []string
+	ImageMetadata ImageMetadata
+
+	// SBOM
+	BOM *core.BOM
+}
+
+type ImageMetadata struct {
+	ID          string   // image ID
+	DiffIDs     []string // uncompressed layer IDs
+	RepoTags    []string
+	RepoDigests []string
+	ConfigFile  v1.ConfigFile
 }

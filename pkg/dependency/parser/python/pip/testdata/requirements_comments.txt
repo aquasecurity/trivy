@@ -1,0 +1,8 @@
+# foo==8.0.0
+#bar==8.0.0
+#comment
+click==8.0.0
+Flask==2.0.0 #comment
+Jinja2==3.0.0#comment
+MarkupSafe==2.0.0 # comment
+

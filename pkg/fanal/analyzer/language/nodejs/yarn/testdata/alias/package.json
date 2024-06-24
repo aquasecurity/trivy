@@ -1,0 +1,14 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "foo-json": "npm:@types/jsonstream@0.8.33",
+    "foo-uuid": "npm:@types/uuid"
+  },
+  "dependencies": {
+    "foo-debug": "npm:debug@^4.3",
+    "foo-ms": "npm:ms"
+  }
+}

@@ -2,6 +2,10 @@
 
 Trivy has client/server mode. Trivy server has vulnerability database and Trivy client doesn't have to download vulnerability database. It is useful if you want to scan images or files at multiple locations and do not want to download the database at every location.
 
+|   Client/Server Mode  | Image | Rootfs | Filesystem | Repository | Config | AWS | K8s |
+|:---------------------:|:-----:|:------:|:----------:|:----------:|:------:|:---:|:---:|
+|       Supported       |   ✅  |   ✅     |     ✅     |     ✅     |  ✅    | X   |  X  |
+
 ## Server
 At first, you need to launch Trivy server. It downloads vulnerability database automatically and continue to fetch the latest DB in the background.
 ```
@@ -287,6 +291,48 @@ $ trivy server --listen localhost:8080 --token dummy
 ```
 $ trivy image --server http://localhost:8080 --token dummy alpine:3.10
 ```
+
+## Endpoints
+
+### Health
+Checks whether the Trivy server is running. Authentication is not required.
+
+Example request:
+```bash
+curl -s 0.0.0.0:8080/healthz
+ok
+```
+
+Returns the `200 OK` status if the request was successful.
+### Version
+
+Returns the version of the Trivy and all components (db, policy). Authentication is not required.
+
+Example request:
+```bash
+curl -s 0.0.0.0:8080/version | jq
+{
+  "Version": "dev",
+  "VulnerabilityDB": {
+    "Version": 2,
+    "NextUpdate": "2023-07-25T14:15:29.876639806Z",
+    "UpdatedAt": "2023-07-25T08:15:29.876640206Z",
+    "DownloadedAt": "2023-07-25T09:36:25.599004Z"
+  },
+  "JavaDB": {
+    "Version": 1,
+    "NextUpdate": "2023-07-28T01:03:52.169192565Z",
+    "UpdatedAt": "2023-07-25T01:03:52.169192765Z",
+    "DownloadedAt": "2023-07-25T09:37:48.906152Z"
+  },
+  "PolicyBundle": {
+    "Digest": "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
+    "DownloadedAt": "2023-07-23T11:40:33.122462Z"
+  }
+}
+```
+
+Returns the `200 OK` status if the request was successful.
 
 ## Architecture
 

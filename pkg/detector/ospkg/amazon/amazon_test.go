@@ -1,17 +1,18 @@
 package amazon_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -30,8 +31,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "amazon linux 1",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 1",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.2",
 				pkgs: []ftypes.Package{
@@ -64,8 +68,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -96,10 +103,13 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2023",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2023",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
-				osVer: "2023",
+				osVer: "2023.3.20240304",
 				pkgs: []ftypes.Package{
 					{
 						Name:    "protobuf",
@@ -128,8 +138,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "empty version",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "empty version",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -140,8 +153,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1",
 				pkgs: []ftypes.Package{
@@ -162,13 +178,13 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := amazon.NewScanner()
-			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -176,7 +192,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -219,7 +235,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osFamily: "amazon",
 				osVer:    "2022",
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "amazon linux 2023",
@@ -233,8 +249,9 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := amazon.NewScanner(amazon.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(context.Background(), tt.now)
+			s := amazon.NewScanner()
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -26,7 +26,10 @@ func Test_apkRepoAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader("http://nl.alpinelinux.org/alpine/v3.7/main"),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "3.7"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "3.7",
+				},
 			},
 		},
 		{
@@ -44,7 +47,10 @@ func Test_apkRepoAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader("http://nl.alpinelinux.org/alpine/v3.7/main"),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "3.7"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "3.7",
+				},
 			},
 		},
 		{
@@ -54,7 +60,10 @@ func Test_apkRepoAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader("https://dl-cdn.alpinelinux.org/alpine/v3.15/main"),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "3.15"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "3.15",
+				},
 			},
 		},
 		{
@@ -64,7 +73,10 @@ func Test_apkRepoAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader("ftp://dl-3.alpinelinux.org/alpine/v2.6/main"),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "2.6"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "2.6",
+				},
 			},
 		},
 		{
@@ -74,7 +86,10 @@ func Test_apkRepoAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader("https://dl-cdn.alpinelinux.org/alpine/edge/main"),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "edge"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "edge",
+				},
 			},
 		},
 		{
@@ -87,7 +102,10 @@ https://dl-cdn.alpinelinux.org/alpine/v3.10/main
 `),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "3.10"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "3.10",
+				},
 			},
 		},
 		{
@@ -99,7 +117,10 @@ https://dl-cdn.alpinelinux.org/alpine/v3.1/main
 `),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "3.10"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "3.10",
+				},
 			},
 		},
 		{
@@ -111,7 +132,10 @@ https://dl-cdn.alpinelinux.org/alpine/v3.10/main
 `),
 			},
 			want: &analyzer.AnalysisResult{
-				Repository: &types.Repository{Family: aos.Alpine, Release: "edge"},
+				Repository: &types.Repository{
+					Family:  types.Alpine,
+					Release: "edge",
+				},
 			},
 		},
 		{
@@ -129,11 +153,11 @@ https://dl-cdn.alpinelinux.org/alpine/v3.10/main
 			got, err := a.Analyze(context.Background(), test.input)
 
 			if test.wantErr != "" {
-				assert.Error(t, err)
+				require.Error(t, err)
 				assert.Equal(t, test.wantErr, err.Error())
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, test.want, got)
 		})
 	}

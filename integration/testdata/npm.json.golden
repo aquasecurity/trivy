@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/npm",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/npm",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -23,8 +24,11 @@
         {
           "ID": "asap@2.0.6",
           "Name": "asap",
+          "Identifier": {
+            "PURL": "pkg:npm/asap@2.0.6",
+            "UID": "199d95f873330bd3"
+          },
           "Version": "2.0.6",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -36,11 +40,14 @@
         {
           "ID": "jquery@3.3.9",
           "Name": "jquery",
+          "Identifier": {
+            "PURL": "pkg:npm/jquery@3.3.9",
+            "UID": "e19e84d31f72b60c"
+          },
           "Version": "3.3.9",
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -52,8 +59,11 @@
         {
           "ID": "js-tokens@4.0.0",
           "Name": "js-tokens",
+          "Identifier": {
+            "PURL": "pkg:npm/js-tokens@4.0.0",
+            "UID": "605df7770562762"
+          },
           "Version": "4.0.0",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -65,8 +75,11 @@
         {
           "ID": "loose-envify@1.4.0",
           "Name": "loose-envify",
+          "Identifier": {
+            "PURL": "pkg:npm/loose-envify@1.4.0",
+            "UID": "a40682339e264167"
+          },
           "Version": "1.4.0",
-          "Indirect": true,
           "DependsOn": [
             "js-tokens@4.0.0"
           ],
@@ -81,8 +94,11 @@
         {
           "ID": "object-assign@4.1.1",
           "Name": "object-assign",
+          "Identifier": {
+            "PURL": "pkg:npm/object-assign@4.1.1",
+            "UID": "ec3b70276c206ac2"
+          },
           "Version": "4.1.1",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -94,11 +110,14 @@
         {
           "ID": "promise@8.0.3",
           "Name": "promise",
+          "Identifier": {
+            "PURL": "pkg:npm/promise@8.0.3",
+            "UID": "b60f9aaa4e3cba8f"
+          },
           "Version": "8.0.3",
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "DependsOn": [
             "asap@2.0.6"
           ],
@@ -113,8 +132,11 @@
         {
           "ID": "prop-types@15.7.2",
           "Name": "prop-types",
+          "Identifier": {
+            "PURL": "pkg:npm/prop-types@15.7.2",
+            "UID": "5a0c427e953b2a24"
+          },
           "Version": "15.7.2",
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "object-assign@4.1.1",
@@ -131,11 +153,14 @@
         {
           "ID": "react@16.8.6",
           "Name": "react",
+          "Identifier": {
+            "PURL": "pkg:npm/react@16.8.6",
+            "UID": "da9140320b70dc57"
+          },
           "Version": "16.8.6",
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "object-assign@4.1.1",
@@ -153,11 +178,14 @@
         {
           "ID": "react-is@16.8.6",
           "Name": "react-is",
+          "Identifier": {
+            "PURL": "pkg:npm/react-is@16.8.6",
+            "UID": "f50b67a44460b362"
+          },
           "Version": "16.8.6",
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -169,11 +197,14 @@
         {
           "ID": "redux@4.0.1",
           "Name": "redux",
+          "Identifier": {
+            "PURL": "pkg:npm/redux@4.0.1",
+            "UID": "fbb7d7c45dbba492"
+          },
           "Version": "4.0.1",
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "symbol-observable@1.2.0"
@@ -189,8 +220,11 @@
         {
           "ID": "scheduler@0.13.6",
           "Name": "scheduler",
+          "Identifier": {
+            "PURL": "pkg:npm/scheduler@0.13.6",
+            "UID": "9738f8ac302a0bb"
+          },
           "Version": "0.13.6",
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "object-assign@4.1.1"
@@ -206,8 +240,11 @@
         {
           "ID": "symbol-observable@1.2.0",
           "Name": "symbol-observable",
+          "Identifier": {
+            "PURL": "pkg:npm/symbol-observable@1.2.0",
+            "UID": "b14a083f8b9e59bc"
+          },
           "Version": "1.2.0",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -222,6 +259,10 @@
           "VulnerabilityID": "CVE-2019-11358",
           "PkgID": "jquery@3.3.9",
           "PkgName": "jquery",
+          "PkgIdentifier": {
+            "PURL": "pkg:npm/jquery@3.3.9",
+            "UID": "e19e84d31f72b60c"
+          },
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
@@ -239,6 +280,18 @@
           "CweIDs": [
             "CWE-79"
           ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 2,
+            "arch-linux": 2,
+            "ghsa": 2,
+            "nodejs-security-wg": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ruby-advisory-db": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",

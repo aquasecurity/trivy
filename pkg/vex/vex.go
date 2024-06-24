@@ -5,171 +5,27 @@ import (
 	"io"
 	"os"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/csaf-poc/csaf_distribution/v3/csaf"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/samber/lo"
 	"github.com/sirupsen/logrus"
-	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
 // Note: This is in the experimental stage and does not yet support many specifications.
 // The implementation may change significantly.
 type VEX interface {
-	Filter([]types.DetectedVulnerability) []types.DetectedVulnerability
-}
-
-type Statement struct {
-	VulnerabilityID string
-	Affects         []string
-	Status          Status
-	Justification   string // TODO: define a type
-}
-
-type OpenVEX struct {
-	statements []Statement
-	logger     *zap.SugaredLogger
-}
-
-func newOpenVEX(cycloneDX *ftypes.CycloneDX, vex openvex.VEX) VEX {
-	logger := log.Logger.With(zap.String("VEX format", "OpenVEX"))
-
-	openvex.SortStatements(vex.Statements, lo.FromPtr(vex.Timestamp))
-
-	// Convert openvex.Statement to Statement
-	stmts := lo.Map(vex.Statements, func(stmt openvex.Statement, index int) Statement {
-		return Statement{
-			// TODO: add subcomponents, etc.
-			VulnerabilityID: stmt.Vulnerability,
-			Affects:         stmt.Products,
-			Status:          Status(stmt.Status),
-			Justification:   string(stmt.Justification),
-		}
-	})
-	// Reverse sorted statements so that the latest statement can come first.
-	stmts = lo.Reverse(stmts)
-
-	// If the SBOM format referenced by OpenVEX is CycloneDX
-	if cycloneDX != nil {
-		return &CycloneDX{
-			sbom:       cycloneDX,
-			statements: stmts,
-			logger:     logger,
-		}
-	}
-	return &OpenVEX{
-		statements: stmts,
-		logger:     logger,
-	}
-}
-
-func (v *OpenVEX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
-	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
-		stmt, ok := lo.Find(v.statements, func(item Statement) bool {
-			return item.VulnerabilityID == vuln.VulnerabilityID
-		})
-		if !ok {
-			return true
-		}
-		return v.affected(vuln, stmt)
-	})
-}
-
-func (v *OpenVEX) affected(vuln types.DetectedVulnerability, stmt Statement) bool {
-	if slices.Contains(stmt.Affects, vuln.PkgRef) &&
-		(stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
-		v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
-			zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
-		return false
-	}
-	return true
-}
-
-type CycloneDX struct {
-	sbom       *ftypes.CycloneDX
-	statements []Statement
-	logger     *zap.SugaredLogger
-}
-
-func newCycloneDX(sbom *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
-	var stmts []Statement
-	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
-		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, index int) string {
-			return item.Ref
-		})
-
-		analysis := lo.FromPtr(vuln.Analysis)
-
-		stmts = append(stmts, Statement{
-			VulnerabilityID: vuln.ID,
-			Affects:         affects,
-			Status:          cdxStatus(analysis.State),
-			Justification:   string(analysis.Justification),
-		})
-	}
-	return &CycloneDX{
-		sbom:       sbom,
-		statements: stmts,
-		logger:     log.Logger.With(zap.String("VEX format", "CycloneDX")),
-	}
-}
-
-func (v *CycloneDX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
-	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
-		stmt, ok := lo.Find(v.statements, func(item Statement) bool {
-			return item.VulnerabilityID == vuln.VulnerabilityID
-		})
-		if !ok {
-			return true
-		}
-		return v.affected(vuln, stmt)
-	})
-}
-
-func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) bool {
-	for _, affect := range stmt.Affects {
-		// Affect must be BOM-Link at the moment
-		link, err := cdx.ParseBOMLink(affect)
-		if err != nil {
-			v.logger.Warnw("Unable to parse BOM-Link", zap.String("affect", affect))
-			continue
-		}
-		if v.sbom.SerialNumber != link.SerialNumber() || v.sbom.Version != link.Version() {
-			v.logger.Warnw("URN doesn't match with SBOM", zap.String("serial number", link.SerialNumber()),
-				zap.Int("version", link.Version()))
-			continue
-		}
-		if vuln.PkgRef == link.Reference() &&
-			(stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
-			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
-				zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
-			return false
-		}
-	}
-	return true
-}
-
-func cdxStatus(s cdx.ImpactAnalysisState) Status {
-	switch s {
-	case cdx.IASResolved, cdx.IASResolvedWithPedigree:
-		return StatusFixed
-	case cdx.IASExploitable:
-		return StatusAffected
-	case cdx.IASInTriage:
-		return StatusUnderInvestigation
-	case cdx.IASFalsePositive, cdx.IASNotAffected:
-		return StatusNotAffected
-	}
-	return StatusUnknown
+	Filter(*types.Result, *core.BOM)
 }
 
 func New(filePath string, report types.Report) (VEX, error) {
@@ -183,7 +39,6 @@ func New(filePath string, report types.Report) (VEX, error) {
 	defer f.Close()
 
 	var errs error
-
 	// Try CycloneDX JSON
 	if ok, err := sbom.IsCycloneDXJSON(f); err != nil {
 		errs = multierror.Append(errs, err)
@@ -192,9 +47,16 @@ func New(filePath string, report types.Report) (VEX, error) {
 	}
 
 	// Try OpenVEX
-	if v, err := decodeOpenVEX(f, report); err != nil {
+	if v, err := decodeOpenVEX(f); err != nil {
 		errs = multierror.Append(errs, err)
-	} else {
+	} else if v != nil {
+		return v, nil
+	}
+
+	// Try CSAF
+	if v, err := decodeCSAF(f); err != nil {
+		errs = multierror.Append(errs, err)
+	} else if v != nil {
 		return v, nil
 	}
 
@@ -209,13 +71,13 @@ func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("json decode error: %w", err)
 	}
-	if report.CycloneDX == nil {
+	if report.ArtifactType != artifact.TypeCycloneDX {
 		return nil, xerrors.New("CycloneDX VEX can be used with CycloneDX SBOM")
 	}
-	return newCycloneDX(report.CycloneDX, vex), nil
+	return newCycloneDX(report.BOM, vex), nil
 }
 
-func decodeOpenVEX(r io.ReadSeeker, report types.Report) (VEX, error) {
+func decodeOpenVEX(r io.ReadSeeker) (VEX, error) {
 	// openvex/go-vex outputs log messages by default
 	logrus.SetOutput(io.Discard)
 
@@ -229,5 +91,81 @@ func decodeOpenVEX(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if openVEX.Context == "" {
 		return nil, nil
 	}
-	return newOpenVEX(report.CycloneDX, openVEX), nil
+	return newOpenVEX(openVEX), nil
+}
+
+func decodeCSAF(r io.ReadSeeker) (VEX, error) {
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return nil, xerrors.Errorf("seek error: %w", err)
+	}
+	var adv csaf.Advisory
+	if err := json.NewDecoder(r).Decode(&adv); err != nil {
+		return nil, err
+	}
+	if adv.Vulnerabilities == nil {
+		return nil, nil
+	}
+	return newCSAF(adv), nil
+}
+
+type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
+
+func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) {
+	components := lo.MapEntries(bom.Components(), func(id uuid.UUID, component *core.Component) (string, *core.Component) {
+		return component.PkgIdentifier.UID, component
+	})
+
+	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
+		c, ok := components[vuln.PkgIdentifier.UID]
+		if !ok {
+			log.Error("Component not found", log.String("uid", vuln.PkgIdentifier.UID))
+			return true // Should never reach here
+		}
+
+		notAffectedFn := func(c, leaf *core.Component) bool {
+			modified, notAffected := fn(vuln, c, leaf)
+			if notAffected {
+				result.ModifiedFindings = append(result.ModifiedFindings, modified)
+				return true
+			}
+			return false
+		}
+
+		return reachRoot(c, bom.Components(), bom.Parents(), notAffectedFn)
+	})
+}
+
+// reachRoot traverses the component tree from the leaf to the root and returns true if the leaf reaches the root.
+func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, parents map[uuid.UUID][]uuid.UUID,
+	notAffected func(c, leaf *core.Component) bool) bool {
+
+	if notAffected(leaf, nil) {
+		return false
+	}
+
+	visited := make(map[uuid.UUID]bool)
+
+	// Use Depth First Search (DFS)
+	var dfs func(c *core.Component) bool
+	dfs = func(c *core.Component) bool {
+		// Call the function with the current component and the leaf component
+		if notAffected(c, leaf) {
+			return false
+		} else if c.Root {
+			return true
+		}
+
+		visited[c.ID()] = true
+		for _, parent := range parents[c.ID()] {
+			if visited[parent] {
+				continue
+			}
+			if dfs(components[parent]) {
+				return true
+			}
+		}
+		return false
+	}
+
+	return dfs(leaf)
 }

@@ -3,12 +3,12 @@ package server
 import (
 	"context"
 
-	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -37,7 +37,7 @@ func NewScanServer(s scanner.Driver) *ScanServer {
 
 // Log and return an error
 func teeError(err error) error {
-	log.Logger.Errorf("%+v", err)
+	log.Errorf("%+v", err)
 	return err
 }
 
@@ -47,10 +47,9 @@ func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpc
 		return types.Scanner(s)
 	})
 	options := types.ScanOptions{
-		VulnType:        in.Options.VulnType,
-		Scanners:        scanners,
-		ListAllPackages: in.Options.ListAllPackages,
-		IncludeDevDeps:  in.Options.IncludeDevDeps,
+		VulnType:       in.Options.VulnType,
+		Scanners:       scanners,
+		IncludeDevDeps: in.Options.IncludeDevDeps,
 	}
 	results, os, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
@@ -71,7 +70,7 @@ func NewCacheServer(c cache.Cache) *CacheServer {
 }
 
 // PutArtifact puts the artifacts in cache
-func (s *CacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*google_protobuf.Empty, error) {
+func (s *CacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*emptypb.Empty, error) {
 	if in.ArtifactInfo == nil {
 		return nil, teeError(xerrors.Errorf("empty image info"))
 	}
@@ -79,11 +78,11 @@ func (s *CacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactReq
 	if err := s.cache.PutArtifact(in.ArtifactId, imageInfo); err != nil {
 		return nil, teeError(xerrors.Errorf("unable to store image info in cache: %w", err))
 	}
-	return &google_protobuf.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // PutBlob puts the blobs in cache
-func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*google_protobuf.Empty, error) {
+func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*emptypb.Empty, error) {
 	if in.BlobInfo == nil {
 		return nil, teeError(xerrors.Errorf("empty layer info"))
 	}
@@ -91,7 +90,7 @@ func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*
 	if err := s.cache.PutBlob(in.DiffId, layerInfo); err != nil {
 		return nil, teeError(xerrors.Errorf("unable to store layer info in cache: %w", err))
 	}
-	return &google_protobuf.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // MissingBlobs returns missing blobs from cache
@@ -107,10 +106,10 @@ func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsR
 }
 
 // DeleteBlobs removes blobs by IDs
-func (s *CacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*google_protobuf.Empty, error) {
+func (s *CacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*emptypb.Empty, error) {
 	blobIDs := rpc.ConvertFromDeleteBlobsRequest(in)
 	if err := s.cache.DeleteBlobs(blobIDs); err != nil {
 		return nil, teeError(xerrors.Errorf("failed to remove a blobs: %w", err))
 	}
-	return &google_protobuf.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }

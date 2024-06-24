@@ -2,10 +2,12 @@ package report_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -55,6 +57,9 @@ func TestReportWriter_JSON(t *testing.T) {
 									Title:       "foobar",
 									Description: "baz",
 									Severity:    "HIGH",
+									VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+										vulnerability.NVD: dbTypes.SeverityHigh,
+									},
 								},
 							},
 						},
@@ -82,12 +87,12 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
-			err := jw.Write(inputResults)
-			assert.NoError(t, err)
+			err := jw.Write(context.Background(), inputResults)
+			require.NoError(t, err)
 
 			var got types.Report
 			err = json.Unmarshal(jsonWritten.Bytes(), &got)
-			assert.NoError(t, err, "invalid json written")
+			require.NoError(t, err, "invalid json written")
 
 			assert.Equal(t, tc.want, got, tc.name)
 		})

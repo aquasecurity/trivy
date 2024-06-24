@@ -81,6 +81,15 @@ severity:
   - MEDIUM
   - HIGH
   - CRITICAL
+
+scan:
+  # Same as '--compliance'
+  # Default is empty  
+  compliance:
+
+  # Same as '--show-suppressed'
+  # Default is false  
+  show-suppressed: false
 ```
 
 ## Scan Options
@@ -106,14 +115,33 @@ scan:
 
   # Same as '--offline-scan'
   # Default is false
-  offline-scan: false
+  offline: false
 
   # Same as '--scanners'
   # Default depends on subcommand
   scanners:
     - vuln
-    - config
+    - misconfig
     - secret
+    - license
+    - 
+  # Same as '--parallel'
+  # Default is 5
+  parallel: 1
+
+  # Same as '--sbom-sources'
+  # Default is empty
+  sbom-sources: 
+    - oci
+    - rekor
+
+  # Same as '--rekor-url'
+  # Default is 'https://rekor.sigstore.dev'
+  rekor-url: https://rekor.sigstore.dev
+
+  # Same as '--include-dev-deps'
+  # Default is false
+  include-dev-deps: false
 ```
 
 ## Cache Options
@@ -130,6 +158,9 @@ cache:
 
   # Redis options
   redis:
+    # Same as '--redis-tls'
+    # Default is false
+    tls:    
     # Same as '--redis-ca'
     # Default is empty
     ca:
@@ -147,21 +178,25 @@ cache:
 
 ```yaml
 db:
+  # Same as '--no-progress'
+  # Default is false
+  no-progress: false
+  
   # Same as '--skip-db-update'
   # Default is false
   skip-update: false
 
-  # Same as '--no-progress'
-  # Default is false
-  no-progress: false
-
   # Same as '--db-repository'
-  # Default is 'ghcr.io/aquasecurity/trivy-db'
-  repository: ghcr.io/aquasecurity/trivy-db
+  # Default is 'ghcr.io/aquasecurity/trivy-db:2'
+  repository: ghcr.io/aquasecurity/trivy-db:2
+
+  # Same as '--skip-java-db-update'
+  # Default is false
+  java-skip-update: false  
 
   # Same as '--java-db-repository'
-  # Default is 'ghcr.io/aquasecurity/trivy-java-db'
-  java-repository: ghcr.io/aquasecurity/trivy-java-db
+  # Default is 'ghcr.io/aquasecurity/trivy-java-db:1'
+  java-repository: ghcr.io/aquasecurity/trivy-java-db:1
 ```
 
 ## Registry Options
@@ -196,10 +231,27 @@ image:
   
   # Same as '--platform'
   # Default is empty
-  platform: 
+  platform:
+
+  # Same as '--image-src'
+  # Default is 'docker,containerd,podman,remote'
+  source:
+    - podman
+    - docker
+      
+  # Same as '--image-config-scanners'
+  # Default is empty
+  image-config-scanners:
+    - misconfig
+    - secret      
   
   docker:
     # Same as '--docker-host'
+    # Default is empty
+    host: 
+  
+  podman:
+    # Same as '--podman-host'
     # Default is empty
     host: 
 ```
@@ -218,6 +270,67 @@ vulnerability:
   # Same as '--ignore-unfixed'
   # Default is false
   ignore-unfixed: false
+
+  # Same as '--ignore-unfixed'
+  # Default is empty
+  ignore-status: 
+    - end_of_life
+```
+
+## License Options
+Available with license scanning
+
+```yaml
+license:
+  # Same as '--license-full'
+  # Default is false
+  full: false
+
+  # Same as '--ignored-licenses'
+  # Default is empty
+  ignored:
+    - MPL-2.0
+    - MIT
+
+  # Same as '--license-confidence-level'
+  # Default is 0.9
+  confidenceLevel: 0.9
+
+  # Set list of forbidden licenses
+  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L171
+  forbidden:
+    - AGPL-1.0
+    - AGPL-3.0
+
+  # Set list of restricted licenses
+  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L199
+  restricted:
+    - AGPL-1.0
+    - AGPL-3.0
+
+  # Set list of reciprocal licenses
+  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L238
+  reciprocal:
+    - AGPL-1.0
+    - AGPL-3.0
+
+  # Set list of notice licenses
+  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L260
+  notice:
+    - AGPL-1.0
+    - AGPL-3.0  
+
+  # Set list of permissive licenses
+  # Default is empty
+  permissive:
+    - AGPL-1.0
+    - AGPL-3.0  
+
+  # Set list of unencumbered licenses
+  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L334
+  unencumbered:
+    - AGPL-1.0
+    - AGPL-3.0    
 ```
 
 ## Secret Options
@@ -233,10 +346,14 @@ secret:
 ## Rego Options
 
 ```yaml
-rego
+rego:
   # Same as '--trace'
   # Default is false
   trace: false
+
+  # Same as '--skip-policy-update'
+  # Default is false
+  skip-policy-update: false
 
   # Same as '--config-policy'
   # Default is empty
@@ -265,27 +382,46 @@ misconfiguration:
   # Same as '--include-non-failures'
   # Default is false
   include-non-failures: false
+  
+  # Same as '--include-deprecated-checks'
+  # Default is false
+  include-deprecated-checks: false
+
+  # Same as '--check-bundle-repository' and '--policy-bundle-repository'
+  # Default is 'ghcr.io/aquasecurity/trivy-checks:0'
+  check-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0  
+  
+  # Same as '--miconfig-scanners'
+  # Default is all scanners
+  scanners:
+    - dockerfile
+    - terraform
 
   # helm value override configurations
-  # set individual values
   helm:
+    # set individual values
     set:
       - securityContext.runAsUser=10001
 
-  # set values with file
-  helm:
+    # set values with file
     values:
       - overrides.yaml
 
-  # set specific values from specific files
-  helm:
+    # set specific values from specific files
     set-file:
       - image=dev-overrides.yaml
 
-  # set as string and preserve type
-  helm:
+    # set as string and preserve type
     set-string:
       - name=true
+
+    # Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command.
+    api-versions:
+      - policy/v1/PodDisruptionBudget
+      - apps/v1/Deployment
+
+    # Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
+    kube-version: "v1.21.0"
 
   # terraform tfvars overrrides
   terraform:
@@ -293,10 +429,15 @@ misconfiguration:
       - dev-terraform.tfvars
       - common-terraform.tfvars
   
-  # Same as '--tf-exclude-downloaded-modules'
-  # Default is false
-  terraform:
+    # Same as '--tf-exclude-downloaded-modules'
+    # Default is false
     exclude-downloaded-modules: false
+
+    # Same as '--cf-params'
+    # Default is false
+  cloudformation:
+    params:
+      - params.json
 ```
 
 ## Kubernetes Options
@@ -311,6 +452,58 @@ kubernetes:
   # Same as '--namespace'
   # Default is empty
   namespace:
+
+  # Same as '--kubeconfig'
+  # Default is empty
+  kubeconfig: ~/.kube/config2
+
+  # Same as '--components'
+  # Default is 'workload,infra'
+  components: 
+    - workload
+    - infra
+
+  # Same as '--k8s-version'
+  # Default is empty
+  k8s-version: 1.21.0
+
+  # Same as '--tolerations'
+  # Default is empty
+  tolerations:
+    - key1=value1:NoExecute
+    - key2=value2:NoSchedule
+
+  # Same as '--all-namespaces'
+  # Default is false
+  all-namespaces: false
+
+  node-collector:
+    # Same as '--node-collector-namespace'
+    # Default is 'trivy-temp'
+    namespace: ~/.kube/config2
+
+    # Same as '--node-collector-imageref'
+    # Default is 'ghcr.io/aquasecurity/node-collector:0.0.9'
+    imageref: ghcr.io/aquasecurity/node-collector:0.0.9
+
+  exclude:
+    # Same as '--exclude-owned'
+    # Default is false
+    owned: true
+
+    # Same as '--exclude-nodes'
+    # Default is empty
+    nodes:
+      - kubernetes.io/arch:arm64
+      - team:dev
+
+  # Same as '--qps'
+  # Default is 5.0
+  qps: 5.0
+
+  # Same as '--burst'
+  # Default is 10
+  burst: 10
 ```
 
 ## Repository Options
@@ -381,6 +574,35 @@ cloud:
 
     # the aws account to use (this will be determined from your environment when not set)
     account: 123456789012
+
+    # the aws specific services
+    service: 
+      - s3
+      - ec2
+        
+    # the aws specific arn
+    arn: arn:aws:s3:::example-bucket      
+
+    # skip the aws specific services
+    skip-service:
+      - s3
+      - ec2 
+```
+
+## Module Options
+Available for modules
+
+```yaml
+module:
+  # Same as '--module-dir'
+  # Default is '$HOME/.trivy/modules'
+  dir: $HOME/.trivy/modules
+
+  # Same as '--enable-modules'
+  # Default is empty
+  enable-modules: 
+    - trivy-module-spring4shell
+    - trivy-module-wordpress
 ```
 
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml

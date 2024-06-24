@@ -2,7 +2,7 @@ package report_test
 
 import (
 	"bytes"
-	"os"
+	"context"
 	"testing"
 	"time"
 
@@ -39,7 +39,8 @@ func TestReportWriter_Template(t *testing.T) {
 					VulnerabilityID: "CVE-2019-0000",
 					PkgName:         "bar",
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String()},
+						Severity: dbTypes.SeverityHigh.String(),
+					},
 				},
 				{
 					VulnerabilityID: "CVE-2019-0001",
@@ -164,9 +165,9 @@ func TestReportWriter_Template(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			clock.SetFakeTime(t, time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
+			ctx := clock.With(context.Background(), time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
 
-			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
+			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}
 			inputReport := types.Report{
 				Results: types.Results{
@@ -178,10 +179,10 @@ func TestReportWriter_Template(t *testing.T) {
 				},
 			}
 
-			w, err := report.NewTemplateWriter(&got, tc.template)
+			w, err := report.NewTemplateWriter(&got, tc.template, "dev")
 			require.NoError(t, err)
-			err = w.Write(inputReport)
-			assert.NoError(t, err)
+			err = w.Write(ctx, inputReport)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, got.String())
 		})
 	}

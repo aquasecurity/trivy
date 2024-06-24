@@ -60,11 +60,11 @@ type DockerOptions struct {
 }
 
 type PodmanOptions struct {
-	// TODO
+	Host string
 }
 
 type ContainerdOptions struct {
-	// TODO
+	// Add Containerd-specific options
 }
 
 // ImageSource represents the source of an image. It can be a string that identifies

@@ -1,116 +1,88 @@
 package log
 
 import (
+	"context"
+	"fmt"
+	"io"
+	"log/slog"
 	"os"
-	"runtime"
+	"strings"
 
-	xlog "github.com/masahiro331/go-xfs-filesystem/log"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"golang.org/x/xerrors"
-
-	dlog "github.com/aquasecurity/go-dep-parser/pkg/log"
-	flog "github.com/aquasecurity/trivy/pkg/fanal/log"
+	"github.com/samber/lo"
 )
 
-var (
-	// Logger is the global variable for logging
-	Logger      *zap.SugaredLogger
-	debugOption bool
+const (
+	LevelDebug = slog.LevelDebug
+	LevelInfo  = slog.LevelInfo
+	LevelWarn  = slog.LevelWarn
+	LevelError = slog.LevelError
+	LevelFatal = slog.Level(12)
 )
 
-func init() {
-	// Set the default logger
-	Logger, _ = NewLogger(false, false) // nolint: errcheck
+// Logger is an alias of slog.Logger
+type Logger = slog.Logger
+
+// New creates a new Logger with the given non-nil Handler.
+func New(h slog.Handler) *Logger {
+	return slog.New(h)
 }
 
 // InitLogger initialize the logger variable
-func InitLogger(debug, disable bool) (err error) {
-	debugOption = debug
-	Logger, err = NewLogger(debug, disable)
-	if err != nil {
-		return xerrors.Errorf("failed to initialize a logger: %w", err)
-	}
-
-	// Set logger for go-dep-parser
-	dlog.SetLogger(Logger)
-
-	// Set logger for fanal
-	flog.SetLogger(Logger)
-
-	// Set logger for go-xfs-filesystem
-	xlog.SetLogger(Logger)
-
-	return nil
-
+func InitLogger(debug, disable bool) {
+	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
+	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
+	slog.SetDefault(New(NewHandler(out, &Options{Level: level})))
 }
 
-// NewLogger is the factory method to return the instance of logger
-func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
-	// First, define our level-handling logic.
-	errorPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel
-	})
-	logPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		if debug {
-			return lvl < zapcore.ErrorLevel
-		}
-		// Not enable debug level
-		return zapcore.DebugLevel < lvl && lvl < zapcore.ErrorLevel
-	})
+var (
+	// With calls [Logger.With] on the default logger.
+	With = slog.With
 
-	encoderLevel := zapcore.CapitalColorLevelEncoder
-	// when running on Windows, don't log with color
-	if runtime.GOOS == "windows" {
-		encoderLevel = zapcore.CapitalLevelEncoder
-	}
+	SetDefault = slog.SetDefault
 
-	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "Time",
-		LevelKey:       "Level",
-		NameKey:        "Name",
-		CallerKey:      "Caller",
-		MessageKey:     "Msg",
-		StacktraceKey:  "St",
-		EncodeLevel:    encoderLevel,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
-		EncodeDuration: zapcore.StringDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
-	}
+	Debug        = slog.Debug
+	DebugContext = slog.DebugContext
+	Info         = slog.Info
+	InfoContext  = slog.InfoContext
+	Warn         = slog.Warn
+	WarnContext  = slog.WarnContext
+	Error        = slog.Error
+	ErrorContext = slog.ErrorContext
+)
 
-	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
-
-	// High-priority output should also go to standard error, and low-priority
-	// output should also go to standard out.
-	consoleLogs := zapcore.Lock(os.Stderr)
-	consoleErrors := zapcore.Lock(os.Stderr)
-	if disable {
-		devNull, err := os.Create(os.DevNull)
-		if err != nil {
-			return nil, err
-		}
-		// Discard low-priority output
-		consoleLogs = zapcore.Lock(devNull)
-	}
-
-	core := zapcore.NewTee(
-		zapcore.NewCore(consoleEncoder, consoleErrors, errorPriority),
-		zapcore.NewCore(consoleEncoder, consoleLogs, logPriority),
-	)
-
-	opts := []zap.Option{zap.ErrorOutput(zapcore.Lock(os.Stderr))}
-	if debug {
-		opts = append(opts, zap.Development())
-	}
-	logger := zap.New(core, opts...)
-
-	return logger.Sugar(), nil
+// WithPrefix calls [Logger.With] with the prefix on the default logger.
+//
+// Note: If WithPrefix is called within init() or during global variable
+// initialization, it will use the default logger of log/slog package
+// before Trivy's logger is set up. In such cases, it's recommended to pass the prefix
+// via WithContextPrefix to ensure the correct logger is used.
+func WithPrefix(prefix string) *Logger {
+	return slog.Default().With(Prefix(prefix))
 }
+
+func Debugf(format string, args ...any) { slog.Default().Debug(fmt.Sprintf(format, args...)) }
+func Infof(format string, args ...any)  { slog.Default().Info(fmt.Sprintf(format, args...)) }
+func Warnf(format string, args ...any)  { slog.Default().Warn(fmt.Sprintf(format, args...)) }
+func Errorf(format string, args ...any) { slog.Default().Error(fmt.Sprintf(format, args...)) }
 
 // Fatal for logging fatal errors
-func Fatal(err error) {
-	if debugOption {
-		Logger.Fatalf("%+v", err)
-	}
-	Logger.Fatal(err)
+func Fatal(msg string, args ...any) {
+	// Fatal errors should be logged to stderr even if the logger is disabled.
+	New(NewHandler(os.Stderr, &Options{})).Log(context.Background(), LevelFatal, msg, args...)
+	os.Exit(1)
+}
+
+// WriteLogger is a wrapper around Logger to implement io.Writer
+type WriteLogger struct {
+	logger *Logger
+}
+
+// NewWriteLogger creates a new WriteLogger
+func NewWriteLogger(logger *Logger) *WriteLogger {
+	return &WriteLogger{logger: logger}
+}
+
+func (l *WriteLogger) Write(p []byte) (n int, err error) {
+	l.logger.Debug(strings.TrimSpace(string(p)))
+	return len(p), nil
 }

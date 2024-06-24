@@ -4,11 +4,11 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/java/pom"
-
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -24,11 +24,22 @@ const version = 1
 type pomAnalyzer struct{}
 
 func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := pom.NewParser(filepath.Join(input.Dir, input.FilePath), pom.WithOffline(input.Options.Offline))
+	filePath := filepath.Join(input.Dir, input.FilePath)
+	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline))
 	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
+
+	// Mark integration test pom files for `maven-invoker-plugin` as Dev to skip them by default.
+	if isIntegrationTestDir(filePath) {
+		for i := range res.Applications {
+			for j := range res.Applications[i].Packages {
+				res.Applications[i].Packages[j].Dev = true
+			}
+		}
+	}
+
 	return res, nil
 }
 
@@ -42,4 +53,15 @@ func (a pomAnalyzer) Type() analyzer.Type {
 
 func (a pomAnalyzer) Version() int {
 	return version
+}
+
+// isIntegrationTestDir checks that pom file is in directory with integration tests of `maven-invoker-plugin`
+// https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
+func isIntegrationTestDir(filePath string) bool {
+	dirs := strings.Split(filepath.ToSlash(filePath), "/")
+	// filepath pattern: `**/[src|target]/it/*/pom.xml`
+	if len(dirs) < 4 {
+		return false
+	}
+	return (dirs[len(dirs)-4] == "src" || dirs[len(dirs)-4] == "target") && dirs[len(dirs)-3] == "it"
 }

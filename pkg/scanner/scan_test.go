@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -35,12 +37,12 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					CtxAnything: true,
 				},
 				Returns: artifact.ArtifactInspectReturns{
-					Reference: ftypes.ArtifactReference{
+					Reference: artifact.Reference{
 						Name:    "alpine:3.11",
-						Type:    ftypes.ArtifactContainerImage,
+						Type:    artifact.TypeContainerImage,
 						ID:      "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 						BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-						ImageMetadata: ftypes.ImageMetadata{
+						ImageMetadata: artifact.ImageMetadata{
 							ID:          "sha256:e389ae58922402a7ded319e79f06ac428d05698d8e61ecbe88d2cf850e42651d",
 							DiffIDs:     []string{"sha256:9a5d14f9f5503e55088666beef7e85a8d9625d4fa7418e2fe269e9c54bcb853c"},
 							RepoTags:    []string{"alpine:3.11"},
@@ -96,8 +98,9 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			},
 			want: types.Report{
 				SchemaVersion: 2,
+				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
 				ArtifactName:  "alpine:3.11",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: "alpine",
@@ -165,7 +168,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					CtxAnything: true,
 				},
 				Returns: artifact.ArtifactInspectReturns{
-					Reference: ftypes.ArtifactReference{
+					Reference: artifact.Reference{
 						Name:    "alpine:3.11",
 						ID:      "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 						BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -188,6 +191,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 		t.Run(tt.name, func(t *testing.T) {
 			d := new(MockDriver)
 			d.ApplyScanExpectation(tt.scanExpectation)
@@ -196,9 +200,9 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			mockArtifact.ApplyInspectExpectation(tt.inspectExpectation)
 
 			s := NewScanner(d, mockArtifact)
-			got, err := s.ScanArtifact(context.Background(), tt.args.options)
+			got, err := s.ScanArtifact(ctx, tt.args.options)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {

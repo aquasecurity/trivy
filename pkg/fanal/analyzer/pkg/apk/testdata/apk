@@ -538,3 +538,27 @@ R:sqlite3ext.h
 Z:Q1riWNHq9ufQzhyMXm7raBW+ZL9z0=
 R:sqlite3.h
 Z:Q11MT2xE8JuMfBRYu6BDTz2PY95Vw=
+
+C:Q1WTFU+AxEBoVEjg9SR5cl17ybZ40=
+P:ada-libs
+V:2.7.4-r0
+A:x86_64
+S:166703
+I:491520
+T:WHATWG-compliant and fast URL parser written in modern C++ (libraries)
+U:https://ada-url.github.io/ada
+L:( Apache-2.0 OR MIT ) AND MPL-2.0
+o:ada
+m:Jakub Jirutka <jakub@jirutka.cz>
+t:1701726025
+c:fa40f3454f9c60870d54115aac4161f9ab7c667f
+D:so:libc.musl-x86_64.so.1
+p:so:libada.so.2=2.7.4
+F:usr
+F:usr/lib
+R:libada.so.2
+a:0:0:777
+Z:Q1qDM97tDEseDtdayU2yr3eJjOl5I=
+R:libada.so.2.7.4
+a:0:0:755
+Z:Q1LUjWSS3wH8zDBHd0pYxED/hWBhk=

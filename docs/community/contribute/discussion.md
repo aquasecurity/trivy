@@ -24,7 +24,7 @@ There are 4 categories:
     If you find any false positives or false negatives, please make sure to report them under the "False Detection" category, not "Bugs".
 
 ## False detection
-Trivy depends on [multiple data sources](https://aquasecurity.github.io/trivy/latest/docs/vulnerability/detection/data-source/).
+Trivy depends on [multiple data sources](https://aquasecurity.github.io/trivy/latest/docs/scanner/vulnerability/#data-sources).
 Sometime these databases contain mistakes.
 
 If Trivy can't detect any CVE-IDs or shows false positive result, at first please follow the next steps:

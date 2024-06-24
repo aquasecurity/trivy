@@ -1,0 +1,125 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:c09512e3-47e7-4eff-8f76-5d7ae72b26a5",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2024-03-10T14:57:31+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "acc9d4aa-4158-4969-a497-637e114fde0c",
+      "type": "application",
+      "name": "C:/Users/bedla.czech/IdeaProjects/sbom-demo",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "eb56cd49-da98-4b08-bfc8-9880fb063cf1",
+      "type": "application",
+      "name": "pom.xml",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "pom"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/org.eclipse.sisu/org.eclipse.sisu.plexus@0.3.0.M1",
+      "type": "library",
+      "group": "org.eclipse.sisu",
+      "name": "org.eclipse.sisu.plexus",
+      "version": "0.3.0.M1",
+      "licenses": [
+        {
+          "license": {
+            "name": "EPL-1.0"
+          }
+        }
+      ],
+      "purl": "pkg:maven/org.eclipse.sisu/org.eclipse.sisu.plexus@0.3.0.M1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.0.M1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pom"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/org.ow2.asm/asm@9.5",
+      "type": "library",
+      "group": "org.ow2.asm",
+      "name": "asm",
+      "version": "9.5",
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "purl": "pkg:maven/org.ow2.asm/asm@9.5",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "org.ow2.asm:asm:9.5"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pom"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/org.slf4j/slf4j-api@2.0.11",
+      "type": "library",
+      "group": "org.slf4j",
+      "name": "slf4j-api",
+      "version": "2.0.11",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT License"
+          }
+        }
+      ],
+      "purl": "pkg:maven/org.slf4j/slf4j-api@2.0.11",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "org.slf4j:slf4j-api:2.0.11"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pom"
+        }
+      ]
+    }
+  ],
+  "dependencies": [],
+  "vulnerabilities": []
+}

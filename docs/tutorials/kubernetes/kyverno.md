@@ -7,8 +7,9 @@ This tutorial details
 - Verify the container image has an attestation with Kyverno
 
 ### Prerequisites
-1. [Attestation of the vulnerability scan uploaded][vuln-attestation]
-2. A running Kubernetes cluster that kubectl is connected to
+1. A running Kubernetes cluster that kubectl is connected to
+2. A Container image signed with Cosign and an attestation generated for a Trivy Vulnerability scan.
+  [Follow this tutorial for more information.][vuln-attestation]
 
 ### Kyverno Policy to check attestation
 
@@ -24,11 +25,12 @@ kind: ClusterPolicy
 metadata:
   name: check-vulnerabilities
 spec:
-  validationFailureAction: enforce
-  webhookTimeoutSeconds: 10
+  validationFailureAction: Enforce
+  background: false
+  webhookTimeoutSeconds: 30
   failurePolicy: Fail
   rules:
-    - name: not-older-than-one-week
+    - name: checking-vulnerability-scan-not-older-than-one-hour
       match:
         any:
         - resources:
@@ -36,14 +38,23 @@ spec:
               - Pod
       verifyImages:
       - imageReferences:
-        - "CONTAINER-REGISTRY/*:*"
+        - "*"
         attestations:
-        - predicateType: cosign.sigstore.dev/attestation/vuln/v1
+        - type: https://cosign.sigstore.dev/attestation/vuln/v1
           conditions:
           - all:
-            - key: "{{ time_since('','{{metadata.scanFinishedOn}}','') }}"
+            - key: "{{ time_since('','{{ metadata.scanFinishedOn }}', '') }}"
               operator: LessThanOrEquals
-              value: "168h"
+              value: "1h"
+          attestors:
+          - count: 1
+            entries:
+            - keys:
+                publicKeys: |-
+                  -----BEGIN PUBLIC KEY-----
+                  abc
+                  xyz
+                  -----END PUBLIC KEY-----
 ```
 
 {% endraw %}
@@ -57,38 +68,12 @@ Next, apply the above policy:
 kubectl apply -f vuln-attestation.yaml
 ```
 
-To ensure that the policy worked, we can deploye an example deployment file with our container image:
+To ensure that the policy worked, we can deploy an example Kubernetes Pod with our container image:
 
-deployment.yaml
 ```
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cns-website
-  namespace: app
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      run: cns-website
-  template:
-    metadata:
-      labels:
-        run: cns-website
-    spec:
-      containers:
-      - name: cns-website
-        image: docker.io/anaisurlichs/cns-website:0.0.6
-        ports:
-          - containerPort: 80
-        imagePullPolicy: Always
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: 200m
-        securityContext:
-          allowPrivilegeEscalation: false
+kubectl run app-signed --image= docker.io/anaisurlichs/signed-example@sha256:c5911ac313e0be82a740bd726dc290e655800a9588424ba4e0558c705d1287fd 
 ```
+Note that the image is based on the [signing tutorial.][vuln-attestation]
 
 Once we apply the deployment, it should pass since our attestation is available:
 ```
@@ -98,7 +83,7 @@ deployment.apps/cns-website created
 
 However, if we try to deploy any other container image, our deployment will fail. We can verify this by replacing the image referenced in the deployment with `docker.io/anaisurlichs/cns-website:0.0.5` and applying the deployment:
 ```
-kubectl apply -f deployment-two.yaml
+kubectl run app-unsigned --image=docker.io/anaisurlichs/cns-website:0.1.1 
 
 Resource: "apps/v1, Resource=deployments", GroupVersionKind: "apps/v1, Kind=Deployment"
 Name: "cns-website", Namespace: "app"

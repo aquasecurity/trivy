@@ -16,6 +16,9 @@ import (
 )
 
 func Run(ctx context.Context, opts flag.Options) (err error) {
+	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
+	defer cancel()
+
 	f, err := os.Open(opts.Target)
 	if err != nil {
 		return xerrors.Errorf("file open error: %w", err)
@@ -36,13 +39,10 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("unable to filter results: %w", err)
 	}
 
-	log.Logger.Debug("Writing report to output...")
-	if err = report.Write(r, opts); err != nil {
+	log.Debug("Writing report to output...")
+	if err = report.Write(ctx, r, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.ExitOnEOL(opts, r.Metadata)
-	operation.Exit(opts, r.Results.Failed())
-
-	return nil
+	return operation.Exit(opts, r.Results.Failed(), r.Metadata)
 }

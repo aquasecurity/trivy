@@ -1,29 +1,30 @@
 package spdx
 
 import (
+	"context"
 	"fmt"
+	"slices"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
-	"golang.org/x/exp/maps"
+	spdxutils "github.com/spdx/tools-golang/utils"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 const (
@@ -38,19 +39,6 @@ const (
 	CategoryPackageManager = "PACKAGE-MANAGER"
 	RefTypePurl            = "purl"
 
-	PropertySchemaVersion = "SchemaVersion"
-
-	// Image properties
-	PropertySize       = "Size"
-	PropertyImageID    = "ImageID"
-	PropertyRepoDigest = "RepoDigest"
-	PropertyDiffID     = "DiffID"
-	PropertyRepoTag    = "RepoTag"
-
-	// Package properties
-	PropertyPkgID       = "PkgID"
-	PropertyLayerDiffID = "LayerDiffID"
-	PropertyLayerDigest = "LayerDigest"
 	// Package Purpose fields
 	PackagePurposeOS          = "OPERATING-SYSTEM"
 	PackagePurposeContainer   = "CONTAINER"
@@ -73,33 +61,29 @@ const (
 
 var (
 	SourcePackagePrefix = "built package from"
+	SourceFilePrefix    = "package found in"
 )
+
+// duplicateProperties contains a list of properties contained in other fields.
+var duplicateProperties = []string{
+	// `SourceInfo` contains SrcName and SrcVersion (it contains PropertySrcRelease and PropertySrcEpoch)
+	core.PropertySrcName,
+	core.PropertySrcRelease,
+	core.PropertySrcEpoch,
+	core.PropertySrcVersion,
+	// `File` contains filePath.
+	core.PropertyFilePath,
+}
 
 type Marshaler struct {
 	format     spdx.Document
-	clock      clock.Clock
-	newUUID    newUUID
 	hasher     Hash
 	appVersion string // Trivy version. It needed for `creator` field
 }
 
-type Hash func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
-
-type newUUID func() uuid.UUID
+type Hash func(v any, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
 
 type marshalOption func(*Marshaler)
-
-func WithClock(clock clock.Clock) marshalOption {
-	return func(opts *Marshaler) {
-		opts.clock = clock
-	}
-}
-
-func WithNewUUID(newUUID newUUID) marshalOption {
-	return func(opts *Marshaler) {
-		opts.newUUID = newUUID
-	}
-}
 
 func WithHasher(hasher Hash) marshalOption {
 	return func(opts *Marshaler) {
@@ -110,8 +94,6 @@ func WithHasher(hasher Hash) marshalOption {
 func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	m := &Marshaler{
 		format:     spdx.Document{},
-		clock:      clock.RealClock{},
-		newUUID:    uuid.New,
 		hasher:     hashstructure.Hash,
 		appVersion: version,
 	}
@@ -123,64 +105,95 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	return m
 }
 
-func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
-	var relationShips []*spdx.Relationship
-	packages := make(map[spdx.ElementID]*spdx.Package)
-	pkgDownloadLocation := getPackageDownloadLocation(r.ArtifactType, r.ArtifactName)
+func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*spdx.Document, error) {
+	// Convert into an intermediate representation
+	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to marshal report: %w", err)
+	}
+
+	return m.Marshal(ctx, bom)
+}
+
+func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document, error) {
+	var (
+		relationShips []*spdx.Relationship
+		packages      []*spdx.Package
+	)
+
+	root := bom.Root()
+	pkgDownloadLocation := m.packageDownloadLocation(root)
+
+	// Component ID => SPDX ID
+	packageIDs := make(map[uuid.UUID]spdx.ElementID)
 
 	// Root package contains OS, OS packages, language-specific packages and so on.
-	rootPkg, err := m.rootPackage(r, pkgDownloadLocation)
+	rootPkg, err := m.rootSPDXPackage(root, pkgDownloadLocation)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to generate a root package: %w", err)
 	}
-	packages[rootPkg.PackageSPDXIdentifier] = rootPkg
+	packages = append(packages, rootPkg)
 	relationShips = append(relationShips,
-		relationShip(DocumentSPDXIdentifier, rootPkg.PackageSPDXIdentifier, RelationShipDescribe),
+		m.spdxRelationShip(DocumentSPDXIdentifier, rootPkg.PackageSPDXIdentifier, RelationShipDescribe),
 	)
+	packageIDs[root.ID()] = rootPkg.PackageSPDXIdentifier
 
-	var spdxFiles []*spdx.File
-
-	for _, result := range r.Results {
-		if len(result.Packages) == 0 {
+	var files []*spdx.File
+	for _, c := range bom.Components() {
+		if c.Root {
 			continue
 		}
-		parentPackage, err := m.resultToSpdxPackage(result, r.Metadata.OS, pkgDownloadLocation)
+		spdxPackage, err := m.spdxPackage(c, pkgDownloadLocation)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to parse result: %w", err)
+			return nil, xerrors.Errorf("spdx package error: %w", err)
 		}
-		packages[parentPackage.PackageSPDXIdentifier] = &parentPackage
-		relationShips = append(relationShips,
-			relationShip(rootPkg.PackageSPDXIdentifier, parentPackage.PackageSPDXIdentifier, RelationShipContains),
-		)
+		packages = append(packages, &spdxPackage)
+		packageIDs[c.ID()] = spdxPackage.PackageSPDXIdentifier
 
-		for _, pkg := range result.Packages {
-			spdxPackage, err := m.pkgToSpdxPackage(result.Type, pkgDownloadLocation, result.Class, r.Metadata, pkg)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to parse package: %w", err)
-			}
-			packages[spdxPackage.PackageSPDXIdentifier] = &spdxPackage
+		spdxFiles, err := m.spdxFiles(c)
+		if err != nil {
+			return nil, xerrors.Errorf("spdx files error: %w", err)
+		} else if len(spdxFiles) == 0 {
+			continue
+		}
+
+		files = append(files, spdxFiles...)
+		for _, file := range spdxFiles {
 			relationShips = append(relationShips,
-				relationShip(parentPackage.PackageSPDXIdentifier, spdxPackage.PackageSPDXIdentifier, RelationShipContains),
+				m.spdxRelationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
 			)
-			files, err := m.pkgFiles(pkg)
-			if err != nil {
-				return nil, xerrors.Errorf("package file error: %w", err)
+		}
+		verificationCode, err := spdxutils.GetVerificationCode(spdxFiles, "")
+		if err != nil {
+			return nil, xerrors.Errorf("package verification error: %w", err)
+		}
+		spdxPackage.FilesAnalyzed = true
+		spdxPackage.PackageVerificationCode = &verificationCode
+	}
+
+	for id, rels := range bom.Relationships() {
+		for _, rel := range rels {
+			refA, ok := packageIDs[id]
+			if !ok {
+				continue
 			}
-			spdxFiles = append(spdxFiles, files...)
-			for _, file := range files {
-				relationShips = append(relationShips,
-					relationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
-				)
+			refB, ok := packageIDs[rel.Dependency]
+			if !ok {
+				continue
 			}
+			relationShips = append(relationShips, m.spdxRelationShip(refA, refB, m.spdxRelationshipType(rel.Type)))
 		}
 	}
+	sortPackages(packages)
+	sortRelationships(relationShips)
+	sortFiles(files)
 
 	return &spdx.Document{
 		SPDXVersion:       spdx.Version,
 		DataLicense:       spdx.DataLicense,
 		SPDXIdentifier:    DocumentSPDXIdentifier,
-		DocumentName:      r.ArtifactName,
-		DocumentNamespace: getDocumentNamespace(r, m),
+		DocumentName:      root.Name,
+		DocumentNamespace: getDocumentNamespace(root),
 		CreationInfo: &spdx.CreationInfo{
 			Creators: []common.Creator{
 				{
@@ -192,217 +205,217 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 					CreatorType: "Tool",
 				},
 			},
-			Created: m.clock.Now().UTC().Format(time.RFC3339),
+			Created: clock.Now(ctx).UTC().Format(time.RFC3339),
 		},
-		Packages:      toPackages(packages),
+		Packages:      packages,
 		Relationships: relationShips,
-		Files:         spdxFiles,
+		Files:         files,
 	}, nil
 }
 
-func toPackages(packages map[spdx.ElementID]*spdx.Package) []*spdx.Package {
-	ret := maps.Values(packages)
-	sort.Slice(ret, func(i, j int) bool {
-		if ret[i].PackageName != ret[j].PackageName {
-			return ret[i].PackageName < ret[j].PackageName
-		}
-		return ret[i].PackageSPDXIdentifier < ret[j].PackageSPDXIdentifier
-	})
-	return ret
+func (m *Marshaler) packageDownloadLocation(root *core.Component) string {
+	location := noneField
+	// this field is used for git/mercurial/subversion/bazaar:
+	// https://spdx.github.io/spdx-spec/v2.2.2/package-information/#77-package-download-location-field
+	if root.Type == core.TypeRepository {
+		// Trivy currently only supports git repositories. Format examples:
+		// git+https://git.myproject.org/MyProject.git
+		// git+http://git.myproject.org/MyProject
+		location = fmt.Sprintf("git+%s", root.Name)
+	}
+	return location
 }
 
-func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgDownloadLocation string) (spdx.Package, error) {
-	switch result.Class {
-	case types.ClassOSPkg:
-		osPkg, err := m.osPackage(os, pkgDownloadLocation)
-		if err != nil {
-			return spdx.Package{}, xerrors.Errorf("failed to parse operating system package: %w", err)
-		}
-		return osPkg, nil
-	case types.ClassLangPkg:
-		langPkg, err := m.langPackage(result.Target, result.Type, pkgDownloadLocation)
-		if err != nil {
-			return spdx.Package{}, xerrors.Errorf("failed to parse application package: %w", err)
-		}
-		return langPkg, nil
-	default:
-		// unsupported packages
-		return spdx.Package{}, nil
-	}
-}
-
-func (m *Marshaler) parseFile(filePath string, digest digest.Digest) (spdx.File, error) {
-	pkgID, err := calcPkgID(m.hasher, filePath)
-	if err != nil {
-		return spdx.File{}, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
-	}
-	file := spdx.File{
-		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
-		FileName:           filePath,
-		Checksums:          digestToSpdxFileChecksum(digest),
-	}
-	return file, nil
-}
-
-func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*spdx.Package, error) {
+func (m *Marshaler) rootSPDXPackage(root *core.Component, pkgDownloadLocation string) (*spdx.Package, error) {
 	var externalReferences []*spdx.PackageExternalReference
-	attributionTexts := []string{attributionText(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion))}
-
 	// When the target is a container image, add PURL to the external references of the root package.
-	if p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{}); err != nil {
-		return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
-	} else if p.Type != "" {
-		externalReferences = append(externalReferences, purlExternalReference(p.ToString()))
+	if root.PkgIdentifier.PURL != nil {
+		externalReferences = append(externalReferences, m.purlExternalReference(root.PkgIdentifier.PURL.String()))
 	}
 
-	if r.Metadata.ImageID != "" {
-		attributionTexts = appendAttributionText(attributionTexts, PropertyImageID, r.Metadata.ImageID)
-	}
-	if r.Metadata.Size != 0 {
-		attributionTexts = appendAttributionText(attributionTexts, PropertySize, strconv.FormatInt(r.Metadata.Size, 10))
-	}
-
-	for _, d := range r.Metadata.RepoDigests {
-		attributionTexts = appendAttributionText(attributionTexts, PropertyRepoDigest, d)
-	}
-	for _, d := range r.Metadata.DiffIDs {
-		attributionTexts = appendAttributionText(attributionTexts, PropertyDiffID, d)
-	}
-	for _, t := range r.Metadata.RepoTags {
-		attributionTexts = appendAttributionText(attributionTexts, PropertyRepoTag, t)
-	}
-
-	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", r.ArtifactName, r.ArtifactType))
+	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", root.Name, root.Type))
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", pkgID, err)
 	}
 
 	pkgPurpose := PackagePurposeSource
-	if r.ArtifactType == ftypes.ArtifactContainerImage {
+	if root.Type == core.TypeContainerImage {
 		pkgPurpose = PackagePurposeContainer
 	}
 
 	return &spdx.Package{
-		PackageName:               r.ArtifactName,
-		PackageSPDXIdentifier:     elementID(camelCase(string(r.ArtifactType)), pkgID),
+		PackageName:               root.Name,
+		PackageSPDXIdentifier:     elementID(camelCase(string(root.Type)), pkgID),
 		PackageDownloadLocation:   pkgDownloadLocation,
-		PackageAttributionTexts:   attributionTexts,
+		PackageAttributionTexts:   m.spdxAttributionTexts(root),
 		PackageExternalReferences: externalReferences,
 		PrimaryPackagePurpose:     pkgPurpose,
 	}, nil
 }
 
-func (m *Marshaler) osPackage(osFound *ftypes.OS, pkgDownloadLocation string) (spdx.Package, error) {
-	if osFound == nil {
-		return spdx.Package{}, nil
+func (m *Marshaler) appendAttributionText(attributionTexts []string, key, value string) []string {
+	if value == "" {
+		return attributionTexts
 	}
+	return append(attributionTexts, fmt.Sprintf("%s: %s", key, value))
+}
 
-	pkgID, err := calcPkgID(m.hasher, osFound)
+func (m *Marshaler) purlExternalReference(packageURL string) *spdx.PackageExternalReference {
+	return &spdx.PackageExternalReference{
+		Category: CategoryPackageManager,
+		RefType:  RefTypePurl,
+		Locator:  packageURL,
+	}
+}
+
+func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (spdx.Package, error) {
+	pkgID, err := calcPkgID(m.hasher, c)
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
 	}
 
-	return spdx.Package{
-		PackageName:             osFound.Family,
-		PackageVersion:          osFound.Name,
-		PackageSPDXIdentifier:   elementID(ElementOperatingSystem, pkgID),
-		PackageDownloadLocation: pkgDownloadLocation,
-		PrimaryPackagePurpose:   PackagePurposeOS,
-	}, nil
-}
+	var elementType, purpose, license, sourceInfo string
+	var supplier *spdx.Supplier
+	switch c.Type {
+	case core.TypeOS:
+		elementType = ElementOperatingSystem
+		purpose = PackagePurposeOS
+	case core.TypeApplication:
+		elementType = ElementApplication
+		purpose = PackagePurposeApplication
+	case core.TypeLibrary:
+		elementType = ElementPackage
+		purpose = PackagePurposeLibrary
+		license = m.spdxLicense(c)
 
-func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (spdx.Package, error) {
-	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", target, appType))
-	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("failed to get %s package ID: %w", target, err)
-	}
+		if c.SrcName != "" {
+			sourceInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, c.SrcName, c.SrcVersion)
+		} else if c.SrcFile != "" {
+			sourceInfo = fmt.Sprintf("%s: %s", SourceFilePrefix, c.SrcFile)
+		}
 
-	return spdx.Package{
-		PackageName:             appType,
-		PackageSourceInfo:       target, // TODO: Files seems better
-		PackageSPDXIdentifier:   elementID(ElementApplication, pkgID),
-		PackageDownloadLocation: pkgDownloadLocation,
-		PrimaryPackagePurpose:   PackagePurposeApplication,
-	}, nil
-}
-
-func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package, error) {
-	license := GetLicense(pkg)
-
-	pkgID, err := calcPkgID(m.hasher, pkg)
-	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
-	}
-
-	var pkgSrcInfo string
-	if class == types.ClassOSPkg && pkg.SrcName != "" {
-		pkgSrcInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, pkg.SrcName, utils.FormatSrcVersion(pkg))
-	}
-
-	packageURL, err := purl.NewPackageURL(t, metadata, pkg)
-	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
-	}
-	pkgExtRefs := []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
-
-	var attrTexts []string
-	attrTexts = appendAttributionText(attrTexts, PropertyPkgID, pkg.ID)
-	attrTexts = appendAttributionText(attrTexts, PropertyLayerDigest, pkg.Layer.Digest)
-	attrTexts = appendAttributionText(attrTexts, PropertyLayerDiffID, pkg.Layer.DiffID)
-
-	supplier := &spdx.Supplier{Supplier: PackageSupplierNoAssertion}
-	if pkg.Maintainer != "" {
-		supplier = &spdx.Supplier{
-			SupplierType: PackageSupplierOrganization, // Always use "Organization" at the moment as it is difficult to distinguish between "Person" or "Organization".
-			Supplier:     pkg.Maintainer,
+		supplier = &spdx.Supplier{Supplier: PackageSupplierNoAssertion}
+		if c.Supplier != "" {
+			supplier = &spdx.Supplier{
+				SupplierType: PackageSupplierOrganization, // Always use "Organization" at the moment as it is difficult to distinguish between "Person" or "Organization".
+				Supplier:     c.Supplier,
+			}
 		}
 	}
 
-	var checksum []spdx.Checksum
-	if pkg.Digest != "" && class == types.ClassOSPkg {
-		checksum = digestToSpdxFileChecksum(pkg.Digest)
+	var pkgExtRefs []*spdx.PackageExternalReference
+	if c.PkgIdentifier.PURL != nil {
+		pkgExtRefs = []*spdx.PackageExternalReference{m.purlExternalReference(c.PkgIdentifier.PURL.String())}
+	}
+
+	var digests []digest.Digest
+	for _, f := range c.Files {
+		// The file digests are stored separately.
+		if f.Path != "" {
+			continue
+		}
+		digests = append(digests, f.Digests...)
 	}
 
 	return spdx.Package{
-		PackageName:             pkg.Name,
-		PackageVersion:          utils.FormatVersion(pkg),
-		PackageSPDXIdentifier:   elementID(ElementPackage, pkgID),
-		PackageDownloadLocation: pkgDownloadLocation,
-		PackageSourceInfo:       pkgSrcInfo,
+		PackageSPDXIdentifier:     elementID(elementType, pkgID),
+		PackageName:               spdxPkgName(c),
+		PackageVersion:            c.Version,
+		PrimaryPackagePurpose:     purpose,
+		PackageDownloadLocation:   pkgDownloadLocation,
+		PackageExternalReferences: pkgExtRefs,
+		PackageAttributionTexts:   m.spdxAttributionTexts(c),
+		PackageSourceInfo:         sourceInfo,
+		PackageSupplier:           supplier,
+		PackageChecksums:          m.spdxChecksums(digests),
 
 		// The Declared License is what the authors of a project believe govern the package
 		PackageLicenseConcluded: license,
 
 		// The Concluded License field is the license the SPDX file creator believes governs the package
 		PackageLicenseDeclared: license,
-
-		PackageExternalReferences: pkgExtRefs,
-		PackageAttributionTexts:   attrTexts,
-		PrimaryPackagePurpose:     PackagePurposeLibrary,
-		PackageSupplier:           supplier,
-		PackageChecksums:          checksum,
 	}, nil
 }
 
-func (m *Marshaler) pkgFiles(pkg ftypes.Package) ([]*spdx.File, error) {
-	if pkg.FilePath == "" {
-		return nil, nil
+func spdxPkgName(component *core.Component) string {
+	if p := component.PkgIdentifier.PURL; p != nil && component.Group != "" {
+		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+			return component.Group + ":" + component.Name
+		}
+		return component.Group + "/" + component.Name
+	}
+	return component.Name
+}
+
+func (m *Marshaler) spdxAttributionTexts(c *core.Component) []string {
+	var texts []string
+	for _, p := range c.Properties {
+		// Add properties that are not in other fields.
+		if !slices.Contains(duplicateProperties, p.Name) {
+			texts = m.appendAttributionText(texts, p.Name, p.Value)
+		}
+	}
+	return texts
+}
+
+func (m *Marshaler) spdxLicense(c *core.Component) string {
+	if len(c.Licenses) == 0 {
+		return noneField
+	}
+	return NormalizeLicense(c.Licenses)
+}
+
+func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {
+	var checksums []common.Checksum
+	for _, d := range digests {
+		var alg spdx.ChecksumAlgorithm
+		switch d.Algorithm() {
+		case digest.SHA1:
+			alg = spdx.SHA1
+		case digest.SHA256:
+			alg = spdx.SHA256
+		case digest.MD5:
+			alg = spdx.MD5
+		default:
+			return nil
+		}
+		checksums = append(checksums, spdx.Checksum{
+			Algorithm: alg,
+			Value:     d.Encoded(),
+		})
 	}
 
-	file, err := m.parseFile(pkg.FilePath, pkg.Digest)
+	return checksums
+}
+
+func (m *Marshaler) spdxFiles(c *core.Component) ([]*spdx.File, error) {
+	var files []*spdx.File
+	for _, file := range c.Files {
+		if file.Path == "" || len(file.Digests) == 0 {
+			continue
+		}
+		spdxFile, err := m.spdxFile(file.Path, file.Digests)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse file: %w", err)
+		}
+		files = append(files, spdxFile)
+	}
+	return files, nil
+}
+
+func (m *Marshaler) spdxFile(filePath string, digests []digest.Digest) (*spdx.File, error) {
+	pkgID, err := calcPkgID(m.hasher, filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse file: %w", err)
+		return nil, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
 	}
-	return []*spdx.File{
-		&file,
+	return &spdx.File{
+		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
+		FileName:           filePath,
+		Checksums:          m.spdxChecksums(digests),
 	}, nil
 }
 
-func elementID(elementType, pkgID string) spdx.ElementID {
-	return spdx.ElementID(fmt.Sprintf("%s-%s", elementType, pkgID))
-}
-
-func relationShip(refA, refB spdx.ElementID, operator string) *spdx.Relationship {
+func (m *Marshaler) spdxRelationShip(refA, refB spdx.ElementID, operator string) *spdx.Relationship {
 	ref := spdx.Relationship{
 		RefA:         common.MakeDocElementID("", string(refA)),
 		RefB:         common.MakeDocElementID("", string(refB)),
@@ -411,56 +424,70 @@ func relationShip(refA, refB spdx.ElementID, operator string) *spdx.Relationship
 	return &ref
 }
 
-func appendAttributionText(attributionTexts []string, key, value string) []string {
-	if value == "" {
-		return attributionTexts
-	}
-	return append(attributionTexts, attributionText(key, value))
-}
-
-func attributionText(key, value string) string {
-	return fmt.Sprintf("%s: %s", key, value)
-}
-
-func purlExternalReference(packageURL string) *spdx.PackageExternalReference {
-	return &spdx.PackageExternalReference{
-		Category: CategoryPackageManager,
-		RefType:  RefTypePurl,
-		Locator:  packageURL,
+func (m *Marshaler) spdxRelationshipType(relType core.RelationshipType) string {
+	switch relType {
+	case core.RelationshipDependsOn:
+		return RelationShipDependsOn
+	case core.RelationshipContains:
+		return RelationShipContains
+	case core.RelationshipDescribes:
+		return RelationShipDescribe
+	default:
+		return RelationShipDependsOn
 	}
 }
 
-func GetLicense(p ftypes.Package) string {
-	if len(p.Licenses) == 0 {
-		return noneField
-	}
-
-	license := strings.Join(lo.Map(p.Licenses, func(license string, index int) string {
-		// e.g. GPL-3.0-with-autoconf-exception
-		license = strings.ReplaceAll(license, "-with-", " WITH ")
-		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
-
-		return fmt.Sprintf("(%s)", license)
-	}), " AND ")
-	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
-	if err != nil {
-		// Not fail on the invalid license
-		log.Logger.Warnf("Unable to marshal SPDX licenses %q", license)
-		return ""
-	}
-	return s
+func sortPackages(pkgs []*spdx.Package) {
+	sort.Slice(pkgs, func(i, j int) bool {
+		switch {
+		case pkgs[i].PrimaryPackagePurpose != pkgs[j].PrimaryPackagePurpose:
+			return pkgs[i].PrimaryPackagePurpose < pkgs[j].PrimaryPackagePurpose
+		case pkgs[i].PackageName != pkgs[j].PackageName:
+			return pkgs[i].PackageName < pkgs[j].PackageName
+		default:
+			return pkgs[i].PackageSPDXIdentifier < pkgs[j].PackageSPDXIdentifier
+		}
+	})
 }
 
-func getDocumentNamespace(r types.Report, m *Marshaler) string {
+func sortRelationships(rels []*spdx.Relationship) {
+	sort.Slice(rels, func(i, j int) bool {
+		switch {
+		case rels[i].RefA.ElementRefID != rels[j].RefA.ElementRefID:
+			return rels[i].RefA.ElementRefID < rels[j].RefA.ElementRefID
+		case rels[i].RefB.ElementRefID != rels[j].RefB.ElementRefID:
+			return rels[i].RefB.ElementRefID < rels[j].RefB.ElementRefID
+		default:
+			return rels[i].Relationship < rels[j].Relationship
+		}
+	})
+}
+
+func sortFiles(files []*spdx.File) {
+	sort.Slice(files, func(i, j int) bool {
+		switch {
+		case files[i].FileName != files[j].FileName:
+			return files[i].FileName < files[j].FileName
+		default:
+			return files[i].FileSPDXIdentifier < files[j].FileSPDXIdentifier
+		}
+	})
+}
+
+func elementID(elementType, pkgID string) spdx.ElementID {
+	return spdx.ElementID(fmt.Sprintf("%s-%s", elementType, pkgID))
+}
+
+func getDocumentNamespace(root *core.Component) string {
 	return fmt.Sprintf("%s/%s/%s-%s",
 		DocumentNamespace,
-		string(r.ArtifactType),
-		strings.ReplaceAll(strings.ReplaceAll(r.ArtifactName, "https://", ""), "http://", ""), // remove http(s):// prefix when scanning repos
-		m.newUUID().String(),
+		string(root.Type),
+		strings.ReplaceAll(strings.ReplaceAll(root.Name, "https://", ""), "http://", ""), // remove http(s):// prefix when scanning repos
+		uuid.New().String(),
 	)
 }
 
-func calcPkgID(h Hash, v interface{}) (string, error) {
+func calcPkgID(h Hash, v any) (string, error) {
 	f, err := h(v, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:      true,
 		SlicesAsSets: true,
@@ -493,40 +520,19 @@ func camelCase(inputUnderScoreStr string) (camelCase string) {
 	return
 }
 
-func getPackageDownloadLocation(t ftypes.ArtifactType, artifactName string) string {
-	location := noneField
-	// this field is used for git/mercurial/subversion/bazaar:
-	// https://spdx.github.io/spdx-spec/v2.2.2/package-information/#77-package-download-location-field
-	if t == ftypes.ArtifactRemoteRepository {
-		// Trivy currently only supports git repositories. Format examples:
-		// git+https://git.myproject.org/MyProject.git
-		// git+http://git.myproject.org/MyProject
-		location = fmt.Sprintf("git+%s", artifactName)
-	}
-	return location
-}
+func NormalizeLicense(licenses []string) string {
+	license := strings.Join(lo.Map(licenses, func(license string, index int) string {
+		// e.g. GPL-3.0-with-autoconf-exception
+		license = strings.ReplaceAll(license, "-with-", " WITH ")
+		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
 
-func digestToSpdxFileChecksum(d digest.Digest) []common.Checksum {
-	if d == "" {
-		return nil
+		return fmt.Sprintf("(%s)", license)
+	}), " AND ")
+	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		log.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		return ""
 	}
-
-	var alg spdx.ChecksumAlgorithm
-	switch d.Algorithm() {
-	case digest.SHA1:
-		alg = spdx.SHA1
-	case digest.SHA256:
-		alg = spdx.SHA256
-	case digest.MD5:
-		alg = spdx.MD5
-	default:
-		return nil
-	}
-
-	return []spdx.Checksum{
-		{
-			Algorithm: alg,
-			Value:     d.Encoded(),
-		},
-	}
+	return s
 }

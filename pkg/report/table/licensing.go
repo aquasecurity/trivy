@@ -6,17 +6,15 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/fatih/color"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"github.com/fatih/color"
-
-	"github.com/aquasecurity/tml"
 )
 
 type pkgLicenseRenderer struct {
@@ -77,14 +75,14 @@ func (r pkgLicenseRenderer) setRows() {
 }
 
 func (r pkgLicenseRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
+	severityCount := make(map[string]int)
 	for _, l := range r.result.Licenses {
 		severityCount[l.Severity]++
 	}
 	return severityCount
 }
 
-func (r *pkgLicenseRenderer) printf(format string, args ...interface{}) {
+func (r *pkgLicenseRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }
@@ -162,14 +160,14 @@ func (r fileLicenseRenderer) setRows() {
 }
 
 func (r fileLicenseRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
+	severityCount := make(map[string]int)
 	for _, l := range r.result.Licenses {
 		severityCount[l.Severity]++
 	}
 	return severityCount
 }
 
-func (r *fileLicenseRenderer) printf(format string, args ...interface{}) {
+func (r *fileLicenseRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }

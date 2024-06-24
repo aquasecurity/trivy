@@ -9,7 +9,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -23,7 +23,7 @@ func TestDriver_Detect(t *testing.T) {
 	tests := []struct {
 		name     string
 		fixtures []string
-		libType  string
+		libType  ftypes.LangType
 		args     args
 		want     []types.DetectedVulnerability
 		wantErr  string
@@ -157,6 +157,31 @@ func TestDriver_Detect(t *testing.T) {
 			},
 			wantErr: "failed to unmarshal advisory JSON",
 		},
+		{
+			name: "duplicated version in advisory",
+			fixtures: []string{
+				"testdata/fixtures/pip.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "Django",
+				pkgVer:  "4.2.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-36053",
+					PkgName:          "Django",
+					InstalledVersion: "4.2.1",
+					FixedVersion:     "4.2.3",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Pip",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -175,7 +200,7 @@ func TestDriver_Detect(t *testing.T) {
 			}
 
 			// Compare
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

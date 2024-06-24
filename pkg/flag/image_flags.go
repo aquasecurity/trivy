@@ -15,41 +15,43 @@ import (
 //   input: "/path/to/alpine"
 
 var (
-	ImageConfigScannersFlag = Flag{
+	ImageConfigScannersFlag = Flag[[]string]{
 		Name:       "image-config-scanners",
 		ConfigName: "image.image-config-scanners",
-		Default:    []string{},
 		Values: xstrings.ToStringSlice(types.Scanners{
 			types.MisconfigScanner,
 			types.SecretScanner,
 		}),
 		Usage: "comma-separated list of what security issues to detect on container image configurations",
 	}
-	ScanRemovedPkgsFlag = Flag{
+	ScanRemovedPkgsFlag = Flag[bool]{
 		Name:       "removed-pkgs",
 		ConfigName: "image.removed-pkgs",
-		Default:    false,
 		Usage:      "detect vulnerabilities of removed packages (only for Alpine)",
 	}
-	InputFlag = Flag{
+	InputFlag = Flag[string]{
 		Name:       "input",
 		ConfigName: "image.input",
-		Default:    "",
 		Usage:      "input file path instead of image name",
 	}
-	PlatformFlag = Flag{
+	PlatformFlag = Flag[string]{
 		Name:       "platform",
 		ConfigName: "image.platform",
-		Default:    "",
 		Usage:      "set platform in the form os/arch if image is multi-platform capable",
 	}
-	DockerHostFlag = Flag{
+	DockerHostFlag = Flag[string]{
 		Name:       "docker-host",
 		ConfigName: "image.docker.host",
 		Default:    "",
 		Usage:      "unix domain socket path to use for docker scanning",
 	}
-	SourceFlag = Flag{
+	PodmanHostFlag = Flag[string]{
+		Name:       "podman-host",
+		ConfigName: "image.podman.host",
+		Default:    "",
+		Usage:      "unix podman socket path to use for podman scanning",
+	}
+	SourceFlag = Flag[[]string]{
 		Name:       "image-src",
 		ConfigName: "image.source",
 		Default:    xstrings.ToStringSlice(ftypes.AllImageSources),
@@ -59,12 +61,13 @@ var (
 )
 
 type ImageFlagGroup struct {
-	Input               *Flag // local image archive
-	ImageConfigScanners *Flag
-	ScanRemovedPkgs     *Flag
-	Platform            *Flag
-	DockerHost          *Flag
-	ImageSources        *Flag
+	Input               *Flag[string] // local image archive
+	ImageConfigScanners *Flag[[]string]
+	ScanRemovedPkgs     *Flag[bool]
+	Platform            *Flag[string]
+	DockerHost          *Flag[string]
+	PodmanHost          *Flag[string]
+	ImageSources        *Flag[[]string]
 }
 
 type ImageOptions struct {
@@ -73,17 +76,19 @@ type ImageOptions struct {
 	ScanRemovedPkgs     bool
 	Platform            ftypes.Platform
 	DockerHost          string
+	PodmanHost          string
 	ImageSources        ftypes.ImageSources
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
 	return &ImageFlagGroup{
-		Input:               &InputFlag,
-		ImageConfigScanners: &ImageConfigScannersFlag,
-		ScanRemovedPkgs:     &ScanRemovedPkgsFlag,
-		Platform:            &PlatformFlag,
-		DockerHost:          &DockerHostFlag,
-		ImageSources:        &SourceFlag,
+		Input:               InputFlag.Clone(),
+		ImageConfigScanners: ImageConfigScannersFlag.Clone(),
+		ScanRemovedPkgs:     ScanRemovedPkgsFlag.Clone(),
+		Platform:            PlatformFlag.Clone(),
+		DockerHost:          DockerHostFlag.Clone(),
+		PodmanHost:          PodmanHostFlag.Clone(),
+		ImageSources:        SourceFlag.Clone(),
 	}
 }
 
@@ -91,20 +96,25 @@ func (f *ImageFlagGroup) Name() string {
 	return "Image"
 }
 
-func (f *ImageFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *ImageFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.Input,
 		f.ImageConfigScanners,
 		f.ScanRemovedPkgs,
 		f.Platform,
 		f.DockerHost,
+		f.PodmanHost,
 		f.ImageSources,
 	}
 }
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return ImageOptions{}, err
+	}
+
 	var platform ftypes.Platform
-	if p := getString(f.Platform); p != "" {
+	if p := f.Platform.Value(); p != "" {
 		pl, err := v1.ParsePlatform(p)
 		if err != nil {
 			return ImageOptions{}, xerrors.Errorf("unable to parse platform: %w", err)
@@ -116,11 +126,12 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	}
 
 	return ImageOptions{
-		Input:               getString(f.Input),
-		ImageConfigScanners: getUnderlyingStringSlice[types.Scanner](f.ImageConfigScanners),
-		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
+		Input:               f.Input.Value(),
+		ImageConfigScanners: xstrings.ToTSlice[types.Scanner](f.ImageConfigScanners.Value()),
+		ScanRemovedPkgs:     f.ScanRemovedPkgs.Value(),
 		Platform:            platform,
-		DockerHost:          getString(f.DockerHost),
-		ImageSources:        getUnderlyingStringSlice[ftypes.ImageSource](f.ImageSources),
+		DockerHost:          f.DockerHost.Value(),
+		PodmanHost:          f.PodmanHost.Value(),
+		ImageSources:        xstrings.ToTSlice[ftypes.ImageSource](f.ImageSources.Value()),
 	}, nil
 }

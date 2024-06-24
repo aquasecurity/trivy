@@ -11,14 +11,14 @@ import (
 	"testing"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/kylelemons/godebug/pretty"
 	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/kylelemons/godebug/pretty"
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -202,7 +202,7 @@ var (
 			},
 			{
 				Created: v1.Time{
-					time.Date(2018, time.October, 15, 21, 28, 51, 35012363, time.UTC),
+					Time: time.Date(2018, time.October, 15, 21, 28, 51, 35012363, time.UTC),
 				},
 				CreatedBy:  "/bin/sh -c #(nop)  ENV COMPOSER_VERSION=1.7.2",
 				EmptyLayer: true,
@@ -234,7 +234,7 @@ var (
 			},
 			{
 				Created: v1.Time{
-					time.Date(2018, time.October, 15, 21, 28, 53, 798628678, time.UTC),
+					Time: time.Date(2018, time.October, 15, 21, 28, 53, 798628678, time.UTC),
 				},
 				CreatedBy:  "/bin/sh -c #(nop)  CMD [\"composer\"]",
 				EmptyLayer: true,
@@ -1070,11 +1070,11 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				targetOS: types.OS{
 					Family: "alpine",
-					Name:   "",
+					Name:   "3.9.1",
 				},
 				config: alpineConfig,
 			},
-			apkIndexArchivePath: testServer.URL + "%v",
+			apkIndexArchivePath: testServer.URL + "/%v",
 			want:                wantPkgs,
 		},
 	}
@@ -1261,9 +1261,9 @@ func TestResolveDependency(t *testing.T) {
 		if err = json.NewDecoder(f).Decode(&apkIndexArchive); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
-		circularDependencyCheck := map[string]struct{}{}
+		circularDependencyCheck := make(map[string]struct{})
 		pkgs := analyzer.resolveDependency(apkIndexArchive, v.pkgName, circularDependencyCheck)
-		actual := map[string]struct{}{}
+		actual := make(map[string]struct{})
 		for _, pkg := range pkgs {
 			actual[pkg] = struct{}{}
 		}

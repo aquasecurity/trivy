@@ -5,12 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	sp "github.com/aquasecurity/defsec/pkg/spec"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	sp "github.com/aquasecurity/trivy-checks/pkg/spec"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,18 +18,18 @@ type Severity string
 
 // ComplianceSpec represent the compliance specification
 type ComplianceSpec struct {
-	Spec defsecTypes.Spec `yaml:"spec"`
+	Spec iacTypes.Spec `yaml:"spec"`
 }
 
 const (
-	FailStatus defsecTypes.ControlStatus = "FAIL"
-	PassStatus defsecTypes.ControlStatus = "PASS"
-	WarnStatus defsecTypes.ControlStatus = "WARN"
+	FailStatus iacTypes.ControlStatus = "FAIL"
+	PassStatus iacTypes.ControlStatus = "PASS"
+	WarnStatus iacTypes.ControlStatus = "WARN"
 )
 
 // Scanners reads spec control and determines the scanners by check ID prefix
 func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
-	scannerTypes := map[types.Scanner]struct{}{}
+	scannerTypes := make(map[types.Scanner]struct{})
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
 			scannerType := scannerByCheckID(check.ID)
@@ -39,12 +39,12 @@ func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
 			scannerTypes[scannerType] = struct{}{}
 		}
 	}
-	return maps.Keys(scannerTypes), nil
+	return lo.Keys(scannerTypes), nil
 }
 
 // CheckIDs return list of compliance check IDs
 func (cs *ComplianceSpec) CheckIDs() map[types.Scanner][]string {
-	checkIDsMap := map[types.Scanner][]string{}
+	checkIDsMap := make(map[types.Scanner][]string)
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
 			scannerType := scannerByCheckID(check.ID)

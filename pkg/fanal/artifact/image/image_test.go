@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
@@ -47,6 +47,35 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"etc/hosts",
+				"etc/sysctl.conf",
+				"etc/group",
+				"etc/protocols",
+				"etc/fstab",
+				"etc/mtab",
+				"etc/profile",
+				"etc/shells",
+				"etc/motd",
+				"etc/inittab",
+				"etc/hostname",
+				"etc/modules",
+				"etc/services",
+				"etc/shadow",
+				"etc/passwd",
+				"etc/profile.d/locale",
+				"etc/profile.d/color_prompt",
+				"etc/sysctl.d/00-alpine.conf",
+				"etc/modprobe.d/i386.conf",
+				"etc/modprobe.d/blacklist.conf",
+				"etc/modprobe.d/aliases.conf",
+				"etc/modprobe.d/kms.conf",
+				"etc/crontabs/root",
+				"sbin/mkmntdirs",
+				"var/run",
+				"var/spool/mail",
+				"var/spool/cron/crontabs",
+			},
 		},
 		{
 			ID:         "alpine-keys@2.1-r2",
@@ -57,6 +86,26 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"MIT"},
 			Arch:       "x86_64",
 			Digest:     "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
+			InstalledFiles: []string{
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+				"usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+				"usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+				"usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+				"usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+			},
 		},
 		{
 			ID:         "apk-tools@2.10.4-r3",
@@ -73,6 +122,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"zlib@1.2.11-r3",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"sbin/apk",
+			},
 		},
 		{
 			ID:         "busybox@1.31.1-r9",
@@ -86,6 +138,15 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"bin/busybox",
+				"bin/sh",
+				"etc/securetty",
+				"etc/udhcpd.conf",
+				"etc/logrotate.d/acpid",
+				"etc/network/if-up.d/dad",
+				"usr/share/udhcpc/default.script",
+			},
 		},
 		{
 			ID:         "ca-certificates-cacert@20191127-r1",
@@ -99,6 +160,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			Arch:   "x86_64",
 			Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+			InstalledFiles: []string{
+				"etc/ssl/cert.pem",
+			},
 		},
 		{
 			ID:         "libc-utils@0.7.2-r0",
@@ -125,6 +189,20 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"etc/ssl/openssl.cnf.dist",
+				"etc/ssl/ct_log_list.cnf",
+				"etc/ssl/ct_log_list.cnf.dist",
+				"etc/ssl/openssl.cnf",
+				"etc/ssl/misc/CA.pl",
+				"etc/ssl/misc/tsget.pl",
+				"etc/ssl/misc/tsget",
+				"lib/libcrypto.so.1.1",
+				"usr/lib/libcrypto.so.1.1",
+				"usr/lib/engines-1.1/capi.so",
+				"usr/lib/engines-1.1/padlock.so",
+				"usr/lib/engines-1.1/afalg.so",
+			},
 		},
 		{
 			ID:         "libssl1.1@1.1.1d-r3",
@@ -139,6 +217,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"lib/libssl.so.1.1",
+				"usr/lib/libssl.so.1.1",
+			},
 		},
 		{
 			ID:         "libtls-standalone@2.9.1-r0",
@@ -155,6 +237,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"usr/lib/libtls-standalone.so.1.0.0",
+				"usr/lib/libtls-standalone.so.1",
+			},
 		},
 		{
 			ID:         "musl@1.1.24-r2",
@@ -165,6 +251,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"MIT"},
 			Arch:       "x86_64",
 			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+			InstalledFiles: []string{
+				"lib/libc.musl-x86_64.so.1",
+				"lib/ld-musl-x86_64.so.1",
+			},
 		},
 		{
 			ID:         "musl-utils@1.1.24-r2",
@@ -183,6 +273,13 @@ func TestArtifact_Inspect(t *testing.T) {
 				"scanelf@1.2.4-r0",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"sbin/ldconfig",
+				"usr/bin/iconv",
+				"usr/bin/ldd",
+				"usr/bin/getconf",
+				"usr/bin/getent",
+			},
 		},
 		{
 			ID:         "scanelf@1.2.4-r0",
@@ -196,6 +293,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"usr/bin/scanelf",
+			},
 		},
 		{
 			ID:         "ssl_client@1.31.1-r9",
@@ -210,6 +310,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"usr/bin/ssl_client",
+			},
 		},
 		{
 			ID:         "zlib@1.2.11-r3",
@@ -223,6 +326,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"lib/libz.so.1.2.11",
+				"lib/libz.so.1",
+			},
 		},
 	}
 
@@ -233,7 +340,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		missingBlobsExpectation cache.ArtifactCacheMissingBlobsExpectation
 		putBlobExpectations     []cache.ArtifactCachePutBlobExpectation
 		putArtifactExpectations []cache.ArtifactCachePutArtifactExpectation
-		want                    types.ArtifactReference
+		want                    artifact.Reference
 		wantErr                 string
 	}{
 		{
@@ -245,17 +352,17 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
-					BlobIDs:    []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
+					BlobIDs:    []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
+					MissingBlobIDs:  []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897",
+						BlobID: "sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -318,12 +425,12 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
-				Type:    types.ArtifactContainerImage,
+				Type:    artifact.TypeContainerImage,
 				ID:      "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
-				BlobIDs: []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
-				ImageMetadata: types.ImageMetadata{
+				BlobIDs: []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
+				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					DiffIDs: []string{
 						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -381,25 +488,25 @@ func TestArtifact_Inspect(t *testing.T) {
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 					BlobIDs: []string{
-						"sha256:db2b5b2f26f320b80ee549495888f111151fdb44fecb2c432dfd928e96978e74",
-						"sha256:718d6a3d0a24966f2d9f64e0c86695d1bb896fe81df634b85300d34142c80174",
-						"sha256:9f6bc14198fa983fd47079bcd82df1391bee8e529a8a131a0305874eb0a51ca0",
-						"sha256:44264715b7132cd14cd956bf385d5f875603461f5adeafde7fdecabe2e266291",
+						"sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
+						"sha256:f9e6a3065bb47f810916e90249076950a4b70785a27d3bcb90406d0ab342fa67",
+						"sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
+						"sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:db2b5b2f26f320b80ee549495888f111151fdb44fecb2c432dfd928e96978e74",
-						"sha256:718d6a3d0a24966f2d9f64e0c86695d1bb896fe81df634b85300d34142c80174",
-						"sha256:9f6bc14198fa983fd47079bcd82df1391bee8e529a8a131a0305874eb0a51ca0",
-						"sha256:44264715b7132cd14cd956bf385d5f875603461f5adeafde7fdecabe2e266291",
+						"sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
+						"sha256:f9e6a3065bb47f810916e90249076950a4b70785a27d3bcb90406d0ab342fa67",
+						"sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
+						"sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:db2b5b2f26f320b80ee549495888f111151fdb44fecb2c432dfd928e96978e74",
+						BlobID: "sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -487,7 +594,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:718d6a3d0a24966f2d9f64e0c86695d1bb896fe81df634b85300d34142c80174",
+						BlobID: "sha256:f9e6a3065bb47f810916e90249076950a4b70785a27d3bcb90406d0ab342fa67",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -583,7 +690,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:9f6bc14198fa983fd47079bcd82df1391bee8e529a8a131a0305874eb0a51ca0",
+						BlobID: "sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -593,7 +700,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											ID:       "guzzlehttp/guzzle@6.2.0",
 											Name:     "guzzlehttp/guzzle",
@@ -791,7 +898,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:44264715b7132cd14cd956bf385d5f875603461f5adeafde7fdecabe2e266291",
+						BlobID: "sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -801,247 +908,14 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "bundler",
 									FilePath: "ruby-app/Gemfile.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
-											ID:       "actioncable@5.2.3",
-											Name:     "actioncable",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"actionpack@5.2.3",
-												"nio4r@2.3.1",
-												"websocket-driver@0.7.0",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 4,
-													EndLine:   4,
-												},
-											},
-										},
-										{
-											ID:       "actionmailer@5.2.3",
-											Name:     "actionmailer",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"actionpack@5.2.3",
-												"actionview@5.2.3",
-												"activejob@5.2.3",
-												"mail@2.7.1",
-												"rails-dom-testing@2.0.3",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 8,
-													EndLine:   8,
-												},
-											},
-										},
-										{
-											ID:       "actionpack@5.2.3",
-											Name:     "actionpack",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"actionview@5.2.3",
-												"activesupport@5.2.3",
-												"rack@2.0.7",
-												"rack-test@1.1.0",
-												"rails-dom-testing@2.0.3",
-												"rails-html-sanitizer@1.0.3",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 14,
-													EndLine:   14,
-												},
-											},
-										},
-										{
-											ID:       "actionview@5.2.3",
-											Name:     "actionview",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"activesupport@5.2.3",
-												"builder@3.2.3",
-												"erubi@1.8.0",
-												"rails-dom-testing@2.0.3",
-												"rails-html-sanitizer@1.0.3",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 21,
-													EndLine:   21,
-												},
-											},
-										},
-										{
-											ID:       "activejob@5.2.3",
-											Name:     "activejob",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"activesupport@5.2.3",
-												"globalid@0.4.2",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 27,
-													EndLine:   27,
-												},
-											},
-										},
-										{
-											ID:        "activemodel@5.2.3",
-											Name:      "activemodel",
-											Version:   "5.2.3",
-											Indirect:  true,
-											DependsOn: []string{"activesupport@5.2.3"},
-											Locations: []types.Location{
-												{
-													StartLine: 30,
-													EndLine:   30,
-												},
-											},
-										},
-										{
-											ID:       "activerecord@5.2.3",
-											Name:     "activerecord",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"activemodel@5.2.3",
-												"activesupport@5.2.3",
-												"arel@9.0.0",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 32,
-													EndLine:   32,
-												},
-											},
-										},
-										{
-											ID:       "activestorage@5.2.3",
-											Name:     "activestorage",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"actionpack@5.2.3",
-												"activerecord@5.2.3",
-												"marcel@0.3.3",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 36,
-													EndLine:   36,
-												},
-											},
-										},
-										{
-											ID:       "activesupport@5.2.3",
-											Name:     "activesupport",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"concurrent-ruby@1.1.5",
-												"i18n@1.6.0",
-												"minitest@5.11.3",
-												"tzinfo@1.2.5",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 40,
-													EndLine:   40,
-												},
-											},
-										},
-										{
-											ID:        "arel@9.0.0",
-											Name:      "arel",
-											Version:   "9.0.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 45,
-													EndLine:   45,
-												},
-											},
-										},
-										{
-											ID:        "ast@2.4.0",
-											Name:      "ast",
-											Version:   "2.4.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 46,
-													EndLine:   46,
-												},
-											},
-										},
-										{
-											ID:        "builder@3.2.3",
-											Name:      "builder",
-											Version:   "3.2.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 47,
-													EndLine:   47,
-												},
-											},
-										},
-										{
-											ID:        "coderay@1.1.2",
-											Name:      "coderay",
-											Version:   "1.1.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 48,
-													EndLine:   48,
-												},
-											},
-										},
-										{
-											ID:        "concurrent-ruby@1.1.5",
-											Name:      "concurrent-ruby",
-											Version:   "1.1.5",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 49,
-													EndLine:   49,
-												},
-											},
-										},
-										{
-											ID:        "crass@1.0.4",
-											Name:      "crass",
-											Version:   "1.0.4",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 50,
-													EndLine:   50,
-												},
-											},
-										},
-										{
-											ID:        "dotenv@2.7.2",
-											Name:      "dotenv",
-											Version:   "2.7.2",
-											Indirect:  false,
-											DependsOn: []string(nil),
+											ID:           "dotenv@2.7.2",
+											Name:         "dotenv",
+											Version:      "2.7.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 51,
@@ -1050,24 +924,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "erubi@1.8.0",
-											Name:      "erubi",
-											Version:   "1.8.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 52,
-													EndLine:   52,
-												},
-											},
-										},
-										{
-											ID:        "faker@1.9.3",
-											Name:      "faker",
-											Version:   "1.9.3",
-											Indirect:  false,
-											DependsOn: []string{"i18n@1.6.0"},
+											ID:           "faker@1.9.3",
+											Name:         "faker",
+											Version:      "1.9.3",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string{"i18n@1.6.0"},
 											Locations: []types.Location{
 												{
 													StartLine: 53,
@@ -1076,50 +938,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "globalid@0.4.2",
-											Name:      "globalid",
-											Version:   "0.4.2",
-											Indirect:  true,
-											DependsOn: []string{"activesupport@5.2.3"},
-											Locations: []types.Location{
-												{
-													StartLine: 55,
-													EndLine:   55,
-												},
-											},
-										},
-										{
-											ID:        "i18n@1.6.0",
-											Name:      "i18n",
-											Version:   "1.6.0",
-											Indirect:  true,
-											DependsOn: []string{"concurrent-ruby@1.1.5"},
-											Locations: []types.Location{
-												{
-													StartLine: 57,
-													EndLine:   57,
-												},
-											},
-										},
-										{
-											ID:        "jaro_winkler@1.5.2",
-											Name:      "jaro_winkler",
-											Version:   "1.5.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 59,
-													EndLine:   59,
-												},
-											},
-										},
-										{
-											ID:        "json@2.2.0",
-											Name:      "json",
-											Version:   "2.2.0",
-											Indirect:  false,
-											DependsOn: []string(nil),
+											ID:           "json@2.2.0",
+											Name:         "json",
+											Version:      "2.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 60,
@@ -1128,169 +952,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "loofah@2.2.3",
-											Name:     "loofah",
-											Version:  "2.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"crass@1.0.4",
-												"nokogiri@1.10.3",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 61,
-													EndLine:   61,
-												},
-											},
-										},
-										{
-											ID:        "mail@2.7.1",
-											Name:      "mail",
-											Version:   "2.7.1",
-											Indirect:  true,
-											DependsOn: []string{"mini_mime@1.0.1"},
-											Locations: []types.Location{
-												{
-													StartLine: 64,
-													EndLine:   64,
-												},
-											},
-										},
-										{
-											ID:        "marcel@0.3.3",
-											Name:      "marcel",
-											Version:   "0.3.3",
-											Indirect:  true,
-											DependsOn: []string{"mimemagic@0.3.3"},
-											Locations: []types.Location{
-												{
-													StartLine: 66,
-													EndLine:   66,
-												},
-											},
-										},
-										{
-											ID:        "method_source@0.9.2",
-											Name:      "method_source",
-											Version:   "0.9.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 68,
-													EndLine:   68,
-												},
-											},
-										},
-										{
-											ID:        "mimemagic@0.3.3",
-											Name:      "mimemagic",
-											Version:   "0.3.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 69,
-													EndLine:   69,
-												},
-											},
-										},
-										{
-											ID:        "mini_mime@1.0.1",
-											Name:      "mini_mime",
-											Version:   "1.0.1",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 70,
-													EndLine:   70,
-												},
-											},
-										},
-										{
-											ID:        "mini_portile2@2.4.0",
-											Name:      "mini_portile2",
-											Version:   "2.4.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 71,
-													EndLine:   71,
-												},
-											},
-										},
-										{
-											ID:        "minitest@5.11.3",
-											Name:      "minitest",
-											Version:   "5.11.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 72,
-													EndLine:   72,
-												},
-											},
-										},
-										{
-											ID:        "nio4r@2.3.1",
-											Name:      "nio4r",
-											Version:   "2.3.1",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 73,
-													EndLine:   73,
-												},
-											},
-										},
-										{
-											ID:        "nokogiri@1.10.3",
-											Name:      "nokogiri",
-											Version:   "1.10.3",
-											Indirect:  true,
-											DependsOn: []string{"mini_portile2@2.4.0"},
-											Locations: []types.Location{
-												{
-													StartLine: 74,
-													EndLine:   74,
-												},
-											},
-										},
-										{
-											ID:        "parallel@1.17.0",
-											Name:      "parallel",
-											Version:   "1.17.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 76,
-													EndLine:   76,
-												},
-											},
-										},
-										{
-											ID:        "parser@2.6.3.0",
-											Name:      "parser",
-											Version:   "2.6.3.0",
-											Indirect:  true,
-											DependsOn: []string{"ast@2.4.0"},
-											Locations: []types.Location{
-												{
-													StartLine: 77,
-													EndLine:   77,
-												},
-											},
-										},
-										{
-											ID:       "pry@0.12.2",
-											Name:     "pry",
-											Version:  "0.12.2",
-											Indirect: false,
+											ID:           "pry@0.12.2",
+											Name:         "pry",
+											Version:      "0.12.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
 											DependsOn: []string{
 												"coderay@1.1.2",
 												"method_source@0.9.2",
@@ -1303,49 +969,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "psych@3.1.0",
-											Name:      "psych",
-											Version:   "3.1.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 82,
-													EndLine:   82,
-												},
-											},
-										},
-										{
-											ID:        "rack@2.0.7",
-											Name:      "rack",
-											Version:   "2.0.7",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 83,
-													EndLine:   83,
-												},
-											},
-										},
-										{
-											ID:        "rack-test@1.1.0",
-											Name:      "rack-test",
-											Version:   "1.1.0",
-											Indirect:  true,
-											DependsOn: []string{"rack@2.0.7"},
-											Locations: []types.Location{
-												{
-													StartLine: 84,
-													EndLine:   84,
-												},
-											},
-										},
-										{
-											ID:       "rails@5.2.0",
-											Name:     "rails",
-											Version:  "5.2.0",
-											Indirect: false,
+											ID:           "rails@5.2.0",
+											Name:         "rails",
+											Version:      "5.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
 											DependsOn: []string{
 												"actioncable@5.2.3",
 												"actionmailer@5.2.3",
@@ -1367,84 +995,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "rails-dom-testing@2.0.3",
-											Name:     "rails-dom-testing",
-											Version:  "2.0.3",
-											Indirect: true,
-											DependsOn: []string{
-												"activesupport@5.2.3",
-												"nokogiri@1.10.3",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 99,
-													EndLine:   99,
-												},
-											},
-										},
-										{
-											ID:        "rails-html-sanitizer@1.0.3",
-											Name:      "rails-html-sanitizer",
-											Version:   "1.0.3",
-											Indirect:  true,
-											DependsOn: []string{"loofah@2.2.3"},
-											Locations: []types.Location{
-												{
-													StartLine: 102,
-													EndLine:   102,
-												},
-											},
-										},
-										{
-											ID:       "railties@5.2.3",
-											Name:     "railties",
-											Version:  "5.2.3",
-											Indirect: true,
-											DependsOn: []string{
-												"actionpack@5.2.3",
-												"activesupport@5.2.3",
-												"method_source@0.9.2",
-												"rake@12.3.2",
-												"thor@0.20.3",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 104,
-													EndLine:   104,
-												},
-											},
-										},
-										{
-											ID:        "rainbow@3.0.0",
-											Name:      "rainbow",
-											Version:   "3.0.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 110,
-													EndLine:   110,
-												},
-											},
-										},
-										{
-											ID:        "rake@12.3.2",
-											Name:      "rake",
-											Version:   "12.3.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 111,
-													EndLine:   111,
-												},
-											},
-										},
-										{
-											ID:       "rubocop@0.67.2",
-											Name:     "rubocop",
-											Version:  "0.67.2",
-											Indirect: false,
+											ID:           "rubocop@0.67.2",
+											Name:         "rubocop",
+											Version:      "0.67.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
 											DependsOn: []string{
 												"jaro_winkler@1.5.2",
 												"parallel@1.17.0",
@@ -1462,11 +1017,609 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "ruby-progressbar@1.10.0",
-											Name:      "ruby-progressbar",
-											Version:   "1.10.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "actioncable@5.2.3",
+											Name:         "actioncable",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"nio4r@2.3.1",
+												"websocket-driver@0.7.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 4,
+													EndLine:   4,
+												},
+											},
+										},
+										{
+											ID:           "actionmailer@5.2.3",
+											Name:         "actionmailer",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"actionview@5.2.3",
+												"activejob@5.2.3",
+												"mail@2.7.1",
+												"rails-dom-testing@2.0.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 8,
+													EndLine:   8,
+												},
+											},
+										},
+										{
+											ID:           "actionpack@5.2.3",
+											Name:         "actionpack",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"actionview@5.2.3",
+												"activesupport@5.2.3",
+												"rack@2.0.7",
+												"rack-test@1.1.0",
+												"rails-dom-testing@2.0.3",
+												"rails-html-sanitizer@1.0.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 14,
+													EndLine:   14,
+												},
+											},
+										},
+										{
+											ID:           "actionview@5.2.3",
+											Name:         "actionview",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"activesupport@5.2.3",
+												"builder@3.2.3",
+												"erubi@1.8.0",
+												"rails-dom-testing@2.0.3",
+												"rails-html-sanitizer@1.0.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 21,
+													EndLine:   21,
+												},
+											},
+										},
+										{
+											ID:           "activejob@5.2.3",
+											Name:         "activejob",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"activesupport@5.2.3",
+												"globalid@0.4.2",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 27,
+													EndLine:   27,
+												},
+											},
+										},
+										{
+											ID:           "activemodel@5.2.3",
+											Name:         "activemodel",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"activesupport@5.2.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 30,
+													EndLine:   30,
+												},
+											},
+										},
+										{
+											ID:           "activerecord@5.2.3",
+											Name:         "activerecord",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"activemodel@5.2.3",
+												"activesupport@5.2.3",
+												"arel@9.0.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 32,
+													EndLine:   32,
+												},
+											},
+										},
+										{
+											ID:           "activestorage@5.2.3",
+											Name:         "activestorage",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"activerecord@5.2.3",
+												"marcel@0.3.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 36,
+													EndLine:   36,
+												},
+											},
+										},
+										{
+											ID:           "activesupport@5.2.3",
+											Name:         "activesupport",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"concurrent-ruby@1.1.5",
+												"i18n@1.6.0",
+												"minitest@5.11.3",
+												"tzinfo@1.2.5",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 40,
+													EndLine:   40,
+												},
+											},
+										},
+										{
+											ID:           "arel@9.0.0",
+											Name:         "arel",
+											Version:      "9.0.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 45,
+													EndLine:   45,
+												},
+											},
+										},
+										{
+											ID:           "ast@2.4.0",
+											Name:         "ast",
+											Version:      "2.4.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 46,
+													EndLine:   46,
+												},
+											},
+										},
+										{
+											ID:           "builder@3.2.3",
+											Name:         "builder",
+											Version:      "3.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 47,
+													EndLine:   47,
+												},
+											},
+										},
+										{
+											ID:           "coderay@1.1.2",
+											Name:         "coderay",
+											Version:      "1.1.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 48,
+													EndLine:   48,
+												},
+											},
+										},
+										{
+											ID:           "concurrent-ruby@1.1.5",
+											Name:         "concurrent-ruby",
+											Version:      "1.1.5",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 49,
+													EndLine:   49,
+												},
+											},
+										},
+										{
+											ID:           "crass@1.0.4",
+											Name:         "crass",
+											Version:      "1.0.4",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 50,
+													EndLine:   50,
+												},
+											},
+										},
+										{
+											ID:           "erubi@1.8.0",
+											Name:         "erubi",
+											Version:      "1.8.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 52,
+													EndLine:   52,
+												},
+											},
+										},
+										{
+											ID:           "globalid@0.4.2",
+											Name:         "globalid",
+											Version:      "0.4.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"activesupport@5.2.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 55,
+													EndLine:   55,
+												},
+											},
+										},
+										{
+											ID:           "i18n@1.6.0",
+											Name:         "i18n",
+											Version:      "1.6.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"concurrent-ruby@1.1.5"},
+											Locations: []types.Location{
+												{
+													StartLine: 57,
+													EndLine:   57,
+												},
+											},
+										},
+										{
+											ID:           "jaro_winkler@1.5.2",
+											Name:         "jaro_winkler",
+											Version:      "1.5.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 59,
+													EndLine:   59,
+												},
+											},
+										},
+										{
+											ID:           "loofah@2.2.3",
+											Name:         "loofah",
+											Version:      "2.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"crass@1.0.4",
+												"nokogiri@1.10.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 61,
+													EndLine:   61,
+												},
+											},
+										},
+										{
+											ID:           "mail@2.7.1",
+											Name:         "mail",
+											Version:      "2.7.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"mini_mime@1.0.1"},
+											Locations: []types.Location{
+												{
+													StartLine: 64,
+													EndLine:   64,
+												},
+											},
+										},
+										{
+											ID:           "marcel@0.3.3",
+											Name:         "marcel",
+											Version:      "0.3.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"mimemagic@0.3.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 66,
+													EndLine:   66,
+												},
+											},
+										},
+										{
+											ID:           "method_source@0.9.2",
+											Name:         "method_source",
+											Version:      "0.9.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 68,
+													EndLine:   68,
+												},
+											},
+										},
+										{
+											ID:           "mimemagic@0.3.3",
+											Name:         "mimemagic",
+											Version:      "0.3.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 69,
+													EndLine:   69,
+												},
+											},
+										},
+										{
+											ID:           "mini_mime@1.0.1",
+											Name:         "mini_mime",
+											Version:      "1.0.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 70,
+													EndLine:   70,
+												},
+											},
+										},
+										{
+											ID:           "mini_portile2@2.4.0",
+											Name:         "mini_portile2",
+											Version:      "2.4.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 71,
+													EndLine:   71,
+												},
+											},
+										},
+										{
+											ID:           "minitest@5.11.3",
+											Name:         "minitest",
+											Version:      "5.11.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 72,
+													EndLine:   72,
+												},
+											},
+										},
+										{
+											ID:           "nio4r@2.3.1",
+											Name:         "nio4r",
+											Version:      "2.3.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 73,
+													EndLine:   73,
+												},
+											},
+										},
+										{
+											ID:           "nokogiri@1.10.3",
+											Name:         "nokogiri",
+											Version:      "1.10.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"mini_portile2@2.4.0"},
+											Locations: []types.Location{
+												{
+													StartLine: 74,
+													EndLine:   74,
+												},
+											},
+										},
+										{
+											ID:           "parallel@1.17.0",
+											Name:         "parallel",
+											Version:      "1.17.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 76,
+													EndLine:   76,
+												},
+											},
+										},
+										{
+											ID:           "parser@2.6.3.0",
+											Name:         "parser",
+											Version:      "2.6.3.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"ast@2.4.0"},
+											Locations: []types.Location{
+												{
+													StartLine: 77,
+													EndLine:   77,
+												},
+											},
+										},
+										{
+											ID:           "psych@3.1.0",
+											Name:         "psych",
+											Version:      "3.1.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 82,
+													EndLine:   82,
+												},
+											},
+										},
+										{
+											ID:           "rack@2.0.7",
+											Name:         "rack",
+											Version:      "2.0.7",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 83,
+													EndLine:   83,
+												},
+											},
+										},
+										{
+											ID:           "rack-test@1.1.0",
+											Name:         "rack-test",
+											Version:      "1.1.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"rack@2.0.7"},
+											Locations: []types.Location{
+												{
+													StartLine: 84,
+													EndLine:   84,
+												},
+											},
+										},
+										{
+											ID:           "rails-dom-testing@2.0.3",
+											Name:         "rails-dom-testing",
+											Version:      "2.0.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"activesupport@5.2.3",
+												"nokogiri@1.10.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 99,
+													EndLine:   99,
+												},
+											},
+										},
+										{
+											ID:           "rails-html-sanitizer@1.0.3",
+											Name:         "rails-html-sanitizer",
+											Version:      "1.0.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"loofah@2.2.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 102,
+													EndLine:   102,
+												},
+											},
+										},
+										{
+											ID:           "railties@5.2.3",
+											Name:         "railties",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"activesupport@5.2.3",
+												"method_source@0.9.2",
+												"rake@12.3.2",
+												"thor@0.20.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 104,
+													EndLine:   104,
+												},
+											},
+										},
+										{
+											ID:           "rainbow@3.0.0",
+											Name:         "rainbow",
+											Version:      "3.0.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 110,
+													EndLine:   110,
+												},
+											},
+										},
+										{
+											ID:           "rake@12.3.2",
+											Name:         "rake",
+											Version:      "12.3.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 111,
+													EndLine:   111,
+												},
+											},
+										},
+										{
+											ID:           "ruby-progressbar@1.10.0",
+											Name:         "ruby-progressbar",
+											Version:      "1.10.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 120,
@@ -1475,10 +1628,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "sprockets@3.7.2",
-											Name:     "sprockets",
-											Version:  "3.7.2",
-											Indirect: true,
+											ID:           "sprockets@3.7.2",
+											Name:         "sprockets",
+											Version:      "3.7.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"concurrent-ruby@1.1.5",
 												"rack@2.0.7",
@@ -1491,10 +1645,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "sprockets-rails@3.2.1",
-											Name:     "sprockets-rails",
-											Version:  "3.2.1",
-											Indirect: true,
+											ID:           "sprockets-rails@3.2.1",
+											Name:         "sprockets-rails",
+											Version:      "3.2.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"actionpack@5.2.3",
 												"activesupport@5.2.3",
@@ -1508,11 +1663,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "thor@0.20.3",
-											Name:      "thor",
-											Version:   "0.20.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "thor@0.20.3",
+											Name:         "thor",
+											Version:      "0.20.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 128,
@@ -1521,11 +1677,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "thread_safe@0.3.6",
-											Name:      "thread_safe",
-											Version:   "0.3.6",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "thread_safe@0.3.6",
+											Name:         "thread_safe",
+											Version:      "0.3.6",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 129,
@@ -1534,11 +1691,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "tzinfo@1.2.5",
-											Name:      "tzinfo",
-											Version:   "1.2.5",
-											Indirect:  true,
-											DependsOn: []string{"thread_safe@0.3.6"},
+											ID:           "tzinfo@1.2.5",
+											Name:         "tzinfo",
+											Version:      "1.2.5",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"thread_safe@0.3.6"},
 											Locations: []types.Location{
 												{
 													StartLine: 130,
@@ -1547,11 +1705,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "unicode-display_width@1.5.0",
-											Name:      "unicode-display_width",
-											Version:   "1.5.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "unicode-display_width@1.5.0",
+											Name:         "unicode-display_width",
+											Version:      "1.5.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 132,
@@ -1560,11 +1719,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "websocket-driver@0.7.0",
-											Name:      "websocket-driver",
-											Version:   "0.7.0",
-											Indirect:  true,
-											DependsOn: []string{"websocket-extensions@0.1.3"},
+											ID:           "websocket-driver@0.7.0",
+											Name:         "websocket-driver",
+											Version:      "0.7.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"websocket-extensions@0.1.3"},
 											Locations: []types.Location{
 												{
 													StartLine: 133,
@@ -1573,11 +1733,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "websocket-extensions@0.1.3",
-											Name:      "websocket-extensions",
-											Version:   "0.1.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "websocket-extensions@0.1.3",
+											Name:         "websocket-extensions",
+											Version:      "0.1.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 135,
@@ -1595,17 +1756,17 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				Type: types.ArtifactContainerImage,
+				Type: artifact.TypeContainerImage,
 				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 				BlobIDs: []string{
-					"sha256:db2b5b2f26f320b80ee549495888f111151fdb44fecb2c432dfd928e96978e74",
-					"sha256:718d6a3d0a24966f2d9f64e0c86695d1bb896fe81df634b85300d34142c80174",
-					"sha256:9f6bc14198fa983fd47079bcd82df1391bee8e529a8a131a0305874eb0a51ca0",
-					"sha256:44264715b7132cd14cd956bf385d5f875603461f5adeafde7fdecabe2e266291",
+					"sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
+					"sha256:f9e6a3065bb47f810916e90249076950a4b70785a27d3bcb90406d0ab342fa67",
+					"sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
+					"sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 				},
-				ImageMetadata: types.ImageMetadata{
+				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 					DiffIDs: []string{
 						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -1697,25 +1858,25 @@ func TestArtifact_Inspect(t *testing.T) {
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 					BlobIDs: []string{
-						"sha256:dc2c102de2a4dc82bc017564a2c1a46646f071367bd51d3ddd80171dc5a78ffe",
-						"sha256:e6bc45e7459162f5a27dd7bd310a420f27378f2ea24c6ed5f0a083f2377bde24",
-						"sha256:8184bee7b1985e0abd72288946c246b90e1847b36fdcd50ca3d588b9371ec920",
-						"sha256:f1bb0ccf476528c6165a2f1a74d0e5a0cb06c9b254a0def6b1183db662e83dd4",
+						"sha256:e1187118cdbe8893fc2fd4b345f813d195ee6aaeb4820d4576694199f8c10350",
+						"sha256:12c266a627dc4014c3ee96936058ba98209056f4ffe0081bb5fca7ff91592cdb",
+						"sha256:47adac0e28b12338e99dedbd7e8b0ef1f7aaa28e646f637ab2db8908b80704c8",
+						"sha256:dd1082b33b17401fdc31bcbf60eaaecb9ce29e23956c50db6f34b2cc6cfa13c8",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:dc2c102de2a4dc82bc017564a2c1a46646f071367bd51d3ddd80171dc5a78ffe",
-						"sha256:e6bc45e7459162f5a27dd7bd310a420f27378f2ea24c6ed5f0a083f2377bde24",
-						"sha256:8184bee7b1985e0abd72288946c246b90e1847b36fdcd50ca3d588b9371ec920",
-						"sha256:f1bb0ccf476528c6165a2f1a74d0e5a0cb06c9b254a0def6b1183db662e83dd4",
+						"sha256:e1187118cdbe8893fc2fd4b345f813d195ee6aaeb4820d4576694199f8c10350",
+						"sha256:12c266a627dc4014c3ee96936058ba98209056f4ffe0081bb5fca7ff91592cdb",
+						"sha256:47adac0e28b12338e99dedbd7e8b0ef1f7aaa28e646f637ab2db8908b80704c8",
+						"sha256:dd1082b33b17401fdc31bcbf60eaaecb9ce29e23956c50db6f34b2cc6cfa13c8",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:dc2c102de2a4dc82bc017564a2c1a46646f071367bd51d3ddd80171dc5a78ffe",
+						BlobID: "sha256:e1187118cdbe8893fc2fd4b345f813d195ee6aaeb4820d4576694199f8c10350",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -1726,7 +1887,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:e6bc45e7459162f5a27dd7bd310a420f27378f2ea24c6ed5f0a083f2377bde24",
+						BlobID: "sha256:12c266a627dc4014c3ee96936058ba98209056f4ffe0081bb5fca7ff91592cdb",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -1737,7 +1898,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:8184bee7b1985e0abd72288946c246b90e1847b36fdcd50ca3d588b9371ec920",
+						BlobID: "sha256:47adac0e28b12338e99dedbd7e8b0ef1f7aaa28e646f637ab2db8908b80704c8",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -1749,7 +1910,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:f1bb0ccf476528c6165a2f1a74d0e5a0cb06c9b254a0def6b1183db662e83dd4",
+						BlobID: "sha256:dd1082b33b17401fdc31bcbf60eaaecb9ce29e23956c50db6f34b2cc6cfa13c8",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -1760,17 +1921,17 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 			},
-			want: types.ArtifactReference{
+			want: artifact.Reference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				Type: types.ArtifactContainerImage,
+				Type: artifact.TypeContainerImage,
 				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 				BlobIDs: []string{
-					"sha256:dc2c102de2a4dc82bc017564a2c1a46646f071367bd51d3ddd80171dc5a78ffe",
-					"sha256:e6bc45e7459162f5a27dd7bd310a420f27378f2ea24c6ed5f0a083f2377bde24",
-					"sha256:8184bee7b1985e0abd72288946c246b90e1847b36fdcd50ca3d588b9371ec920",
-					"sha256:f1bb0ccf476528c6165a2f1a74d0e5a0cb06c9b254a0def6b1183db662e83dd4",
+					"sha256:e1187118cdbe8893fc2fd4b345f813d195ee6aaeb4820d4576694199f8c10350",
+					"sha256:12c266a627dc4014c3ee96936058ba98209056f4ffe0081bb5fca7ff91592cdb",
+					"sha256:47adac0e28b12338e99dedbd7e8b0ef1f7aaa28e646f637ab2db8908b80704c8",
+					"sha256:dd1082b33b17401fdc31bcbf60eaaecb9ce29e23956c50db6f34b2cc6cfa13c8",
 				},
-				ImageMetadata: types.ImageMetadata{
+				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 					DiffIDs: []string{
 						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -1851,7 +2012,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
-					BlobIDs:    []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
+					BlobIDs:    []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					Err: xerrors.New("MissingBlobs failed"),
@@ -1865,16 +2026,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
-					BlobIDs:    []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
+					BlobIDs:    []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
-					MissingBlobIDs: []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
+					MissingBlobIDs: []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897",
+						BlobID: "sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -1928,27 +2089,24 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantErr: "put layer failed",
 		},
 		{
-			name:      "sad path, PutBlob returns an error with multiple layers and Slow enabled",
+			name:      "sad path, PutBlob returns an error with multiple layers",
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
-			artifactOpt: artifact.Option{
-				Slow: true,
-			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 					BlobIDs: []string{
-						"sha256:db2b5b2f26f320b80ee549495888f111151fdb44fecb2c432dfd928e96978e74",
-						"sha256:718d6a3d0a24966f2d9f64e0c86695d1bb896fe81df634b85300d34142c80174",
-						"sha256:9f6bc14198fa983fd47079bcd82df1391bee8e529a8a131a0305874eb0a51ca0",
-						"sha256:44264715b7132cd14cd956bf385d5f875603461f5adeafde7fdecabe2e266291",
+						"sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
+						"sha256:f9e6a3065bb47f810916e90249076950a4b70785a27d3bcb90406d0ab342fa67",
+						"sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
+						"sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:db2b5b2f26f320b80ee549495888f111151fdb44fecb2c432dfd928e96978e74",
-						"sha256:718d6a3d0a24966f2d9f64e0c86695d1bb896fe81df634b85300d34142c80174",
-						"sha256:9f6bc14198fa983fd47079bcd82df1391bee8e529a8a131a0305874eb0a51ca0",
-						"sha256:44264715b7132cd14cd956bf385d5f875603461f5adeafde7fdecabe2e266291",
+						"sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
+						"sha256:f9e6a3065bb47f810916e90249076950a4b70785a27d3bcb90406d0ab342fa67",
+						"sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
+						"sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 					},
 				},
 			},
@@ -1956,7 +2114,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				{
 
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID:           "sha256:db2b5b2f26f320b80ee549495888f111151fdb44fecb2c432dfd928e96978e74",
+						BlobID:           "sha256:dd0a4f4754bf4590327be34f4266f63c92184352afadb72e4c9b162f76224000",
 						BlobInfoAnything: true,
 					},
 
@@ -1967,7 +2125,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				{
 
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID:           "sha256:718d6a3d0a24966f2d9f64e0c86695d1bb896fe81df634b85300d34142c80174",
+						BlobID:           "sha256:f9e6a3065bb47f810916e90249076950a4b70785a27d3bcb90406d0ab342fa67",
 						BlobInfoAnything: true,
 					},
 
@@ -1978,7 +2136,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				{
 
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID:           "sha256:9f6bc14198fa983fd47079bcd82df1391bee8e529a8a131a0305874eb0a51ca0",
+						BlobID:           "sha256:b6be0de11c6090f71dea119f43dd360335643420058e317baffb089f0dff4001",
 						BlobInfoAnything: true,
 					},
 
@@ -1989,7 +2147,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				{
 
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID:           "sha256:44264715b7132cd14cd956bf385d5f875603461f5adeafde7fdecabe2e266291",
+						BlobID:           "sha256:37c561c19b169f5f9832f4b0060bf74ebc8d1c9e01662ad4fa21c394da159440",
 						BlobInfoAnything: true,
 					},
 
@@ -2006,17 +2164,17 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
-					BlobIDs:    []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
+					BlobIDs:    []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897"},
+					MissingBlobIDs:  []string{"sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:0366f81c3cbeac047536f9ca133b5632544c8342544922c3ed8a3e51c0250897",
+						BlobID: "sha256:1fd280c63e1416a2261e76454caa19a5b77c6bddedd48309c9687c4fe72b34c0",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",

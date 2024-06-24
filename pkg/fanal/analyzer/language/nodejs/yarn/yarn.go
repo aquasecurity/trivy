@@ -1,46 +1,59 @@
 package yarn
 
 import (
+	"archive/zip"
 	"context"
 	"errors"
+	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
+	"strings"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(types.Yarn, newYarnAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeYarn, newYarnAnalyzer)
 }
 
-const version = 1
+const version = 2
+
+// Taken from Yarn
+// cf. https://github.com/yarnpkg/yarn/blob/328fd596de935acc6c3e134741748fcc62ec3739/src/resolvers/exotics/registry-resolver.js#L12
+var fragmentRegexp = regexp.MustCompile(`(\S+):(@?.*?)(@(.*?)|)$`)
 
 type yarnAnalyzer struct {
+	logger            *log.Logger
 	packageJsonParser *packagejson.Parser
-	lockParser        godeptypes.Parser
+	lockParser        language.Parser
 	comparer          npm.Comparer
+	license           *license.License
 }
 
-func newYarnAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newYarnAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &yarnAnalyzer{
+		logger:            log.WithPrefix("yarn"),
 		packageJsonParser: packagejson.NewParser(),
 		lockParser:        yarn.NewParser(),
 		comparer:          npm.Comparer{},
+		license:           license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 
@@ -51,19 +64,33 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return filepath.Base(path) == types.YarnLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		// Parse yarn.lock
-		app, err := a.parseYarnLock(path, r)
+		app, err := a.parseYarnLock(filePath, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
 
-		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
-		if err = a.analyzeDependencies(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to remove dev dependencies: %s", filepath.Join(filepath.Dir(path), types.NpmPkg), err)
+		licenses, err := a.traverseLicenses(input.FS, filePath)
+		if err != nil {
+			a.logger.Debug("Unable to traverse licenses", log.Err(err))
 		}
+
+		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
+		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app); err != nil {
+			a.logger.Warn("Unable to parse package.json to remove dev dependencies",
+				log.String("file_path", path.Join(path.Dir(filePath), types.NpmPkg)), log.Err(err))
+		}
+
+		// Fill licenses
+		for i, lib := range app.Packages {
+			if l, ok := licenses[lib.ID]; ok {
+				app.Packages[i].Licenses = l
+			}
+		}
+
 		apps = append(apps, *app)
 
 		return nil
@@ -78,8 +105,38 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 }
 
 func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	fileName := filepath.Base(filePath)
-	return fileName == types.YarnLock || fileName == types.NpmPkg
+	dirs, fileName := splitPath(filePath)
+
+	if fileName == types.YarnLock &&
+		// skipping yarn.lock in cache folders
+		lo.Some(dirs, []string{
+			"node_modules",
+			".yarn",
+		}) {
+		return false
+	}
+
+	if fileName == types.YarnLock ||
+		fileName == types.NpmPkg ||
+		strings.HasPrefix(strings.ToLower(fileName), "license") {
+		return true
+	}
+
+	// The path is slashed in analyzers.
+	l := len(dirs)
+	// Valid path to the zip file - **/.yarn/cache/*.zip
+	if l > 1 && dirs[l-2] == ".yarn" && dirs[l-1] == "cache" && path.Ext(fileName) == ".zip" {
+		return true
+	}
+
+	return false
+}
+
+func splitPath(filePath string) (dirs []string, fileName string) {
+	fileName = filepath.Base(filePath)
+	// The path is slashed in analyzers.
+	dirs = strings.Split(path.Dir(filePath), "/")
+	return dirs, fileName
 }
 
 func (a yarnAnalyzer) Type() analyzer.Type {
@@ -90,36 +147,36 @@ func (a yarnAnalyzer) Version() int {
 	return version
 }
 
-func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
-	return language.Parse(types.Yarn, path, r, a.lockParser)
+func (a yarnAnalyzer) parseYarnLock(filePath string, r io.Reader) (*types.Application, error) {
+	return language.Parse(types.Yarn, filePath, r, a.lockParser)
 }
 
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
 func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	packageJsonPath := filepath.Join(dir, types.NpmPkg)
+	packageJsonPath := path.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Yarn: %s not found", packageJsonPath)
+		a.logger.Debug("package.json not found", log.String("path", packageJsonPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", dir, err)
 	}
 
-	// yarn.lock file can contain same libraries with different versions
+	// yarn.lock file can contain same packages with different versions
 	// save versions separately for version comparison by comparator
-	pkgIDs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
 	// Walk prod dependencies
-	pkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDeps, false)
+	pkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDeps, false)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
 
 	// Walk dev dependencies
-	devPkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDevDeps, true)
+	devPkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDevDeps, true)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
@@ -128,42 +185,56 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	// If the same package is found in both prod and dev dependencies, use the one in prod.
 	pkgs = lo.Assign(devPkgs, pkgs)
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
-	// Save libraries
-	app.Libraries = pkgSlice
+	// Save packages
+	app.Packages = pkgSlice
 	return nil
 }
 
-func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]types.Package,
+func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]types.Package,
 	directDeps map[string]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
-	pkgs := map[string]types.Package{}
-	for _, pkg := range libs {
-		if constraint, ok := directDeps[pkg.Name]; ok {
-			// npm has own comparer to compare versions
-			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
-			} else if match {
-				// Mark as a direct dependency
-				pkg.Indirect = false
-				pkg.Dev = dev
-				pkgs[pkg.ID] = pkg
-			}
+	directPkgs := make(map[string]types.Package)
+	for _, pkg := range pkgs {
+		constraint, ok := directDeps[pkg.Name]
+		if !ok {
+			continue
 		}
+
+		// Handle aliases
+		// cf. https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
+		if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
+			pkg.Name = m[2] // original name
+			constraint = m[4]
+		}
+
+		// npm has own comparer to compare versions
+		if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+			return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+		} else if !match {
+			continue
+		}
+
+		// Mark as a direct dependency
+		pkg.Indirect = false
+		pkg.Relationship = types.RelationshipDirect
+		pkg.Dev = dev
+		directPkgs[pkg.ID] = pkg
+
 	}
 
 	// Walk indirect dependencies
-	for _, pkg := range pkgs {
-		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
+	for _, pkg := range directPkgs {
+		a.walkIndirectDependencies(pkg, pkgIDs, directPkgs)
 	}
 
-	return pkgs, nil
+	return directPkgs, nil
 }
 
-func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[string]types.Package, deps map[string]types.Package) {
+func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
 	for _, pkgID := range pkg.DependsOn {
 		if _, ok := deps[pkgID]; ok {
 			continue
@@ -175,15 +246,16 @@ func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[str
 		}
 
 		dep.Indirect = true
+		dep.Relationship = types.RelationshipIndirect
 		dep.Dev = pkg.Dev
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)
 	}
 }
 
-func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map[string]string, map[string]string, error) {
+func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) (map[string]string, map[string]string, error) {
 	// Parse package.json
-	f, err := fsys.Open(path)
+	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("file open error: %w", err)
 	}
@@ -199,7 +271,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 	devDependencies := rootPkg.DevDependencies
 
 	if len(rootPkg.Workspaces) > 0 {
-		pkgs, err := a.traverseWorkspaces(fsys, rootPkg.Workspaces)
+		pkgs, err := a.traverseWorkspaces(fsys, path.Dir(filePath), rootPkg.Workspaces)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("traverse workspaces error: %w", err)
 		}
@@ -212,14 +284,14 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 	return dependencies, devDependencies, nil
 }
 
-func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]packagejson.Package, error) {
+func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []string) ([]packagejson.Package, error) {
 	var pkgs []packagejson.Package
 
 	required := func(path string, _ fs.DirEntry) bool {
 		return filepath.Base(path) == types.NpmPkg
 	}
 
-	walkDirFunc := func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	walkDirFunc := func(path string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", path, err)
@@ -229,6 +301,9 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 	}
 
 	for _, workspace := range workspaces {
+		// We need to add the path to the `package.json` file
+		// to properly get the pattern to search in `fs`
+		workspace = path.Join(dir, workspace)
 		matches, err := fs.Glob(fsys, workspace)
 		if err != nil {
 			return nil, err
@@ -241,4 +316,101 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 
 	}
 	return pkgs, nil
+}
+
+func (a yarnAnalyzer) traverseLicenses(fsys fs.FS, lockPath string) (map[string][]string, error) {
+	sub, err := fs.Sub(fsys, path.Dir(lockPath))
+	if err != nil {
+		return nil, xerrors.Errorf("fs error: %w", err)
+	}
+	var errs error
+
+	// Yarn v1
+	licenses, err := a.traverseYarnClassicPkgs(sub)
+	if err == nil {
+		return licenses, nil
+	}
+	errs = multierror.Append(errs, err)
+
+	// Yarn v2+
+	licenses, err = a.traverseYarnModernPkgs(sub)
+	if err == nil {
+		return licenses, nil
+	}
+	errs = multierror.Append(errs, err)
+
+	return nil, errs
+}
+
+func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS) (map[string][]string, error) {
+	return a.license.Traverse(fsys, "node_modules")
+}
+
+func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, error) {
+	sub, err := fs.Sub(fsys, ".yarn")
+	if err != nil {
+		return nil, xerrors.Errorf("fs error: %w", err)
+	}
+
+	var errs error
+	licenses := make(map[string][]string)
+
+	if ll, err := a.traverseUnpluggedDir(sub); err != nil {
+		errs = multierror.Append(errs, err)
+	} else {
+		licenses = lo.Assign(licenses, ll)
+	}
+
+	if ll, err := a.traverseCacheDir(sub); err != nil {
+		errs = multierror.Append(errs, err)
+	} else {
+		licenses = lo.Assign(licenses, ll)
+	}
+
+	if len(licenses) == 0 {
+		return nil, errs
+	}
+
+	return licenses, nil
+}
+
+func (a yarnAnalyzer) traverseUnpluggedDir(fsys fs.FS) (map[string][]string, error) {
+	// `unplugged` hold machine-specific build artifacts
+	// Traverse .yarn/unplugged dir
+	return a.license.Traverse(fsys, "unplugged")
+}
+
+func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) {
+	// Traverse .yarn/cache dir
+	licenses := make(map[string][]string)
+	err := fsutils.WalkDir(fsys, "cache", fsutils.RequiredExt(".zip"),
+		func(filePath string, d fs.DirEntry, r io.Reader) error {
+			fi, err := d.Info()
+			if err != nil {
+				return xerrors.Errorf("file stat error: %w", err)
+			}
+
+			rr, err := xio.NewReadSeekerAt(r)
+			if err != nil {
+				return xerrors.Errorf("reader error: %w", err)
+			}
+
+			zr, err := zip.NewReader(rr, fi.Size())
+			if err != nil {
+				return xerrors.Errorf("zip reader error: %w", err)
+			}
+
+			if l, err := a.license.Traverse(zr, "node_modules"); err != nil {
+				return xerrors.Errorf("license traverse error: %w", err)
+			} else {
+				licenses = lo.Assign(licenses, l)
+			}
+			return nil
+		})
+
+	if err != nil {
+		return nil, xerrors.Errorf("walk error: %w", err)
+	}
+
+	return licenses, nil
 }

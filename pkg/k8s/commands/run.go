@@ -3,11 +3,12 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -18,39 +19,34 @@ import (
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-)
-
-const (
-	clusterArtifact = "cluster"
-	allArtifact     = "all"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 // Run runs a k8s scan
 func Run(ctx context.Context, args []string, opts flag.Options) error {
-	cluster, err := k8s.GetCluster(
-		k8s.WithContext(opts.K8sOptions.ClusterContext),
+	clusterOptions := []k8s.ClusterOption{
 		k8s.WithKubeConfig(opts.K8sOptions.KubeConfig),
-	)
+		k8s.WithBurst(opts.K8sOptions.Burst),
+		k8s.WithQPS(opts.K8sOptions.QPS),
+	}
+	if len(args) > 0 {
+		clusterOptions = append(clusterOptions, k8s.WithContext(args[0]))
+	}
+	cluster, err := k8s.GetCluster(clusterOptions...)
 	if err != nil {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
 	}
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
-	defer cancel()
 
 	defer func() {
+		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Logger.Warn("Increase --timeout value")
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration
+			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
 	opts.K8sVersion = cluster.GetClusterVersion()
-	switch args[0] {
-	case clusterArtifact:
-		return clusterRun(ctx, opts, cluster)
-	case allArtifact:
-		return namespaceRun(ctx, opts, cluster)
-	default: // resourceArtifact
-		return resourceRun(ctx, args, opts, cluster)
-	}
+	return clusterRun(ctx, opts, cluster)
 }
 
 type runner struct {
@@ -65,7 +61,7 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 	}
 }
 
-func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
+func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) error {
 	runner, err := cmd.NewRunner(ctx, r.flagOpts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
@@ -75,7 +71,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 	}
 	defer func() {
 		if err := runner.Close(ctx); err != nil {
-			log.Logger.Errorf("failed to close runner: %s", err)
+			log.ErrorContext(ctx, "failed to close runner: %s", err)
 		}
 	}()
 
@@ -95,11 +91,11 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	output, err := r.flagOpts.OutputWriter()
+	output, cleanup, err := r.flagOpts.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results
@@ -110,28 +106,25 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
-		return cr.Write(complianceReport, cr.Option{
+		return cr.Write(ctx, complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
 			Output: output,
 		})
 	}
 
-	if err := k8sRep.Write(rpt, report.Option{
+	if err := k8sRep.Write(ctx, rpt, report.Option{
 		Format:     r.flagOpts.Format,
 		Report:     r.flagOpts.ReportFormat,
 		Output:     output,
 		Severities: r.flagOpts.Severities,
-		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
 		APIVersion: r.flagOpts.AppVersion,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.Exit(r.flagOpts, rpt.Failed())
-
-	return nil
+	return operation.Exit(r.flagOpts, rpt.Failed(), types.Metadata{})
 }
 
 // Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.

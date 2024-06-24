@@ -2,10 +2,10 @@ package downloader
 
 import (
 	"context"
+	"maps"
 	"os"
 
 	getter "github.com/hashicorp/go-getter"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 )
 

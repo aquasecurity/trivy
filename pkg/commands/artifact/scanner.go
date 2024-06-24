@@ -11,10 +11,10 @@ import (
 // imageStandaloneScanner initializes a container image scanner in standalone mode
 // $ trivy image alpine:3.15
 func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
+	s, cleanup, err := initializeImageScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
 		conf.ArtifactOption.ImageOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a docker scanner: %w", err)
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize an image scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -33,10 +33,10 @@ func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.
 // $ trivy image --server localhost:4954 alpine:3.15
 func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
 	scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRemoteDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption,
+	s, cleanup, err := initializeRemoteImageScanner(ctx, conf.Target, conf.ArtifactCache, conf.ServerOption,
 		conf.ArtifactOption.ImageOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the remote docker scanner: %w", err)
+		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize a remote image scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -109,8 +109,7 @@ func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner
 
 // vmStandaloneScanner initializes a VM scanner in standalone mode
 func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption)
+	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
 	}

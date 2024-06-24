@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "disk.img",
   "ArtifactType": "vm",
   "Metadata": {
@@ -28,6 +29,9 @@
           "VulnerabilityID": "CVE-2022-3715",
           "PkgID": "bash@5.1-6ubuntu1",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/bash@5.1-6ubuntu1?arch=amd64\u0026distro=ubuntu-22.04"
+          },
           "InstalledVersion": "5.1-6ubuntu1",
           "Status": "affected",
           "Layer": {},
@@ -39,6 +43,13 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "nvd": 3,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",

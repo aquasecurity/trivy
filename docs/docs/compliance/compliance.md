@@ -1,4 +1,4 @@
-# Compliance Reports
+# Built-in Compliance Reports
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.

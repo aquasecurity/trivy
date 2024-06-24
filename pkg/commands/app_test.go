@@ -29,10 +29,10 @@ func Test_showVersion(t *testing.T) {
 			name: "happy path, table output",
 			args: args{
 				outputFormat: "table",
-				version:      "v1.2.3",
+				version:      "dev",
 				cacheDir:     "testdata",
 			},
-			want: `Version: v1.2.3
+			want: `Version: dev
 Vulnerability DB:
   Version: 2
   UpdatedAt: 2022-03-02 06:07:07.99504083 +0000 UTC
@@ -43,7 +43,7 @@ Java DB:
   UpdatedAt: 2023-03-14 00:47:02.774253754 +0000 UTC
   NextUpdate: 2023-03-17 00:47:02.774253254 +0000 UTC
   DownloadedAt: 2023-03-14 03:04:55.058541039 +0000 UTC
-Policy Bundle:
+Check Bundle:
   Digest: sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd
   DownloadedAt: 2023-03-02 01:06:08.191725 +0000 UTC
 `,
@@ -52,17 +52,17 @@ Policy Bundle:
 			name: "sad path, bogus cache dir",
 			args: args{
 				outputFormat: "json",
-				version:      "1.2.3",
+				version:      "dev",
 				cacheDir:     "/foo/bar/bogus",
 			},
-			want: `{"Version":"1.2.3"}
+			want: `{"Version":"dev"}
 `,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := new(bytes.Buffer)
-			showVersion(tt.args.cacheDir, tt.args.outputFormat, tt.args.version, got)
+			showVersion(tt.args.cacheDir, tt.args.outputFormat, got)
 			assert.Equal(t, tt.want, got.String(), tt.name)
 		})
 	}
@@ -70,7 +70,7 @@ Policy Bundle:
 
 // Check flag and command for print version
 func TestPrintVersion(t *testing.T) {
-	tableOutput := `Version: test
+	tableOutput := `Version: dev
 Vulnerability DB:
   Version: 2
   UpdatedAt: 2022-03-02 06:07:07.99504083 +0000 UTC
@@ -81,11 +81,11 @@ Java DB:
   UpdatedAt: 2023-03-14 00:47:02.774253754 +0000 UTC
   NextUpdate: 2023-03-17 00:47:02.774253254 +0000 UTC
   DownloadedAt: 2023-03-14 03:04:55.058541039 +0000 UTC
-Policy Bundle:
+Check Bundle:
   Digest: sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd
   DownloadedAt: 2023-03-02 01:06:08.191725 +0000 UTC
 `
-	jsonOutput := `{"Version":"test","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"},"JavaDB":{"Version":1,"NextUpdate":"2023-03-17T00:47:02.774253254Z","UpdatedAt":"2023-03-14T00:47:02.774253754Z","DownloadedAt":"2023-03-14T03:04:55.058541039Z"},"PolicyBundle":{"Digest":"sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd","DownloadedAt":"2023-03-01T17:06:08.191725-08:00"}}
+	jsonOutput := `{"Version":"dev","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"},"JavaDB":{"Version":1,"NextUpdate":"2023-03-17T00:47:02.774253254Z","UpdatedAt":"2023-03-14T00:47:02.774253754Z","DownloadedAt":"2023-03-14T03:04:55.058541039Z"},"CheckBundle":{"Digest":"sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd","DownloadedAt":"2023-03-02T01:06:08.191725Z"}}
 `
 	tests := []struct {
 		name      string
@@ -157,7 +157,7 @@ Policy Bundle:
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			got := new(bytes.Buffer)
-			app := NewApp("test")
+			app := NewApp()
 			app.SetOut(got)
 			app.SetArgs(test.arguments)
 
@@ -172,6 +172,7 @@ func TestFlags(t *testing.T) {
 	type want struct {
 		format     types.Format
 		severities []dbTypes.Severity
+		scanners   types.Scanners
 	}
 	tests := []struct {
 		name      string
@@ -193,6 +194,11 @@ func TestFlags(t *testing.T) {
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityCritical,
 				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
+					types.SBOMScanner,
+				},
 			},
 		},
 		{
@@ -207,6 +213,11 @@ func TestFlags(t *testing.T) {
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityLow,
 					dbTypes.SeverityMedium,
+				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
+					types.SBOMScanner,
 				},
 			},
 		},
@@ -225,6 +236,11 @@ func TestFlags(t *testing.T) {
 					dbTypes.SeverityLow,
 					dbTypes.SeverityHigh,
 				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
+					types.SBOMScanner,
+				},
 			},
 		},
 		{
@@ -241,6 +257,34 @@ func TestFlags(t *testing.T) {
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityCritical,
 				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SecretScanner,
+					types.SBOMScanner,
+				},
+			},
+		},
+		{
+			name: "happy path with scanners for compliance report",
+			arguments: []string{
+				"test",
+				"--scanners",
+				"license",
+				"--compliance",
+				"docker-cis",
+			},
+			want: want{
+				format: types.FormatTable,
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityUnknown,
+					dbTypes.SeverityLow,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityCritical,
+				},
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
 			},
 		},
 		{
@@ -250,31 +294,38 @@ func TestFlags(t *testing.T) {
 				"--format",
 				"foo",
 			},
-			wantErr: `invalid argument "foo" for "-f, --format" flag`,
+			wantErr: `invalid argument "foo" for "--format" flag`,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			globalFlags := flag.NewGlobalFlagGroup()
-			rootCmd := NewRootCommand("dev", globalFlags)
+			rootCmd := NewRootCommand(globalFlags)
 			rootCmd.SetErr(io.Discard)
 			rootCmd.SetOut(io.Discard)
 
 			flags := &flag.Flags{
+				GlobalFlagGroup: globalFlags,
 				ReportFlagGroup: flag.NewReportFlagGroup(),
+				ScanFlagGroup:   flag.NewScanFlagGroup(),
 			}
 			cmd := &cobra.Command{
 				Use: "test",
 				RunE: func(cmd *cobra.Command, args []string) error {
 					// Bind
-					require.NoError(t, flags.Bind(cmd))
+					if err := flags.Bind(cmd); err != nil {
+						return err
+					}
 
-					options, err := flags.ToOptions("dev", args, globalFlags)
-					require.NoError(t, err)
+					options, err := flags.ToOptions(args)
+					if err != nil {
+						return err
+					}
 
 					assert.Equal(t, tt.want.format, options.Format)
 					assert.Equal(t, tt.want.severities, options.Severities)
+					assert.Equal(t, tt.want.scanners, options.Scanners)
 					return nil
 				},
 			}

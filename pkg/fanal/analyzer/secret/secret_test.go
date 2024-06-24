@@ -111,7 +111,10 @@ func TestSecretAnalyzer(t *testing.T) {
 				Secrets: []types.Secret{
 					{
 						FilePath: "testdata/secret.txt",
-						Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+						Findings: []types.SecretFinding{
+							wantFinding1,
+							wantFinding2,
+						},
 					},
 				},
 			},
@@ -124,7 +127,10 @@ func TestSecretAnalyzer(t *testing.T) {
 				Secrets: []types.Secret{
 					{
 						FilePath: "/testdata/secret.txt",
-						Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+						Findings: []types.SecretFinding{
+							wantFinding1,
+							wantFinding2,
+						},
 					},
 				},
 			},
@@ -151,7 +157,7 @@ func TestSecretAnalyzer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &secret.SecretAnalyzer{}
+			a := secret.SecretAnalyzer{}
 			err := a.Init(analyzer.AnalyzerOptions{
 				SecretScannerOption: analyzer.SecretScannerOption{ConfigPath: tt.configPath},
 			})
@@ -161,7 +167,7 @@ func TestSecretAnalyzer(t *testing.T) {
 			fi, err := content.Stat()
 			require.NoError(t, err)
 
-			got, err := a.Analyze(context.TODO(), analyzer.AnalysisInput{
+			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Dir:      tt.dir,
 				Content:  content,

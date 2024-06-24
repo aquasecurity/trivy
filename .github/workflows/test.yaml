@@ -1,36 +1,29 @@
 name: Test
 on:
-  push:
-    branches-ignore:
-      - 'main'
-      - 'gh-readonly-queue/**'
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - 'LICENSE'
   pull_request:
       paths-ignore:
       - '**.md'
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json' ## don't run tests for release-please PRs
   merge_group:
+env:
+  GO_VERSION: '1.22'
 jobs:
   test:
     name: Test
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: oldstable
-
+          go-version: ${{ env.GO_VERSION }}
       - name: go mod tidy
         run: |
           go mod tidy
@@ -38,18 +31,24 @@ jobs:
             echo "Run 'go mod tidy' and push it"
             exit 1
           fi
-        if: matrix.operating-system == 'ubuntu-latest'
+        if: matrix.operating-system == 'ubuntu-latest-m'
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.6.0
+        id: lint
+        uses: golangci/golangci-lint-action@v6.0.1
         with:
-          version: v1.52
-          args: --deadline=30m
-          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
-        if: matrix.operating-system == 'ubuntu-latest'
+          version: v1.58
+          args: --verbose --out-format=line-number
+        if: matrix.operating-system == 'ubuntu-latest-m'
+
+      - name: Check if linter failed
+        run: |
+          echo "Linter failed, running 'mage lint:fix' might help to correct some errors"
+          exit 1
+        if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
@@ -61,25 +60,25 @@ jobs:
             echo "Run 'mage docs:generate' and push it"
             exit 1
           fi
-        if: matrix.operating-system == 'ubuntu-latest'
+        if: matrix.operating-system == 'ubuntu-latest-m'
 
       - name: Run unit tests
         run: mage test:unit
 
   integration:
     name: Integration Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -88,18 +87,18 @@ jobs:
 
   k8s-integration:
     name: K8s Integration Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -111,15 +110,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -130,17 +129,17 @@ jobs:
 
   vm-test:
     name: VM Integration Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
       - name: Run vm integration tests
@@ -152,17 +151,17 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.5.3
+      uses: actions/checkout@v4.1.6
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version-file: go.mod
+        go-version: ${{ env.GO_VERSION }}
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
@@ -177,7 +176,7 @@ jobs:
         fi
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v4
+      uses: goreleaser/goreleaser-action@v6
       with:
-        version: v1.16.2
+        version: v2.0.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}

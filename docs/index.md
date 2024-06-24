@@ -82,7 +82,7 @@ trivy image python:3.4-alpine
 </details>
 
 ```bash
-trivy fs --scanners vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,misconfig myproject/
 ```
 
 <details>
@@ -126,8 +126,8 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
 [Ecosystem]: ./ecosystem/index.md
 [Installation]: getting-started/installation.md
-[pronunciation]: #how-to-pronounce-the-name-trivy
-[Scanning Coverage]: getting-started/coverage.md
+[pronunciation]: getting-started/faq.md#how-to-pronounce-the-name-trivy
+[Scanning Coverage]: ./docs/coverage/index.md
 
 [aquasec]: https://aquasec.com
 [oss]: https://www.aquasec.com/products/open-source-projects/

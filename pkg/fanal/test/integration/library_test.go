@@ -1,5 +1,4 @@
 //go:build integration
-// +build integration
 
 package integration
 
@@ -21,11 +20,11 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -327,16 +326,16 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 		})
 
 		for _, app := range detail.Applications {
-			sort.Sort(app.Libraries)
-			for i := range app.Libraries {
-				sort.Strings(app.Libraries[i].DependsOn)
+			sort.Sort(app.Packages)
+			for i := range app.Packages {
+				sort.Strings(app.Packages[i].DependsOn)
 			}
 		}
 
 		// Do not compare layers
 		for _, app := range detail.Applications {
-			for i := range app.Libraries {
-				app.Libraries[i].Layer = types.Layer{}
+			for i := range app.Packages {
+				app.Packages[i].Layer = types.Layer{}
 			}
 		}
 
@@ -362,6 +361,14 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 
 func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	if tc.wantPkgsFromCmds != "" {
+		if *update {
+			sort.Sort(types.Packages(detail.ImageConfig.Packages))
+			b, err := json.MarshalIndent(detail.ImageConfig.Packages, "", "  ")
+			require.NoError(t, err)
+			err = os.WriteFile(tc.wantPkgsFromCmds, b, 0666)
+			require.NoError(t, err)
+			return
+		}
 		data, _ := os.ReadFile(tc.wantPkgsFromCmds)
 		var expectedPkgsFromCmds []types.Package
 

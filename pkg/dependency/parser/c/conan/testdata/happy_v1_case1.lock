@@ -1,0 +1,41 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "options": "glew:fPIC=True\nglew:shared=False\nglew:with_egl=False",
+    "requires": [
+     "1",
+     "3"
+    ],
+    "path": "conanfile.txt",
+    "context": "host"
+   },
+   "1": {
+       "ref": "pkga/0.0.1",
+       "options": "fPIC=True\nshared=False\nwith_egl=False",
+       "package_id": "",
+       "prev": "0",
+       "requires": [
+        "2"
+       ],
+       "context": "host"
+      },
+   "2": {
+       "ref": "pkgb/system",
+       "options": "",
+       "package_id": "",
+       "prev": "0",
+       "context": "host"
+      },
+   "3": {
+       "ref": "pkgc/0.1.1@user/testing",
+       "options": "shared=False",
+       "path": "conanfile.txt",
+       "context": "host"
+      }
+  },
+  "revisions_enabled": false
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=gcc\ncompiler.libcxx=libstdc++\ncompiler.version=9\nos=Linux\nos_build=Linux\n[options]\n[build_requires]\n[env]\n"
+}

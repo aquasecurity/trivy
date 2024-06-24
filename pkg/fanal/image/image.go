@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -41,7 +42,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 	for _, src := range opt.ImageSources {
 		trySrc, ok := imageSourceFuncs[src]
 		if !ok {
-			log.Logger.Warnf("Unknown image source: '%s'", src)
+			log.Warn("Unknown image source", log.String("source", string(src)))
 			continue
 		}
 
@@ -50,10 +51,11 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 			// Return v1.Image if the image is found
 			return img, cleanup, nil
 		}
+		err = multierror.Prefix(err, fmt.Sprintf("%s error:", src))
 		errs = multierror.Append(errs, err)
 	}
 
-	return nil, func() {}, errs
+	return nil, func() {}, xerrors.Errorf("unable to find the specified image %q in %q: %w", imageName, opt.ImageSources, errs)
 }
 
 func ID(img v1.Image) (string, error) {

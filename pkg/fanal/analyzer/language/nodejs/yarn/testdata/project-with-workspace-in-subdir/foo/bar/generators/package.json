@@ -1,0 +1,7 @@
+{
+    "name": "@test/bar-generators",
+    "version": "0.0.1",
+    "dependencies": {
+        "hoek": "6.1.3"
+    }
+}

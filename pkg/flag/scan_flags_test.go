@@ -38,7 +38,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			name: "happy path for configs",
 			args: []string{"alpine:latest"},
 			fields: fields{
-				scanners: "config",
+				scanners: "misconfig",
 			},
 			want: flag.ScanOptions{
 				Target:   "alpine:latest",
@@ -109,23 +109,23 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			viper.Set(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
-			viper.Set(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
-			viper.Set(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
-			viper.Set(flag.ScannersFlag.ConfigName, tt.fields.scanners)
+			t.Cleanup(viper.Reset)
+			setSliceValue(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
+			setSliceValue(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
+			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
+			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
-				SkipDirs:    &flag.SkipDirsFlag,
-				SkipFiles:   &flag.SkipFilesFlag,
-				OfflineScan: &flag.OfflineScanFlag,
-				Scanners:    &flag.ScannersFlag,
+				SkipDirs:    flag.SkipDirsFlag.Clone(),
+				SkipFiles:   flag.SkipFilesFlag.Clone(),
+				OfflineScan: flag.OfflineScanFlag.Clone(),
+				Scanners:    flag.ScannersFlag.Clone(),
 			}
 
 			got, err := f.ToOptions(tt.args)
 			tt.assertion(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 		})
-
 	}
 }

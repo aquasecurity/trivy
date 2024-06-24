@@ -20,3 +20,8 @@
         ID: "ruby-advisory-db"
         Name: "Ruby Advisory Database"
         URL:  "https://github.com/rubysec/ruby-advisory-db"
+    - key: "pip::GitHub Security Advisory Pip"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Pip"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"

@@ -1,23 +1,26 @@
 package types
 
 import (
-	"encoding/json"
+	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 // Report represents a scan result
 type Report struct {
-	SchemaVersion int                 `json:",omitempty"`
-	ArtifactName  string              `json:",omitempty"`
-	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
-	Metadata      Metadata            `json:",omitempty"`
-	Results       Results             `json:",omitempty"`
+	SchemaVersion int           `json:",omitempty"`
+	CreatedAt     time.Time     `json:",omitempty"`
+	ArtifactName  string        `json:",omitempty"`
+	ArtifactType  artifact.Type `json:",omitempty"`
+	Metadata      Metadata      `json:",omitempty"`
+	Results       Results       `json:",omitempty"`
 
-	// SBOM
-	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
+	// parsed SBOM
+	BOM *core.BOM `json:"-"` // Just for internal usage, not exported in JSON
 }
 
 // Metadata represents a metadata of artifact
@@ -41,13 +44,14 @@ type Compliance = string
 type Format string
 
 const (
-	ClassOSPkg       = "os-pkgs"      // For detected packages and vulnerabilities in OS packages
-	ClassLangPkg     = "lang-pkgs"    // For detected packages and vulnerabilities in language-specific packages
-	ClassConfig      = "config"       // For detected misconfigurations
-	ClassSecret      = "secret"       // For detected secrets
-	ClassLicense     = "license"      // For detected package licenses
-	ClassLicenseFile = "license-file" // For detected licenses in files
-	ClassCustom      = "custom"
+	ClassUnknown     ResultClass = "unknown"
+	ClassOSPkg       ResultClass = "os-pkgs"      // For detected packages and vulnerabilities in OS packages
+	ClassLangPkg     ResultClass = "lang-pkgs"    // For detected packages and vulnerabilities in language-specific packages
+	ClassConfig      ResultClass = "config"       // For detected misconfigurations
+	ClassSecret      ResultClass = "secret"       // For detected secrets
+	ClassLicense     ResultClass = "license"      // For detected package licenses
+	ClassLicenseFile ResultClass = "license-file" // For detected licenses in files
+	ClassCustom      ResultClass = "custom"
 
 	ComplianceK8sNsa           = Compliance("k8s-nsa")
 	ComplianceK8sCIS           = Compliance("k8s-cis")
@@ -101,42 +105,24 @@ var (
 type Result struct {
 	Target            string                     `json:"Target"`
 	Class             ResultClass                `json:"Class,omitempty"`
-	Type              string                     `json:"Type,omitempty"`
+	Type              ftypes.TargetType          `json:"Type,omitempty"`
 	Packages          []ftypes.Package           `json:"Packages,omitempty"`
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
-	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
+	Secrets           []DetectedSecret           `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
-}
 
-func (r *Result) MarshalJSON() ([]byte, error) {
-	// VendorSeverity includes all vendor severities.
-	// It would be noisy to users, so it should be removed from the JSON output.
-	for i := range r.Vulnerabilities {
-		r.Vulnerabilities[i].VendorSeverity = nil
-	}
-
-	// remove the Highlighted attribute from the json results
-	for i := range r.Misconfigurations {
-		for li := range r.Misconfigurations[i].CauseMetadata.Code.Lines {
-			r.Misconfigurations[i].CauseMetadata.Code.Lines[li].Highlighted = ""
-		}
-	}
-
-	// Notice the Alias struct prevents MarshalJSON being called infinitely
-	type ResultAlias Result
-	return json.Marshal(&struct {
-		*ResultAlias
-	}{
-		ResultAlias: (*ResultAlias)(r),
-	})
+	// ModifiedFindings holds a list of findings that have been modified from their original state.
+	// This can include vulnerabilities that have been marked as ignored, not affected, or have had
+	// their severity adjusted. It is currently available only in the table format.
+	ModifiedFindings []ModifiedFinding `json:"-"`
 }
 
 func (r *Result) IsEmpty() bool {
 	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
-		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0
+		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0 && len(r.ModifiedFindings) == 0
 }
 
 type MisconfSummary struct {
@@ -156,7 +142,7 @@ func (results Results) Failed() bool {
 			return true
 		}
 		for _, m := range r.Misconfigurations {
-			if m.Status == StatusFailure {
+			if m.Status == MisconfStatusFailure {
 				return true
 			}
 		}

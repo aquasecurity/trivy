@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -74,7 +74,7 @@ func IsExecutable(fileInfo os.FileInfo) bool {
 	return false
 }
 
-func IsBinary(content dio.ReadSeekerAt, fileSize int64) (bool, error) {
+func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 	headSize := int(math.Min(float64(fileSize), 300))
 	head := make([]byte, headSize)
 	if _, err := content.Read(head); err != nil {

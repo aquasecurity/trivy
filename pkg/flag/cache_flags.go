@@ -1,12 +1,11 @@
 package flag
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/cache"
 )
 
 // e.g. config yaml:
@@ -19,87 +18,71 @@ import (
 //	  cert: cert.pem
 //	  key: key.pem
 var (
-	ClearCacheFlag = Flag{
+	ClearCacheFlag = Flag[bool]{
 		Name:       "clear-cache",
 		ConfigName: "cache.clear",
-		Default:    false,
 		Usage:      "clear image caches without scanning",
 	}
-	CacheBackendFlag = Flag{
+	CacheBackendFlag = Flag[string]{
 		Name:       "cache-backend",
 		ConfigName: "cache.backend",
 		Default:    "fs",
 		Usage:      "cache backend (e.g. redis://localhost:6379)",
 	}
-	CacheTTLFlag = Flag{
+	CacheTTLFlag = Flag[time.Duration]{
 		Name:       "cache-ttl",
 		ConfigName: "cache.ttl",
-		Default:    time.Duration(0),
 		Usage:      "cache TTL when using redis as cache backend",
 	}
-	RedisTLSFlag = Flag{
+	RedisTLSFlag = Flag[bool]{
 		Name:       "redis-tls",
 		ConfigName: "cache.redis.tls",
-		Default:    false,
 		Usage:      "enable redis TLS with public certificates, if using redis as cache backend",
 	}
-	RedisCACertFlag = Flag{
+	RedisCACertFlag = Flag[string]{
 		Name:       "redis-ca",
 		ConfigName: "cache.redis.ca",
-		Default:    "",
 		Usage:      "redis ca file location, if using redis as cache backend",
 	}
-	RedisCertFlag = Flag{
+	RedisCertFlag = Flag[string]{
 		Name:       "redis-cert",
 		ConfigName: "cache.redis.cert",
-		Default:    "",
 		Usage:      "redis certificate file location, if using redis as cache backend",
 	}
-	RedisKeyFlag = Flag{
+	RedisKeyFlag = Flag[string]{
 		Name:       "redis-key",
 		ConfigName: "cache.redis.key",
-		Default:    "",
 		Usage:      "redis key file location, if using redis as cache backend",
 	}
 )
 
 // CacheFlagGroup composes common printer flag structs used for commands requiring cache logic.
 type CacheFlagGroup struct {
-	ClearCache   *Flag
-	CacheBackend *Flag
-	CacheTTL     *Flag
+	ClearCache   *Flag[bool]
+	CacheBackend *Flag[string]
+	CacheTTL     *Flag[time.Duration]
 
-	RedisTLS    *Flag
-	RedisCACert *Flag
-	RedisCert   *Flag
-	RedisKey    *Flag
+	RedisTLS    *Flag[bool]
+	RedisCACert *Flag[string]
+	RedisCert   *Flag[string]
+	RedisKey    *Flag[string]
 }
 
 type CacheOptions struct {
-	ClearCache   bool
-	CacheBackend string
-	CacheTTL     time.Duration
-	RedisTLS     bool
-	RedisOptions
-}
-
-// RedisOptions holds the options for redis cache
-type RedisOptions struct {
-	RedisCACert string
-	RedisCert   string
-	RedisKey    string
+	ClearCache          bool
+	CacheBackendOptions cache.Options
 }
 
 // NewCacheFlagGroup returns a default CacheFlagGroup
 func NewCacheFlagGroup() *CacheFlagGroup {
 	return &CacheFlagGroup{
-		ClearCache:   &ClearCacheFlag,
-		CacheBackend: &CacheBackendFlag,
-		CacheTTL:     &CacheTTLFlag,
-		RedisTLS:     &RedisTLSFlag,
-		RedisCACert:  &RedisCACertFlag,
-		RedisCert:    &RedisCertFlag,
-		RedisKey:     &RedisKeyFlag,
+		ClearCache:   ClearCacheFlag.Clone(),
+		CacheBackend: CacheBackendFlag.Clone(),
+		CacheTTL:     CacheTTLFlag.Clone(),
+		RedisTLS:     RedisTLSFlag.Clone(),
+		RedisCACert:  RedisCACertFlag.Clone(),
+		RedisCert:    RedisCertFlag.Clone(),
+		RedisKey:     RedisKeyFlag.Clone(),
 	}
 }
 
@@ -107,48 +90,31 @@ func (fg *CacheFlagGroup) Name() string {
 	return "Cache"
 }
 
-func (fg *CacheFlagGroup) Flags() []*Flag {
-	return []*Flag{fg.ClearCache, fg.CacheBackend, fg.CacheTTL, fg.RedisTLS, fg.RedisCACert, fg.RedisCert, fg.RedisKey}
+func (fg *CacheFlagGroup) Flags() []Flagger {
+	return []Flagger{
+		fg.ClearCache,
+		fg.CacheBackend,
+		fg.CacheTTL,
+		fg.RedisTLS,
+		fg.RedisCACert,
+		fg.RedisCert,
+		fg.RedisKey,
+	}
 }
 
 func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
-	cacheBackend := getString(fg.CacheBackend)
-	redisOptions := RedisOptions{
-		RedisCACert: getString(fg.RedisCACert),
-		RedisCert:   getString(fg.RedisCert),
-		RedisKey:    getString(fg.RedisKey),
+	if err := parseFlags(fg); err != nil {
+		return CacheOptions{}, err
 	}
 
-	// "redis://" or "fs" are allowed for now
-	// An empty value is also allowed for testability
-	if !strings.HasPrefix(cacheBackend, "redis://") &&
-		cacheBackend != "fs" && cacheBackend != "" {
-		return CacheOptions{}, xerrors.Errorf("unsupported cache backend: %s", cacheBackend)
-	}
-	// if one of redis option not nil, make sure CA, cert, and key provided
-	if !lo.IsEmpty(redisOptions) {
-		if redisOptions.RedisCACert == "" || redisOptions.RedisCert == "" || redisOptions.RedisKey == "" {
-			return CacheOptions{}, xerrors.Errorf("you must provide Redis CA, cert and key file path when using TLS")
-		}
+	backendOpts, err := cache.NewOptions(fg.CacheBackend.Value(), fg.RedisCACert.Value(), fg.RedisCert.Value(),
+		fg.RedisKey.Value(), fg.RedisTLS.Value(), fg.CacheTTL.Value())
+	if err != nil {
+		return CacheOptions{}, xerrors.Errorf("failed to initialize cache options: %w", err)
 	}
 
 	return CacheOptions{
-		ClearCache:   getBool(fg.ClearCache),
-		CacheBackend: cacheBackend,
-		CacheTTL:     getDuration(fg.CacheTTL),
-		RedisTLS:     getBool(fg.RedisTLS),
-		RedisOptions: redisOptions,
+		ClearCache:          fg.ClearCache.Value(),
+		CacheBackendOptions: backendOpts,
 	}, nil
-}
-
-// CacheBackendMasked returns the redis connection string masking credentials
-func (o *CacheOptions) CacheBackendMasked() string {
-	endIndex := strings.Index(o.CacheBackend, "@")
-	if endIndex == -1 {
-		return o.CacheBackend
-	}
-
-	startIndex := strings.Index(o.CacheBackend, "//")
-
-	return fmt.Sprintf("%s****%s", o.CacheBackend[:startIndex+2], o.CacheBackend[endIndex:])
 }

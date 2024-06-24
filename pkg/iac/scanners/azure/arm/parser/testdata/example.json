@@ -1,0 +1,15 @@
+{
+  // wow this is a comment
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#", // another one
+  // this version is great
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storagePrefix": {
+      "type": "string",
+      "defaultValue": "x",
+      "maxLength": 11,
+      "minLength": 3
+    }
+  },
+  "resources": []
+}

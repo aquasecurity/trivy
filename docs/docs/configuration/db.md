@@ -8,7 +8,7 @@
 |     License      |           |
 
 The vulnerability database and the Java index database are needed only for vulnerability scanning.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ## Vulnerability Database
 
@@ -54,15 +54,28 @@ $ trivy image --download-db-only
 $ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
 ```
 
+!!!note
+    Trivy automatically adds the `trivy-db` schema version as a tag if the tag is not used:
+
+    `trivy-db-registry:latest` => `trivy-db-registry:latest`, but `trivy-db-registry` => `trivy-db-registry:2`.
+
 ## Java Index Database
 The same options are also available for the Java index DB, which is used for scanning Java applications.
 Skipping an update can be done by using the `--skip-java-db-update` option, while `--download-java-db-only` can be used to only download the Java index DB.
+
+!!! Note
+    In [Client/Server](../references/modes/client-server.md) mode, `Java index DB` is currently only used on the `client` side.
 
 Downloading the Java index DB from an external OCI registry can be done by using the `--java-db-repository` option.
 
 ```
 $ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
 ```
+
+!!!note
+    Trivy automatically adds the `trivy-java-db` schema version as a tag if the tag is not used:
+
+    `java-db-registry:latest` => `java-db-registry:latest`, but `java-db-registry` => `java-db-registry:1`.
 
 ## Remove DBs
 The `--reset` flag removes all caches and databases.

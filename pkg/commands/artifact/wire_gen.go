@@ -13,12 +13,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	local2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/repo"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
@@ -29,9 +30,9 @@ import (
 
 // Injectors from inject.go:
 
-// initializeDockerScanner is for container image scanning in standalone mode
+// initializeImageScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeImageScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
@@ -82,7 +83,8 @@ func initializeFilesystemScanner(ctx context.Context, path string, artifactCache
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, err := local2.NewArtifact(path, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -98,7 +100,8 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -131,7 +134,8 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, err := vm.NewArtifact(filePath, artifactCache, artifactOption)
+	walkerVM := walker.NewVM()
+	artifactArtifact, err := vm.NewArtifact(filePath, artifactCache, walkerVM, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -140,9 +144,9 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 	}, nil
 }
 
-// initializeRemoteDockerScanner is for container image scanning in client/server mode
+// initializeRemoteImageScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteImageScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
 	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt)
@@ -185,7 +189,8 @@ func initializeRemoteArchiveScanner(ctx context.Context, filePath string, artifa
 func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, err := local2.NewArtifact(path, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -198,7 +203,8 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 func initializeRemoteRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -225,7 +231,8 @@ func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache
 func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, err := vm.NewArtifact(path, artifactCache, artifactOption)
+	walkerVM := walker.NewVM()
+	artifactArtifact, err := vm.NewArtifact(path, artifactCache, walkerVM, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

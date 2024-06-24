@@ -12,16 +12,16 @@ export SP_DATA=$(az ad sp create-for-rbac --name TrivyTest --role AcrPull --scop
 # Usage
 ```bash
 # must set TRIVY_USERNAME empty char
-export AZURE_CLIENT_ID$(echo $SP_DATA | jq -r .appId)
-export AZURE_CLIENT_SECRET$(echo $SP_DATA | jq -r .password)
-export AZURE_TENANT_ID$(echo $SP_DATA | jq -r .tenant)
+export AZURE_CLIENT_ID=$(echo $SP_DATA | jq -r '.appId')
+export AZURE_CLIENT_SECRET=$(echo $SP_DATA | jq -r '.password')
+export AZURE_TENANT_ID=$(echo $SP_DATA | jq -r '.tenant')
 ```
 
 # Testing
 You can test credentials in the following manner.
 
 ```bash
-docker run -it --rm -v /tmp:/tmp\
-  -e AZURE_CLIENT_ID=${AZURE_CLIENT_ID} -e AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET} \
-  -e AZURE_TENANT_ID=${AZURE_TENANT_ID} aquasec/trivy image your_special_project.azurecr.io/your_special_image:your_special_tag
+docker run -it --rm -v /tmp:/tmp \
+  -e AZURE_CLIENT_ID -e AZURE_CLIENT_SECRET -e AZURE_TENANT_ID \
+  aquasec/trivy image your_special_project.azurecr.io/your_special_image:your_special_tag
 ```

@@ -7,7 +7,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -21,7 +20,7 @@ type RemoteCache struct {
 }
 
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.ArtifactCache {
+func NewRemoteCache(url string, customHeaders http.Header, insecure bool) ArtifactCache {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 
 	httpClient := &http.Client{
@@ -33,7 +32,10 @@ func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.
 		},
 	}
 	c := rpcCache.NewCacheProtobufClient(url, httpClient)
-	return &RemoteCache{ctx: ctx, client: c}
+	return &RemoteCache{
+		ctx:    ctx,
+		client: c,
+	}
 }
 
 // PutArtifact sends artifact to remote client
@@ -53,7 +55,7 @@ func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo
 func (c RemoteCache) PutBlob(diffID string, blobInfo types.BlobInfo) error {
 	err := rpc.Retry(func() error {
 		var err error
-		_, err = c.client.PutBlob(c.ctx, rpc.ConvertToRPCBlobInfo(diffID, blobInfo))
+		_, err = c.client.PutBlob(c.ctx, rpc.ConvertToRPCPutBlobRequest(diffID, blobInfo))
 		return err
 	})
 	if err != nil {

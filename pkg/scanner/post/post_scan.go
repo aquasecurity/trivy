@@ -24,14 +24,14 @@ func DeregisterPostScanner(name string) {
 }
 
 func ScannerVersions() map[string]int {
-	versions := map[string]int{}
+	versions := make(map[string]int)
 	for _, s := range postScanners {
 		versions[s.Name()] = s.Version()
 	}
 	return versions
 }
 
-var postScanners = map[string]Scanner{}
+var postScanners = make(map[string]Scanner)
 
 func Scan(ctx context.Context, results types.Results) (types.Results, error) {
 	var err error

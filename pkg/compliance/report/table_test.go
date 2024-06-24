@@ -2,6 +2,7 @@ package report_test
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -36,7 +37,10 @@ func TestTableWriter_Write(t *testing.T) {
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
-									{AVDID: "AVD-KSV012", Status: types.StatusFailure},
+									{
+										AVDID:  "AVD-KSV012",
+										Status: types.MisconfStatusFailure,
+									},
 								},
 							},
 						},
@@ -48,7 +52,10 @@ func TestTableWriter_Write(t *testing.T) {
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
-									{AVDID: "AVD-KSV013", Status: types.StatusFailure},
+									{
+										AVDID:  "AVD-KSV013",
+										Status: types.MisconfStatusFailure,
+									},
 								},
 							},
 						},
@@ -62,8 +69,11 @@ func TestTableWriter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			tr := report.TableWriter{Report: tt.reportType, Output: buf}
-			err := tr.Write(tt.input)
+			tr := report.TableWriter{
+				Report: tt.reportType,
+				Output: buf,
+			}
+			err := tr.Write(context.Background(), tt.input)
 			require.NoError(t, err)
 
 			want, err := os.ReadFile(tt.want)

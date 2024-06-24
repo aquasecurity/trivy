@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	core "github.com/aquasecurity/go-dep-parser/pkg/dotnet/core_deps"
+	core "github.com/aquasecurity/trivy/pkg/dependency/parser/dotnet/core_deps"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

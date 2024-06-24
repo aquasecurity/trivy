@@ -1,0 +1,16 @@
+PODS:
+  - _NIODataStructures (2.41.0)
+
+DEPENDENCIES:
+  - _NIODataStructures (= 2.41.0)
+
+SPEC REPOS:
+  trunk:
+    - _NIODataStructures
+
+SPEC CHECKSUMS:
+  _NIODataStructures: 3d45d8e70a1d17a15b1dc59d102c63dbc0525ffd
+
+PODFILE CHECKSUM: 2acff18c7f9246879b6a1a2d04e5decbc9410ef4
+
+COCOAPODS: 1.12.1

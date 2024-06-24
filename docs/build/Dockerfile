@@ -1,4 +1,4 @@
-FROM squidfunk/mkdocs-material:8.3.9
+FROM squidfunk/mkdocs-material:9.4.6
 
 ## If you want to see exactly the same version as is published to GitHub pages
 ## use a private image for insiders, which requires authentication.

@@ -21,24 +21,19 @@ const (
 var parentDir = ".." + utils.PathSeparator
 
 type LayerTar struct {
-	walker
-	threshold int64
+	skipFiles []string
+	skipDirs  []string
 }
 
-func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
-	threshold := defaultSizeThreshold
-	if slow {
-		threshold = slowSizeThreshold
-	}
-
+func NewLayerTar(opt Option) LayerTar {
 	return LayerTar{
-		walker:    newWalker(skipFiles, skipDirs, slow),
-		threshold: threshold,
+		skipFiles: CleanSkipPaths(opt.SkipFiles),
+		skipDirs:  CleanSkipPaths(opt.SkipDirs),
 	}
 }
 
 func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
-	var opqDirs, whFiles, skipDirs []string
+	var opqDirs, whFiles, skippedDirs []string
 	tr := tar.NewReader(layer)
 	for {
 		hdr, err := tr.Next()
@@ -68,12 +63,12 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 
 		switch hdr.Typeflag {
 		case tar.TypeDir:
-			if w.shouldSkipDir(filePath) {
-				skipDirs = append(skipDirs, filePath)
+			if SkipPath(filePath, w.skipDirs) {
+				skippedDirs = append(skippedDirs, filePath)
 				continue
 			}
 		case tar.TypeReg:
-			if w.shouldSkipFile(filePath) {
+			if SkipPath(filePath, w.skipFiles) {
 				continue
 			}
 		// symlinks and hardlinks have no content in reader, skip them
@@ -81,7 +76,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 			continue
 		}
 
-		if underSkippedDir(filePath, skipDirs) {
+		if underSkippedDir(filePath, skippedDirs) {
 			continue
 		}
 
@@ -94,7 +89,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 }
 
 func (w LayerTar) processFile(filePath string, tr *tar.Reader, fi fs.FileInfo, analyzeFn WalkFunc) error {
-	cf := newCachedFile(fi.Size(), tr, w.threshold)
+	cf := newCachedFile(fi.Size(), tr)
 	defer func() {
 		// nolint
 		_ = cf.Clean()

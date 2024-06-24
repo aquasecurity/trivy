@@ -3,16 +3,16 @@ package poetry
 import (
 	"context"
 	"errors"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/python/poetry"
-	"github.com/aquasecurity/go-dep-parser/pkg/python/pyproject"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/poetry"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -27,12 +27,14 @@ func init() {
 const version = 1
 
 type poetryAnalyzer struct {
+	logger          *log.Logger
 	pyprojectParser *pyproject.Parser
-	lockParser      godeptypes.Parser
+	lockParser      language.Parser
 }
 
 func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &poetryAnalyzer{
+		logger:          log.WithPrefix("poetry"),
 		pyprojectParser: pyproject.NewParser(),
 		lockParser:      poetry.NewParser(),
 	}, nil
@@ -45,7 +47,7 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return filepath.Base(path) == types.PoetryLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// Parse poetry.lock
 		app, err := a.parsePoetryLock(path, r)
 		if err != nil {
@@ -56,7 +58,8 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 		// Parse pyproject.toml alongside poetry.lock to identify the direct dependencies
 		if err = a.mergePyProject(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.PyProject), err)
+			a.logger.Warn("Unable to parse pyproject.toml to identify direct dependencies",
+				log.String("path", filepath.Join(filepath.Dir(path), types.PyProject)), log.Err(err))
 		}
 		apps = append(apps, *app)
 
@@ -84,7 +87,7 @@ func (a poetryAnalyzer) Version() int {
 	return version
 }
 
-func (a poetryAnalyzer) parsePoetryLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
+func (a poetryAnalyzer) parsePoetryLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Poetry, path, r, a.lockParser)
 }
 
@@ -94,23 +97,26 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	p, err := a.parsePyProject(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from poetry.lock
-		log.Logger.Debugf("Poetry: %s not found", path)
+		a.logger.Debug("pyproject.toml not found", log.String("path", path))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	for i, lib := range app.Libraries {
-		// Identify the direct/transitive dependencies
-		if _, ok := p[lib.Name]; !ok {
-			app.Libraries[i].Indirect = true
+	// Identify the direct/transitive dependencies
+	for i, pkg := range app.Packages {
+		if _, ok := p[pkg.Name]; ok {
+			app.Packages[i].Relationship = types.RelationshipDirect
+		} else {
+			app.Packages[i].Indirect = true
+			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
 
 	return nil
 }
 
-func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]interface{}, error) {
+func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]any, error) {
 	// Parse pyproject.toml
 	f, err := fsys.Open(path)
 	if err != nil {
@@ -122,5 +128,11 @@ func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]inte
 	if err != nil {
 		return nil, err
 	}
+
+	// Packages from `pyproject.toml` can use uppercase characters, `.` and `_`.
+	parsed = lo.MapKeys(parsed, func(_ any, pkgName string) string {
+		return poetry.NormalizePkgName(pkgName)
+	})
+
 	return parsed, nil
 }

@@ -9,16 +9,17 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
+
+var r = regexp.MustCompile("\\\\|/|:|\\*|\\?|<|>")
 
 func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
 
 	if runtime.GOOS == "windows" {
-		//removes characters not permitted in file/directory names on Windows
+		// removes characters not permitted in file/directory names on Windows
 		filename = filenameWindowsFriendly(filename)
 	}
 	file, err := os.CreateTemp("", filename)
@@ -27,7 +28,7 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
-			log.Logger.Errorf("failed to close temp file %s: %s:", file.Name(), err)
+			log.Error("Failed to close temp file", log.String("path", file.Name()), log.Err(err))
 		}
 	}()
 
@@ -41,11 +42,9 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 
 func removeFile(filename string) {
 	if err := os.Remove(filename); err != nil {
-		log.Logger.Errorf("failed to remove temp file %s: %s:", filename, err)
+		log.Error("Failed to remove temp file", log.String("path", filename), log.Err(err))
 	}
 }
-
-var r, _ = regexp.Compile("\\\\|/|:|\\*|\\?|<|>")
 
 func filenameWindowsFriendly(name string) string {
 	return r.ReplaceAllString(name, "_")

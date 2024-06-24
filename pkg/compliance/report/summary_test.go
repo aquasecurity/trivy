@@ -32,7 +32,10 @@ func TestBuildSummary(t *testing.T) {
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
-									{AVDID: "AVD-KSV012", Status: types.StatusFailure},
+									{
+										AVDID:  "AVD-KSV012",
+										Status: types.MisconfStatusFailure,
+									},
 								},
 							},
 						},
@@ -44,7 +47,10 @@ func TestBuildSummary(t *testing.T) {
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
-									{AVDID: "AVD-KSV013", Status: types.StatusFailure},
+									{
+										AVDID:  "AVD-KSV013",
+										Status: types.MisconfStatusFailure,
+									},
 								},
 							},
 						},
@@ -86,7 +92,10 @@ func TestBuildSummary(t *testing.T) {
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
-									{AVDID: "AVD-KSV012", Status: types.StatusFailure},
+									{
+										AVDID:  "AVD-KSV012",
+										Status: types.MisconfStatusFailure,
+									},
 								},
 							},
 						},
@@ -98,7 +107,10 @@ func TestBuildSummary(t *testing.T) {
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
-									{AVDID: "AVD-KSV013", Status: types.StatusFailure},
+									{
+										AVDID:  "AVD-KSV013",
+										Status: types.MisconfStatusFailure,
+									},
 								},
 							},
 						},

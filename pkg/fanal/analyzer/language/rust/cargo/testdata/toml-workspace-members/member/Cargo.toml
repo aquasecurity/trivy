@@ -1,0 +1,7 @@
+[package]
+name = "member"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gdb-command = "0.7"
