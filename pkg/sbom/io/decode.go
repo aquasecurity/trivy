@@ -397,12 +397,8 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 
 		// TODO: mismatch between the OS and the packages should be rejected.
 		// e.g. OS: debian, Packages: rpm
-
-		// `applier` package merges `PackageInfo` elements  along the filepath,
-		// but sbom files may not contain filepath for OS packages.
-		// In these cases we will overwrite `PackageInfo` and miss some `Packages`.
-		// This is why we need to merge all found `Packages` into one `PackageInfo`.
-		sbom.Packages = appendOrphanPkgsToPackageInfo(sbom.Packages, pkgs)
+		sort.Sort(pkgs)
+		sbom.Packages = append(sbom.Packages, ftypes.PackageInfo{Packages: pkgs})
 
 		break // Just take the first element
 	}
@@ -416,26 +412,4 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 		})
 	}
 	return nil
-}
-
-// appendOrphanPkgsToPackageInfo merges `orphanPkgs` into `packages[0]` (the comparison is done by PURL).
-// Merged `Packages` are sorted.
-func appendOrphanPkgsToPackageInfo(packages []ftypes.PackageInfo, orphanPkgs ftypes.Packages) []ftypes.PackageInfo {
-	// Length of `packages` can be only 0 or 1
-	// packages[].FilePath is always empty
-	// cf. https://github.com/aquasecurity/trivy/blob/09e50ce6a82073ba62f1732d5aa0cd2701578693/pkg/sbom/io/decode.go#L331
-	var pkgs ftypes.Packages
-	if len(packages) == 1 { //
-		pkgs = packages[0].Packages
-	}
-	pkgs = append(pkgs, orphanPkgs...)
-	pkgs = lo.UniqBy(pkgs, func(pkg ftypes.Package) string {
-		return pkg.Identifier.PURL.String()
-	})
-	sort.Sort(pkgs)
-	return []ftypes.PackageInfo{
-		{
-			Packages: pkgs,
-		},
-	}
 }
