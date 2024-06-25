@@ -24,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -350,41 +349,14 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	// standalone mode
-	cacheClient, err := cache.NewClient(opts.CacheDir, opts.CacheOptions.CacheBackendOptions)
+	cacheClient, err := cache.New(opts.CacheDir, opts.CacheOptions.CacheBackendOptions)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
 	log.Debug("Cache dir", log.String("dir", opts.CacheDir))
 
-	if opts.Reset {
-		defer cacheClient.Close()
-		if err = cacheClient.Reset(); err != nil {
-			return xerrors.Errorf("cache reset error: %w", err)
-		}
-		return SkipScan
-	}
-
-	if opts.ResetChecksBundle {
-		c, err := policy.NewClient(opts.CacheDir, true, opts.MisconfOptions.ChecksBundleRepository)
-		if err != nil {
-			return xerrors.Errorf("failed to instantiate check client: %w", err)
-		}
-		if err := c.Clear(); err != nil {
-			return xerrors.Errorf("failed to remove the cache: %w", err)
-		}
-		return SkipScan
-	}
-
-	if opts.ClearCache {
-		defer cacheClient.Close()
-		if err = cacheClient.ClearArtifacts(); err != nil {
-			return xerrors.Errorf("cache clear error: %w", err)
-		}
-		return SkipScan
-	}
-
-	r.cache = cacheClient.Cache
-	r.localCache = cacheClient.Cache
+	r.cache = cacheClient
+	r.localCache = cacheClient
 	return nil
 }
 

@@ -14,6 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -94,6 +95,7 @@ func NewApp() *cobra.Command {
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
+		NewCleanCommand(globalFlags),
 	)
 
 	if plugins := loadPluginCommands(); len(plugins) > 0 {
@@ -1160,6 +1162,47 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
+func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	cleanFlags := &flag.Flags{
+		GlobalFlagGroup: globalFlags,
+		CleanFlagGroup:  flag.NewCleanFlagGroup(),
+	}
+	cmd := &cobra.Command{
+		Use:     "clean [flags]",
+		GroupID: groupUtility,
+		Short:   "Remove cached files",
+		Example: `  # Remove all caches
+  $ trivy clean --all
+
+  # Remove scan cache
+  $ trivy clean --scan-cache
+
+  # Remove vulnerability database
+  $ trivy clean --vuln-db
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := cleanFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			opts, err := cleanFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+
+			return clean.Run(cmd.Context(), opts)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	cleanFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, cleanFlags.Usages(cmd)))
+
+	return cmd
+}
 func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{
@@ -1199,7 +1242,8 @@ func showVersion(cacheDir, outputFormat string, w io.Writer) error {
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
-	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset', '--reset-checks-bundle' and '--generate-default-config' don't conduct the subsequent scanning
+	// '--clear-cache' (removed), '--download-db-only', '--download-java-db-only', '--reset' (removed),
+	// '--reset-checks-bundle' (removed) and '--generate-default-config' don't conduct the subsequent scanning
 	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
 		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
 		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetChecksBundleFlag.ConfigName) {

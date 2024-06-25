@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -154,6 +155,13 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 
 	if err = c.updateDownloadedAt(ctx, dst); err != nil {
 		return xerrors.Errorf("failed to update downloaded_at: %w", err)
+	}
+	return nil
+}
+
+func (c *Client) Clear(ctx context.Context) error {
+	if err := os.RemoveAll(db.Dir(c.cacheDir)); err != nil {
+		return xerrors.Errorf("failed to remove vulnerability database: %w", err)
 	}
 	return nil
 }

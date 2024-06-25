@@ -59,7 +59,10 @@ type Flag[T FlagType] struct {
 	Persistent bool
 
 	// Deprecated represents if the flag is deprecated
-	Deprecated bool
+	Deprecated string
+
+	// Removed represents if the flag is removed and no longer works
+	Removed string
 
 	// Aliases represents aliases
 	Aliases []Alias
@@ -105,6 +108,14 @@ func (f *Flag[T]) Parse() error {
 
 	if f.isSet() && !f.allowedValue(value) {
 		return xerrors.Errorf(`invalid argument "%s" for "--%s" flag: must be one of %q`, value, f.Name, f.Values)
+	}
+
+	if f.Deprecated != "" && f.isSet() {
+		log.Warnf(`"--%s" is deprecated. %s`, f.Name, f.Deprecated)
+	}
+	if f.Removed != "" && f.isSet() {
+		log.Errorf(`"--%s" was removed. %s`, f.Name, f.Removed)
+		return xerrors.Errorf(`removed flag ("--%s")`, f.Name)
 	}
 
 	f.value = value
@@ -229,8 +240,8 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 		flags.Float64P(f.Name, f.Shorthand, v, f.Usage)
 	}
 
-	if f.Deprecated {
-		flags.MarkHidden(f.Name) // nolint: gosec
+	if f.Deprecated != "" || f.Removed != "" {
+		_ = flags.MarkHidden(f.Name)
 	}
 }
 
@@ -301,6 +312,7 @@ type Flags struct {
 	GlobalFlagGroup        *GlobalFlagGroup
 	AWSFlagGroup           *AWSFlagGroup
 	CacheFlagGroup         *CacheFlagGroup
+	CleanFlagGroup         *CleanFlagGroup
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
 	K8sFlagGroup           *K8sFlagGroup
@@ -323,6 +335,7 @@ type Options struct {
 	GlobalOptions
 	AWSOptions
 	CacheOptions
+	CleanOptions
 	DBOptions
 	ImageOptions
 	K8sOptions
@@ -495,6 +508,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.CacheFlagGroup != nil {
 		groups = append(groups, f.CacheFlagGroup)
 	}
+	if f.CleanFlagGroup != nil {
+		groups = append(groups, f.CleanFlagGroup)
+	}
 	if f.DBFlagGroup != nil {
 		groups = append(groups, f.DBFlagGroup)
 	}
@@ -618,6 +634,13 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		opts.CacheOptions, err = f.CacheFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("cache flag error: %w", err)
+		}
+	}
+
+	if f.CleanFlagGroup != nil {
+		opts.CleanOptions, err = f.CleanFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("clean flag error: %w", err)
 		}
 	}
 

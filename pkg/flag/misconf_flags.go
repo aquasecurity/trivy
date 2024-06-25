@@ -15,10 +15,12 @@ import (
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
+	// Deprecated
 	ResetChecksBundleFlag = Flag[bool]{
 		Name:       "reset-checks-bundle",
 		ConfigName: "misconfiguration.reset-checks-bundle",
 		Usage:      "remove checks bundle",
+		Removed:    `Use "trivy clean --checks-bundle" instead`,
 		Aliases: []Alias{
 			{
 				Name:       "reset-policy-bundle",
