@@ -53,13 +53,13 @@ const (
 	ClassLicenseFile ResultClass = "license-file" // For detected licenses in files
 	ClassCustom      ResultClass = "custom"
 
-	ComplianceK8sNsa           = Compliance("k8s-nsa")
-	ComplianceK8sCIS           = Compliance("k8s-cis")
-	ComplianceK8sPSSBaseline   = Compliance("k8s-pss-baseline")
-	ComplianceK8sPSSRestricted = Compliance("k8s-pss-restricted")
+	ComplianceK8sNsa           = Compliance("k8s-nsa-1.0")
+	ComplianceK8sCIS           = Compliance("k8s-cis-1.23")
+	ComplianceK8sPSSBaseline   = Compliance("k8s-pss-baseline-0.1")
+	ComplianceK8sPSSRestricted = Compliance("k8s-pss-restricted-0.1")
 	ComplianceAWSCIS12         = Compliance("aws-cis-1.2")
 	ComplianceAWSCIS14         = Compliance("aws-cis-1.4")
-	ComplianceDockerCIS        = Compliance("docker-cis")
+	ComplianceDockerCIS        = Compliance("docker-cis-1.6.0")
 
 	FormatTable      Format = "table"
 	FormatJSON       Format = "json"
