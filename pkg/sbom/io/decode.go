@@ -109,12 +109,12 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 }
 
 func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
-	osIDs := make(map[uuid.UUID]*core.Component)
+	var osComponents []*core.Component
 
 	for id, c := range m.bom.Components() {
 		switch c.Type {
 		case core.TypeOS:
-			osIDs[id] = c
+			osComponents = append(osComponents, c)
 			continue
 		case core.TypeApplication:
 			if app := m.decodeApplication(c); app.Type != "" {
@@ -135,39 +135,34 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 		}
 	}
 
-	m.selectOS(osIDs, sbom)
+	m.selectOS(osComponents, sbom)
 	return nil
 }
 
 // selectOS checks all found OSes and selects the OS with the maximum number of packages
 // If two or more OS contain the same number of packages - select the first OS alphabetically
-func (m *Decoder) selectOS(osIDs map[uuid.UUID]*core.Component, sbom *types.SBOM) {
-	if len(osIDs) == 0 {
+func (m *Decoder) selectOS(osComponents []*core.Component, sbom *types.SBOM) {
+	if len(osComponents) == 0 {
 		return
 	}
 
-	var osID uuid.UUID
-	var osComponent *core.Component
-	numberOfOSPkgs := -1 // To always take the first component
-	for id, c := range osIDs {
-		if numberOfPkgs := len(m.bom.Relationships()[id]); numberOfPkgs > numberOfOSPkgs {
-			osID = id
-			numberOfOSPkgs = numberOfPkgs
-			osComponent = c
-		} else if numberOfPkgs == numberOfOSPkgs && c.PkgIdentifier.BOMRef < osComponent.PkgIdentifier.BOMRef {
-			osID = id
-			osComponent = c
+	sort.Slice(osComponents, func(i, j int) bool {
+		numberOfIPkgs := len(m.bom.Relationships()[osComponents[i].ID()])
+		numberOfJPkgs := len(m.bom.Relationships()[osComponents[j].ID()])
+		if numberOfIPkgs != numberOfJPkgs {
+			return numberOfIPkgs < numberOfJPkgs
 		}
+		return osComponents[i].PkgIdentifier.BOMRef < osComponents[j].PkgIdentifier.BOMRef
+	})
+
+	if len(osComponents) > 1 {
+		m.logger.Warn("Multiple OS components are not supported, taking OS with most packages and ignoring the rest", log.String("selected OS", osComponents[0].Name+" "+osComponents[0].Version))
 	}
 
-	if len(osIDs) > 1 {
-		m.logger.Warn("Multiple OS components are not supported, taking OS with most packages and ignoring the rest", log.String("selected OS", osComponent.Name+" "+osComponent.Version))
-	}
-
-	m.osID = osID
+	m.osID = osComponents[0].ID()
 	sbom.Metadata.OS = &ftypes.OS{
-		Family: ftypes.OSType(osComponent.Name),
-		Name:   osComponent.Version,
+		Family: ftypes.OSType(osComponents[0].Name),
+		Name:   osComponents[0].Version,
 	}
 }
 
