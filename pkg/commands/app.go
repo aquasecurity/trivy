@@ -104,6 +104,15 @@ func NewApp() *cobra.Command {
 		rootCmd.AddCommand(plugins...)
 	}
 
+	// TODO(simar7): Only for backwards support guidance, delete the subcommand after a while.
+	if cmd, _, _ := rootCmd.Find([]string{"aws"}); cmd == cmd.Root() { // "trivy aws" not installed
+		rootCmd.AddCommand(&cobra.Command{
+			Hidden: true,
+			Long:   "Trivy AWS is now available as an optional plugin. See github.com/aquasecurity/trivy-aws for details.",
+			Use:    "aws",
+		})
+	}
+
 	return rootCmd
 }
 
