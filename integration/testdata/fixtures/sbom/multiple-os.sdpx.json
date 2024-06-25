@@ -19,7 +19,7 @@
       "licenseDeclared": "NOASSERTION",
       "name": "debian",
       "primaryPackagePurpose": "OPERATING_SYSTEM",
-      "versionInfo": "12.5"
+      "versionInfo": "12.0"
     },
     {
       "SPDXID": "SPDXRef-Package-gnrtd7",
@@ -41,7 +41,7 @@
       "versionInfo": "3.1-20221030-2"
     },
     {
-      "SPDXID": "SPDXRef-OperatingSystem-gnrtd143",
+      "SPDXID": "SPDXRef-OperatingSystem-agnrtd143",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
@@ -79,7 +79,7 @@
     {
       "relatedSpdxElement": "SPDXRef-Package-gnrtd259",
       "relationshipType": "CONTAINS",
-      "spdxElementId": "SPDXRef-OperatingSystem-gnrtd143"
+      "spdxElementId": "SPDXRef-OperatingSystem-agnrtd143"
     }
   ],
   "spdxVersion": "SPDX-2.3"

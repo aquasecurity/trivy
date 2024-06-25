@@ -30,7 +30,8 @@
           "Name": "libedit2",
           "Identifier": {
             "PURL": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.5",
-            "UID": "d9c0b51d2f4afa4d"
+            "UID": "ef1004e38e59b6f8",
+            "BOMRef": "Package-gnrtd7"
           },
           "Version": "3.1-20221030-2",
           "Arch": "amd64",
@@ -39,23 +40,6 @@
           "SrcRelease": "2",
           "Licenses": [
             "BSD-3-Clause"
-          ],
-          "Layer": {}
-        },
-        {
-          "ID": "libmount1@2.38.1-5+deb12u1",
-          "Name": "libmount1",
-          "Identifier": {
-            "PURL": "pkg:deb/debian/libmount1@2.38.1-5%2Bdeb12u1?arch=arm64\u0026distro=debian-12.5",
-            "UID": "104ee5d0a32c0520"
-          },
-          "Version": "2.38.1-5+deb12u1",
-          "Arch": "arm64",
-          "SrcName": "util-linux",
-          "SrcVersion": "2.38.1",
-          "SrcRelease": "5+deb12u1",
-          "Licenses": [
-            "(LicenseRef-public-domain AND LGPL-2.0-only AND LGPL-3.0-only AND BSD-4-Clause AND LGPL-2.1-only AND BSD-3-Clause AND MIT AND GPL-3.0-only AND GPL-2.0-only AND LicenseRef-BSLA)"
           ],
           "Layer": {}
         }
