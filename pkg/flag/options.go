@@ -313,7 +313,6 @@ type Flags struct {
 	AWSFlagGroup           *AWSFlagGroup
 	CacheFlagGroup         *CacheFlagGroup
 	CleanFlagGroup         *CleanFlagGroup
-	CloudFlagGroup         *CloudFlagGroup
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
 	K8sFlagGroup           *K8sFlagGroup
@@ -337,7 +336,6 @@ type Options struct {
 	AWSOptions
 	CacheOptions
 	CleanOptions
-	CloudOptions
 	DBOptions
 	ImageOptions
 	K8sOptions
@@ -513,9 +511,6 @@ func (f *Flags) groups() []FlagGroup {
 	if f.CleanFlagGroup != nil {
 		groups = append(groups, f.CleanFlagGroup)
 	}
-	if f.CloudFlagGroup != nil {
-		groups = append(groups, f.CloudFlagGroup)
-	}
 	if f.DBFlagGroup != nil {
 		groups = append(groups, f.DBFlagGroup)
 	}
@@ -646,13 +641,6 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		opts.CleanOptions, err = f.CleanFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("clean flag error: %w", err)
-		}
-	}
-
-	if f.CloudFlagGroup != nil {
-		opts.CloudOptions, err = f.CloudFlagGroup.ToOptions()
-		if err != nil {
-			return Options{}, xerrors.Errorf("cloud flag error: %w", err)
 		}
 	}
 

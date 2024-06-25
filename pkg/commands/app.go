@@ -94,7 +94,6 @@ func NewApp() *cobra.Command {
 		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
-		NewAWSCommand(),
 		NewVMCommand(globalFlags),
 		NewCleanCommand(globalFlags),
 	)
@@ -105,6 +104,15 @@ func NewApp() *cobra.Command {
 			Title: "Plugin Commands",
 		})
 		rootCmd.AddCommand(plugins...)
+	}
+
+	// TODO(simar7): Only for backwards support guidance, delete the subcommand after a while.
+	if cmd, _, _ := rootCmd.Find([]string{"aws"}); cmd == cmd.Root() { // "trivy aws" not installed
+		rootCmd.AddCommand(&cobra.Command{
+			Hidden: true,
+			Long:   "Trivy AWS is now available as an optional plugin. See github.com/aquasecurity/trivy-aws for details.",
+			Use:    "aws",
+		})
 	}
 
 	return rootCmd
@@ -1013,14 +1021,6 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	k8sFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, k8sFlags.Usages(cmd)))
 
-	return cmd
-}
-
-func NewAWSCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Deprecated: "Trivy AWS is now available as an optional plugin. See github.com/aquasecurity/trivy-aws for details",
-		Use:        "aws [flags]",
-	}
 	return cmd
 }
 
