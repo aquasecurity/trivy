@@ -165,7 +165,7 @@ The plugin used by both tools is developped [here](https://github.com/zufardhiya
 
 1. Download the file for your operating system/architecture from [GitHub Release assets](https://github.com/aquasecurity/trivy/releases/tag/{{ git.tag }}).  
 2. Unpack the downloaded archive (`tar -xzf ./trivy.tar.gz`).
-3. Put the binary somewhere in your `$PATH` (e.g `mv ./trivy /usr/local/bin/`).
+3. Put the binary somewhere in your `$PATH` (e.g `sudo mv ./trivy /usr/local/bin/`).
 4. Make sure the binary has execution bit turned on (`chmod +x ./trivy`).
 
 ### Install Script
