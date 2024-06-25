@@ -38,7 +38,7 @@ trivy image [flags] IMAGE_NAME
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
-      --compliance string                 compliance report to generate (docker-cis)
+      --compliance string                 compliance report to generate (docker-cis-1.6.0)
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --custom-headers strings            custom headers in client mode
