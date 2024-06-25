@@ -61,7 +61,7 @@ brew install trivy
 Arch Linux Package Repository.
 
 ```bash
-pacman -S trivy
+sudo pacman -S trivy
 ```
 
 References: 
