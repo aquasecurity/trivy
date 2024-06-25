@@ -256,6 +256,14 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 		return pkg.Name
 	}
 
+	// `maven purl type` has no restrictions on using lowercase letters.
+	// Also, `spdx-maven-plugin` uses `name` instead of `artifactId` for the `package name` field.
+	// So we need to use `purl` for maven/gradle packages
+	// See https://github.com/aquasecurity/trivy/issues/7007 for more information.
+	if c.PkgIdentifier.PURL.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+		return pkg.Name
+	}
+
 	// TODO(backward compatibility): Remove after 03/2025
 	// Bitnami used different pkg.Name and the name from PURL.
 	// For backwards compatibility - we need to use PURL.
@@ -265,9 +273,6 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 	}
 
 	if c.Group != "" {
-		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
-			return c.Group + ":" + c.Name
-		}
 		return c.Group + "/" + c.Name
 	}
 	return c.Name
