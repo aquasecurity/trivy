@@ -260,7 +260,7 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 	// Also, `spdx-maven-plugin` uses `name` instead of `artifactId` for the `package name` field.
 	// So we need to use `purl` for maven/gradle packages
 	// See https://github.com/aquasecurity/trivy/issues/7007 for more information.
-	if c.PkgIdentifier.PURL.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+	if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
 		return pkg.Name
 	}
 
