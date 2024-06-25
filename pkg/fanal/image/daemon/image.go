@@ -114,6 +114,8 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed parsing created %s: %w", img.inspect.Created, err)
 	}
+	// Converting it to UTC in case it's in IST
+	created = time.Time.UTC(created)
 
 	return &v1.ConfigFile{
 		Architecture:  img.inspect.Architecture,
