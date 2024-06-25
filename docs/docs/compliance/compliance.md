@@ -35,14 +35,14 @@ to specify a built-in compliance report, select it by ID like `trivy --complianc
 For the list of built-in compliance reports, please see the relevant section:
 
 - [Docker compliance](../target/container_image.md#compliance)
-- [Kubernetes compliance](../target/kubernetes.md#compliance) 
+- [Kubernetes compliance](../target/kubernetes.md#compliance)
 - [AWS compliance](../target/aws.md#compliance)
 
-## Contribute a Build-in Compliance Report
+## Contribute a Built-in Compliance Report
 
-### Define a Compliance spec, based on cis benchmark or other specs
+### Define a Compliance spec, based on CIS benchmark or other specs
 
-here is an example for cis compliance report:
+Here is an example for CIS compliance report:
 
 ```yaml
 ---
@@ -71,19 +71,19 @@ spec:
 
 ### Compliance ID
 
-id field is the name used to execute the compliance scan via trivy
+ID field is the name used to execute the compliance scan via trivy
 example:
 
 ```sh
 trivy k8s --compliance k8s-cis-1.23
 ```
 
-id naming convension: {platform}-{type}-{version}
+ID naming convention: {platform}-{type}-{version}
 
 ### Compliance Platform
 
 The platform field specifies the type of platform on which to run this compliance report.
-supported platforms:
+Supported platforms:
 
 - k8s (native kubernetes cluster)
 - eks (elastic kubernetes service)
@@ -203,7 +203,7 @@ Specifiy here the shell command to be used please make sure to add error supress
 
 ### Command Platforms
 
-The list of platforms that support this command , name should be taken from this list [Platforms](#compliance-platform)
+The list of platforms that support this command. Name should be taken from this list [Platforms](#compliance-platform)
 
 ### Command Config Files
 
@@ -223,9 +223,9 @@ kubelet:
 
 ### Commands Files Location
 
-currently checks files location are :`https://github.com/aquasecurity/trivy-checks/tree/main/checks`
+Currently checks files location are :`https://github.com/aquasecurity/trivy-checks/tree/main/checks`
 
-proposed command files location: `https://github.com/aquasecurity/trivy-checks/tree/main/commands`
+Command files location: `https://github.com/aquasecurity/trivy-checks/tree/main/commands`
 under command file
 
 Note: command config files will be located under `https://github.com/aquasecurity/trivy-checks/tree/main/commands` as well
@@ -259,7 +259,6 @@ example:
   }
 }
 ```
-
 
 ## Custom compliance
 
