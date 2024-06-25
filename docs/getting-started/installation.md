@@ -173,7 +173,7 @@ The plugin used by both tools is developped [here](https://github.com/zufardhiya
 The process above can be automated by the following script:
 
 ```bash
-curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin {{ git.tag }}
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin {{ git.tag }}
 ```
 
 ### Install from source
