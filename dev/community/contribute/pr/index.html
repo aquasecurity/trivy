@@ -4195,8 +4195,12 @@ Each commit message doesn't have to follow the conventions as long as it is clea
 <li>deps</li>
 </ul>
 <p>The <code>&lt;scope&gt;</code> can be empty (e.g. if the change is a global or difficult to assign to a single component), in which case the parentheses are omitted.</p>
+<p><strong>Breaking changes</strong></p>
+<p>A PR, introducing a breaking API change, needs to append a <code>!</code> after the type/scope.</p>
 <h3 id="example-titles">Example titles</h3>
 <div class="highlight"><pre><span></span><code>feat(alma): add support for AlmaLinux
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>feat(vuln)!: delete the existing CLI flag
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>fix(oracle): handle advisories with ksplice versions
 </code></pre></div>
