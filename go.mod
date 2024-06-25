@@ -28,7 +28,7 @@ require (
 	github.com/aquasecurity/trivy-checks v0.13.0
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
-	github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20240608070923-cab5e3064198
+	github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20240625102549-87c0f9c7bcf4
 	github.com/aws/aws-sdk-go-v2 v1.27.2
 	github.com/aws/aws-sdk-go-v2/config v1.27.18
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.18
