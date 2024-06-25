@@ -5,7 +5,6 @@ import (
 	"slices"
 	"sort"
 	"strconv"
-	"sync"
 
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
@@ -110,22 +109,12 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 }
 
 func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
-	onceMultiOSWarn := sync.OnceFunc(func() {
-		m.logger.Warn("Multiple OS components are not supported, taking the first one and ignoring the rest")
-	})
+	osIDs := make(map[uuid.UUID]*core.Component)
 
 	for id, c := range m.bom.Components() {
 		switch c.Type {
 		case core.TypeOS:
-			if m.osID != uuid.Nil {
-				onceMultiOSWarn()
-				continue
-			}
-			m.osID = id
-			sbom.Metadata.OS = &ftypes.OS{
-				Family: ftypes.OSType(c.Name),
-				Name:   c.Version,
-			}
+			osIDs[id] = c
 			continue
 		case core.TypeApplication:
 			if app := m.decodeApplication(c); app.Type != "" {
@@ -146,7 +135,40 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 		}
 	}
 
+	m.selectOS(osIDs, sbom)
 	return nil
+}
+
+// selectOS checks all found OSes and selects the OS with the maximum number of packages
+// If two or more OS contain the same number of packages - select the first OS alphabetically
+func (m *Decoder) selectOS(osIDs map[uuid.UUID]*core.Component, sbom *types.SBOM) {
+	if len(osIDs) == 0 {
+		return
+	}
+
+	var osID uuid.UUID
+	var osComponent *core.Component
+	numberOfOSPkgs := -1 // To always take the first component
+	for id, c := range osIDs {
+		if numberOfPkgs := len(m.bom.Relationships()[id]); numberOfPkgs > numberOfOSPkgs {
+			osID = id
+			numberOfOSPkgs = numberOfPkgs
+			osComponent = c
+		} else if numberOfPkgs == numberOfOSPkgs && c.PkgIdentifier.BOMRef < osComponent.PkgIdentifier.BOMRef {
+			osID = id
+			osComponent = c
+		}
+	}
+
+	if len(osIDs) > 1 {
+		m.logger.Warn("Multiple OS components are not supported, taking OS with most packages and ignoring the rest", log.String("selected OS", osComponent.Name+" "+osComponent.Version))
+	}
+
+	m.osID = osID
+	sbom.Metadata.OS = &ftypes.OS{
+		Family: ftypes.OSType(osComponent.Name),
+		Name:   osComponent.Version,
+	}
 }
 
 // buildDependencyGraph builds a dependency graph between packages
