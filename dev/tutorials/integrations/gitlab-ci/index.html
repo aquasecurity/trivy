@@ -2960,6 +2960,20 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
+      <a href="../../../docs/references/configuration/cli/trivy_clean/" class="md-nav__link">
+        Clean
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../docs/references/configuration/cli/trivy_config/" class="md-nav__link">
         Config
       </a>
@@ -3033,18 +3047,18 @@ You're not viewing the latest version.
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_7" type="checkbox" id="__nav_3_10_1_1_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10_1_1_7">
+        <label class="md-nav__link" for="__nav_3_10_1_1_8">
           Module
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Module" data-md-level="5">
-        <label class="md-nav__title" for="__nav_3_10_1_1_7">
+        <label class="md-nav__title" for="__nav_3_10_1_1_8">
           <span class="md-nav__icon md-icon"></span>
           Module
         </label>
@@ -3108,18 +3122,18 @@ You're not viewing the latest version.
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_9" type="checkbox" id="__nav_3_10_1_1_9" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10_1_1_8">
+        <label class="md-nav__link" for="__nav_3_10_1_1_9">
           Plugin
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Plugin" data-md-level="5">
-        <label class="md-nav__title" for="__nav_3_10_1_1_8">
+        <label class="md-nav__title" for="__nav_3_10_1_1_9">
           <span class="md-nav__icon md-icon"></span>
           Plugin
         </label>
@@ -3980,8 +3994,6 @@ with the container image.</p>
 <span class="w">    </span><span class="nt">FULL_IMAGE_NAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG</span><span class="w"></span>
 <span class="w">  </span><span class="nt">script</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trivy --version</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># cache cleanup is needed when scanning images with the same tags, it does not remove the database</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">time trivy image --clear-cache</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># update vulnerabilities db</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">time trivy image --download-db-only</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there</span><span class="w"></span>

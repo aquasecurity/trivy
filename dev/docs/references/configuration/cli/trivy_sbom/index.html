@@ -2909,6 +2909,20 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
+      <a href="../trivy_clean/" class="md-nav__link">
+        Clean
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../trivy_config/" class="md-nav__link">
         Config
       </a>
@@ -2982,18 +2996,18 @@ You're not viewing the latest version.
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_7" type="checkbox" id="__nav_3_10_1_1_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10_1_1_7">
+        <label class="md-nav__link" for="__nav_3_10_1_1_8">
           Module
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Module" data-md-level="5">
-        <label class="md-nav__title" for="__nav_3_10_1_1_7">
+        <label class="md-nav__title" for="__nav_3_10_1_1_8">
           <span class="md-nav__icon md-icon"></span>
           Module
         </label>
@@ -3057,18 +3071,18 @@ You're not viewing the latest version.
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_9" type="checkbox" id="__nav_3_10_1_1_9" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10_1_1_8">
+        <label class="md-nav__link" for="__nav_3_10_1_1_9">
           Plugin
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Plugin" data-md-level="5">
-        <label class="md-nav__title" for="__nav_3_10_1_1_8">
+        <label class="md-nav__title" for="__nav_3_10_1_1_9">
           <span class="md-nav__icon md-icon"></span>
           Plugin
         </label>
@@ -3960,7 +3974,6 @@ You're not viewing the latest version.
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><span></span><code>      --cache-backend string        cache backend (e.g. redis://localhost:6379) (default &quot;fs&quot;)
       --cache-ttl duration          cache TTL when using redis as cache backend
-      --clear-cache                 clear image caches without scanning
       --compliance string           compliance report to generate
       --custom-headers strings      custom headers in client mode
       --db-repository string        OCI repository to retrieve trivy-db from (default &quot;ghcr.io/aquasecurity/trivy-db:2&quot;)
@@ -3987,7 +4000,6 @@ You're not viewing the latest version.
       --redis-key string            redis key file location, if using redis as cache backend
       --redis-tls                   enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
-      --reset                       remove all caches and database
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings            comma-separated list of what security issues to detect (vuln,license) (default [vuln])
       --server string               server address in client mode

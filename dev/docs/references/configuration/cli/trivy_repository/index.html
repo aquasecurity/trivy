@@ -2909,6 +2909,20 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
+      <a href="../trivy_clean/" class="md-nav__link">
+        Clean
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../trivy_config/" class="md-nav__link">
         Config
       </a>
@@ -2982,18 +2996,18 @@ You're not viewing the latest version.
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_7" type="checkbox" id="__nav_3_10_1_1_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10_1_1_7">
+        <label class="md-nav__link" for="__nav_3_10_1_1_8">
           Module
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Module" data-md-level="5">
-        <label class="md-nav__title" for="__nav_3_10_1_1_7">
+        <label class="md-nav__title" for="__nav_3_10_1_1_8">
           <span class="md-nav__icon md-icon"></span>
           Module
         </label>
@@ -3057,18 +3071,18 @@ You're not viewing the latest version.
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_9" type="checkbox" id="__nav_3_10_1_1_9" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10_1_1_8">
+        <label class="md-nav__link" for="__nav_3_10_1_1_9">
           Plugin
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Plugin" data-md-level="5">
-        <label class="md-nav__title" for="__nav_3_10_1_1_8">
+        <label class="md-nav__title" for="__nav_3_10_1_1_9">
           <span class="md-nav__icon md-icon"></span>
           Plugin
         </label>
@@ -3963,7 +3977,6 @@ You're not viewing the latest version.
       --cf-params strings                 specify paths to override the CloudFormation parameters files
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default &quot;ghcr.io/aquasecurity/trivy-checks:0&quot;)
-      --clear-cache                       clear image caches without scanning
       --commit string                     pass the commit hash to be scanned
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
@@ -4009,8 +4022,6 @@ You're not viewing the latest version.
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
-      --reset                             remove all caches and database
-      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default &quot;trivy-secret.yaml&quot;)

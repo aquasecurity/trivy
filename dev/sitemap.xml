@@ -391,6 +391,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_clean/</loc>
+         <lastmod>2024-06-25</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_config/</loc>
          <lastmod>2024-06-25</lastmod>
          <changefreq>daily</changefreq>
