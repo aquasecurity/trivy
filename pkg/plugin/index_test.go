@@ -26,7 +26,7 @@ func TestManager_Update(t *testing.T) {
 	t.Cleanup(ts.Close)
 
 	manager := plugin.NewManager(plugin.WithIndexURL(ts.URL + "/index.yaml"))
-	err := manager.Update(context.Background())
+	err := manager.Update(context.Background(), plugin.Options{})
 	require.NoError(t, err)
 
 	indexPath := filepath.Join(tempDir, ".trivy", "plugins", "index.yaml")

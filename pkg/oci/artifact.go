@@ -188,7 +188,8 @@ func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir s
 	}
 
 	// Decompress the downloaded file if it is compressed and copy it into the dst
-	if err = downloader.Download(ctx, f.Name(), dir, dir); err != nil {
+	// NOTE: it's local copying, the insecure option doesn't matter.
+	if err = downloader.Download(ctx, f.Name(), dir, dir, false); err != nil {
 		return xerrors.Errorf("download error: %w", err)
 	}
 

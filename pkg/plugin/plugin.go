@@ -57,6 +57,7 @@ type Options struct {
 	Args     []string
 	Stdin    io.Reader // For output plugin
 	Platform ftypes.Platform
+	Insecure bool
 }
 
 func (p *Plugin) Cmd(ctx context.Context, opts Options) (*exec.Cmd, error) {
@@ -154,7 +155,7 @@ func (p *Plugin) install(ctx context.Context, dst, pwd string, opts Options) err
 	p.Installed.Platform = lo.FromPtr(platform.Selector)
 
 	log.DebugContext(ctx, "Downloading the execution file...", log.String("uri", platform.URI))
-	if err = downloader.Download(ctx, platform.URI, dst, pwd); err != nil {
+	if err = downloader.Download(ctx, platform.URI, dst, pwd, opts.Insecure); err != nil {
 		return xerrors.Errorf("unable to download the execution file (%s): %w", platform.URI, err)
 	}
 	return nil

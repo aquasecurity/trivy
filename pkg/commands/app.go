@@ -62,6 +62,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 
 // NewApp is the factory method to return Trivy CLI
 func NewApp() *cobra.Command {
+	cobra.EnableTraverseRunHooks = true // To execute persistent pre-run hooks from all parents.
 	globalFlags := flag.NewGlobalFlagGroup()
 	rootCmd := NewRootCommand(globalFlags)
 	rootCmd.AddGroup(
@@ -89,7 +90,7 @@ func NewApp() *cobra.Command {
 		NewServerCommand(globalFlags),
 		NewConfigCommand(globalFlags),
 		NewConvertCommand(globalFlags),
-		NewPluginCommand(),
+		NewPluginCommand(globalFlags),
 		NewModuleCommand(globalFlags),
 		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
@@ -719,7 +720,11 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func NewPluginCommand() *cobra.Command {
+func NewPluginCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	var pluginOptions flag.Options
+	pluginFlags := &flag.Flags{
+		GlobalFlagGroup: globalFlags,
+	}
 	cmd := &cobra.Command{
 		Use:           "plugin subcommand",
 		Aliases:       []string{"p"},
@@ -727,6 +732,13 @@ func NewPluginCommand() *cobra.Command {
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+			pluginOptions, err = pluginFlags.ToOptions(args)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
 	}
 	cmd.AddCommand(
 		&cobra.Command{
@@ -746,7 +758,7 @@ func NewPluginCommand() *cobra.Command {
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if _, err := plugin.Install(cmd.Context(), args[0], plugin.Options{}); err != nil {
+				if _, err := plugin.Install(cmd.Context(), args[0], plugin.Options{Insecure: pluginOptions.Insecure}); err != nil {
 					return xerrors.Errorf("plugin install error: %w", err)
 				}
 				return nil
@@ -816,7 +828,7 @@ func NewPluginCommand() *cobra.Command {
 			SilenceUsage:          true,
 			Args:                  cobra.NoArgs,
 			RunE: func(cmd *cobra.Command, _ []string) error {
-				if err := plugin.Update(cmd.Context()); err != nil {
+				if err := plugin.Update(cmd.Context(), plugin.Options{Insecure: pluginOptions.Insecure}); err != nil {
 					return xerrors.Errorf("plugin update error: %w", err)
 				}
 				return nil

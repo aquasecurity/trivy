@@ -92,13 +92,13 @@ func Upgrade(ctx context.Context, names []string) error { return defaultManager(
 func Uninstall(ctx context.Context, name string) error  { return defaultManager().Uninstall(ctx, name) }
 func Information(name string) error                     { return defaultManager().Information(name) }
 func List(ctx context.Context) error                    { return defaultManager().List(ctx) }
-func Update(ctx context.Context) error                  { return defaultManager().Update(ctx) }
+func Update(ctx context.Context, opts Options) error    { return defaultManager().Update(ctx, opts) }
 func Search(ctx context.Context, keyword string) error  { return defaultManager().Search(ctx, keyword) }
 
 // Install installs a plugin
 func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin, error) {
 	input := m.parseArg(ctx, arg)
-	input.name = m.tryIndex(ctx, input.name)
+	input.name = m.tryIndex(ctx, input.name, opts)
 
 	// If the plugin is already installed, it skips installing the plugin.
 	if p, installed := m.isInstalled(ctx, input.name, input.version); installed {
@@ -111,7 +111,7 @@ func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin
 }
 
 func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin, error) {
-	tempDir, err := downloader.DownloadToTempDir(ctx, src)
+	tempDir, err := downloader.DownloadToTempDir(ctx, src, opts.Insecure)
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("download failed: %w", err)
 	}
