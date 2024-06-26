@@ -42,6 +42,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
+									SPDXID: "Package-f0db45781e6813a1",
 								},
 							},
 							{
@@ -56,6 +57,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-cached-lookup-key",
 										Version:   "1.36.0",
 									},
+									SPDXID: "Package-efe22bf5916f985f",
 								},
 							},
 							{
@@ -70,6 +72,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-common",
 										Version:   "1.36.0",
 									},
+									SPDXID: "Package-33d86d2d11abe114",
 								},
 							},
 							{
@@ -84,6 +87,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-core",
 										Version:   "1.36.0",
 									},
+									SPDXID: "Package-b905fcf69ca61281",
 								},
 							},
 						},
@@ -110,6 +114,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 											},
 										},
 									},
+									SPDXID: "elasticsearch",
 								},
 							},
 						},
@@ -184,6 +189,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "gdal",
 										Version: "3.7.1",
 									},
+									SPDXID: "gdal",
 								},
 							},
 							{
@@ -197,6 +203,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "geos",
 										Version: "3.8.3",
 									},
+									SPDXID: "geos",
 								},
 							},
 							{
@@ -210,6 +217,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "postgresql",
 										Version: "15.3.0",
 									},
+									SPDXID: "postgresql",
 								},
 								DependsOn: []string{
 									"GEOS@3.8.3",
@@ -228,6 +236,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "proj",
 										Version: "6.3.2",
 									},
+									SPDXID: "proj",
 								},
 							},
 						},

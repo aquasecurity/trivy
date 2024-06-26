@@ -30,8 +30,8 @@
           "Name": "libedit2",
           "Identifier": {
             "PURL": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.5",
-            "UID": "ef1004e38e59b6f8",
-            "BOMRef": "Package-gnrtd7"
+            "UID": "7bc539cf6076d318",
+            "SPDXID": "Package-gnrtd7"
           },
           "Version": "3.1-20221030-2",
           "Arch": "amd64",

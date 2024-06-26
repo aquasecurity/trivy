@@ -102,6 +102,11 @@ func TestSBOM(t *testing.T) {
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)"
+
+				require.Len(t, got.Results[0].Vulnerabilities, 3)
+				want.Results[0].Vulnerabilities[0].PkgIdentifier.SPDXID = "Package-5a18334f22149877"
+				want.Results[0].Vulnerabilities[1].PkgIdentifier.SPDXID = "Package-e16b1cbaa5186199"
+				want.Results[0].Vulnerabilities[2].PkgIdentifier.SPDXID = "Package-e16b1cbaa5186199"
 			},
 		},
 		{
@@ -118,6 +123,11 @@ func TestSBOM(t *testing.T) {
 
 				require.Len(t, got.Results, 1)
 				want.Results[0].Target = "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)"
+
+				require.Len(t, got.Results[0].Vulnerabilities, 3)
+				want.Results[0].Vulnerabilities[0].PkgIdentifier.SPDXID = "Package-5a18334f22149877"
+				want.Results[0].Vulnerabilities[1].PkgIdentifier.SPDXID = "Package-e16b1cbaa5186199"
+				want.Results[0].Vulnerabilities[2].PkgIdentifier.SPDXID = "Package-e16b1cbaa5186199"
 			},
 		},
 		{
