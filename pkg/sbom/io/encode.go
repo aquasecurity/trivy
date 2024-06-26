@@ -173,8 +173,15 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	// Group vulnerabilities by package ID
 	vulns := make(map[string][]core.Vulnerability)
 	for _, vuln := range result.Vulnerabilities {
-		v := e.vulnerability(vuln)
-		vulns[v.PkgID] = append(vulns[v.PkgID], v)
+		// There are cases when `Result` contains the same vulnerabilities for the same packages but with different file paths
+		// We don't need to include duplicates.
+		vv := vulns[vuln.PkgID]
+		if _, ok := lo.Find(vv, func(v core.Vulnerability) bool {
+			return vuln.VulnerabilityID == v.ID
+		}); !ok {
+			v := e.vulnerability(vuln)
+			vulns[v.PkgID] = append(vulns[v.PkgID], v)
+		}
 	}
 
 	// Convert packages into components and add them to the BOM
