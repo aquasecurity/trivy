@@ -4686,14 +4686,14 @@ For an overview of Trivy's Compliance feature, including working with custom com
 <tr>
 <td>CIS Docker Community Edition Benchmark</td>
 <td>1.1.0</td>
-<td><code>docker-cis</code></td>
+<td><code>docker-cis-1.6.0</code></td>
 <td><a href="https://www.aquasec.com/cloud-native-academy/docker-container/docker-cis-benchmark/">Link</a></td>
 </tr>
 </tbody>
 </table>
 <h3 id="examples">Examples</h3>
 <p>Scan a container image configuration and generate a compliance summary report:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --compliance docker-cis [YOUR_IMAGE_NAME]
+<div class="highlight"><pre><span></span><code>trivy image --compliance docker-cis-1.6.0 [YOUR_IMAGE_NAME]
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

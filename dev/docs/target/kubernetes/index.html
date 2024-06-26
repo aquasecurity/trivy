@@ -4369,23 +4369,33 @@ For an overview of Trivy's Compliance feature, including working with custom com
 </thead>
 <tbody>
 <tr>
-<td>NSA, CISA Kubernetes Hardening Guidance v1.2</td>
-<td><code>k8s-nsa</code></td>
+<td>NSA, CISA Kubernetes Hardening Guidance v1.0</td>
+<td><code>k8s-nsa-1.0</code></td>
 <td><a href="https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF">Link</a></td>
 </tr>
 <tr>
 <td>CIS Benchmark for Kubernetes v1.23</td>
-<td><code>k8s-cis</code></td>
+<td><code>k8s-cis-1.23</code></td>
+<td><a href="https://www.cisecurity.org/benchmark/kubernetes">Link</a></td>
+</tr>
+<tr>
+<td>CIS Benchmark for RKE2 v1.24</td>
+<td><code>rke2-cis-1.24</code></td>
+<td><a href="https://www.cisecurity.org/benchmark/kubernetes">Link</a></td>
+</tr>
+<tr>
+<td>CIS Benchmark for EKS v1.4</td>
+<td><code>eks-cis-1.4</code></td>
 <td><a href="https://www.cisecurity.org/benchmark/kubernetes">Link</a></td>
 </tr>
 <tr>
 <td>Pod Security Standards, Baseline</td>
-<td><code>k8s-pss-baseline</code></td>
+<td><code>k8s-pss-baseline-0.1</code></td>
 <td><a href="https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline">Link</a></td>
 </tr>
 <tr>
 <td>Pod  Security Standards, Restricted</td>
-<td><code>k8s-pss-restricted</code></td>
+<td><code>k8s-pss-restricted-0.1</code></td>
 <td><a href="https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted">Link</a></td>
 </tr>
 </tbody>
@@ -4395,13 +4405,13 @@ For an overview of Trivy's Compliance feature, including working with custom com
 <div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-pss-baseline --report summary
 </code></pre></div>
 <p>Get the detailed report for checks:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis --report all
+<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis-1.23 --report all
 </code></pre></div>
 <p>Get summary report in JSON format:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis --report summary --format json
+<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis-1.23 --report summary --format json
 </code></pre></div>
 <p>Get detailed report in JSON format:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis --report all --format json
+<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis-1.23 --report all --format json
 </code></pre></div>
 <h2 id="kbom">KBOM</h2>
 <p>KBOM, Kubernetes Bill of Materials, is a manifest of all the important components that make up your Kubernetes cluster – Control plane components, Node Components, and Addons, including their versions and images. Which “api-server” version are you currently running? Which flavor of "kubelet" is running on each node? What kind of etcd or storage are you currently using? And most importantly – are there any vulnerabilities known to affect these components? These are all questions that KBOM can help you answer.<br />
