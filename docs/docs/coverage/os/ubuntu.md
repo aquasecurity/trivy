@@ -44,10 +44,10 @@ Trivy supports the following [vulnerability statuses] for Ubuntu.
 |       Status        | Supported |
 | :-----------------: | :-------: |
 |        Fixed        |     ✓     |
-|      Affected       |     ✓     |
+|      Affected       |           |
 | Under Investigation |           |
-|    Will Not Fix     |           |
-|    Fix Deferred     |           |
+|    Will Not Fix     |     ✓     |
+|    Fix Deferred     |     ✓     |
 |     End of Life     |           |
 
 ## License
