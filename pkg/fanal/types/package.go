@@ -56,7 +56,8 @@ func (r *Relationship) UnmarshalJSON(data []byte) error {
 type PkgIdentifier struct {
 	UID    string                 `json:",omitempty"` // Calculated by the package struct
 	PURL   *packageurl.PackageURL `json:"-"`
-	BOMRef string                 `json:",omitempty"` // From SBOM file: `component.BOMRef` or `package.SPDXID`
+	BOMRef string                 `json:",omitempty"` // For CycloneDX
+	SPDXID string                 `json:",omitempty"` // For SPDX
 }
 
 // MarshalJSON customizes the JSON encoding of PkgIdentifier.

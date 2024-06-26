@@ -133,6 +133,9 @@ type Component struct {
 	//   SPDX: package.externalRefs.referenceLocator
 	// BOMRef:
 	//   CycloneDX: component.bom-ref
+	//   SPDX: N/A
+	// SPDXID:
+	//   CycloneDX: N/A
 	//   SPDX: package.SPDXID
 	PkgIdentifier ftypes.PkgIdentifier
 

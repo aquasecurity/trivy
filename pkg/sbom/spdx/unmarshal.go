@@ -166,7 +166,7 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 		Name:    spdxPkg.PackageName,
 		Version: spdxPkg.PackageVersion,
 		PkgIdentifier: types.PkgIdentifier{
-			BOMRef: string(spdxPkg.PackageSPDXIdentifier),
+			SPDXID: string(spdxPkg.PackageSPDXIdentifier),
 		},
 	}
 

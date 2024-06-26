@@ -152,7 +152,12 @@ func (m *Decoder) selectOS(osComponents []*core.Component, sbom *types.SBOM) {
 		if numberOfIPkgs != numberOfJPkgs {
 			return numberOfIPkgs < numberOfJPkgs
 		}
-		return osComponents[i].PkgIdentifier.BOMRef < osComponents[j].PkgIdentifier.BOMRef
+		// For CycloneDX
+		if osComponents[i].PkgIdentifier.BOMRef != "" || osComponents[j].PkgIdentifier.BOMRef != "" {
+			return osComponents[i].PkgIdentifier.BOMRef < osComponents[j].PkgIdentifier.BOMRef
+		}
+		// For SPDX
+		return osComponents[i].PkgIdentifier.SPDXID < osComponents[j].PkgIdentifier.SPDXID
 	})
 
 	if len(osComponents) > 1 {
@@ -244,6 +249,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	}
 
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
+	pkg.Identifier.SPDXID = c.PkgIdentifier.SPDXID
 	pkg.Licenses = c.Licenses
 
 	for _, f := range c.Files {
