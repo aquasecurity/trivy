@@ -27,7 +27,7 @@
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
-          "referenceLocator": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.5",
+          "referenceLocator": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.0",
           "referenceType": "purl"
         }
       ],
@@ -41,7 +41,7 @@
       "versionInfo": "3.1-20221030-2"
     },
     {
-      "SPDXID": "SPDXRef-OperatingSystem-agnrtd143",
+      "SPDXID": "SPDXRef-OperatingSystem-gnrtd143",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
@@ -49,6 +49,31 @@
       "name": "debian",
       "primaryPackagePurpose": "OPERATING_SYSTEM",
       "versionInfo": "12.5"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gnrtd175",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "99a8c7dd591fae9fb37d8bf8dfdffa850e207fa405b3198c5b24711a5f972381"
+        }
+      ],
+      "downloadLocation": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:deb/debian/libmd0@1.0.4-2?arch=arm64\u0026distro=debian-12.5",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "libmd0",
+      "primaryPackagePurpose": "LIBRARY",
+      "sourceInfo": "built package from: libmd 1.0.4-2",
+      "supplier": "Organization: Guillem Jover \u003cguillem@debian.org\u003e",
+      "versionInfo": "1.0.4-2"
     },
     {
       "SPDXID": "SPDXRef-Package-gnrtd259",
@@ -61,8 +86,8 @@
         }
       ],
       "filesAnalyzed": false,
-      "licenseConcluded": "(LicenseRef-public-domain AND LGPL-2.0-only AND LGPL-3.0-only AND BSD-4-Clause AND LGPL-2.1-only AND BSD-3-Clause AND MIT AND GPL-3.0-only AND GPL-2.0-only AND LicenseRef-BSLA)",
-      "licenseDeclared": "(LicenseRef-public-domain AND LGPL-2.0-only AND LGPL-3.0-only AND BSD-4-Clause AND LGPL-2.1-only AND BSD-3-Clause AND MIT AND GPL-3.0-only AND GPL-2.0-only AND LicenseRef-BSLA)",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
       "name": "libmount1",
       "primaryPackagePurpose": "LIBRARY",
       "sourceInfo": "built package from: util-linux 2.38.1-5+deb12u1",
@@ -77,9 +102,14 @@
       "spdxElementId": "SPDXRef-OperatingSystem-gnrtd1"
     },
     {
+      "relatedSpdxElement": "SPDXRef-Package-gnrtd175",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-OperatingSystem-gnrtd143"
+    },
+    {
       "relatedSpdxElement": "SPDXRef-Package-gnrtd259",
       "relationshipType": "CONTAINS",
-      "spdxElementId": "SPDXRef-OperatingSystem-agnrtd143"
+      "spdxElementId": "SPDXRef-OperatingSystem-gnrtd143"
     }
   ],
   "spdxVersion": "SPDX-2.3"

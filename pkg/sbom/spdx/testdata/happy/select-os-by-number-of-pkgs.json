@@ -27,7 +27,7 @@
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
-          "referenceLocator": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.5",
+          "referenceLocator": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.0",
           "referenceType": "purl"
         }
       ],

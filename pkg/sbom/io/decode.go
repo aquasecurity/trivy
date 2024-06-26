@@ -169,6 +169,19 @@ func (m *Decoder) selectOS(osComponents []*core.Component, sbom *types.SBOM) {
 		Family: ftypes.OSType(osComponents[0].Name),
 		Name:   osComponents[0].Version,
 	}
+
+	// remove pkgs of non-main OS to avoid adding them as orphan packages
+	m.removeOSesPkgs(osComponents[1:])
+}
+
+// RemoveOSesPkgs removes associated packages with osComponents from `Decoder.pkgs`
+func (m *Decoder) removeOSesPkgs(osComponents []*core.Component) {
+	for _, osComponent := range osComponents {
+		for _, pkg := range m.bom.Relationships()[osComponent.ID()] {
+			delete(m.pkgs, pkg.Dependency)
+		}
+	}
+	return
 }
 
 // buildDependencyGraph builds a dependency graph between packages

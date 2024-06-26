@@ -399,39 +399,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							},
 						},
 					},
-					{
-						Packages: ftypes.Packages{
-							{
-								ID:         "libedit2@3.1-20221030-2",
-								Name:       "libedit2",
-								Version:    "3.1-20221030-2",
-								Arch:       "amd64",
-								SrcName:    "libedit",
-								SrcVersion: "3.1-20221030",
-								SrcRelease: "2",
-								Licenses:   []string{"BSD-3-Clause"},
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:      packageurl.TypeDebian,
-										Namespace: "debian",
-										Name:      "libedit2",
-										Version:   "3.1-20221030-2",
-										Qualifiers: packageurl.Qualifiers{
-											{
-												Key:   "arch",
-												Value: "amd64",
-											},
-											{
-												Key:   "distro",
-												Value: "debian-12.5",
-											},
-										},
-									},
-									SPDXID: "Package-gnrtd7",
-								},
-							},
-						},
-					},
 				},
 			},
 		},
@@ -442,43 +409,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: "debian",
-						Name:   "12.5",
+						Name:   "12.0",
 					},
 				},
 				Packages: []ftypes.PackageInfo{
-					{
-						Packages: ftypes.Packages{
-							{
-								ID:         "libmount1@2.38.1-5+deb12u1",
-								Name:       "libmount1",
-								Version:    "2.38.1-5+deb12u1",
-								Arch:       "arm64",
-								SrcName:    "util-linux",
-								SrcVersion: "2.38.1",
-								SrcRelease: "5+deb12u1",
-								Licenses:   []string{"MIT"},
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:      packageurl.TypeDebian,
-										Namespace: "debian",
-										Name:      "libmount1",
-										Version:   "2.38.1-5+deb12u1",
-										Qualifiers: packageurl.Qualifiers{
-											{
-												Key:   "arch",
-												Value: "arm64",
-											},
-											{
-												Key:   "distro",
-												Value: "debian-12.5",
-											},
-										},
-									},
-									SPDXID: "Package-gnrtd259",
-								},
-							},
-						},
-					},
 					{
 						Packages: ftypes.Packages{
 							{
@@ -503,7 +437,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 											},
 											{
 												Key:   "distro",
-												Value: "debian-12.5",
+												Value: "debian-12.0",
 											},
 										},
 									},

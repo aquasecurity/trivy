@@ -26,20 +26,38 @@
       "Type": "debian",
       "Packages": [
         {
-          "ID": "libedit2@3.1-20221030-2",
-          "Name": "libedit2",
+          "ID": "libmd0@1.0.4-2",
+          "Name": "libmd0",
           "Identifier": {
-            "PURL": "pkg:deb/debian/libedit2@3.1-20221030-2?arch=amd64\u0026distro=debian-12.5",
-            "UID": "7bc539cf6076d318",
-            "SPDXID": "Package-gnrtd7"
+            "PURL": "pkg:deb/debian/libmd0@1.0.4-2?arch=arm64\u0026distro=debian-12.5",
+            "UID": "1a40caf90922a802",
+            "SPDXID": "Package-gnrtd175"
           },
-          "Version": "3.1-20221030-2",
-          "Arch": "amd64",
-          "SrcName": "libedit",
-          "SrcVersion": "3.1-20221030",
+          "Version": "1.0.4-2",
+          "Arch": "arm64",
+          "SrcName": "libmd",
+          "SrcVersion": "1.0.4",
           "SrcRelease": "2",
           "Licenses": [
-            "BSD-3-Clause"
+            "MIT"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "libmount1@2.38.1-5+deb12u1",
+          "Name": "libmount1",
+          "Identifier": {
+            "PURL": "pkg:deb/debian/libmount1@2.38.1-5%2Bdeb12u1?arch=arm64\u0026distro=debian-12.5",
+            "UID": "f5f492c064df8ae2",
+            "SPDXID": "Package-gnrtd259"
+          },
+          "Version": "2.38.1-5+deb12u1",
+          "Arch": "arm64",
+          "SrcName": "util-linux",
+          "SrcVersion": "2.38.1",
+          "SrcRelease": "5+deb12u1",
+          "Licenses": [
+            "MIT"
           ],
           "Layer": {}
         }
