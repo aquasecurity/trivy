@@ -4161,7 +4161,7 @@ sudo dpkg -i trivy_0.52.0_Linux-64bit.deb
 </code></pre></div>
 <h3 id="arch-linux-community">Arch Linux (Community)</h3>
 <p>Arch Linux Package Repository.</p>
-<div class="highlight"><pre><span></span><code>pacman -S trivy
+<div class="highlight"><pre><span></span><code>sudo pacman -S trivy
 </code></pre></div>
 <p>References: 
 - <a href="https://archlinux.org/packages/extra/x86_64/trivy/">https://archlinux.org/packages/extra/x86_64/trivy/</a>
@@ -4249,12 +4249,12 @@ trivy --version
 <ol>
 <li>Download the file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.52.0">GitHub Release assets</a>.  </li>
 <li>Unpack the downloaded archive (<code>tar -xzf ./trivy.tar.gz</code>).</li>
-<li>Put the binary somewhere in your <code>$PATH</code> (e.g <code>mv ./trivy /usr/local/bin/</code>).</li>
 <li>Make sure the binary has execution bit turned on (<code>chmod +x ./trivy</code>).</li>
+<li>Put the binary somewhere in your <code>$PATH</code> (e.g <code>sudo mv ./trivy /usr/local/bin/</code>).</li>
 </ol>
 <h3 id="install-script">Install Script</h3>
 <p>The process above can be automated by the following script:</p>
-<div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.52.0
+<div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sudo sh -s -- -b /usr/local/bin v0.52.0
 </code></pre></div>
 <h3 id="install-from-source">Install from source</h3>
 <div class="highlight"><pre><span></span><code>git clone --depth <span class="m">1</span> --branch v0.52.0 https://github.com/aquasecurity/trivy
