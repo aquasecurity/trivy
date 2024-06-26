@@ -248,10 +248,10 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	if r.initializeScanner == nil {
-		r.initializeScanner = initializeScanner
+	if r.initializeScanner != nil {
+		initializeScanner = r.initializeScanner
 	}
-	report, err := r.scan(ctx, opts)
+	report, err := r.scan(ctx, opts, initializeScanner)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
@@ -614,12 +614,12 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	}, scanOptions, nil
 }
 
-func (r *runner) scan(ctx context.Context, opts flag.Options) (types.Report, error) {
+func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
 	scannerConfig, scanOptions, err := r.initScannerConfig(opts)
 	if err != nil {
 		return types.Report{}, err
 	}
-	s, cleanup, err := r.initializeScanner(ctx, scannerConfig)
+	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
