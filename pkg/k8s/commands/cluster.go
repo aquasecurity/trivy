@@ -5,9 +5,11 @@ import (
 
 	"golang.org/x/xerrors"
 
+	trivy_checks "github.com/aquasecurity/trivy-checks"
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -35,11 +37,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			trivyk8s.WithExcludeOwned(opts.ExcludeOwned),
 		}
 		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && !opts.DisableNodeCollector {
-			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx,
-				trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
-				trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
-				trivyk8s.WithScanJobImageRef(opts.NodeCollectorImageRef),
-				trivyk8s.WithTolerations(opts.Tolerations))
+			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx, nodeCollectorOptions(opts)...)
 			if err != nil {
 				return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 			}
@@ -59,4 +57,49 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	}
 	runner := newRunner(opts, cluster.GetCurrentContext())
 	return runner.run(ctx, artifacts)
+}
+
+func nodeCollectorOptions(opts flag.Options) []trivyk8s.NodeCollectorOption {
+	nodeCollectorOptions := []trivyk8s.NodeCollectorOption{
+		trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
+		trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
+		trivyk8s.WithScanJobImageRef(opts.NodeCollectorImageRef),
+		trivyk8s.WithTolerations(opts.Tolerations)}
+
+	contentPath, err := operation.InitBuiltinPolicies(context.Background(),
+		opts.CacheDir,
+		opts.Quiet,
+		opts.SkipCheckUpdate,
+		opts.MisconfOptions.ChecksBundleRepository,
+		opts.RegistryOpts())
+
+	if err != nil {
+		log.Error("Falling back to embedded checks", log.Err(err))
+		nodeCollectorOptions = append(nodeCollectorOptions,
+			[]trivyk8s.NodeCollectorOption{
+				trivyk8s.WithEmbeddedCommandFileSystem(trivy_checks.EmbeddedK8sCommandsFileSystem),
+				trivyk8s.WithEmbeddedNodeConfigFilesystem(trivy_checks.EmbeddedConfigCommandsFileSystem),
+			}...)
+	}
+
+	complianceCommandsIDs := getComplianceCommands(opts)
+	nodeCollectorOptions = append(nodeCollectorOptions, []trivyk8s.NodeCollectorOption{
+		trivyk8s.WithCommandPaths(contentPath),
+		trivyk8s.WithSpecCommandIds(complianceCommandsIDs),
+	}...)
+	return nodeCollectorOptions
+}
+
+func getComplianceCommands(opts flag.Options) []string {
+	var commands []string
+	if opts.Compliance.Spec.ID != "" {
+		for _, control := range opts.Compliance.Spec.Controls {
+			for _, command := range control.Commands {
+				if command.ID != "" {
+					commands = append(commands, command.ID)
+				}
+			}
+		}
+	}
+	return commands
 }

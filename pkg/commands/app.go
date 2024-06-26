@@ -247,7 +247,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = report
 
 	compliance := flag.ComplianceFlag.Clone()
-	compliance.Values = []string{types.ComplianceDockerCIS}
+	compliance.Values = []string{types.ComplianceDockerCIS160}
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 
 	misconfFlagGroup := flag.NewMisconfFlagGroup()
@@ -946,10 +946,12 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag.Clone()
 	compliance.Values = []string{
-		types.ComplianceK8sNsa,
-		types.ComplianceK8sCIS,
-		types.ComplianceK8sPSSBaseline,
-		types.ComplianceK8sPSSRestricted,
+		types.ComplianceK8sNsa10,
+		types.ComplianceK8sCIS123,
+		types.ComplianceEksCIS14,
+		types.ComplianceRke2CIS124,
+		types.ComplianceK8sPSSBaseline01,
+		types.ComplianceK8sPSSRestricted01,
 	}
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'

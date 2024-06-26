@@ -34,7 +34,7 @@ trivy kubernetes [flags] [CONTEXT]
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
-      --compliance string                 compliance report to generate (k8s-nsa,k8s-cis,k8s-pss-baseline,k8s-pss-restricted)
+      --compliance string                 compliance report to generate (k8s-nsa-1.0,k8s-cis-1.23,eks-cis-1.4,rke2-cis-1.24,k8s-pss-baseline-0.1,k8s-pss-restricted-0.1)
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
@@ -71,7 +71,7 @@ trivy kubernetes [flags] [CONTEXT]
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --no-progress                       suppress progress bar
-      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.2.1")
+      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.3.1")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
