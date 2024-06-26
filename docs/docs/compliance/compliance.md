@@ -154,7 +154,7 @@ deny[res] {
 
 ### Compliance Command ID
 
-***Note:*** This field is not mandatory, it relevant to k8s compliance report when node-collector is in use
+***Note:*** This field is not mandatory, it is relevant to k8s compliance report when node-collector is in use
 
 Specify the command ID (#ref) that needs to be executed to collect the information required to evaluate the control.
 
@@ -199,7 +199,7 @@ Specify the node type on which the command is supposed to run.
 
 ### Command Audit
 
-Specifiy here the shell command to be used please make sure to add error supression (2>/dev/null)
+Specify here the shell command to be used please make sure to add error supression (2>/dev/null)
 
 ### Command Platforms
 
