@@ -327,6 +327,195 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path multiple OS. OS is selected by number of packages",
+			inputFile: "testdata/happy/select-os-by-number-of-pkgs.json",
+			want: types.SBOM{
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "debian",
+						Name:   "12.5",
+					},
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "libmd0@1.0.4-2",
+								Name:       "libmd0",
+								Version:    "1.0.4-2",
+								Arch:       "arm64",
+								SrcName:    "libmd",
+								SrcVersion: "1.0.4",
+								SrcRelease: "2",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libmd0",
+										Version:   "1.0.4-2",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.5",
+											},
+										},
+									},
+									SPDXID: "Package-gnrtd175",
+								},
+							},
+							{
+								ID:         "libmount1@2.38.1-5+deb12u1",
+								Name:       "libmount1",
+								Version:    "2.38.1-5+deb12u1",
+								Arch:       "arm64",
+								SrcName:    "util-linux",
+								SrcVersion: "2.38.1",
+								SrcRelease: "5+deb12u1",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libmount1",
+										Version:   "2.38.1-5+deb12u1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.5",
+											},
+										},
+									},
+									SPDXID: "Package-gnrtd259",
+								},
+							},
+						},
+					},
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "libedit2@3.1-20221030-2",
+								Name:       "libedit2",
+								Version:    "3.1-20221030-2",
+								Arch:       "amd64",
+								SrcName:    "libedit",
+								SrcVersion: "3.1-20221030",
+								SrcRelease: "2",
+								Licenses:   []string{"BSD-3-Clause"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libedit2",
+										Version:   "3.1-20221030-2",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "amd64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.5",
+											},
+										},
+									},
+									SPDXID: "Package-gnrtd7",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path multiple OS. OS is selected by SPDXID",
+			inputFile: "testdata/happy/select-os-by-spdxid.json",
+			want: types.SBOM{
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "debian",
+						Name:   "12.5",
+					},
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "libmount1@2.38.1-5+deb12u1",
+								Name:       "libmount1",
+								Version:    "2.38.1-5+deb12u1",
+								Arch:       "arm64",
+								SrcName:    "util-linux",
+								SrcVersion: "2.38.1",
+								SrcRelease: "5+deb12u1",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libmount1",
+										Version:   "2.38.1-5+deb12u1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.5",
+											},
+										},
+									},
+									SPDXID: "Package-gnrtd259",
+								},
+							},
+						},
+					},
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "libedit2@3.1-20221030-2",
+								Name:       "libedit2",
+								Version:    "3.1-20221030-2",
+								Arch:       "amd64",
+								SrcName:    "libedit",
+								SrcVersion: "3.1-20221030",
+								SrcRelease: "2",
+								Licenses:   []string{"BSD-3-Clause"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libedit2",
+										Version:   "3.1-20221030-2",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "amd64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.5",
+											},
+										},
+									},
+									SPDXID: "Package-gnrtd7",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path with file as parent of relationship",
 			inputFile: "testdata/happy/with-file-as-relationship-parent.json",
 			want:      types.SBOM{},

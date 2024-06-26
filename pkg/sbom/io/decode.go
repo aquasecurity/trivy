@@ -150,7 +150,7 @@ func (m *Decoder) selectOS(osComponents []*core.Component, sbom *types.SBOM) {
 		numberOfIPkgs := len(m.bom.Relationships()[osComponents[i].ID()])
 		numberOfJPkgs := len(m.bom.Relationships()[osComponents[j].ID()])
 		if numberOfIPkgs != numberOfJPkgs {
-			return numberOfIPkgs < numberOfJPkgs
+			return numberOfIPkgs > numberOfJPkgs
 		}
 		// For CycloneDX
 		if osComponents[i].PkgIdentifier.BOMRef != "" || osComponents[j].PkgIdentifier.BOMRef != "" {
