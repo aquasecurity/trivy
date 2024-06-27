@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/flag"
 )
@@ -99,6 +100,9 @@ func TestRun(t *testing.T) {
 			opts := flag.Options{
 				GlobalOptions: flag.GlobalOptions{
 					CacheDir: tempDir,
+				},
+				CacheOptions: flag.CacheOptions{
+					CacheBackend: string(cache.TypeFS),
 				},
 				CleanOptions: tt.cleanOpts,
 			}
