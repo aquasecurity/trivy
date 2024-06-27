@@ -80,7 +80,6 @@ type CacheOptions struct {
 // NewCacheFlagGroup returns a default CacheFlagGroup
 func NewCacheFlagGroup() *CacheFlagGroup {
 	return &CacheFlagGroup{
-		ClearCache:   ClearCacheFlag.Clone(),
 		CacheBackend: CacheBackendFlag.Clone(),
 		CacheTTL:     CacheTTLFlag.Clone(),
 		RedisTLS:     RedisTLSFlag.Clone(),
@@ -112,7 +111,6 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 	}
 
 	return CacheOptions{
-		ClearCache:   fg.ClearCache.Value(),
 		CacheBackend: fg.CacheBackend.Value(),
 		CacheTTL:     fg.CacheTTL.Value(),
 		RedisTLS:     fg.RedisTLS.Value(),
