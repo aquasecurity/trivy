@@ -9,14 +9,17 @@ Trivy supports the following scanners for Conda packages.
 |    License    |     ✓     |
 
 
-## SBOM
-Trivy detects packages that have been installed with `Conda`.
 
+## `<package>.json`
+### SBOM
+Trivy parses `<conda-root>/envs/<env>/conda-meta/<package>.json` files to find the dependencies installed in your env.
 
-### `<package>.json`
-Trivy parses `<conda-root>/envs/<env>/conda-meta/<package>.json` files to find the version and license for the dependencies installed in your env.
+### License
+The `<package>.json` files contain package license information.
+Trivy includes licenses for the packages it finds without having to parse additional files.
 
-### `environment.yml`[^1]
+## `environment.yml`[^1]
+### SBOM
 Trivy supports parsing [environment.yml][environment.yml][^1] files to find dependency list.
 
 `environment.yml`[^1] files supports [version range][env-version-range]. We can't be sure about versions for these dependencies.
@@ -25,8 +28,9 @@ Therefore, you need to use `conda env export` command to get dependency list in 
 !!! note
     For dependencies in a non-Conda format, Trivy doesn't include a version of them.
 
-#### licenses
+### License
 Trivy parses `conda-meta/<package>.json` files at the [prefix] path.
+
 To correctly define licenses, make sure your `environment.yml`[^1] contains `prefix` field and `prefix` directory contains `package.json` files.
 
 !!! note 
