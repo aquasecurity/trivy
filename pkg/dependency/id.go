@@ -1,9 +1,13 @@
 package dependency
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/mitchellh/hashstructure/v2"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // ID returns a unique ID for the given library.
@@ -29,4 +33,20 @@ func ID(ltype types.LangType, name, version string) string {
 		sep = ":"
 	}
 	return name + sep + version
+}
+
+// UID calculates the hash of the package for the unique ID
+func UID(filePath string, pkg types.Package) string {
+	v := map[string]any{
+		"filePath": filePath, // To differentiate the hash of the same package but different file path
+		"pkg":      pkg,
+	}
+	hash, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
+		ZeroNil:         true,
+		IgnoreZeroValue: true,
+	})
+	if err != nil {
+		log.Warn("Failed to calculate the package hash", log.String("pkg", pkg.Name), log.Err(err))
+	}
+	return fmt.Sprintf("%x", hash)
 }

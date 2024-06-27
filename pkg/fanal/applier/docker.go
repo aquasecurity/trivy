@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/knqyf263/nested"
-	"github.com/mitchellh/hashstructure/v2"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -223,7 +223,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		if mergedLayer.OS.Family != "" {
 			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
 		}
-		mergedLayer.Packages[i].Identifier.UID = calcPkgUID("", pkg)
+		mergedLayer.Packages[i].Identifier.UID = dependency.UID("", pkg)
 
 		// Only debian packages
 		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
@@ -244,7 +244,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			if pkg.Identifier.PURL == nil {
 				app.Packages[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, pkg)
 			}
-			app.Packages[i].Identifier.UID = calcPkgUID(app.FilePath, pkg)
+			app.Packages[i].Identifier.UID = dependency.UID(app.FilePath, pkg)
 		}
 	}
 
@@ -261,22 +261,6 @@ func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 		return nil
 	}
 	return p.Unwrap()
-}
-
-// calcPkgUID calculates the hash of the package for the unique ID
-func calcPkgUID(filePath string, pkg ftypes.Package) string {
-	v := map[string]any{
-		"filePath": filePath, // To differentiate the hash of the same package but different file path
-		"pkg":      pkg,
-	}
-	hash, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
-		ZeroNil:         true,
-		IgnoreZeroValue: true,
-	})
-	if err != nil {
-		log.Warn("Failed to calculate the package hash", log.String("pkg", pkg.Name), log.Err(err))
-	}
-	return fmt.Sprintf("%x", hash)
 }
 
 // aggregate merges all packages installed by pip/gem/npm/jar/conda into each application
