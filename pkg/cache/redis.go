@@ -88,7 +88,7 @@ func NewRedisCache(backend, caCertPath, certPath, keyPath string, enableTLS bool
 		return RedisCache{}, xerrors.Errorf("failed to create Redis options: %w", err)
 	}
 
-	log.Info("Redis cache", log.String("url", opts.BackendMasked()))
+	log.Info("Redis scan cache", log.String("url", opts.BackendMasked()))
 	options, err := redis.ParseURL(opts.Backend)
 	if err != nil {
 		return RedisCache{}, xerrors.Errorf("failed to parse Redis URL: %w", err)
