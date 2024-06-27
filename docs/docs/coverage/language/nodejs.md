@@ -8,7 +8,7 @@ The following scanners are supported.
 |----------|:----:|:-------------:|:-------:|
 | npm      |  ✓   |       ✓       |    ✓    |
 | Yarn     |  ✓   |       ✓       |    ✓    |
-| pnpm     |  ✓   |       ✓       |    -    |
+| pnpm     |  ✓   |       ✓       |    ✓    |
 | Bun      |  ✓   |       ✓       |    ✓    |
 
 The following table provides an outline of the features Trivy offers.
