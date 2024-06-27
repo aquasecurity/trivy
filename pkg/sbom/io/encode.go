@@ -174,25 +174,33 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	vulns := make(map[string][]core.Vulnerability)
 	for _, vuln := range result.Vulnerabilities {
 		v := e.vulnerability(vuln)
-		vulns[v.PkgID] = append(vulns[v.PkgID], v)
+		vulns[vuln.PkgIdentifier.UID] = append(vulns[vuln.PkgIdentifier.UID], v)
 	}
 
 	// Convert packages into components and add them to the BOM
 	parentRelationship := core.RelationshipContains
+
+	// UID => Package Component
 	components := make(map[string]*core.Component, len(result.Packages))
+	// PkgID => Package Component
+	dependencies := make(map[string]*core.Component, len(result.Packages))
 	for i, pkg := range result.Packages {
 		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, pkg.Version), pkg.ID)
 		result.Packages[i].ID = pkgID
 
 		// Convert packages to components
 		c := e.component(result, pkg)
-		components[pkgID+pkg.FilePath] = c
+		components[pkg.Identifier.UID] = c
+
+		// For dependencies: the key "pkgID" might be duplicated in aggregated packages,
+		// but it doesn't matter as they don't have "DependsOn".
+		dependencies[pkgID] = c
 
 		// Add a component
 		e.bom.AddComponent(c)
 
 		// Add vulnerabilities
-		if vv := vulns[pkgID]; vv != nil {
+		if vv := vulns[pkg.Identifier.UID]; vv != nil {
 			e.bom.AddVulnerabilities(c, vv)
 		}
 
@@ -211,7 +219,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		if pkg.Relationship == ftypes.RelationshipRoot {
 			continue
 		}
-		c := components[pkg.ID+pkg.FilePath]
+		c := components[pkg.Identifier.UID]
 
 		// Add a relationship between the parent and the package if needed
 		if e.belongToParent(pkg, parents) {
@@ -220,7 +228,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 
 		// Add relationships between the package and its dependencies
 		for _, dep := range pkg.DependsOn {
-			dependsOn, ok := components[dep]
+			dependsOn, ok := dependencies[dep]
 			if !ok {
 				continue
 			}
@@ -369,7 +377,7 @@ func (*Encoder) vulnerability(vuln types.DetectedVulnerability) core.Vulnerabili
 	return core.Vulnerability{
 		Vulnerability:    vuln.Vulnerability,
 		ID:               vuln.VulnerabilityID,
-		PkgID:            lo.Ternary(vuln.PkgID == "", fmt.Sprintf("%s@%s", vuln.PkgName, vuln.InstalledVersion), vuln.PkgID),
+		PkgID:            vuln.PkgID,
 		PkgName:          vuln.PkgName,
 		InstalledVersion: vuln.InstalledVersion,
 		FixedVersion:     vuln.FixedVersion,
