@@ -132,6 +132,10 @@ func Test_environmentAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "empty",
+			inputFile: "testdata/empty.yaml",
+		},
+		{
 			name:      "invalid",
 			inputFile: "testdata/invalid.yaml",
 			wantErr:   "unable to parse environment.yaml",

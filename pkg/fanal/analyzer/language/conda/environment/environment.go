@@ -32,25 +32,28 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 		return nil, xerrors.Errorf("unable to parse environment.yaml: %w", err)
 	}
 
-	if res != nil && len(res.Applications) > 0 {
-		once := sync.Once{}
-		// For `environment.yaml` Applications always contains only 1 Application
-		for i, pkg := range res.Applications[0].Packages {
-			// Skip packages without a version, because in this case we will not be able to get the correct file name.
-			if pkg.Version != "" {
-				licenses, err := findLicenseFromEnvDir(pkg)
-				if err != nil {
-					// Show log once per file
-					once.Do(func() {
-						log.WithPrefix("conda").Debug("License not found. For more information, see https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#licenses",
-							log.String("file", input.FilePath), log.String("pkg", pkg.Name), log.Err(err))
-					})
-				}
-				pkg.Licenses = licenses
+	if res == nil {
+		return nil, nil
+	}
+
+	once := sync.Once{}
+	// res always contains only 1 Application
+	// cf. https://github.com/aquasecurity/trivy/blob/0ccdbfbb6598a52de7cda603ab22e794f710e86c/pkg/fanal/analyzer/language/analyze.go#L32
+	for i, pkg := range res.Applications[0].Packages {
+		// Skip packages without a version, because in this case we will not be able to get the correct file name.
+		if pkg.Version != "" {
+			licenses, err := findLicenseFromEnvDir(pkg)
+			if err != nil {
+				// Show log once per file
+				once.Do(func() {
+					log.WithPrefix("conda").Debug("License not found. For more information, see https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#licenses",
+						log.String("file", input.FilePath), log.String("pkg", pkg.Name), log.Err(err))
+				})
 			}
-			pkg.FilePath = "" // remove `prefix` from FilePath
-			res.Applications[0].Packages[i] = pkg
+			pkg.Licenses = licenses
 		}
+		pkg.FilePath = "" // remove `prefix` from FilePath
+		res.Applications[0].Packages[i] = pkg
 
 	}
 
