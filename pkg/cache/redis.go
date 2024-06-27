@@ -3,8 +3,10 @@ package cache
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -227,4 +229,22 @@ func (c RedisCache) Clear() error {
 		}
 	}
 	return nil
+}
+
+// GetTLSConfig gets tls config from CA, Cert and Key file
+func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Certificate, error) {
+	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
+	if err != nil {
+		return nil, tls.Certificate{}, err
+	}
+
+	caCert, err := os.ReadFile(caCertPath)
+	if err != nil {
+		return nil, tls.Certificate{}, err
+	}
+
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	return caCertPool, cert, nil
 }
