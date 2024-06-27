@@ -24,7 +24,6 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
 	defer cleanup()
-	log.Debug("Cache", log.String("dir", opts.CacheDir))
 
 	// download the database file
 	if err = operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository,
