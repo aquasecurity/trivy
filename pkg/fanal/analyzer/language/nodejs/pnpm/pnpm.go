@@ -3,23 +3,24 @@ package pnpm
 import (
 	"context"
 	"errors"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	xpath "github.com/aquasecurity/trivy/pkg/x/path"
-	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
 
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
 func init() {
@@ -95,6 +96,13 @@ func (a pnpmAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	if fileName == types.PnpmLock && !xpath.Contains(filePath, "node_modules") {
 		return true
 	}
+
+	// Save package.json files only from the `node_modules` directory.
+	// Required to search for licenses.
+	if fileName == types.NpmPkg && xpath.Contains(filePath, "node_modules") {
+		return true
+	}
+
 	return false
 }
 
