@@ -28,7 +28,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			Service:            "srvc",
 			Library:            false,
 			Frameworks: map[framework.Framework][]string{
-				framework.Default: {"dd"},
+				framework.CIS_AWS_1_2: {"dd"},
 			},
 		}
 
@@ -47,7 +47,8 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 				"library":             true,
 				"url":                 "r_n",
 				"frameworks": map[string]any{
-					"all": []any{"aa"},
+					"all":     []any{"aa"},
+					"default": nil,
 				},
 			},
 		))
@@ -68,8 +69,9 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			Service:            "srvc_n",
 			Library:            true,
 			Frameworks: map[framework.Framework][]string{
-				framework.Default: {"dd"},
-				framework.ALL:     {"aa"},
+				framework.CIS_AWS_1_2: {"dd"},
+				framework.ALL:         {"aa"},
+				framework.Default:     {},
 			},
 			CloudFormation: &scan.EngineMetadata{},
 			Terraform:      &scan.EngineMetadata{},
