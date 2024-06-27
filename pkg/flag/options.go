@@ -353,8 +353,10 @@ type Options struct {
 }
 
 // Align takes consistency of options
-func (o *Options) Align() error {
-	o.enableSBOM()
+func (o *Options) Align(f *Flags) error {
+	if f.ScanFlagGroup != nil && f.ScanFlagGroup.Scanners != nil {
+		o.enableSBOM()
+	}
 
 	if o.Compliance.Spec.ID != "" {
 		if viper.IsSet(ScannersFlag.ConfigName) {
@@ -738,7 +740,7 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		}
 	}
 
-	if err := opts.Align(); err != nil {
+	if err := opts.Align(f); err != nil {
 		return Options{}, xerrors.Errorf("align options error: %w", err)
 	}
 
