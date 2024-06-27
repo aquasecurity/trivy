@@ -124,7 +124,7 @@ func (a pnpmAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string][]st
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
 	licenses := make(map[string][]string)
-	err = fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r io.Reader) error {
+	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
