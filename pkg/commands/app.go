@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
@@ -330,12 +331,6 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFormat := flag.ReportFormatFlag.Clone()
-	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
-	reportFlagGroup.ReportFormat = reportFormat
-	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
-
 	fsFlags := &flag.Flags{
 		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -346,11 +341,15 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        reportFlagGroup,
+		ReportFlagGroup:        flag.NewReportFlagGroup(),
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
+
+	fsFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory)                           // Use memory cache by default
+	fsFlags.ReportFlagGroup.ReportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
+	fsFlags.ReportFlagGroup.ExitOnEOL = nil                                                          // disable '--exit-on-eol'
 
 	cmd := &cobra.Command{
 		Use:     "filesystem [flags] PATH",
@@ -405,10 +404,11 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
-	rootfsFlags.ReportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	rootfsFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
-	rootfsFlags.ReportFlagGroup.ReportFormat = nil // disable '--report'
-	rootfsFlags.ScanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+	rootfsFlags.ReportFlagGroup.ReportFormat = nil                             // TODO: support --report summary
+	rootfsFlags.ReportFlagGroup.Compliance = nil                               // disable '--compliance'
+	rootfsFlags.ReportFlagGroup.ReportFormat = nil                             // disable '--report'
+	rootfsFlags.ScanFlagGroup.IncludeDevDeps = nil                             // disable '--include-dev-deps'
+	rootfsFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
 
 	cmd := &cobra.Command{
 		Use:     "rootfs [flags] ROOTDIR",
@@ -468,6 +468,8 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	repoFlags.ReportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	repoFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
 	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
+
+	repoFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] (REPO_PATH | REPO_URL)",
@@ -651,15 +653,6 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
-	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
-	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
-	reportFlagGroup.ShowSuppressed = nil // disable '--show-suppressed'
-	reportFormat := flag.ReportFormatFlag.Clone()
-	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
-	reportFlagGroup.ReportFormat = reportFormat
-
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
 		SkipDirs:     flag.SkipDirsFlag.Clone(),
@@ -678,9 +671,16 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			// disable unneeded flags
 			K8sVersion: flag.K8sVersionFlag.Clone(),
 		},
-		ReportFlagGroup: reportFlagGroup,
+		ReportFlagGroup: flag.NewReportFlagGroup(),
 		ScanFlagGroup:   scanFlags,
 	}
+
+	configFlags.ReportFlagGroup.DependencyTree = nil                                                     // disable '--dependency-tree'
+	configFlags.ReportFlagGroup.ListAllPkgs = nil                                                        // disable '--list-all-pkgs'
+	configFlags.ReportFlagGroup.ExitOnEOL = nil                                                          // disable '--exit-on-eol'
+	configFlags.ReportFlagGroup.ShowSuppressed = nil                                                     // disable '--show-suppressed'
+	configFlags.ReportFlagGroup.ReportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
+	configFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory)
 
 	cmd := &cobra.Command{
 		Use:     "config [flags] DIR",
@@ -1142,6 +1142,8 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		LicenseFlagGroup:       licenseFlagGroup,
 	}
 
+	sbomFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
+
 	cmd := &cobra.Command{
 		Use:     "sbom [flags] SBOM_PATH",
 		Short:   "Scan SBOM for vulnerabilities and licenses",
@@ -1220,6 +1222,7 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	return cmd
 }
+
 func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{

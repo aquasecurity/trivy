@@ -21,7 +21,7 @@ trivy vm [flags] VM_IMAGE
 
 ```
       --aws-region string                 AWS region to scan
-      --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --compliance string                 compliance report to generate
