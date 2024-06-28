@@ -3,8 +3,6 @@ package pnpm
 import (
 	"context"
 	"errors"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"io"
 	"io/fs"
 	"os"
@@ -14,9 +12,11 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
