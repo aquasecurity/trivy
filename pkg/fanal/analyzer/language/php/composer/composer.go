@@ -26,7 +26,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeComposer, newComposerAnalyzer)
 }
 
-const version = 1
+const composerAnalyzerVersion = 1
 
 var requiredFiles = []string{
 	types.ComposerLock,
@@ -96,7 +96,7 @@ func (a composerAnalyzer) Type() analyzer.Type {
 }
 
 func (a composerAnalyzer) Version() int {
-	return version
+	return composerAnalyzerVersion
 }
 
 func (a composerAnalyzer) parseComposerLock(path string, r io.Reader) (*types.Application, error) {
