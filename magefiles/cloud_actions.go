@@ -186,7 +186,7 @@ func generateFile(path string, actions []string) error {
 
 package iam
 
-var allowedActionsForResourceWildcardsMap = map[string]struct{}{
+var AllowedActionsForResourceWildcardsMap = map[string]struct{}{
 `,
 	)
 
@@ -200,7 +200,7 @@ var allowedActionsForResourceWildcardsMap = map[string]struct{}{
 
 func main() {
 	if err := GenAllowedActions(); err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 }
 
@@ -209,7 +209,7 @@ func GenAllowedActions() error {
 	log.Info("Start parsing actions")
 	startTime := time.Now()
 	defer func() {
-		log.Info("Parsing is completed", log.Duration(time.Since(startTime).Seconds()))
+		log.Info("Parsing is completed", log.Duration("time", time.Since(startTime)))
 	}()
 
 	doc, err := htmlquery.LoadURL(serviceActionReferencesURL)

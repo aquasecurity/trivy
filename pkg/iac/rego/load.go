@@ -7,8 +7,10 @@ import (
 	"io/fs"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/bundle"
+	"github.com/open-policy-agent/opa/storage"
 	"github.com/samber/lo"
 )
 
@@ -125,10 +127,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		namespace := getModuleNamespace(module)
 		uniq[namespace] = struct{}{}
 	}
-	var namespaces []string
-	for namespace := range uniq {
-		namespaces = append(namespaces, namespace)
-	}
+	namespaces := lo.Keys(uniq)
 
 	dataFS := srcFS
 	if s.dataFS != nil {
@@ -139,9 +138,34 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	if err != nil {
 		return fmt.Errorf("unable to load data: %w", err)
 	}
+
 	s.store = store
 
+	if err := s.addData(iam.AllowedActionsForResourceWildcardsMap, []string{"aws", "iam", "allowed_actions"}); err != nil {
+		s.debug.Log("Failed to add aws.iam.allowed_actions data to Rego store: %s", err)
+	}
+
 	return s.compilePolicies(srcFS, paths)
+}
+
+func (s *Scanner) addData(data any, path []string) (err error) {
+	fn := func(tx storage.Transaction) error {
+		if err := storage.MakeDir(context.TODO(), s.store, tx, storage.Path(path[:len(path)-1])); err != nil {
+			return fmt.Errorf("failed to create dir in store: %w", err)
+		}
+
+		if err := s.store.Write(context.TODO(), tx, storage.AddOp, storage.Path(path), data); err != nil {
+			return fmt.Errorf("unable to write data: %w", err)
+		}
+
+		return nil
+	}
+
+	if err := storage.Txn(context.TODO(), s.store, storage.WriteParams, fn); err != nil {
+		return fmt.Errorf("unable to write data: %w", err)
+	}
+
+	return nil
 }
 
 func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {

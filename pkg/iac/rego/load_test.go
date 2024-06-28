@@ -2,6 +2,7 @@ package rego_test
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"fmt"
 	"io"
@@ -246,4 +247,46 @@ deny {
 	)
 	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
 	require.Error(t, err)
+}
+
+func TestCheckWithAllowedActions(t *testing.T) {
+
+	var debugBuf bytes.Buffer
+
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		options.ScannerWithEmbeddedPolicies(false),
+		options.ScannerWithPolicyNamespaces("user"),
+		options.ScannerWithRegoErrorLimits(0),
+		options.ScannerWithPerResultTracing(true),
+		options.ScannerWithTrace(&debugBuf),
+	)
+
+	fsys := fstest.MapFS{
+		"test-check.rego": &fstest.MapFile{
+			Data: []byte(`# METADATA
+# title: test check
+package user.test001
+
+import rego.v1
+
+deny if {
+  count(data.aws.iam.allowed_actions) != 0
+  data.aws.iam.allowed_actions["sqs:ListQueues"]
+}
+`),
+		},
+	}
+
+	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
+	require.NoError(t, err)
+
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{})
+	require.NoError(t, err)
+
+	assert.Len(t, results.GetFailed(), 1)
+
+	if t.Failed() {
+		fmt.Println(debugBuf.String())
+	}
 }
