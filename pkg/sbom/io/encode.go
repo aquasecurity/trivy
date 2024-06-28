@@ -86,7 +86,10 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	case artifact.TypeCycloneDX, artifact.TypeSPDX:
 		// When we scan SBOM file
 		if r.BOM != nil {
-			return r.BOM.Root(), nil
+			// If SBOM file doesn't contain root component - use filesystem
+			if bomRoot := r.BOM.Root(); bomRoot != nil {
+				return bomRoot, nil
+			}
 		}
 		// When we scan a `json` file (meaning a file in `json` format) which was created from the SBOM file.
 		// e.g. for use in `convert` mode.
