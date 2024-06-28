@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -599,7 +598,6 @@ func TestEncoder_Encode(t *testing.T) {
 								Name:    "org.apache.logging.log4j:log4j-core",
 								Version: "2.23.1",
 								Identifier: ftypes.PkgIdentifier{
-									UID: "6C0AE96901617503",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.apache.logging.log4j",
@@ -616,7 +614,7 @@ func TestEncoder_Encode(t *testing.T) {
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): fsComponent,
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponentWithUID(),
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponent,
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
@@ -775,12 +773,6 @@ var (
 		},
 	}
 )
-
-func libComponentWithUID() *core.Component {
-	component := lo.FromPtr(libComponent)
-	component.PkgIdentifier.UID = "6C0AE96901617503"
-	return lo.ToPtr(component)
-}
 
 func newTestBOM(t *testing.T) *core.BOM {
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
