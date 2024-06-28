@@ -37,7 +37,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.New("AWS and Kubernetes scanning reports are not yet supported")
 	}
 
-	compat(r)
+	compat(&r)
 	if err = result.Filter(ctx, r, opts.FilterOpts()); err != nil {
 		return xerrors.Errorf("unable to filter results: %w", err)
 	}
@@ -51,7 +51,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 }
 
 // compat converts the JSON report to the latest format
-func compat(r types.Report) {
+func compat(r *types.Report) {
 	for i, res := range r.Results {
 		pkgs := make(map[string]ftypes.Package, len(res.Packages))
 		for j, pkg := range res.Packages {
