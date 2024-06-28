@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -776,9 +777,9 @@ var (
 )
 
 func libComponentWithUID() *core.Component {
-	component := libComponent
+	component := lo.FromPtr(libComponent)
 	component.PkgIdentifier.UID = "6C0AE96901617503"
-	return component
+	return lo.ToPtr(component)
 }
 
 func newTestBOM(t *testing.T) *core.BOM {
