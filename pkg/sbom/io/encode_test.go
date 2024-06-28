@@ -582,6 +582,53 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
+			name: "SBOM file without root component",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "report.cdx.json",
+				ArtifactType:  artifact.TypeCycloneDX,
+				Results: []types.Result{
+					{
+						Target: "Java",
+						Type:   ftypes.Jar,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "org.apache.logging.log4j:log4j-core:2.23.1",
+								Name:    "org.apache.logging.log4j:log4j-core",
+								Version: "2.23.1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "6C0AE96901617503",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.logging.log4j",
+										Name:      "log4j-core",
+										Version:   "2.23.1",
+									},
+								},
+								FilePath: "log4j-core-2.23.1.jar",
+							},
+						},
+					},
+				},
+				BOM: newTestBOM2(t),
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): fsComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponentWithUID(),
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
 			name: "json file created from SBOM file (BOM is empty)",
 			report: types.Report{
 				SchemaVersion: 2,
@@ -728,9 +775,23 @@ var (
 	}
 )
 
+func libComponentWithUID() *core.Component {
+	component := libComponent
+	component.PkgIdentifier.UID = "6C0AE96901617503"
+	return component
+}
+
 func newTestBOM(t *testing.T) *core.BOM {
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(appComponent)
+	return bom
+}
+
+// BOM without root component
+func newTestBOM2(t *testing.T) *core.BOM {
+	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(libComponent)
 	return bom
 }
