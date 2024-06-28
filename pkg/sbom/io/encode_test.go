@@ -722,6 +722,7 @@ func TestEncoder_Encode(t *testing.T) {
 								Name:    "org.apache.logging.log4j:log4j-core",
 								Version: "2.23.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "6C0AE96901617503",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.apache.logging.log4j",
