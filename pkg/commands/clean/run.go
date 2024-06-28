@@ -76,7 +76,7 @@ func cleanScanCache(ctx context.Context, opts flag.Options) error {
 
 func cleanVulnerabilityDB(ctx context.Context, opts flag.Options) error {
 	log.InfoContext(ctx, "Removing vulnerability database...")
-	if err := db.NewClient(opts.CacheDir, true).Clear(ctx); err != nil {
+	if err := db.NewClient(db.Dir(opts.CacheDir), true).Clear(ctx); err != nil {
 		return xerrors.Errorf("clear vulnerability database: %w", err)
 
 	}
