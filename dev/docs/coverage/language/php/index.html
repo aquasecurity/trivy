@@ -1952,8 +1952,15 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#composer" class="md-nav__link">
-    Composer
+  <a href="#composerlock" class="md-nav__link">
+    composer.lock
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installedjson" class="md-nav__link">
+    installed.json
   </a>
   
 </li>
@@ -3870,8 +3877,15 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#composer" class="md-nav__link">
-    Composer
+  <a href="#composerlock" class="md-nav__link">
+    composer.lock
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installedjson" class="md-nav__link">
+    installed.json
   </a>
   
 </li>
@@ -3936,13 +3950,23 @@ You're not viewing the latest version.
 <td align="center">✓</td>
 <td align="center">✓</td>
 </tr>
+<tr>
+<td>Composer</td>
+<td>installed.json</td>
+<td align="center">✓</td>
+<td align="center">Excluded</td>
+<td align="center">-</td>
+<td align="center">✓</td>
+</tr>
 </tbody>
 </table>
-<h2 id="composer">Composer</h2>
+<h2 id="composerlock">composer.lock</h2>
 <p>In order to detect dependencies, Trivy searches for <code>composer.lock</code>.</p>
 <p>Trivy also supports dependency trees; however, to display an accurate tree, it needs to know whether each package is a direct dependency of the project.
 Since this information is not included in <code>composer.lock</code>, Trivy parses <code>composer.json</code>, which should be located next to <code>composer.lock</code>.
 If you want to see the dependency tree, please ensure that <code>composer.json</code> is present.</p>
+<h2 id="installedjson">installed.json</h2>
+<p>Trivy also supports dependency detection for <code>installed.json</code> files. By default, you can find this file at <code>path_to_app/vendor/composer/installed.json</code>.</p>
 
               
             </article>
