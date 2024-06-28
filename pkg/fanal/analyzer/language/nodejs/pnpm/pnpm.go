@@ -82,7 +82,7 @@ func (a pnpmAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("yarn walk error: %w", err)
+		return nil, xerrors.Errorf("pnpm walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
