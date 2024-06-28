@@ -23,7 +23,7 @@ import (
 const (
 	serviceAuthURL             = "https://docs.aws.amazon.com/service-authorization/latest/reference/"
 	serviceActionReferencesURL = "https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html"
-	targetFile                 = "pkg/iac/providers/aws/iam/actions.go"
+	targetFile                 = "pkg/iac/providers/aws/iam/actions_gen.go"
 	defaultParallel            = 10
 )
 
