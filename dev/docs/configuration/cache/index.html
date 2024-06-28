@@ -2291,9 +2291,36 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#cache-backend" class="md-nav__link">
-    Cache Backend
+  <a href="#scan-cache-backend" class="md-nav__link">
+    Scan Cache Backend
   </a>
+  
+    <nav class="md-nav" aria-label="Scan Cache Backend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-file-system" class="md-nav__link">
+    Local File System
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    Memory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis" class="md-nav__link">
+    Redis
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3896,9 +3923,36 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#cache-backend" class="md-nav__link">
-    Cache Backend
+  <a href="#scan-cache-backend" class="md-nav__link">
+    Scan Cache Backend
   </a>
+  
+    <nav class="md-nav" aria-label="Scan Cache Backend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-file-system" class="md-nav__link">
+    Local File System
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    Memory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis" class="md-nav__link">
+    Redis
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3948,26 +4002,48 @@ See <code>trivy clean --help</code> for details.</p>
 <p>Specify where the cache is stored with <code>--cache-dir</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
 </code></pre></div>
-<h2 id="cache-backend">Cache Backend</h2>
+<h2 id="scan-cache-backend">Scan Cache Backend</h2>
 <div class="admonition warning">
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>Trivy supports local filesystem and Redis as the cache backend. This option is useful especially for client/server mode.</p>
-<p>Two options:</p>
+<p>Trivy utilizes a scan cache to store analysis results, such as package lists.
+It supports three types of backends for this cache: </p>
 <ul>
-<li><code>fs</code><ul>
-<li>the cache path can be specified by <code>--cache-dir</code></li>
+<li>Local File System (<code>fs</code>)<ul>
+<li>The cache path can be specified by <code>--cache-dir</code></li>
 </ul>
 </li>
-<li><code>redis://</code><ul>
+<li>Memory (<code>memory</code>)</li>
+<li>Redis (<code>redis://</code>)<ul>
 <li><code>redis://[HOST]:[PORT]</code></li>
 <li>TTL can be configured via <code>--cache-ttl</code></li>
 </ul>
 </li>
 </ul>
+<h3 id="local-file-system">Local File System</h3>
+<p>The local file system backend is the default choice for container and VM image scans.
+When scanning container images, it stores analysis results on a per-layer basis, using layer IDs as keys.
+This approach enables faster scans of the same container image or different images that share layers.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Internally, this backend uses <a href="https://github.com/etcd-io/bbolt">BoltDB</a>, which has an important limitation: only one process can access the cache at a time.
+Subsequent processes attempting to access the cache will be locked.
+For more details on this limitation, refer to the <a href="https://aquasecurity.github.io/trivy/v0.52/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run">troubleshooting guide</a>.</p>
+</div>
+<h3 id="memory">Memory</h3>
+<p>The memory backend stores analysis results in memory, which means the cache is discarded when the process ends.
+This makes it useful in scenarios where caching is not required or desired.
+It serves as the default for repository, filesystem and SBOM scans and can also be employed for container image scans when caching is unnecessary.</p>
+<p>To use the memory backend for a container image scan, you can use the following command:</p>
+<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --cache-backend memory
+</code></pre></div>
+<h3 id="redis">Redis</h3>
+<p>The Redis backend is particularly useful when you need to share the cache across multiple Trivy instances.
+You can set up Trivy to use a Redis backend with a command like this:</p>
 <div class="highlight"><pre><span></span><code>$ trivy server --cache-backend redis://localhost:6379
 </code></pre></div>
+<p>This approach allows for centralized caching, which can be beneficial in distributed or high-concurrency environments.</p>
 <p>If you want to use TLS with Redis, you can enable it by specifying the <code>--redis-tls</code> flag.</p>
 <div class="highlight"><pre><span></span><code>$ trivy server --cache-backend redis://localhost:6379 --redis-tls
 </code></pre></div>
