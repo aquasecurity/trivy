@@ -379,7 +379,6 @@ func TestEncoder_Encode(t *testing.T) {
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
 					{
 						ID:               "CVE-2021-22876",
-						PkgID:            "curl@7.50.3-1",
 						PkgName:          "curl",
 						InstalledVersion: "7.50.3-1",
 						FixedVersion:     "7.50.3-1+deb9u1",
@@ -391,7 +390,6 @@ func TestEncoder_Encode(t *testing.T) {
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
 					{
 						ID:               "CVE-2022-42003",
-						PkgID:            "com.fasterxml.jackson.core:jackson-databind:2.13.4",
 						PkgName:          "com.fasterxml.jackson.core:jackson-databind",
 						InstalledVersion: "2.13.4",
 						FixedVersion:     "2.12.7.1, 2.13.4.2",
@@ -403,7 +401,6 @@ func TestEncoder_Encode(t *testing.T) {
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): {
 					{
 						ID:               "CVE-2022-42003",
-						PkgID:            "com.fasterxml.jackson.core:jackson-databind:2.13.4",
 						PkgName:          "com.fasterxml.jackson.core:jackson-databind",
 						InstalledVersion: "2.13.4",
 						FixedVersion:     "2.12.7.1, 2.13.4.2",

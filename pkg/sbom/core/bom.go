@@ -194,7 +194,6 @@ type Relationship struct {
 type Vulnerability struct {
 	dtypes.Vulnerability
 	ID               string
-	PkgID            string
 	PkgName          string
 	InstalledVersion string
 	FixedVersion     string

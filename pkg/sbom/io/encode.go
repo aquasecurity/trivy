@@ -377,7 +377,6 @@ func (*Encoder) vulnerability(vuln types.DetectedVulnerability) core.Vulnerabili
 	return core.Vulnerability{
 		Vulnerability:    vuln.Vulnerability,
 		ID:               vuln.VulnerabilityID,
-		PkgID:            vuln.PkgID,
 		PkgName:          vuln.PkgName,
 		InstalledVersion: vuln.InstalledVersion,
 		FixedVersion:     vuln.FixedVersion,
