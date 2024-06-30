@@ -25,7 +25,7 @@ var (
 		Name:       "cache-backend",
 		ConfigName: "cache.backend",
 		Default:    "fs",
-		Usage:      "cache backend (e.g. redis://localhost:6379)",
+		Usage:      "[EXPERIMENTAL] cache backend (e.g. redis://localhost:6379)",
 	}
 	CacheTTLFlag = Flag[time.Duration]{
 		Name:       "cache-ttl",

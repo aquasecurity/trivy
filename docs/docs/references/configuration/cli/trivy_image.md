@@ -34,7 +34,7 @@ trivy image [flags] IMAGE_NAME
 ### Options
 
 ```
-      --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")

@@ -20,7 +20,7 @@ trivy sbom [flags] SBOM_PATH
 ### Options
 
 ```
-      --cache-backend string        cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string        [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "memory")
       --cache-ttl duration          cache TTL when using redis as cache backend
       --compliance string           compliance report to generate
       --custom-headers strings      custom headers in client mode
