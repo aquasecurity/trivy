@@ -169,7 +169,7 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 }
 
-func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
+func Test_pnpmPkgLibraryAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
@@ -188,7 +188,7 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 		{
 			name:     "package.json in node_modules",
 			filePath: "pnpm/node_modules/ms/package.json",
-			want:     false,
+			want:     true,
 		},
 		{
 			name:     "sad path",
