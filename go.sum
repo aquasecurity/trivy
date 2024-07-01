@@ -1026,8 +1026,6 @@ github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee h1:cgm8mE25x5X
 github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee/go.mod h1:rojbW5tVhH1cuVYFKZS+QX+VGXK45JVsRO+jW92kkKM=
 github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323 h1:uQubA711SeYStvStohMLrdvRTTohdPHrEPFzerLcY9I=
 github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323/go.mod h1:OdtzwqTtu49Gh5RFkNEU1SbcihIuVTtUipwHflqxckE=
-github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4 h1:uHO44vOunB0oEtk+r8ifBbFOD0mr6+fmoyFNCgLE66k=
-github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4/go.mod h1:3XMMY1M486mWGTD13WPItg6FsgflQR72ZMAkd+gsyoQ=
 github.com/masahiro331/go-ext4-filesystem v0.0.0-20240620024024-ca14e6327bbd h1:JEIW94K3spsvBI5Xb9PGhKSIza9/jxO1lF30tPCAJlA=
 github.com/masahiro331/go-ext4-filesystem v0.0.0-20240620024024-ca14e6327bbd/go.mod h1:3XMMY1M486mWGTD13WPItg6FsgflQR72ZMAkd+gsyoQ=
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08 h1:AevUBW4cc99rAF8q8vmddIP8qd/0J5s/UyltGbp66dg=
