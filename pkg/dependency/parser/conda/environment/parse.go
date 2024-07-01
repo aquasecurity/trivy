@@ -28,6 +28,11 @@ type Dependency struct {
 	Line  int
 }
 
+type Packages struct {
+	Packages ftypes.Packages
+	Prefix   string
+}
+
 type Parser struct {
 	logger *log.Logger
 	once   sync.Once
@@ -40,16 +45,16 @@ func NewParser() *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) (Packages, error) {
 	var env environment
 	if err := yaml.NewDecoder(r).Decode(&env); err != nil {
-		return nil, nil, xerrors.Errorf("unable to decode conda environment.yml file: %w", err)
+		return Packages{}, xerrors.Errorf("unable to decode conda environment.yml file: %w", err)
 	}
 
 	var pkgs ftypes.Packages
 	for _, entry := range env.Entries {
 		for _, dep := range entry.Dependencies {
-			pkg := p.toPackage(dep, env.Prefix)
+			pkg := p.toPackage(dep)
 			// Skip empty pkgs
 			if pkg.Name == "" {
 				continue
@@ -59,10 +64,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	sort.Sort(pkgs)
-	return pkgs, nil, nil
+	return Packages{
+		Packages: pkgs,
+		Prefix:   env.Prefix,
+	}, nil
 }
 
-func (p *Parser) toPackage(dep Dependency, prefix string) ftypes.Package {
+func (p *Parser) toPackage(dep Dependency) ftypes.Package {
 	name, ver := p.parseDependency(dep.Value)
 	if ver == "" {
 		p.once.Do(func() {
@@ -78,7 +86,6 @@ func (p *Parser) toPackage(dep Dependency, prefix string) ftypes.Package {
 				EndLine:   dep.Line,
 			},
 		},
-		FilePath: prefix,
 	}
 }
 

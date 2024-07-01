@@ -15,192 +15,178 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    []ftypes.Package
+		want    environment.Packages
 		wantErr string
 	}{
 		{
 			name:  "happy path",
 			input: "testdata/happy.yaml",
-			want: []ftypes.Package{
-				{
-					Name: "_openmp_mutex",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 6,
-							EndLine:   6,
+			want: environment.Packages{
+				Packages: []ftypes.Package{
+					{
+						Name: "_openmp_mutex",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 6,
+								EndLine:   6,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "asgiref",
-					Version: "3.8.1",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 21,
-							EndLine:   21,
+					{
+						Name:    "asgiref",
+						Version: "3.8.1",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 21,
+								EndLine:   21,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "blas",
-					Version: "1.0",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 5,
-							EndLine:   5,
+					{
+						Name:    "blas",
+						Version: "1.0",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 5,
+								EndLine:   5,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "bzip2",
-					Version: "1.0.8",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 19,
-							EndLine:   19,
+					{
+						Name:    "bzip2",
+						Version: "1.0.8",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 19,
+								EndLine:   19,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "ca-certificates",
-					Version: "2024.2",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 7,
-							EndLine:   7,
+					{
+						Name:    "ca-certificates",
+						Version: "2024.2",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 7,
+								EndLine:   7,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "django",
-					Version: "5.0.6",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 22,
-							EndLine:   22,
+					{
+						Name:    "django",
+						Version: "5.0.6",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 22,
+								EndLine:   22,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name: "ld_impl_linux-aarch64",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 8,
-							EndLine:   8,
+					{
+						Name: "ld_impl_linux-aarch64",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 8,
+								EndLine:   8,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name: "libblas",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 9,
-							EndLine:   9,
+					{
+						Name: "libblas",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 9,
+								EndLine:   9,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name: "libcblas",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 10,
-							EndLine:   10,
+					{
+						Name: "libcblas",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 10,
+								EndLine:   10,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "libexpat",
-					Version: "2.6.2",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 11,
-							EndLine:   11,
+					{
+						Name:    "libexpat",
+						Version: "2.6.2",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 11,
+								EndLine:   11,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "libffi",
-					Version: "3.4.2",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 12,
-							EndLine:   12,
+					{
+						Name:    "libffi",
+						Version: "3.4.2",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 12,
+								EndLine:   12,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name: "libgcc-ng",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 13,
-							EndLine:   13,
+					{
+						Name: "libgcc-ng",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 13,
+								EndLine:   13,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name: "libgfortran-ng",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 14,
-							EndLine:   14,
+					{
+						Name: "libgfortran-ng",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 14,
+								EndLine:   14,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name: "libgfortran5",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 15,
-							EndLine:   15,
+					{
+						Name: "libgfortran5",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 15,
+								EndLine:   15,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "libgomp",
-					Version: "13.2.0",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 16,
-							EndLine:   16,
+					{
+						Name:    "libgomp",
+						Version: "13.2.0",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 16,
+								EndLine:   16,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name: "liblapack",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 17,
-							EndLine:   17,
+					{
+						Name: "liblapack",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 17,
+								EndLine:   17,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
-				},
-				{
-					Name:    "libnsl",
-					Version: "2.0.1",
-					Locations: ftypes.Locations{
-						{
-							StartLine: 18,
-							EndLine:   18,
+					{
+						Name:    "libnsl",
+						Version: "2.0.1",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 18,
+								EndLine:   18,
+							},
 						},
 					},
-					FilePath: "/opt/conda/envs/test-env",
 				},
+				Prefix: "/opt/conda/envs/test-env",
 			},
 		},
 		{
@@ -230,7 +216,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, _, err := environment.NewParser().Parse(f)
+			got, err := environment.NewParser().Parse(f)
 
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
