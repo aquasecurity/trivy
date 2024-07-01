@@ -35,8 +35,6 @@ func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, e
 	}
 
 	once := sync.Once{}
-	// res always contains only 1 Application
-	// cf. https://github.com/aquasecurity/trivy/blob/0ccdbfbb6598a52de7cda603ab22e794f710e86c/pkg/fanal/analyzer/language/analyze.go#L32
 	for i, pkg := range pkgs.Packages {
 		// Skip packages without a version, because in this case we will not be able to get the correct file name.
 		if pkg.Version != "" {
@@ -44,7 +42,7 @@ func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, e
 			if err != nil {
 				// Show log once per file
 				once.Do(func() {
-					log.WithPrefix("conda").Debug("License not found. See https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#licenses for details",
+					log.WithPrefix("conda").Debug("License not found. See https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#license_1 for details",
 						log.String("pkg", pkg.Name), log.Err(err))
 				})
 			}
