@@ -42,7 +42,7 @@ func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, e
 			if err != nil {
 				// Show log once per file
 				once.Do(func() {
-					log.WithPrefix("conda").Debug("License not found. See https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#license_1 for details",
+					log.WithPrefix("conda").Debugf("License not found. See %s for details", doc.URL("docs/coverage/os/conda/", "license_1"))
 						log.String("pkg", pkg.Name), log.Err(err))
 				})
 			}
