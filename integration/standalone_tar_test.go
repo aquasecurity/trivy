@@ -215,6 +215,14 @@ func TestTar(t *testing.T) {
 			golden: "testdata/debian-stretch.json.golden",
 		},
 		{
+			name: "ubuntu 16.04",
+			args: args{
+				Format: types.FormatJSON,
+				Input:  "testdata/fixtures/images/ubuntu-1604.tar.gz",
+			},
+			golden: "testdata/ubuntu-1804.json.golden",
+		},
+		{
 			name: "ubuntu 18.04",
 			args: args{
 				Format: types.FormatJSON,
