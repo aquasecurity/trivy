@@ -40,6 +40,7 @@ var (
 		ftypes.CentOS:       redhat.NewScanner(),
 		ftypes.Rocky:        rocky.NewScanner(),
 		ftypes.Oracle:       oracle.NewScanner(),
+		ftypes.OpenSUSETumbleweed: suse.NewScanner(suse.OpenSUSETumbleweed),
 		ftypes.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
 		ftypes.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
 		ftypes.Photon:       photon.NewScanner(),

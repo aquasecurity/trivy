@@ -68,6 +68,7 @@ const (
 	SUSEEnterpriseLinux Type = iota
 	// OpenSUSE for open versions
 	OpenSUSE
+	OpenSUSETumbleweed
 )
 
 // Scanner implements the SUSE scanner
@@ -85,6 +86,10 @@ func NewScanner(t Type) *Scanner {
 	case OpenSUSE:
 		return &Scanner{
 			vs: susecvrf.NewVulnSrc(susecvrf.OpenSUSE),
+		}
+	case OpenSUSETumbleweed:
+		return &Scanner{
+			vs: susecvrf.NewVulnSrc(susecvrf.OpenSUSETumbleweed),
 		}
 	}
 	return nil
@@ -129,6 +134,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	if osFamily == ftypes.SLES {
 		return osver.Supported(ctx, slesEolDates, osFamily, osVer)
+	}
+	// tumbleweed is a rolling release, it has no version and no eol
+	if osFamily == ftypes.OpenSUSETumbleweed {
+		return true
 	}
 	return osver.Supported(ctx, opensuseEolDates, osFamily, osVer)
 }
