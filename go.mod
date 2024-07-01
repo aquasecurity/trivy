@@ -75,6 +75,7 @@ require (
 	github.com/liamg/jfather v0.0.7
 	github.com/liamg/memoryfs v1.6.0
 	github.com/magefile/mage v1.15.0
+	github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee
 	github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
@@ -273,7 +274,6 @@ require (
 	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
