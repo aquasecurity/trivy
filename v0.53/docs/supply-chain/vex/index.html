@@ -1,0 +1,4847 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI">
+      
+      
+      
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/v0.53/docs/supply-chain/vex/">
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>VEX - Trivy</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vulnerability-exploitability-exchange-vex" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+            <div class="md-banner__inner md-grid md-typeset">
+              
+You're not viewing the latest version.
+<a href="../../../..">
+    <strong>Click here to go to latest.</strong>
+</a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          
+        </aside>
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+      
+  <img src="../../../imgs/logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Trivy
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VEX
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aquasecurity/trivy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../tutorials/overview/" class="md-tabs__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
+        Docs
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../ecosystem/" class="md-tabs__link">
+        Ecosystem
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../community/principles/" class="md-tabs__link">
+        Contributing
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+      
+  <img src="../../../imgs/logo-white.svg" alt="logo">
+
+    </a>
+    Trivy
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aquasecurity/trivy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/signature-verification/" class="md-nav__link">
+        Signature Verification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          CI/CD
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="CI/CD" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          CI/CD
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/github-actions/" class="md-nav__link">
+        GitHub Actions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/circleci/" class="md-nav__link">
+        CircleCI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/travis-ci/" class="md-nav__link">
+        Travis CI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/gitlab-ci/" class="md-nav__link">
+        GitLab CI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/bitbucket/" class="md-nav__link">
+        Bitbucket Pipelines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/aws-codepipeline/" class="md-nav__link">
+        AWS CodePipeline
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/aws-security-hub/" class="md-nav__link">
+        AWS Security Hub
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/azure-devops/" class="md-nav__link">
+        Azure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3" type="checkbox" id="__nav_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
+        Cluster Scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/kubernetes/kyverno/" class="md-nav__link">
+        Kyverno
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/kubernetes/gitops/" class="md-nav__link">
+        GitOps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_4">
+          Misconfiguration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Misconfiguration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_4">
+          <span class="md-nav__icon md-icon"></span>
+          Misconfiguration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/misconfiguration/terraform/" class="md-nav__link">
+        Terraform scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/misconfiguration/custom-checks/" class="md-nav__link">
+        Custom Checks with Rego
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5" type="checkbox" id="__nav_2_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_5">
+          Signing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Signing" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_5">
+          <span class="md-nav__icon md-icon"></span>
+          Signing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/signing/vuln-attestation/" class="md-nav__link">
+        Vulnerability Scan Record Attestation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_6" type="checkbox" id="__nav_2_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_6">
+          Shell
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Shell" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_6">
+          <span class="md-nav__icon md-icon"></span>
+          Shell
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/shell/shell-completion/" class="md-nav__link">
+        Completion
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_7" type="checkbox" id="__nav_2_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_7">
+          Additional Resources
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Additional Resources" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_7">
+          <span class="md-nav__icon md-icon"></span>
+          Additional Resources
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/additional-resources/references/" class="md-nav__link">
+        Additional Resources
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/additional-resources/community/" class="md-nav__link">
+        Community References
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/additional-resources/cks/" class="md-nav__link">
+        CKS Reference
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Docs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Docs" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Docs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Target
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Target" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Target
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/container_image/" class="md-nav__link">
+        Container Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/filesystem/" class="md-nav__link">
+        Filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/rootfs/" class="md-nav__link">
+        Rootfs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/repository/" class="md-nav__link">
+        Code Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/vm/" class="md-nav__link">
+        Virtual Machine Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/aws/" class="md-nav__link">
+        AWS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Scanner
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Scanner" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Scanner
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/vulnerability/" class="md-nav__link">
+        Vulnerability
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2" type="checkbox" id="__nav_3_3_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3_2">
+          Misconfiguration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Misconfiguration" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Misconfiguration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2_2" type="checkbox" id="__nav_3_3_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3_2_2">
+          Policy
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Policy" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_3_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Policy
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/check/builtin/" class="md-nav__link">
+        Built-in Checks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/check/exceptions/" class="md-nav__link">
+        Exceptions
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2_3" type="checkbox" id="__nav_3_3_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3_2_3">
+          Custom Checks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_3_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Custom Checks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/data/" class="md-nav__link">
+        Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/combine/" class="md-nav__link">
+        Combine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/selectors/" class="md-nav__link">
+        Selectors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/schema/" class="md-nav__link">
+        Schemas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/debug/" class="md-nav__link">
+        Debugging Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/misconfiguration/custom/contribute-checks/" class="md-nav__link">
+        Contribute Checks
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/secret/" class="md-nav__link">
+        Secret
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4">
+          Coverage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Coverage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_4">
+          <span class="md-nav__icon md-icon"></span>
+          Coverage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_2" type="checkbox" id="__nav_3_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_2">
+          OS
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="OS" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          OS
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/alma/" class="md-nav__link">
+        AlmaLinux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/alpine/" class="md-nav__link">
+        Alpine Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/amazon/" class="md-nav__link">
+        Amazon Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/cbl-mariner/" class="md-nav__link">
+        CBL-Mariner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/centos/" class="md-nav__link">
+        CentOS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/chainguard/" class="md-nav__link">
+        Chainguard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/conda/" class="md-nav__link">
+        Conda
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/debian/" class="md-nav__link">
+        Debian
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/oracle/" class="md-nav__link">
+        Oracle Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/photon/" class="md-nav__link">
+        Photon OS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/rhel/" class="md-nav__link">
+        Red Hat
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/rocky/" class="md-nav__link">
+        Rocky Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/suse/" class="md-nav__link">
+        SUSE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/ubuntu/" class="md-nav__link">
+        Ubuntu
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/wolfi/" class="md-nav__link">
+        Wolfi
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/google-distroless/" class="md-nav__link">
+        Google Distroless (Images)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/bitnami/" class="md-nav__link">
+        Bitnami (Images)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_3" type="checkbox" id="__nav_3_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_3">
+          Language
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Language" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Language
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/c/" class="md-nav__link">
+        C/C++
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/dart/" class="md-nav__link">
+        Dart
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/dotnet/" class="md-nav__link">
+        .NET
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/elixir/" class="md-nav__link">
+        Elixir
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/golang/" class="md-nav__link">
+        Go
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/java/" class="md-nav__link">
+        Java
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/nodejs/" class="md-nav__link">
+        Node.js
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/php/" class="md-nav__link">
+        PHP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/python/" class="md-nav__link">
+        Python
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/ruby/" class="md-nav__link">
+        Ruby
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/rust/" class="md-nav__link">
+        Rust
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/swift/" class="md-nav__link">
+        Swift
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/julia/" class="md-nav__link">
+        Julia
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_4" type="checkbox" id="__nav_3_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_4">
+          IaC
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IaC" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          IaC
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/azure-arm/" class="md-nav__link">
+        Azure ARM Template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/cloudformation/" class="md-nav__link">
+        CloudFormation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/docker/" class="md-nav__link">
+        Docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/helm/" class="md-nav__link">
+        Helm
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/terraform/" class="md-nav__link">
+        Terraform
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/filtering/" class="md-nav__link">
+        Filtering
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/skipping/" class="md-nav__link">
+        Skipping Files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/reporting/" class="md-nav__link">
+        Reporting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/cache/" class="md-nav__link">
+        Cache
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/db/" class="md-nav__link">
+        DB
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/others/" class="md-nav__link">
+        Others
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6">
+          Supply Chain
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Supply Chain" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_6">
+          <span class="md-nav__icon md-icon"></span>
+          Supply Chain
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_2" type="checkbox" id="__nav_3_6_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6_2">
+          Attestation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Attestation" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_6_2">
+          <span class="md-nav__icon md-icon"></span>
+          Attestation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attestation/sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attestation/vuln/" class="md-nav__link">
+        Cosign Vulnerability Scan Record
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attestation/rekor/" class="md-nav__link">
+        SBOM Attestation in Rekor
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          VEX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        VEX
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cyclonedx" class="md-nav__link">
+    CycloneDX
+  </a>
+  
+    <nav class="md-nav" aria-label="CycloneDX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-the-sbom" class="md-nav__link">
+    Generate the SBOM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-the-vex" class="md-nav__link">
+    Create the VEX
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-sbom-with-vex" class="md-nav__link">
+    Scan SBOM with VEX
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openvex" class="md-nav__link">
+    OpenVEX
+  </a>
+  
+    <nav class="md-nav" aria-label="OpenVEX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-vex-document" class="md-nav__link">
+    Create the VEX document
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-with-vex" class="md-nav__link">
+    Scan with VEX
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#csaf" class="md-nav__link">
+    CSAF
+  </a>
+  
+    <nav class="md-nav" aria-label="CSAF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-csaf-document" class="md-nav__link">
+    Create the CSAF document
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-with-csaf-vex" class="md-nav__link">
+    Scan with CSAF VEX
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix" class="md-nav__link">
+    Appendix
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#purl-matching" class="md-nav__link">
+    PURL matching
+  </a>
+  
+    <nav class="md-nav" aria-label="PURL matching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#matching-without-version" class="md-nav__link">
+    Matching Without Version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matching-without-qualifiers" class="md-nav__link">
+    Matching Without Qualifiers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matching-with-specific-qualifiers" class="md-nav__link">
+    Matching With Specific Qualifiers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applying-vex-to-dependency-trees" class="md-nav__link">
+    Applying VEX to Dependency Trees
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7">
+          Compliance
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Compliance" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Compliance
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compliance/compliance/" class="md-nav__link">
+        Built-in Compliance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compliance/contrib-compliance/" class="md-nav__link">
+        Custom Compliance
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8">
+          Plugins
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Plugins" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Plugins
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugin/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugin/user-guide/" class="md-nav__link">
+        User guide
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugin/developer-guide/" class="md-nav__link">
+        Developer guide
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/modules/" class="md-nav__link">
+        Modules
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
+        Air-Gapped Environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3" type="checkbox" id="__nav_3_9_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_3">
+          Container Image
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Container Image" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_9_3">
+          <span class="md-nav__icon md-icon"></span>
+          Container Image
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+        Embed in Dockerfile
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+        Unpacked container image filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3_3" type="checkbox" id="__nav_3_9_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_3_3">
+          Private Docker Registries
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Private Docker Registries" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_9_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Private Docker Registries
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
+        Docker Hub
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
+        AWS ECR (Elastic Container Registry)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
+        GCR (Google Container Registry)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/acr/" class="md-nav__link">
+        ACR (Azure Container Registry)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
+        Self-Hosted
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10">
+          References
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="References" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_10">
+          <span class="md-nav__icon md-icon"></span>
+          References
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1" type="checkbox" id="__nav_3_10_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_10_1">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1" type="checkbox" id="__nav_3_10_1_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1_1">
+          CLI
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="CLI" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_10_1_1">
+          <span class="md-nav__icon md-icon"></span>
+          CLI
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_clean/" class="md-nav__link">
+        Clean
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_config/" class="md-nav__link">
+        Config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_convert/" class="md-nav__link">
+        Convert
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_filesystem/" class="md-nav__link">
+        Filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_image/" class="md-nav__link">
+        Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1_1_8">
+          Module
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Module" data-md-level="5">
+        <label class="md-nav__title" for="__nav_3_10_1_1_8">
+          <span class="md-nav__icon md-icon"></span>
+          Module
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_module/" class="md-nav__link">
+        Module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_module_install/" class="md-nav__link">
+        Module Install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_module_uninstall/" class="md-nav__link">
+        Module Uninstall
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_9" type="checkbox" id="__nav_3_10_1_1_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1_1_9">
+          Plugin
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Plugin" data-md-level="5">
+        <label class="md-nav__title" for="__nav_3_10_1_1_9">
+          <span class="md-nav__icon md-icon"></span>
+          Plugin
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin/" class="md-nav__link">
+        Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_info/" class="md-nav__link">
+        Plugin Info
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_install/" class="md-nav__link">
+        Plugin Install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_list/" class="md-nav__link">
+        Plugin List
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_run/" class="md-nav__link">
+        Plugin Run
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
+        Plugin Uninstall
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_update/" class="md-nav__link">
+        Plugin Update
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_upgrade/" class="md-nav__link">
+        Plugin Upgrade
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_search/" class="md-nav__link">
+        Plugin Search
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_repository/" class="md-nav__link">
+        Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_rootfs/" class="md-nav__link">
+        Rootfs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_server/" class="md-nav__link">
+        Server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_version/" class="md-nav__link">
+        Version
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_vm/" class="md-nav__link">
+        VM
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/config-file/" class="md-nav__link">
+        Config file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_2" type="checkbox" id="__nav_3_10_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_2">
+          Modes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Modes" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_10_2">
+          <span class="md-nav__icon md-icon"></span>
+          Modes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/modes/standalone/" class="md-nav__link">
+        Standalone
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/modes/client-server/" class="md-nav__link">
+        Client/Server
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/troubleshooting/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Ecosystem
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ecosystem" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Ecosystem
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/cicd/" class="md-nav__link">
+        CI/CD
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/ide/" class="md-nav__link">
+        IDE and Dev tools
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/prod/" class="md-nav__link">
+        Production and Clouds
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/reporting/" class="md-nav__link">
+        Reporting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Contributing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contributing" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Contributing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/principles/" class="md-nav__link">
+        Principles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_2" type="checkbox" id="__nav_5_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_2">
+          How to contribute
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="How to contribute" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_2">
+          <span class="md-nav__icon md-icon"></span>
+          How to contribute
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/issue/" class="md-nav__link">
+        Issues
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/discussion/" class="md-nav__link">
+        Discussions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/pr/" class="md-nav__link">
+        Pull Requests
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_3" type="checkbox" id="__nav_5_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3">
+          Contribute Rego Checks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contribute Rego Checks" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_3">
+          <span class="md-nav__icon md-icon"></span>
+          Contribute Rego Checks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/checks/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/checks/service-support/" class="md-nav__link">
+        Add Service Support
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4">
+          Maintainer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Maintainer" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_4">
+          <span class="md-nav__icon md-icon"></span>
+          Maintainer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/release-flow/" class="md-nav__link">
+        Release Flow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/backporting/" class="md-nav__link">
+        Backporting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/help-wanted/" class="md-nav__link">
+        Help Wanted
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/triage/" class="md-nav__link">
+        Triage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cyclonedx" class="md-nav__link">
+    CycloneDX
+  </a>
+  
+    <nav class="md-nav" aria-label="CycloneDX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-the-sbom" class="md-nav__link">
+    Generate the SBOM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-the-vex" class="md-nav__link">
+    Create the VEX
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-sbom-with-vex" class="md-nav__link">
+    Scan SBOM with VEX
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openvex" class="md-nav__link">
+    OpenVEX
+  </a>
+  
+    <nav class="md-nav" aria-label="OpenVEX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-vex-document" class="md-nav__link">
+    Create the VEX document
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-with-vex" class="md-nav__link">
+    Scan with VEX
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#csaf" class="md-nav__link">
+    CSAF
+  </a>
+  
+    <nav class="md-nav" aria-label="CSAF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-csaf-document" class="md-nav__link">
+    Create the CSAF document
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-with-csaf-vex" class="md-nav__link">
+    Scan with CSAF VEX
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix" class="md-nav__link">
+    Appendix
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#purl-matching" class="md-nav__link">
+    PURL matching
+  </a>
+  
+    <nav class="md-nav" aria-label="PURL matching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#matching-without-version" class="md-nav__link">
+    Matching Without Version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matching-without-qualifiers" class="md-nav__link">
+    Matching Without Qualifiers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matching-with-specific-qualifiers" class="md-nav__link">
+    Matching With Specific Qualifiers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applying-vex-to-dependency-trees" class="md-nav__link">
+    Applying VEX to Dependency Trees
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/supply-chain/vex.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="vulnerability-exploitability-exchange-vex">Vulnerability Exploitability Exchange (VEX)</h1>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<p>Trivy supports filtering detected vulnerabilities using <a href="https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf">the Vulnerability Exploitability Exchange (VEX)</a>, a standardized format for sharing and exchanging information about vulnerabilities.
+By providing VEX during scanning, it is possible to filter vulnerabilities based on their status.
+Currently, Trivy supports the following three formats:</p>
+<ul>
+<li><a href="https://cyclonedx.org/capabilities/vex/">CycloneDX</a></li>
+<li><a href="https://github.com/openvex/spec">OpenVEX</a></li>
+<li><a href="https://oasis-open.github.io/csaf-documentation/specification.html">CSAF</a></li>
+</ul>
+<h2 id="cyclonedx">CycloneDX</h2>
+<table>
+<thead>
+<tr>
+<th align="center">Target</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Container Image</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Filesystem</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Code Repository</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">VM Image</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Kubernetes</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">SBOM</td>
+<td align="center">✅</td>
+</tr>
+</tbody>
+</table>
+<p>There are <a href="https://cyclonedx.org/capabilities/vex/">two VEX formats</a> for CycloneDX:</p>
+<ul>
+<li>Independent BOM and VEX BOM</li>
+<li>BOM With Embedded VEX</li>
+</ul>
+<p>Trivy only supports the Independent BOM and VEX BOM format, so you need to provide a separate VEX file alongside the SBOM.
+The input SBOM format must be in CycloneDX format.</p>
+<p>The following steps are required:</p>
+<ol>
+<li>Generate a CycloneDX SBOM</li>
+<li>Create a VEX based on the SBOM generated in step 1</li>
+<li>Provide the VEX when scanning the CycloneDX SBOM</li>
+</ol>
+<h3 id="generate-the-sbom">Generate the SBOM</h3>
+<p>You can generate a CycloneDX SBOM with Trivy as follows:</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format cyclonedx --output debian11.sbom.cdx debian:11
+</code></pre></div>
+<h3 id="create-the-vex">Create the VEX</h3>
+<p>Next, create a VEX based on the generated SBOM.
+Multiple vulnerability statuses can be defined under <code>vulnerabilities</code>.
+Take a look at the example below.</p>
+<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; trivy.vex.cdx</span>
+<span class="s">{</span>
+<span class="s">  &quot;bomFormat&quot;: &quot;CycloneDX&quot;,</span>
+<span class="s">  &quot;specVersion&quot;: &quot;1.5&quot;,</span>
+<span class="s">  &quot;version&quot;: 1,</span>
+<span class="s">  &quot;vulnerabilities&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;id&quot;: &quot;CVE-2020-8911&quot;,</span>
+<span class="s">      &quot;analysis&quot;: {</span>
+<span class="s">        &quot;state&quot;: &quot;not_affected&quot;,</span>
+<span class="s">        &quot;justification&quot;: &quot;code_not_reachable&quot;,</span>
+<span class="s">        &quot;response&quot;: [&quot;will_not_fix&quot;, &quot;update&quot;],</span>
+<span class="s">        &quot;detail&quot;: &quot;The vulnerable function is not called&quot;</span>
+<span class="s">      },</span>
+<span class="s">      &quot;affects&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;ref&quot;: &quot;urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@1.44.234&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ]</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<p>This is a VEX document in the CycloneDX format.
+The vulnerability ID, such as a CVE-ID or GHSA-ID, should be placed in <code>vulnerabilities.id</code>.
+When the <code>analysis.state</code> is set to <code>not_affected</code>, Trivy will not detect the vulnerability.</p>
+<p>BOM-Links must be placed in <code>affects.ref</code>.
+The BOM-Link has the following syntax and consists of three elements:</p>
+<div class="highlight"><pre><span></span><code>urn:cdx:serialNumber/version#bom-ref
+</code></pre></div>
+<ul>
+<li>serialNumber</li>
+<li>version</li>
+<li>bom-ref</li>
+</ul>
+<p>These values must be obtained from the CycloneDX SBOM.
+Please note that while the serialNumber starts with <code>urn:uuid:</code>, the BOM-Link starts with <code>urn:cdx:</code>.</p>
+<p>The <code>bom-ref</code> must contain the BOM-Ref of the package affected by the vulnerability.
+In the example above, since the Go package <code>github.com/aws/aws-sdk-go</code> is affected by CVE-2020-8911, it was necessary to specify the SBOM's BOM-Ref, <code>pkg:golang/github.com/aws/aws-sdk-go@1.44.234</code>.</p>
+<p>For more details on CycloneDX VEX and BOM-Link, please refer to the following links:</p>
+<ul>
+<li><a href="https://cyclonedx.org/capabilities/vex/">CycloneDX VEX</a></li>
+<li><a href="https://cyclonedx.org/capabilities/bomlink/">BOM-Link</a></li>
+<li><a href="https://github.com/CycloneDX/bom-examples/tree/master">Examples</a></li>
+</ul>
+<h3 id="scan-sbom-with-vex">Scan SBOM with VEX</h3>
+<p>Provide the VEX when scanning the CycloneDX SBOM.</p>
+<div class="highlight"><pre><span></span><code>$ trivy sbom trivy.sbom.cdx --vex trivy.vex.cdx
+...
+<span class="m">2023</span>-04-13T12:55:44.838+0300    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;CycloneDX&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2020-8911&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span>, <span class="s2">&quot;justification&quot;</span>: <span class="s2">&quot;code_not_reachable&quot;</span><span class="o">}</span>
+
+go.mod <span class="o">(</span>gomod<span class="o">)</span>
+<span class="o">==============</span>
+Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+┌───────────────────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
+│          Library          │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                           Title                            │
+├───────────────────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ <span class="m">1</span>.44.234          │               │ aws-sdk-go: In-band key negotiation issue <span class="k">in</span> AWS S3 Crypto │
+│                           │               │          │                   │               │ SDK <span class="k">for</span> golang...                                          │
+│                           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-8912                  │
+└───────────────────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<p>CVE-2020-8911 is no longer shown as it is filtered out according to the given CycloneDX VEX document.</p>
+<h2 id="openvex">OpenVEX</h2>
+<table>
+<thead>
+<tr>
+<th align="center">Target</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Container Image</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">Filesystem</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">Code Repository</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">VM Image</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">Kubernetes</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">SBOM</td>
+<td align="center">✅</td>
+</tr>
+</tbody>
+</table>
+<p>Trivy also supports <a href="https://github.com/openvex/spec">OpenVEX</a> that is designed to be minimal, compliant, interoperable, and embeddable.
+OpenVEX can be used in all Trivy targets, unlike CycloneDX VEX.</p>
+<p>The following steps are required:</p>
+<ol>
+<li>Create a VEX document</li>
+<li>Provide the VEX when scanning your target</li>
+</ol>
+<h3 id="create-the-vex-document">Create the VEX document</h3>
+<p>Please see also <a href="https://github.com/openvex/examples">the example</a>.
+Trivy requires <a href="https://github.com/package-url/purl-spec">the Package URL (PURL)</a> as the product identifier.</p>
+<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; debian11.openvex.json</span>
+<span class="s">{</span>
+<span class="s">  &quot;@context&quot;: &quot;https://openvex.dev/ns/v0.2.0&quot;,</span>
+<span class="s">  &quot;@id&quot;: &quot;https://openvex.dev/docs/public/vex-2e67563e128250cbcb3e98930df948dd053e43271d70dc50cfa22d57e03fe96f&quot;,</span>
+<span class="s">  &quot;author&quot;: &quot;Aqua Security&quot;,</span>
+<span class="s">  &quot;timestamp&quot;: &quot;2023-08-29T19:07:16.853479631-06:00&quot;,</span>
+<span class="s">  &quot;version&quot;: 1,</span>
+<span class="s">  &quot;statements&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;vulnerability&quot;: {&quot;name&quot;: &quot;CVE-2019-8457&quot;},</span>
+<span class="s">      &quot;products&quot;: [</span>
+<span class="s">        {&quot;@id&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8&quot;}</span>
+<span class="s">      ],</span>
+<span class="s">      &quot;status&quot;: &quot;not_affected&quot;,</span>
+<span class="s">      &quot;justification&quot;: &quot;vulnerable_code_not_in_execute_path&quot;</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<p>In the above example, PURLs, <code>pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8</code> are used for the product identifier.
+You can find PURLs in the JSON report generated by Trivy.
+This VEX statement is applied if the PURL specified in the VEX matches the PURL found during the scan.
+See <a href="#purl-matching">here</a> for more details of PURL matching.</p>
+<p>Trivy also supports <a href="https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#subcomponent">OpenVEX subcomponents</a>, which allow for more precise specification of the scope of a VEX statement, reducing the risk of incorrect filtering.
+Let's say you want to suppress vulnerabilities within a container image.
+If you only specify the PURL of the container image as the product, the resulting VEX would look like this:</p>
+<details>
+<summary>OpenVEX products only</summary>
+
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-32002&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+
+<p>However, this approach would suppress all instances of CVE-2024-32002 within the container image.
+If the intention is to declare that the <code>git</code> package distributed by Alpine Linux within this image is not affected, subcomponents can be utilized as follows:</p>
+<details>
+<summary>OpenVEX subcomponents</summary>
+
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-32002&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="p">{</span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/git&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+
+<p>By declaring the subcomponent in this manner, Trivy will filter the results, considering only the <code>git</code> package within the <code>ghcr.io/aquasecurity/trivy</code> container image as not affected.
+Omitting the version in the PURL applies the statement to all versions of the package.
+More details about PURL matching can be found <a href="#purl-matching">here</a>.</p>
+<p>Furthermore, the product specified in a VEX statement does not necessarily need to be the target of the scan.
+It is possible to specify a component that is included in the scan target as the product.
+For example, you can designate a specific Go project as the product and its dependent modules as subcomponents.</p>
+<p>In the following example, the VEX statement declares that the <code>github.com/docker/docker</code> module, which is a dependency of the <code>github.com/aquasecurity/trivy</code> Go project, is not affected by CVE-2024-29018.</p>
+<details>
+<summary>OpenVEX intermediate components</summary>
+
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-29018&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/github.com/aquasecurity/trivy&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/github.com/docker/docker&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+
+<p>This VEX document can be used when scanning a container image as well as other targets.
+The VEX statement will be applied when Trivy finds the Go binary within the container image.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image ghcr.io/aquasecurity/trivy:0.50.0 --vex trivy.openvex.json
+</code></pre></div>
+<p>VEX documents can indeed be reused across different container images, eliminating the need to issue separate VEX documents for each image.
+This is particularly useful when there is a common component or library that is used across multiple projects or container images.</p>
+<p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
+<h3 id="scan-with-vex">Scan with VEX</h3>
+<p>Provide the VEX when scanning your target.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.openvex.json
+...
+<span class="m">2023</span>-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;OpenVEX&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2019-8457&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span>, <span class="s2">&quot;justification&quot;</span>: <span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="o">}</span>
+
+debian11.spdx.json <span class="o">(</span>debian <span class="m">11</span>.6<span class="o">)</span>
+<span class="o">================================</span>
+Total: <span class="m">80</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">58</span>, MEDIUM: <span class="m">6</span>, HIGH: <span class="m">16</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+</code></pre></div>
+<p>CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.</p>
+<h2 id="csaf">CSAF</h2>
+<table>
+<thead>
+<tr>
+<th align="center">Target</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Container Image</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">Filesystem</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">Code Repository</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">VM Image</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">Kubernetes</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">SBOM</td>
+<td align="center">✅</td>
+</tr>
+</tbody>
+</table>
+<p>Trivy also supports <a href="https://oasis-open.github.io/csaf-documentation/specification.html">CSAF</a> format for VEX.
+Since CSAF aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.</p>
+<p>The following steps are required:</p>
+<ol>
+<li>Create a CSAF document</li>
+<li>Provide the CSAF when scanning your target</li>
+</ol>
+<h3 id="create-the-csaf-document">Create the CSAF document</h3>
+<p>Create a CSAF document in JSON format as follows:</p>
+<details>
+<summary>CSAF VEX</summary>
+
+<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; debian11.vex.csaf</span>
+<span class="s">{</span>
+<span class="s">  &quot;document&quot;: {</span>
+<span class="s">    &quot;category&quot;: &quot;csaf_vex&quot;,</span>
+<span class="s">    &quot;csaf_version&quot;: &quot;2.0&quot;,</span>
+<span class="s">    &quot;notes&quot;: [</span>
+<span class="s">      {</span>
+<span class="s">        &quot;category&quot;: &quot;summary&quot;,</span>
+<span class="s">        &quot;text&quot;: &quot;Example Company VEX document. Unofficial content for demonstration purposes only.&quot;,</span>
+<span class="s">        &quot;title&quot;: &quot;Author comment&quot;</span>
+<span class="s">      }</span>
+<span class="s">    ],</span>
+<span class="s">    &quot;publisher&quot;: {</span>
+<span class="s">      &quot;category&quot;: &quot;vendor&quot;,</span>
+<span class="s">      &quot;name&quot;: &quot;Example Company ProductCERT&quot;,</span>
+<span class="s">      &quot;namespace&quot;: &quot;https://psirt.example.com&quot;</span>
+<span class="s">    },</span>
+<span class="s">    &quot;title&quot;: &quot;AquaSecurity example VEX document&quot;,</span>
+<span class="s">    &quot;tracking&quot;: {</span>
+<span class="s">      &quot;current_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">      &quot;generator&quot;: {</span>
+<span class="s">        &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">        &quot;engine&quot;: {</span>
+<span class="s">          &quot;name&quot;: &quot;Secvisogram&quot;,</span>
+<span class="s">          &quot;version&quot;: &quot;1.11.0&quot;</span>
+<span class="s">        }</span>
+<span class="s">      },</span>
+<span class="s">      &quot;id&quot;: &quot;2024-EVD-UC-01-A-001&quot;,</span>
+<span class="s">      &quot;initial_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">      &quot;revision_history&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
+<span class="s">          &quot;number&quot;: &quot;1&quot;,</span>
+<span class="s">          &quot;summary&quot;: &quot;Initial version.&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ],</span>
+<span class="s">      &quot;status&quot;: &quot;final&quot;,</span>
+<span class="s">      &quot;version&quot;: &quot;1&quot;</span>
+<span class="s">    }</span>
+<span class="s">  },</span>
+<span class="s">  &quot;product_tree&quot;: {</span>
+<span class="s">    &quot;branches&quot;: [</span>
+<span class="s">      {</span>
+<span class="s">        &quot;branches&quot;: [</span>
+<span class="s">          {</span>
+<span class="s">            &quot;branches&quot;: [</span>
+<span class="s">              {</span>
+<span class="s">                &quot;category&quot;: &quot;product_version&quot;,</span>
+<span class="s">                &quot;name&quot;: &quot;5.3&quot;,</span>
+<span class="s">                &quot;product&quot;: {</span>
+<span class="s">                  &quot;name&quot;: &quot;Database Libraries 5.3&quot;,</span>
+<span class="s">                  &quot;product_id&quot;: &quot;LIBDB-5328&quot;,</span>
+<span class="s">                  &quot;product_identification_helper&quot;: {</span>
+<span class="s">                    &quot;purl&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.8?arch=amd64\u0026distro=debian-11.8&quot;</span>
+<span class="s">                  }</span>
+<span class="s">                }</span>
+<span class="s">              }</span>
+<span class="s">            ],</span>
+<span class="s">            &quot;category&quot;: &quot;product_name&quot;,</span>
+<span class="s">            &quot;name&quot;: &quot;Database Libraries&quot;</span>
+<span class="s">          }</span>
+<span class="s">        ],</span>
+<span class="s">        &quot;category&quot;: &quot;vendor&quot;,</span>
+<span class="s">        &quot;name&quot;: &quot;Debian&quot;</span>
+<span class="s">      }</span>
+<span class="s">    ]</span>
+<span class="s">  },</span>
+<span class="s">  &quot;vulnerabilities&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;cve&quot;: &quot;CVE-2019-8457&quot;,</span>
+<span class="s">      &quot;notes&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;category&quot;: &quot;description&quot;,</span>
+<span class="s">          &quot;text&quot;: &quot;SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.&quot;,</span>
+<span class="s">          &quot;title&quot;: &quot;CVE description&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ],</span>
+<span class="s">      &quot;product_status&quot;: {</span>
+<span class="s">        &quot;known_not_affected&quot;: [</span>
+<span class="s">          &quot;LIBDB-5328&quot;</span>
+<span class="s">        ]</span>
+<span class="s">      },</span>
+<span class="s">      &quot;threats&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;category&quot;: &quot;impact&quot;,</span>
+<span class="s">          &quot;details&quot;: &quot;Vulnerable code not in execute path.&quot;,</span>
+<span class="s">          &quot;product_ids&quot;: [</span>
+<span class="s">            &quot;LIBDB-5328&quot;</span>
+<span class="s">          ]</span>
+<span class="s">        }</span>
+<span class="s">      ]</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
+
+</details>
+
+<p>Trivy also supports <a href="https://docs.oasis-open.org/csaf/csaf/v2.0/os/csaf-v2.0-os.html#3224-product-tree-property---relationships">CSAF relationships</a>, reducing the risk of incorrect filtering.
+It works in the same way as OpenVEX subcomponents.
+At present, the specified relationship category is not taken into account and all the following categories are treated internally as "depends_on".</p>
+<ul>
+<li>default_component_of</li>
+<li>installed_on</li>
+<li>installed_with</li>
+</ul>
+<p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
+<h3 id="scan-with-csaf-vex">Scan with CSAF VEX</h3>
+<p>Provide the CSAF document when scanning your target.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.vex.csaf
+...
+<span class="m">2024</span>-01-02T10:28:26.704+0100    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;CSAF&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2019-8457&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span><span class="o">}</span>
+
+debian11.spdx.json <span class="o">(</span>debian <span class="m">11</span>.6<span class="o">)</span>
+<span class="o">================================</span>
+Total: <span class="m">80</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">58</span>, MEDIUM: <span class="m">6</span>, HIGH: <span class="m">16</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+</code></pre></div>
+<p>CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.</p>
+<h2 id="appendix">Appendix</h2>
+<h3 id="purl-matching">PURL matching</h3>
+<p>In the context of VEX, Package URLs (PURLs) are utilized to identify specific software packages and their versions.
+The PURL matching specification outlines how PURLs are interpreted for vulnerability exception processing, ensuring precise identification and broad coverage of software packages.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following PURL matching rules are not formally defined within the current official PURL specification.
+Instead, they represent <a href="https://github.com/openvex/spec/issues/27">a community consensus</a> on how to interpret PURLs.</p>
+</div>
+<p>Below are the key aspects of the PURL matching rules:</p>
+<h4 id="matching-without-version">Matching Without Version</h4>
+<p>A PURL without a specified version (e.g., <code>pkg:maven/com.google.guava/guava</code>) matches all versions of that package.
+This rule simplifies the application of vulnerability exceptions to all versions of a package.</p>
+<p><strong>Example</strong>: <code>pkg:maven/com.google.guava/guava</code> matches:</p>
+<ul>
+<li>All versions of <code>guava</code>, such as <code>com.google.guava:guava:24.1.1</code>, <code>com.google.guava:guava:30.0</code>.</li>
+</ul>
+<h4 id="matching-without-qualifiers">Matching Without Qualifiers</h4>
+<p>A PURL without any qualifiers (e.g., <code>pkg:maven/com.google.guava/guava@24.1.1</code>) matches any variation of that package, irrespective of qualifiers.
+This approach ensures broad matching capabilities, covering all architectural or platform-specific variations of a package version.</p>
+<p><strong>Example</strong>: <code>pkg:maven/com.google.guava/guava@24.1.1</code> matches:</p>
+<ul>
+<li><code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86</code></li>
+<li><code>pkg:maven/com.google.guava/guava@24.1.1?type=pom</code></li>
+</ul>
+<h4 id="matching-with-specific-qualifiers">Matching With Specific Qualifiers</h4>
+<p>A PURL that includes specific qualifiers (e.g., <code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86</code>) matches only those package versions that include the same qualifiers.</p>
+<p><strong>Example</strong>: <code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86</code> matches:</p>
+<ul>
+<li><code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86&amp;type=dll</code><ul>
+<li>Extra qualifiers (e.g., <code>type=dll</code>) are ignored.</li>
+</ul>
+</li>
+</ul>
+<p>does not match:</p>
+<ul>
+<li><code>pkg:maven/com.google.guava/guava@24.1.1</code><ul>
+<li><code>classifier=x86</code> is missing.</li>
+</ul>
+</li>
+<li><code>pkg:maven/com.google.guava/guava@24.1.1?classifier=sources</code><ul>
+<li><code>classifier</code> must have the same value.</li>
+</ul>
+</li>
+</ul>
+<h3 id="applying-vex-to-dependency-trees">Applying VEX to Dependency Trees</h3>
+<p>Trivy internally generates a dependency tree and applies VEX statements to this graph.
+Let's consider a project with the following dependency tree, where <code>Module C v2.0.0</code> is assumed to have a vulnerability CVE-XXXX-YYYY:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootA(Module Root A v1.0.0)
+  modB(Module B v1.0.0) 
+  modC(Module C v2.0.0)
+
+  modRootA--&gt;modB
+  modB--&gt;modC</code></pre>
+<p>Now, suppose a VEX statement is issued for <code>Module B</code> as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-XXXX-YYYY&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-b@1.0.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-c@2.0.0&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w">  </span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>It declares that <code>Module B</code> is not affected by CVE-XXXX-YYYY on <code>Module C</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The VEX in this example defines the relationship between <code>Module B</code> and <code>Module C</code>.
+However, as Trivy traverses all parents from vulnerable packages, it is also possible to define a VEX for the relationship between a vulnerable package and any parent, such as <code>Module A</code> and <code>Module C</code>, etc.</p>
+</div>
+<p>Mapping this VEX onto the dependency tree would look like this:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootA(Module Root A v1.0.0)
+
+  subgraph "VEX (Not Affected)"
+  modB(Module B v1.0.0)
+  modC(Module C v2.0.0)
+  end
+
+  modRootA--&gt;modB
+  modB--&gt;modC</code></pre>
+<p>In this case, it's clear that <code>Module Root A</code> is also not affected by CVE-XXXX-YYYY, so this vulnerability is suppressed.</p>
+<p>Now, let's consider another project:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootZ(Module Root Z v1.0.0)
+  modB'(Module B v1.0.0)
+  modC'(Module C v2.0.0)
+  modD'(Module D v3.0.0)
+
+  modRootZ--&gt;modB'
+  modRootZ--&gt;modD'
+  modB'--&gt;modC'
+  modD'--&gt;modC'</code></pre>
+<p>Assuming the same VEX as before, applying it to this dependency tree would look like:</p>
+<pre class="mermaid"><code>graph TD;
+  modRootZ(Module Root Z v1.0.0)
+
+  subgraph "VEX (Not Affected)"
+  modB'(Module B v1.0.0)
+  modC'(Module C v2.0.0)
+  end
+
+  modD'(Module D v3.0.0)
+
+  modRootZ--&gt;modB'
+  modRootZ--&gt;modD'
+  modB'--&gt;modC'
+  modD'--&gt;modC'</code></pre>
+<p><code>Module Root Z</code> depends on <code>Module C</code> via multiple paths.
+While the VEX tells us that <code>Module B</code> is not affected by the vulnerability, <code>Module D</code> might be.
+In the absence of a VEX, the default assumption is that it is affected.
+Taking all of this into account, Trivy determines that <code>Module Root Z</code> is affected by this vulnerability.</p>
+
+              
+            </article>
+            
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../attestation/rekor/" class="md-footer__link md-footer__link--prev" aria-label="Previous: SBOM Attestation in Rekor" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              SBOM Attestation in Rekor
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../compliance/compliance/" class="md-footer__link md-footer__link--next" aria-label="Next: Built-in Compliance" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Built-in Compliance
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/AquaTrivy" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/aquasecurity/trivy" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/aquasecurity/trivy" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M94.12 315.1c0 25.9-21.16 47.06-47.06 47.06S0 341 0 315.1c0-25.9 21.16-47.06 47.06-47.06h47.06v47.06zm23.72 0c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06v117.84c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06V315.1zm47.06-188.98c-25.9 0-47.06-21.16-47.06-47.06S139 32 164.9 32s47.06 21.16 47.06 47.06v47.06H164.9zm0 23.72c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06H47.06C21.16 243.96 0 222.8 0 196.9s21.16-47.06 47.06-47.06H164.9zm188.98 47.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06h-47.06V196.9zm-23.72 0c0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06V79.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06V196.9zM283.1 385.88c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06v-47.06h47.06zm0-23.72c-25.9 0-47.06-21.16-47.06-47.06 0-25.9 21.16-47.06 47.06-47.06h117.84c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06H283.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.footer", "content.action.edit", "content.tabs.link", "content.code.annotate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"default": "latest", "method": "mike", "provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+    
+  </body>
+</html>
