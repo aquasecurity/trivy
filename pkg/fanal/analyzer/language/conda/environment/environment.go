@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -24,10 +25,41 @@ func init() {
 
 const version = 2
 
+type parser struct{}
+
+func (*parser) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	p := environment.NewParser()
+	pkgs, err := p.Parse(r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	once := sync.Once{}
+	// res always contains only 1 Application
+	// cf. https://github.com/aquasecurity/trivy/blob/0ccdbfbb6598a52de7cda603ab22e794f710e86c/pkg/fanal/analyzer/language/analyze.go#L32
+	for i, pkg := range pkgs.Packages {
+		// Skip packages without a version, because in this case we will not be able to get the correct file name.
+		if pkg.Version != "" {
+			licenses, err := findLicenseFromEnvDir(pkg, pkgs.Prefix)
+			if err != nil {
+				// Show log once per file
+				once.Do(func() {
+					log.WithPrefix("conda").Debug("License not found. See https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#licenses for details",
+						log.String("pkg", pkg.Name), log.Err(err))
+				})
+			}
+			pkg.Licenses = licenses
+		}
+		pkgs.Packages[i] = pkg
+	}
+
+	return pkgs.Packages, nil, nil
+}
+
 type environmentAnalyzer struct{}
 
 func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.CondaEnv, input.FilePath, input.Content, environment.NewParser())
+	res, err := language.Analyze(types.CondaEnv, input.FilePath, input.Content, &parser{})
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse environment.yaml: %w", err)
 	}
@@ -35,36 +67,14 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	if res == nil {
 		return nil, nil
 	}
-
-	once := sync.Once{}
-	// res always contains only 1 Application
-	// cf. https://github.com/aquasecurity/trivy/blob/0ccdbfbb6598a52de7cda603ab22e794f710e86c/pkg/fanal/analyzer/language/analyze.go#L32
-	for i, pkg := range res.Applications[0].Packages {
-		// Skip packages without a version, because in this case we will not be able to get the correct file name.
-		if pkg.Version != "" {
-			licenses, err := findLicenseFromEnvDir(pkg)
-			if err != nil {
-				// Show log once per file
-				once.Do(func() {
-					log.WithPrefix("conda").Debug("License not found. For more information, see https://aquasecurity.github.io/trivy/latest/docs/coverage/os/conda/#licenses",
-						log.String("file", input.FilePath), log.String("pkg", pkg.Name), log.Err(err))
-				})
-			}
-			pkg.Licenses = licenses
-		}
-		pkg.FilePath = "" // remove `prefix` from FilePath
-		res.Applications[0].Packages[i] = pkg
-
-	}
-
 	return res, nil
 }
 
-func findLicenseFromEnvDir(pkg types.Package) ([]string, error) {
-	if pkg.FilePath == "" {
+func findLicenseFromEnvDir(pkg types.Package, prefix string) ([]string, error) {
+	if prefix == "" {
 		return nil, xerrors.Errorf("`prefix` field doesn't exist")
 	}
-	condaMetaDir := filepath.Join(pkg.FilePath, "conda-meta")
+	condaMetaDir := filepath.Join(prefix, "conda-meta")
 	entries, err := os.ReadDir(condaMetaDir)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to read conda-meta dir: %w", err)
