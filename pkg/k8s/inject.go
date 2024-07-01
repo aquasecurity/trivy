@@ -6,7 +6,7 @@ package k8s
 import (
 	"github.com/google/wire"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 )
 
 func initializeScanK8s(localArtifactCache cache.LocalArtifactCache) *ScanKubernetes {

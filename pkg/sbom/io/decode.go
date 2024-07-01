@@ -10,7 +10,7 @@ import (
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -256,10 +256,23 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 		return pkg.Name
 	}
 
+	// `maven purl type` has no restrictions on using lowercase letters.
+	// Also, `spdx-maven-plugin` uses `name` instead of `artifactId` for the `package name` field.
+	// So we need to use `purl` for maven/gradle packages
+	// See https://github.com/aquasecurity/trivy/issues/7007 for more information.
+	if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+		return pkg.Name
+	}
+
+	// TODO(backward compatibility): Remove after 03/2025
+	// Bitnami used different pkg.Name and the name from PURL.
+	// For backwards compatibility - we need to use PURL.
+	// cf. https://github.com/aquasecurity/trivy/issues/6981
+	if c.PkgIdentifier.PURL.Type == packageurl.TypeBitnami {
+		return pkg.Name
+	}
+
 	if c.Group != "" {
-		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
-			return c.Group + ":" + c.Name
-		}
 		return c.Group + "/" + c.Name
 	}
 	return c.Name
@@ -363,7 +376,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	}
 
 	if len(osPkgMap) > 1 {
-		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", maps.Keys(osPkgMap))
+		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", lo.Keys(osPkgMap))
 	}
 
 	// Add OS packages only when OS is detected.

@@ -30,12 +30,11 @@ trivy kubernetes [flags] [CONTEXT]
 
 ```
       --burst int                         specify the maximum burst for throttle (default 10)
-      --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
-      --clear-cache                       clear image caches without scanning
-      --compliance string                 compliance report to generate (k8s-nsa,k8s-cis,k8s-pss-baseline,k8s-pss-restricted)
+      --compliance string                 compliance report to generate (k8s-nsa-1.0,k8s-cis-1.23,eks-cis-1.4,rke2-cis-1.24,k8s-pss-baseline-0.1,k8s-pss-restricted-0.1)
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
@@ -72,7 +71,7 @@ trivy kubernetes [flags] [CONTEXT]
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --no-progress                       suppress progress bar
-      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.2.1")
+      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.3.1")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
@@ -87,8 +86,6 @@ trivy kubernetes [flags] [CONTEXT]
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --report string                     specify a report format for the output (all,summary) (default "all")
-      --reset                             remove all caches and database
-      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,rbac) (default [vuln,misconfig,secret,rbac])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")

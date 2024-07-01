@@ -184,6 +184,7 @@
         }
       },
       "properties": {
+        "imageID": "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
         "imageName": "testdata/fixtures/images/alpine-310.tar.gz",
         "repoDigests": null,
         "repoTags": null

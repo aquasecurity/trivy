@@ -1,11 +1,11 @@
 package flag
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"

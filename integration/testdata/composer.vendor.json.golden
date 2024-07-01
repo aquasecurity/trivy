@@ -1,0 +1,131 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/composer-vendor",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "installed.json",
+      "Class": "lang-pkgs",
+      "Type": "composer-vendor",
+      "Packages": [
+        {
+          "ID": "guzzlehttp/psr7@1.8.3",
+          "Name": "guzzlehttp/psr7",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "25fca97fe23aa7b1"
+          },
+          "Version": "1.8.3",
+          "Licenses": [
+            "MIT"
+          ],
+          "DependsOn": [
+            "psr/http-message@1.1",
+            "ralouphie/getallheaders@3.0.3"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 115
+            }
+          ]
+        },
+        {
+          "ID": "psr/http-message@1.1",
+          "Name": "psr/http-message",
+          "Identifier": {
+            "PURL": "pkg:composer/psr/http-message@1.1",
+            "UID": "299d8ff4461e894"
+          },
+          "Version": "1.1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 116,
+              "EndLine": 171
+            }
+          ]
+        },
+        {
+          "ID": "ralouphie/getallheaders@3.0.3",
+          "Name": "ralouphie/getallheaders",
+          "Identifier": {
+            "PURL": "pkg:composer/ralouphie/getallheaders@3.0.3",
+            "UID": "c383e94d979a209c"
+          },
+          "Version": "3.0.3",
+          "Licenses": [
+            "MIT"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 172,
+              "EndLine": 218
+            }
+          ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-24775",
+          "PkgID": "guzzlehttp/psr7@1.8.3",
+          "PkgName": "guzzlehttp/psr7",
+          "PkgIdentifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "25fca97fe23aa7b1"
+          },
+          "InstalledVersion": "1.8.3",
+          "FixedVersion": "1.8.4",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Composer",
+            "URL": "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
+          },
+          "Title": "Improper Input Validation in guzzlehttp/psr7",
+          "Description": "### Impact\nIn proper header parsing. An attacker could sneak in a new line character and pass untrusted values. \n\n### Patches\nThe issue is patched in 1.8.4 and 2.1.1.\n\n### Workarounds\nThere are no known workarounds.\n",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://github.com/guzzle/psr7/security/advisories/GHSA-q7rv-6hp3-vh96",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-24775"
+          ],
+          "PublishedDate": "2022-03-25T19:26:33Z",
+          "LastModifiedDate": "2022-06-14T20:02:29Z"
+        }
+      ]
+    }
+  ]
+}

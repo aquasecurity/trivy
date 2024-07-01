@@ -7,12 +7,19 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
+
+var _ ArtifactCache = (*RemoteCache)(nil)
+
+type RemoteOptions struct {
+	ServerAddr    string
+	CustomHeaders http.Header
+	Insecure      bool
+}
 
 // RemoteCache implements remote cache
 type RemoteCache struct {
@@ -21,19 +28,22 @@ type RemoteCache struct {
 }
 
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.ArtifactCache {
-	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
+func NewRemoteCache(opts RemoteOptions) *RemoteCache {
+	ctx := client.WithCustomHeaders(context.Background(), opts.CustomHeaders)
 
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: insecure,
+				InsecureSkipVerify: opts.Insecure,
 			},
 		},
 	}
-	c := rpcCache.NewCacheProtobufClient(url, httpClient)
-	return &RemoteCache{ctx: ctx, client: c}
+	c := rpcCache.NewCacheProtobufClient(opts.ServerAddr, httpClient)
+	return &RemoteCache{
+		ctx:    ctx,
+		client: c,
+	}
 }
 
 // PutArtifact sends artifact to remote client

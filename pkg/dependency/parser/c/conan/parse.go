@@ -2,11 +2,11 @@ package conan
 
 import (
 	"io"
+	"slices"
 	"strings"
 
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"

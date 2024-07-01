@@ -93,8 +93,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/elasticsearch",
 						Packages: types.Packages{
 							{
-								ID:       "Elasticsearch@8.9.1",
-								Name:     "Elasticsearch",
+								ID:       "elasticsearch@8.9.1",
+								Name:     "elasticsearch",
 								Version:  "8.9.1",
 								Arch:     "arm64",
 								Licenses: []string{"Elastic-2.0"},
@@ -174,8 +174,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/postgresql",
 						Packages: types.Packages{
 							{
-								ID:       "GDAL@3.7.1",
-								Name:     "GDAL",
+								ID:       "gdal@3.7.1",
+								Name:     "gdal",
 								Version:  "3.7.1",
 								Licenses: []string{"MIT"},
 								Identifier: types.PkgIdentifier{
@@ -187,8 +187,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "GEOS@3.8.3",
-								Name:     "GEOS",
+								ID:       "geos@3.8.3",
+								Name:     "geos",
 								Version:  "3.8.3",
 								Licenses: []string{"LGPL-2.1-only"},
 								Identifier: types.PkgIdentifier{
@@ -200,8 +200,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "PostgreSQL@15.3.0",
-								Name:     "PostgreSQL",
+								ID:       "postgresql@15.3.0",
+								Name:     "postgresql",
 								Version:  "15.3.0",
 								Licenses: []string{"PostgreSQL"},
 								Identifier: types.PkgIdentifier{
@@ -212,14 +212,14 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 									},
 								},
 								DependsOn: []string{
-									"GEOS@3.8.3",
-									"Proj@6.3.2",
-									"GDAL@3.7.1",
+									"geos@3.8.3",
+									"proj@6.3.2",
+									"gdal@3.7.1",
 								},
 							},
 							{
-								ID:       "Proj@6.3.2",
-								Name:     "Proj",
+								ID:       "proj@6.3.2",
+								Name:     "proj",
 								Version:  "6.3.2",
 								Licenses: []string{"MIT"},
 								Identifier: types.PkgIdentifier{

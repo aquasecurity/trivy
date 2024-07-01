@@ -6,6 +6,7 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
@@ -28,6 +29,11 @@ import (
 
 // StandaloneSuperSet is used in the standalone mode
 var StandaloneSuperSet = wire.NewSet(
+	// Cache
+	cache.New,
+	wire.Bind(new(cache.ArtifactCache), new(cache.Cache)),
+	wire.Bind(new(cache.LocalArtifactCache), new(cache.Cache)),
+
 	local.SuperSet,
 	wire.Bind(new(Driver), new(local.Scanner)),
 	NewScanner,
@@ -77,6 +83,10 @@ var StandaloneVMSet = wire.NewSet(
 
 // RemoteSuperSet is used in the client mode
 var RemoteSuperSet = wire.NewSet(
+	// Cache
+	cache.NewRemoteCache,
+	wire.Bind(new(cache.ArtifactCache), new(*cache.RemoteCache)), // No need for LocalArtifactCache
+
 	client.NewScanner,
 	wire.Value([]client.Option(nil)),
 	wire.Bind(new(Driver), new(client.Scanner)),

@@ -90,15 +90,7 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 	if raw, ok := meta["url"]; ok {
 		sm.References = append(sm.References, fmt.Sprintf("%s", raw))
 	}
-	if raw, ok := meta["frameworks"]; ok {
-		frameworks, ok := raw.(map[string][]string)
-		if !ok {
-			return fmt.Errorf("failed to parse framework metadata: not an object")
-		}
-		for fw, sections := range frameworks {
-			sm.Frameworks[framework.Framework(fw)] = sections
-		}
-	}
+
 	if raw, ok := meta["related_resources"]; ok {
 		switch relatedResources := raw.(type) {
 		case []map[string]any:
@@ -112,6 +104,9 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 		}
 	}
 
+	if err := sm.updateFrameworks(meta); err != nil {
+		return fmt.Errorf("failed to update frameworks: %w", err)
+	}
 	sm.updateAliases(meta)
 
 	var err error
@@ -123,6 +118,28 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 		return err
 	}
 
+	return nil
+}
+
+func (sm *StaticMetadata) updateFrameworks(meta map[string]any) error {
+	if raw, ok := meta["frameworks"]; ok {
+		frameworks, ok := raw.(map[string]any)
+		if !ok {
+			return fmt.Errorf("frameworks metadata is not an object, got %T", raw)
+		}
+		for fw, rawIDs := range frameworks {
+			ids, ok := rawIDs.([]any)
+			if !ok {
+				return fmt.Errorf("framework ids is not an array, got %T", rawIDs)
+			}
+			fr := framework.Framework(fw)
+			for _, id := range ids {
+				if str, ok := id.(string); ok {
+					sm.Frameworks[fr] = append(sm.Frameworks[fr], str)
+				}
+			}
+		}
+	}
 	return nil
 }
 
@@ -172,8 +189,15 @@ func NewEngineMetadata(schema string, meta map[string]any) (*scan.EngineMetadata
 	if val, ok := sMap["bad_examples"].(string); ok {
 		em.BadExamples = []string{val}
 	}
-	if val, ok := sMap["links"].(string); ok {
-		em.Links = []string{val}
+	switch links := sMap["links"].(type) {
+	case string:
+		em.Links = []string{links}
+	case []any:
+		for _, v := range links {
+			if str, ok := v.(string); ok {
+				em.Links = append(em.Links, str)
+			}
+		}
 	}
 	if val, ok := sMap["remediation_markdown"].(string); ok {
 		em.RemediationMarkdown = val

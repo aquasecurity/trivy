@@ -301,6 +301,7 @@ func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules,
 		fileIgnores := ignore.Parse(
 			string(file.file.Bytes),
 			file.path,
+			p.moduleSource,
 			&ignore.StringMatchParser{
 				SectionKey: "ws",
 			},

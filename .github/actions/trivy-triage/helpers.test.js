@@ -73,5 +73,15 @@ describe('trivy-triage', async function() {
       assert(!labels.includes('FilesystemLabel'));
       assert(!labels.includes('MisconfigurationLabel'));
     });
+    it('process only relevant categories', async function() {
+      const discussion = {
+        body: 'hello world', 
+        category: {
+          name: 'Announcements'
+        }
+      };
+      const labels = detectDiscussionLabels(discussion, configDiscussionLabels);
+      assert(labels.length === 0);
+    });
   });
 });

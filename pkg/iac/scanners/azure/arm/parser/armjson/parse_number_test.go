@@ -24,7 +24,7 @@ func Test_Number_IntToFloat(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	err := Unmarshal(example, &output, &metadata)
 	require.NoError(t, err)
-	assert.Equal(t, 123.0, output)
+	assert.InEpsilon(t, 123.0, output, 0.0001)
 }
 
 func Test_Number_FloatToFloat(t *testing.T) {
@@ -33,7 +33,7 @@ func Test_Number_FloatToFloat(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	err := Unmarshal(example, &output, &metadata)
 	require.NoError(t, err)
-	assert.Equal(t, 123.456, output)
+	assert.InEpsilon(t, 123.456, output, 0.0001)
 }
 
 func Test_Number_FloatToInt(t *testing.T) {
@@ -42,7 +42,7 @@ func Test_Number_FloatToInt(t *testing.T) {
 	metadata := types.NewTestMetadata()
 	err := Unmarshal(example, &output, &metadata)
 	require.NoError(t, err)
-	assert.Equal(t, 123, output)
+	assert.InEpsilon(t, 123, output, 0.0001)
 }
 
 func Test_Number_FloatWithExponent(t *testing.T) {
@@ -70,7 +70,7 @@ func Test_Number_FloatWithExponent(t *testing.T) {
 			metadata := types.NewTestMetadata()
 			err := Unmarshal(example, &output, &metadata)
 			require.NoError(t, err)
-			assert.Equal(t, test.out, output)
+			assert.InEpsilon(t, test.out, output, 0.0001)
 
 		})
 	}

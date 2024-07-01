@@ -73,7 +73,7 @@ var (
 		ConfigName: "scan.slow",
 		Default:    false,
 		Usage:      "scan over time with lower CPU and memory utilization",
-		Deprecated: true,
+		Deprecated: `Use "--parallel 1" instead.`,
 	}
 	ParallelFlag = Flag[int]{
 		Name:       "parallel",

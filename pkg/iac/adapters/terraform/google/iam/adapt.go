@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
@@ -36,9 +36,9 @@ func (a *adapter) Adapt() iam.IAM {
 
 func (a *adapter) buildIAMOutput() iam.IAM {
 	return iam.IAM{
-		Organizations:                 fromPtrSlice(maps.Values(a.orgs)),
-		Folders:                       fromPtrSlice(maps.Values(a.folders)),
-		Projects:                      fromPtrSlice(maps.Values(a.projects)),
+		Organizations:                 fromPtrSlice(lo.Values(a.orgs)),
+		Folders:                       fromPtrSlice(lo.Values(a.folders)),
+		Projects:                      fromPtrSlice(lo.Values(a.projects)),
 		WorkloadIdentityPoolProviders: a.workloadIdentityPoolProviders,
 	}
 }

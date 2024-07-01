@@ -171,7 +171,7 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 		if err := yaml.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(path, err)
 		}
-		fctx.Ignores = ignore.Parse(string(content), path)
+		fctx.Ignores = ignore.Parse(string(content), path, "")
 	case JsonSourceFormat:
 		if err := jfather.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(path, err)

@@ -185,10 +185,18 @@ others:
 
 The `<scope>` can be empty (e.g. if the change is a global or difficult to assign to a single component), in which case the parentheses are omitted.
 
+**Breaking changes**
+
+A PR, introducing a breaking API change, needs to append a `!` after the type/scope.
+
 ### Example titles
 
 ```
 feat(alma): add support for AlmaLinux
+```
+
+```
+feat(vuln)!: delete the existing CLI flag
 ```
 
 ```

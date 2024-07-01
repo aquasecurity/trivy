@@ -12,10 +12,12 @@ import (
 )
 
 var (
+	// Deprecated
 	ResetFlag = Flag[bool]{
 		Name:       "reset",
 		ConfigName: "reset",
 		Usage:      "remove all caches and database",
+		Removed:    `Use "trivy clean --all" instead.`,
 	}
 	DownloadDBOnlyFlag = Flag[bool]{
 		Name:       "download-db-only",
@@ -64,7 +66,7 @@ var (
 		Name:       "light",
 		ConfigName: "db.light",
 		Usage:      "deprecated",
-		Deprecated: true,
+		Deprecated: `This flag is ignored.`,
 	}
 )
 
@@ -90,7 +92,6 @@ type DBOptions struct {
 	NoProgress         bool
 	DBRepository       name.Reference
 	JavaDBRepository   name.Reference
-	Light              bool // deprecated
 }
 
 // NewDBFlagGroup returns a default DBFlagGroup
@@ -135,16 +136,12 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	skipJavaDBUpdate := f.SkipJavaDBUpdate.Value()
 	downloadDBOnly := f.DownloadDBOnly.Value()
 	downloadJavaDBOnly := f.DownloadJavaDBOnly.Value()
-	light := f.Light.Value()
 
 	if downloadDBOnly && skipDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
 	if downloadJavaDBOnly && skipJavaDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
-	}
-	if light {
-		log.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
 	}
 
 	var dbRepository, javaDBRepository name.Reference
@@ -179,7 +176,6 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		SkipDBUpdate:       skipDBUpdate,
 		DownloadJavaDBOnly: downloadJavaDBOnly,
 		SkipJavaDBUpdate:   skipJavaDBUpdate,
-		Light:              light,
 		NoProgress:         f.NoProgress.Value(),
 		DBRepository:       dbRepository,
 		JavaDBRepository:   javaDBRepository,

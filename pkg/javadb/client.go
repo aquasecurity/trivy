@@ -79,7 +79,7 @@ func (u *Updater) Update() error {
 			return xerrors.Errorf("Java DB metadata update error: %w", err)
 		}
 		log.Info("The Java DB is cached for 3 days. If you want to update the database more frequently, " +
-			"the '--reset' flag clears the DB cache.")
+			`"trivy clean --java-db" command clears the DB cache.`)
 	}
 
 	return nil
@@ -88,7 +88,7 @@ func (u *Updater) Update() error {
 func Init(cacheDir string, javaDBRepository name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
 		repo:           javaDBRepository,
-		dbDir:          filepath.Join(cacheDir, "java-db"),
+		dbDir:          dbDir(cacheDir),
 		skip:           skip,
 		quiet:          quiet,
 		registryOption: registryOption,
@@ -105,6 +105,14 @@ func Update() error {
 		err = updater.Update()
 	})
 	return err
+}
+
+func Clear(ctx context.Context, cacheDir string) error {
+	return os.RemoveAll(dbDir(cacheDir))
+}
+
+func dbDir(cacheDir string) string {
+	return filepath.Join(cacheDir, "java-db")
 }
 
 type DB struct {

@@ -29,7 +29,6 @@ jobs:
             chore
             revert
             release
-            BREAKING
 
           scopes: |
             vuln

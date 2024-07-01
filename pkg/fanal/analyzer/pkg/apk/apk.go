@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 
 	apkVersion "github.com/knqyf263/go-apk-version"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"

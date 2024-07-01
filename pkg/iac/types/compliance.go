@@ -7,6 +7,9 @@ type ControlStatus string
 type SpecCheck struct {
 	ID string `yaml:"id"`
 }
+type Command struct {
+	ID string `yaml:"id"`
+}
 
 // ComplianceSpec represent the compliance specification
 type ComplianceSpec struct {
@@ -28,6 +31,7 @@ type Control struct {
 	Name          string        `yaml:"name"`
 	Description   string        `yaml:"description,omitempty"`
 	Checks        []SpecCheck   `yaml:"checks"`
+	Commands      []Command     `yaml:"commands"`
 	Severity      Severity      `yaml:"severity"`
 	DefaultStatus ControlStatus `yaml:"defaultStatus,omitempty"`
 }

@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
@@ -18,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 // Run runs a k8s scan
@@ -39,7 +41,8 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	defer func() {
 		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.WarnContext(ctx, "Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration
+			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
 	opts.K8sVersion = cluster.GetClusterVersion()

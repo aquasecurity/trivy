@@ -29,3 +29,11 @@ You can use Kyverno to ensure and enforce that deployed workloads' images are sc
 Trivy is integrated into Zora as a vulnerability scanner plugin.
 
 👉 Get it at: <https://zora-docs.undistro.io/latest/plugins/trivy/>
+
+## Helmper (Community)
+
+[Helmper](https://christoffernissen.github.io/helmper/) is a go program that reads Helm Charts from remote OCI registries and pushes the Helm Charts and the Helm Charts container images to your OCI registries with optional OS level vulnerability patching
+
+Trivy is integrated into Helmper as a vulnerability scanner in combination with Copacetic to fix detected vulnerabilities.
+
+👉 Get it at: <https://github.com/ChristofferNissen/helmper>

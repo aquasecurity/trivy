@@ -237,7 +237,6 @@ func (c *Client) GetMetadata() (*Metadata, error) {
 }
 
 func (c *Client) Clear() error {
-	log.Info("Removing check bundle...")
 	if err := os.RemoveAll(c.policyDir); err != nil {
 		return xerrors.Errorf("failed to remove check bundle: %w", err)
 	}
