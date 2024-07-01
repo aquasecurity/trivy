@@ -1653,23 +1653,50 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sbom" class="md-nav__link">
-    SBOM
+  <a href="#packagejson" class="md-nav__link">
+    &lt;package&gt;.json
   </a>
   
-    <nav class="md-nav" aria-label="SBOM">
+    <nav class="md-nav" aria-label="&lt;package&gt;.json">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#packagejson" class="md-nav__link">
-    &lt;package&gt;.json
+  <a href="#sbom" class="md-nav__link">
+    SBOM
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#environmentyml2" class="md-nav__link">
-    environment.yml2
+  <a href="#license" class="md-nav__link">
+    License
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environmentyml1" class="md-nav__link">
+    environment.yml1
+  </a>
+  
+    <nav class="md-nav" aria-label="environment.yml1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sbom_1" class="md-nav__link">
+    SBOM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#license_1" class="md-nav__link">
+    License
   </a>
   
 </li>
@@ -3890,23 +3917,50 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sbom" class="md-nav__link">
-    SBOM
+  <a href="#packagejson" class="md-nav__link">
+    &lt;package&gt;.json
   </a>
   
-    <nav class="md-nav" aria-label="SBOM">
+    <nav class="md-nav" aria-label="&lt;package&gt;.json">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#packagejson" class="md-nav__link">
-    &lt;package&gt;.json
+  <a href="#sbom" class="md-nav__link">
+    SBOM
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#environmentyml2" class="md-nav__link">
-    environment.yml2
+  <a href="#license" class="md-nav__link">
+    License
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environmentyml1" class="md-nav__link">
+    environment.yml1
+  </a>
+  
+    <nav class="md-nav" aria-label="environment.yml1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sbom_1" class="md-nav__link">
+    SBOM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#license_1" class="md-nav__link">
+    License
   </a>
   
 </li>
@@ -3954,34 +4008,37 @@ You're not viewing the latest version.
 </tr>
 <tr>
 <td align="center">License</td>
-<td align="center">✓<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+<td align="center">✓</td>
 </tr>
 </tbody>
 </table>
-<h2 id="sbom">SBOM</h2>
-<p>Trivy detects packages that have been installed with <code>Conda</code>.</p>
-<h3 id="packagejson"><code>&lt;package&gt;.json</code></h3>
-<p>Trivy parses <code>&lt;conda-root&gt;/envs/&lt;env&gt;/conda-meta/&lt;package&gt;.json</code> files to find the version and license for the dependencies installed in your env.</p>
-<h3 id="environmentyml2"><code>environment.yml</code><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></h3>
-<p>Trivy supports parsing <a href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#sharing-an-environment">environment.yml</a><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup> files to find dependency list.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>License detection is currently not supported.</p>
-</div>
-<p><code>environment.yml</code><sup id="fnref3:2"><a class="footnote-ref" href="#fn:2">2</a></sup> files supports <a href="https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html#examples-of-package-specs">version range</a>. We can't be sure about versions for these dependencies.
-Therefore, you need to use <code>conda env export</code> command to get dependency list in <code>Conda</code> default format before scanning <code>environment.yml</code><sup id="fnref4:2"><a class="footnote-ref" href="#fn:2">2</a></sup> file.</p>
+<h2 id="packagejson"><code>&lt;package&gt;.json</code></h2>
+<h3 id="sbom">SBOM</h3>
+<p>Trivy parses <code>&lt;conda-root&gt;/envs/&lt;env&gt;/conda-meta/&lt;package&gt;.json</code> files to find the dependencies installed in your env.</p>
+<h3 id="license">License</h3>
+<p>The <code>&lt;package&gt;.json</code> files contain package license information.
+Trivy includes licenses for the packages it finds without having to parse additional files.</p>
+<h2 id="environmentyml1"><code>environment.yml</code><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h2>
+<h3 id="sbom_1">SBOM</h3>
+<p>Trivy supports parsing <a href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#sharing-an-environment">environment.yml</a><sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> files to find dependency list.</p>
+<p><code>environment.yml</code><sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup> files supports <a href="https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html#examples-of-package-specs">version range</a>. We can't be sure about versions for these dependencies.
+Therefore, you need to use <code>conda env export</code> command to get dependency list in <code>Conda</code> default format before scanning <code>environment.yml</code><sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup> file.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For dependencies in a non-Conda format, Trivy doesn't include a version of them.</p>
+</div>
+<h3 id="license_1">License</h3>
+<p>Trivy parses <code>conda-meta/&lt;package&gt;.json</code> files at the <a href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#specifying-a-location-for-an-environment">prefix</a> path.</p>
+<p>To correctly define licenses, make sure your <code>environment.yml</code><sup id="fnref5:1"><a class="footnote-ref" href="#fn:1">1</a></sup> contains <code>prefix</code> field and <code>prefix</code> directory contains <code>package.json</code> files.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To get correct <code>environment.yml</code><sup id="fnref6:1"><a class="footnote-ref" href="#fn:1">1</a></sup> file and fill <code>prefix</code> directory - use <code>conda env export</code> command.</p>
 </div>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p>License detection is only supported for <code>&lt;package&gt;.json</code> files&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p>Trivy supports both <code>yaml</code> and <code>yml</code> extensions.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>Trivy supports both <code>yaml</code> and <code>yml</code> extensions.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref5:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref6:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
