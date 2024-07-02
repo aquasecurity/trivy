@@ -1,7 +1,9 @@
 package cyclonedx_test
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"os"
 	"testing"
 
@@ -757,7 +759,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 
 			var got types.SBOM
-			err = sbomio.NewDecoder(cdx.BOM).Decode(&got)
+			ctx := log.WithContextAttrs(context.Background(), log.String("filepath", tt.inputFile))
+			err = sbomio.NewDecoder(cdx.BOM).Decode(ctx, &got)
 			require.NoError(t, err)
 
 			got.BOM = nil

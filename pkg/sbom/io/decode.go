@@ -1,6 +1,7 @@
 package io
 
 import (
+	"context"
 	"errors"
 	"slices"
 	"sort"
@@ -46,14 +47,14 @@ func NewDecoder(bom *core.BOM) *Decoder {
 	}
 }
 
-func (m *Decoder) Decode(sbom *types.SBOM) error {
+func (m *Decoder) Decode(ctx context.Context, sbom *types.SBOM) error {
 	// Parse the root component
 	if err := m.decodeRoot(sbom); err != nil {
 		return xerrors.Errorf("failed to decode root component: %w", err)
 	}
 
 	// Parse all components
-	if err := m.decodeComponents(sbom); err != nil {
+	if err := m.decodeComponents(ctx, sbom); err != nil {
 		return xerrors.Errorf("failed to decode components: %w", err)
 	}
 
@@ -67,7 +68,7 @@ func (m *Decoder) Decode(sbom *types.SBOM) error {
 	m.addLangPkgs(sbom)
 
 	// Add remaining packages
-	if err := m.addOrphanPkgs(sbom); err != nil {
+	if err := m.addOrphanPkgs(ctx, sbom); err != nil {
 		return xerrors.Errorf("failed to aggregate packages: %w", err)
 	}
 
@@ -109,9 +110,9 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 	return nil
 }
 
-func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
+func (m *Decoder) decodeComponents(ctx context.Context, sbom *types.SBOM) error {
 	onceMultiOSWarn := sync.OnceFunc(func() {
-		m.logger.Warn("Multiple OS components are not supported, taking the first one and ignoring the rest")
+		m.logger.WarnContext(ctx, "Multiple OS components are not supported, taking the first one and ignoring the rest")
 	})
 
 	for id, c := range m.bom.Components() {
@@ -136,7 +137,7 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 
 		// Third-party SBOMs may contain packages in types other than "Library"
 		if c.Type == core.TypeLibrary || c.PkgIdentifier.PURL != nil {
-			pkg, err := m.decodeLibrary(c)
+			pkg, err := m.decodeLibrary(ctx, c)
 			if errors.Is(err, ErrUnsupportedType) || errors.Is(err, ErrPURLEmpty) {
 				continue
 			} else if err != nil {
@@ -183,17 +184,17 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 	return &app
 }
 
-func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
+func (m *Decoder) decodeLibrary(ctx context.Context, c *core.Component) (*ftypes.Package, error) {
 	p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
 	if p == nil {
-		m.logger.Debug("Skipping a component without PURL",
+		m.logger.DebugContext(ctx, "Skipping a component without PURL",
 			log.String("name", c.Name), log.String("version", c.Version))
 		return nil, ErrPURLEmpty
 	}
 
 	pkg := p.Package()
 	if p.Class() == types.ClassUnknown {
-		m.logger.Debug("Skipping a component with an unsupported type",
+		m.logger.DebugContext(ctx, "Skipping a component with an unsupported type",
 			log.String("name", c.Name), log.String("version", c.Version), log.String("type", p.Type))
 		return nil, ErrUnsupportedType
 	}
@@ -240,7 +241,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	}
 
 	if p.Class() == types.ClassOSPkg {
-		m.fillSrcPkg(c, pkg)
+		m.fillSrcPkg(ctx, c, pkg)
 	}
 
 	return pkg, nil
@@ -278,11 +279,11 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 	return c.Name
 }
 
-func (m *Decoder) fillSrcPkg(c *core.Component, pkg *ftypes.Package) {
+func (m *Decoder) fillSrcPkg(ctx context.Context, c *core.Component, pkg *ftypes.Package) {
 	if c.SrcName != "" && pkg.SrcName == "" {
 		pkg.SrcName = c.SrcName
 	}
-	m.parseSrcVersion(pkg, c.SrcVersion)
+	m.parseSrcVersion(ctx, pkg, c.SrcVersion)
 
 	// Source info was added from component or properties
 	if pkg.SrcName != "" && pkg.SrcVersion != "" {
@@ -305,7 +306,7 @@ func (m *Decoder) fillSrcPkg(c *core.Component, pkg *ftypes.Package) {
 }
 
 // parseSrcVersion parses the version of the source package.
-func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
+func (m *Decoder) parseSrcVersion(ctx context.Context, pkg *ftypes.Package, ver string) {
 	if ver == "" {
 		return
 	}
@@ -318,7 +319,7 @@ func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
 	case packageurl.TypeDebian:
 		v, err := debver.NewVersion(ver)
 		if err != nil {
-			m.logger.Debug("Failed to parse Debian version", log.Err(err))
+			m.logger.DebugContext(ctx, "Failed to parse Debian version", log.Err(err))
 			return
 		}
 		pkg.SrcEpoch = v.Epoch()
@@ -361,7 +362,7 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 
 // addOrphanPkgs adds orphan packages.
 // Orphan packages are packages that are not related to any components.
-func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
+func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 	osPkgMap := make(map[string]ftypes.Packages)
 	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, pkg := range m.pkgs {
@@ -382,7 +383,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	// Add OS packages only when OS is detected.
 	for _, pkgs := range osPkgMap {
 		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			m.logger.Warn("Ignore the OS package as no OS is detected.")
+			m.logger.WarnContext(ctx, "Ignore the OS package as no OS is detected.")
 			break
 		}
 
