@@ -157,12 +157,12 @@ func initConfig(configFile string) error {
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Debug("Config file not found", log.String("file_path", configFile))
+			log.Debug("Config file not found", log.FilePath(configFile))
 			return nil
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
-	log.Info("Loaded", log.String("file_path", configFile))
+	log.Info("Loaded", log.FilePath(configFile))
 	return nil
 }
 

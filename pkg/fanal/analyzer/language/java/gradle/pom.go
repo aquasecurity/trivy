@@ -80,7 +80,7 @@ func (a gradleLockAnalyzer) parsePoms() (map[string]pomXML, error) {
 	err := fsutils.WalkDir(os.DirFS(cacheDir), ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		pom, err := parsePom(r, path)
 		if err != nil {
-			a.logger.Debug("Unable to parse pom", log.String("file_path", path), log.Err(err))
+			a.logger.Debug("Unable to parse pom", log.FilePath(path), log.Err(err))
 			return nil
 		}
 
