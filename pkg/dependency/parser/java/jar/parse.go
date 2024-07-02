@@ -83,7 +83,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 }
 
 func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
-	p.logger.Debug("Parsing Java artifacts...", log.String("file", filePath))
+	p.logger.Debug("Parsing Java artifacts...", log.FilePath(filePath))
 
 	// Try to extract artifactId and version from the file name
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
