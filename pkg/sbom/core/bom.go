@@ -134,6 +134,9 @@ type Component struct {
 	// BOMRef:
 	//   CycloneDX: component.bom-ref
 	//   SPDX: N/A
+	// SPDXID:
+	//   CycloneDX: N/A
+	//   SPDX: package.SPDXID
 	PkgIdentifier ftypes.PkgIdentifier
 
 	// Supplier is the name of the supplier of the component
