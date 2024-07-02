@@ -16,9 +16,10 @@ For detailed behavior, please refer to [the GitHub Actions configuration][workfl
 The release flow consists of the following main steps:
 
 1. Creating the release PR (automatically or manually)
-1. Drafting the release notes
+1. Drafting the release notes in GitHub Discussions
 1. Merging the release PR
-1. Updating the release notes
+1. Updating the release notes in GitHub Discussions
+1. Navigating to the release notes in GitHub Releases page
 
 ### Automatic Release PR Creation
 When a releasable commit (a commit with `feat` or `fix` prefix) is merged, a release PR is automatically created.
@@ -56,6 +57,23 @@ When the PR is merged, a tag is automatically created, and [GoReleaser][goreleas
 ### Updating the Release Notes
 If the release completes without errors, a page for the release notes is created in GitHub Discussions (e.g., https://github.com/aquasecurity/trivy/discussions/6622).
 Copy the draft release notes, adjust the formatting, and finalize the release notes.
+
+### Navigating to the Release Notes
+To navigate to the release highlights and summary in GitHub Discussions, place a link in the GitHub Releases page as below:
+
+```
+## ⚡Release highlights and summary⚡
+
+👉 https://github.com/aquasecurity/trivy/discussions/6838
+
+## Changelog
+https://github.com/aquasecurity/trivy/blob/main/CHANGELOG.md#0520-2024-06-03
+```
+
+Replace URLs with appropriate ones.
+
+Example: https://github.com/aquasecurity/trivy/releases/tag/v0.52.0
+
 
 The release is now complete.
 
