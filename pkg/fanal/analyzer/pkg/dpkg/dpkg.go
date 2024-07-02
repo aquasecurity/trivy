@@ -64,26 +64,35 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		a.logger.Debug("Unable to parse the available file", log.FilePath(availableFile), log.Err(err))
 	}
 
-	required := func(path string, d fs.DirEntry) bool {
-		return path != availableFile
-	}
-
 	packageFiles := make(map[string][]string)
 
-	// parse other files
-	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
-		// parse list files
-		if a.isListFile(filepath.Split(path)) {
-			scanner := bufio.NewScanner(r)
-			systemFiles, err := a.parseDpkgInfoList(scanner)
-			if err != nil {
-				return err
-			}
-			packageFiles[strings.TrimSuffix(filepath.Base(path), ".list")] = systemFiles
-			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
-			return nil
+	// parse list files
+	err = fsutils.WalkDir(input.FS, infoDir, fsutils.RequiredExt(".list"), func(path string, d fs.DirEntry, r io.Reader) error {
+		scanner := bufio.NewScanner(r)
+		systemFiles, err := a.parseDpkgInfoList(scanner)
+		if err != nil {
+			return err
 		}
-		// parse status files
+		packageFiles[strings.TrimSuffix(filepath.Base(path), ".list")] = systemFiles
+		systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
+		return nil
+	})
+	if err != nil && !os.IsNotExist(err) {
+		return nil, xerrors.Errorf("dpkg walk error: %w", err)
+	}
+
+	// parse root status file
+	rootStatusInfos, err := a.parseRootStatusFile(input, digests)
+	if err != nil {
+		return nil, xerrors.Errorf("dpkg parse error: %w", err)
+	}
+	packageInfos = append(packageInfos, rootStatusInfos...)
+
+	// parse status files
+	excludeMd5sum := func(filePath string, _ fs.DirEntry) bool {
+		return filepath.Ext(filePath) != ".md5sums"
+	}
+	err = fsutils.WalkDir(input.FS, statusDir, excludeMd5sum, func(path string, d fs.DirEntry, r io.Reader) error {
 		infos, err := a.parseDpkgStatus(path, r, digests)
 		if err != nil {
 			return err
@@ -91,7 +100,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		packageInfos = append(packageInfos, infos...)
 		return nil
 	})
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
 
@@ -111,6 +120,23 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		SystemInstalledFiles: systemInstalledFiles,
 	}, nil
 
+}
+
+func (a dpkgAnalyzer) parseRootStatusFile(input analyzer.PostAnalysisInput, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
+	f, err := input.FS.Open(statusFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, xerrors.Errorf("failed to open %s: %w", statusFile, err)
+	}
+	defer f.Close()
+
+	infos, err := a.parseDpkgStatus(statusFile, f, digests)
+	if err != nil {
+		return nil, err
+	}
+	return infos, nil
 }
 
 // parseDpkgInfoList parses /var/lib/dpkg/info/*.list
@@ -185,7 +211,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 	return pkgs, nil
 }
 
-// parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status/*
+// parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status.d/*
 func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
 	var pkg *types.Package
 	pkgs := make(map[string]*types.Package)
