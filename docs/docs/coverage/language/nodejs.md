@@ -54,6 +54,7 @@ By default, Trivy doesn't report development dependencies. Use the `--include-de
 
 ### pnpm
 Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependency-graph] of dependencies with vulnerabilities.
+To identify licenses, you need to download dependencies to `node_modules` beforehand. Trivy analyzes `node_modules` for licenses.
 
 #### lock file v9 version
 Trivy supports `Dev` field for `pnpm-lock.yaml` v9 or later. Use the `--include-dev-deps` flag to include the developer's dependencies in the result.
