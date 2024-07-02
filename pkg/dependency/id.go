@@ -20,7 +20,8 @@ func ID(ltype types.LangType, name, version string) string {
 
 	sep := "@"
 	switch ltype {
-	case types.Conan:
+	// cf. https://github.com/dotnet/sdk/blob/529132850841a6bcfce96799262ce688e3851875/documentation/specs/runtime-configuration-file.md#targets-section-depsjson
+	case types.Conan, types.DotNetCore:
 		sep = "/"
 	case types.GoModule, types.GoBinary:
 		// Return a module ID according the Go way.

@@ -2,7 +2,6 @@ package core_deps
 
 import (
 	"os"
-	"path"
 	"sort"
 	"testing"
 
@@ -13,29 +12,102 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	vectors := []struct {
+	tests := []struct {
+		name    string
 		file    string // Test input file
 		want    []ftypes.Package
 		wantErr string
 	}{
 		{
-			file: "testdata/ExampleApp1.deps.json",
+			name: "happy path",
+			file: "testdata/happy.deps.json",
 			want: []ftypes.Package{
-				{Name: "Newtonsoft.Json", Version: "13.0.1", Locations: []ftypes.Location{{StartLine: 33, EndLine: 39}}},
+				{
+					ID:      "Newtonsoft.Json/13.0.1",
+					Name:    "Newtonsoft.Json",
+					Version: "13.0.1",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 33, EndLine: 39,
+						},
+					},
+				},
 			},
 		},
 		{
-			file: "testdata/NoLibraries.deps.json",
+			name: "happy path with skipped libs",
+			file: "testdata/without-runtime.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:      "JsonDiffPatch/2.0.61",
+					Name:    "JsonDiffPatch",
+					Version: "2.0.61",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 60, EndLine: 66,
+						},
+					},
+				},
+				{
+					ID:      "Libuv/1.9.1",
+					Name:    "Libuv",
+					Version: "1.9.1",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 67, EndLine: 73,
+						},
+					},
+				},
+				{
+					ID:      "Microsoft.NETCore.App/1.1.2",
+					Name:    "Microsoft.NETCore.App",
+					Version: "1.1.2",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 74, EndLine: 80,
+						},
+					},
+					Dev: true,
+				},
+				{
+					ID:      "Microsoft.NETCore.Platforms/1.1.0",
+					Name:    "Microsoft.NETCore.Platforms",
+					Version: "1.1.0",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 81, EndLine: 87,
+						},
+					},
+					Dev: true,
+				},
+				{
+					ID:      "System.Collections.Immutable/1.3.0",
+					Name:    "System.Collections.Immutable",
+					Version: "1.3.0",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 88, EndLine: 94,
+						},
+					},
+					// Is false because `targets[.NETCoreApp,Version=v6.0]` doesn't contain this library
+					Dev: false,
+				},
+			},
+		},
+		{
+			name: "happy path without libs",
+			file: "testdata/no-libraries.deps.json",
 			want: nil,
 		},
 		{
-			file:    "testdata/InvalidJson.deps.json",
+			name:    "sad path",
+			file:    "testdata/invalid.deps.json",
 			wantErr: "failed to decode .deps.json file: EOF",
 		},
 	}
 
-	for _, tt := range vectors {
-		t.Run(path.Base(tt.file), func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
