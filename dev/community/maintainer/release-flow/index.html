@@ -3820,6 +3820,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#navigating-to-the-release-notes" class="md-nav__link">
+    Navigating to the Release Notes
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3965,6 +3972,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#navigating-to-the-release-notes" class="md-nav__link">
+    Navigating to the Release Notes
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4004,9 +4018,10 @@ To include such commits in a release, you need to either include commits with <c
 <p>The release flow consists of the following main steps:</p>
 <ol>
 <li>Creating the release PR (automatically or manually)</li>
-<li>Drafting the release notes</li>
+<li>Drafting the release notes in GitHub Discussions</li>
 <li>Merging the release PR</li>
-<li>Updating the release notes</li>
+<li>Updating the release notes in GitHub Discussions</li>
+<li>Navigating to the release notes in GitHub Releases page</li>
 </ol>
 <h3 id="automatic-release-pr-creation">Automatic Release PR Creation</h3>
 <p>When a releasable commit (a commit with <code>feat</code> or <code>fix</code> prefix) is merged, a release PR is automatically created.
@@ -4038,6 +4053,17 @@ When the PR is merged, a tag is automatically created, and <a href="https://gore
 <h3 id="updating-the-release-notes">Updating the Release Notes</h3>
 <p>If the release completes without errors, a page for the release notes is created in GitHub Discussions (e.g., https://github.com/aquasecurity/trivy/discussions/6622).
 Copy the draft release notes, adjust the formatting, and finalize the release notes.</p>
+<h3 id="navigating-to-the-release-notes">Navigating to the Release Notes</h3>
+<p>To navigate to the release highlights and summary in GitHub Discussions, place a link in the GitHub Releases page as below:</p>
+<div class="highlight"><pre><span></span><code>## ⚡Release highlights and summary⚡
+
+👉 https://github.com/aquasecurity/trivy/discussions/6838
+
+## Changelog
+https://github.com/aquasecurity/trivy/blob/main/CHANGELOG.md#0520-2024-06-03
+</code></pre></div>
+<p>Replace URLs with appropriate ones.</p>
+<p>Example: https://github.com/aquasecurity/trivy/releases/tag/v0.52.0</p>
 <p>The release is now complete.</p>
 
               
