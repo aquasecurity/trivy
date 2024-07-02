@@ -37,7 +37,7 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 		return nil, xerrors.Errorf("failed to detect SBOM format: %w", err)
 	}
 
-	ctx = log.WithContextAttrs(ctx, log.String("file", input.FilePath))
+	ctx = log.WithContextAttrs(ctx, log.FilePath(input.FilePath))
 	bom, err := sbom.Decode(ctx, input.Content, format)
 	if err != nil {
 		return nil, xerrors.Errorf("SBOM decode error: %w", err)

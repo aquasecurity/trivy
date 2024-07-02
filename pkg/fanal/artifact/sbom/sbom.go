@@ -51,7 +51,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}
 	log.Info("Detected SBOM format", log.String("format", string(format)))
 
-	ctx = log.WithContextAttrs(ctx, log.String("file", a.filePath))
+	ctx = log.WithContextAttrs(ctx, log.FilePath(a.filePath))
 	bom, err := sbom.Decode(ctx, f, format)
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("SBOM decode error: %w", err)
