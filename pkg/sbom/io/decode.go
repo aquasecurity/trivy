@@ -186,14 +186,14 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
 	if p == nil {
-		log.Debug("Skipping a component without PURL",
+		m.logger.Debug("Skipping a component without PURL",
 			log.String("name", c.Name), log.String("version", c.Version))
 		return nil, ErrPURLEmpty
 	}
 
 	pkg := p.Package()
 	if p.Class() == types.ClassUnknown {
-		log.Debug("Skipping a component with an unsupported type",
+		m.logger.Debug("Skipping a component with an unsupported type",
 			log.String("name", c.Name), log.String("version", c.Version), log.String("type", p.Type))
 		return nil, ErrUnsupportedType
 	}
@@ -318,7 +318,7 @@ func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
 	case packageurl.TypeDebian:
 		v, err := debver.NewVersion(ver)
 		if err != nil {
-			log.Debug("Failed to parse Debian version", log.Err(err))
+			m.logger.Debug("Failed to parse Debian version", log.Err(err))
 			return
 		}
 		pkg.SrcEpoch = v.Epoch()
@@ -382,7 +382,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	// Add OS packages only when OS is detected.
 	for _, pkgs := range osPkgMap {
 		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			log.Warn("Ignore the OS package as no OS is detected.")
+			m.logger.Warn("Ignore the OS package as no OS is detected.")
 			break
 		}
 
