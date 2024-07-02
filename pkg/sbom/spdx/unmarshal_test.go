@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -359,8 +358,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			}
 
 			var got types.SBOM
-			ctx := log.WithContextAttrs(context.Background(), log.String("filepath", tt.inputFile))
-			err = sbomio.NewDecoder(v.BOM).Decode(ctx, &got)
+			err = sbomio.NewDecoder(v.BOM).Decode(context.Background(), &got)
 			require.NoError(t, err)
 
 			// Not compare BOM
