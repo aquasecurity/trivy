@@ -198,7 +198,7 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 	log.Info("Detected config files", log.Int("num", len(misconfs)))
 	var results types.Results
 	for _, misconf := range misconfs {
-		log.Debug("Scanned config file", log.String("path", misconf.FilePath))
+		log.Debug("Scanned config file", log.FilePath(misconf.FilePath))
 
 		var detected []types.DetectedMisconfiguration
 
@@ -237,7 +237,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 
 	var results types.Results
 	for _, secret := range secrets {
-		log.Debug("Secret file", log.String("path", secret.FilePath))
+		log.Debug("Secret file", log.FilePath(secret.FilePath))
 
 		results = append(results, types.Result{
 			Target: secret.FilePath,
