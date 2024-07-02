@@ -13,10 +13,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
@@ -33,8 +31,6 @@ type pnpmAnalyzer struct {
 	logger            *log.Logger
 	packageJsonParser *packagejson.Parser
 	lockParser        language.Parser
-	comparer          npm.Comparer
-	license           *license.License
 }
 
 func newPnpmAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -42,8 +38,6 @@ func newPnpmAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error
 		logger:            log.WithPrefix("pnpm"),
 		packageJsonParser: packagejson.NewParser(),
 		lockParser:        pnpm.NewParser(),
-		comparer:          npm.Comparer{},
-		license:           license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 
