@@ -71,7 +71,7 @@ func (h unpackagedHook) Handle(ctx context.Context, res *analyzer.AnalysisResult
 		}
 
 		if len(bom.Applications) > 0 {
-			h.logger.Info("Found SBOM attestation in Rekor", log.String("file_path", filePath))
+			h.logger.Info("Found SBOM attestation in Rekor", log.FilePath(filePath))
 			// Take the first app since this SBOM should contain a single application.
 			app := bom.Applications[0]
 			app.FilePath = filePath // Use the original file path rather than the one in the SBOM.

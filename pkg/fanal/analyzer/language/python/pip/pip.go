@@ -117,7 +117,7 @@ func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
 
 	metadataPkg, _, err := a.metadataParser.Parse(metadataFile)
 	if err != nil {
-		a.logger.Warn("Unable to parse METADATA file", log.String("path", metadataPath), log.Err(err))
+		a.logger.Warn("Unable to parse METADATA file", log.FilePath(metadataPath), log.Err(err))
 		return nil
 	}
 

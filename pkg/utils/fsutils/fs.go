@@ -88,7 +88,7 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		defer f.Close()
 
 		if err = fn(path, d, f); err != nil {
-			log.Debug("Walk error", log.String("file_path", path), log.Err(err))
+			log.Debug("Walk error", log.FilePath(path), log.Err(err))
 		}
 		return nil
 	})
