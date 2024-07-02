@@ -37,7 +37,7 @@ jobs:
         id: lint
         uses: golangci/golangci-lint-action@v6.0.1
         with:
-          version: v1.58
+          version: v1.59
           args: --verbose --out-format=line-number
         if: matrix.operating-system == 'ubuntu-latest-m'
 
