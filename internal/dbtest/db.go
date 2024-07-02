@@ -9,17 +9,18 @@ import (
 	"github.com/stretchr/testify/require"
 
 	fixtures "github.com/aquasecurity/bolt-fixtures"
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	trivydb "github.com/aquasecurity/trivy-db/pkg/db"
 	jdb "github.com/aquasecurity/trivy-java-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/db"
 )
 
 // InitDB initializes testing database.
 func InitDB(t *testing.T, fixtureFiles []string) string {
 	// Create a temp dir
-	dir := t.TempDir()
+	cacheDir := t.TempDir()
 
-	dbPath := db.Path(dir)
-	dbDir := filepath.Dir(dbPath)
+	dbDir := db.Dir(cacheDir)
+	dbPath := trivydb.Path(dbDir)
 	err := os.MkdirAll(dbDir, 0700)
 	require.NoError(t, err)
 
@@ -30,9 +31,9 @@ func InitDB(t *testing.T, fixtureFiles []string) string {
 	require.NoError(t, loader.Close())
 
 	// Initialize DB
-	require.NoError(t, db.Init(dir))
+	require.NoError(t, db.Init(dbDir))
 
-	return dir
+	return cacheDir
 }
 
 func Close() error {
