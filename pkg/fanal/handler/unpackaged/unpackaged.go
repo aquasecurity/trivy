@@ -64,7 +64,8 @@ func (h unpackagedHook) Handle(ctx context.Context, res *analyzer.AnalysisResult
 		}
 
 		// Parse the fetched SBOM
-		bom, err := sbom.Decode(bytes.NewReader(raw), format)
+		ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
+		bom, err := sbom.Decode(ctx, bytes.NewReader(raw), format)
 		if err != nil {
 			return err
 		}

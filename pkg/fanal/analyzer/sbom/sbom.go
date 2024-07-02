@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -29,14 +30,15 @@ var requiredSuffixes = []string{
 
 type sbomAnalyzer struct{}
 
-func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Format auto-detection
 	format, err := sbom.DetectFormat(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to detect SBOM format: %w", err)
 	}
 
-	bom, err := sbom.Decode(input.Content, format)
+	ctx = log.WithContextAttrs(ctx, log.FilePath(input.FilePath))
+	bom, err := sbom.Decode(ctx, input.Content, format)
 	if err != nil {
 		return nil, xerrors.Errorf("SBOM decode error: %w", err)
 	}
