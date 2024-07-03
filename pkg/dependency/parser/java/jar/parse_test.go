@@ -172,18 +172,18 @@ var (
 	wantDuplicatesJar = []ftypes.Package{
 		{
 			Name:     "io.quarkus.gizmo:gizmo",
-			Version:  "1.1.1.Final",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+			Version:  "1.1",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.16",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.16.jar",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.16.jar",
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.17.jar",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.17.jar",
 		},
 	}
 )
@@ -251,7 +251,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "duplicate libraries",
-			file: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+			file: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 			want: wantDuplicatesJar,
 		},
 	}
@@ -277,13 +277,13 @@ func TestParse(t *testing.T) {
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "Gizmo"):
 			res.Response.NumFound = 0
-		case strings.Contains(r.URL.Query().Get("q"), "85d30c06026afd9f5be26da3194d4698c447a904"):
+		case strings.Contains(r.URL.Query().Get("q"), "1c78bbc4d8c58b9af8eee82b84f2c26ec48e9a2b"):
 			res.Response.Docs = []doc{
 				{
 					ID:         "io.quarkus.gizmo.gizmo",
 					GroupID:    "io.quarkus.gizmo",
 					ArtifactID: "gizmo",
-					Version:    "1.1.1.Final",
+					Version:    "1.1.0",
 				},
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "heuristic"):
