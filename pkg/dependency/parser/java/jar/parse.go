@@ -6,15 +6,15 @@ import (
 	"crypto/sha1" // nolint:gosec
 	"encoding/hex"
 	"errors"
-	"fmt"
+	mavenversion "github.com/masahiro331/go-mvn-version"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -439,7 +439,24 @@ func (m manifest) determineVersion() (string, error) {
 }
 
 func removePackageDuplicates(pkgs []ftypes.Package) []ftypes.Package {
-	return lo.UniqBy(pkgs, func(pkg ftypes.Package) string {
-		return fmt.Sprintf("%s::%s::%s", pkg.Name, pkg.Version, pkg.FilePath)
-	})
+	// name::filePath => versions
+	var uniq = make(map[string][]mavenversion.Version)
+	var uniqPkgs []ftypes.Package
+	for _, pkg := range pkgs {
+		uniqID := pkg.Name + "::" + pkg.FilePath
+		// err is always nil
+		// cf. https://github.com/masahiro331/go-mvn-version/blob/d3157d602a08806ad94464c443e0cef1370694a1/version.go#L20-L25
+		pkgVer, _ := mavenversion.NewVersion(pkg.Version)
+		savedVers, ok := uniq[uniqID]
+		if !ok || !slices.ContainsFunc(savedVers, func(v mavenversion.Version) bool {
+			// There are times when patch `0` is omitted.
+			// So we can't compare versions just as strings
+			// for example `2.17.0` and `2.17` must be equal
+			return v.Equal(pkgVer)
+		}) {
+			uniq[uniqID] = []mavenversion.Version{pkgVer}
+			uniqPkgs = append(uniqPkgs, pkg)
+		}
+	}
+	return uniqPkgs
 }
