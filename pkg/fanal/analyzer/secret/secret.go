@@ -166,7 +166,7 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
-	if size := fi.Size(); size > 209_715_200 { // 200MB
+	if size := fi.Size(); size > 10485760 { // 10MB
 		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(filePath), log.Int64("size (MB)", size/1048576))
 	}
 	return true
