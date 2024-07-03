@@ -23,7 +23,7 @@ import (
 const configFile = "plugin.yaml"
 
 var (
-	pluginsRelativeDir = filepath.Join(".trivy", "plugins")
+	pluginsDir = "plugins"
 
 	_defaultManager *Manager
 )
@@ -58,7 +58,7 @@ type Manager struct {
 }
 
 func NewManager(opts ...ManagerOption) *Manager {
-	root := filepath.Join(fsutils.HomeDir(), pluginsRelativeDir)
+	root := filepath.Join(fsutils.TrivyHomeDir(), pluginsDir)
 	m := &Manager{
 		w:          os.Stdout,
 		indexURL:   indexURL,

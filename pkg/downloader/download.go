@@ -7,6 +7,8 @@ import (
 
 	getter "github.com/hashicorp/go-getter"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // DownloadToTempDir downloads the configured source to a temp dir.
@@ -31,7 +33,9 @@ func DownloadToTempDir(ctx context.Context, url string, insecure bool) (string, 
 // Download downloads the configured source to the destination.
 func Download(ctx context.Context, src, dst, pwd string, insecure bool) error {
 	// go-getter doesn't allow the dst directory already exists if the src is directory.
-	_ = os.RemoveAll(dst)
+	if fsutils.DirExists(src) {
+		_ = os.RemoveAll(dst)
+	}
 
 	var opts []getter.ClientOption
 	if insecure {

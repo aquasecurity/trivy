@@ -27,6 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/version/app"
+	vexrepo "github.com/aquasecurity/trivy/pkg/vex/repo"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -98,6 +99,7 @@ func NewApp() *cobra.Command {
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
 		NewCleanCommand(globalFlags),
+		NewVEXCommand(globalFlags),
 	)
 
 	if plugins := loadPluginCommands(); len(plugins) > 0 {
@@ -1222,6 +1224,69 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	cleanFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, cleanFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	vexFlags := &flag.Flags{
+		GlobalFlagGroup: globalFlags,
+	}
+	var vexOptions flag.Options
+	cmd := &cobra.Command{
+		Use:           "vex subcommand",
+		Aliases:       []string{"p"},
+		GroupID:       groupManagement,
+		Short:         "VEX utilities",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+			vexOptions, err = vexFlags.ToOptions(args)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+
+	repoCmd := &cobra.Command{
+		Use:           "repo subcommand",
+		Short:         "Manage VEX repositories",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+
+	repoCmd.AddCommand(
+		&cobra.Command{
+			Use:                   "init",
+			Short:                 "Initialize a configuration file",
+			SilenceErrors:         true,
+			SilenceUsage:          true,
+			DisableFlagsInUseLine: true,
+			Args:                  cobra.ExactArgs(0),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := vexrepo.NewManager().Init(cmd.Context()); err != nil {
+					return xerrors.Errorf("config init error: %w", err)
+				}
+				return nil
+			},
+		},
+		&cobra.Command{
+			Use:                   "update [REPO_NAMES]",
+			Short:                 "Update the local copy of the VEX repositories",
+			DisableFlagsInUseLine: true,
+			SilenceErrors:         true,
+			SilenceUsage:          true,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := vexrepo.NewManager().Update(cmd.Context(), args, vexrepo.Options{Insecure: vexOptions.Insecure}); err != nil {
+					return xerrors.Errorf("repository update error: %w", err)
+				}
+				return nil
+			},
+		},
+	)
+
+	cmd.AddCommand(repoCmd)
 
 	return cmd
 }

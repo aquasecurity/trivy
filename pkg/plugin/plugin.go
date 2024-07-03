@@ -165,5 +165,5 @@ func (p *Plugin) Dir() string {
 	if p.dir != "" {
 		return p.dir
 	}
-	return filepath.Join(fsutils.HomeDir(), pluginsRelativeDir, p.Name)
+	return filepath.Join(fsutils.TrivyHomeDir(), p.Name)
 }
