@@ -33,7 +33,7 @@ type pnpmAnalyzer struct {
 	lockParser        language.Parser
 }
 
-func newPnpmAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newPnpmAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &pnpmAnalyzer{
 		logger:            log.WithPrefix("pnpm"),
 		packageJsonParser: packagejson.NewParser(),
