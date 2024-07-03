@@ -4057,7 +4057,7 @@ You're not viewing the latest version.
 <td>pnpm</td>
 <td align="center">✓</td>
 <td align="center">✓</td>
-<td align="center">-</td>
+<td align="center">✓</td>
 </tr>
 <tr>
 <td>Bun</td>
@@ -4153,7 +4153,8 @@ Trivy also uses <code>package.json</code> file to handle <a href="https://classi
 <p>Trivy analyzes <code>.yarn</code> (Yarn 2+) or <code>node_modules</code> (Yarn Classic) folder next to the yarn.lock file to detect licenses.</p>
 <p>By default, Trivy doesn't report development dependencies. Use the <code>--include-dev-deps</code> flag to include them.</p>
 <h3 id="pnpm">pnpm</h3>
-<p>Trivy parses <code>pnpm-lock.yaml</code>, then finds production dependencies and builds a <a href="../../../configuration/reporting/#show-origins-of-vulnerable-dependencies">tree</a> of dependencies with vulnerabilities.</p>
+<p>Trivy parses <code>pnpm-lock.yaml</code>, then finds production dependencies and builds a <a href="../../../configuration/reporting/#show-origins-of-vulnerable-dependencies">tree</a> of dependencies with vulnerabilities.
+To identify licenses, you need to download dependencies to <code>node_modules</code> beforehand. Trivy analyzes <code>node_modules</code> for licenses.</p>
 <h4 id="lock-file-v9-version">lock file v9 version</h4>
 <p>Trivy supports <code>Dev</code> field for <code>pnpm-lock.yaml</code> v9 or later. Use the <code>--include-dev-deps</code> flag to include the developer's dependencies in the result.</p>
 <h3 id="bun">Bun</h3>
