@@ -6,7 +6,6 @@ import (
 	"crypto/sha1" // nolint:gosec
 	"encoding/hex"
 	"errors"
-	mavenversion "github.com/masahiro331/go-mvn-version"
 	"io"
 	"os"
 	"path"
@@ -15,6 +14,7 @@ import (
 	"slices"
 	"strings"
 
+	mavenversion "github.com/masahiro331/go-mvn-version"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
