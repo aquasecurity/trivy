@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // To make sure SecretAnalyzer implements analyzer.Initializer
@@ -165,6 +166,9 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
+	if size := fi.Size(); size > 209_715_200 { // 200MB
+		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(filePath), log.Int64("size (MB)", size/1048576))
+	}
 	return true
 }
 
