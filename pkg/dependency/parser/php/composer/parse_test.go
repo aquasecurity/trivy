@@ -1,11 +1,13 @@
 package composer
 
 import (
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
@@ -96,7 +98,7 @@ var (
 			Locations: []ftypes.Location{
 				{
 					StartLine: 502,
-					EndLine:   585,
+					EndLine:   583,
 				},
 			},
 		},
@@ -104,11 +106,11 @@ var (
 			ID:       "symfony/polyfill-php72@v1.27.0",
 			Name:     "symfony/polyfill-php72",
 			Version:  "v1.27.0",
-			Licenses: []string{"MIT"},
+			Licenses: []string{"MIT", "BSD-2-Clause"},
 			Locations: []ftypes.Location{
 				{
-					StartLine: 586,
-					EndLine:   661,
+					StartLine: 584,
+					EndLine:   657,
 				},
 			},
 		},

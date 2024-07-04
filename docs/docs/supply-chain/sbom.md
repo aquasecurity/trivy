@@ -731,17 +731,20 @@ $ cat result.spdx.json | jq .
 </details>
 
 ## Scanning
-Trivy can take SBOM documents as input for scanning.
+
+### SBOM as Target
+Trivy can take SBOM documents as input for scanning, e.g `trivy sbom ./sbom.spdx`.
 See [here](../target/sbom.md) for more details.
 
-Also, Trivy searches for SBOM files in container images.
+### SBOM Detection inside Targets
+Trivy searches for SBOM files in container images with the following extensions:
+- `.spdx`
+- `.spdx.json`
+- `.cdx`
+- `.cdx.json`
 
-```bash
-$ trivy image bitnami/elasticsearch:8.7.1
-```
+In addition, Trivy automatically detects SBOM files in [Bitnami images](https://github.com/bitnami/containers), [see here](../coverage/os/bitnami.md) for more details.
 
-For example, [Bitnami images](https://github.com/bitnami/containers) contain SBOM files in `/opt/bitnami` directory.
-Trivy automatically detects the SBOM files and uses them for scanning.
 It is enabled in the following targets.
 
 |     Target      | Enabled |
@@ -755,6 +758,9 @@ It is enabled in the following targets.
 |       AWS       |         |
 |      SBOM       |         |
 
+### SBOM Discovery for Container Images
+
+When scanning container images, Trivy can discover SBOM for those images. [See here](../target/container_image.md) for more details.
 
 [spdx]: https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf
 

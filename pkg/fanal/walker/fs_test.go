@@ -6,10 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
-
-	"golang.org/x/exp/slices"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -10,7 +10,9 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/xerrors"
 
+	version "github.com/aquasecurity/go-pep440-version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -22,10 +24,14 @@ const (
 	endExtras     string = "]"
 )
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() *Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("pip"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -37,9 +43,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	scanner := bufio.NewScanner(decodedReader)
 	var pkgs []ftypes.Package
+	var lineNumber int
 	for scanner.Scan() {
-		line := scanner.Text()
-		line = strings.ReplaceAll(line, " ", "")
+		lineNumber++
+		text := scanner.Text()
+		line := strings.ReplaceAll(text, " ", "")
 		line = strings.ReplaceAll(line, `\`, "")
 		line = removeExtras(line)
 		line = rStripByKey(line, commentMarker)
@@ -49,9 +57,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		if len(s) != 2 {
 			continue
 		}
+
+		if !isValidName(s[0]) || !isValidVersion(s[1]) {
+			p.logger.Debug("Invalid package name/version in requirements.txt.", log.String("line", text))
+			continue
+		}
+
 		pkgs = append(pkgs, ftypes.Package{
 			Name:    s[0],
 			Version: s[1],
+			Locations: []ftypes.Location{
+				{
+					StartLine: lineNumber,
+					EndLine:   lineNumber,
+				},
+			},
 		})
 	}
 	if err := scanner.Err(); err != nil {
@@ -74,4 +94,20 @@ func removeExtras(line string) string {
 		line = line[:startIndex] + line[endIndex:]
 	}
 	return line
+}
+
+func isValidName(name string) bool {
+	for _, r := range name {
+		// only characters [A-Z0-9._-] are allowed (case insensitive)
+		// cf. https://peps.python.org/pep-0508/#names
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '.' && r != '_' && r != '-' {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidVersion(ver string) bool {
+	_, err := version.Parse(ver)
+	return err == nil
 }

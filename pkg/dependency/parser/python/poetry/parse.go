@@ -16,15 +16,15 @@ import (
 
 type Lockfile struct {
 	Packages []struct {
-		Category       string                 `toml:"category"`
-		Description    string                 `toml:"description"`
-		Marker         string                 `toml:"marker,omitempty"`
-		Name           string                 `toml:"name"`
-		Optional       bool                   `toml:"optional"`
-		PythonVersions string                 `toml:"python-versions"`
-		Version        string                 `toml:"version"`
-		Dependencies   map[string]interface{} `toml:"dependencies"`
-		Metadata       interface{}
+		Category       string         `toml:"category"`
+		Description    string         `toml:"description"`
+		Marker         string         `toml:"marker,omitempty"`
+		Name           string         `toml:"name"`
+		Optional       bool           `toml:"optional"`
+		PythonVersions string         `toml:"python-versions"`
+		Version        string         `toml:"version"`
+		Dependencies   map[string]any `toml:"dependencies"`
+		Metadata       any
 	} `toml:"package"`
 }
 
@@ -105,7 +105,7 @@ func (p *Parser) parseDependencies(deps map[string]any, pkgVersions map[string][
 }
 
 func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[string][]string) (string, error) {
-	name = normalizePkgName(name)
+	name = NormalizePkgName(name)
 	vers, ok := pkgVersions[name]
 	if !ok {
 		return "", xerrors.Errorf("no version found for %q", name)
@@ -117,7 +117,7 @@ func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[str
 		switch r := versRange.(type) {
 		case string:
 			vRange = r
-		case map[string]interface{}:
+		case map[string]any:
 			for k, v := range r {
 				if k == "version" {
 					vRange = v.(string)
@@ -149,9 +149,11 @@ func matchVersion(currentVersion, constraint string) (bool, error) {
 	return c.Check(v), nil
 }
 
-func normalizePkgName(name string) string {
+// NormalizePkgName normalizes the package name based on pep-0426
+func NormalizePkgName(name string) string {
 	// The package names don't use `_`, `.` or upper case, but dependency names can contain them.
 	// We need to normalize those names.
+	// cf. https://peps.python.org/pep-0426/#name
 	name = strings.ToLower(name)              // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L819
 	name = strings.ReplaceAll(name, "_", "-") // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L50
 	name = strings.ReplaceAll(name, ".", "-") // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L816

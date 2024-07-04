@@ -2,7 +2,7 @@ package functions
 
 import "fmt"
 
-func String(args ...interface{}) interface{} {
+func String(args ...any) any {
 	if len(args) != 1 {
 		return ""
 	}

@@ -232,17 +232,19 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 	}
 
 	modulesMetadata, metadataPath, err := loadModuleMetadata(p.moduleFS, p.projectRoot)
-	if err != nil {
+
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		p.debug.Log("Error loading module metadata: %s.", err)
-	} else {
-		p.debug.Log("Loaded module metadata for %d module(s) from '%s'.", len(modulesMetadata.Modules), metadataPath)
+	} else if err == nil {
+		p.debug.Log("Loaded module metadata for %d module(s) from %q.", len(modulesMetadata.Modules), metadataPath)
 	}
 
 	workingDir, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-	p.debug.Log("Working directory for module evaluation is '%s'", workingDir)
+
+	p.debug.Log("Working directory for module evaluation is %q", workingDir)
 	return newEvaluator(
 		p.moduleFS,
 		p,
@@ -299,6 +301,7 @@ func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules,
 		fileIgnores := ignore.Parse(
 			string(file.file.Bytes),
 			file.path,
+			p.moduleSource,
 			&ignore.StringMatchParser{
 				SectionKey: "ws",
 			},

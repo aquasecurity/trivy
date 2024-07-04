@@ -32,7 +32,7 @@ type TVDecoder struct {
 	r io.Reader
 }
 
-func (tv *TVDecoder) Decode(v interface{}) error {
+func (tv *TVDecoder) Decode(v any) error {
 	spdxDocument, err := tagvalue.Read(tv.r)
 	if err != nil {
 		return xerrors.Errorf("failed to load tag-value spdx: %w", err)

@@ -6,10 +6,10 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"slices"
 	"strings"
 
 	"github.com/fatih/color"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	SeverityColor = []func(a ...interface{}) string{
+	SeverityColor = []func(a ...any) string{
 		color.New(color.FgCyan).SprintFunc(),   // UNKNOWN
 		color.New(color.FgBlue).SprintFunc(),   // LOW
 		color.New(color.FgYellow).SprintFunc(), // MEDIUM

@@ -1,10 +1,10 @@
 package parser
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"testing"
 )
 
 func Test_resolve_find_in_map_value(t *testing.T) {

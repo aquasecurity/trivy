@@ -3,12 +3,13 @@ package rego
 import (
 	"testing"
 
-	checks "github.com/aquasecurity/trivy-checks"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	checks "github.com/aquasecurity/trivy-checks"
+	"github.com/aquasecurity/trivy/pkg/iac/rules"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 func Test_EmbeddedLoading(t *testing.T) {

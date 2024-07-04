@@ -43,19 +43,19 @@ func (r regoResult) GetMetadata() iacTypes.Metadata {
 	return m
 }
 
-func (r regoResult) GetRawValue() interface{} {
+func (r regoResult) GetRawValue() any {
 	return nil
 }
 
-func parseResult(raw interface{}) *regoResult {
+func parseResult(raw any) *regoResult {
 	var result regoResult
 	result.Managed = true
 	switch val := raw.(type) {
-	case []interface{}:
+	case []any:
 		var msg string
 		for _, item := range val {
 			switch raw := item.(type) {
-			case map[string]interface{}:
+			case map[string]any:
 				result = parseCause(raw)
 			case string:
 				msg = raw
@@ -64,7 +64,7 @@ func parseResult(raw interface{}) *regoResult {
 		result.Message = msg
 	case string:
 		result.Message = val
-	case map[string]interface{}:
+	case map[string]any:
 		result = parseCause(val)
 	default:
 		result.Message = "Rego check resulted in DENY"
@@ -72,7 +72,7 @@ func parseResult(raw interface{}) *regoResult {
 	return &result
 }
 
-func parseCause(cause map[string]interface{}) regoResult {
+func parseCause(cause map[string]any) regoResult {
 	var result regoResult
 	result.Managed = true
 	if msg, ok := cause["msg"]; ok {
@@ -107,7 +107,7 @@ func parseCause(cause map[string]interface{}) regoResult {
 		}
 	}
 	if parent, ok := cause["parent"]; ok {
-		if m, ok := parent.(map[string]interface{}); ok {
+		if m, ok := parent.(map[string]any); ok {
 			parentResult := parseCause(m)
 			result.Parent = &parentResult
 		}
@@ -115,7 +115,7 @@ func parseCause(cause map[string]interface{}) regoResult {
 	return result
 }
 
-func parseLineNumber(raw interface{}) int {
+func parseLineNumber(raw any) int {
 	str := fmt.Sprintf("%s", raw)
 	n, _ := strconv.Atoi(str)
 	return n
@@ -126,9 +126,9 @@ func (s *Scanner) convertResults(set rego.ResultSet, input Input, namespace, rul
 
 	offset := 0
 	if input.Contents != nil {
-		if xx, ok := input.Contents.(map[string]interface{}); ok {
+		if xx, ok := input.Contents.(map[string]any); ok {
 			if md, ok := xx["__defsec_metadata"]; ok {
-				if md2, ok := md.(map[string]interface{}); ok {
+				if md2, ok := md.(map[string]any); ok {
 					if sl, ok := md2["offset"]; ok {
 						offset, _ = sl.(int)
 					}
@@ -138,9 +138,9 @@ func (s *Scanner) convertResults(set rego.ResultSet, input Input, namespace, rul
 	}
 	for _, result := range set {
 		for _, expression := range result.Expressions {
-			values, ok := expression.Value.([]interface{})
+			values, ok := expression.Value.([]any)
 			if !ok {
-				values = []interface{}{expression.Value}
+				values = []any{expression.Value}
 			}
 
 			for _, value := range values {

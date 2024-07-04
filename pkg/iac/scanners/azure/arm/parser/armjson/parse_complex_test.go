@@ -3,13 +3,13 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_Complex(t *testing.T) {
-	target := make(map[string]interface{})
+	target := make(map[string]any)
 	input := `{
     "glossary": {
         "title": "example glossary",
@@ -56,8 +56,8 @@ type Parameter struct {
 }
 
 type parameterInner struct {
-	Type    string      `json:"Type" yaml:"Type"`
-	Default interface{} `yaml:"Default"`
+	Type    string `json:"Type" yaml:"Type"`
+	Default any    `yaml:"Default"`
 }
 
 func (p *Parameter) UnmarshalJSONWithMetadata(node Node) error {
@@ -73,7 +73,7 @@ type CFType string
 
 type propertyInner struct {
 	Type  CFType
-	Value interface{} `json:"Value" yaml:"Value"`
+	Value any `json:"Value" yaml:"Value"`
 }
 
 func (p *Property) UnmarshalJSONWithMetadata(node Node) error {

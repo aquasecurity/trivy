@@ -9,12 +9,12 @@ import (
 func Test_Join(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "join strings with no items",
-			args: []interface{}{
+			args: []any{
 				[]string{},
 				" ",
 			},
@@ -22,7 +22,7 @@ func Test_Join(t *testing.T) {
 		},
 		{
 			name: "join strings",
-			args: []interface{}{
+			args: []any{
 				[]string{"Hello", "World"},
 				" ",
 			},

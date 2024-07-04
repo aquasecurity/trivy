@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"

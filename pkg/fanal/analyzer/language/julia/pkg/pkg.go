@@ -7,12 +7,11 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	julia "github.com/aquasecurity/trivy/pkg/dependency/parser/julia/manifest"
@@ -70,7 +69,7 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		// Parse Project.toml alongside Manifest.toml to identify the direct dependencies. This mutates `app`.
 		if err = a.analyzeDependencies(input.FS, filepath.Dir(path), app); err != nil {
 			a.logger.Warn("Unable to parse file to analyze dependencies",
-				log.String("FILEPATH", filepath.Join(filepath.Dir(path), types.JuliaProject)), log.Err(err))
+				log.FilePath(filepath.Join(filepath.Dir(path), types.JuliaProject)), log.Err(err))
 		}
 
 		sort.Sort(app.Packages)
@@ -167,7 +166,7 @@ func walkDependencies(directDeps map[string]string, allPackages types.Packages, 
 		walkIndirectDependencies(pkg, pkgsByID, visited)
 	}
 
-	return maps.Values(visited)
+	return lo.Values(visited)
 }
 
 // Marks all indirect dependencies as indirect. Starts from `rootPkg`. Visited deps are added to `visited`.

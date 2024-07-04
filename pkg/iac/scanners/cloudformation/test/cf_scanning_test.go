@@ -6,10 +6,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 

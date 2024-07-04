@@ -4,20 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"github.com/spf13/viper"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
-	"github.com/aquasecurity/trivy-db/pkg/db"
-	tcache "github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -26,13 +24,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -46,8 +43,6 @@ const (
 	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
-
-	devVersion = "dev"
 )
 
 var (
@@ -62,8 +57,8 @@ type ScannerConfig struct {
 	Target string
 
 	// Cache
-	ArtifactCache      cache.ArtifactCache
-	LocalArtifactCache cache.LocalArtifactCache
+	CacheOptions       cache.Options
+	RemoteCacheOptions cache.RemoteOptions
 
 	// Client/Server options
 	ServerOption client.ScannerOption
@@ -94,33 +89,29 @@ type Runner interface {
 }
 
 type runner struct {
-	cache  cache.Cache
-	dbOpen bool
+	initializeScanner InitializeScanner
+	dbOpen            bool
 
 	// WASM modules
 	module *module.Manager
 }
 
-type runnerOption func(*runner)
+type RunnerOption func(*runner)
 
-// WithCacheClient takes a custom cache implementation
+// WithInitializeScanner takes a custom scanner initialization function.
 // It is useful when Trivy is imported as a library.
-func WithCacheClient(c cache.Cache) runnerOption {
+func WithInitializeScanner(f InitializeScanner) RunnerOption {
 	return func(r *runner) {
-		r.cache = c
+		r.initializeScanner = f
 	}
 }
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOption) (Runner, error) {
+func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOption) (Runner, error) {
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
-	}
-
-	if err := r.initCache(cliOptions); err != nil {
-		return nil, xerrors.Errorf("cache error: %w", err)
 	}
 
 	// Update the vulnerability database if needed.
@@ -145,10 +136,6 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 // Close closes everything
 func (r *runner) Close(ctx context.Context) error {
 	var errs error
-	if err := r.cache.Close(); err != nil {
-		errs = multierror.Append(errs, err)
-	}
-
 	if r.dbOpen {
 		if err := db.Close(); err != nil {
 			errs = multierror.Append(errs, err)
@@ -261,7 +248,10 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	report, err := scan(ctx, opts, initializeScanner, r.cache)
+	if r.initializeScanner != nil {
+		initializeScanner = r.initializeScanner
+	}
+	report, err := r.scan(ctx, opts, initializeScanner)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
@@ -305,7 +295,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 		return SkipScan
 	}
 
-	if err := db.Init(opts.CacheDir); err != nil {
+	if err := db.Init(db.Dir(opts.CacheDir)); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 	r.dbOpen = true
@@ -338,58 +328,6 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 	return nil
 }
 
-func (r *runner) initCache(opts flag.Options) error {
-	// Skip initializing cache when custom cache is passed
-	if r.cache != nil {
-		return nil
-	}
-
-	// client/server mode
-	if opts.ServerAddr != "" {
-		remoteCache := tcache.NewRemoteCache(opts.ServerAddr, opts.CustomHeaders, opts.Insecure)
-		r.cache = tcache.NopCache(remoteCache)
-		return nil
-	}
-
-	// standalone mode
-	fsutils.SetCacheDir(opts.CacheDir)
-	cacheClient, err := operation.NewCache(opts.CacheOptions)
-	if err != nil {
-		return xerrors.Errorf("unable to initialize the cache: %w", err)
-	}
-	log.Debug("Cache dir", log.String("dir", fsutils.CacheDir()))
-
-	if opts.Reset {
-		defer cacheClient.Close()
-		if err = cacheClient.Reset(); err != nil {
-			return xerrors.Errorf("cache reset error: %w", err)
-		}
-		return SkipScan
-	}
-
-	if opts.ResetChecksBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.ChecksBundleRepository)
-		if err != nil {
-			return xerrors.Errorf("failed to instantiate check client: %w", err)
-		}
-		if err := c.Clear(); err != nil {
-			return xerrors.Errorf("failed to remove the cache: %w", err)
-		}
-		return SkipScan
-	}
-
-	if opts.ClearCache {
-		defer cacheClient.Close()
-		if err = cacheClient.ClearArtifacts(); err != nil {
-			return xerrors.Errorf("cache clear error: %w", err)
-		}
-		return SkipScan
-	}
-
-	r.cache = cacheClient
-	return nil
-}
-
 // Run performs artifact scanning
 func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
@@ -397,7 +335,8 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration/
+			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
 
@@ -527,7 +466,7 @@ func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, e
 	return lo.Without(all, included...), nil
 }
 
-func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
+func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
 	target := opts.Target
 	if opts.Input != "" {
 		target = opts.Input
@@ -538,7 +477,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
 		IncludeDevDeps:      opts.IncludeDevDeps,
@@ -594,10 +532,10 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// Do not load config file for secret scanning
 	if opts.Scanners.Enabled(types.SecretScanner) {
-		ver := canonicalVersion(opts.AppVersion)
 		log.Info("Secret scanning is enabled")
 		log.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
-		log.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/scanner/secret/#recommendation for faster secret detection", ver)
+		// e.g. https://aquasecurity.github.io/trivy/latest/docs/scanner/secret/#recommendation
+		log.Infof("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation"))
 	} else {
 		opts.SecretConfigPath = ""
 	}
@@ -618,8 +556,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	return ScannerConfig{
 		Target:             target,
-		ArtifactCache:      cacheClient,
-		LocalArtifactCache: cacheClient,
+		CacheOptions:       opts.CacheOpts(),
+		RemoteCacheOptions: opts.RemoteCacheOpts(),
 		ServerOption: client.ScannerOption{
 			RemoteURL:     opts.ServerAddr,
 			CustomHeaders: opts.CustomHeaders,
@@ -637,10 +575,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
-			//Platform:          opts.Platform,
-			AWSRegion:    opts.Region,
-			AWSEndpoint:  opts.Endpoint,
-			FileChecksum: fileChecksum,
+			AWSRegion:         opts.Region,
+			AWSEndpoint:       opts.Endpoint,
+			FileChecksum:      fileChecksum,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{
@@ -677,9 +614,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	}, scanOptions, nil
 }
 
-func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner, cacheClient cache.Cache) (
-	types.Report, error) {
-	scannerConfig, scanOptions, err := initScannerConfig(opts, cacheClient)
+func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
+	scannerConfig, scanOptions, err := r.initScannerConfig(opts)
 	if err != nil {
 		return types.Report{}, err
 	}
@@ -694,21 +630,4 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
-}
-
-func canonicalVersion(ver string) string {
-	if ver == devVersion {
-		return ver
-	}
-	v, err := semver.Parse(ver)
-	if err != nil {
-		return devVersion
-	}
-	// Replace pre-release with "dev"
-	// e.g. v0.34.0-beta1+snapshot-1
-	if v.IsPreRelease() || v.Metadata() != "" {
-		return devVersion
-	}
-	// Add "v" prefix and cut a patch number, "0.34.0" => "v0.34" for the url
-	return fmt.Sprintf("v%d.%d", v.Major(), v.Minor())
 }

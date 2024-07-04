@@ -65,6 +65,7 @@ nav:
                   - Schemas: docs/scanner/misconfiguration/custom/schema.md
                   - Testing: docs/scanner/misconfiguration/custom/testing.md
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
+                  - Contribute Checks: docs/scanner/misconfiguration/custom/contribute-checks.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
       - Coverage:
@@ -128,11 +129,12 @@ nav:
                 - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
           - VEX: docs/supply-chain/vex.md
       - Compliance:
-          - Reports:  docs/compliance/compliance.md
-      - Plugin:
+          - Built-in Compliance:  docs/compliance/compliance.md
+          - Custom Compliance: docs/compliance/contrib-compliance.md
+      - Plugins:
           - Overview: docs/plugin/index.md
-          - User Guide: docs/plugin/user-guide.md
-          - Developer Guide: docs/plugin/developer-guide.md
+          - User guide: docs/plugin/user-guide.md
+          - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
@@ -150,7 +152,7 @@ nav:
           - Configuration:
               - CLI:
                   - Overview: docs/references/configuration/cli/trivy.md
-                  - AWS: docs/references/configuration/cli/trivy_aws.md
+                  - Clean: docs/references/configuration/cli/trivy_clean.md
                   - Config: docs/references/configuration/cli/trivy_config.md
                   - Convert: docs/references/configuration/cli/trivy_convert.md
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
@@ -193,7 +195,12 @@ nav:
           - Issues: community/contribute/issue.md
           - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
+      - Contribute Rego Checks:
+          - Overview: community/contribute/checks/overview.md
+          - Add Service Support: community/contribute/checks/service-support.md
       - Maintainer:
+          - Release Flow: community/maintainer/release-flow.md
+          - Backporting: community/maintainer/backporting.md
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
 theme:

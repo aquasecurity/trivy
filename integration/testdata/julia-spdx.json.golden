@@ -25,7 +25,7 @@
     },
     {
       "name": "A",
-      "SPDXID": "SPDXRef-Package-2a46714189f3b9de",
+      "SPDXID": "SPDXRef-Package-7784b00da0cb0cb0",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -48,30 +48,7 @@
     },
     {
       "name": "B",
-      "SPDXID": "SPDXRef-Package-4a8e351c4c9b7318",
-      "versionInfo": "1.9.0",
-      "supplier": "NOASSERTION",
-      "downloadLocation": "NONE",
-      "filesAnalyzed": false,
-      "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NONE",
-      "licenseDeclared": "NONE",
-      "externalRefs": [
-        {
-          "referenceCategory": "PACKAGE-MANAGER",
-          "referenceType": "purl",
-          "referenceLocator": "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c"
-        }
-      ],
-      "attributionTexts": [
-        "PkgID: edca9bc6-334e-11e9-3554-9595dbb4349c",
-        "PkgType: julia"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
-    },
-    {
-      "name": "B",
-      "SPDXID": "SPDXRef-Package-d10d5e4a30a43fff",
+      "SPDXID": "SPDXRef-Package-960543ac5c5f7e10",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -93,6 +70,29 @@
       "primaryPackagePurpose": "LIBRARY"
     },
     {
+      "name": "B",
+      "SPDXID": "SPDXRef-Package-a4705eb108e4f15c",
+      "versionInfo": "1.9.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "sourceInfo": "package found in: Manifest.toml",
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c"
+        }
+      ],
+      "attributionTexts": [
+        "PkgID: edca9bc6-334e-11e9-3554-9595dbb4349c",
+        "PkgType: julia"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
       "name": "testdata/fixtures/repo/julia",
       "SPDXID": "SPDXRef-Filesystem-1be792dd0077c431",
       "downloadLocation": "NONE",
@@ -106,17 +106,17 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-2a46714189f3b9de",
+      "relatedSpdxElement": "SPDXRef-Package-7784b00da0cb0cb0",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-4a8e351c4c9b7318",
+      "relatedSpdxElement": "SPDXRef-Package-960543ac5c5f7e10",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-d10d5e4a30a43fff",
+      "relatedSpdxElement": "SPDXRef-Package-a4705eb108e4f15c",
       "relationshipType": "CONTAINS"
     },
     {
@@ -130,8 +130,8 @@
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-2a46714189f3b9de",
-      "relatedSpdxElement": "SPDXRef-Package-d10d5e4a30a43fff",
+      "spdxElementId": "SPDXRef-Package-7784b00da0cb0cb0",
+      "relatedSpdxElement": "SPDXRef-Package-960543ac5c5f7e10",
       "relationshipType": "DEPENDS_ON"
     }
   ]

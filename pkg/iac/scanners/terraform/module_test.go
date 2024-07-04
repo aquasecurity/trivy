@@ -7,6 +7,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy-checks/checks/cloud/aws/iam"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -16,9 +19,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy-checks/checks/cloud/aws/iam"
 )
 
 var badRule = scan.Rule{

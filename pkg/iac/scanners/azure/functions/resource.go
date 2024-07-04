@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func ResourceID(args ...interface{}) interface{} {
+func ResourceID(args ...any) any {
 	if len(args) < 2 {
 		return nil
 	}
@@ -18,7 +18,7 @@ func ResourceID(args ...interface{}) interface{} {
 	return resourceID
 }
 
-func ExtensionResourceID(args ...interface{}) interface{} {
+func ExtensionResourceID(args ...any) any {
 	if len(args) < 3 {
 		return nil
 	}
@@ -32,7 +32,7 @@ func ExtensionResourceID(args ...interface{}) interface{} {
 	return resourceID
 }
 
-func ResourceGroup(args ...interface{}) interface{} {
+func ResourceGroup(args ...any) any {
 	return fmt.Sprintf(`{
 "id": "/subscriptions/%s/resourceGroups/PlaceHolderResourceGroup",
 "name": "Placeholder Resource Group",

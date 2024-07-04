@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -89,7 +88,7 @@ func filterByVEX(report types.Report, opt FilterOption) error {
 		return nil
 	}
 
-	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
+	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(report)
 	if err != nil {
 		return xerrors.Errorf("unable to encode the SBOM: %w", err)
 	}
@@ -135,7 +134,7 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 	}
 
 	// Override the detected vulnerabilities
-	result.Vulnerabilities = maps.Values(uniqVulns)
+	result.Vulnerabilities = lo.Values(uniqVulns)
 	if len(result.Vulnerabilities) == 0 {
 		result.Vulnerabilities = nil
 	}
@@ -330,7 +329,7 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	return nil
 }
 
-func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
+func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input any) (bool, error) {
 	results, err := query.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)

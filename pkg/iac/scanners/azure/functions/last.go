@@ -1,6 +1,6 @@
 package functions
 
-func Last(args ...interface{}) interface{} {
+func Last(args ...any) any {
 	if len(args) != 1 {
 		return ""
 	}
@@ -12,7 +12,7 @@ func Last(args ...interface{}) interface{} {
 		if cType != "" {
 			return string(cType[len(cType)-1])
 		}
-	case interface{}:
+	case any:
 		switch iType := cType.(type) {
 		case []string:
 			if len(iType) > 0 {

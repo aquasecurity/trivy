@@ -844,6 +844,188 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with filling system files for debian packages",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:cdd7c73923174e45ea648d66996665c288e1b17a0f45efdbeca860f6dafdf731",
+					OS: types.OS{
+						Family: "ubuntu",
+						Name:   "24.04",
+					},
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status",
+							Packages: types.Packages{
+								{
+									ID:         "apt@2.4.9",
+									Name:       "apt",
+									Version:    "2.4.9",
+									Arch:       "amd64",
+									SrcName:    "apt",
+									SrcVersion: "2.4.9",
+									InstalledFiles: []string{
+										"/etc/apt/apt.conf.d/01-vendor-ubuntu",
+										"/etc/apt/apt.conf.d/01autoremove",
+										"/etc/apt/auth.conf.d",
+										"/etc/apt/keyrings",
+									},
+								},
+							},
+						},
+					},
+				},
+				// Install `curl`
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:faf30fa9c41c10f93b3b134d7b2c16e07753320393e020c481f0c97d10db067d",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status",
+							Packages: types.Packages{
+								{
+									ID:         "apt@2.4.9",
+									Name:       "apt",
+									Version:    "2.4.9",
+									Arch:       "amd64",
+									SrcName:    "apt",
+									SrcVersion: "2.4.9",
+								},
+								{
+									ID:         "curl@8.5.0-2ubuntu10.1",
+									Name:       "curl",
+									Version:    "8.5.0",
+									Release:    "2ubuntu10.1",
+									Arch:       "arm64",
+									SrcName:    "curl",
+									SrcVersion: "8.5.0",
+									SrcRelease: "2ubuntu10.1",
+									InstalledFiles: []string{
+										"/usr/bin/curl",
+										"/usr/share/doc/curl/README.Debian",
+										"/usr/share/doc/curl/changelog.Debian.gz",
+										"/usr/share/doc/curl/copyright",
+										"/usr/share/man/man1/curl.1.gz",
+										"/usr/share/zsh/vendor-completions/_curl",
+									},
+								},
+							},
+						},
+					},
+				},
+				// Upgrade `apt`
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:440e26edc0eb9b4fee6e1d40d8af9eb59500d38e25edfc5d5302c55f59394c1e",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status",
+							Packages: types.Packages{
+								{
+									ID:         "apt@2.4.12",
+									Name:       "apt",
+									Version:    "2.4.12",
+									Arch:       "amd64",
+									SrcName:    "apt",
+									SrcVersion: "2.4.12",
+									InstalledFiles: []string{
+										"/etc/apt/apt.conf.d/01-vendor-ubuntu",
+										"/etc/apt/apt.conf.d/01autoremove",
+										"/etc/apt/auth.conf.d",
+										"/etc/apt/keyrings",
+										"/usr/share/man/it/man5/sources.list.5.gz",
+									},
+								},
+								{
+									ID:         "curl@8.5.0-2ubuntu10.1",
+									Name:       "curl",
+									Version:    "8.5.0",
+									Release:    "2ubuntu10.1",
+									Arch:       "arm64",
+									SrcName:    "curl",
+									SrcVersion: "8.5.0",
+									SrcRelease: "2ubuntu10.1",
+								},
+							},
+						},
+					},
+				},
+				// Remove curl
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:cb04e1d437de723d8d04bc7df89dc42271530c5f8ea1724c6072e3f0e7d6d38a",
+					WhiteoutFiles: []string{
+						"usr/bin/curl",
+						"usr/share/doc/curl",
+						"usr/share/zsh",
+						"var/lib/dpkg/info/curl.list",
+						"var/lib/dpkg/info/curl.md5sums",
+					},
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status",
+							Packages: types.Packages{
+								{
+									ID:         "apt@2.4.12",
+									Name:       "apt",
+									Version:    "2.4.12",
+									Arch:       "amd64",
+									SrcName:    "apt",
+									SrcVersion: "2.4.12",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{
+					Family: "ubuntu",
+					Name:   "24.04",
+				},
+				Packages: types.Packages{
+					{
+						ID:         "apt@2.4.12",
+						Name:       "apt",
+						Version:    "2.4.12",
+						Arch:       "amd64",
+						SrcName:    "apt",
+						SrcVersion: "2.4.12",
+
+						Identifier: types.PkgIdentifier{
+							UID: "80bc98a8f3159db9",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "ubuntu",
+								Name:      "apt",
+								Version:   "2.4.12",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "arch",
+										Value: "amd64",
+									},
+									{
+										Key:   "distro",
+										Value: "ubuntu-24.04",
+									},
+								},
+							},
+						},
+						Layer: types.Layer{
+							DiffID: "sha256:440e26edc0eb9b4fee6e1d40d8af9eb59500d38e25edfc5d5302c55f59394c1e",
+						},
+						InstalledFiles: []string{
+							"/etc/apt/apt.conf.d/01-vendor-ubuntu",
+							"/etc/apt/apt.conf.d/01autoremove",
+							"/etc/apt/auth.conf.d",
+							"/etc/apt/keyrings",
+							"/usr/share/man/it/man5/sources.list.5.gz",
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path, opaque dirs with the trailing slash",
 			inputLayers: []types.BlobInfo{
 				{

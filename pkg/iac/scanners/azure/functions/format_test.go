@@ -10,12 +10,12 @@ func Test_FormatCall(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "simple format call",
-			args: []interface{}{
+			args: []any{
 				"{0}/{1}",
 				"myPostgreSQLServer",
 				"log_checkpoints",
@@ -24,7 +24,7 @@ func Test_FormatCall(t *testing.T) {
 		},
 		{
 			name: "complex format call",
-			args: []interface{}{
+			args: []any{
 				"{0} + {1} = {2}",
 				1, 2, 3,
 			},

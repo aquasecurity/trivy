@@ -52,6 +52,20 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "sbt package",
+			typ:  ftypes.Sbt,
+			pkg: ftypes.Package{
+				Name:    "org.typelevel:cats-core_2.12",
+				Version: "2.9.0",
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.typelevel",
+				Name:      "cats-core_2.12",
+				Version:   "2.9.0",
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
@@ -780,7 +794,7 @@ func TestPackageURL_LangType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := (purl.PackageURL)(tt.purl)
+			p := purl.PackageURL(tt.purl)
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
 		})
 	}

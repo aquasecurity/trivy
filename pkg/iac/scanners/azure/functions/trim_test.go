@@ -5,33 +5,33 @@ import "testing"
 func Test_Trim(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "trim a string",
-			args: []interface{}{
+			args: []any{
 				" hello ",
 			},
 			expected: "hello",
 		},
 		{
 			name: "trim a string with multiple spaces",
-			args: []interface{}{
+			args: []any{
 				"   hello   ",
 			},
 			expected: "hello",
 		},
 		{
 			name: "trim a string with tabs",
-			args: []interface{}{
+			args: []any{
 				"	hello	",
 			},
 			expected: "hello",
 		},
 		{
 			name: "trim a string with new lines",
-			args: []interface{}{
+			args: []any{
 				`
 
 hello
@@ -42,7 +42,7 @@ hello
 		},
 		{
 			name: "trim a string with tabs, spaces and new lines",
-			args: []interface{}{
+			args: []any{
 				`
 
 hello
@@ -53,7 +53,7 @@ hello
 		},
 		{
 			name: "trim a string with non string input",
-			args: []interface{}{
+			args: []any{
 				10,
 			},
 			expected: "",

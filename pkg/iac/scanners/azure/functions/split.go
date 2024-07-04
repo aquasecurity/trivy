@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func Split(args ...interface{}) interface{} {
+func Split(args ...any) any {
 	if len(args) != 2 {
 		return ""
 	}
@@ -15,7 +15,7 @@ func Split(args ...interface{}) interface{} {
 	switch separator := args[1].(type) {
 	case string:
 		return strings.Split(input, separator)
-	case interface{}:
+	case any:
 		if separator, ok := separator.([]string); ok {
 			m := make(map[rune]int)
 			for _, r := range separator {

@@ -9,40 +9,40 @@ import (
 func Test_Min(t *testing.T) {
 	test := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected int
 	}{
 		{
 			name: "min of empty slice",
-			args: []interface{}{
+			args: []any{
 				[]int{},
 			},
 			expected: 0,
 		},
 		{
 			name: "min of slice",
-			args: []interface{}{
+			args: []any{
 				[]int{1, 2, 3},
 			},
 			expected: 1,
 		},
 		{
 			name: "min of slice with negative numbers",
-			args: []interface{}{
+			args: []any{
 				[]int{-1, -2, -3},
 			},
 			expected: -3,
 		},
 		{
 			name: "min of slice with negative and positive numbers",
-			args: []interface{}{
+			args: []any{
 				[]int{-1, 2, -3},
 			},
 			expected: -3,
 		},
 		{
 			name: "min of comma separated numbers",
-			args: []interface{}{
+			args: []any{
 				1, 2, 3, 4, 5,
 			},
 			expected: 1,

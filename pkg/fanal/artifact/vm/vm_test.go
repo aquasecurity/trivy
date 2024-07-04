@@ -14,10 +14,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
@@ -79,14 +79,14 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name:   "sad path unsupported vm format",
 			target: "testdata/monolithicSparse.vmdk",
-			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+			wantErr: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "unsupported type error")
 			},
 		},
 		{
 			name:   "sad path file not found",
 			target: "testdata/no-file",
-			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+			wantErr: func(t assert.TestingT, err error, args ...any) bool {
 				return assert.ErrorContains(t, err, "file open error")
 			},
 		},

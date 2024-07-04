@@ -20,7 +20,7 @@ func (n *node) decodeArray(v reflect.Value) error {
 		v.Set(reflect.MakeSlice(v.Type(), length, length))
 	case reflect.Interface:
 		original = v
-		slice := reflect.ValueOf(make([]interface{}, length))
+		slice := reflect.ValueOf(make([]any, length))
 		v = reflect.New(slice.Type()).Elem()
 		v.Set(slice)
 	default:

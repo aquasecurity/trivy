@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func PadLeft(args ...interface{}) interface{} {
+func PadLeft(args ...any) any {
 	if len(args) != 3 {
 		return ""
 	}

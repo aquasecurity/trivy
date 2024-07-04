@@ -3,11 +3,11 @@ package report
 import (
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
@@ -40,7 +40,7 @@ func ColumnHeading(scanners types.Scanners, availableColumns []string) []string 
 		NamespaceColumn,
 		ResourceColumn,
 	}
-	securityOptions := make(map[string]interface{}, 0)
+	securityOptions := make(map[string]any, 0)
 	// maintain column order (vuln,config,secret)
 	for _, check := range scanners {
 		switch check {

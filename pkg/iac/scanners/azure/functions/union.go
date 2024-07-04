@@ -2,30 +2,30 @@ package functions
 
 import "sort"
 
-func Union(args ...interface{}) interface{} {
+func Union(args ...any) any {
 	if len(args) == 0 {
-		return []interface{}{}
+		return []any{}
 	}
 	if len(args) == 1 {
 		return args[0]
 	}
 
 	switch args[0].(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		return unionMap(args...)
-	case interface{}:
+	case any:
 		return unionArray(args...)
 	}
 
-	return []interface{}{}
+	return []any{}
 
 }
 
-func unionMap(args ...interface{}) interface{} {
-	result := make(map[string]interface{})
+func unionMap(args ...any) any {
+	result := make(map[string]any)
 
 	for _, arg := range args {
-		if iType, ok := arg.(map[string]interface{}); ok {
+		if iType, ok := arg.(map[string]any); ok {
 			for k, v := range iType {
 				result[k] = v
 			}
@@ -35,12 +35,12 @@ func unionMap(args ...interface{}) interface{} {
 	return result
 }
 
-func unionArray(args ...interface{}) interface{} {
-	var result []interface{}
-	union := make(map[interface{}]bool)
+func unionArray(args ...any) any {
+	var result []any
+	union := make(map[any]bool)
 
 	for _, arg := range args {
-		if iType, ok := arg.([]interface{}); ok {
+		if iType, ok := arg.([]any); ok {
 			for _, item := range iType {
 				union[item] = true
 			}

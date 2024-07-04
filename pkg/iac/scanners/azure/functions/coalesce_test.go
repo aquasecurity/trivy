@@ -9,19 +9,19 @@ import (
 func Test_Coalesce(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "coalesce with nil",
-			args: []interface{}{
+			args: []any{
 				nil,
 			},
 			expected: nil,
 		},
 		{
 			name: "coalesce with nil and string",
-			args: []interface{}{
+			args: []any{
 				nil,
 				"test",
 			},
@@ -29,7 +29,7 @@ func Test_Coalesce(t *testing.T) {
 		},
 		{
 			name: "coalesce with nil and string and int",
-			args: []interface{}{
+			args: []any{
 				nil,
 				"test",
 				1,
@@ -38,12 +38,12 @@ func Test_Coalesce(t *testing.T) {
 		},
 		{
 			name: "coalesce with nil and nil and array",
-			args: []interface{}{
+			args: []any{
 				nil,
 				nil,
-				[]interface{}{"a", "b", "c"},
+				[]any{"a", "b", "c"},
 			},
-			expected: []interface{}{"a", "b", "c"},
+			expected: []any{"a", "b", "c"},
 		},
 	}
 

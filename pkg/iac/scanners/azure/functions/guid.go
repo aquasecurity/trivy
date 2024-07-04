@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func Guid(args ...interface{}) interface{} {
+func Guid(args ...any) any {
 
 	if len(args) == 0 {
 		return ""
@@ -39,6 +39,6 @@ func generateSeededGUID(seedParts ...string) (uuid.UUID, error) {
 	return id, nil
 }
 
-func NewGuid(args ...interface{}) interface{} {
+func NewGuid(args ...any) any {
 	return uuid.NewString()
 }

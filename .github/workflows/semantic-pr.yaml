@@ -28,7 +28,7 @@ jobs:
             ci
             chore
             revert
-            BREAKING
+            release
 
           scopes: |
             vuln

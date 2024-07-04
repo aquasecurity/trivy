@@ -16,7 +16,7 @@ type Tool struct {
 }
 
 type Poetry struct {
-	Dependencies map[string]interface{} `toml:"dependencies"`
+	Dependencies map[string]any `toml:"dependencies"`
 }
 
 // Parser parses pyproject.toml defined in PEP518.
@@ -28,7 +28,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r io.Reader) (map[string]interface{}, error) {
+func (p *Parser) Parse(r io.Reader) (map[string]any, error) {
 	var conf PyProject
 	if _, err := toml.NewDecoder(r).Decode(&conf); err != nil {
 		return nil, xerrors.Errorf("toml decode error: %w", err)

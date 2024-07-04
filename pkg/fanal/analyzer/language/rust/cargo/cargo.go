@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
@@ -72,7 +72,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
 		if err = a.removeDevDependencies(input.FS, path.Dir(filePath), app); err != nil {
 			a.logger.Warn("Unable to parse Cargo.toml q to identify direct dependencies",
-				log.String("path", path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
+				log.FilePath(path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
 		}
 		sort.Sort(app.Packages)
 		apps = append(apps, *app)
@@ -109,7 +109,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	cargoTOMLPath := path.Join(dir, types.CargoToml)
 	directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		a.logger.Debug("Cargo.toml not found", log.String("path", cargoTOMLPath))
+		a.logger.Debug("Cargo.toml not found", log.FilePath(cargoTOMLPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
@@ -148,7 +148,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
 	}
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
 	// Save only prod packages
@@ -167,7 +167,7 @@ type cargoTomlWorkspace struct {
 	Members      []string     `toml:"members"`
 }
 
-type Dependencies map[string]interface{}
+type Dependencies map[string]any
 
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
@@ -196,7 +196,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[stri
 		case string:
 			// e.g. regex = "1.5"
 			deps[name] = ver
-		case map[string]interface{}:
+		case map[string]any:
 			// e.g. serde = { version = "1.0", features = ["derive"] }
 			for k, v := range ver {
 				if k == "version" {

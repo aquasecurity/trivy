@@ -1,0 +1,58 @@
+name: Automatic Backporting
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check_permission:
+    name: Check comment author permissions
+    runs-on: ubuntu-latest
+    outputs:
+      is_maintainer: ${{ steps.check_permission.outputs.is_maintainer }}
+    steps:
+      - name: Check permission
+        id: check_permission
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PERMISSION=$(gh api /repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission --jq '.permission')
+          if [ "$PERMISSION" == "admin" ] || [ "$PERMISSION" == "write" ]; then
+           echo "is_maintainer=true" >> $GITHUB_OUTPUT
+          else
+           echo "is_maintainer=false" >> $GITHUB_OUTPUT
+          fi
+  
+
+  backport:
+    name: Backport PR
+    needs: check_permission # run this job after checking permissions
+    if: |
+      needs.check_permission.outputs.is_maintainer == 'true' &&      
+      github.event.issue.pull_request &&
+      github.event.issue.pull_request.merged_at != null &&
+      startsWith(github.event.comment.body, '@aqua-bot backport release/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract branch name
+        run: |
+          BRANCH_NAME=$(echo ${{ github.event.comment.body }} | grep -oE '@aqua-bot backport\s+(\S+)' | awk '{print $3}')
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Set up Git user
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Run backport script
+        run: ./misc/backport/backport.sh ${{ env.BRANCH_NAME }} ${{ github.event.issue.number }}
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows the created PR to trigger tests and other workflows
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}

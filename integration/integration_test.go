@@ -26,11 +26,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/commands"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 
@@ -55,15 +55,9 @@ func initDB(t *testing.T) string {
 	}
 
 	cacheDir := dbtest.InitDB(t, fixtures)
-	defer db.Close()
+	defer dbtest.Close()
 
-	dbDir := filepath.Dir(db.Path(cacheDir))
-
-	metadataFile := filepath.Join(dbDir, "metadata.json")
-	f, err := os.Create(metadataFile)
-	require.NoError(t, err)
-
-	err = json.NewEncoder(f).Encode(metadata.Metadata{
+	err = metadata.NewClient(db.Dir(cacheDir)).Update(metadata.Metadata{
 		Version:    db.SchemaVersion,
 		NextUpdate: time.Now().Add(24 * time.Hour),
 		UpdatedAt:  time.Now(),

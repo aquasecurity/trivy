@@ -1,6 +1,6 @@
 package functions
 
-func Length(args ...interface{}) interface{} {
+func Length(args ...any) any {
 
 	if len(args) != 1 {
 		return 0
@@ -9,9 +9,9 @@ func Length(args ...interface{}) interface{} {
 	switch ctype := args[0].(type) {
 	case string:
 		return len(ctype)
-	case map[string]interface{}:
+	case map[string]any:
 		return len(ctype)
-	case interface{}:
+	case any:
 		switch iType := ctype.(type) {
 		case []string:
 			return len(iType)
@@ -21,7 +21,7 @@ func Length(args ...interface{}) interface{} {
 			return len(iType)
 		case []float64:
 			return len(iType)
-		case []interface{}:
+		case []any:
 			return len(iType)
 		}
 	}

@@ -168,7 +168,7 @@ func TestParser_ParseLDFlags(t *testing.T) {
 					"-s",
 					"-w",
 					"-X=foo=bar",
-					"-X='github.com/aquasecurity/trivy/pkg/version.version=v0.50.1'",
+					"-X='github.com/aquasecurity/trivy/pkg/version/app.ver=v0.50.1'",
 				},
 			},
 			want: "v0.50.1",
@@ -194,7 +194,7 @@ func TestParser_ParseLDFlags(t *testing.T) {
 					"-s",
 					"-w",
 					"-X=foo=bar",
-					"-X='github.com/aquasecurity/trivy/pkg/version.ver=v0.50.1'",
+					"-X='github.com/aquasecurity/trivy/pkg/version/app.ver=v0.50.1'",
 				},
 			},
 			want: "v0.50.1",
@@ -239,6 +239,91 @@ func TestParser_ParseLDFlags(t *testing.T) {
 			want: "0.50.1",
 		},
 		{
+			name: "with `cmd` + `default prefix` flags",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/cmd/Any.Ver=0.50.0'",
+					"-X='github.com/aquasecurity/trivy/pkg/version.Ver=0.50.1'",
+				},
+			},
+			want: "0.50.0",
+		},
+		{
+			name: "with `cmd` flag",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/cmd/Any.Ver=0.50.0'",
+				},
+			},
+			want: "0.50.0",
+		},
+		{
+			name: "with `cmd` + `other` flags",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/cmd/Any.Ver=0.50.0'",
+					"-X='github.com/aquasecurity/trivy/pkg/Any.Ver=0.50.1'",
+				},
+			},
+			want: "0.50.0",
+		},
+		{
+			name: "with `default prefix` flag",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/pkg/Common.Ver=0.50.1'",
+				},
+			},
+			want: "0.50.1",
+		},
+		{
+			name: "with `default prefix` + `other` flags",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/pkg/Any.Ver=0.50.0'",
+					"-X='github.com/aquasecurity/trivy/pkg/Common.Ver=0.50.1'",
+				},
+			},
+			want: "0.50.1",
+		},
+		{
+			name: "with `other` flag",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/pkg/Any.Ver=0.50.1'",
+				},
+			},
+			want: "0.50.1",
+		},
+		{
+			name: "with 2 flags using default prefixes",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/pkg/Common.Ver=0.50.0'",
+					"-X='github.com/aquasecurity/trivy/pkg/Main.Ver=0.50.1'",
+				},
+			},
+			want: "",
+		},
+		{
+			name: "with two `other` flags",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-X='github.com/aquasecurity/trivy/pkg/Any.Ver=0.50.1'",
+					"-X='github.com/aquasecurity/trivy/pkg/Any-pref.Ver=0.50.0'",
+				},
+			},
+			want: "",
+		},
+		{
 			name: "with version with extra prefix",
 			args: args{
 				name: "github.com/argoproj/argo-cd/v2",
@@ -262,7 +347,7 @@ func TestParser_ParseLDFlags(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := binary.NewParser()
-			assert.Equal(t, tt.want, p.ParseLDFlags(tt.args.name, tt.args.flags))
+			require.Equal(t, tt.want, p.ParseLDFlags(tt.args.name, tt.args.flags))
 		})
 	}
 }

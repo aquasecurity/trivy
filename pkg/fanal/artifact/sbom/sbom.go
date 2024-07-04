@@ -11,9 +11,9 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -37,7 +37,7 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func (a Artifact) Inspect(_ context.Context) (artifact.Reference, error) {
+func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	f, err := os.Open(a.filePath)
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to open sbom file error: %w", err)
@@ -51,7 +51,8 @@ func (a Artifact) Inspect(_ context.Context) (artifact.Reference, error) {
 	}
 	log.Info("Detected SBOM format", log.String("format", string(format)))
 
-	bom, err := sbom.Decode(f, format)
+	ctx = log.WithContextAttrs(ctx, log.FilePath(a.filePath))
+	bom, err := sbom.Decode(ctx, f, format)
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("SBOM decode error: %w", err)
 	}

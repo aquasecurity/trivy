@@ -28,6 +28,6 @@ func (m *Manifest) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-func (m *Manifest) ToRego() interface{} {
+func (m *Manifest) ToRego() any {
 	return m.Content.ToRego()
 }

@@ -1,17 +1,18 @@
 package spdx_test
 
 import (
+	"context"
 	"encoding/json"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/package-url/packageurl-go"
 	"os"
 	"sort"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -357,7 +358,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			}
 
 			var got types.SBOM
-			err = sbomio.NewDecoder(v.BOM).Decode(&got)
+			err = sbomio.NewDecoder(v.BOM).Decode(context.Background(), &got)
 			require.NoError(t, err)
 
 			// Not compare BOM

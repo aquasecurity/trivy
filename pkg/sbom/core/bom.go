@@ -70,6 +70,10 @@ type BOM struct {
 	// This is used to ensure that each package URL is only represented once in the BOM.
 	purls map[string][]uuid.UUID
 
+	// parents is a map of parent components to their children
+	// This field is populated when Options.Parents is set to true.
+	parents map[uuid.UUID][]uuid.UUID
+
 	// opts is a set of options for the BOM.
 	opts Options
 }
@@ -190,7 +194,6 @@ type Relationship struct {
 type Vulnerability struct {
 	dtypes.Vulnerability
 	ID               string
-	PkgID            string
 	PkgName          string
 	InstalledVersion string
 	FixedVersion     string
@@ -199,7 +202,8 @@ type Vulnerability struct {
 }
 
 type Options struct {
-	GenerateBOMRef bool
+	GenerateBOMRef bool // Generate BOMRef for CycloneDX
+	Parents        bool // Hold parent maps
 }
 
 func NewBOM(opts Options) *BOM {
@@ -208,6 +212,7 @@ func NewBOM(opts Options) *BOM {
 		relationships:   make(map[uuid.UUID][]Relationship),
 		vulnerabilities: make(map[uuid.UUID][]Vulnerability),
 		purls:           make(map[string][]uuid.UUID),
+		parents:         make(map[uuid.UUID][]uuid.UUID),
 		opts:            opts,
 	}
 }
@@ -257,6 +262,10 @@ func (b *BOM) AddRelationship(parent, child *Component, relationshipType Relatio
 		Type:       relationshipType,
 		Dependency: child.id,
 	})
+
+	if b.opts.Parents {
+		b.parents[child.id] = append(b.parents[child.id], parent.id)
+	}
 }
 
 func (b *BOM) AddVulnerabilities(c *Component, vulns []Vulnerability) {
@@ -298,8 +307,8 @@ func (b *BOM) Vulnerabilities() map[uuid.UUID][]Vulnerability {
 	return b.vulnerabilities
 }
 
-func (b *BOM) NumComponents() int {
-	return len(b.components) + 1 // +1 for the root component
+func (b *BOM) Parents() map[uuid.UUID][]uuid.UUID {
+	return b.parents
 }
 
 // bomRef returns BOMRef for CycloneDX

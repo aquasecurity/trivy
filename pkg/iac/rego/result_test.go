@@ -9,7 +9,7 @@ import (
 func Test_parseResult(t *testing.T) {
 	var testCases = []struct {
 		name  string
-		input interface{}
+		input any
 		want  regoResult
 	}{
 		{
@@ -30,7 +30,7 @@ func Test_parseResult(t *testing.T) {
 		},
 		{
 			name:  "strings",
-			input: []interface{}{"message"},
+			input: []any{"message"},
 			want: regoResult{
 				Managed: true,
 				Message: "message",
@@ -38,9 +38,9 @@ func Test_parseResult(t *testing.T) {
 		},
 		{
 			name: "maps",
-			input: []interface{}{
+			input: []any{
 				"message",
-				map[string]interface{}{
+				map[string]any{
 					"filepath": "a.out",
 				},
 			},
@@ -52,7 +52,7 @@ func Test_parseResult(t *testing.T) {
 		},
 		{
 			name: "map",
-			input: map[string]interface{}{
+			input: map[string]any{
 				"msg":          "message",
 				"filepath":     "a.out",
 				"fskey":        "abcd",
@@ -77,9 +77,9 @@ func Test_parseResult(t *testing.T) {
 		},
 		{
 			name: "parent",
-			input: map[string]interface{}{
+			input: map[string]any{
 				"msg": "child",
-				"parent": map[string]interface{}{
+				"parent": map[string]any{
 					"msg": "parent",
 				},
 			},

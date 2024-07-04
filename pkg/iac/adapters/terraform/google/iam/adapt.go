@@ -1,109 +1,59 @@
 package iam
 
 import (
-	"github.com/google/uuid"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) iam.IAM {
 	return (&adapter{
-		orgs:    make(map[string]iam.Organization),
-		modules: modules,
+		orgs:         make(map[string]*iam.Organization),
+		projects:     make(map[string]*iam.Project),
+		projectsByID: make(map[string]string), // projectID -> blockID
+		folders:      make(map[string]*iam.Folder),
+		modules:      modules,
 	}).Adapt()
 }
 
 type adapter struct {
 	modules                       terraform.Modules
-	orgs                          map[string]iam.Organization
-	folders                       []parentedFolder
-	projects                      []parentedProject
+	orgs                          map[string]*iam.Organization
+	folders                       map[string]*iam.Folder
+	projects                      map[string]*iam.Project
+	projectsByID                  map[string]string
 	workloadIdentityPoolProviders []iam.WorkloadIdentityPoolProvider
 }
 
 func (a *adapter) Adapt() iam.IAM {
 	a.adaptOrganizationIAM()
-	a.adaptFolders()
 	a.adaptFolderIAM()
-	a.adaptProjects()
 	a.adaptProjectIAM()
 	a.adaptWorkloadIdentityPoolProviders()
-	return a.merge()
+	return a.buildIAMOutput()
 }
 
-func (a *adapter) addOrg(blockID string) {
-	if _, ok := a.orgs[blockID]; !ok {
-		a.orgs[blockID] = iam.Organization{
-			Metadata: types.NewUnmanagedMetadata(),
-		}
-	}
-}
-
-func (a *adapter) merge() iam.IAM {
-
-	// add projects to folders, orgs
-PROJECT:
-	for _, project := range a.projects {
-		for i, folder := range a.folders {
-			if project.folderBlockID != "" && project.folderBlockID == folder.blockID {
-				folder.folder.Projects = append(folder.folder.Projects, project.project)
-				a.folders[i] = folder
-				continue PROJECT
-			}
-		}
-		if project.orgBlockID != "" {
-			if org, ok := a.orgs[project.orgBlockID]; ok {
-				org.Projects = append(org.Projects, project.project)
-				a.orgs[project.orgBlockID] = org
-				continue PROJECT
-			}
-		}
-
-		org := iam.Organization{
-			Metadata: types.NewUnmanagedMetadata(),
-			Projects: []iam.Project{project.project},
-		}
-		a.orgs[uuid.NewString()] = org
-	}
-
-	// add folders to folders, orgs
-FOLDER_NESTED: // nolint: gocritic
-	for _, folder := range a.folders {
-		for i, existing := range a.folders {
-			if folder.parentBlockID != "" && folder.parentBlockID == existing.blockID {
-				existing.folder.Folders = append(existing.folder.Folders, folder.folder)
-				a.folders[i] = existing
-				continue FOLDER_NESTED // nolint: gocritic
-			}
-
-		}
-	}
-FOLDER_ORG: // nolint: gocritic
-	for _, folder := range a.folders {
-		if folder.parentBlockID != "" {
-			if org, ok := a.orgs[folder.parentBlockID]; ok {
-				org.Folders = append(org.Folders, folder.folder)
-				a.orgs[folder.parentBlockID] = org
-				continue FOLDER_ORG // nolint: gocritic
-			}
-		} else {
-			// add to placeholder?
-			org := iam.Organization{
-				Metadata: types.NewUnmanagedMetadata(),
-				Folders:  []iam.Folder{folder.folder},
-			}
-			a.orgs[uuid.NewString()] = org
-		}
-	}
-
-	output := iam.IAM{
-		Organizations:                 nil,
+func (a *adapter) buildIAMOutput() iam.IAM {
+	return iam.IAM{
+		Organizations:                 fromPtrSlice(lo.Values(a.orgs)),
+		Folders:                       fromPtrSlice(lo.Values(a.folders)),
+		Projects:                      fromPtrSlice(lo.Values(a.projects)),
 		WorkloadIdentityPoolProviders: a.workloadIdentityPoolProviders,
 	}
-	for _, org := range a.orgs {
-		output.Organizations = append(output.Organizations, org)
+}
+
+func fromPtrSlice[T any](collection []*T) []T {
+	if len(collection) == 0 {
+		return nil
 	}
-	return output
+
+	result := make([]T, 0, len(collection))
+	for _, item := range collection {
+		if item == nil {
+			continue
+		}
+		result = append(result, *item)
+	}
+	return result
 }

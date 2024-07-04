@@ -6,12 +6,12 @@ import (
 	"io/fs"
 	"os"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -413,7 +413,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		}
 		rc, err := opener()
 		if errors.Is(err, fs.ErrPermission) {
-			ag.logger.Debug("Permission error", log.String("file_path", filePath))
+			ag.logger.Debug("Permission error", log.FilePath(filePath))
 			break
 		} else if err != nil {
 			return xerrors.Errorf("unable to open %s: %w", filePath, err)

@@ -23,13 +23,13 @@ z = ["a", "b", "c"]
 	data, err := New().ParseFile(context.TODO(), memfs, "something.yaml")
 	require.NoError(t, err)
 
-	msi, ok := data.(map[string]interface{})
+	msi, ok := data.(map[string]any)
 	require.True(t, ok)
 
 	xObj, ok := msi["x"]
 	require.True(t, ok)
 
-	xMsi, ok := xObj.(map[string]interface{})
+	xMsi, ok := xObj.(map[string]any)
 	require.True(t, ok)
 
 	yRaw, ok := xMsi["y"]
@@ -43,7 +43,7 @@ z = ["a", "b", "c"]
 	zRaw, ok := xMsi["z"]
 	require.True(t, ok)
 
-	z, ok := zRaw.([]interface{})
+	z, ok := zRaw.([]any)
 	require.True(t, ok)
 
 	require.Len(t, z, 3)

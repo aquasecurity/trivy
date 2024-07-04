@@ -87,7 +87,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 	// Calculate the file digest when one of `spdx` formats is selected
 	d, err := calculateDigest(r)
 	if err != nil {
-		log.Warn("Unable to get checksum", log.String("file_path", filePath), log.Err(err))
+		log.Warn("Unable to get checksum", log.FilePath(filePath), log.Err(err))
 	}
 
 	deps := make(map[string][]string)

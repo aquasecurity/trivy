@@ -22,7 +22,7 @@ type AnalysisResult struct {
 type CustomResource struct {
 	Type     string
 	FilePath string
-	Data     interface{}
+	Data     any
 }
 
 type PostScanAction string
@@ -66,7 +66,7 @@ type DetectedVulnerability struct {
 	DataSource *types.DataSource `json:",omitempty"`
 
 	// Custom is for extensibility and not supposed to be used in OSS
-	Custom interface{} `json:",omitempty"`
+	Custom any `json:",omitempty"`
 
 	// Embed vulnerability details
 	types.Vulnerability

@@ -9,43 +9,43 @@ import (
 func Test_Union(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "union single array",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c"},
+			args: []any{
+				[]any{"a", "b", "c"},
 			},
-			expected: []interface{}{"a", "b", "c"},
+			expected: []any{"a", "b", "c"},
 		},
 		{
 			name: "union two arrays",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c"},
-				[]interface{}{"b", "c", "d"},
+			args: []any{
+				[]any{"a", "b", "c"},
+				[]any{"b", "c", "d"},
 			},
-			expected: []interface{}{"a", "b", "c", "d"},
+			expected: []any{"a", "b", "c", "d"},
 		},
 		{
 			name: "union two arrays",
-			args: []interface{}{
-				[]interface{}{"a", "b", "c"},
-				[]interface{}{"b", "c", "d"},
-				[]interface{}{"b", "c", "d", "e"},
+			args: []any{
+				[]any{"a", "b", "c"},
+				[]any{"b", "c", "d"},
+				[]any{"b", "c", "d", "e"},
 			},
-			expected: []interface{}{"a", "b", "c", "d", "e"},
+			expected: []any{"a", "b", "c", "d", "e"},
 		},
 		{
 			name: "union single maps",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"a": "a",
 					"b": "b",
 					"c": "c",
 				},
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"a": "a",
 				"b": "b",
 				"c": "c",
@@ -53,19 +53,19 @@ func Test_Union(t *testing.T) {
 		},
 		{
 			name: "union two maps",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"a": "a",
 					"b": "b",
 					"c": "c",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"b": "b",
 					"c": "c",
 					"d": "d",
 				},
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"a": "a",
 				"b": "b",
 				"c": "c",
@@ -74,24 +74,24 @@ func Test_Union(t *testing.T) {
 		},
 		{
 			name: "union three maps",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"a": "a",
 					"b": "b",
 					"c": "c",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"b": "b",
 					"c": "c",
 					"d": "d",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"b": "b",
 					"c": "c",
 					"e": "e",
 				},
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"a": "a",
 				"b": "b",
 				"c": "c",

@@ -64,6 +64,7 @@ The following languages are currently supported:
 | PHP      | [composer.lock][composer-lock]             |
 | Java     | [pom.xml][pom-xml]                         |
 |          | [*gradle.lockfile][gradle-lockfile]        |
+|          | [*.sbt.lock][sbt-lockfile]                 |
 | Dart     | [pubspec.lock][pubspec-lock]               |
 
 This tree is the reverse of the dependency graph.
@@ -399,7 +400,7 @@ $ trivy <target> [--format <format>] --output plugin=<plugin_name> [--output-plu
 ```
 
 This is useful for cases where you want to convert the output into a custom format, or when you want to send the output somewhere.
-For more details, please check [here](../plugin/plugins.md#output-plugins).
+For more details, please check [here](../plugin/user-guide.md#output-mode-support).
 
 ## Converting
 To generate multiple reports, you can generate the JSON report first and convert it to other formats with the `convert` subcommand.
@@ -447,5 +448,6 @@ $ trivy convert --format table --severity CRITICAL result.json
 [composer-lock]: ../coverage/language/php.md#composer
 [pom-xml]: ../coverage/language/java.md#pomxml
 [gradle-lockfile]: ../coverage/language/java.md#gradlelock
+[sbt-lockfile]: ../coverage/language/java.md#sbt
 [pubspec-lock]: ../coverage/language/dart.md#dart
 [cargo-binaries]: ../coverage/language/rust.md#binaries

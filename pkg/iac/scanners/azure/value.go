@@ -1,10 +1,9 @@
 package azure
 
 import (
+	"slices"
 	"strings"
 	"time"
-
-	"golang.org/x/exp/slices"
 
 	armjson2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -27,7 +26,7 @@ const (
 
 type Value struct {
 	types.Metadata
-	rLit     interface{}
+	rLit     any
 	rMap     map[string]Value
 	rArr     []Value
 	Kind     Kind
@@ -38,14 +37,14 @@ var NullValue = Value{
 	Kind: KindNull,
 }
 
-func NewValue(value interface{}, metadata types.Metadata) Value {
+func NewValue(value any, metadata types.Metadata) Value {
 
 	v := Value{
 		Metadata: metadata,
 	}
 
 	switch ty := value.(type) {
-	case []interface{}:
+	case []any:
 		v.Kind = KindArray
 		for _, child := range ty {
 			if internal, ok := child.(Value); ok {
@@ -58,7 +57,7 @@ func NewValue(value interface{}, metadata types.Metadata) Value {
 		v.Kind = KindArray
 		v.rArr = append(v.rArr, ty...)
 
-	case map[string]interface{}:
+	case map[string]any:
 		v.Kind = KindObject
 		v.rMap = make(map[string]Value)
 		for key, val := range ty {
@@ -249,7 +248,13 @@ func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.Boo
 	v.Resolve()
 	if v.Kind == KindString {
 		possibleValue := strings.ToLower(v.rLit.(string))
-		if slices.Contains([]string{"true", "1", "yes", "on", "enabled"}, possibleValue) {
+		if slices.Contains([]string{
+			"true",
+			"1",
+			"yes",
+			"on",
+			"enabled",
+		}, possibleValue) {
 			return types.Bool(true, metadata)
 		}
 	}
@@ -261,7 +266,7 @@ func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.Boo
 	return types.Bool(v.rLit.(bool), v.GetMetadata())
 }
 
-func (v Value) EqualTo(value interface{}) bool {
+func (v Value) EqualTo(value any) bool {
 	switch ty := value.(type) {
 	case string:
 		return v.AsString() == ty
@@ -302,7 +307,7 @@ func (v Value) AsList() []Value {
 	return v.rArr
 }
 
-func (v Value) Raw() interface{} {
+func (v Value) Raw() any {
 	switch v.Kind {
 	case KindArray:
 		// TODO: recursively build raw array

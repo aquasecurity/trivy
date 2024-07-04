@@ -10,14 +10,14 @@ type IntValue struct {
 }
 
 func (b IntValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"value":    b.value,
 		"metadata": b.metadata,
 	})
 }
 
 func (b *IntValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (b IntValue) Value() int {
 	return b.value
 }
 
-func (b IntValue) GetRawValue() interface{} {
+func (b IntValue) GetRawValue() any {
 	return b.value
 }
 
@@ -111,8 +111,8 @@ func (b IntValue) GreaterThan(i int) bool {
 	return b.value > i
 }
 
-func (s IntValue) ToRego() interface{} {
-	m := s.metadata.ToRego().(map[string]interface{})
+func (s IntValue) ToRego() any {
+	m := s.metadata.ToRego().(map[string]any)
 	m["value"] = s.Value()
 	return m
 }

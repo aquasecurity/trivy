@@ -84,7 +84,6 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			Options: &rpc.ScanOptions{
 				VulnType:          opts.VulnType,
 				Scanners:          xstrings.ToStringSlice(opts.Scanners),
-				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
 				IncludeDevDeps:    opts.IncludeDevDeps,
 			},

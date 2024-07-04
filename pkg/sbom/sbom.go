@@ -2,6 +2,7 @@ package sbom
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"io"
@@ -168,7 +169,7 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 		return "", false
 	}
 
-	m, ok := s.Predicate.(map[string]interface{})
+	m, ok := s.Predicate.(map[string]any)
 	if !ok {
 		return "", false
 	}
@@ -180,9 +181,9 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 	return FormatAttestCycloneDXJSON, true
 }
 
-func Decode(f io.Reader, format Format) (types.SBOM, error) {
+func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error) {
 	var (
-		v       interface{}
+		v       any
 		bom     = core.NewBOM(core.Options{})
 		decoder interface{ Decode(any) error }
 	)
@@ -227,7 +228,7 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 	}
 
 	var sbom types.SBOM
-	if err := sbomio.NewDecoder(bom).Decode(&sbom); err != nil {
+	if err := sbomio.NewDecoder(bom).Decode(ctx, &sbom); err != nil {
 		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
 	}
 

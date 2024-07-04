@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/google/wire"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -153,7 +153,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
-	if !options.ListAllPackages && !options.Scanners.Enabled(types.VulnerabilityScanner) {
+	if !options.Scanners.AnyEnabled(types.SBOMScanner, types.VulnerabilityScanner) {
 		return nil, false, nil
 	}
 
@@ -198,7 +198,7 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 	log.Info("Detected config files", log.Int("num", len(misconfs)))
 	var results types.Results
 	for _, misconf := range misconfs {
-		log.Debug("Scanned config file", log.String("path", misconf.FilePath))
+		log.Debug("Scanned config file", log.FilePath(misconf.FilePath))
 
 		var detected []types.DetectedMisconfiguration
 
@@ -237,7 +237,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 
 	var results types.Results
 	for _, secret := range secrets {
-		log.Debug("Secret file", log.String("path", secret.FilePath))
+		log.Debug("Secret file", log.FilePath(secret.FilePath))
 
 		results = append(results, types.Result{
 			Target: secret.FilePath,

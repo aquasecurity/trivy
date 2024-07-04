@@ -25,9 +25,10 @@ message Licenses {
 message ScanOptions {
   repeated string       vuln_type          = 1;
   repeated string       scanners           = 2;
-  bool                  list_all_packages  = 3;
   map<string, Licenses> license_categories = 4;
   bool                  include_dev_deps   = 5;
+
+  reserved 3;  // deleted 'list_all_packages'
 }
 
 message ScanResponse {

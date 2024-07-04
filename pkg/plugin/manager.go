@@ -58,12 +58,13 @@ type Manager struct {
 }
 
 func NewManager(opts ...ManagerOption) *Manager {
+	root := filepath.Join(fsutils.HomeDir(), pluginsRelativeDir)
 	m := &Manager{
 		w:          os.Stdout,
 		indexURL:   indexURL,
 		logger:     log.WithPrefix("plugin"),
-		pluginRoot: filepath.Join(fsutils.HomeDir(), pluginsRelativeDir),
-		indexPath:  filepath.Join(fsutils.CacheDir(), "plugin", "index.yaml"),
+		pluginRoot: root,
+		indexPath:  filepath.Join(root, "index.yaml"),
 	}
 	for _, opt := range opts {
 		opt(m)
@@ -84,20 +85,20 @@ func Install(ctx context.Context, name string, opts Options) (Plugin, error) {
 func Start(ctx context.Context, name string, opts Options) (Wait, error) {
 	return defaultManager().Start(ctx, name, opts)
 }
-func RunWithURL(ctx context.Context, name string, opts Options) error {
-	return defaultManager().RunWithURL(ctx, name, opts)
+func Run(ctx context.Context, name string, opts Options) error {
+	return defaultManager().Run(ctx, name, opts)
 }
 func Upgrade(ctx context.Context, names []string) error { return defaultManager().Upgrade(ctx, names) }
 func Uninstall(ctx context.Context, name string) error  { return defaultManager().Uninstall(ctx, name) }
 func Information(name string) error                     { return defaultManager().Information(name) }
 func List(ctx context.Context) error                    { return defaultManager().List(ctx) }
-func Update(ctx context.Context) error                  { return defaultManager().Update(ctx) }
+func Update(ctx context.Context, opts Options) error    { return defaultManager().Update(ctx, opts) }
 func Search(ctx context.Context, keyword string) error  { return defaultManager().Search(ctx, keyword) }
 
 // Install installs a plugin
 func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin, error) {
 	input := m.parseArg(ctx, arg)
-	input.name = m.tryIndex(ctx, input.name)
+	input.name = m.tryIndex(ctx, input.name, opts)
 
 	// If the plugin is already installed, it skips installing the plugin.
 	if p, installed := m.isInstalled(ctx, input.name, input.version); installed {
@@ -110,11 +111,19 @@ func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin
 }
 
 func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin, error) {
-	tempDir, err := downloader.DownloadToTempDir(ctx, src)
+	tempDir, err := downloader.DownloadToTempDir(ctx, src, opts.Insecure)
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("download failed: %w", err)
 	}
 	defer os.RemoveAll(tempDir)
+
+	if entries, err := os.ReadDir(tempDir); err != nil {
+		return Plugin{}, xerrors.Errorf("failed to read %s: %w", tempDir, err)
+	} else if len(entries) == 1 && entries[0].IsDir() {
+		//　A single directory may be contained within an archive file.
+		// e.g. https://github.com/aquasecurity/trivy-plugin-referrer/archive/refs/heads/main.zip
+		tempDir = filepath.Join(tempDir, entries[0].Name())
+	}
 
 	m.logger.DebugContext(ctx, "Loading the plugin metadata...")
 	plugin, err := m.loadMetadata(tempDir)
@@ -291,8 +300,8 @@ func (m *Manager) Start(ctx context.Context, name string, opts Options) (Wait, e
 	return wait, nil
 }
 
-// RunWithURL runs the plugin
-func (m *Manager) RunWithURL(ctx context.Context, name string, opts Options) error {
+// Run installs and runs the plugin
+func (m *Manager) Run(ctx context.Context, name string, opts Options) error {
 	plugin, err := m.Install(ctx, name, opts)
 	if err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)

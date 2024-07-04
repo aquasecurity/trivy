@@ -8,13 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sync"
 
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -445,7 +445,7 @@ func (m *wasmModule) Required(filePath string, _ os.FileInfo) bool {
 
 func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := "/" + filepath.ToSlash(input.FilePath)
-	log.Debug("Module analyzing...", log.String("module", m.name), log.String("file_path", filePath))
+	log.Debug("Module analyzing...", log.String("module", m.name), log.FilePath(filePath))
 
 	// Wasm module instances are not Goroutine safe, so we take look here since Analyze might be called concurrently.
 	// TODO: This is temporary solution and we could improve the Analyze performance by having module instance pool.

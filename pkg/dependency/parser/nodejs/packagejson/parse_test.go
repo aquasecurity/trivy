@@ -59,7 +59,7 @@ func TestParse(t *testing.T) {
 					Version:  "4.1.2",
 					Licenses: []string{"ISC"},
 				},
-				Dependencies: map[string]string{},
+				Dependencies: make(map[string]string),
 				DevDependencies: map[string]string{
 					"@babel/cli":  "^7.14.5",
 					"@babel/core": "^7.14.6",

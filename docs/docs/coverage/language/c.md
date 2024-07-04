@@ -23,10 +23,11 @@ In order to detect dependencies, Trivy searches for `conan.lock`[^1].
 
 ### Licenses
 The Conan lock file doesn't contain any license information.
-To obtain licenses we parse the `conanfile.py` files from the [conan cache directory][conan-cache-dir].
+To obtain licenses we parse the `conanfile.py` files from the [conan v1 cache directory][conan-v1-cache-dir] and [conan v2 cache directory][conan-v2-cache-dir].
 To correctly detection licenses, ensure that the cache directory contains all dependencies used.
 
-[conan-cache-dir]: https://docs.conan.io/1/mastering/custom_cache.html
+[conan-v1-cache-dir]: https://docs.conan.io/1/mastering/custom_cache.html
+[conan-v2-cache-dir]: https://docs.conan.io/2/reference/environment.html#conan-home
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 
 [^1]: The local cache should contain the dependencies used. See [licenses](#licenses).

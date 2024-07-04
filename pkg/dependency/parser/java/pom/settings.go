@@ -68,6 +68,7 @@ func openSettings(filePath string) (settings, error) {
 	if err != nil {
 		return settings{}, err
 	}
+	defer f.Close()
 
 	s := settings{}
 	decoder := xml.NewDecoder(f)

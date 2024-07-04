@@ -18,8 +18,8 @@ type Parameter struct {
 }
 
 type parameterInner struct {
-	Type    string      `yaml:"Type"`
-	Default interface{} `yaml:"Default"`
+	Type    string `yaml:"Type"`
+	Default any    `yaml:"Default"`
 }
 
 func (p *Parameter) UnmarshalYAML(node *yaml.Node) error {
@@ -27,7 +27,24 @@ func (p *Parameter) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func (p *Parameter) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	return node.Decode(&p.inner)
+
+	var inner parameterInner
+
+	if err := node.Decode(&inner); err != nil {
+		return err
+	}
+
+	// jfather parses Number without fraction as int64
+	// https://github.com/liamg/jfather/blob/4ef05d70c05af167226d3333a4ec7d8ac3c9c281/parse_number.go#L33-L42
+	switch v := inner.Default.(type) {
+	case int64:
+		inner.Default = int(v)
+	default:
+		inner.Default = v
+	}
+
+	p.inner = inner
+	return nil
 }
 
 func (p *Parameter) Type() cftypes.CfType {
@@ -43,11 +60,11 @@ func (p *Parameter) Type() cftypes.CfType {
 	}
 }
 
-func (p *Parameter) Default() interface{} {
+func (p *Parameter) Default() any {
 	return p.inner.Default
 }
 
-func (p *Parameter) UpdateDefault(inVal interface{}) {
+func (p *Parameter) UpdateDefault(inVal any) {
 	passedVal := inVal.(string)
 
 	switch p.inner.Type {

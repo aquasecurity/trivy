@@ -2,7 +2,7 @@ package functions
 
 import "strings"
 
-func Bool(args ...interface{}) interface{} {
+func Bool(args ...any) any {
 	if len(args) != 1 {
 		return false
 	}

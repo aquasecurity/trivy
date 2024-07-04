@@ -105,8 +105,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "pnpm",
 			args: args{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/pnpm",
+				scanner:     types.VulnerabilityScanner,
+				input:       "testdata/fixtures/repo/pnpm",
+				listAllPkgs: true,
 			},
 			golden: "testdata/pnpm.json.golden",
 		},
@@ -152,6 +153,14 @@ func TestRepository(t *testing.T) {
 				input:   "testdata/fixtures/repo/gradle",
 			},
 			golden: "testdata/gradle.json.golden",
+		},
+		{
+			name: "sbt",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/sbt",
+			},
+			golden: "testdata/sbt.json.golden",
 		},
 		{
 			name: "conan",
@@ -233,6 +242,24 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/composer",
 			},
 			golden: "testdata/composer.lock.json.golden",
+		},
+		{
+			name: "multiple lockfiles",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/trivy-ci-test",
+			},
+			golden: "testdata/test-repo.json.golden",
+		},
+		{
+			name: "installed.json",
+			args: args{
+				command:     "rootfs",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/composer-vendor",
+			},
+			golden: "testdata/composer.vendor.json.golden",
 		},
 		{
 			name: "dockerfile",

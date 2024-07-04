@@ -1,14 +1,15 @@
 package flag_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/google/go-containerregistry/pkg/name"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestDBFlagGroup_ToOptions(t *testing.T) {
@@ -43,29 +44,12 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
-			name: "light",
-			fields: fields{
-				Light:            true,
-				DBRepository:     "ghcr.io/aquasecurity/trivy-db",
-				JavaDBRepository: "ghcr.io/aquasecurity/trivy-java-db",
-			},
-			want: flag.DBOptions{
-				Light:            true,
-				DBRepository:     name.Tag{}, // All fields are unexported
-				JavaDBRepository: name.Tag{}, // All fields are unexported
-			},
-			wantLogs: []string{
-				"'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649",
-			},
-			assertion: require.NoError,
-		},
-		{
 			name: "sad",
 			fields: fields{
 				SkipDBUpdate:   true,
 				DownloadDBOnly: true,
 			},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+			assertion: func(t require.TestingT, err error, msgs ...any) {
 				require.ErrorContains(t, err, "--skip-db-update and --download-db-only options can not be specified both")
 			},
 		},
@@ -76,7 +60,7 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				DownloadDBOnly: false,
 				DBRepository:   "foo:bar:baz",
 			},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+			assertion: func(t require.TestingT, err error, msgs ...any) {
 				require.ErrorContains(t, err, "invalid db repository")
 			},
 		},
@@ -87,7 +71,6 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 
 			viper.Set(flag.SkipDBUpdateFlag.ConfigName, tt.fields.SkipDBUpdate)
 			viper.Set(flag.DownloadDBOnlyFlag.ConfigName, tt.fields.DownloadDBOnly)
-			viper.Set(flag.LightFlag.ConfigName, tt.fields.Light)
 			viper.Set(flag.DBRepositoryFlag.ConfigName, tt.fields.DBRepository)
 			viper.Set(flag.JavaDBRepositoryFlag.ConfigName, tt.fields.JavaDBRepository)
 
@@ -95,7 +78,6 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 			f := &flag.DBFlagGroup{
 				DownloadDBOnly:   flag.DownloadDBOnlyFlag.Clone(),
 				SkipDBUpdate:     flag.SkipDBUpdateFlag.Clone(),
-				Light:            flag.LightFlag.Clone(),
 				DBRepository:     flag.DBRepositoryFlag.Clone(),
 				JavaDBRepository: flag.JavaDBRepositoryFlag.Clone(),
 			}

@@ -5,7 +5,7 @@ import (
 	"path"
 )
 
-func Uri(args ...interface{}) interface{} {
+func Uri(args ...any) any {
 	if len(args) != 2 {
 		return ""
 	}

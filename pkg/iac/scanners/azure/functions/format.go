@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-func Format(args ...interface{}) interface{} {
+func Format(args ...any) any {
 	formatter := generateFormatterString(args...)
 
 	return fmt.Sprintf(formatter, args[1:]...)
 }
 
-func generateFormatterString(args ...interface{}) string {
+func generateFormatterString(args ...any) string {
 
 	formatter, ok := args[0].(string)
 	if !ok {

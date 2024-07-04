@@ -4,10 +4,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {

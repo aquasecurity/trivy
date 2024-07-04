@@ -2,9 +2,9 @@ package unpackaged_test
 
 import (
 	"context"
-	"github.com/package-url/packageurl-go"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

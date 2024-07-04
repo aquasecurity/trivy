@@ -15,7 +15,6 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
@@ -82,7 +81,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
 		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app); err != nil {
 			a.logger.Warn("Unable to parse package.json to remove dev dependencies",
-				log.String("file_path", path.Join(path.Dir(filePath), types.NpmPkg)), log.Err(err))
+				log.FilePath(path.Join(path.Dir(filePath), types.NpmPkg)), log.Err(err))
 		}
 
 		// Fill licenses
@@ -158,7 +157,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	packageJsonPath := path.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		a.logger.Debug("package.json not found", log.String("path", packageJsonPath))
+		a.logger.Debug("package.json not found", log.FilePath(packageJsonPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", dir, err)
@@ -186,7 +185,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	// If the same package is found in both prod and dev dependencies, use the one in prod.
 	pkgs = lo.Assign(devPkgs, pkgs)
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
 	// Save packages

@@ -1,19 +1,20 @@
 package cyclonedx_test
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/package-url/packageurl-go"
 	"os"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestUnmarshaler_Unmarshal(t *testing.T) {
@@ -757,7 +758,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 
 			var got types.SBOM
-			err = sbomio.NewDecoder(cdx.BOM).Decode(&got)
+			err = sbomio.NewDecoder(cdx.BOM).Decode(context.Background(), &got)
 			require.NoError(t, err)
 
 			got.BOM = nil

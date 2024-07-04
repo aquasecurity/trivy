@@ -7,7 +7,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
-func redactIfSensitive(value interface{}, markses ...cty.ValueMarks) string {
+func redactIfSensitive(value any, markses ...cty.ValueMarks) string {
 	if Has(cty.DynamicVal.WithMarks(markses...), MarkedSensitive) {
 		return "(sensitive value)"
 	}

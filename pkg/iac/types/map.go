@@ -10,14 +10,14 @@ type MapValue struct {
 }
 
 func (b MapValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"value":    b.value,
 		"metadata": b.metadata,
 	})
 }
 
 func (b *MapValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (b MapValue) Value() map[string]string {
 	return b.value
 }
 
-func (b MapValue) GetRawValue() interface{} {
+func (b MapValue) GetRawValue() any {
 	return b.value
 }
 
@@ -85,8 +85,8 @@ func (b MapValue) HasKey(key string) bool {
 	return ok
 }
 
-func (s MapValue) ToRego() interface{} {
-	m := s.metadata.ToRego().(map[string]interface{})
+func (s MapValue) ToRego() any {
+	m := s.metadata.ToRego().(map[string]any)
 	m["value"] = s.Value()
 	return m
 }

@@ -5,19 +5,18 @@ import (
 	"sort"
 	"testing"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/maps"
-
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 func TestScanner_Scan(t *testing.T) {
@@ -36,7 +35,7 @@ func TestScanner_Scan(t *testing.T) {
 					Namespace: "kube-system",
 					Kind:      "Cluster",
 					Name:      "k8s.io/kubernetes",
-					RawResource: map[string]interface{}{
+					RawResource: map[string]any{
 						"name":    "k8s.io/kubernetes",
 						"version": "1.21.1",
 						"type":    "ClusterInfo",
@@ -50,9 +49,9 @@ func TestScanner_Scan(t *testing.T) {
 					Namespace: "kube-system",
 					Kind:      "ControlPlaneComponents",
 					Name:      "k8s.io/apiserver",
-					RawResource: map[string]interface{}{
-						"Containers": []interface{}{
-							map[string]interface{}{
+					RawResource: map[string]any{
+						"Containers": []any{
+							map[string]any{
 								"Digest":     "18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
 								"ID":         "kube-apiserver:v1.21.1",
 								"Registry":   "k8s.gcr.io",
@@ -67,7 +66,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Kind: "NodeComponents",
 					Name: "kind-control-plane",
-					RawResource: map[string]interface{}{
+					RawResource: map[string]any{
 						"ContainerRuntimeVersion": "containerd://1.5.2",
 						"Hostname":                "kind-control-plane",
 						"KubeProxyVersion":        "6.2.13-300.fc38.aarch64",
@@ -285,7 +284,7 @@ func TestScanner_Scan(t *testing.T) {
 			got, err := scanner.Scan(ctx, tt.artifacts)
 			require.NoError(t, err)
 
-			gotComponents := maps.Values(got.BOM.Components())
+			gotComponents := lo.Values(got.BOM.Components())
 			require.Equal(t, len(tt.wantComponents), len(gotComponents))
 
 			sort.Slice(gotComponents, func(i, j int) bool {
@@ -508,18 +507,18 @@ func TestFindNodeName(t *testing.T) {
 					Namespace:   "kube-system",
 					Kind:        "Cluster",
 					Name:        "k8s.io/kubernetes",
-					RawResource: map[string]interface{}{},
+					RawResource: make(map[string]any),
 				},
 				{
 					Namespace:   "kube-system",
 					Kind:        "ControlPlaneComponents",
 					Name:        "k8s.io/apiserver",
-					RawResource: map[string]interface{}{},
+					RawResource: make(map[string]any),
 				},
 				{
 					Kind:        "NodeComponents",
 					Name:        "kind-control-plane",
-					RawResource: map[string]interface{}{},
+					RawResource: make(map[string]any),
 				},
 			},
 			want: "kind-control-plane",
@@ -531,13 +530,13 @@ func TestFindNodeName(t *testing.T) {
 					Namespace:   "kube-system",
 					Kind:        "Cluster",
 					Name:        "k8s.io/kubernetes",
-					RawResource: map[string]interface{}{},
+					RawResource: make(map[string]any),
 				},
 				{
 					Namespace:   "kube-system",
 					Kind:        "ControlPlaneComponents",
 					Name:        "k8s.io/apiserver",
-					RawResource: map[string]interface{}{},
+					RawResource: make(map[string]any),
 				},
 			},
 			want: "",

@@ -21,7 +21,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 125,
+        "Successes": 80,
         "Failures": 14,
         "Exceptions": 0
       },

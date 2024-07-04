@@ -14,7 +14,7 @@ import (
 // Cosign uses this structure when creating an SBOM attestation.
 // cf. https://github.com/sigstore/cosign/blob/e0547cff64f98585a837a524ff77ff6b47ff5609/pkg/cosign/attestation/attestation.go#L39-L43
 type CosignPredicate struct {
-	Data interface{}
+	Data any
 }
 
 // Statement holds in-toto statement headers and the predicate.

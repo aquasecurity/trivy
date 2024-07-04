@@ -176,7 +176,7 @@ func TestScanner_Scan(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if tt.expectation == nil {
-					e := map[string]interface{}{
+					e := map[string]any{
 						"code": "not_found",
 						"msg":  "expectation is empty",
 					}

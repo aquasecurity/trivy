@@ -6,6 +6,7 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json' ## don't run tests for release-please PRs
   merge_group:
 env:
   GO_VERSION: '1.22'
@@ -15,19 +16,9 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@v10
-        with:
-          root-reserve-mb: 32768 # The golangci-lint uses a lot of space.
-          remove-android: "true"
-          remove-docker-images: "true"
-          remove-dotnet: "true"
-          remove-haskell: "true"
-        if: matrix.operating-system == 'ubuntu-latest'
-
-      - uses: actions/checkout@v4.1.4
+      - uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -40,15 +31,15 @@ jobs:
             echo "Run 'go mod tidy' and push it"
             exit 1
           fi
-        if: matrix.operating-system == 'ubuntu-latest'
+        if: matrix.operating-system == 'ubuntu-latest-m'
 
       - name: Lint
         id: lint
         uses: golangci/golangci-lint-action@v6.0.1
         with:
-          version: v1.58
+          version: v1.59
           args: --verbose --out-format=line-number
-        if: matrix.operating-system == 'ubuntu-latest'
+        if: matrix.operating-system == 'ubuntu-latest-m'
 
       - name: Check if linter failed
         run: |
@@ -57,7 +48,7 @@ jobs:
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
@@ -69,17 +60,17 @@ jobs:
             echo "Run 'mage docs:generate' and push it"
             exit 1
           fi
-        if: matrix.operating-system == 'ubuntu-latest'
+        if: matrix.operating-system == 'ubuntu-latest-m'
 
       - name: Run unit tests
         run: mage test:unit
 
   integration:
     name: Integration Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -87,7 +78,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -96,19 +87,10 @@ jobs:
 
   k8s-integration:
     name: K8s Integration Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@v10
-        with:
-          root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
-          remove-android: "true"
-          remove-docker-images: "true"
-          remove-dotnet: "true"
-          remove-haskell: "true"
-
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -116,7 +98,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -128,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -136,7 +118,7 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -147,26 +129,17 @@ jobs:
 
   vm-test:
     name: VM Integration Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@v10
-        with:
-          root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
-          remove-android: 'true'
-          remove-docker-images: 'true'
-          remove-dotnet: 'true'
-          remove-haskell: 'true'
-
       - name: Checkout
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.0
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
       - name: Run vm integration tests
@@ -178,22 +151,12 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
-    - name: Maximize build space
-      uses: easimon/maximize-build-space@v10
-      with:
-        root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
-        remove-android: 'true'
-        remove-docker-images: 'true'
-        remove-dotnet: 'true'
-        remove-haskell: 'true'
-      if: matrix.operating-system == 'ubuntu-latest'
-
     - name: Checkout
-      uses: actions/checkout@v4.1.4
+      uses: actions/checkout@v4.1.6
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -213,7 +176,7 @@ jobs:
         fi
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v5
+      uses: goreleaser/goreleaser-action@v6
       with:
-        version: v1.20.0
+        version: v2.0.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}

@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"debug/buildinfo"
 	"runtime/debug"
+	"slices"
 	"sort"
 	"strings"
 
@@ -142,6 +143,14 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 		return ""
 	}
 
+	// foundVersions contains discovered versions by type.
+	// foundVersions doesn't contain duplicates. Versions are filled into first corresponding category.
+	// Possible elements(categories):
+	//   [0]: Versions using format `github.com/<module_owner>/<module_name>/cmd/**/*.<version>=x.x.x`
+	//   [1]: Versions that use prefixes from `defaultPrefixes`
+	//   [2]: Other versions
+	var foundVersions = make([][]string, 3)
+	defaultPrefixes := []string{"main", "common", "version", "cmd"}
 	for key, val := range x {
 		// It's valid to set the -X flags with quotes so we trim any that might
 		// have been provided: Ex:
@@ -154,16 +163,46 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 		// -X "main.version=1.0.0"
 		key = strings.TrimLeft(key, `'`)
 		val = strings.TrimRight(val, `'`)
-		if isValidXKey(key) && isValidSemVer(val) {
-			return val
+		if isVersionXKey(key) && isValidSemVer(val) {
+			switch {
+			case strings.HasPrefix(key, name+"/cmd/"):
+				foundVersions[0] = append(foundVersions[0], val)
+			case slices.Contains(defaultPrefixes, strings.ToLower(versionPrefix(key))):
+				foundVersions[1] = append(foundVersions[1], val)
+			default:
+				foundVersions[2] = append(foundVersions[2], val)
+			}
 		}
 	}
 
-	p.logger.Debug("Unable to detect dependency version used in `-ldflags` build info settings. Empty version used.", log.String("dependency", name))
+	return p.chooseVersion(name, foundVersions)
+}
+
+// chooseVersion chooses version from found versions
+// Categories order:
+// module name with `cmd` => versions with default prefixes => other versions
+// See more in https://github.com/aquasecurity/trivy/issues/6702#issuecomment-2122271427
+func (p *Parser) chooseVersion(moduleName string, vers [][]string) string {
+	for _, versions := range vers {
+		// Versions for this category was not found
+		if len(versions) == 0 {
+			continue
+		}
+
+		// More than 1 version for one category.
+		// Use empty version.
+		if len(versions) > 1 {
+			p.logger.Debug("Unable to detect dependency version. `-ldflags` build info settings contain more than one version. Empty version used.", log.String("dependency", moduleName))
+			return ""
+		}
+		return versions[0]
+	}
+
+	p.logger.Debug("Unable to detect dependency version. `-ldflags` build info settings don't contain version flag. Empty version used.", log.String("dependency", moduleName))
 	return ""
 }
 
-func isValidXKey(key string) bool {
+func isVersionXKey(key string) bool {
 	key = strings.ToLower(key)
 	// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
 	return strings.HasSuffix(key, ".version") || strings.HasSuffix(key, ".ver")
@@ -174,4 +213,19 @@ func isValidSemVer(ver string) bool {
 	// here and checking validity again increases the chances that we
 	// parse a valid semver version.
 	return semver.IsValid(ver) || semver.IsValid("v"+ver)
+}
+
+// versionPrefix returns version prefix from `-ldflags` flag key
+// e.g.
+//   - `github.com/aquasecurity/trivy/pkg/version/app.ver` => `version`
+//   - `github.com/google/go-containerregistry/cmd/crane/common.ver` => `common`
+func versionPrefix(s string) string {
+	// Trim module part.
+	// e.g. `github.com/aquasecurity/trivy/pkg/Version.version` => `Version.version`
+	if lastIndex := strings.LastIndex(s, "/"); lastIndex > 0 {
+		s = s[lastIndex+1:]
+	}
+
+	s, _, _ = strings.Cut(s, ".")
+	return strings.ToLower(s)
 }

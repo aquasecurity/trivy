@@ -61,7 +61,7 @@ func TestParseDependency(t *testing.T) {
 	tests := []struct {
 		name         string
 		packageName  string
-		versionRange interface{}
+		versionRange any
 		pkgsVersions map[string][]string
 		want         string
 		wantErr      string
@@ -96,7 +96,7 @@ func TestParseDependency(t *testing.T) {
 		{
 			name:        "version range as json",
 			packageName: "test",
-			versionRange: map[string]interface{}{
+			versionRange: map[string]any{
 				"version": ">=4.8.3",
 				"markers": "python_version < \"3.8\"",
 			},
@@ -109,7 +109,7 @@ func TestParseDependency(t *testing.T) {
 			name:         "pkgsVersions doesn't contain required version",
 			packageName:  "test",
 			versionRange: ">=1.0.0",
-			pkgsVersions: map[string][]string{},
+			pkgsVersions: make(map[string][]string),
 			wantErr:      "no version found",
 		},
 	}

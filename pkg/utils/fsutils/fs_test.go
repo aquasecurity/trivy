@@ -18,7 +18,7 @@ func touch(t *testing.T, name string) {
 	}
 }
 
-func write(t *testing.T, name string, content string) {
+func write(t *testing.T, name, content string) {
 	err := os.WriteFile(name, []byte(content), 0666)
 	if err != nil {
 		t.Fatal(err)

@@ -2,15 +2,16 @@ package result_test
 
 import (
 	"context"
-	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -18,10 +19,12 @@ import (
 
 func TestFilter(t *testing.T) {
 	var (
-		vuln1 = types.DetectedVulnerability{
-			VulnerabilityID: "CVE-2019-0001",
-			PkgName:         "foo",
-			PkgIdentifier: ftypes.PkgIdentifier{
+		pkg1 = ftypes.Package{
+			ID:      "foo@1.2.3",
+			Name:    "foo",
+			Version: "1.2.3",
+			Identifier: ftypes.PkgIdentifier{
+				UID: "01",
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
@@ -29,25 +32,29 @@ func TestFilter(t *testing.T) {
 					Version:   "1.2.3",
 				},
 			},
-			InstalledVersion: "1.2.3",
+		}
+		vuln1 = types.DetectedVulnerability{
+			VulnerabilityID:  "CVE-2019-0001",
+			PkgName:          pkg1.Name,
+			InstalledVersion: pkg1.Version,
 			FixedVersion:     "1.2.4",
+			PkgIdentifier: ftypes.PkgIdentifier{
+				UID:  pkg1.Identifier.UID,
+				PURL: pkg1.Identifier.PURL,
+			},
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: dbTypes.SeverityLow.String(),
 			},
 		}
 		vuln2 = types.DetectedVulnerability{
-			VulnerabilityID: "CVE-2019-0002",
-			PkgName:         "foo",
-			PkgIdentifier: ftypes.PkgIdentifier{
-				PURL: &packageurl.PackageURL{
-					Type:      packageurl.TypeGolang,
-					Namespace: "github.com/aquasecurity",
-					Name:      "foo",
-					Version:   "4.5.6",
-				},
-			},
-			InstalledVersion: "1.2.3",
+			VulnerabilityID:  "CVE-2019-0002",
+			PkgName:          pkg1.Name,
+			InstalledVersion: pkg1.Version,
 			FixedVersion:     "1.2.4",
+			PkgIdentifier: ftypes.PkgIdentifier{
+				UID:  pkg1.Identifier.UID,
+				PURL: pkg1.Identifier.PURL,
+			},
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: dbTypes.SeverityCritical.String(),
 			},
@@ -243,8 +250,14 @@ func TestFilter(t *testing.T) {
 			name: "filter by VEX",
 			args: args{
 				report: types.Report{
+					ArtifactName: ".",
+					ArtifactType: artifact.TypeFilesystem,
 					Results: types.Results{
 						types.Result{
+							Target:   "gobinary",
+							Class:    types.ClassLangPkg,
+							Type:     ftypes.GoBinary,
+							Packages: []ftypes.Package{pkg1},
 							Vulnerabilities: []types.DetectedVulnerability{
 								vuln1,
 								vuln2,
@@ -262,8 +275,14 @@ func TestFilter(t *testing.T) {
 				vexPath: "testdata/openvex.json",
 			},
 			want: types.Report{
+				ArtifactName: ".",
+				ArtifactType: artifact.TypeFilesystem,
 				Results: types.Results{
 					types.Result{
+						Target:   "gobinary",
+						Class:    types.ClassLangPkg,
+						Type:     ftypes.GoBinary,
+						Packages: []ftypes.Package{pkg1},
 						Vulnerabilities: []types.DetectedVulnerability{
 							vuln2,
 						},
@@ -658,7 +677,10 @@ func TestFilter(t *testing.T) {
 						},
 					},
 				},
-				severities: []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityHigh},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
 				policyFile: "./testdata/test-ignore-policy-licenses-and-secrets.rego",
 			},
 			want: types.Report{
@@ -671,7 +693,7 @@ func TestFilter(t *testing.T) {
 							secret1,
 						},
 						ModifiedFindings: []types.ModifiedFinding{
-							 {
+							{
 								Type:      types.FindingTypeSecret,
 								Status:    types.FindingStatusIgnored,
 								Statement: "Filtered by Rego",

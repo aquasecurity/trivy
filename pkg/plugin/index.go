@@ -32,9 +32,9 @@ type Index struct {
 	} `yaml:"plugins"`
 }
 
-func (m *Manager) Update(ctx context.Context) error {
+func (m *Manager) Update(ctx context.Context, opts Options) error {
 	m.logger.InfoContext(ctx, "Updating the plugin index...", log.String("url", m.indexURL))
-	if err := downloader.Download(ctx, m.indexURL, filepath.Dir(m.indexPath), ""); err != nil {
+	if err := downloader.Download(ctx, m.indexURL, filepath.Dir(m.indexPath), "", opts.Insecure); err != nil {
 		return xerrors.Errorf("unable to download the plugin index: %w", err)
 	}
 	return nil
@@ -69,10 +69,10 @@ func (m *Manager) Search(ctx context.Context, keyword string) error {
 
 // tryIndex returns the repository URL if the plugin name is found in the index.
 // Otherwise, it returns the input name.
-func (m *Manager) tryIndex(ctx context.Context, name string) string {
+func (m *Manager) tryIndex(ctx context.Context, name string, opts Options) string {
 	// If the index file does not exist, download it first.
 	if !fsutils.FileExists(m.indexPath) {
-		if err := m.Update(ctx); err != nil {
+		if err := m.Update(ctx, opts); err != nil {
 			m.logger.ErrorContext(ctx, "Failed to update the plugin index", log.Err(err))
 			return name
 		}

@@ -1,0 +1,5 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+prefix: /opt/conda/envs/test-env

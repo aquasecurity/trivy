@@ -7,6 +7,9 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -14,8 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 var alwaysFailRule = scan.Rule{
@@ -79,7 +80,7 @@ func Test_OptionWithDebugWriter(t *testing.T) {
 	_ = scanWithOptions(t, `
 resource "something" "else" {}
 `, scannerOpts...)
-	require.Greater(t, buffer.Len(), 0)
+	require.Positive(t, buffer.Len())
 }
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
@@ -216,9 +217,13 @@ func Test_OptionWithPolicyNamespaces(t *testing.T) {
 			wantFailure:        true,
 		},
 		{
-			includedNamespaces: []string{"a", "users", "b"},
-			policyNamespace:    "users",
-			wantFailure:        true,
+			includedNamespaces: []string{
+				"a",
+				"users",
+				"b",
+			},
+			policyNamespace: "users",
+			wantFailure:     true,
 		},
 		{
 			includedNamespaces: []string{"user"},

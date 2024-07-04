@@ -12,19 +12,19 @@ func Test_UTCNow(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "utc now day",
-			args: []interface{}{
+			args: []any{
 				"d",
 			},
 			expected: fmt.Sprintf("%d", time.Now().UTC().Day()),
 		},
 		{
 			name: "utc now date",
-			args: []interface{}{
+			args: []any{
 				"yyyy-M-d",
 			},
 			expected: fmt.Sprintf("%d-%d-%d", time.Now().UTC().Year(), time.Now().UTC().Month(), time.Now().UTC().Day()),

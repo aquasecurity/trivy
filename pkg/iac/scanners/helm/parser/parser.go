@@ -186,7 +186,7 @@ func (p *Parser) extractChartName(chartPath string) error {
 	}
 	defer func() { _ = chrt.Close() }()
 
-	var chartContent map[string]interface{}
+	var chartContent map[string]any
 	if err := yaml.NewDecoder(chrt).Decode(&chartContent); err != nil {
 		// the chart likely has the name templated and so cannot be parsed as yaml - use a temporary name
 		if dir := filepath.Dir(chartPath); dir != "" && dir != "." {

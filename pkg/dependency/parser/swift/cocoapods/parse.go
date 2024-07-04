@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -47,7 +47,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				continue
 			}
 			parsedDeps[pkg.Name] = pkg
-		case map[string]interface{}: // dependency with its child dependencies
+		case map[string]any:
 			for dep, childDeps := range dep {
 				pkg, err := parseDep(dep)
 				if err != nil {
@@ -56,7 +56,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				}
 				parsedDeps[pkg.Name] = pkg
 
-				children, ok := childDeps.([]interface{})
+				children, ok := childDeps.([]any)
 				if !ok {
 					return nil, nil, xerrors.Errorf("invalid value of cocoapods direct dependency: %q", childDeps)
 				}
@@ -86,7 +86,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	sort.Sort(deps)
-	return utils.UniquePackages(maps.Values(parsedDeps)), deps, nil
+	return utils.UniquePackages(lo.Values(parsedDeps)), deps, nil
 }
 
 func parseDep(dep string) (ftypes.Package, error) {

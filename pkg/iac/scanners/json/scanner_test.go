@@ -4,12 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_BasicScan(t *testing.T) {
@@ -72,6 +73,6 @@ deny[res] {
 			Terraform: (*scan.TerraformCustomCheck)(nil),
 		},
 		RegoPackage: "data.builtin.json.lol",
-		Frameworks:  map[framework.Framework][]string{},
+		Frameworks:  make(map[framework.Framework][]string),
 	}, results.GetFailed()[0].Rule())
 }

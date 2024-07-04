@@ -47,7 +47,7 @@ func TestManager_Versions(t *testing.T) {
 		{
 			name:    "disable hooks",
 			disable: []types.HandlerType{"fake"},
-			want:    map[string]int{},
+			want:    make(map[string]int),
 		},
 	}
 

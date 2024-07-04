@@ -37,7 +37,7 @@ type File struct {
 	SrcLocation string `json:"source_location,omitempty"`
 }
 
-type Metadata map[string]interface{}
+type Metadata map[string]any
 
 type Manifest struct {
 	Name     string             `json:"name,omitempty"`

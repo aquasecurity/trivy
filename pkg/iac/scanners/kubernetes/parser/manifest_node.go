@@ -23,12 +23,12 @@ type ManifestNode struct {
 	StartLine int
 	EndLine   int
 	Offset    int
-	Value     interface{}
+	Value     any
 	Type      TagType
 	Path      string
 }
 
-func (r *ManifestNode) ToRego() interface{} {
+func (r *ManifestNode) ToRego() any {
 	if r == nil {
 		return nil
 	}
@@ -36,14 +36,14 @@ func (r *ManifestNode) ToRego() interface{} {
 	case TagBool, TagInt, TagString, TagStr:
 		return r.Value
 	case TagSlice:
-		var output []interface{}
+		var output []any
 		for _, node := range r.Value.([]ManifestNode) {
 			output = append(output, node.ToRego())
 		}
 		return output
 	case TagMap:
-		output := make(map[string]interface{})
-		output["__defsec_metadata"] = map[string]interface{}{
+		output := make(map[string]any)
+		output["__defsec_metadata"] = map[string]any{
 			"startline": r.StartLine,
 			"endline":   r.EndLine,
 			"filepath":  r.Path,

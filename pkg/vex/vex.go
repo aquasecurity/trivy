@@ -5,17 +5,20 @@ import (
 	"io"
 	"os"
 
-	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/csaf-poc/csaf_distribution/v3/csaf"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
+	"github.com/samber/lo"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -103,4 +106,66 @@ func decodeCSAF(r io.ReadSeeker) (VEX, error) {
 		return nil, nil
 	}
 	return newCSAF(adv), nil
+}
+
+type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
+
+func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) {
+	components := lo.MapEntries(bom.Components(), func(id uuid.UUID, component *core.Component) (string, *core.Component) {
+		return component.PkgIdentifier.UID, component
+	})
+
+	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
+		c, ok := components[vuln.PkgIdentifier.UID]
+		if !ok {
+			log.Error("Component not found", log.String("uid", vuln.PkgIdentifier.UID))
+			return true // Should never reach here
+		}
+
+		notAffectedFn := func(c, leaf *core.Component) bool {
+			modified, notAffected := fn(vuln, c, leaf)
+			if notAffected {
+				result.ModifiedFindings = append(result.ModifiedFindings, modified)
+				return true
+			}
+			return false
+		}
+
+		return reachRoot(c, bom.Components(), bom.Parents(), notAffectedFn)
+	})
+}
+
+// reachRoot traverses the component tree from the leaf to the root and returns true if the leaf reaches the root.
+func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, parents map[uuid.UUID][]uuid.UUID,
+	notAffected func(c, leaf *core.Component) bool) bool {
+
+	if notAffected(leaf, nil) {
+		return false
+	}
+
+	visited := make(map[uuid.UUID]bool)
+
+	// Use Depth First Search (DFS)
+	var dfs func(c *core.Component) bool
+	dfs = func(c *core.Component) bool {
+		// Call the function with the current component and the leaf component
+		if notAffected(c, leaf) {
+			return false
+		} else if c.Root {
+			return true
+		}
+
+		visited[c.ID()] = true
+		for _, parent := range parents[c.ID()] {
+			if visited[parent] {
+				continue
+			}
+			if dfs(components[parent]) {
+				return true
+			}
+		}
+		return false
+	}
+
+	return dfs(leaf)
 }

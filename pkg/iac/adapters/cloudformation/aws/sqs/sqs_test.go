@@ -3,11 +3,12 @@ package sqs
 import (
 	"testing"
 
+	"github.com/liamg/iamgo"
+
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/liamg/iamgo"
 )
 
 func TestAdapt(t *testing.T) {

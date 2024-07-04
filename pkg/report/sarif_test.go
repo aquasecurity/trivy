@@ -31,6 +31,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				ArtifactName: "debian:9",
 				ArtifactType: artifact.TypeContainerImage,
 				Metadata: types.Metadata{
+					ImageID: "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
 					RepoTags: []string{
 						"debian:9",
 					},
@@ -111,8 +112,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											Level: "error",
 										},
 										HelpURI: lo.ToPtr("https://avd.aquasec.com/nvd/cve-2020-0001"),
-										Properties: map[string]interface{}{
-											"tags": []interface{}{
+										Properties: map[string]any{
+											"tags": []any{
 												"vulnerability",
 												"security",
 												"HIGH",
@@ -175,10 +176,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						PropertyBag: sarif.PropertyBag{
-							Properties: map[string]interface{}{
+							Properties: map[string]any{
 								"imageName":   "debian:9",
-								"repoDigests": []interface{}{"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534"},
-								"repoTags":    []interface{}{"debian:9"},
+								"imageID":     "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
+								"repoDigests": []any{"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534"},
+								"repoTags":    []any{"debian:9"},
 							},
 						},
 					},
@@ -236,8 +238,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											Level: "error",
 										},
 										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/ksv001"),
-										Properties: map[string]interface{}{
-											"tags": []interface{}{
+										Properties: map[string]any{
+											"tags": []any{
 												"misconfiguration",
 												"security",
 												"HIGH",
@@ -259,8 +261,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											Level: "error",
 										},
 										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/ksv002"),
-										Properties: map[string]interface{}{
-											"tags": []interface{}{
+										Properties: map[string]any{
+											"tags": []any{
 												"misconfiguration",
 												"security",
 												"CRITICAL",
@@ -376,8 +378,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											Level: "error",
 										},
 										HelpURI: lo.ToPtr("https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go"),
-										Properties: map[string]interface{}{
-											"tags": []interface{}{
+										Properties: map[string]any{
+											"tags": []any{
 												"secret",
 												"security",
 												"CRITICAL",
@@ -469,8 +471,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error"),
 										Help: sarif.NewMultiformatMessageString("License GPL-3.0\nClassification: restricted\nPkgName: alpine-base\nPath: ").
 											WithMarkdown("**License GPL-3.0**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|alpine-base|restricted||"),
-										Properties: map[string]interface{}{
-											"tags": []interface{}{
+										Properties: map[string]any{
+											"tags": []any{
 												"license",
 												"security",
 												"HIGH",
@@ -614,7 +616,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											Markdown: lo.ToPtr("**Misconfiguration AVD-GCP-0007**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Terraform Security Check|HIGH|Service accounts should not have roles assigned with excessive privileges|Service account is granted a privileged role.|[AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)|\n\nService accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
 										},
 										Properties: sarif.Properties{
-											"tags": []interface{}{
+											"tags": []any{
 												"misconfiguration",
 												"security",
 												"HIGH",

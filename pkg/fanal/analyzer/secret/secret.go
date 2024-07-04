@@ -7,16 +7,17 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // To make sure SecretAnalyzer implements analyzer.Initializer
@@ -34,10 +35,26 @@ var (
 		"Pipfile.lock",
 		"Gemfile.lock",
 	}
-	skipDirs = []string{".git", "node_modules"}
+	skipDirs = []string{
+		".git",
+		"node_modules",
+	}
 	skipExts = []string{
-		".jpg", ".png", ".gif", ".doc", ".pdf", ".bin", ".svg", ".socket", ".deb", ".rpm",
-		".zip", ".gz", ".gzip", ".tar", ".pyc",
+		".jpg",
+		".png",
+		".gif",
+		".doc",
+		".pdf",
+		".bin",
+		".svg",
+		".socket",
+		".deb",
+		".rpm",
+		".zip",
+		".gz",
+		".gzip",
+		".tar",
+		".pyc",
 	}
 )
 
@@ -149,6 +166,9 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
+	if size := fi.Size(); size > 10485760 { // 10MB
+		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(filePath), log.Int64("size (MB)", size/1048576))
+	}
 	return true
 }
 

@@ -10,38 +10,38 @@ func Test_CreateObject(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name:     "CreateObject with no args",
-			args:     []interface{}{},
-			expected: map[string]interface{}{},
+			args:     []any{},
+			expected: make(map[string]any),
 		},
 		{
 			name:     "CreateObject with one arg",
-			args:     []interface{}{"foo", "bar"},
-			expected: map[string]interface{}{"foo": "bar"},
+			args:     []any{"foo", "bar"},
+			expected: map[string]any{"foo": "bar"},
 		},
 		{
 			name:     "CreateObject with two args",
-			args:     []interface{}{"foo", "bar", "baz", "qux"},
-			expected: map[string]interface{}{"foo": "bar", "baz": "qux"},
+			args:     []any{"foo", "bar", "baz", "qux"},
+			expected: map[string]any{"foo": "bar", "baz": "qux"},
 		},
 		{
 			name:     "CreateObject with three args",
-			args:     []interface{}{"foo", "bar", "baz", 1, "quux", true},
-			expected: map[string]interface{}{"foo": "bar", "baz": 1, "quux": true},
+			args:     []any{"foo", "bar", "baz", 1, "quux", true},
+			expected: map[string]any{"foo": "bar", "baz": 1, "quux": true},
 		},
 		{
 			name:     "CreateObject with odd number of args",
-			args:     []interface{}{"foo", "bar", "baz"},
-			expected: map[string]interface{}{},
+			args:     []any{"foo", "bar", "baz"},
+			expected: make(map[string]any),
 		},
 		{
 			name: "CreateObject with odd number of args",
-			args: []interface{}{"foo", "bar", "baz", []string{"Hello", "World"}},
-			expected: map[string]interface{}{
+			args: []any{"foo", "bar", "baz", []string{"Hello", "World"}},
+			expected: map[string]any{
 				"foo": "bar",
 				"baz": []string{
 					"Hello", "World",

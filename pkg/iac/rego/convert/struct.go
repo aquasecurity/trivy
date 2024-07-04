@@ -13,7 +13,7 @@ type metadataProvider interface {
 
 var metadataInterface = reflect.TypeOf((*metadataProvider)(nil)).Elem()
 
-func StructToRego(inputValue reflect.Value) map[string]interface{} {
+func StructToRego(inputValue reflect.Value) map[string]any {
 
 	// make sure we have a struct literal
 	for inputValue.Type().Kind() == reflect.Ptr || inputValue.Type().Kind() == reflect.Interface {
@@ -26,26 +26,27 @@ func StructToRego(inputValue reflect.Value) map[string]interface{} {
 		panic("not a struct")
 	}
 
-	output := make(map[string]interface{}, inputValue.NumField())
+	output := make(map[string]any, inputValue.NumField())
 
 	for i := 0; i < inputValue.NumField(); i++ {
 		field := inputValue.Field(i)
 		typ := inputValue.Type().Field(i)
 		name := typ.Name
-		if !typ.IsExported() {
+
+		if !typ.IsExported() || field.Interface() == nil {
 			continue
 		}
-		if field.Interface() == nil {
+
+		if _, ok := field.Interface().(types.Metadata); ok && name == "Metadata" {
 			continue
 		}
+
 		val := anonymousToRego(reflect.ValueOf(field.Interface()))
+
 		if val == nil {
 			continue
 		}
-		key := strings.ToLower(name)
-		if _, ok := field.Interface().(types.Metadata); key == "metadata" && ok {
-			continue
-		}
+
 		output[strings.ToLower(name)] = val
 	}
 

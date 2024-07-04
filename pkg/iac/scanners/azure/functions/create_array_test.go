@@ -10,48 +10,48 @@ func Test_CreateArray(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name: "create array with strings",
-			args: []interface{}{
+			args: []any{
 				"Hello",
 				"World",
 			},
-			expected: []interface{}{"Hello", "World"},
+			expected: []any{"Hello", "World"},
 		},
 		{
 			name: "create array with ints",
 
-			args: []interface{}{
+			args: []any{
 				1, 2, 3,
 			},
-			expected: []interface{}{1, 2, 3},
+			expected: []any{1, 2, 3},
 		},
 		{
 			name: "create array with arrays",
-			args: []interface{}{
-				[]interface{}{1, 2, 3},
-				[]interface{}{4, 5, 6},
+			args: []any{
+				[]any{1, 2, 3},
+				[]any{4, 5, 6},
 			},
-			expected: []interface{}{[]interface{}{1, 2, 3}, []interface{}{4, 5, 6}},
+			expected: []any{[]any{1, 2, 3}, []any{4, 5, 6}},
 		},
 		{
 			name: "create arrau with maps",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"one": "a",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"two": "b",
 				},
 			},
-			expected: []interface{}{
-				map[string]interface{}{
+			expected: []any{
+				map[string]any{
 					"one": "a",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"two": "b",
 				},
 			},

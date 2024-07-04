@@ -10,13 +10,13 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/severity"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func CreateFS(t *testing.T, files map[string]string) fs.FS {
@@ -51,7 +51,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 		FS: srcFS,
@@ -86,7 +86,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 		FS: srcFS,
@@ -121,7 +121,7 @@ warn {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -153,7 +153,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": false,
 		},
 	})
@@ -196,7 +196,7 @@ exception[ns] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -244,7 +244,7 @@ exception[ns] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -281,7 +281,7 @@ exception[rules] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -317,7 +317,7 @@ exception[rules] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -330,7 +330,7 @@ exception[rules] {
 
 func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
 
-	_ = os.Setenv("DEFSEC_RUNTIME_VAL", "AOK")
+	t.Setenv("DEFSEC_RUNTIME_VAL", "AOK")
 
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `
@@ -351,7 +351,7 @@ deny_evil {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -382,7 +382,7 @@ deny[msg] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -420,7 +420,7 @@ deny[res] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -462,7 +462,7 @@ deny[res] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -516,7 +516,7 @@ deny[res] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -565,7 +565,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -599,7 +599,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -630,7 +630,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -665,7 +665,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -699,7 +699,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -737,7 +737,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"text": "dynamic",
 		},
 	})
@@ -770,7 +770,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"text": "test",
 		},
 	})
@@ -817,7 +817,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"text": "test",
 		},
 	})
@@ -1077,7 +1077,7 @@ deny {
 
 			results, err := scanner.ScanInput(context.TODO(), Input{
 				Path: "/evil.lol",
-				Contents: map[string]interface{}{
+				Contents: map[string]any{
 					"text": "test",
 				},
 			})

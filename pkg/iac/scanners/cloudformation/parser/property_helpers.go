@@ -169,7 +169,7 @@ func (p *Property) Len() int {
 	return len(p.AsList())
 }
 
-func (p *Property) EqualTo(checkValue interface{}, equalityOptions ...EqualityOptions) bool {
+func (p *Property) EqualTo(checkValue any, equalityOptions ...EqualityOptions) bool {
 	var ignoreCase bool
 	for _, option := range equalityOptions {
 		if option == IgnoreCase {
@@ -235,7 +235,7 @@ func (p *Property) IsEmpty() bool {
 	}
 }
 
-func (p *Property) Contains(checkVal interface{}) bool {
+func (p *Property) Contains(checkVal any) bool {
 	if p == nil || p.IsNil() {
 		return false
 	}

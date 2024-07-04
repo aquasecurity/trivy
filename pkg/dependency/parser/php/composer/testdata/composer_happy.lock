@@ -541,9 +541,7 @@
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
+            "license": "MIT",
             "authors": [
                 {
                     "name": "Nicolas Grekas",
@@ -619,9 +617,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
+            "license": "MIT or BSD-2-Clause",
             "authors": [
                 {
                     "name": "Nicolas Grekas",

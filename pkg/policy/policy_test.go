@@ -70,15 +70,15 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			name:     "happy path",
 			cacheDir: "testdata/happy",
 			want: []string{
-				filepath.Join("testdata/happy/policy/content/kubernetes"),
-				filepath.Join("testdata/happy/policy/content/docker"),
+				filepath.Join("testdata", "happy", "policy", "content", "kubernetes"),
+				filepath.Join("testdata", "happy", "policy", "content", "docker"),
 			},
 		},
 		{
 			name:     "empty roots",
 			cacheDir: "testdata/empty",
 			want: []string{
-				filepath.Join("testdata/empty/policy/content"),
+				filepath.Join("testdata", "empty", "policy", "content"),
 			},
 		},
 		{
@@ -143,7 +143,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		name          string
 		clock         clock.Clock
 		digestReturns digestReturns
-		metadata      interface{}
+		metadata      any
 		want          bool
 		wantErr       bool
 	}{

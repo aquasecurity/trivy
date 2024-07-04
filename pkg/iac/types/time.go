@@ -11,14 +11,14 @@ type TimeValue struct {
 }
 
 func (b TimeValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"value":    b.value.Format(time.RFC3339),
 		"metadata": b.metadata,
 	})
 }
 
 func (b *TimeValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (t TimeValue) Value() time.Time {
 	return t.value
 }
 
-func (t TimeValue) GetRawValue() interface{} {
+func (t TimeValue) GetRawValue() any {
 	return t.value
 }
 
@@ -95,8 +95,8 @@ func (t TimeValue) After(i time.Time) bool {
 	return t.value.After(i)
 }
 
-func (t TimeValue) ToRego() interface{} {
-	m := t.metadata.ToRego().(map[string]interface{})
+func (t TimeValue) ToRego() any {
+	m := t.metadata.ToRego().(map[string]any)
 	m["value"] = t.Value().Format(time.RFC3339)
 	return m
 }

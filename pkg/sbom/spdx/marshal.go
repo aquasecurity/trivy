@@ -3,6 +3,7 @@ package spdx
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -13,7 +14,6 @@ import (
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	spdxutils "github.com/spdx/tools-golang/utils"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
@@ -81,7 +81,7 @@ type Marshaler struct {
 	appVersion string // Trivy version. It needed for `creator` field
 }
 
-type Hash func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
+type Hash func(v any, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
 
 type marshalOption func(*Marshaler)
 
@@ -487,7 +487,7 @@ func getDocumentNamespace(root *core.Component) string {
 	)
 }
 
-func calcPkgID(h Hash, v interface{}) (string, error) {
+func calcPkgID(h Hash, v any) (string, error) {
 	f, err := h(v, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:      true,
 		SlicesAsSets: true,

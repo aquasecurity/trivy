@@ -7,12 +7,13 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Test_BasicParsing(t *testing.T) {
@@ -1509,7 +1510,7 @@ func parse(t *testing.T, files map[string]string) terraform.Modules {
 	return modules
 }
 
-func compareSets(a []int, b []int) bool {
+func compareSets(a, b []int) bool {
 	m := make(map[int]bool)
 	for _, el := range a {
 		m[el] = true

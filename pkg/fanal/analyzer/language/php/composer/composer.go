@@ -8,10 +8,10 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/php/composer"
@@ -26,7 +26,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeComposer, newComposerAnalyzer)
 }
 
-const version = 1
+const composerAnalyzerVersion = 1
 
 var requiredFiles = []string{
 	types.ComposerLock,
@@ -62,7 +62,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 		// Parse composer.json alongside composer.lock to identify the direct dependencies
 		if err = a.mergeComposerJson(input.FS, filepath.Dir(path), app); err != nil {
 			log.Warn("Unable to parse composer.json to identify direct dependencies",
-				log.String("path", filepath.Join(filepath.Dir(path), types.ComposerJson)), log.Err(err))
+				log.FilePath(filepath.Join(filepath.Dir(path), types.ComposerJson)), log.Err(err))
 		}
 		sort.Sort(app.Packages)
 		apps = append(apps, *app)
@@ -96,7 +96,7 @@ func (a composerAnalyzer) Type() analyzer.Type {
 }
 
 func (a composerAnalyzer) Version() int {
-	return version
+	return composerAnalyzerVersion
 }
 
 func (a composerAnalyzer) parseComposerLock(path string, r io.Reader) (*types.Application, error) {
@@ -109,7 +109,7 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 	p, err := a.parseComposerJson(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from composer.lock
-		log.Debug("Unable to determine the direct dependencies, composer.json not found", log.String("path", path))
+		log.Debug("Unable to determine the direct dependencies, composer.json not found", log.FilePath(path))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", path, err)

@@ -1,6 +1,7 @@
 package io
 
 import (
+	"context"
 	"errors"
 	"slices"
 	"sort"
@@ -10,7 +11,7 @@ import (
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -46,14 +47,14 @@ func NewDecoder(bom *core.BOM) *Decoder {
 	}
 }
 
-func (m *Decoder) Decode(sbom *types.SBOM) error {
+func (m *Decoder) Decode(ctx context.Context, sbom *types.SBOM) error {
 	// Parse the root component
 	if err := m.decodeRoot(sbom); err != nil {
 		return xerrors.Errorf("failed to decode root component: %w", err)
 	}
 
 	// Parse all components
-	if err := m.decodeComponents(sbom); err != nil {
+	if err := m.decodeComponents(ctx, sbom); err != nil {
 		return xerrors.Errorf("failed to decode components: %w", err)
 	}
 
@@ -67,7 +68,7 @@ func (m *Decoder) Decode(sbom *types.SBOM) error {
 	m.addLangPkgs(sbom)
 
 	// Add remaining packages
-	if err := m.addOrphanPkgs(sbom); err != nil {
+	if err := m.addOrphanPkgs(ctx, sbom); err != nil {
 		return xerrors.Errorf("failed to aggregate packages: %w", err)
 	}
 
@@ -109,9 +110,9 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 	return nil
 }
 
-func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
+func (m *Decoder) decodeComponents(ctx context.Context, sbom *types.SBOM) error {
 	onceMultiOSWarn := sync.OnceFunc(func() {
-		m.logger.Warn("Multiple OS components are not supported, taking the first one and ignoring the rest")
+		m.logger.WarnContext(ctx, "Multiple OS components are not supported, taking the first one and ignoring the rest")
 	})
 
 	for id, c := range m.bom.Components() {
@@ -136,7 +137,7 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 
 		// Third-party SBOMs may contain packages in types other than "Library"
 		if c.Type == core.TypeLibrary || c.PkgIdentifier.PURL != nil {
-			pkg, err := m.decodeLibrary(c)
+			pkg, err := m.decodeLibrary(ctx, c)
 			if errors.Is(err, ErrUnsupportedType) || errors.Is(err, ErrPURLEmpty) {
 				continue
 			} else if err != nil {
@@ -183,17 +184,17 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 	return &app
 }
 
-func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
+func (m *Decoder) decodeLibrary(ctx context.Context, c *core.Component) (*ftypes.Package, error) {
 	p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
 	if p == nil {
-		log.Debug("Skipping a component without PURL",
+		m.logger.DebugContext(ctx, "Skipping a component without PURL",
 			log.String("name", c.Name), log.String("version", c.Version))
 		return nil, ErrPURLEmpty
 	}
 
 	pkg := p.Package()
 	if p.Class() == types.ClassUnknown {
-		log.Debug("Skipping a component with an unsupported type",
+		m.logger.DebugContext(ctx, "Skipping a component with an unsupported type",
 			log.String("name", c.Name), log.String("version", c.Version), log.String("type", p.Type))
 		return nil, ErrUnsupportedType
 	}
@@ -240,7 +241,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	}
 
 	if p.Class() == types.ClassOSPkg {
-		m.fillSrcPkg(c, pkg)
+		m.fillSrcPkg(ctx, c, pkg)
 	}
 
 	return pkg, nil
@@ -256,20 +257,38 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 		return pkg.Name
 	}
 
+	// `maven purl type` has no restrictions on using lowercase letters.
+	// Also, `spdx-maven-plugin` uses `name` instead of `artifactId` for the `package name` field.
+	// So we need to use `purl` for maven/gradle packages
+	// See https://github.com/aquasecurity/trivy/issues/7007 for more information.
+	if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+		return pkg.Name
+	}
+
+	// TODO(backward compatibility): Remove after 03/2025
+	// Bitnami used different pkg.Name and the name from PURL.
+	// For backwards compatibility - we need to use PURL.
+	// cf. https://github.com/aquasecurity/trivy/issues/6981
+	if c.PkgIdentifier.PURL.Type == packageurl.TypeBitnami {
+		return pkg.Name
+	}
+
 	if c.Group != "" {
-		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
-			return c.Group + ":" + c.Name
-		}
 		return c.Group + "/" + c.Name
 	}
 	return c.Name
 }
 
-func (m *Decoder) fillSrcPkg(c *core.Component, pkg *ftypes.Package) {
+func (m *Decoder) fillSrcPkg(ctx context.Context, c *core.Component, pkg *ftypes.Package) {
 	if c.SrcName != "" && pkg.SrcName == "" {
 		pkg.SrcName = c.SrcName
 	}
-	m.parseSrcVersion(pkg, c.SrcVersion)
+	m.parseSrcVersion(ctx, pkg, c.SrcVersion)
+
+	// Source info was added from component or properties
+	if pkg.SrcName != "" && pkg.SrcVersion != "" {
+		return
+	}
 
 	// Fill source package information for components in third-party SBOMs .
 	if pkg.SrcName == "" {
@@ -287,7 +306,7 @@ func (m *Decoder) fillSrcPkg(c *core.Component, pkg *ftypes.Package) {
 }
 
 // parseSrcVersion parses the version of the source package.
-func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
+func (m *Decoder) parseSrcVersion(ctx context.Context, pkg *ftypes.Package, ver string) {
 	if ver == "" {
 		return
 	}
@@ -300,7 +319,7 @@ func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
 	case packageurl.TypeDebian:
 		v, err := debver.NewVersion(ver)
 		if err != nil {
-			log.Debug("Failed to parse Debian version", log.Err(err))
+			m.logger.DebugContext(ctx, "Failed to parse Debian version", log.Err(err))
 			return
 		}
 		pkg.SrcEpoch = v.Epoch()
@@ -343,7 +362,7 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 
 // addOrphanPkgs adds orphan packages.
 // Orphan packages are packages that are not related to any components.
-func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
+func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 	osPkgMap := make(map[string]ftypes.Packages)
 	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, pkg := range m.pkgs {
@@ -358,13 +377,13 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	}
 
 	if len(osPkgMap) > 1 {
-		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", maps.Keys(osPkgMap))
+		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", lo.Keys(osPkgMap))
 	}
 
 	// Add OS packages only when OS is detected.
 	for _, pkgs := range osPkgMap {
 		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			log.Warn("Ignore the OS package as no OS is detected.")
+			m.logger.WarnContext(ctx, "Ignore the OS package as no OS is detected.")
 			break
 		}
 

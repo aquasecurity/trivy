@@ -2,9 +2,8 @@ package nodejs
 
 import (
 	"context"
+	"slices"
 	"strings"
-
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"

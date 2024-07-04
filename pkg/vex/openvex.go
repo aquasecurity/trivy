@@ -2,7 +2,6 @@ package vex
 
 import (
 	openvex "github.com/openvex/go-vex/pkg/vex"
-	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -19,38 +18,36 @@ func newOpenVEX(vex openvex.VEX) VEX {
 }
 
 func (v *OpenVEX) Filter(result *types.Result, bom *core.BOM) {
-	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
-		if vuln.PkgIdentifier.PURL == nil {
-			return true
-		}
-
-		stmts := v.Matches(vuln, bom)
-		if len(stmts) == 0 {
-			return true
-		}
-
-		// Take the latest statement for a given vulnerability and product
-		// as a sequence of statements can be overridden by the newer one.
-		// cf. https://github.com/openvex/spec/blob/fa5ba0c0afedb008dc5ebad418548cacf16a3ca7/OPENVEX-SPEC.md#the-vex-statement
-		stmt := stmts[len(stmts)-1]
-		if stmt.Status == openvex.StatusNotAffected || stmt.Status == openvex.StatusFixed {
-			result.ModifiedFindings = append(result.ModifiedFindings,
-				types.NewModifiedFinding(vuln, findingStatus(stmt.Status), string(stmt.Justification), "OpenVEX"))
-			return false
-		}
-		return true
-	})
+	filterVulnerabilities(result, bom, v.NotAffected)
 }
 
-func (v *OpenVEX) Matches(vuln types.DetectedVulnerability, bom *core.BOM) []openvex.Statement {
-	root := bom.Root()
-	if root != nil && root.PkgIdentifier.PURL != nil {
-		stmts := v.vex.Matches(vuln.VulnerabilityID, root.PkgIdentifier.PURL.String(), []string{vuln.PkgIdentifier.PURL.String()})
-		if len(stmts) != 0 {
-			return stmts
-		}
+func (v *OpenVEX) NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool) {
+	stmts := v.Matches(vuln, product, subComponent)
+	if len(stmts) == 0 {
+		return types.ModifiedFinding{}, false
 	}
-	return v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.PURL.String(), nil)
+
+	// Take the latest statement for a given vulnerability and product
+	// as a sequence of statements can be overridden by the newer one.
+	// cf. https://github.com/openvex/spec/blob/fa5ba0c0afedb008dc5ebad418548cacf16a3ca7/OPENVEX-SPEC.md#the-vex-statement
+	stmt := stmts[len(stmts)-1]
+	if stmt.Status == openvex.StatusNotAffected || stmt.Status == openvex.StatusFixed {
+		modifiedFindings := types.NewModifiedFinding(vuln, findingStatus(stmt.Status), string(stmt.Justification), "OpenVEX")
+		return modifiedFindings, true
+	}
+	return types.ModifiedFinding{}, false
+}
+
+func (v *OpenVEX) Matches(vuln types.DetectedVulnerability, product, subComponent *core.Component) []openvex.Statement {
+	if product == nil || product.PkgIdentifier.PURL == nil {
+		return nil
+	}
+
+	var subComponentPURL string
+	if subComponent != nil && subComponent.PkgIdentifier.PURL != nil {
+		subComponentPURL = subComponent.PkgIdentifier.PURL.String()
+	}
+	return v.vex.Matches(vuln.VulnerabilityID, product.PkgIdentifier.PURL.String(), []string{subComponentPURL})
 }
 
 func findingStatus(status openvex.Status) types.FindingStatus {

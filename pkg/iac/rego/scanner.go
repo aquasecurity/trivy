@@ -17,11 +17,29 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
+
+var checkTypesWithSubtype = map[types.Source]struct{}{
+	types.SourceCloud:      {},
+	types.SourceDefsec:     {},
+	types.SourceKubernetes: {},
+}
+
+var supportedProviders = makeSupportedProviders()
+
+func makeSupportedProviders() map[string]struct{} {
+	m := make(map[string]struct{})
+	for _, p := range providers.AllProviders() {
+		m[string(p)] = struct{}{}
+	}
+	m["kind"] = struct{}{} // kubernetes
+	return m
+}
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
@@ -41,7 +59,7 @@ type Scanner struct {
 	dataFS                  fs.FS
 	frameworks              []framework.Framework
 	spec                    string
-	inputSchema             interface{} // unmarshalled into this from a json schema document
+	inputSchema             any // unmarshalled into this from a json schema document
 	sourceType              types.Source
 	includeDeprecatedChecks bool
 
@@ -71,7 +89,7 @@ func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
 	// handled externally
 }
 
-func (s *Scanner) trace(heading string, input interface{}) {
+func (s *Scanner) trace(heading string, input any) {
 	if s.traceWriter == nil {
 		return
 	}
@@ -212,9 +230,9 @@ func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, d
 }
 
 type Input struct {
-	Path     string      `json:"path"`
-	FS       fs.FS       `json:"-"`
-	Contents interface{} `json:"contents"`
+	Path     string `json:"path"`
+	FS       fs.FS  `json:"-"`
+	Contents any    `json:"contents"`
 }
 
 func GetInputsContents(inputs []Input) []any {
@@ -295,26 +313,23 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 }
 
 func isPolicyWithSubtype(sourceType types.Source) bool {
-	for _, s := range []types.Source{types.SourceCloud, types.SourceDefsec, types.SourceKubernetes} {
-		if sourceType == s {
-			return true
-		}
-	}
-	return false
+	_, exists := checkTypesWithSubtype[sourceType]
+	return exists
 }
 
-func checkSubtype(ii map[string]interface{}, provider string, subTypes []SubType) bool {
+func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 	if len(subTypes) == 0 {
 		return true
 	}
 
 	for _, st := range subTypes {
 		switch services := ii[provider].(type) {
-		case map[string]interface{}: // cloud
-			for service := range services {
-				if (service == st.Service) && (st.Provider == provider) {
-					return true
-				}
+		case map[string]any:
+			if st.Provider != provider {
+				continue
+			}
+			if _, exists := services[st.Service]; exists {
+				return true
 			}
 		case string: // k8s - logic can be improved
 			if strings.EqualFold(services, st.Group) ||
@@ -329,10 +344,9 @@ func checkSubtype(ii map[string]interface{}, provider string, subTypes []SubType
 
 func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	for _, input := range inputs {
-		if ii, ok := input.Contents.(map[string]interface{}); ok {
+		if ii, ok := input.Contents.(map[string]any); ok {
 			for provider := range ii {
-				// TODO(simar): Add other providers
-				if !strings.Contains(strings.Join([]string{"kind", "aws", "azure"}, ","), provider) {
+				if _, exists := supportedProviders[provider]; !exists {
 					continue
 				}
 

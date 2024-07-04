@@ -4,18 +4,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 const (
@@ -26,17 +29,14 @@ const (
 var (
 	DefaultRepository    = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
 	defaultRepository, _ = name.NewTag(DefaultRepository)
-)
 
-// Operation defines the DB operations
-type Operation interface {
-	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
-	Download(ctx context.Context, dst string, opt types.RegistryOptions) (err error)
-}
+	Init  = db.Init
+	Close = db.Close
+	Path  = db.Path
+)
 
 type options struct {
 	artifact     *oci.Artifact
-	clock        clock.Clock
 	dbRepository name.Reference
 }
 
@@ -57,26 +57,22 @@ func WithDBRepository(dbRepository name.Reference) Option {
 	}
 }
 
-// WithClock takes a clock
-func WithClock(c clock.Clock) Option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Client implements DB operations
 type Client struct {
 	*options
 
-	cacheDir string
+	dbDir    string
 	metadata metadata.Client
 	quiet    bool
 }
 
+func Dir(cacheDir string) string {
+	return filepath.Join(cacheDir, "db")
+}
+
 // NewClient is the factory method for DB client
-func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
+func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
-		clock:        clock.RealClock{},
 		dbRepository: defaultRepository,
 	}
 
@@ -86,14 +82,14 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 
 	return &Client{
 		options:  o,
-		cacheDir: cacheDir,
-		metadata: metadata.NewClient(cacheDir),
+		dbDir:    dbDir,
+		metadata: metadata.NewClient(dbDir),
 		quiet:    quiet,
 	}
 }
 
 // NeedsUpdate check is DB needs update
-func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
+func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) (bool, error) {
 	meta, err := c.metadata.Get()
 	if err != nil {
 		log.Debug("There is no valid metadata file", log.Err(err))
@@ -124,7 +120,7 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 		return true, nil
 	}
 
-	return !c.isNewDB(meta), nil
+	return !c.isNewDB(ctx, meta), nil
 }
 
 func (c *Client) validate(meta metadata.Metadata) error {
@@ -136,13 +132,14 @@ func (c *Client) validate(meta metadata.Metadata) error {
 	return nil
 }
 
-func (c *Client) isNewDB(meta metadata.Metadata) bool {
-	if c.clock.Now().Before(meta.NextUpdate) {
+func (c *Client) isNewDB(ctx context.Context, meta metadata.Metadata) bool {
+	now := clock.Now(ctx)
+	if now.Before(meta.NextUpdate) {
 		log.Debug("DB update was skipped because the local DB is the latest")
 		return true
 	}
 
-	if c.clock.Now().Before(meta.DownloadedAt.Add(time.Hour)) {
+	if now.Before(meta.DownloadedAt.Add(time.Hour)) {
 		log.Debug("DB update was skipped because the local DB was downloaded during the last hour")
 		return true
 	}
@@ -161,28 +158,35 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
-	if err = art.Download(ctx, db.Dir(dst), oci.DownloadOption{MediaType: dbMediaType}); err != nil {
+	if err = art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
 		return xerrors.Errorf("database download error: %w", err)
 	}
 
-	if err = c.updateDownloadedAt(dst); err != nil {
+	if err = c.updateDownloadedAt(ctx, dst); err != nil {
 		return xerrors.Errorf("failed to update downloaded_at: %w", err)
 	}
 	return nil
 }
 
-func (c *Client) updateDownloadedAt(dst string) error {
+func (c *Client) Clear(_ context.Context) error {
+	if err := os.RemoveAll(c.dbDir); err != nil {
+		return xerrors.Errorf("failed to remove vulnerability database: %w", err)
+	}
+	return nil
+}
+
+func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	log.Debug("Updating database metadata...")
 
 	// We have to initialize a metadata client here
 	// since the destination may be different from the cache directory.
-	client := metadata.NewClient(dst)
+	client := metadata.NewClient(dbDir)
 	meta, err := client.Get()
 	if err != nil {
 		return xerrors.Errorf("unable to get metadata: %w", err)
 	}
 
-	meta.DownloadedAt = c.clock.Now().UTC()
+	meta.DownloadedAt = clock.Now(ctx).UTC()
 	if err = client.Update(meta); err != nil {
 		return xerrors.Errorf("failed to update metadata: %w", err)
 	}
@@ -202,7 +206,8 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 			for _, diagnostic := range terr.Errors {
 				// For better user experience
 				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-					log.Warn("See https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db")
+					// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
+					log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
 					break
 				}
 			}
@@ -210,4 +215,14 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 		return nil, xerrors.Errorf("OCI artifact error: %w", err)
 	}
 	return art, nil
+}
+
+func (c *Client) ShowInfo() error {
+	meta, err := c.metadata.Get()
+	if err != nil {
+		return xerrors.Errorf("something wrong with DB: %w", err)
+	}
+	log.Debug("DB info", log.Int("schema", meta.Version), log.Time("updated_at", meta.UpdatedAt),
+		log.Time("next_update", meta.NextUpdate), log.Time("downloaded_at", meta.DownloadedAt))
+	return nil
 }
