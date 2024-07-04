@@ -168,8 +168,8 @@ var (
 		},
 	}
 
-	// manually created
-	// io.quarkus.gizmo.gizmo-1.1.jar (gizmo:1.1.0 (from sha1))
+	// Manually created.
+	// Files of `io.quarkus.gizmo.gizmo-1.1.jar` (gizmo:1.1.0 (from sha1)):
 	//├── bar
 	//│   ├── bar
 	//│   │   └── pom.properties (jackson-databind:2.13.4)
