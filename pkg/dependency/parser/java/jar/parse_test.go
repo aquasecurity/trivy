@@ -169,6 +169,28 @@ var (
 	}
 
 	// manually created
+	// .
+	//├── bar
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.13.4)
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.12.3)
+	//├── foo
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.12.3
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.13.4)
+	//├── jars
+	//│   ├── log4j-1.2.16.jar (log4j:1.2.16)
+	//│   └── log4j-1.2.17.jar (log4j:1.2.17)
+	//└── META-INF
+	//    ├── INDEX.LIST
+	//    ├── MANIFEST.MF
+	//    └── maven
+	//        └── io.quarkus.gizmo
+	//            └── gizmo
+	//                ├── pom.properties (gizmo:1.1)
+	//                └── pom.xml
 	wantDuplicatesJar = []ftypes.Package{
 		{
 			Name:     "io.quarkus.gizmo:gizmo",
@@ -184,6 +206,16 @@ var (
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.17.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.12.3",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.13.4",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 	}
 )
