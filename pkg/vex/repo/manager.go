@@ -137,10 +137,14 @@ func (m *Manager) UpdateManifest(ctx context.Context, names []string, opts Optio
 		if len(names) > 0 && !slices.Contains(names, repo.Name) {
 			continue
 		}
-		log.InfoContext(ctx, "Updating the repository...", log.String("name", repo.Name), log.String("url", repo.URL))
+		log.InfoContext(ctx, "Updating the repository manifest...", log.String("name", repo.Name), log.String("url", repo.URL))
 		if err = repo.downloadManifest(ctx, opts); err != nil {
 			return xerrors.Errorf("failed to update the repository: %w", err)
 		}
 	}
 	return nil
+}
+
+func (m *Manager) Clear() error {
+	return os.RemoveAll(m.cacheDir)
 }
