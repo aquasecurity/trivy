@@ -30,8 +30,8 @@
           "Name": "libmd0",
           "Identifier": {
             "PURL": "pkg:deb/debian/libmd0@1.0.4-2?arch=arm64\u0026distro=debian-12.5",
-            "UID": "1a40caf90922a802",
-            "SPDXID": "Package-gnrtd175"
+            "UID": "bd94e402741d3988",
+            "BOMRef": "Package-gnrtd175"
           },
           "Version": "1.0.4-2",
           "Arch": "arm64",
@@ -48,8 +48,8 @@
           "Name": "libmount1",
           "Identifier": {
             "PURL": "pkg:deb/debian/libmount1@2.38.1-5%2Bdeb12u1?arch=arm64\u0026distro=debian-12.5",
-            "UID": "f5f492c064df8ae2",
-            "SPDXID": "Package-gnrtd259"
+            "UID": "ae2f6c69df04ce11",
+            "BOMRef": "Package-gnrtd259"
           },
           "Version": "2.38.1-5+deb12u1",
           "Arch": "arm64",
