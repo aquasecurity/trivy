@@ -454,7 +454,7 @@ func removePackageDuplicates(pkgs []ftypes.Package) []ftypes.Package {
 			// for example `2.17.0` and `2.17` must be equal
 			return v.Equal(pkgVer)
 		}) {
-			uniq[uniqID] = []mavenversion.Version{pkgVer}
+			uniq[uniqID] = append(uniq[uniqID], pkgVer)
 			uniqPkgs = append(uniqPkgs, pkg)
 		}
 	}
