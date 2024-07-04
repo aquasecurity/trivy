@@ -169,7 +169,7 @@ var (
 	}
 
 	// manually created
-	// .
+	// io.quarkus.gizmo.gizmo-1.1.jar (gizmo:1.1.0 (from sha1))
 	//├── bar
 	//│   ├── bar
 	//│   │   └── pom.properties (jackson-databind:2.13.4)
@@ -177,7 +177,7 @@ var (
 	//│       └── pom.properties (jackson-databind:2.12.3)
 	//├── foo
 	//│   ├── bar
-	//│   │   └── pom.properties (jackson-databind:2.12.3
+	//│   │   └── pom.properties (jackson-databind:2.12.3)
 	//│   └── foo
 	//│       └── pom.properties (jackson-databind:2.13.4)
 	//├── jars
