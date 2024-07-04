@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -15,9 +16,12 @@ import (
 )
 
 const (
-	// const defaultVEXHubURL = "git@github.com:aquasecurity/vexhub.git"
-	defaultVEXHubURL = "https://github.com/aquasecurity/vuln-list-update.git"
+	defaultVEXHubURL = "https://github.com/aquasecurity/vexhub"
+	vexDir           = "vex"
+	repoDir          = "repositories"
 )
+
+var ErrNoConfig = errors.New("no config found")
 
 type ManagerOption func(indexer *Manager)
 
@@ -40,15 +44,14 @@ type Manager struct {
 	w          io.Writer
 	indexURL   string
 	configFile string
-	repoDir    string
+	cacheDir   string
 }
 
-func NewManager(opts ...ManagerOption) *Manager {
-	root := filepath.Join(fsutils.TrivyHomeDir(), "vex")
+func NewManager(cacheRoot string, opts ...ManagerOption) *Manager {
 	m := &Manager{
 		w:          os.Stdout,
-		configFile: filepath.Join(root, "config.yaml"),
-		repoDir:    filepath.Join(root, "repositories"),
+		configFile: filepath.Join(fsutils.TrivyHomeDir(), vexDir, "repository.yaml"),
+		cacheDir:   filepath.Join(cacheRoot, vexDir),
 	}
 	for _, opt := range opts {
 		opt(m)
@@ -76,9 +79,10 @@ func (m *Manager) writeConfig(conf Config) error {
 	return nil
 }
 
-func (m *Manager) Config() (Config, error) {
+func (m *Manager) Config(ctx context.Context) (Config, error) {
 	if !fsutils.FileExists(m.configFile) {
-		return Config{}, xerrors.Errorf("config file not found, run 'trivy vex repo init' first")
+		log.DebugContext(ctx, "No config found", log.String("path", m.configFile))
+		return Config{}, ErrNoConfig
 	}
 
 	f, err := os.Open(m.configFile)
@@ -92,8 +96,8 @@ func (m *Manager) Config() (Config, error) {
 		return conf, xerrors.Errorf("unable to decode metadata: %w", err)
 	}
 
-	for i := range conf.Repositories {
-		conf.Repositories[i].dir = m.repoDir
+	for i, r := range conf.Repositories {
+		conf.Repositories[i].dir = filepath.Join(m.cacheDir, repoDir, r.Name)
 	}
 	return conf, nil
 }
@@ -120,8 +124,10 @@ func (m *Manager) Init(ctx context.Context) error {
 }
 
 func (m *Manager) UpdateManifest(ctx context.Context, names []string, opts Options) error {
-	conf, err := m.Config()
-	if err != nil {
+	conf, err := m.Config(ctx)
+	if errors.Is(err, ErrNoConfig) {
+		return errors.New("no config found, run 'trivy vex repo init' first")
+	} else if err != nil {
 		return xerrors.Errorf("unable to read config: %w", err)
 	} else if len(conf.Repositories) == 0 {
 		return xerrors.Errorf("no repositories found in config: %s", m.configFile)

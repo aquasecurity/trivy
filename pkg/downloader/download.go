@@ -61,7 +61,7 @@ func Download(ctx context.Context, src, dst, pwd string, insecure bool) error {
 	if u, err := url.Parse(src); err == nil && u.Host == "github.com" {
 		client := github.NewClient(nil)
 		if t := os.Getenv("GITHUB_TOKEN"); t != "" {
-			client.WithAuthToken(t)
+			client = client.WithAuthToken(t)
 		}
 		httpGetter.Client = client.Client()
 	}

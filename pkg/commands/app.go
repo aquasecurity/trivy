@@ -1267,7 +1267,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(0),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err := vexrepo.NewManager().Init(cmd.Context()); err != nil {
+				if err := vexrepo.NewManager(vexOptions.CacheDir).Init(cmd.Context()); err != nil {
 					return xerrors.Errorf("config init error: %w", err)
 				}
 				return nil
@@ -1280,7 +1280,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			SilenceErrors:         true,
 			SilenceUsage:          true,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err := vexrepo.NewManager().UpdateManifest(cmd.Context(), args, vexrepo.Options{Insecure: vexOptions.Insecure}); err != nil {
+				if err := vexrepo.NewManager(vexOptions.CacheDir).UpdateManifest(cmd.Context(), args, vexrepo.Options{Insecure: vexOptions.Insecure}); err != nil {
 					return xerrors.Errorf("repository manifest update error: %w", err)
 				}
 				return nil

@@ -2,6 +2,7 @@ package operation
 
 import (
 	"context"
+	"errors"
 	"sync"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -13,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
 var mu sync.Mutex
@@ -23,6 +25,7 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 	mu.Lock()
 	defer mu.Unlock()
 
+	ctx = log.WithContextPrefix(ctx, "db")
 	dbDir := db.Dir(cacheDir)
 	client := db.NewClient(dbDir, quiet, db.WithDBRepository(dbRepository))
 	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, skipUpdate)
@@ -31,8 +34,8 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 	}
 
 	if needsUpdate {
-		log.Info("Need to update DB")
-		log.Info("Downloading DB...", log.String("repository", dbRepository.String()))
+		log.InfoContext(ctx, "Need to update DB")
+		log.InfoContext(ctx, "Downloading DB...", log.String("repository", dbRepository.String()))
 		if err = client.Download(ctx, dbDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
@@ -43,6 +46,29 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil
+}
+
+func DownloadVEXRepositories(ctx context.Context, cacheDir string, skipUpdate, insecure bool) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	ctx = log.WithContextPrefix(ctx, "vex")
+	config, err := repo.NewManager(cacheDir).Config(ctx)
+	if errors.Is(err, repo.ErrNoConfig) {
+		return nil
+	} else if err != nil {
+		return xerrors.Errorf("failed to get vex repository config: %w", err)
+	}
+
+	for _, r := range config.Repositories {
+		// TODO: support skip update
+		if err = r.Update(ctx, repo.Options{Insecure: insecure}); err != nil {
+			return xerrors.Errorf("failed to update vex repository: %w", err)
+		}
+	}
+
+	return nil
+
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
