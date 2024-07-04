@@ -45,7 +45,7 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 		}
 
 		l.logger.Debug("License names are missing, an attempt to find them in the license file",
-			log.String("file", pkgJSONPath), log.String("license_file", licenseFileName))
+			log.FilePath(pkgJSONPath), log.String("license_file", licenseFileName))
 		licenseFilePath := path.Join(path.Dir(pkgJSONPath), licenseFileName)
 
 		if findings, err := classifyLicense(licenseFilePath, l.classifierConfidenceLevel, fsys); err != nil {

@@ -70,11 +70,11 @@ func TestManager_Install(t *testing.T) {
 		zr := zip.NewWriter(w)
 		switch r.URL.Path {
 		case "/test_plugin.zip":
-			require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin/test_plugin")))
+			assert.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin/test_plugin")))
 		case "/test_nested.zip":
-			require.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin")))
+			assert.NoError(t, zr.AddFS(os.DirFS("testdata/test_plugin")))
 		}
-		require.NoError(t, zr.Close())
+		assert.NoError(t, zr.Close())
 	}))
 	t.Cleanup(ts.Close)
 
@@ -200,7 +200,11 @@ func TestManager_Install(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", dst)
 
 			// For plugin index
-			fsutils.SetCacheDir("testdata")
+			pluginDir := filepath.Join(dst, ".trivy", "plugins")
+			err := os.MkdirAll(pluginDir, 0755)
+			require.NoError(t, err)
+			_, err = fsutils.CopyFile("testdata/.trivy/plugins/index.yaml", filepath.Join(pluginDir, "index.yaml"))
+			require.NoError(t, err)
 
 			if tt.installed != nil {
 				setupInstalledPlugin(t, dst, *tt.installed)

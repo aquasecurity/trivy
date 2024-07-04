@@ -7,11 +7,10 @@ import (
 	"time"
 
 	"github.com/alicebob/miniredis/v2"
-	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -67,18 +66,15 @@ func TestRedisCache_PutArtifact(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
-			}, 0)
+			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			require.NoError(t, err)
 
 			err = c.PutArtifact(tt.args.artifactID, tt.args.artifactConfig)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			require.NoError(t, err)
 
 			got, err := s.Get(tt.wantKey)
 			require.NoError(t, err)
@@ -156,18 +152,15 @@ func TestRedisCache_PutBlob(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
-			}, 0)
+			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			require.NoError(t, err)
 
 			err = c.PutBlob(tt.args.blobID, tt.args.blobConfig)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			require.NoError(t, err)
 
 			got, err := s.Get(tt.wantKey)
 			require.NoError(t, err)
@@ -241,18 +234,15 @@ func TestRedisCache_GetArtifact(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
-			}, 0)
+			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			require.NoError(t, err)
 
 			got, err := c.GetArtifact(tt.artifactID)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)
 		})
@@ -334,14 +324,12 @@ func TestRedisCache_GetBlob(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
-			}, 0)
+			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			require.NoError(t, err)
 
 			got, err := c.GetBlob(tt.blobID)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
@@ -445,14 +433,12 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 				addr = "dummy:6379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
-			}, 0)
+			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			require.NoError(t, err)
 
 			missingArtifact, missingBlobIDs, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
@@ -470,9 +456,9 @@ func TestRedisCache_Close(t *testing.T) {
 	defer s.Close()
 
 	t.Run("close", func(t *testing.T) {
-		c := cache.NewRedisCache(&redis.Options{
-			Addr: s.Addr(),
-		}, 0)
+		c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", s.Addr()), "", "", "", false, 0)
+		require.NoError(t, err)
+
 		closeErr := c.Close()
 		require.NoError(t, closeErr)
 		time.Sleep(3 * time.Second) // give it some time
@@ -492,9 +478,9 @@ func TestRedisCache_Clear(t *testing.T) {
 	s.Set("foo", "bar")
 
 	t.Run("clear", func(t *testing.T) {
-		c := cache.NewRedisCache(&redis.Options{
-			Addr: s.Addr(),
-		}, 0)
+		c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", s.Addr()), "", "", "", false, 0)
+		require.NoError(t, err)
+
 		require.NoError(t, c.Clear())
 		for i := 0; i < 200; i++ {
 			assert.False(t, s.Exists(fmt.Sprintf("fanal::key%d", i)))
@@ -546,9 +532,8 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
-			}, 0)
+			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			require.NoError(t, err)
 
 			err = c.DeleteBlobs(tt.args.blobIDs)
 			if tt.wantErr != "" {
@@ -557,6 +542,30 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
+		})
+	}
+}
+
+func TestRedisOptions_BackendMasked(t *testing.T) {
+	tests := []struct {
+		name   string
+		fields cache.RedisOptions
+		want   string
+	}{
+		{
+			name:   "redis cache backend masked",
+			fields: cache.RedisOptions{Backend: "redis://root:password@localhost:6379"},
+			want:   "redis://****@localhost:6379",
+		},
+		{
+			name:   "redis cache backend masked does nothing",
+			fields: cache.RedisOptions{Backend: "redis://localhost:6379"},
+			want:   "redis://localhost:6379",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.fields.BackendMasked())
 		})
 	}
 }

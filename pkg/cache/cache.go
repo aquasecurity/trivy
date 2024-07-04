@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	cacheDirName = "fanal"
+	scanCacheDirName = "fanal"
 
 	// artifactBucket stores artifact information with artifact ID such as image ID
 	artifactBucket = "artifact"

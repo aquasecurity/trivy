@@ -373,7 +373,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 				require.NoError(t, err, tt.name)
 			}
 
-			fs.db.View(func(tx *bolt.Tx) error {
+			err = fs.db.View(func(tx *bolt.Tx) error {
 				// check decompressedDigestBucket
 				imageBucket := tx.Bucket([]byte(artifactBucket))
 				b := imageBucket.Get([]byte(tt.args.imageID))
@@ -381,6 +381,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 
 				return nil
 			})
+			require.NoError(t, err)
 		})
 	}
 }

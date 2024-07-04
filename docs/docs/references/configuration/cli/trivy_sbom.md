@@ -20,9 +20,8 @@ trivy sbom [flags] SBOM_PATH
 ### Options
 
 ```
-      --cache-backend string        cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string        [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "memory")
       --cache-ttl duration          cache TTL when using redis as cache backend
-      --clear-cache                 clear image caches without scanning
       --compliance string           compliance report to generate
       --custom-headers strings      custom headers in client mode
       --db-repository string        OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
@@ -49,7 +48,6 @@ trivy sbom [flags] SBOM_PATH
       --redis-key string            redis key file location, if using redis as cache backend
       --redis-tls                   enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --reset                       remove all caches and database
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings            comma-separated list of what security issues to detect (vuln,license) (default [vuln])
       --server string               server address in client mode

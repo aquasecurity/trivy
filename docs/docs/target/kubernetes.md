@@ -355,12 +355,14 @@ For an overview of Trivy's Compliance feature, including working with custom com
 
 The following reports are available out of the box:
 
-| Compliance                                   | Name for command     | More info                                                                                                           |
-|----------------------------------------------|----------------------|---------------------------------------------------------------------------------------------------------------------|
-| NSA, CISA Kubernetes Hardening Guidance v1.2 | `k8s-nsa`            | [Link](https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF) |
-| CIS Benchmark for Kubernetes v1.23           | `k8s-cis`            | [Link](https://www.cisecurity.org/benchmark/kubernetes)                                                             |
-| Pod Security Standards, Baseline             | `k8s-pss-baseline`   | [Link](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline)                               |
-| Pod  Security Standards, Restricted          | `k8s-pss-restricted` | [Link](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted)                             |
+| Compliance                                   | Name for command         | More info                                                                                                           |
+|----------------------------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------------|
+| NSA, CISA Kubernetes Hardening Guidance v1.0 | `k8s-nsa-1.0`            | [Link](https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF) |
+| CIS Benchmark for Kubernetes v1.23           | `k8s-cis-1.23`           | [Link](https://www.cisecurity.org/benchmark/kubernetes)                                                             |
+| CIS Benchmark for RKE2 v1.24                 | `rke2-cis-1.24`          | [Link](https://www.cisecurity.org/benchmark/kubernetes)                                                             |
+| CIS Benchmark for EKS v1.4                   | `eks-cis-1.4`            | [Link](https://www.cisecurity.org/benchmark/kubernetes)                                                             |
+| Pod Security Standards, Baseline             | `k8s-pss-baseline-0.1`   | [Link](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline)                               |
+| Pod  Security Standards, Restricted          | `k8s-pss-restricted-0.1` | [Link](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted)                             |
 
 Examples:
 
@@ -376,7 +378,7 @@ Get the detailed report for checks:
 
 ```
 
-trivy k8s --compliance=k8s-cis --report all
+trivy k8s --compliance=k8s-cis-1.23 --report all
 
 ```
 
@@ -384,7 +386,7 @@ Get summary report in JSON format:
 
 ```
 
-trivy k8s --compliance=k8s-cis --report summary --format json
+trivy k8s --compliance=k8s-cis-1.23 --report summary --format json
 
 ```
 
@@ -392,7 +394,7 @@ Get detailed report in JSON format:
 
 ```
 
-trivy k8s --compliance=k8s-cis --report all --format json
+trivy k8s --compliance=k8s-cis-1.23 --report all --format json
 
 ```
 

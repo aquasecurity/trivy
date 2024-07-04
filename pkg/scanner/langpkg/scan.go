@@ -85,7 +85,7 @@ func (s *scanner) scanVulnerabilities(ctx context.Context, app ftypes.Applicatio
 		printedTypes[app.Type] = struct{}{}
 	}
 
-	log.DebugContext(ctx, "Scanning packages for vulnerabilities", log.String("file_path", app.FilePath))
+	log.DebugContext(ctx, "Scanning packages for vulnerabilities", log.FilePath(app.FilePath))
 	vulns, err := library.Detect(ctx, app.Type, app.Packages)
 	if err != nil {
 		return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)

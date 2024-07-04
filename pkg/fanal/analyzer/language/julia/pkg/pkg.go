@@ -69,7 +69,7 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		// Parse Project.toml alongside Manifest.toml to identify the direct dependencies. This mutates `app`.
 		if err = a.analyzeDependencies(input.FS, filepath.Dir(path), app); err != nil {
 			a.logger.Warn("Unable to parse file to analyze dependencies",
-				log.String("FILEPATH", filepath.Join(filepath.Dir(path), types.JuliaProject)), log.Err(err))
+				log.FilePath(filepath.Join(filepath.Dir(path), types.JuliaProject)), log.Err(err))
 		}
 
 		sort.Sort(app.Packages)

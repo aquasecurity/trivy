@@ -171,7 +171,7 @@ type Package struct {
 	SrcEpoch           int           `json:",omitempty"`
 	Licenses           []string      `json:",omitempty"`
 	Maintainer         string        `json:",omitempty"`
-	ExternalReferences []ExternalRef `json:"-"`
+	ExternalReferences []ExternalRef `json:"-" hash:"ignore"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat

@@ -116,7 +116,7 @@ body:
       label: Checklist
       description: Have you tried the following?
       options:
-        - label: Run `trivy image --reset`
+        - label: Run `trivy clean --all`
         - label: Read [the troubleshooting](https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/)
   - type: markdown
     attributes:

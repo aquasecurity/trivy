@@ -20,7 +20,7 @@ type FSCache struct {
 }
 
 func NewFSCache(cacheDir string) (FSCache, error) {
-	dir := filepath.Join(cacheDir, cacheDirName)
+	dir := filepath.Join(cacheDir, scanCacheDirName)
 	if err := os.MkdirAll(dir, 0700); err != nil {
 		return FSCache{}, xerrors.Errorf("failed to create cache dir: %w", err)
 	}
@@ -31,7 +31,10 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 	}
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		for _, bucket := range []string{artifactBucket, blobBucket} {
+		for _, bucket := range []string{
+			artifactBucket,
+			blobBucket,
+		} {
 			if _, err := tx.CreateBucketIfNotExists([]byte(bucket)); err != nil {
 				return xerrors.Errorf("unable to create %s bucket: %w", bucket, err)
 			}

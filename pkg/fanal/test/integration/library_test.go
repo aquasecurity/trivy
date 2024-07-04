@@ -20,11 +20,11 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

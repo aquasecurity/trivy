@@ -14,12 +14,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	trivydb "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/version"
@@ -75,17 +74,17 @@ func Test_dbWorker_update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cacheDir := t.TempDir()
+			dbDir := db.Dir(t.TempDir())
 
 			// Initialize the cache
-			meta := metadata.NewClient(cacheDir)
+			meta := metadata.NewClient(dbDir)
 			err := meta.Update(cachedMetadata)
 			require.NoError(t, err)
 
-			err = trivydb.Init(cacheDir)
+			err = db.Init(dbDir)
 			require.NoError(t, err)
 
-			defer func() { _ = trivydb.Close() }()
+			defer func() { _ = db.Close() }()
 
 			// Set a fake time
 			ctx := clock.With(context.Background(), tt.now)
@@ -95,11 +94,11 @@ func Test_dbWorker_update(t *testing.T) {
 			art := dbtest.NewFakeDB(t, dbPath, dbtest.FakeDBOptions{
 				MediaType: tt.layerMediaType,
 			})
-			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art))
+			client := db.NewClient(dbDir, true, db.WithOCIArtifact(art))
 			w := newDBWorker(client)
 
 			var dbUpdateWg, requestWg sync.WaitGroup
-			err = w.update(ctx, "1.2.3", cacheDir,
+			err = w.update(ctx, "1.2.3", dbDir,
 				tt.skipUpdate, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.Error(t, err, tt.name)
@@ -108,7 +107,7 @@ func Test_dbWorker_update(t *testing.T) {
 			}
 			require.NoError(t, err, tt.name)
 
-			mc := metadata.NewClient(cacheDir)
+			mc := metadata.NewClient(dbDir)
 			got, err := mc.Get()
 			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got, tt.name)

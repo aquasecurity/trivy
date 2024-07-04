@@ -196,7 +196,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			moduleArtifact, err := p.parseModule(result.filePath, relativePath)
 			if err != nil {
 				p.logger.Debug("Unable to parse the module",
-					log.String("file_path", result.filePath), log.Err(err))
+					log.FilePath(result.filePath), log.Err(err))
 				continue
 			}
 

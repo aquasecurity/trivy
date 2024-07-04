@@ -15,14 +15,13 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
-	fcache "github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
 type mockCacheServer struct {
-	cache fcache.Cache
+	cache cache.Cache
 }
 
 func (s *mockCacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*emptypb.Empty, error) {
@@ -47,7 +46,10 @@ func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBl
 		}
 		layerIDs = append(layerIDs, layerID)
 	}
-	return &rpcCache.MissingBlobsResponse{MissingArtifact: true, MissingBlobIds: layerIDs}, nil
+	return &rpcCache.MissingBlobsResponse{
+		MissingArtifact: true,
+		MissingBlobIds:  layerIDs,
+	}, nil
 }
 
 func (s *mockCacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*emptypb.Empty, error) {
@@ -143,7 +145,11 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
+			c := cache.NewRemoteCache(cache.RemoteOptions{
+				ServerAddr:    ts.URL,
+				CustomHeaders: tt.args.customHeaders,
+				Insecure:      false,
+			})
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.Error(t, err, tt.name)
@@ -204,7 +210,11 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
+			c := cache.NewRemoteCache(cache.RemoteOptions{
+				ServerAddr:    ts.URL,
+				CustomHeaders: tt.args.customHeaders,
+				Insecure:      false,
+			})
 			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.Error(t, err, tt.name)
@@ -282,7 +292,11 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
+			c := cache.NewRemoteCache(cache.RemoteOptions{
+				ServerAddr:    ts.URL,
+				CustomHeaders: tt.args.customHeaders,
+				Insecure:      false,
+			})
 			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.Error(t, err, tt.name)
@@ -332,7 +346,11 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, nil, tt.args.insecure)
+			c := cache.NewRemoteCache(cache.RemoteOptions{
+				ServerAddr:    ts.URL,
+				CustomHeaders: nil,
+				Insecure:      tt.args.insecure,
+			})
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.Error(t, err)

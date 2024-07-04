@@ -8,7 +8,7 @@ import (
 	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scanner"
