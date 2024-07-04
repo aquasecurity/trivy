@@ -3,8 +3,10 @@ package downloader
 import (
 	"context"
 	"maps"
+	"net/url"
 	"os"
 
+	"github.com/google/go-github/v62/github"
 	getter "github.com/hashicorp/go-getter"
 	"golang.org/x/xerrors"
 
@@ -51,8 +53,18 @@ func Download(ctx context.Context, src, dst, pwd string, insecure bool) error {
 	// Since "httpGetter" is a global pointer and the state is shared,
 	// once it is executed without "WithInsecure()",
 	// it cannot enable WithInsecure() afterwards because its state is preserved.
+	// Therefore, we need to create a new "HttpGetter" instance every time.
 	// cf. https://github.com/hashicorp/go-getter/blob/5a63fd9c0d5b8da8a6805e8c283f46f0dacb30b3/get.go#L63-L65
-	httpGetter := &getter.HttpGetter{Netrc: true}
+	httpGetter := &getter.HttpGetter{
+		Netrc: true,
+	}
+	if u, err := url.Parse(src); err == nil && u.Host == "github.com" {
+		client := github.NewClient(nil)
+		if t := os.Getenv("GITHUB_TOKEN"); t != "" {
+			client.WithAuthToken(t)
+		}
+		httpGetter.Client = client.Client()
+	}
 	getters["http"] = httpGetter
 	getters["https"] = httpGetter
 

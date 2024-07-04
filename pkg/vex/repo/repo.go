@@ -2,199 +2,262 @@ package repo
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
+	"errors"
 	"io"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
-	"slices"
+	"strings"
+	"time"
 
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/google/go-github/v62/github"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
-// const defaultVEXHubURL = "git@github.com:aquasecurity/vexhub.git"
-const defaultVEXHubURL = "https://github.com/aquasecurity/vuln-list-update.git"
+const (
+	SchemaVersion = "0.1"
+	manifestFile  = "vex-repository.json"
+	indexFile     = "index.json"
+)
 
-type ManagerOption func(indexer *Manager)
-
-func WithWriter(w io.Writer) ManagerOption {
-	return func(manager *Manager) {
-		manager.w = w
-	}
+type Manifest struct {
+	Name          string             `json:"name"`
+	Description   string             `json:"description"`
+	Versions      map[string]Version `json:"versions"`
+	LatestVersion string             `json:"latest_version"`
 }
 
-func WithLogger(logger *log.Logger) ManagerOption {
-	return func(manager *Manager) {
-		manager.logger = logger
-	}
+type Version struct {
+	SpecVersion    string     `json:"spec_version"`
+	Locations      []Location `json:"locations"`
+	UpdateInterval Duration   `json:"update_interval"`
 }
 
-type Config struct {
-	Repositories []Repository `json:"repositories"`
+// Duration is a wrapper around time.Duration that implements UnmarshalJSON
+type Duration struct {
+	time.Duration
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface
+func (d *Duration) UnmarshalJSON(b []byte) error {
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
+		return xerrors.Errorf("duration unmarshal error: %w", err)
+	}
+
+	var err error
+	d.Duration, err = time.ParseDuration(s)
+	if err != nil {
+		return xerrors.Errorf("duration parse error: %w", err)
+	}
+	return nil
+}
+
+type Location struct {
+	URL string `json:"url"`
+}
+
+type Index struct {
+	UpdatedAt time.Time               `json:"updated_at"`
+	Packages  map[string]PackageEntry `json:"packages"`
+}
+
+type PackageEntry struct {
+	ID       string `json:"id"`
+	Location string `json:"location"`
+	Format   string `json:"format"`
+}
+
+type rawIndex struct {
+	UpdatedAt time.Time      `json:"updated_at"`
+	Packages  []PackageEntry `json:"packages"`
 }
 
 type Repository struct {
 	Name string
 	URL  string
-	DB   string `yaml:",omitempty"` // TODO: support pre-built DB
+
+	dir string // Root directory for this VEX repository, $CACHE_DIR/vex/repositories/$REPO_NAME/
 }
 
-type Options struct {
-	Insecure bool
-}
+func (r *Repository) Manifest(ctx context.Context) (Manifest, error) {
+	filePath := filepath.Join(r.dir, manifestFile)
+	log.DebugContext(ctx, "Reading the repository metadata...", log.String("name", r.Name), log.FilePath(filePath))
 
-// Manager manages the plugins
-type Manager struct {
-	w          io.Writer
-	indexURL   string
-	logger     *log.Logger
-	configFile string
-	repoDir    string
-}
-
-func NewManager(opts ...ManagerOption) *Manager {
-	root := filepath.Join(fsutils.TrivyHomeDir(), "vex")
-	m := &Manager{
-		w:          os.Stdout,
-		logger:     log.WithPrefix("vex"),
-		configFile: filepath.Join(root, "config.yaml"),
-		repoDir:    filepath.Join(root, "repositories"),
+	f, err := os.Open(filePath)
+	if err != nil {
+		return Manifest{}, xerrors.Errorf("failed to open the file: %w", err)
 	}
-	for _, opt := range opts {
-		opt(m)
-	}
+	defer f.Close()
 
-	return m
+	var manifest Manifest
+	if err = json.NewDecoder(f).Decode(&manifest); err != nil {
+		return Manifest{}, xerrors.Errorf("failed to decode the metadata: %w", err)
+	}
+	return manifest, nil
 }
 
-func (m *Manager) writeConfig(conf Config) error {
-	if err := os.MkdirAll(filepath.Dir(m.configFile), 0700); err != nil {
+func (r *Repository) Index(ctx context.Context) (Index, error) {
+	filePath := filepath.Join(r.dir, indexFile)
+	log.DebugContext(ctx, "Reading the repository index...", log.String("name", r.Name), log.FilePath(filePath))
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		return Index{}, xerrors.Errorf("failed to open the file: %w", err)
+	}
+	defer f.Close()
+
+	var raw rawIndex
+	if err = json.NewDecoder(f).Decode(&raw); err != nil {
+		return Index{}, xerrors.Errorf("failed to decode the index: %w", err)
+	}
+
+	return Index{
+		UpdatedAt: raw.UpdatedAt,
+		Packages:  lo.KeyBy(raw.Packages, func(p PackageEntry) string { return p.ID }),
+	}, nil
+}
+
+func (r *Repository) downloadManifest(ctx context.Context, opts Options) error {
+	if err := os.MkdirAll(r.dir, 0700); err != nil {
 		return xerrors.Errorf("failed to mkdir: %w", err)
 	}
-	f, err := os.Create(m.configFile)
+
+	u, err := url.Parse(r.URL)
 	if err != nil {
-		return xerrors.Errorf("failed to create a file: %w", err)
-	}
-	defer f.Close()
-
-	e := yaml.NewEncoder(f)
-	e.SetIndent(2)
-	if err = e.Encode(conf); err != nil {
-		return xerrors.Errorf("JSON encode error: %w", err)
+		return xerrors.Errorf("failed to parse the URL: %w", err)
 	}
 
-	return nil
-}
-
-func (m *Manager) readConfig() (Config, error) {
-	if !fsutils.FileExists(m.configFile) {
-		return Config{}, xerrors.Errorf("config file not found, run 'trivy vex repo init' first")
-	}
-
-	f, err := os.Open(m.configFile)
-	if err != nil {
-		return Config{}, xerrors.Errorf("unable to open a file: %w", err)
-	}
-	defer f.Close()
-
-	var conf Config
-	if err = yaml.NewDecoder(f).Decode(&conf); err != nil {
-		return conf, xerrors.Errorf("unable to decode metadata: %w", err)
-	}
-	return conf, nil
-}
-
-func (m *Manager) Init(ctx context.Context) error {
-	if fsutils.FileExists(m.configFile) {
-		m.logger.InfoContext(ctx, "The configuration file already exists", log.String("path", m.configFile))
+	if u.Host == "github.com" {
+		if err = r.githubGet(ctx, u, r.dir); err != nil {
+			return xerrors.Errorf("failed to get the repository metadata: %w", err)
+		}
 		return nil
 	}
 
-	err := m.writeConfig(Config{
-		Repositories: []Repository{
-			{
-				Name: "default",
-				URL:  defaultVEXHubURL,
-			},
-		},
-	})
-	if err != nil {
-		return xerrors.Errorf("failed to write the default config: %w", err)
-	}
-	log.InfoContext(ctx, "The default configuration file has been created", log.FilePath(m.configFile))
-	return nil
-}
-
-func (m *Manager) Update(ctx context.Context, names []string, opts Options) error {
-	conf, err := m.readConfig()
-	if err != nil {
-		return xerrors.Errorf("unable to read config: %w", err)
-	} else if len(conf.Repositories) == 0 {
-		return xerrors.Errorf("no repositories found in config: %s", m.configFile)
-	}
-
-	for _, repo := range conf.Repositories {
-		if len(names) > 0 && !slices.Contains(names, repo.Name) {
-			continue
-		}
-		m.logger.InfoContext(ctx, "Updating the repository...", log.String("name", repo.Name), log.String("url", repo.URL))
-		if err = m.download(ctx, repo, opts); err != nil {
-			return xerrors.Errorf("failed to update the repository: %w", err)
-		}
-	}
-	return nil
-}
-
-func (m *Manager) download(ctx context.Context, repo Repository, opts Options) error {
-	// Force git protocol
-	// cf. https://github.com/hashicorp/go-getter/blob/5a63fd9c0d5b8da8a6805e8c283f46f0dacb30b3/README.md#forced-protocol
-	url := "git::" + repo.URL + "?depth=1"
-
-	dst := filepath.Join(m.repoDir, repo.Name)
-	if fsutils.DirExists(dst) {
-		defaultBranch, err := findDefaultBranch(dst)
-		if err != nil {
-			m.logger.DebugContext(ctx, "failed to find the default branch", log.String("path", dst), log.Err(err))
-			defaultBranch = "main"
-		}
-		url += "&ref=" + defaultBranch
-	}
-
-	m.logger.DebugContext(ctx, "Downloading the repository...", log.String("url", url), log.String("dst", dst))
-	if err := downloader.Download(ctx, url, dst, ".", opts.Insecure); err != nil {
+	u.Path += path.Join(u.Path, ".well-known", manifestFile)
+	log.DebugContext(ctx, "Downloading the repository metadata...", log.String("url", u.String()), log.String("dst", r.dir))
+	if err := downloader.Download(ctx, u.String(), r.dir, ".", opts.Insecure); err != nil {
 		return xerrors.Errorf("failed to download the repository: %w", err)
 	}
 	return nil
 }
 
-func findDefaultBranch(repoPath string) (string, error) {
-	repo, err := git.PlainOpen(repoPath)
-	if err != nil {
-		return "", err
+func (r *Repository) githubGet(ctx context.Context, u *url.URL, dstDir string) error {
+	ss := strings.SplitN(u.Path, "/", 4)
+	if len(ss) < 3 {
+		return xerrors.Errorf("invalid GitHub URL: %s", u)
+	}
+	owner := ss[1]
+	repo := ss[2]
+	filePath := manifestFile
+	if len(ss) == 4 {
+		filePath = path.Join(ss[3], filePath)
 	}
 
-	remote, err := repo.Remote("origin")
-	if err != nil {
-		return "", err
+	client := github.NewClient(nil)
+	if t := os.Getenv("GITHUB_TOKEN"); t != "" {
+		client = client.WithAuthToken(t)
 	}
 
-	refs, err := remote.List(&git.ListOptions{})
+	log.DebugContext(ctx, "Downloading the repository metadata from GitHub...",
+		log.String("owner", owner), log.String("repo", repo), log.String("path", filePath),
+		log.String("dst", dstDir))
+	rc, _, err := client.Repositories.DownloadContents(ctx, owner, repo, filePath, nil)
 	if err != nil {
-		return "", err
+		return xerrors.Errorf("failed to get the file content: %w", err)
+	}
+	defer rc.Close()
+
+	f, err := os.Create(filepath.Join(dstDir, manifestFile))
+	if err != nil {
+		return xerrors.Errorf("failed to create a file: %w", err)
+	}
+	defer f.Close()
+
+	if _, err = io.Copy(f, rc); err != nil {
+		return xerrors.Errorf("failed to copy the file: %w", err)
+	}
+	return nil
+}
+
+func (r *Repository) Update(ctx context.Context, opts Options) error {
+	manifest, err := r.Manifest(ctx)
+	if err != nil {
+		return xerrors.Errorf("failed to get the repository metadata: %w", err)
 	}
 
-	for _, ref := range refs {
-		if ref.Name() == "HEAD" {
-			if ref.Type() == plumbing.SymbolicReference {
-				return ref.Target().Short(), nil
-			}
+	majorVersion, _, ok := strings.Cut(SchemaVersion, ".")
+	if !ok {
+		return xerrors.New("invalid schema version")
+	}
+	majorVersion = "v" + majorVersion
+	ver, ok := manifest.Versions[majorVersion]
+	if !ok {
+		// TODO: improve error
+		return xerrors.Errorf("version %s not found", majorVersion)
+	}
+
+	versionDir := filepath.Join(r.dir, majorVersion)
+	if !r.needUpdate(ctx, ver, majorVersion) {
+		log.InfoContext(ctx, "Need to update repository", log.String("name", r.Name))
+		return nil
+	}
+
+	log.InfoContext(ctx, "Need to update repository", log.String("name", r.Name))
+	log.InfoContext(ctx, "Downloading repository...", log.String("name", r.Name), log.String("url", r.URL))
+	if err = r.download(ctx, ver, versionDir, opts); err != nil {
+		return xerrors.Errorf("failed to download the repository: %w", err)
+	}
+	return err
+}
+
+func (r *Repository) needUpdate(ctx context.Context, ver Version, versionDir string) bool {
+	if !fsutils.DirExists(versionDir) {
+		return true
+	}
+
+	index, err := r.Index(ctx)
+	if err != nil {
+		log.DebugContext(ctx, "Failed to get the repository index", log.String("name", r.Name), log.Err(err))
+		return true
+	}
+
+	now := clock.Clock(ctx).Now()
+	if now.After(index.UpdatedAt.Add(ver.UpdateInterval.Duration)) {
+		return true
+	}
+
+	// TODO: use local metadata.json
+
+	return false
+}
+
+func (r *Repository) download(ctx context.Context, ver Version, dst string, opts Options) error {
+	if len(ver.Locations) == 0 {
+		return xerrors.Errorf("no locations found for version %s", ver.SpecVersion)
+	}
+
+	if err := os.MkdirAll(dst, 0700); err != nil {
+		return xerrors.Errorf("failed to mkdir: %w", err)
+	}
+
+	var errs error
+	for _, loc := range ver.Locations {
+		log.DebugContext(ctx, "Downloading repository ...", log.String("url", loc.URL), log.String("dir", dst))
+		if err := downloader.Download(ctx, loc.URL, dst, ".", opts.Insecure); err != nil {
+			errs = errors.Join(errs, err)
+		} else {
+			return nil
 		}
 	}
-	return "", fmt.Errorf("HEAD reference not found")
+	return errs
 }

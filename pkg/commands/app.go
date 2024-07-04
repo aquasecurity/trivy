@@ -1241,6 +1241,8 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+			cmd.SetContext(log.WithContextPrefix(cmd.Context(), "vex"))
+
 			vexOptions, err = vexFlags.ToOptions(args)
 			if err != nil {
 				return err
@@ -1273,13 +1275,13 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		},
 		&cobra.Command{
 			Use:                   "update [REPO_NAMES]",
-			Short:                 "Update the local copy of the VEX repositories",
+			Short:                 "Update the local copy of the VEX repository manifests",
 			DisableFlagsInUseLine: true,
 			SilenceErrors:         true,
 			SilenceUsage:          true,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err := vexrepo.NewManager().Update(cmd.Context(), args, vexrepo.Options{Insecure: vexOptions.Insecure}); err != nil {
-					return xerrors.Errorf("repository update error: %w", err)
+				if err := vexrepo.NewManager().UpdateManifest(cmd.Context(), args, vexrepo.Options{Insecure: vexOptions.Insecure}); err != nil {
+					return xerrors.Errorf("repository manifest update error: %w", err)
 				}
 				return nil
 			},
@@ -1287,7 +1289,6 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 
 	cmd.AddCommand(repoCmd)
-
 	return cmd
 }
 
