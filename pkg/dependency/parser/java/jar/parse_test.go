@@ -168,22 +168,54 @@ var (
 		},
 	}
 
-	// manually created
+	// Manually created.
+	// Files of `io.quarkus.gizmo.gizmo-1.1.jar` (gizmo:1.1.0 (from sha1)):
+	//├── bar
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.13.4)
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.12.3)
+	//├── foo
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.12.3)
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.13.4)
+	//├── jars
+	//│   ├── log4j-1.2.16.jar (log4j:1.2.16)
+	//│   └── log4j-1.2.17.jar (log4j:1.2.17)
+	//└── META-INF
+	//    ├── INDEX.LIST
+	//    ├── MANIFEST.MF
+	//    └── maven
+	//        └── io.quarkus.gizmo
+	//            └── gizmo
+	//                ├── pom.properties (gizmo:1.1)
+	//                └── pom.xml
 	wantDuplicatesJar = []ftypes.Package{
 		{
 			Name:     "io.quarkus.gizmo:gizmo",
-			Version:  "1.1.1.Final",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+			Version:  "1.1",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.16",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.16.jar",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.16.jar",
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.17.jar",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.17.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.12.3",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.13.4",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 	}
 )
@@ -251,7 +283,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "duplicate libraries",
-			file: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+			file: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 			want: wantDuplicatesJar,
 		},
 	}
@@ -277,13 +309,13 @@ func TestParse(t *testing.T) {
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "Gizmo"):
 			res.Response.NumFound = 0
-		case strings.Contains(r.URL.Query().Get("q"), "85d30c06026afd9f5be26da3194d4698c447a904"):
+		case strings.Contains(r.URL.Query().Get("q"), "1c78bbc4d8c58b9af8eee82b84f2c26ec48e9a2b"):
 			res.Response.Docs = []doc{
 				{
 					ID:         "io.quarkus.gizmo.gizmo",
 					GroupID:    "io.quarkus.gizmo",
 					ArtifactID: "gizmo",
-					Version:    "1.1.1.Final",
+					Version:    "1.1.0",
 				},
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "heuristic"):
