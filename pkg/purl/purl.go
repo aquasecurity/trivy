@@ -42,6 +42,8 @@ const (
 	NamespaceOCP = "ocp"
 
 	TypeUnknown = "unknown"
+
+	distroQualifierKey = "distro"
 )
 
 type PackageURL packageurl.PackageURL
@@ -247,6 +249,29 @@ func (p *PackageURL) Package() *ftypes.Package {
 	return pkg
 }
 
+func (p *PackageURL) OS() *ftypes.OS {
+	// Detect OS only for OS packages
+	if p.Type != packageurl.TypeApk && p.Type != packageurl.TypeDebian && p.Type != packageurl.TypeRPM {
+		return nil
+	}
+
+	distro, ok := p.Qualifiers.Map()[distroQualifierKey]
+	if !ok {
+		return nil
+	}
+
+	// Trim OS family if exists
+	// e.g. `debian-12` => `12`
+	if _, osRelease, ok := strings.Cut(distro, "-"); ok {
+		distro = osRelease
+	}
+
+	return &ftypes.OS{
+		Family: ftypes.OSType(p.Namespace),
+		Name:   distro,
+	}
+}
+
 // Match returns true if the given PURL "target" satisfies the constraint PURL "p".
 // - If the constraint does not have a version, it will match any version in the target.
 // - If the constraint has qualifiers, the target must have the same set of qualifiers to match.
@@ -328,7 +353,7 @@ func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualif
 	ns := strings.ToLower(string(fos.Family))
 	qs := packageurl.Qualifiers{
 		{
-			Key:   "distro",
+			Key:   distroQualifierKey,
 			Value: fos.Name,
 		},
 	}
@@ -346,7 +371,7 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
 	return packageurl.Qualifiers{
 		{
-			Key:   "distro",
+			Key:   distroQualifierKey,
 			Value: distro,
 		},
 	}
@@ -366,7 +391,7 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl
 
 	qualifiers := packageurl.Qualifiers{
 		{
-			Key:   "distro",
+			Key:   distroQualifierKey,
 			Value: fmt.Sprintf("%s-%s", family, fos.Name),
 		},
 	}

@@ -868,3 +868,71 @@ func TestPackageURL_Match(t *testing.T) {
 		})
 	}
 }
+
+func TestPackageURL_OS(t *testing.T) {
+	tests := []struct {
+		name string
+		purl purl.PackageURL
+		want *ftypes.OS
+	}{
+		{
+			name: "`distro` with family prefix",
+			purl: purl.PackageURL{
+				Type:      packageurl.TypeRPM,
+				Namespace: "fedora",
+				Name:      "curl",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "distro",
+						Value: "fedora-25",
+					},
+				},
+			},
+			want: &ftypes.OS{
+				Family: "fedora",
+				Name:   "25",
+			},
+		},
+		{
+			name: "`distro` without family prefix",
+			purl: purl.PackageURL{
+				Type:      packageurl.TypeApk,
+				Namespace: "alpine",
+				Name:      "alpine-baselayout",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "distro",
+						Value: "3.14.2",
+					},
+				},
+			},
+			want: &ftypes.OS{
+				Family: "alpine",
+				Name:   "3.14.2",
+			},
+		},
+		{
+			name: "`distro` qualifier doesn't exist",
+			purl: purl.PackageURL{
+				Type:      packageurl.TypeApk,
+				Namespace: "alpine",
+				Name:      "alpine-baselayout",
+			},
+		},
+		{
+			name: "language package",
+			purl: purl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, tt.purl.OS())
+		})
+	}
+
+}
