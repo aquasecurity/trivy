@@ -136,7 +136,7 @@ func (m *Decoder) decodeComponents(ctx context.Context, sbom *types.SBOM) error 
 		}
 	}
 
-	m.selectOS(osComponents, sbom)
+	m.selectOS(ctx, osComponents, sbom)
 	return nil
 }
 
