@@ -47,7 +47,7 @@ func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpc
 		return types.Scanner(s)
 	})
 	options := types.ScanOptions{
-		VulnType:       in.Options.VulnType,
+		PkgTypes:       in.Options.PkgTypes,
 		Scanners:       scanners,
 		IncludeDevDeps: in.Options.IncludeDevDeps,
 	}
