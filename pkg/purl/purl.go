@@ -42,8 +42,6 @@ const (
 	NamespaceOCP = "ocp"
 
 	TypeUnknown = "unknown"
-
-	distroQualifierKey = "distro"
 )
 
 type PackageURL packageurl.PackageURL
@@ -258,7 +256,7 @@ func (p *PackageURL) OS() *ftypes.OS {
 	// `distro` field may be empty for some OS
 	// e.g. `wolfi` doesn't use version for its packages
 	// cf. https://github.com/aquasecurity/trivy/discussions/7073#discussioncomment-9964255
-	distro := p.Qualifiers.Map()[distroQualifierKey]
+	distro := p.Qualifiers.Map()["distro"]
 
 	// Trim OS family if exists
 	// e.g. `debian-12` => `12`
@@ -353,7 +351,7 @@ func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualif
 	ns := strings.ToLower(string(fos.Family))
 	qs := packageurl.Qualifiers{
 		{
-			Key:   distroQualifierKey,
+			Key:   "distro",
 			Value: fos.Name,
 		},
 	}
@@ -371,7 +369,7 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
 	return packageurl.Qualifiers{
 		{
-			Key:   distroQualifierKey,
+			Key:   "distro",
 			Value: distro,
 		},
 	}
@@ -391,7 +389,7 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl
 
 	qualifiers := packageurl.Qualifiers{
 		{
-			Key:   distroQualifierKey,
+			Key:   "distro",
 			Value: fmt.Sprintf("%s-%s", family, fos.Name),
 		},
 	}
