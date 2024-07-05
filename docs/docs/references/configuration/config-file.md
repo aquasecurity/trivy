@@ -81,6 +81,13 @@ severity:
   - MEDIUM
   - HIGH
   - CRITICAL
+    
+# Same as '--pkg-types'
+# Default is 'os,library'
+pkg-types:
+  - os
+  - library
+    
 
 scan:
   # Same as '--compliance'
@@ -261,12 +268,6 @@ Available with vulnerability scanning
 
 ```yaml
 vulnerability:
-  # Same as '--vuln-type'
-  # Default is 'os,library'
-  type:
-    - os
-    - library
-
   # Same as '--ignore-unfixed'
   # Default is false
   ignore-unfixed: false

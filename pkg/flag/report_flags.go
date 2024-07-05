@@ -108,7 +108,7 @@ var (
 	}
 	PkgTypesFlag = Flag[[]string]{
 		Name:       "pkg-types",
-		ConfigName: "report.types",
+		ConfigName: "pkg-types",
 		Default:    types.PkgTypes,
 		Values:     types.PkgTypes,
 		Usage:      "comma-separated list of package types",
