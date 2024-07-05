@@ -111,7 +111,7 @@ func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin
 }
 
 func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin, error) {
-	tempDir, err := downloader.DownloadToTempDir(ctx, src, opts.Insecure)
+	tempDir, err := downloader.DownloadToTempDir(ctx, src, downloader.Options{Insecure: opts.Insecure})
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("download failed: %w", err)
 	}

@@ -53,18 +53,13 @@ func DownloadVEXRepositories(ctx context.Context, cacheDir string, skipUpdate, i
 	defer mu.Unlock()
 
 	ctx = log.WithContextPrefix(ctx, "vex")
-	config, err := repo.NewManager(cacheDir).Config(ctx)
+	err := repo.NewManager(cacheDir).DownloadRepositories(ctx, nil, repo.Options{
+		Insecure: insecure,
+	})
 	if errors.Is(err, repo.ErrNoConfig) {
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("failed to get vex repository config: %w", err)
-	}
-
-	for _, r := range config.Repositories {
-		// TODO: support skip update
-		if err = r.Update(ctx, repo.Options{Insecure: insecure}); err != nil {
-			return xerrors.Errorf("failed to update vex repository: %w", err)
-		}
 	}
 
 	return nil
