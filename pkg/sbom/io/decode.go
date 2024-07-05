@@ -363,13 +363,14 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 // addOrphanPkgs adds orphan packages.
 // Orphan packages are packages that are not related to any components.
 func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
-	osPkgMap := make(map[string]ftypes.Packages)
+	osPkgMap := make(map[ftypes.OS]ftypes.Packages)
 	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, pkg := range m.pkgs {
 		p := (*purl.PackageURL)(pkg.Identifier.PURL)
 		switch p.Class() {
 		case types.ClassOSPkg:
-			osPkgMap[p.Type] = append(osPkgMap[p.Type], *pkg)
+			os := *p.OS()
+			osPkgMap[os] = append(osPkgMap[os], *pkg)
 		case types.ClassLangPkg:
 			langType := p.LangType()
 			langPkgMap[langType] = append(langPkgMap[langType], *pkg)
@@ -377,14 +378,26 @@ func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 	}
 
 	if len(osPkgMap) > 1 {
-		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", lo.Keys(osPkgMap))
+		oses := lo.MapToSlice(osPkgMap, func(os ftypes.OS, _ ftypes.Packages) string {
+			s := string(os.Family)
+			if os.Name != "" {
+				s = s + "-" + os.Name
+			}
+			return s
+		})
+		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", oses)
 	}
 
 	// Add OS packages only when OS is detected.
-	for _, pkgs := range osPkgMap {
+	for os, pkgs := range osPkgMap {
 		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			m.logger.WarnContext(ctx, "Ignore the OS package as no OS is detected.")
-			break
+			// If OS component didn't detect - try to find OS from package purl
+			if !os.Detected() {
+				m.logger.WarnContext(ctx, "Ignore the OS package as no OS is detected.")
+				break
+			}
+			// Save OS from purl and add pkgs for this OS
+			sbom.Metadata.OS = &os
 		}
 
 		// TODO: mismatch between the OS and the packages should be rejected.
