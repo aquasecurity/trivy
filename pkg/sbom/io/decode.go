@@ -385,7 +385,7 @@ func (m *Decoder) addOrphanPkgs(ctx context.Context, sbom *types.SBOM) error {
 			}
 			return s
 		})
-		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", oses)
+		return xerrors.Errorf("multiple OSes in SBOM are not supported (%q)", oses)
 	}
 
 	// Add OS packages only when OS is detected.
