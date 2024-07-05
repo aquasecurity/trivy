@@ -19,10 +19,11 @@ import (
 
 func TestUnmarshaler_Unmarshal(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      types.SBOM
-		wantErr   string
+		name                  string
+		inputFile             string
+		want                  types.SBOM
+		wantJsonDecodeErr     string
+		wantSBOMCoreDecodeErr string
 	}{
 		{
 			name:      "happy path",
@@ -333,14 +334,83 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path with OS detected from purl",
+			inputFile: "testdata/happy/os-from-purl.json",
+			want: types.SBOM{
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "wolfi",
+						Name:   "",
+					},
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "apk-tools@2.14.4-r0",
+								Name:       "apk-tools",
+								Version:    "2.14.4-r0",
+								SrcName:    "apk-tools",
+								SrcVersion: "2.14.4-r0",
+								Arch:       "x86_64",
+								Licenses:   []string{"GPL-2.0-only"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeApk,
+										Namespace: "wolfi",
+										Name:      "apk-tools",
+										Version:   "2.14.4-r0",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "x86_64",
+											},
+										},
+									},
+								},
+							},
+							{
+								ID:         "busybox@1.36.1-r10",
+								Name:       "busybox",
+								Version:    "1.36.1-r10",
+								SrcName:    "busybox",
+								SrcVersion: "1.36.1-r10",
+								Arch:       "x86_64",
+								Licenses:   []string{"GPL-2.0-only"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeApk,
+										Namespace: "wolfi",
+										Name:      "busybox",
+										Version:   "1.36.1-r10",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "x86_64",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path empty component",
 			inputFile: "testdata/happy/empty-bom.json",
 			want:      types.SBOM{},
 		},
 		{
-			name:      "sad path invalid purl",
-			inputFile: "testdata/sad/invalid-purl.json",
-			wantErr:   "purl is missing type or name",
+			name:              "sad path invalid purl",
+			inputFile:         "testdata/sad/invalid-purl.json",
+			wantJsonDecodeErr: "purl is missing type or name",
+		},
+		{
+			name:                  "sad path with multiple OSes detected from purl",
+			inputFile:             "testdata/sad/multiple-os-from-purl.json",
+			wantSBOMCoreDecodeErr: `multiple types of OS packages in SBOM are not supported (["wolfi-20230201" "wolfi"])`,
 		},
 	}
 
@@ -352,14 +422,17 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 
 			var v spdx.SPDX
 			err = json.NewDecoder(f).Decode(&v)
-			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
+			if tt.wantJsonDecodeErr != "" {
+				assert.ErrorContains(t, err, tt.wantJsonDecodeErr)
 				return
 			}
 
 			var got types.SBOM
 			err = sbomio.NewDecoder(v.BOM).Decode(context.Background(), &got)
-			require.NoError(t, err)
+			if tt.wantSBOMCoreDecodeErr != "" {
+				assert.ErrorContains(t, err, tt.wantSBOMCoreDecodeErr)
+				return
+			}
 
 			// Not compare BOM
 			got.BOM = nil
