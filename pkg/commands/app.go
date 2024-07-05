@@ -1256,6 +1256,9 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Short:         "Manage VEX repositories",
 		SilenceErrors: true,
 		SilenceUsage:  true,
+		Example: `  # Initialize the configuration file
+  $ trivy vex repo init
+`,
 	}
 
 	repoCmd.AddCommand(
@@ -1274,13 +1277,17 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "update [REPO_NAMES]",
-			Short:                 "Update the local copy of the VEX repository manifests",
+			Use:                   "download [REPO_NAMES]",
+			Short:                 "Download the VEX repositories",
 			DisableFlagsInUseLine: true,
 			SilenceErrors:         true,
 			SilenceUsage:          true,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err := vexrepo.NewManager(vexOptions.CacheDir).UpdateManifest(cmd.Context(), args, vexrepo.Options{Insecure: vexOptions.Insecure}); err != nil {
+				err := vexrepo.NewManager(vexOptions.CacheDir).DownloadRepositories(cmd.Context(), args,
+					vexrepo.Options{Insecure: vexOptions.Insecure})
+				if errors.Is(err, vexrepo.ErrNoConfig) {
+					return errors.New("no config found, run 'trivy vex repo init' first")
+				} else if err != nil {
 					return xerrors.Errorf("repository manifest update error: %w", err)
 				}
 				return nil

@@ -123,11 +123,9 @@ func (m *Manager) Init(ctx context.Context) error {
 	return nil
 }
 
-func (m *Manager) UpdateManifest(ctx context.Context, names []string, opts Options) error {
+func (m *Manager) DownloadRepositories(ctx context.Context, names []string, opts Options) error {
 	conf, err := m.Config(ctx)
-	if errors.Is(err, ErrNoConfig) {
-		return errors.New("no config found, run 'trivy vex repo init' first")
-	} else if err != nil {
+	if err != nil {
 		return xerrors.Errorf("unable to read config: %w", err)
 	} else if len(conf.Repositories) == 0 {
 		return xerrors.Errorf("no repositories found in config: %s", m.configFile)
@@ -137,8 +135,7 @@ func (m *Manager) UpdateManifest(ctx context.Context, names []string, opts Optio
 		if len(names) > 0 && !slices.Contains(names, repo.Name) {
 			continue
 		}
-		log.InfoContext(ctx, "Updating the repository manifest...", log.String("name", repo.Name), log.String("url", repo.URL))
-		if err = repo.downloadManifest(ctx, opts); err != nil {
+		if err = repo.Update(ctx, opts); err != nil {
 			return xerrors.Errorf("failed to update the repository: %w", err)
 		}
 	}
