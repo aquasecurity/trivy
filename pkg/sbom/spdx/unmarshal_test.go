@@ -410,7 +410,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 		{
 			name:                  "sad path with multiple OSes detected from purl",
 			inputFile:             "testdata/sad/multiple-os-from-purl.json",
-			wantSBOMCoreDecodeErr: `multiple types of OS packages in SBOM are not supported (["wolfi-20230201" "wolfi"])`,
+			wantSBOMCoreDecodeErr: `multiple OSes in SBOM are not supported`,
 		},
 	}
 

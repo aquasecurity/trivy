@@ -918,6 +918,9 @@ func TestPackageURL_OS(t *testing.T) {
 				Namespace: "alpine",
 				Name:      "alpine-baselayout",
 			},
+			want: &ftypes.OS{
+				Family: "alpine",
+			},
 		},
 		{
 			name: "language package",
