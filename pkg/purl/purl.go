@@ -251,14 +251,14 @@ func (p *PackageURL) Package() *ftypes.Package {
 
 func (p *PackageURL) OS() *ftypes.OS {
 	// Detect OS only for OS packages
-	if p.Type != packageurl.TypeApk && p.Type != packageurl.TypeDebian && p.Type != packageurl.TypeRPM {
+	if p.Class() != types.ClassOSPkg {
 		return nil
 	}
 
-	distro, ok := p.Qualifiers.Map()[distroQualifierKey]
-	if !ok {
-		return nil
-	}
+	// `distro` field may be empty for some OS
+	// e.g. `wolfi` doesn't use version for its packages
+	// cf. https://github.com/aquasecurity/trivy/discussions/7073#discussioncomment-9964255
+	distro := p.Qualifiers.Map()[distroQualifierKey]
 
 	// Trim OS family if exists
 	// e.g. `debian-12` => `12`
