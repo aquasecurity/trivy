@@ -37,6 +37,9 @@ func ID(ltype types.LangType, name, version string) string {
 
 // UID calculates the hash of the package for the unique ID
 func UID(filePath string, pkg types.Package) string {
+	if pkg.Identifier.UID != "" {
+		return pkg.Identifier.UID
+	}
 	v := map[string]any{
 		"filePath": filePath, // To differentiate the hash of the same package but different file path
 		"pkg":      pkg,
