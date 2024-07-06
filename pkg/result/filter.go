@@ -24,7 +24,7 @@ const (
 	DefaultIgnoreFile = ".trivyignore"
 )
 
-type FilterOption struct {
+type FilterOptions struct {
 	Severities         []dbTypes.Severity
 	IgnoreStatuses     []dbTypes.Status
 	IncludeNonFailures bool
@@ -35,20 +35,20 @@ type FilterOption struct {
 }
 
 // Filter filters out the report
-func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
-	ignoreConf, err := ParseIgnoreFile(ctx, opt.IgnoreFile)
+func Filter(ctx context.Context, report types.Report, opts FilterOptions) error {
+	ignoreConf, err := ParseIgnoreFile(ctx, opts.IgnoreFile)
 	if err != nil {
-		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
+		return xerrors.Errorf("%s error: %w", opts.IgnoreFile, err)
 	}
 
 	for i := range report.Results {
-		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opt); err != nil {
+		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opts); err != nil {
 			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
 
 	// Filter out vulnerabilities based on the given VEX document.
-	if err = filterByVEX(report, opt); err != nil {
+	if err = vex.Filter(&report, vex.Options{VEXPath: opts.VEXPath}); err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
 	}
 
@@ -56,7 +56,7 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 }
 
 // FilterResult filters out the result
-func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOption) error {
+func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOptions) error {
 	// Convert dbTypes.Severity to string
 	severities := lo.Map(opt.Severities, func(s dbTypes.Severity, _ int) string {
 		return s.String()

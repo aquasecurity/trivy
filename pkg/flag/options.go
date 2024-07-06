@@ -437,8 +437,8 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 }
 
 // FilterOpts returns options for filtering
-func (o *Options) FilterOpts() result.FilterOption {
-	return result.FilterOption{
+func (o *Options) FilterOpts() result.FilterOptions {
+	return result.FilterOptions{
 		Severities:         o.Severities,
 		IgnoreStatuses:     o.IgnoreStatuses,
 		IncludeNonFailures: o.IncludeNonFailures,
