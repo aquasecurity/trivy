@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -25,10 +26,39 @@ import (
 // Note: This is in the experimental stage and does not yet support many specifications.
 // The implementation may change significantly.
 type VEX interface {
-	Filter(*types.Result, *core.BOM)
+	NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
 }
 
-func New(filePath string, report types.Report) (VEX, error) {
+type Options struct {
+	VEXPath string
+}
+
+// Filter determines whether a detected vulnerability should be filtered out based on the provided VEX document.
+// If the VEX document is passed and the vulnerability is either not affected or fixed according to the VEX statement,
+// the vulnerability is filtered out.
+func Filter(report *types.Report, opts Options) error {
+	vexDoc, err := New(opts.VEXPath, report)
+	if err != nil {
+		return xerrors.Errorf("unable to load VEX: %w", err)
+	} else if vexDoc == nil {
+		return nil
+	}
+
+	bom, err := sbomio.NewEncoder(core.Options{}).Encode(*report)
+	if err != nil {
+		return xerrors.Errorf("unable to encode the SBOM: %w", err)
+	}
+
+	for i, result := range report.Results {
+		if len(result.Vulnerabilities) == 0 {
+			continue
+		}
+		filterVulnerabilities(&report.Results[i], bom, vexDoc.NotAffected)
+	}
+	return nil
+}
+
+func New(filePath string, report *types.Report) (VEX, error) {
 	if filePath == "" {
 		return nil, nil
 	}
@@ -63,7 +93,7 @@ func New(filePath string, report types.Report) (VEX, error) {
 	return nil, xerrors.Errorf("unable to load VEX: %w", errs)
 }
 
-func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
+func decodeCycloneDXJSON(r io.ReadSeeker, report *types.Report) (*CycloneDX, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return nil, xerrors.Errorf("seek error: %w", err)
 	}
@@ -77,7 +107,7 @@ func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	return newCycloneDX(report.BOM, vex), nil
 }
 
-func decodeOpenVEX(r io.ReadSeeker) (VEX, error) {
+func decodeOpenVEX(r io.ReadSeeker) (*OpenVEX, error) {
 	// openvex/go-vex outputs log messages by default
 	logrus.SetOutput(io.Discard)
 
@@ -94,7 +124,7 @@ func decodeOpenVEX(r io.ReadSeeker) (VEX, error) {
 	return newOpenVEX(openVEX), nil
 }
 
-func decodeCSAF(r io.ReadSeeker) (VEX, error) {
+func decodeCSAF(r io.ReadSeeker) (*CSAF, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return nil, xerrors.Errorf("seek error: %w", err)
 	}

@@ -20,7 +20,7 @@ type relationship struct {
 	SubProducts []*purl.PackageURL
 }
 
-func newCSAF(advisory csaf.Advisory) VEX {
+func newCSAF(advisory csaf.Advisory) *CSAF {
 	return &CSAF{
 		advisory: advisory,
 		logger:   log.WithPrefix("vex").With(log.String("format", "CSAF")),

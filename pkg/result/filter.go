@@ -13,8 +13,6 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
@@ -74,31 +72,6 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	}
 	sort.Sort(types.BySeverity(result.Vulnerabilities))
 
-	return nil
-}
-
-// filterByVEX determines whether a detected vulnerability should be filtered out based on the provided VEX document.
-// If the VEX document is not nil and the vulnerability is either not affected or fixed according to the VEX statement,
-// the vulnerability is filtered out.
-func filterByVEX(report types.Report, opt FilterOption) error {
-	vexDoc, err := vex.New(opt.VEXPath, report)
-	if err != nil {
-		return err
-	} else if vexDoc == nil {
-		return nil
-	}
-
-	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(report)
-	if err != nil {
-		return xerrors.Errorf("unable to encode the SBOM: %w", err)
-	}
-
-	for i, result := range report.Results {
-		if len(result.Vulnerabilities) == 0 {
-			continue
-		}
-		vexDoc.Filter(&report.Results[i], bom)
-	}
 	return nil
 }
 

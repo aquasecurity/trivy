@@ -11,7 +11,7 @@ type OpenVEX struct {
 	vex openvex.VEX
 }
 
-func newOpenVEX(vex openvex.VEX) VEX {
+func newOpenVEX(vex openvex.VEX) *OpenVEX {
 	return &OpenVEX{
 		vex: vex,
 	}

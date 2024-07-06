@@ -42,10 +42,6 @@ func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 	}
 }
 
-func (v *CycloneDX) Filter(result *types.Result, bom *core.BOM) {
-	filterVulnerabilities(result, bom, v.NotAffected)
-}
-
 func (v *CycloneDX) NotAffected(vuln types.DetectedVulnerability, product, _ *core.Component) (types.ModifiedFinding, bool) {
 	stmt, ok := v.statements[vuln.VulnerabilityID]
 	if !ok {
@@ -70,7 +66,7 @@ func (v *CycloneDX) NotAffected(vuln types.DetectedVulnerability, product, _ *co
 			continue
 		}
 		if product.PkgIdentifier.Match(link.Reference()) {
-			return types.NewModifiedFinding(vuln, stmt.Status, stmt.Justification, "CycloneDX VEX"), false
+			return types.NewModifiedFinding(vuln, stmt.Status, stmt.Justification, "CycloneDX VEX"), true
 		}
 	}
 	return types.ModifiedFinding{}, false
