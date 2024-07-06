@@ -203,7 +203,6 @@ type Vulnerability struct {
 
 type Options struct {
 	GenerateBOMRef bool // Generate BOMRef for CycloneDX
-	Parents        bool // Hold parent maps
 }
 
 func NewBOM(opts Options) *BOM {
@@ -263,9 +262,7 @@ func (b *BOM) AddRelationship(parent, child *Component, relationshipType Relatio
 		Dependency: child.id,
 	})
 
-	if b.opts.Parents {
-		b.parents[child.id] = append(b.parents[child.id], parent.id)
-	}
+	b.parents[child.id] = append(b.parents[child.id], parent.id)
 }
 
 func (b *BOM) AddVulnerabilities(c *Component, vulns []Vulnerability) {

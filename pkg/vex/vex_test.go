@@ -500,7 +500,7 @@ func newTestBOM1() *core.BOM {
 	// - oci:debian?tag=12
 	//     - pkg:maven/org.springframework.boot/spring-boot@2.6.0
 	//     - pkg:deb/debian/bash@5.3
-	bom := core.NewBOM(core.Options{Parents: true})
+	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(&ociComponent)
 	bom.AddComponent(&springComponent)
 	bom.AddComponent(&bashComponent)
@@ -541,7 +541,7 @@ func newTestBOM3() *core.BOM {
 	//     - pkg:golang/github.com/aquasecurity/go-module@1.0.0
 	//         - pkg:golang/github.com/aquasecurity/go-direct1@2.0.0
 	//             - pkg:golang/github.com/aquasecurity/go-transitive@4.0.0
-	bom := core.NewBOM(core.Options{Parents: true})
+	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(&fsComponent)
 	bom.AddComponent(&goModuleComponent)
 	bom.AddComponent(&goDirectComponent1)
@@ -559,7 +559,7 @@ func newTestBOM4() *core.BOM {
 	//             - pkg:golang/github.com/aquasecurity/go-transitive@5.0.0
 	//         - pkg:golang/github.com/aquasecurity/go-direct2@4.0.0
 	//             - pkg:golang/github.com/aquasecurity/go-transitive@5.0.0
-	bom := core.NewBOM(core.Options{Parents: true})
+	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(&fsComponent)
 	bom.AddComponent(&goModuleComponent)
 	bom.AddComponent(&goDirectComponent1)
@@ -577,7 +577,7 @@ func newTestBOM5() *core.BOM {
 	// - oci:debian?tag=12
 	//     - pkg:bitnami/argo-cd@2.9.3-2?arch=amd64&distro=debian-12
 	//         - pkg:golang/k8s.io/client-go@0.24.2
-	bom := core.NewBOM(core.Options{Parents: true})
+	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(&ociComponent)
 	bom.AddComponent(&argoComponent)
 	bom.AddComponent(&clientGoComponent)
@@ -589,7 +589,7 @@ func newTestBOM5() *core.BOM {
 func newTestBOM6() *core.BOM {
 	// - oci:debian?tag=12
 	//     - pkg:golang/k8s.io/client-go@0.24.2
-	bom := core.NewBOM(core.Options{Parents: true})
+	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(&ociComponent)
 	bom.AddComponent(&clientGoComponent)
 	bom.AddRelationship(&ociComponent, &clientGoComponent, core.RelationshipContains)
