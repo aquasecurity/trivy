@@ -152,16 +152,20 @@ func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) 
 			return true // Should never reach here
 		}
 
+		var modified types.ModifiedFinding
 		notAffectedFn := func(c, leaf *core.Component) bool {
-			modified, notAffected := fn(vuln, c, leaf)
+			m, notAffected := fn(vuln, c, leaf)
 			if notAffected {
-				result.ModifiedFindings = append(result.ModifiedFindings, modified)
-				return true
+				modified = m // Take the last modified finding if multiple VEX states "not affected"
 			}
-			return false
+			return notAffected
 		}
 
-		return reachRoot(c, bom.Components(), bom.Parents(), notAffectedFn)
+		if !reachRoot(c, bom.Components(), bom.Parents(), notAffectedFn) {
+			result.ModifiedFindings = append(result.ModifiedFindings, modified)
+			return false
+		}
+		return true
 	})
 }
 
