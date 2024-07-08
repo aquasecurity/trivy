@@ -109,9 +109,12 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		req.Header.Set("If-None-Match", t.cachedETag)
 	}
 
-	transport := http.DefaultTransport
+	var transport http.RoundTripper
 	if req.URL.Host == "github.com" {
 		transport = NewGitHubTransport(req.URL)
+	}
+	if transport == nil {
+		transport = http.DefaultTransport
 	}
 
 	res, err := transport.RoundTrip(req)
