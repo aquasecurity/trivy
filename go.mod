@@ -43,7 +43,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.1.5
 	github.com/containerd/containerd v1.7.18
 	github.com/csaf-poc/csaf_distribution/v3 v3.0.0
-	github.com/docker/docker v26.1.4+incompatible
+	github.com/docker/docker v27.0.3+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/fatih/color v1.17.0
 	github.com/go-git/go-git/v5 v5.12.0
@@ -106,8 +106,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
-	github.com/testcontainers/testcontainers-go v0.31.0
-	github.com/testcontainers/testcontainers-go/modules/localstack v0.31.0
+	github.com/testcontainers/testcontainers-go v0.32.0
+	github.com/testcontainers/testcontainers-go/modules/localstack v0.32.0
 	github.com/tetratelabs/wazero v1.7.3
 	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/xeipuuv/gojsonschema v1.2.0
