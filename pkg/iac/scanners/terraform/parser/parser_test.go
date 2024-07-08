@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"sort"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1724,4 +1725,23 @@ func Test_LoadLocalCachedModule(t *testing.T) {
 
 	bucketName := buckets[0].GetAttribute("bucket").Value().AsString()
 	assert.Equal(t, "my-s3-bucket", bucketName)
+}
+
+func TestTFVarsFileDoesNotExist(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(``),
+		},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+		OptionWithTFVarsPaths("main.tfvars"),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	_, _, err := parser.EvaluateAll(context.TODO())
+	assert.ErrorContains(t, err, "file does not exist")
 }
