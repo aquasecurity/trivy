@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
 	"net/url"
 	"os"
 	"path"
@@ -12,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v62/github"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -24,8 +22,10 @@ import (
 
 const (
 	SchemaVersion = "0.1"
-	manifestFile  = "vex-repository.json"
-	indexFile     = "index.json"
+
+	manifestFile      = "vex-repository.json"
+	indexFile         = "index.json"
+	cacheMetadataFile = "cache.json"
 )
 
 type Manifest struct {
@@ -66,8 +66,9 @@ type Location struct {
 }
 
 type Index struct {
-	UpdatedAt time.Time               `json:"updated_at"`
-	Packages  map[string]PackageEntry `json:"packages"`
+	Path      string // Path to the index file
+	UpdatedAt time.Time
+	Packages  map[string]PackageEntry
 }
 
 type PackageEntry struct {
@@ -88,10 +89,20 @@ type Repository struct {
 	dir string // Root directory for this VEX repository, $CACHE_DIR/vex/repositories/$REPO_NAME/
 }
 
+type CacheMetadata struct {
+	UpdatedAt time.Time         // Last updated time
+	ETags     map[string]string // Last ETag for each URL
+}
+
 func (r *Repository) Manifest(ctx context.Context) (Manifest, error) {
 	filePath := filepath.Join(r.dir, manifestFile)
-	log.DebugContext(ctx, "Reading the repository metadata...", log.String("name", r.Name), log.FilePath(filePath))
+	if !fsutils.FileExists(filePath) {
+		if err := r.downloadManifest(ctx, Options{}); err != nil {
+			return Manifest{}, xerrors.Errorf("failed to download the repository metadata: %w", err)
+		}
+	}
 
+	log.DebugContext(ctx, "Reading the repository metadata...", log.String("repo", r.Name), log.FilePath(filePath))
 	f, err := os.Open(filePath)
 	if err != nil {
 		return Manifest{}, xerrors.Errorf("failed to open the file: %w", err)
@@ -107,7 +118,7 @@ func (r *Repository) Manifest(ctx context.Context) (Manifest, error) {
 
 func (r *Repository) Index(ctx context.Context) (Index, error) {
 	filePath := filepath.Join(r.dir, indexFile)
-	log.DebugContext(ctx, "Reading the repository index...", log.String("name", r.Name), log.FilePath(filePath))
+	log.DebugContext(ctx, "Reading the repository index...", log.String("repo", r.Name), log.FilePath(filePath))
 
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -121,6 +132,7 @@ func (r *Repository) Index(ctx context.Context) (Index, error) {
 	}
 
 	return Index{
+		Path:      filePath,
 		UpdatedAt: raw.UpdatedAt,
 		Packages:  lo.KeyBy(raw.Packages, func(p PackageEntry) string { return p.ID }),
 	}, nil
@@ -137,54 +149,15 @@ func (r *Repository) downloadManifest(ctx context.Context, opts Options) error {
 	}
 
 	if u.Host == "github.com" {
-		if err = r.githubGet(ctx, u, r.dir); err != nil {
-			return xerrors.Errorf("failed to get the repository metadata: %w", err)
-		}
-		return nil
+		u.Path = path.Join(u.Path, manifestFile)
+	} else {
+		u.Path = path.Join(u.Path, ".well-known", manifestFile)
 	}
 
-	u.Path += path.Join(u.Path, ".well-known", manifestFile)
 	log.DebugContext(ctx, "Downloading the repository metadata...", log.String("url", u.String()), log.String("dst", r.dir))
-	if err := downloader.Download(ctx, u.String(), r.dir, ".", opts.Insecure); err != nil {
+	if _, err = downloader.Download(ctx, u.String(), r.dir, ".", downloader.Options{Insecure: opts.Insecure}); err != nil {
+		_ = os.RemoveAll(r.dir)
 		return xerrors.Errorf("failed to download the repository: %w", err)
-	}
-	return nil
-}
-
-func (r *Repository) githubGet(ctx context.Context, u *url.URL, dstDir string) error {
-	ss := strings.SplitN(u.Path, "/", 4)
-	if len(ss) < 3 {
-		return xerrors.Errorf("invalid GitHub URL: %s", u)
-	}
-	owner := ss[1]
-	repo := ss[2]
-	filePath := manifestFile
-	if len(ss) == 4 {
-		filePath = path.Join(ss[3], filePath)
-	}
-
-	client := github.NewClient(nil)
-	if t := os.Getenv("GITHUB_TOKEN"); t != "" {
-		client = client.WithAuthToken(t)
-	}
-
-	log.DebugContext(ctx, "Downloading the repository metadata from GitHub...",
-		log.String("owner", owner), log.String("repo", repo), log.String("path", filePath),
-		log.String("dst", dstDir))
-	rc, _, err := client.Repositories.DownloadContents(ctx, owner, repo, filePath, nil)
-	if err != nil {
-		return xerrors.Errorf("failed to get the file content: %w", err)
-	}
-	defer rc.Close()
-
-	f, err := os.Create(filepath.Join(dstDir, manifestFile))
-	if err != nil {
-		return xerrors.Errorf("failed to create a file: %w", err)
-	}
-	defer f.Close()
-
-	if _, err = io.Copy(f, rc); err != nil {
-		return xerrors.Errorf("failed to copy the file: %w", err)
 	}
 	return nil
 }
@@ -207,13 +180,12 @@ func (r *Repository) Update(ctx context.Context, opts Options) error {
 	}
 
 	versionDir := filepath.Join(r.dir, majorVersion)
-	if !r.needUpdate(ctx, ver, majorVersion) {
-		log.InfoContext(ctx, "Need to update repository", log.String("name", r.Name))
+	if !r.needUpdate(ctx, ver, versionDir) {
+		log.InfoContext(ctx, "No need to check repository updates", log.String("repo", r.Name))
 		return nil
 	}
 
-	log.InfoContext(ctx, "Need to update repository", log.String("name", r.Name))
-	log.InfoContext(ctx, "Downloading repository...", log.String("name", r.Name), log.String("url", r.URL))
+	log.InfoContext(ctx, "Updating repository...", log.String("repo", r.Name), log.String("url", r.URL))
 	if err = r.download(ctx, ver, versionDir, opts); err != nil {
 		return xerrors.Errorf("failed to download the repository: %w", err)
 	}
@@ -225,19 +197,18 @@ func (r *Repository) needUpdate(ctx context.Context, ver Version, versionDir str
 		return true
 	}
 
-	index, err := r.Index(ctx)
+	m, err := r.cacheMetadata()
 	if err != nil {
-		log.DebugContext(ctx, "Failed to get the repository index", log.String("name", r.Name), log.Err(err))
+		log.DebugContext(ctx, "Failed to get repository cache metadata", log.String("repo", r.Name), log.Err(err))
 		return true
 	}
 
 	now := clock.Clock(ctx).Now()
-	if now.After(index.UpdatedAt.Add(ver.UpdateInterval.Duration)) {
+	log.DebugContext(ctx, "Checking if the repository needs to be updated...", log.String("repo", r.Name),
+		log.Time("last_update", m.UpdatedAt), log.Duration("update_interval", ver.UpdateInterval.Duration))
+	if now.After(m.UpdatedAt.Add(ver.UpdateInterval.Duration)) {
 		return true
 	}
-
-	// TODO: use local metadata.json
-
 	return false
 }
 
@@ -245,19 +216,83 @@ func (r *Repository) download(ctx context.Context, ver Version, dst string, opts
 	if len(ver.Locations) == 0 {
 		return xerrors.Errorf("no locations found for version %s", ver.SpecVersion)
 	}
-
 	if err := os.MkdirAll(dst, 0700); err != nil {
 		return xerrors.Errorf("failed to mkdir: %w", err)
 	}
 
+	m, err := r.cacheMetadata()
+	if err != nil {
+		return xerrors.Errorf("failed to get the repository cache metadata: %w", err)
+	}
+	etags := lo.Ternary(m.ETags == nil, map[string]string{}, m.ETags)
+
 	var errs error
 	for _, loc := range ver.Locations {
-		log.DebugContext(ctx, "Downloading repository ...", log.String("url", loc.URL), log.String("dir", dst))
-		if err := downloader.Download(ctx, loc.URL, dst, ".", opts.Insecure); err != nil {
+		logger := log.With(log.String("repo", r.Name))
+		logger.DebugContext(ctx, "Downloading repository to cache dir...", log.String("url", loc.URL),
+			log.String("dir", dst), log.String("etag", etags[loc.URL]))
+		etag, err := downloader.Download(ctx, loc.URL, dst, ".", downloader.Options{
+			Insecure: opts.Insecure,
+			ETag:     etags[loc.URL],
+		})
+		switch {
+		case errors.Is(err, downloader.ErrSkipDownload):
+			logger.DebugContext(ctx, "No updates in the repository", log.String("url", r.URL))
+			etag = etags[loc.URL] // Keep the old ETag
+			// Update last updated time so that Trivy will not try to download the same URL soon
+		case err != nil:
 			errs = errors.Join(errs, err)
-		} else {
-			return nil
+			continue // Try the next location
+		default:
+			// Successfully downloaded
 		}
+
+		// Update the cache metadata
+		etags[loc.URL] = etag
+		now := clock.Clock(ctx).Now()
+		if err = r.updateCacheMetadata(ctx, CacheMetadata{
+			UpdatedAt: now,
+			ETags:     etags,
+		}); err != nil {
+			return xerrors.Errorf("failed to update the repository cache metadata: %w", err)
+		}
+		logger.DebugContext(ctx, "Updated repository cache metadata", log.String("etag", etag),
+			log.Time("updated_at", now))
+		return nil
 	}
 	return errs
+}
+
+func (r *Repository) cacheMetadata() (CacheMetadata, error) {
+	filePath := filepath.Join(r.dir, cacheMetadataFile)
+	if !fsutils.FileExists(filePath) {
+		return CacheMetadata{}, nil
+	}
+	f, err := os.Open(filePath)
+	if err != nil {
+		return CacheMetadata{}, xerrors.Errorf("failed to open the file: %w", err)
+	}
+	defer f.Close()
+
+	var metadata CacheMetadata
+	if err = json.NewDecoder(f).Decode(&metadata); err != nil {
+		return CacheMetadata{}, xerrors.Errorf("failed to decode the cache metadata: %w", err)
+	}
+	return metadata, nil
+}
+
+func (r *Repository) updateCacheMetadata(ctx context.Context, metadata CacheMetadata) error {
+	filePath := filepath.Join(r.dir, cacheMetadataFile)
+	log.DebugContext(ctx, "Updating repository cache metadata...", log.FilePath(filePath))
+
+	f, err := os.Create(filePath)
+	if err != nil {
+		return xerrors.Errorf("failed to create the file: %w", err)
+	}
+	defer f.Close()
+
+	if err = json.NewEncoder(f).Encode(metadata); err != nil {
+		return xerrors.Errorf("failed to encode the metadata: %w", err)
+	}
+	return nil
 }
