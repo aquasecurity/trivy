@@ -62,7 +62,26 @@
     {
       "Target": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz (opensuse.tumbleweed 20240607)",
       "Class": "os-pkgs",
-      "Type": "opensuse.tumbleweed"
+      "Type": "opensuse.tumbleweed",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "openSUSE-SU-2024:13065-1",
+          "PkgID": "libopenssl3@3.1.4-9.1.x86_64",
+          "PkgName": "libopenssl3",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/opensuse.tumbleweed/libopenssl3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse.tumbleweed-20240607",
+            "UID": "f051425f385d2b99"
+          },
+          "InstalledVersion": "3.1.4-9.1",
+          "FixedVersion": "3.1.5-9.1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:427d16a14c45614f51357aeebee0dfe209a1cebfc044b3b724b6ea35663b3111",
+            "DiffID": "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
+          },
+          "Severity": "UNKNOWN"
+        }
+      ]
     }
   ]
 }
