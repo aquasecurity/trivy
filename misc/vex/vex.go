@@ -19,6 +19,7 @@ import (
 	"github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
+	"golang.org/x/vuln/scan"
 
 	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -76,6 +77,18 @@ func run() error {
 		_, _ = checkoutMain(ctx, *cloneDir)
 	}()
 
+	// Save the current working directory
+	wd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current working directory: %w", err)
+	}
+
+	// Change to the target directory as govulncheck doesn't support Dir
+	// cf. https://github.com/golang/go/blob/6d89b38ed86e0bfa0ddaba08dc4071e6bb300eea/src/os/exec/exec.go#L171-L174
+	if err = os.Chdir(*cloneDir); err != nil {
+		return fmt.Errorf("failed to change to directory %s: %w", *cloneDir, err)
+	}
+
 	tags, err := getLatestTags(ctx, *cloneDir)
 	if err != nil {
 		return err
@@ -91,6 +104,11 @@ func run() error {
 		docs = append(docs, doc)
 	}
 
+	// Change back to the original directory when we're done
+	if err = os.Chdir(wd); err != nil {
+		return fmt.Errorf("failed to change back to original directory: %w", err)
+	}
+
 	if err = updateVEX(*output, combineDocs(docs)); err != nil {
 		return err
 	}
@@ -100,21 +118,21 @@ func run() error {
 
 func cloneOrPullRepo(ctx context.Context, dir string) ([]byte, error) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return runCommandWithTimeout(ctx, 2*time.Minute, "", "git", "clone", repoURL, dir)
+		return runCommandWithTimeout(ctx, 2*time.Minute, "git", "clone", repoURL, dir)
 	}
 
 	if _, err := checkoutMain(ctx, dir); err != nil {
 		return nil, fmt.Errorf("failed to checkout main: %w", err)
 	}
-	return runCommandWithTimeout(ctx, 2*time.Minute, dir, "git", "pull", "--tags")
+	return runCommandWithTimeout(ctx, 2*time.Minute, "git", "-C", dir, "pull", "--tags")
 }
 
 func checkoutMain(ctx context.Context, dir string) ([]byte, error) {
-	return runCommandWithTimeout(ctx, 1*time.Minute, dir, "git", "checkout", "main")
+	return runCommandWithTimeout(ctx, 1*time.Minute, "git", "-C", dir, "checkout", "main")
 }
 
 func getLatestTags(ctx context.Context, dir string) ([]string, error) {
-	output, err := runCommandWithTimeout(ctx, 1*time.Minute, dir, "git", "tag")
+	output, err := runCommandWithTimeout(ctx, 1*time.Minute, "git", "tag")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tags: %w", err)
 	}
@@ -143,12 +161,12 @@ func getLatestTags(ctx context.Context, dir string) ([]string, error) {
 
 func processTag(ctx context.Context, dir, tag string) (*vex.VEX, error) {
 	log.Info("Processing tag", log.String("tag", tag))
-	if _, err := runCommandWithTimeout(ctx, 1*time.Minute, dir, "git", "checkout", tag); err != nil {
+	if _, err := runCommandWithTimeout(ctx, 1*time.Minute, "git", "checkout", tag); err != nil {
 		return nil, fmt.Errorf("failed to checkout tag %s: %w", tag, err)
 	}
 
 	// Run govulncheck and generate VEX document
-	vexDoc, err := generateVEX(ctx, dir)
+	vexDoc, err := generateVEX(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run govulncheck: %w", err)
 	}
@@ -160,7 +178,7 @@ func processTag(ctx context.Context, dir, tag string) (*vex.VEX, error) {
 	//   - Status
 	//      - govulncheck uses "not_affected" for all vulnerabilities.
 	//        cf. https://github.com/golang/go/issues/68338
-	findings, err := generateJSON(ctx, dir)
+	findings, err := generateJSON(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run govulncheck: %w", err)
 	}
@@ -225,31 +243,30 @@ func processTag(ctx context.Context, dir, tag string) (*vex.VEX, error) {
 	return vexDoc, nil
 }
 
-func generateVEX(ctx context.Context, dir string) (*vex.VEX, error) {
-	output, err := runCommandWithTimeout(ctx, 5*time.Minute, dir, "govulncheck", "-format", "openvex", "./...")
+func generateVEX(ctx context.Context) (*vex.VEX, error) {
+	buf, err := runGovulncheck(ctx, "openvex")
 	if err != nil {
 		return nil, fmt.Errorf("failed to run govulncheck: %w", err)
 	}
 
-	vexDoc, err := vex.Parse(output)
+	vexDoc, err := vex.Parse(buf.Bytes())
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse govulncheck output: %w", err)
 	}
 	return vexDoc, nil
 }
 
-func generateJSON(ctx context.Context, dir string) (map[vex.VulnerabilityID]VulnerabilityFinding, error) {
-	output, err := runCommandWithTimeout(ctx, 5*time.Minute, dir, "govulncheck", "-format", "json", "./...")
+func generateJSON(ctx context.Context) (map[vex.VulnerabilityID]VulnerabilityFinding, error) {
+	buf, err := runGovulncheck(ctx, "json")
 	if err != nil {
 		return nil, fmt.Errorf("failed to run govulncheck: %w", err)
 	}
 
-	decoder := json.NewDecoder(bytes.NewReader(output))
-
+	decoder := json.NewDecoder(buf)
 	findings := map[vex.VulnerabilityID]VulnerabilityFinding{}
 	for {
 		var finding VulnerabilityFinding
-		if err := decoder.Decode(&finding); errors.Is(err, io.EOF) {
+		if err := decoder.Decode(&finding); err == io.EOF {
 			break
 		} else if err != nil {
 			return nil, fmt.Errorf("failed to decode govulncheck output: %w", err)
@@ -259,7 +276,24 @@ func generateJSON(ctx context.Context, dir string) (map[vex.VulnerabilityID]Vuln
 	return findings, nil
 }
 
+func runGovulncheck(ctx context.Context, format string) (*bytes.Buffer, error) {
+	var buf bytes.Buffer
+	cmd := scan.Command(ctx, "-format", format, "./...")
+	cmd.Stdout = &buf
+
+	log.Info("Running govulncheck", log.String("format", format))
+	if err := cmd.Start(); err != nil {
+		return nil, fmt.Errorf("failed to start govulncheck: %w", err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		return nil, fmt.Errorf("failed to run govulncheck: %w", err)
+	}
+	return &buf, nil
+}
+
 func combineDocs(docs []*vex.VEX) []vex.Statement {
+	log.Info("Combining VEX documents", log.Int("docs", len(docs)))
 	statements := map[vex.VulnerabilityID]vex.Statement{}
 	for _, doc := range docs {
 		for _, stmt := range doc.Statements {
@@ -274,14 +308,11 @@ func combineDocs(docs []*vex.VEX) []vex.Statement {
 	return lo.Values(statements)
 }
 
-func runCommandWithTimeout(ctx context.Context, timeout time.Duration, dir, name string, args ...string) ([]byte, error) {
+func runCommandWithTimeout(ctx context.Context, timeout time.Duration, name string, args ...string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, name, args...)
-	if dir != "" {
-		cmd.Dir = dir
-	}
 	log.Info("Executing command", log.String("cmd", cmd.String()))
 
 	output, err := cmd.CombinedOutput()
@@ -326,7 +357,9 @@ func updateVEX(output string, statements []vex.Statement) error {
 	}
 	defer f.Close()
 
-	if err = json.NewEncoder(f).Encode(d); err != nil {
+	e := json.NewEncoder(f)
+	e.SetIndent("", "  ")
+	if err = e.Encode(d); err != nil {
 		return err
 	}
 	return err
