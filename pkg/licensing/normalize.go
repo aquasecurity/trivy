@@ -74,17 +74,17 @@ var mapping = map[string]string{
 	"BSD-4-CLAUSE":                 BSD4Clause,
 	"BSD 2 CLAUSE":                 BSD2Clause,
 	"BSD 2-CLAUSE":                 BSD2Clause,
-	"2-CLAUSE BSD":     			BSD2Clause,
-	"TWO-CLAUSE BSD-STYLE": 		BSD2Clause,
+	"2-CLAUSE BSD":                 BSD2Clause,
+	"TWO-CLAUSE BSD-STYLE":         BSD2Clause,
 	"BSD 3 CLAUSE":                 BSD3Clause,
 	"BSD 3-CLAUSE":                 BSD3Clause,
 	"BSD 3-CLAUSE \"NEW\" OR \"REVISED\" LICENSE (BSD-3-CLAUSE)": BSD3Clause,
 	"ECLIPSE DISTRIBUTION LICENSE (NEW BSD LICENSE)":             BSD3Clause,
-	"NEW BSD":                      		BSD3Clause,
-	"MODIFIED BSD":                 		BSD3Clause,
+	"NEW BSD":                              BSD3Clause,
+	"MODIFIED BSD":                         BSD3Clause,
 	"REVISED BSD":                          BSD3Clause,
-	"3-CLAUSE BSD":                 		BSD3Clause,
-	"BSD 3-CLAUSE NEW":             		BSD3Clause,
+	"3-CLAUSE BSD":                         BSD3Clause,
+	"BSD 3-CLAUSE NEW":                     BSD3Clause,
 	"BSD LICENSE 3":                        BSD3Clause,
 	// Eclipse Distribution License 1.0 is the same as BSD-3-Clause
 	// See https://wiki.spdx.org/view/Legal_Team/License_List/Licenses_Under_Consideration
@@ -94,7 +94,7 @@ var mapping = map[string]string{
 	"ECLIPSE DISTRIBUTION LICENSE V1.0":    BSD3Clause,
 
 	// APACHE
-	"APACHE":                       		Apache10,
+	"APACHE":                               Apache10,
 	"APACHE SOFTWARE LICENSES":             Apache10,
 	"APACHE 2.0":                           Apache20,
 	"APACHE 2":                             Apache20,
@@ -107,8 +107,8 @@ var mapping = map[string]string{
 	"APACHE LICENSE, VERSION 2.0":              Apache20,
 	"APACHE PUBLIC LICENSE 2.0":                Apache20,
 	"APACHE SOFTWARE LICENSE - VERSION 2.0":    Apache20,
-	"APACHE-2.0":                       		Apache20,
-	"APACHE 2 STYLE":                   		Apache20,
+	"APACHE-2.0":                               Apache20,
+	"APACHE 2 STYLE":                           Apache20,
 	"ASF 2.0":                                  Apache20,
 
 	// CC0-1.0
