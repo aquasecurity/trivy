@@ -1,12 +1,46 @@
 package licensing_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/licensing"
 )
+
+func TestNormalize(t *testing.T) {
+	tests := []struct {
+		licenses   []string
+		normalized string
+	}{
+		{
+			[]string{
+				"APACHE",
+				" APACHE ",
+				"APACHE License",
+				"The Apache License",
+				"THE APACHE LICENSE",
+				"  THE APACHE LICENSE  ",
+			},
+			"Apache-1.0",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.normalized, func(t *testing.T) {
+			for _, ll := range tt.licenses {
+				res := licensing.Normalize(ll)
+				assert.Equal(t, tt.normalized, res)
+			}
+		})
+	}
+	t.Run("All mapping keys must be uppercase", func(t *testing.T) {
+		for k := range mapping {
+			res := strings.ToUpper(k)
+			assert.Equal(t, k, res)
+		}
+	})
+}
 
 func TestSplitLicenses(t *testing.T) {
 	tests := []struct {
