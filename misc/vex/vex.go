@@ -12,7 +12,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"sort"
 	"strings"
 	"time"
 
@@ -26,16 +25,20 @@ import (
 )
 
 const (
-	repoURL = "https://github.com/aquasecurity/trivy"
-	maxTags = 20
+	repoURL    = "https://github.com/aquasecurity/trivy"
+	minVersion = "0.40.0"
 )
 
-// Product ID for Trivy
-var productID = &packageurl.PackageURL{
-	Type:      packageurl.TypeGolang,
-	Namespace: "github.com/aquasecurity",
-	Name:      "trivy",
-}
+var (
+	minVer, _ = version.Parse(minVersion)
+
+	// Product ID for Trivy
+	productID = &packageurl.PackageURL{
+		Type:      packageurl.TypeGolang,
+		Namespace: "github.com/aquasecurity",
+		Name:      "trivy",
+	}
+)
 
 // VulnerabilityFinding is for parsing govulncheck JSON output
 type VulnerabilityFinding struct {
@@ -100,7 +103,7 @@ func run() error {
 	}
 
 	// Get the latest tags from the repository
-	tags, err := getLatestTags(ctx, *cloneDir)
+	tags, err := getLatestTags(ctx)
 	if err != nil {
 		return err
 	}
@@ -158,34 +161,26 @@ func checkoutMain(ctx context.Context, dir string) ([]byte, error) {
 }
 
 // getLatestTags retrieves and sorts the latest tags from the repository
-func getLatestTags(ctx context.Context, dir string) ([]string, error) {
+func getLatestTags(ctx context.Context) ([]string, error) {
 	output, err := runCommandWithTimeout(ctx, 1*time.Minute, "git", "tag")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tags: %w", err)
 	}
 
 	tags := strings.Split(strings.TrimSpace(string(output)), "\n")
-	versions := make([]version.Version, 0, len(tags))
+	versions := make([]string, 0, len(tags))
 
 	for _, tag := range tags {
 		v, err := version.Parse(tag)
-		if err == nil {
-			versions = append(versions, v)
+		if err != nil {
+			continue
+		}
+		if v.GreaterThanOrEqual(minVer) {
+			versions = append(versions, tag)
 		}
 	}
 
-	// Sort versions in descending order
-	sort.Slice(versions, func(i, j int) bool {
-		return versions[i].GreaterThan(versions[j])
-	})
-
-	// Get the latest maxTags number of tags
-	result := make([]string, 0, maxTags)
-	for i := 0; i < len(versions) && i < maxTags; i++ {
-		result = append(result, versions[i].Original())
-	}
-
-	return result, nil
+	return versions, nil
 }
 
 // processTag processes a single tag, running govulncheck and generating VEX statements
