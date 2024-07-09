@@ -4008,6 +4008,7 @@ You're not viewing the latest version.
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
+      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -4028,7 +4029,6 @@ You're not viewing the latest version.
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default &quot;Trivy-Token&quot;)
       --vex string                        [EXPERIMENTAL] file path to VEX
-      --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 </code></pre></div>
 <h3 id="options-inherited-from-parent-commands">Options inherited from parent commands</h3>
 <div class="highlight"><pre><span></span><code>      --cache-dir string          cache directory (default &quot;/path/to/cache&quot;)

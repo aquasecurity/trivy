@@ -4194,6 +4194,13 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HIGH</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CRITICAL</span><span class="w"></span>
 
+<span class="c1"># Same as &#39;--pkg-types&#39;</span><span class="w"></span>
+<span class="c1"># Default is &#39;os,library&#39;</span><span class="w"></span>
+<span class="nt">pkg-types</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">os</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">library</span><span class="w"></span>
+
+
 <span class="nt">scan</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Same as &#39;--compliance&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is empty  </span><span class="w"></span>
@@ -4355,12 +4362,6 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <h2 id="vulnerability-options">Vulnerability Options</h2>
 <p>Available with vulnerability scanning</p>
 <div class="highlight"><pre><span></span><code><span class="nt">vulnerability</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Same as &#39;--vuln-type&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is &#39;os,library&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">os</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">library</span><span class="w"></span>
-
 <span class="w">  </span><span class="c1"># Same as &#39;--ignore-unfixed&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ignore-unfixed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
