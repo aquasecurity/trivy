@@ -4,7 +4,7 @@
   "author": "Aqua Security",
   "timestamp": "2024-07-09T11:38:00.115697+04:00",
   "version": 1,
-  "tooling": "https://github.com/aquasecurity/trivy/tree/main/misc/vex/vex.go",
+  "tooling": "https://github.com/aquasecurity/trivy/tree/main/magefiles/vex.go",
   "statements": [
     {
       "vulnerability": {
