@@ -63,6 +63,7 @@ trivy filesystem [flags] PATH
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -89,7 +90,6 @@ trivy filesystem [flags] PATH
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex string                        [EXPERIMENTAL] file path to VEX
-      --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 
 ### Options inherited from parent commands

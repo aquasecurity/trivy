@@ -81,6 +81,7 @@ trivy image [flags] IMAGE_NAME
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
       --platform string                   set platform in the form os/arch if image is multi-platform capable
       --podman-host string                unix podman socket path to use for podman scanning
       --redis-ca string                   redis ca file location, if using redis as cache backend
@@ -109,7 +110,6 @@ trivy image [flags] IMAGE_NAME
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex string                        [EXPERIMENTAL] file path to VEX
-      --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 
 ### Options inherited from parent commands
