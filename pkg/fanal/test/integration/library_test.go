@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	dtypes "github.com/docker/docker/api/types"
+	dimage "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -144,7 +144,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			require.NoError(t, err)
 
 			// remove existing Image if any
-			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
+			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dimage.RemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})
@@ -230,7 +230,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			// clear Cache
 			require.NoError(t, c.Clear(), tt.name)
 
-			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
+			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dimage.RemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})

@@ -31,7 +31,7 @@ func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisI
 		return nil, xerrors.Errorf("dockerfile parse error: %w", err)
 	}
 
-	stages, metaArgs, err := instructions.Parse(dockerfile.AST)
+	stages, metaArgs, err := instructions.Parse(dockerfile.AST, nil)
 	if err != nil {
 		return nil, xerrors.Errorf("instruction parse error: %w", err)
 	}
