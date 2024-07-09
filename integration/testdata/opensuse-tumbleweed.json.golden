@@ -79,7 +79,14 @@
             "Digest": "sha256:427d16a14c45614f51357aeebee0dfe209a1cebfc044b3b724b6ea35663b3111",
             "DiffID": "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
           },
-          "Severity": "UNKNOWN"
+          "Title": "libopenssl-3-devel-3.1.1-3.1 on GA media",
+          "Description": "These are all security issues fixed in the libopenssl-3-devel-3.1.1-3.1 package on the GA media of openSUSE Tumbleweed.",
+          "Severity": "MEDIUM",
+          "References": [
+            "https://www.suse.com/security/cve/CVE-2023-2975/",
+            "https://www.suse.com/security/cve/CVE-2023-3446/",
+            "https://www.suse.com/support/security/rating/"
+          ]
         }
       ]
     }
