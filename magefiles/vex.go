@@ -148,7 +148,7 @@ func run() error {
 // cloneOrPullRepo clones the Trivy repository or pulls updates if it already exists
 func cloneOrPullRepo(ctx context.Context, dir string) ([]byte, error) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return runCommandWithTimeout(ctx, 2*time.Minute, "git", "clone", repoURL, dir)
+		return runCommandWithTimeout(ctx, 20*time.Minute, "git", "clone", repoURL, dir)
 	}
 
 	if _, err := checkoutMain(ctx, dir); err != nil {
