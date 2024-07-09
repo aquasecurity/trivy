@@ -12,7 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
-	api "github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/require"
 )
@@ -243,7 +243,7 @@ func TestDockerEngine(t *testing.T) {
 				require.NoError(t, err, tt.name)
 
 				// ensure image doesnt already exists
-				_, _ = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
+				_, _ = cli.ImageRemove(ctx, tt.input, image.RemoveOptions{
 					Force:         true,
 					PruneChildren: true,
 				})
@@ -262,11 +262,11 @@ func TestDockerEngine(t *testing.T) {
 
 				// cleanup
 				t.Cleanup(func() {
-					_, _ = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
+					_, _ = cli.ImageRemove(ctx, tt.input, image.RemoveOptions{
 						Force:         true,
 						PruneChildren: true,
 					})
-					_, _ = cli.ImageRemove(ctx, tt.imageTag, api.ImageRemoveOptions{
+					_, _ = cli.ImageRemove(ctx, tt.imageTag, image.RemoveOptions{
 						Force:         true,
 						PruneChildren: true,
 					})
