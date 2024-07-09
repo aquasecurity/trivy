@@ -198,19 +198,6 @@ func processTag(ctx context.Context, tag string) (map[UniqueKey]vex.Statement, m
 		return nil, nil, fmt.Errorf("failed to run govulncheck: %w", err)
 	}
 
-	// Save the VEX document for the current tag
-	f, err := os.Create(fmt.Sprintf("vex-%s.json", tag))
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create VEX file: %w", err)
-	}
-	defer f.Close()
-
-	e := json.NewEncoder(f)
-	e.SetIndent("", "  ")
-	if err = e.Encode(vexDoc); err != nil {
-		return nil, nil, fmt.Errorf("failed to write VEX file: %w", err)
-	}
-
 	// Run govulncheck and generate JSON result
 	// Need to generate JSON as well as OpenVEX for the following reasons:
 	//   - Subcomponent
