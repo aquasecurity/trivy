@@ -154,15 +154,12 @@ type terraformRootModule struct {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {
-
-	s.debug.Log("Scanning [%s] at '%s'...", target, dir)
-
 	// find directories which directly contain tf files
 	modulePaths := s.findModules(target, dir, dir)
 	sort.Strings(modulePaths)
 
 	if len(modulePaths) == 0 {
-		s.debug.Log("no modules found")
+		s.debug.Log("No modules found")
 		return nil, nil
 	}
 
@@ -178,6 +175,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 	var allResults scan.Results
 
 	p := parser.New(target, "", s.parserOpt...)
+	p.SetDebugWriter(io.Discard)
 	rootDirs, err := p.FindRootModules(ctx, modulePaths)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find root modules: %w", err)
@@ -188,7 +186,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 	// parse all root module directories
 	for _, dir := range rootDirs {
 
-		s.debug.Log("Scanning root module '%s'...", dir)
+		s.debug.Log("Scanning root module %q", dir)
 
 		p := parser.New(target, "", s.parserOpt...)
 
@@ -298,7 +296,7 @@ func (s *Scanner) findModules(target fs.FS, scanDir string, dirs ...string) []st
 func (s *Scanner) isRootModule(target fs.FS, dir string) bool {
 	files, err := fs.ReadDir(target, filepath.ToSlash(dir))
 	if err != nil {
-		s.debug.Log("failed to read dir '%s' from filesystem [%s]: %s", dir, target, err)
+		s.debug.Log("failed to read dir %q from filesystem [%s]: %s", dir, target, err)
 		return false
 	}
 	for _, file := range files {

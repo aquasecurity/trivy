@@ -77,7 +77,7 @@ func (e *evaluator) loadModule(ctx context.Context, b *terraform.Block) (*Module
 	}
 
 	if def, err := e.loadModuleFromTerraformCache(ctx, b, source); err == nil {
-		e.debug.Log("found module '%s' in .terraform/modules", source)
+		e.debug.Log("Found module %q in .terraform/modules", source)
 		return def, nil
 	}
 
@@ -110,7 +110,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 		}
 	}
 
-	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' using modules.json", b.FullName(), modulePath, e.filesystem)
+	e.debug.Log("Module %q resolved to path %q using modules.json", b.FullName(), modulePath)
 	moduleParser := e.parentParser.newModuleParser(e.filesystem, source, modulePath, b.Label(), b)
 	if err := moduleParser.ParseFS(ctx, modulePath); err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 
 func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, source string) (*ModuleDefinition, error) {
 
-	e.debug.Log("locating non-initialized module '%s'...", source)
+	e.debug.Log("Locating non-initialized module %q", source)
 
 	version := b.GetAttribute("version").AsStringValueOrDefault("", b).Value()
 	opt := resolvers.Options{
@@ -147,7 +147,7 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		return nil, err
 	}
 	prefix = path.Join(e.parentParser.moduleSource, prefix)
-	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' with prefix '%s'", b.FullName(), downloadPath, filesystem, prefix)
+	e.debug.Log("Module %q resolved to path %q with prefix %q", b.FullName(), downloadPath, prefix)
 	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, downloadPath, b.Label(), b)
 	if err := moduleParser.ParseFS(ctx, downloadPath); err != nil {
 		return nil, err

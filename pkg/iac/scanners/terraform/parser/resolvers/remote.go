@@ -53,7 +53,7 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 
 	r.incrementCount(opt)
 	opt.Debug("Successfully downloaded %s from %s", opt.Name, opt.Source)
-	opt.Debug("Module '%s' resolved via remote download.", opt.Name)
+	opt.Debug("Module %q resolved via remote download.", opt.Name)
 	return os.DirFS(cacheDir), opt.Source, filepath.Join(".", opt.RelativePath), true, nil
 }
 

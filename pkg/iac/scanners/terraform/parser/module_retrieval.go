@@ -20,7 +20,7 @@ var defaultResolvers = []ModuleResolver{
 }
 
 func resolveModule(ctx context.Context, current fs.FS, opt resolvers.Options) (filesystem fs.FS, sourcePrefix, downloadPath string, err error) {
-	opt.Debug("Resolving module '%s' with source: '%s'...", opt.Name, opt.Source)
+	opt.Debug("Resolving module %q with source: %q...", opt.Name, opt.Source)
 	for _, resolver := range defaultResolvers {
 		if filesystem, prefix, path, applies, err := resolver.Resolve(ctx, current, opt); err != nil {
 			return nil, "", "", err
@@ -29,5 +29,5 @@ func resolveModule(ctx context.Context, current fs.FS, opt resolvers.Options) (f
 			return filesystem, prefix, path, nil
 		}
 	}
-	return nil, "", "", fmt.Errorf("failed to resolve module '%s' with source: %s", opt.Name, opt.Source)
+	return nil, "", "", fmt.Errorf("failed to resolve module %q with source: %s", opt.Name, opt.Source)
 }

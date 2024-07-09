@@ -56,7 +56,7 @@ func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesy
 
 	opt.Debug("Trying to resolve: %s", key)
 	if info, err := fs.Stat(cacheFS, filepath.ToSlash(key)); err == nil && info.IsDir() {
-		opt.Debug("Module '%s' resolving via cache...", opt.Name)
+		opt.Debug("Module %q resolving via cache...", opt.Name)
 		cacheDir, err := locateCacheDir(opt.CacheDir)
 		if err != nil {
 			return nil, "", "", true, err
