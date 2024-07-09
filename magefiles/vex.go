@@ -390,7 +390,7 @@ func updateVEX(output string, statements []vex.Statement) error {
 			Author:    "Aqua Security",
 			Timestamp: lo.ToPtr(time.Now()),
 			Version:   doc.Version + 1,
-			Tooling:   "https://github.com/aquasecurity/trivy/tree/main/misc/vex/vex.go",
+			Tooling:   "https://github.com/aquasecurity/trivy/tree/main/magefiles/vex.go",
 		},
 		Statements: statements,
 	}
