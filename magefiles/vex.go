@@ -1,3 +1,5 @@
+//go:build mage_vex
+
 package main
 
 import (
