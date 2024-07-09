@@ -394,6 +394,7 @@ func updateVEX(output string, statements []vex.Statement) error {
 		return err
 	}
 
+	vex.SortStatements(statements, time.Now())
 	d := &vex.VEX{
 		Metadata: vex.Metadata{
 			Context:   "https://openvex.dev/ns/v0.2.0",
