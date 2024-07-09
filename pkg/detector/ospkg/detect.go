@@ -30,21 +30,22 @@ var (
 	ErrUnsupportedOS = xerrors.New("unsupported os")
 
 	drivers = map[ftypes.OSType]Driver{
-		ftypes.Alpine:       alpine.NewScanner(),
-		ftypes.Alma:         alma.NewScanner(),
-		ftypes.Amazon:       amazon.NewScanner(),
-		ftypes.CBLMariner:   mariner.NewScanner(),
-		ftypes.Debian:       debian.NewScanner(),
-		ftypes.Ubuntu:       ubuntu.NewScanner(),
-		ftypes.RedHat:       redhat.NewScanner(),
-		ftypes.CentOS:       redhat.NewScanner(),
-		ftypes.Rocky:        rocky.NewScanner(),
-		ftypes.Oracle:       oracle.NewScanner(),
-		ftypes.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
-		ftypes.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
-		ftypes.Photon:       photon.NewScanner(),
-		ftypes.Wolfi:        wolfi.NewScanner(),
-		ftypes.Chainguard:   chainguard.NewScanner(),
+		ftypes.Alpine:             alpine.NewScanner(),
+		ftypes.Alma:               alma.NewScanner(),
+		ftypes.Amazon:             amazon.NewScanner(),
+		ftypes.CBLMariner:         mariner.NewScanner(),
+		ftypes.Debian:             debian.NewScanner(),
+		ftypes.Ubuntu:             ubuntu.NewScanner(),
+		ftypes.RedHat:             redhat.NewScanner(),
+		ftypes.CentOS:             redhat.NewScanner(),
+		ftypes.Rocky:              rocky.NewScanner(),
+		ftypes.Oracle:             oracle.NewScanner(),
+		ftypes.OpenSUSETumbleweed: suse.NewScanner(suse.OpenSUSETumbleweed),
+		ftypes.OpenSUSELeap:       suse.NewScanner(suse.OpenSUSE),
+		ftypes.SLES:               suse.NewScanner(suse.SUSEEnterpriseLinux),
+		ftypes.Photon:             photon.NewScanner(),
+		ftypes.Wolfi:              wolfi.NewScanner(),
+		ftypes.Chainguard:         chainguard.NewScanner(),
 	}
 )
 

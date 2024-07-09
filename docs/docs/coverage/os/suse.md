@@ -2,6 +2,7 @@
 Trivy supports the following distributions:
 
 - openSUSE Leap
+- openSUSE Tumbleweed
 - SUSE Enterprise Linux (SLE)
 
 Please see [here](index.md#supported-os) for supported versions.
@@ -35,6 +36,6 @@ Trivy identifies licenses by examining the metadata of RPM packages.
 
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
-[cvrf]: http://ftp.suse.com/pub/projects/security/cvrf/
+[cvrf]: https://ftp.suse.com/pub/projects/security/cvrf/
 
 [vulnerability statuses]: ../../configuration/filtering.md#by-status
