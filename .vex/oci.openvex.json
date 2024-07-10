@@ -13,25 +13,22 @@
         {
           "@id": "pkg:oci/trivy?repository_url=index.docker.io%2Faquasec%2Ftrivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         },
         {
           "@id": "pkg:oci/trivy?repository_url=public.ecr.aws%2Faquasecurity%2Ftrivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         },
         {
           "@id": "pkg:oci/trivy?repository_url=ghcr.io/aquasecurity/trivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         }
       ],
@@ -47,9 +44,8 @@
         {
           "@id": "pkg:oci/trivy?repository_url=index.docker.io%2Faquasec%2Ftrivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         },
         {
@@ -63,9 +59,8 @@
         {
           "@id": "pkg:oci/trivy?repository_url=ghcr.io/aquasecurity/trivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         }
       ],
@@ -81,25 +76,22 @@
         {
           "@id": "pkg:oci/trivy?repository_url=index.docker.io%2Faquasec%2Ftrivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         },
         {
           "@id": "pkg:oci/trivy?repository_url=public.ecr.aws%2Faquasecurity%2Ftrivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         },
         {
           "@id": "pkg:oci/trivy?repository_url=ghcr.io/aquasecurity/trivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         }
       ],
@@ -115,25 +107,22 @@
         {
           "@id": "pkg:oci/trivy?repository_url=index.docker.io%2Faquasec%2Ftrivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         },
         {
           "@id": "pkg:oci/trivy?repository_url=public.ecr.aws%2Faquasecurity%2Ftrivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         },
         {
           "@id": "pkg:oci/trivy?repository_url=ghcr.io/aquasecurity/trivy",
           "subcomponents": [
-            {
-              "@id": "pkg:apk/alpine/busybox"
-            }
+            {"@id": "pkg:apk/alpine/busybox"},
+            {"@id": "pkg:apk/alpine/busybox-binsh"}
           ]
         }
       ],
