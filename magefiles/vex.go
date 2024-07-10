@@ -36,9 +36,11 @@ var (
 
 	// Product ID for Trivy
 	productID = &packageurl.PackageURL{
-		Type:      packageurl.TypeGolang,
-		Namespace: "github.com/aquasecurity",
-		Name:      "trivy",
+		Type: packageurl.TypeGolang,
+		// According to https://github.com/package-url/purl-spec/issues/63,
+		// It's probably better to leave namespace empty and put a module name into `name`.
+		Namespace: "",
+		Name:      "github.com/aquasecurity/trivy",
 	}
 )
 
