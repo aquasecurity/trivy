@@ -43,7 +43,7 @@ func NewDocument(filePath string, report *types.Report) (VEX, error) {
 	}
 
 	// Try CSAF
-	if v, err := decodeCSAF(f); err != nil {
+	if v, err := decodeCSAF(f, filePath); err != nil {
 		errs = multierror.Append(errs, err)
 	} else if v != nil {
 		return v, nil
@@ -83,7 +83,7 @@ func decodeOpenVEX(r io.ReadSeeker, source string) (*OpenVEX, error) {
 	return newOpenVEX(openVEX, source), nil
 }
 
-func decodeCSAF(r io.ReadSeeker) (*CSAF, error) {
+func decodeCSAF(r io.ReadSeeker, source string) (*CSAF, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return nil, xerrors.Errorf("seek error: %w", err)
 	}
@@ -94,5 +94,5 @@ func decodeCSAF(r io.ReadSeeker) (*CSAF, error) {
 	if adv.Vulnerabilities == nil {
 		return nil, nil
 	}
-	return newCSAF(adv), nil
+	return newCSAF(adv, source), nil
 }

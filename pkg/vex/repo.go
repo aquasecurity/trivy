@@ -98,7 +98,7 @@ func (rs *RepositorySet) OpenDocument(source, dir string, entry repo.PackageEntr
 	case "openvex", "":
 		return decodeOpenVEX(f, source)
 	case "csaf":
-		return decodeCSAF(f)
+		return decodeCSAF(f, source)
 	default:
 		return nil, xerrors.Errorf("unsupported VEX format: %s", entry.Format)
 	}
