@@ -268,7 +268,10 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 	e, err := p.Load(ctx)
 	if errors.Is(err, ErrNoFiles) {
 		return nil, cty.NilVal, nil
+	} else if err != nil {
+		return nil, cty.NilVal, err
 	}
+
 	modules, fsMap := e.EvaluateAll(ctx)
 	p.debug.Log("Finished parsing module '%s'.", p.moduleName)
 	p.fsMap = fsMap
