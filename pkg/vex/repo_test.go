@@ -6,45 +6,19 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
-var (
-	opensslComponent = core.Component{
-		Name:    "openssl",
-		Version: "1.1.1t-r0",
-		PkgIdentifier: ftypes.PkgIdentifier{
-			UID: "01",
-			PURL: &packageurl.PackageURL{
-				Type:      "deb",
-				Namespace: "debian",
-				Name:      "openssl",
-				Version:   "1.1.1t-r0",
-			},
-		},
-	}
-	opensslVuln1 = types.DetectedVulnerability{
-		VulnerabilityID:  "CVE-2023-1234",
-		PkgName:          opensslComponent.Name,
-		InstalledVersion: opensslComponent.Version,
-		FixedVersion:     "1.1.1u-r0",
-		PkgIdentifier:    opensslComponent.PkgIdentifier,
-	}
-	opensslVuln2 = types.DetectedVulnerability{
-		VulnerabilityID:  "CVE-2023-12345",
-		PkgName:          opensslComponent.Name,
-		InstalledVersion: opensslComponent.Version,
-		FixedVersion:     "1.1.1u-r2",
-		PkgIdentifier:    opensslComponent.PkgIdentifier,
-	}
-)
+var bashComponent = core.Component{
+	Name:          bashPackage.Name,
+	Version:       bashPackage.Version,
+	PkgIdentifier: bashPackage.Identifier,
+}
 
 func TestRepositorySet_NotAffected(t *testing.T) {
 	tests := []struct {
@@ -64,11 +38,11 @@ repositories:
   - name: default
     url: https://example.com/vex/default
 `,
-			vuln:    opensslVuln1,
-			product: opensslComponent,
+			vuln:    vuln3,
+			product: bashComponent,
 			wantModified: types.ModifiedFinding{
 				Type:      types.FindingTypeVulnerability,
-				Finding:   opensslVuln1,
+				Finding:   vuln3,
 				Status:    types.FindingStatusNotAffected,
 				Statement: "vulnerable_code_not_in_execute_path",
 				Source:    "VEX Repository: default (https://example.com/vex/default)",
@@ -84,8 +58,8 @@ repositories:
     url: https://example.com/vex/high-priority
   - name: default
     url: https://example.com/vex/default`,
-			vuln:            opensslVuln1,
-			product:         opensslComponent,
+			vuln:            vuln3,
+			product:         bashComponent,
 			wantNotAffected: false,
 		},
 		{
@@ -96,8 +70,8 @@ repositories:
   - name: default
     url: https://example.com/vex/default
 `,
-			vuln:            opensslVuln2,
-			product:         opensslComponent,
+			vuln:            vuln4,
+			product:         bashComponent,
 			wantNotAffected: false,
 		},
 	}

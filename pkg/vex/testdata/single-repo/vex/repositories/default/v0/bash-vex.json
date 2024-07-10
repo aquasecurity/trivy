@@ -8,11 +8,11 @@
   "statements": [
     {
       "vulnerability": {
-        "@id": "CVE-2023-1234"
+        "@id": "CVE-2022-3715"
       },
       "products": [
         {
-          "@id": "pkg:deb/debian/openssl@1.1.1t-r0"
+          "@id": "pkg:deb/debian/bash@5.3"
         }
       ],
       "status": "not_affected",

@@ -3,6 +3,7 @@ package vex_test
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/v1"
@@ -132,6 +133,12 @@ var (
 		PkgIdentifier:    bashPackage.Identifier,
 	}
 	vuln4 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2024-10000",
+		PkgName:          bashPackage.Name,
+		InstalledVersion: bashPackage.Version,
+		PkgIdentifier:    bashPackage.Identifier,
+	}
+	vuln5 = types.DetectedVulnerability{
 		VulnerabilityID:  "CVE-2024-0001",
 		PkgName:          goTransitivePackage.Name,
 		InstalledVersion: goTransitivePackage.Version,
@@ -151,6 +158,7 @@ func TestFilter(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
+		setup   func(t *testing.T, tmpDir string)
 		args    args
 		want    *types.Report
 		wantErr string
@@ -247,7 +255,7 @@ func TestFilter(t *testing.T) {
 				report: fsReport([]types.Result{
 					goSinglePathResult(types.Result{
 						Vulnerabilities: []types.DetectedVulnerability{
-							vuln4, // filtered by VEX
+							vuln5, // filtered by VEX
 						},
 					}),
 				}),
@@ -258,7 +266,7 @@ func TestFilter(t *testing.T) {
 			want: fsReport([]types.Result{
 				goSinglePathResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "testdata/openvex-nested.json")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln5, vulnerableCodeNotInExecutePath, "testdata/openvex-nested.json")},
 				}),
 			}),
 		},
@@ -268,7 +276,7 @@ func TestFilter(t *testing.T) {
 				report: fsReport([]types.Result{
 					goMultiPathResult(types.Result{
 						Vulnerabilities: []types.DetectedVulnerability{
-							vuln4,
+							vuln5,
 						},
 					}),
 				}),
@@ -278,7 +286,7 @@ func TestFilter(t *testing.T) {
 			},
 			want: fsReport([]types.Result{
 				goMultiPathResult(types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{vuln4}, // Will not be filtered because of multi paths
+					Vulnerabilities: []types.DetectedVulnerability{vuln5}, // Will not be filtered because of multi paths
 				}),
 			}),
 		},
@@ -353,7 +361,7 @@ func TestFilter(t *testing.T) {
 				report: imageReport([]types.Result{
 					goSinglePathResult(types.Result{
 						Vulnerabilities: []types.DetectedVulnerability{
-							vuln4, // filtered by VEX
+							vuln5, // filtered by VEX
 						},
 					}),
 				}),
@@ -364,7 +372,7 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				goSinglePathResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "testdata/csaf.json")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln5, vulnerableCodeNotInExecutePath, "testdata/csaf.json")},
 				}),
 			}),
 		},
@@ -374,7 +382,7 @@ func TestFilter(t *testing.T) {
 				report: imageReport([]types.Result{
 					goSinglePathResult(types.Result{
 						Vulnerabilities: []types.DetectedVulnerability{
-							vuln4, // filtered by VEX
+							vuln5, // filtered by VEX
 						},
 					}),
 				}),
@@ -385,7 +393,7 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				goSinglePathResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "testdata/csaf-relationships.json")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln5, vulnerableCodeNotInExecutePath, "testdata/csaf-relationships.json")},
 				}),
 			}),
 		},
@@ -395,7 +403,7 @@ func TestFilter(t *testing.T) {
 				report: imageReport([]types.Result{
 					goMultiPathResult(types.Result{
 						Vulnerabilities: []types.DetectedVulnerability{
-							vuln4,
+							vuln5,
 						},
 					}),
 				}),
@@ -405,7 +413,62 @@ func TestFilter(t *testing.T) {
 			},
 			want: imageReport([]types.Result{
 				goMultiPathResult(types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{vuln4}, // Will not be filtered because of multi paths
+					Vulnerabilities: []types.DetectedVulnerability{vuln5}, // Will not be filtered because of multi paths
+				}),
+			}),
+		},
+		{
+			name: "VEX Repository",
+			setup: func(t *testing.T, tmpDir string) {
+				// Create repository.yaml
+				vexDir := filepath.Join(tmpDir, ".trivy", "vex")
+				require.NoError(t, os.MkdirAll(vexDir, 0755))
+
+				configPath := filepath.Join(vexDir, "repository.yaml")
+				configContent := `
+repositories:
+  - name: default
+    url: https://example.com/vex/default`
+				require.NoError(t, os.WriteFile(configPath, []byte(configContent), 0644))
+			},
+			args: args{
+				report: imageReport([]types.Result{
+					bashResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3, // filtered by VEX
+						},
+					}),
+				}),
+				opts: vex.Options{
+					CacheDir: "testdata/single-repo",
+				},
+			},
+			want: imageReport([]types.Result{
+				bashResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{
+						modifiedFinding(vuln3, "vulnerable_code_not_in_execute_path", "VEX Repository: default (https://example.com/vex/default)"),
+					},
+				}),
+			}),
+		},
+		{
+			name: "VEX Repository without config",
+			args: args{
+				report: imageReport([]types.Result{
+					bashResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3, // not filtered by VEX
+						},
+					}),
+				}),
+				opts: vex.Options{
+					CacheDir: "testdata/no-repo",
+				},
+			},
+			want: imageReport([]types.Result{
+				bashResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{vuln3},
 				}),
 			}),
 		},
@@ -423,6 +486,11 @@ func TestFilter(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			t.Setenv("XDG_DATA_HOME", tmpDir)
+			if tt.setup != nil {
+				tt.setup(t, tmpDir)
+			}
 			err := vex.Filter(context.Background(), tt.args.report, tt.args.opts)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
