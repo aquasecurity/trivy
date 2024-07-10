@@ -21,12 +21,14 @@ import (
 )
 
 const (
-	SchemaVersion = "0.1"
+	SchemaVersion = "v0.1"
 
 	manifestFile      = "vex-repository.json"
 	indexFile         = "index.json"
 	cacheMetadataFile = "cache.json"
 )
+
+var majorVersion, _, _ = strings.Cut(SchemaVersion, ".")
 
 type Manifest struct {
 	Name          string             `json:"name"`
@@ -117,7 +119,7 @@ func (r *Repository) Manifest(ctx context.Context) (Manifest, error) {
 }
 
 func (r *Repository) Index(ctx context.Context) (Index, error) {
-	filePath := filepath.Join(r.dir, indexFile)
+	filePath := filepath.Join(r.dir, majorVersion, indexFile)
 	log.DebugContext(ctx, "Reading the repository index...", log.String("repo", r.Name), log.FilePath(filePath))
 
 	f, err := os.Open(filePath)
@@ -168,11 +170,6 @@ func (r *Repository) Update(ctx context.Context, opts Options) error {
 		return xerrors.Errorf("failed to get the repository metadata: %w", err)
 	}
 
-	majorVersion, _, ok := strings.Cut(SchemaVersion, ".")
-	if !ok {
-		return xerrors.New("invalid schema version")
-	}
-	majorVersion = "v" + majorVersion
 	ver, ok := manifest.Versions[majorVersion]
 	if !ok {
 		// TODO: improve error

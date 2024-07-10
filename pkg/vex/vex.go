@@ -1,25 +1,18 @@
 package vex
 
 import (
-	"encoding/json"
-	"io"
-	"os"
+	"context"
+	"errors"
 
-	"github.com/csaf-poc/csaf_distribution/v3/csaf"
-	"github.com/hashicorp/go-multierror"
-	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/samber/lo"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
+	vexrepo "github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -29,18 +22,25 @@ type VEX interface {
 	NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
 }
 
-type Options struct {
-	VEXPath string
+type Client struct {
+	VEXes []VEX
 }
+
+type Options struct {
+	CacheDir string
+	VEXPath  string
+}
+
+type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
 
 // Filter determines whether a detected vulnerability should be filtered out based on the provided VEX document.
 // If the VEX document is passed and the vulnerability is either not affected or fixed according to the VEX statement,
 // the vulnerability is filtered out.
-func Filter(report *types.Report, opts Options) error {
-	vexDoc, err := New(opts.VEXPath, report)
+func Filter(ctx context.Context, report *types.Report, opts Options) error {
+	client, err := New(ctx, report, opts)
 	if err != nil {
-		return xerrors.Errorf("unable to load VEX: %w", err)
-	} else if vexDoc == nil {
+		return xerrors.Errorf("VEX error: %w", err)
+	} else if client == nil {
 		return nil
 	}
 
@@ -53,92 +53,41 @@ func Filter(report *types.Report, opts Options) error {
 		if len(result.Vulnerabilities) == 0 {
 			continue
 		}
-		filterVulnerabilities(&report.Results[i], bom, vexDoc.NotAffected)
+		filterVulnerabilities(&report.Results[i], bom, client.NotAffected)
 	}
 	return nil
 }
 
-func New(filePath string, report *types.Report) (VEX, error) {
-	if filePath == "" {
-		return nil, nil
-	}
-	f, err := os.Open(filePath)
+func New(ctx context.Context, report *types.Report, opts Options) (*Client, error) {
+	var vexes []VEX
+	v, err := NewDocument(opts.VEXPath, report)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
-	}
-	defer f.Close()
-
-	var errs error
-	// Try CycloneDX JSON
-	if ok, err := sbom.IsCycloneDXJSON(f); err != nil {
-		errs = multierror.Append(errs, err)
-	} else if ok {
-		return decodeCycloneDXJSON(f, report)
-	}
-
-	// Try OpenVEX
-	if v, err := decodeOpenVEX(f); err != nil {
-		errs = multierror.Append(errs, err)
+		return nil, xerrors.Errorf("unable to load VEX: %w", err)
 	} else if v != nil {
-		return v, nil
+		vexes = append(vexes, v)
 	}
 
-	// Try CSAF
-	if v, err := decodeCSAF(f); err != nil {
-		errs = multierror.Append(errs, err)
-	} else if v != nil {
-		return v, nil
+	rs, err := NewRepositorySet(ctx, opts.CacheDir)
+	if !errors.Is(err, vexrepo.ErrNoConfig) && err != nil {
+		return nil, xerrors.Errorf("failed to create a repository set: %w", err)
+	} else if rs != nil {
+		vexes = append(vexes, rs)
 	}
 
-	return nil, xerrors.Errorf("unable to load VEX: %w", errs)
-}
-
-func decodeCycloneDXJSON(r io.ReadSeeker, report *types.Report) (*CycloneDX, error) {
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("seek error: %w", err)
-	}
-	vex, err := cyclonedx.DecodeJSON(r)
-	if err != nil {
-		return nil, xerrors.Errorf("json decode error: %w", err)
-	}
-	if report.ArtifactType != artifact.TypeCycloneDX {
-		return nil, xerrors.New("CycloneDX VEX can be used with CycloneDX SBOM")
-	}
-	return newCycloneDX(report.BOM, vex), nil
-}
-
-func decodeOpenVEX(r io.ReadSeeker) (*OpenVEX, error) {
-	// openvex/go-vex outputs log messages by default
-	logrus.SetOutput(io.Discard)
-
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("seek error: %w", err)
-	}
-	var openVEX openvex.VEX
-	if err := json.NewDecoder(r).Decode(&openVEX); err != nil {
-		return nil, err
-	}
-	if openVEX.Context == "" {
+	if len(vexes) == 0 {
 		return nil, nil
 	}
-	return newOpenVEX(openVEX), nil
+	return &Client{VEXes: vexes}, nil
 }
 
-func decodeCSAF(r io.ReadSeeker) (*CSAF, error) {
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("seek error: %w", err)
+func (c *Client) NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool) {
+	for _, v := range c.VEXes {
+		if m, notAffected := v.NotAffected(vuln, product, subComponent); notAffected {
+			return m, true
+		}
 	}
-	var adv csaf.Advisory
-	if err := json.NewDecoder(r).Decode(&adv); err != nil {
-		return nil, err
-	}
-	if adv.Vulnerabilities == nil {
-		return nil, nil
-	}
-	return newCSAF(adv), nil
+	return types.ModifiedFinding{}, false
 }
-
-type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
 
 func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) {
 	components := lo.MapEntries(bom.Components(), func(id uuid.UUID, component *core.Component) (string, *core.Component) {

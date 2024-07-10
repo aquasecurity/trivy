@@ -1237,7 +1237,7 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:           "vex subcommand",
 		Aliases:       []string{"p"},
 		GroupID:       groupManagement,
-		Short:         "VEX utilities",
+		Short:         "[EXPERIMENTAL] VEX utilities",
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
