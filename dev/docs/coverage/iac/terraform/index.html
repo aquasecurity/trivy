@@ -2186,6 +2186,39 @@ You're not viewing the latest version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    Limitations
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terraform-plan-json" class="md-nav__link">
+    Terraform Plan JSON
+  </a>
+  
+    <nav class="md-nav" aria-label="Terraform Plan JSON">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-each-and-count-objects-in-expression" class="md-nav__link">
+    For each and count objects in expression
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3930,6 +3963,39 @@ You're not viewing the latest version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    Limitations
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terraform-plan-json" class="md-nav__link">
+    Terraform Plan JSON
+  </a>
+  
+    <nav class="md-nav" aria-label="Terraform Plan JSON">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-each-and-count-objects-in-expression" class="md-nav__link">
+    For each and count objects in expression
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4017,6 +4083,27 @@ If you don't want to scan them, you can use the <code>--tf-exclude-downloaded-mo
 </code></pre></div>
 <h2 id="secret">Secret</h2>
 <p>The secret scan is performed on plain text files, with no special treatment for Terraform.</p>
+<h2 id="limitations">Limitations</h2>
+<h3 id="terraform-plan-json">Terraform Plan JSON</h3>
+<h4 id="for-each-and-count-objects-in-expression">For each and count objects in expression</h4>
+<p>The plan created by Terraform does not provide complete information about references in expressions that use <code>each</code> or <code>count</code> objects. For this reason, in some situations it is not possible to establish references between resources that are needed for checks when detecting misconfigurations. An example of such a configuration is:</p>
+<div class="highlight"><pre><span></span><code>locals {
+  buckets = toset([&quot;test&quot;])
+}
+
+resource &quot;aws_s3_bucket&quot; &quot;this&quot; {
+  for_each = local.buckets
+  bucket = each.key
+}
+
+resource &quot;aws_s3_bucket_acl&quot; &quot;this&quot; {
+  for_each = local.buckets
+  bucket = aws_s3_bucket.this[each.key].id
+  acl    = &quot;private&quot;
+}
+</code></pre></div>
+<p>With this configuration, the plan will not contain information about which attribute of the <code>aws_s3_bucket</code> resource is referenced by the <code>aws_s3_bucket_acl</code> resource.</p>
+<p>See more <a href="https://github.com/hashicorp/terraform/issues/30826">here</a>.</p>
 
               
             </article>
