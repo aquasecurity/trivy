@@ -2,6 +2,7 @@ package vex
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -35,7 +36,10 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 	var indexes []RepositoryIndex
 	for _, r := range conf.Repositories {
 		index, err := r.Index(ctx)
-		if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			log.Warn("VEX repository not found locally, skipping this repository", log.String("repo", r.Name))
+			continue
+		} else if err != nil {
 			return nil, xerrors.Errorf("failed to get VEX repository index: %w", err)
 		}
 		indexes = append(indexes, RepositoryIndex{
