@@ -1,6 +1,7 @@
 package vex_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -171,7 +172,7 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				springResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln1, vulnerableCodeNotInExecutePath, "OpenVEX")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln1, vulnerableCodeNotInExecutePath, "testdata/openvex.json")},
 				}),
 			}),
 		},
@@ -195,7 +196,7 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				springResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{vuln2},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln1, vulnerableCodeNotInExecutePath, "OpenVEX")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln1, vulnerableCodeNotInExecutePath, "testdata/openvex-multiple.json")},
 				}),
 			}),
 		},
@@ -218,7 +219,7 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				bashResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln3, vulnerableCodeNotInExecutePath, "OpenVEX")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln3, vulnerableCodeNotInExecutePath, "testdata/openvex-oci.json")},
 				}),
 			}),
 		},
@@ -257,7 +258,7 @@ func TestFilter(t *testing.T) {
 			want: fsReport([]types.Result{
 				goSinglePathResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "OpenVEX")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "testdata/openvex-nested.json")},
 				}),
 			}),
 		},
@@ -363,7 +364,7 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				goSinglePathResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "CSAF VEX")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "testdata/csaf.json")},
 				}),
 			}),
 		},
@@ -384,7 +385,7 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				goSinglePathResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "CSAF VEX")},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln4, vulnerableCodeNotInExecutePath, "testdata/csaf-relationships.json")},
 				}),
 			}),
 		},
@@ -422,7 +423,7 @@ func TestFilter(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := vex.Filter(tt.args.report, tt.args.opts)
+			err := vex.Filter(context.Background(), tt.args.report, tt.args.opts)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
