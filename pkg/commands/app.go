@@ -512,6 +512,8 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ScanFlagGroup:   &flag.ScanFlagGroup{},
 		ReportFlagGroup: flag.NewReportFlagGroup(),
 	}
+	convertFlags.ReportFlagGroup.PkgTypes = nil // disable '--pkg-types'
+
 	cmd := &cobra.Command{
 		Use:     "convert [flags] RESULT_JSON",
 		Aliases: []string{"conv"},
@@ -679,6 +681,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	configFlags.ReportFlagGroup.ListAllPkgs = nil                                                        // disable '--list-all-pkgs'
 	configFlags.ReportFlagGroup.ExitOnEOL = nil                                                          // disable '--exit-on-eol'
 	configFlags.ReportFlagGroup.ShowSuppressed = nil                                                     // disable '--show-suppressed'
+	configFlags.ReportFlagGroup.PkgTypes = nil                                                           // disable '--pkg-types'
 	configFlags.ReportFlagGroup.ReportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
 	configFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory)
 

@@ -201,7 +201,7 @@ func (r *runner) scanFS(ctx context.Context, opts flag.Options) (types.Report, e
 
 func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Do not scan OS packages
-	opts.VulnType = []string{types.VulnTypeLibrary}
+	opts.PkgTypes = []string{types.PkgTypeLibrary}
 
 	// Disable the OS analyzers, individual package analyzers and SBOM analyzer
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
@@ -405,7 +405,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not analyze programming language packages when not running in 'library'
-	if !slices.Contains(opts.VulnType, types.VulnTypeLibrary) {
+	if !slices.Contains(opts.PkgTypes, types.PkgTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
@@ -473,7 +473,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	}
 
 	scanOptions := types.ScanOptions{
-		VulnType:            opts.VulnType,
+		PkgTypes:            opts.PkgTypes,
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
@@ -488,7 +488,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 
 	if opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		log.Info("Vulnerability scanning is enabled")
-		log.Debug("Vulnerability type", log.Any("type", scanOptions.VulnType))
+		log.Debug("Package types", log.Any("types", scanOptions.PkgTypes))
 	}
 
 	// ScannerOption is filled only when config scanning is enabled.

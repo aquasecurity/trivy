@@ -106,6 +106,20 @@ var (
 		ConfigName: "scan.show-suppressed",
 		Usage:      "[EXPERIMENTAL] show suppressed vulnerabilities",
 	}
+	PkgTypesFlag = Flag[[]string]{
+		Name:       "pkg-types",
+		ConfigName: "pkg-types",
+		Default:    types.PkgTypes,
+		Values:     types.PkgTypes,
+		Usage:      "comma-separated list of package types",
+		Aliases: []Alias{
+			{
+				Name:       "vuln-type",
+				ConfigName: "vulnerability.type",
+				Deprecated: true, // --vuln-type was renamed to --pkg-types
+			},
+		},
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -125,6 +139,7 @@ type ReportFlagGroup struct {
 	Severity        *Flag[[]string]
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
+	PkgTypes        *Flag[[]string]
 }
 
 type ReportOptions struct {
@@ -142,6 +157,7 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
+	PkgTypes         []string
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -160,6 +176,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Severity:        SeverityFlag.Clone(),
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
+		PkgTypes:        PkgTypesFlag.Clone(),
 	}
 }
 
@@ -183,6 +200,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Severity,
 		f.Compliance,
 		f.ShowSuppressed,
+		f.PkgTypes,
 	}
 }
 
@@ -252,6 +270,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Severities:       toSeverity(f.Severity.Value()),
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
+		PkgTypes:         f.PkgTypes.Value(),
 	}, nil
 }
 

@@ -94,9 +94,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{
-						types.VulnTypeOS,
-						types.VulnTypeLibrary,
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
 					},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
@@ -294,9 +294,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{
-						types.VulnTypeOS,
-						types.VulnTypeLibrary,
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
 					},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
@@ -377,7 +377,7 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "./result.cdx",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{types.VulnTypeLibrary},
+					PkgTypes: []string{types.PkgTypeLibrary},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
@@ -473,9 +473,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{
-						types.VulnTypeOS,
-						types.VulnTypeLibrary,
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
 					},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
@@ -554,9 +554,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "fedora:27",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{
-						types.VulnTypeOS,
-						types.VulnTypeLibrary,
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
 					},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
@@ -626,9 +626,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "busybox:latest",
 				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
 				options: types.ScanOptions{
-					VulnType: []string{
-						types.VulnTypeOS,
-						types.VulnTypeLibrary,
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
 					},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
@@ -650,7 +650,7 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"},
 				options: types.ScanOptions{
-					VulnType: []string{types.VulnTypeLibrary},
+					PkgTypes: []string{types.PkgTypeLibrary},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
@@ -896,9 +896,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{
-						types.VulnTypeOS,
-						types.VulnTypeLibrary,
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
 					},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
@@ -920,7 +920,7 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{types.VulnTypeLibrary},
+					PkgTypes: []string{types.PkgTypeLibrary},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},

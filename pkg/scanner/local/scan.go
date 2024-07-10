@@ -160,7 +160,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	var eosl bool
 	var results types.Results
 
-	if slices.Contains(options.VulnType, types.VulnTypeOS) {
+	if slices.Contains(options.PkgTypes, types.PkgTypeOS) {
 		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
 		switch {
 		case errors.Is(err, ospkgDetector.ErrUnsupportedOS):
@@ -173,7 +173,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 		}
 	}
 
-	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
+	if slices.Contains(options.PkgTypes, types.PkgTypeLibrary) {
 		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)

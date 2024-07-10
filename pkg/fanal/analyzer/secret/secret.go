@@ -100,6 +100,10 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		return nil, nil
 	}
 
+	if size := input.Info.Size(); size > 10485760 { // 10MB
+		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(input.FilePath), log.Int64("size (MB)", size/1048576))
+	}
+
 	content, err := io.ReadAll(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
@@ -166,9 +170,6 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
-	if size := fi.Size(); size > 10485760 { // 10MB
-		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(filePath), log.Int64("size (MB)", size/1048576))
-	}
 	return true
 }
 

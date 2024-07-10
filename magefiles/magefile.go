@@ -469,3 +469,8 @@ type CloudActions mg.Namespace
 func (CloudActions) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
 }
+
+// VEX generates a VEX document for Trivy
+func VEX(_ context.Context, dir string) error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_vex", "./magefiles/vex.go", "--dir", dir)
+}
