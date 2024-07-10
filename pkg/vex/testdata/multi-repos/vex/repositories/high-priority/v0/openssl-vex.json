@@ -1,0 +1,21 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://openvex.dev/docs/public/vex-5d6e2706",
+  "author": "Example Author",
+  "role": "Document Creator",
+  "timestamp": "2023-07-01T00:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "@id": "CVE-2023-1234"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/debian/openssl@1.1.1t-r0"
+        }
+      ],
+      "status": "affected"
+    }
+  ]
+}

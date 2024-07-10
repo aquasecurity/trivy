@@ -50,10 +50,6 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 	}, nil
 }
 
-func (rs *RepositorySet) Filter(result *types.Result, bom *core.BOM) {
-	filterVulnerabilities(result, bom, rs.NotAffected)
-}
-
 func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool) {
 	if product == nil || product.PkgIdentifier.PURL == nil {
 		return types.ModifiedFinding{}, false
