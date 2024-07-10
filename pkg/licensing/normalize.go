@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var mapping = map[string]string{
+var Mapping = map[string]string{
 	// GPL
 	"GPL-1":                          GPL10,
 	"GPL-1+":                         GPL10,
@@ -68,24 +68,24 @@ var mapping = map[string]string{
 	"MPL 2":   MPL20,
 
 	// BSD
-	"BSD":                          BSD3Clause, // 2? 3?
-	"BSD-2-CLAUSE":                 BSD2Clause,
-	"BSD-3-CLAUSE":                 BSD3Clause,
-	"BSD-4-CLAUSE":                 BSD4Clause,
-	"BSD 2 CLAUSE":                 BSD2Clause,
-	"BSD 2-CLAUSE":                 BSD2Clause,
-	"2-CLAUSE BSD":                 BSD2Clause,
-	"TWO-CLAUSE BSD-STYLE":         BSD2Clause,
-	"BSD 3 CLAUSE":                 BSD3Clause,
-	"BSD 3-CLAUSE":                 BSD3Clause,
+	"BSD":                  BSD3Clause, // 2? 3?
+	"BSD-2-CLAUSE":         BSD2Clause,
+	"BSD-3-CLAUSE":         BSD3Clause,
+	"BSD-4-CLAUSE":         BSD4Clause,
+	"BSD 2 CLAUSE":         BSD2Clause,
+	"BSD 2-CLAUSE":         BSD2Clause,
+	"2-CLAUSE BSD":         BSD2Clause,
+	"TWO-CLAUSE BSD-STYLE": BSD2Clause,
+	"BSD 3 CLAUSE":         BSD3Clause,
+	"BSD 3-CLAUSE":         BSD3Clause,
 	"BSD 3-CLAUSE \"NEW\" OR \"REVISED\" LICENSE (BSD-3-CLAUSE)": BSD3Clause,
 	"ECLIPSE DISTRIBUTION LICENSE (NEW BSD LICENSE)":             BSD3Clause,
-	"NEW BSD":                              BSD3Clause,
-	"MODIFIED BSD":                         BSD3Clause,
-	"REVISED BSD":                          BSD3Clause,
-	"3-CLAUSE BSD":                         BSD3Clause,
-	"BSD 3-CLAUSE NEW":                     BSD3Clause,
-	"BSD LICENSE 3":                        BSD3Clause,
+	"NEW BSD":          BSD3Clause,
+	"MODIFIED BSD":     BSD3Clause,
+	"REVISED BSD":      BSD3Clause,
+	"3-CLAUSE BSD":     BSD3Clause,
+	"BSD 3-CLAUSE NEW": BSD3Clause,
+	"BSD LICENSE 3":    BSD3Clause,
 	// Eclipse Distribution License 1.0 is the same as BSD-3-Clause
 	// See https://wiki.spdx.org/view/Legal_Team/License_List/Licenses_Under_Consideration
 	"EDL 1.0":                              BSD3Clause,
@@ -94,30 +94,30 @@ var mapping = map[string]string{
 	"ECLIPSE DISTRIBUTION LICENSE V1.0":    BSD3Clause,
 
 	// APACHE
-	"APACHE":                               Apache10,
-	"APACHE SOFTWARE LICENSES":             Apache10,
-	"APACHE 2.0":                           Apache20,
-	"APACHE 2":                             Apache20,
-	"APACHE V2":                            Apache20,
-	"APACHE SOFTWARE LICENSE, VERSION 2.0": Apache20,
-	"APACHE LICENSE (V2.0)":                    Apache20,
-	"APACHE LICENSE 2.0":                       Apache20,
-	"APACHE LICENSE V2.0":                      Apache20,
-	"APACHE LICENSE VERSION 2.0":               Apache20,
-	"APACHE LICENSE, VERSION 2.0":              Apache20,
-	"APACHE PUBLIC LICENSE 2.0":                Apache20,
-	"APACHE SOFTWARE LICENSE - VERSION 2.0":    Apache20,
-	"APACHE-2.0":                               Apache20,
-	"APACHE 2 STYLE":                           Apache20,
-	"ASF 2.0":                                  Apache20,
+	"APACHE":                                Apache10,
+	"APACHE SOFTWARE LICENSES":              Apache10,
+	"APACHE 2.0":                            Apache20,
+	"APACHE 2":                              Apache20,
+	"APACHE V2":                             Apache20,
+	"APACHE SOFTWARE LICENSE, VERSION 2.0":  Apache20,
+	"APACHE LICENSE (V2.0)":                 Apache20,
+	"APACHE LICENSE 2.0":                    Apache20,
+	"APACHE LICENSE V2.0":                   Apache20,
+	"APACHE LICENSE VERSION 2.0":            Apache20,
+	"APACHE LICENSE, VERSION 2.0":           Apache20,
+	"APACHE PUBLIC LICENSE 2.0":             Apache20,
+	"APACHE SOFTWARE LICENSE - VERSION 2.0": Apache20,
+	"APACHE-2.0":                            Apache20,
+	"APACHE 2 STYLE":                        Apache20,
+	"ASF 2.0":                               Apache20,
 
 	// CC0-1.0
 	"CC0 1.0 UNIVERSAL":                       CC010,
 	"PUBLIC DOMAIN, PER CREATIVE COMMONS CC0": CC010,
 
 	// CDDL 1.0
-	"CDDL 1.0":     CDDL10,
-	"CDDL":         CDDL10,
+	"CDDL 1.0": CDDL10,
+	"CDDL":     CDDL10,
 	"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) VERSION 1.0": CDDL10,
 	"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) V1.0":        CDDL10,
 
@@ -136,17 +136,17 @@ var mapping = map[string]string{
 	"ECLIPSE PUBLIC LICENSE (EPL), VERSION 1.0": EPL10,
 
 	// EPL 2.0
-	"ECLIPSE PUBLIC LICENSE 1.0":             EPL10,
-	"ECLIPSE PUBLIC LICENSE - VERSION 2.0":   EPL20,
-	"EPL 2.0":                                EPL20,
-	"ECLIPSE PUBLIC LICENSE - V 2.0":         EPL20,
-	"ECLIPSE PUBLIC LICENSE V2.0":            EPL20,
-	"ECLIPSE PUBLIC LICENSE, VERSION 2.0":    EPL20,
-	"ECLIPSE PUBLIC LICENSE VERSION 2.0":     EPL20,
-	"ECLIPSE PUBLIC LICENSE V. 2.0":          EPL20,
+	"ECLIPSE PUBLIC LICENSE 1.0":           EPL10,
+	"ECLIPSE PUBLIC LICENSE - VERSION 2.0": EPL20,
+	"EPL 2.0":                              EPL20,
+	"ECLIPSE PUBLIC LICENSE - V 2.0":       EPL20,
+	"ECLIPSE PUBLIC LICENSE V2.0":          EPL20,
+	"ECLIPSE PUBLIC LICENSE, VERSION 2.0":  EPL20,
+	"ECLIPSE PUBLIC LICENSE VERSION 2.0":   EPL20,
+	"ECLIPSE PUBLIC LICENSE V. 2.0":        EPL20,
 
 	// MIT No Attribution (MIT-0) is not yet supported by google/licenseclassifier
-	"MIT-0":                                  MIT,
+	"MIT-0": MIT,
 
 	"RUBY": Ruby,
 	"ZLIB": Zlib,
@@ -180,7 +180,7 @@ func Normalize(name string) string {
 	name = strings.ToUpper(name)
 	name = strings.TrimPrefix(name, "THE ")
 	name = strings.TrimSuffix(name, " LICENSE")
-	if l, ok := mapping[name]; ok {
+	if l, ok := Mapping[name]; ok {
 		return l
 	}
 	return name

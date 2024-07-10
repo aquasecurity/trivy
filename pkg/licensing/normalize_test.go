@@ -35,7 +35,7 @@ func TestNormalize(t *testing.T) {
 		})
 	}
 	t.Run("All mapping keys must be uppercase", func(t *testing.T) {
-		for k := range mapping {
+		for k := range licensing.Mapping {
 			res := strings.ToUpper(k)
 			assert.Equal(t, k, res)
 		}
