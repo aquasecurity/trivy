@@ -12,13 +12,11 @@
         - key: CVE-2019-5094
           value:
             FixedVersion: 1.44.1-1ubuntu1.2
-- bucket: ubuntu 16.04
-  pairs:
-    - bucket: libspring-java
+    - bucket: freeradius
       pairs:
-        - key: CVE-2022-22965
-          value:
-            Status: fix_deferred
+        - key: CVE-2024-3596
+          value: 
+          Status: 6
 - bucket: ubuntu 22.04
   pairs:
     - bucket: bash

@@ -139,11 +139,6 @@
         ID: "ubuntu"
         Name: "Ubuntu CVE Tracker"
         URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 21.10
-      value:
-        ID: "ubuntu"
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
     - key: CBL-Mariner 1.0
       value:
         ID:   "cbl-mariner"
