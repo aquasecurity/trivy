@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -62,6 +63,16 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 	p.Version = ""
 	p.Qualifiers = nil
 	p.Subpath = ""
+
+	if p.Type == packageurl.TypeOCI {
+		// For OCI artifacts, we consider "repository_url" is part of name.
+		for _, q := range product.PkgIdentifier.PURL.Qualifiers {
+			if q.Key == "repository_url" {
+				p.Qualifiers = packageurl.Qualifiers{q}
+				break
+			}
+		}
+	}
 
 	pkgID := p.String() // PURL without version, qualifiers, and subpath
 	for _, index := range rs.indexes {
