@@ -85,8 +85,9 @@ type rawIndex struct {
 }
 
 type Repository struct {
-	Name string
-	URL  string
+	Name    string
+	URL     string
+	Enabled bool
 
 	dir string // Root directory for this VEX repository, $CACHE_DIR/vex/repositories/$REPO_NAME/
 }

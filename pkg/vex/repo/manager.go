@@ -2,12 +2,12 @@ package repo
 
 import (
 	"context"
-	"errors"
 	"io"
 	"os"
 	"path/filepath"
 	"slices"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -20,8 +20,6 @@ const (
 	vexDir           = "vex"
 	repoDir          = "repositories"
 )
-
-var ErrNoConfig = errors.New("no config found")
 
 type ManagerOption func(indexer *Manager)
 
@@ -98,9 +96,12 @@ func (m *Manager) Config(ctx context.Context) (Config, error) {
 		return conf, xerrors.Errorf("unable to decode metadata: %w", err)
 	}
 
-	for i, r := range conf.Repositories {
-		conf.Repositories[i].dir = filepath.Join(m.cacheDir, repoDir, r.Name)
-	}
+	// Filter out disabled repositories
+	conf.Repositories = lo.FilterMap(conf.Repositories, func(r Repository, _ int) (Repository, bool) {
+		r.dir = filepath.Join(m.cacheDir, repoDir, r.Name)
+		return r, r.Enabled
+	})
+
 	return conf, nil
 }
 
@@ -113,8 +114,9 @@ func (m *Manager) Init(ctx context.Context) error {
 	err := m.writeConfig(Config{
 		Repositories: []Repository{
 			{
-				Name: "default",
-				URL:  defaultVEXHubURL,
+				Name:    "default",
+				URL:     defaultVEXHubURL,
+				Enabled: true,
 			},
 		},
 	})
@@ -130,7 +132,8 @@ func (m *Manager) DownloadRepositories(ctx context.Context, names []string, opts
 	if err != nil {
 		return xerrors.Errorf("unable to read config: %w", err)
 	} else if len(conf.Repositories) == 0 {
-		return xerrors.Errorf("no repositories found in config: %s", m.configFile)
+		log.WarnContext(ctx, "No enabled repositories found in config", log.String("path", m.configFile))
+		return nil
 	}
 
 	for _, repo := range conf.Repositories {

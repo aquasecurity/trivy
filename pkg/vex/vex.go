@@ -59,6 +59,7 @@ type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *c
 // If the VEX document is passed and the vulnerability is either not affected or fixed according to the VEX statement,
 // the vulnerability is filtered out.
 func Filter(ctx context.Context, report *types.Report, opts Options) error {
+	ctx = log.WithContextPrefix(ctx, "vex")
 	client, err := New(ctx, report, opts)
 	if err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
