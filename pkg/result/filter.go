@@ -30,7 +30,7 @@ type FilterOptions struct {
 	PolicyFile         string
 	IgnoreLicenses     []string
 	CacheDir           string
-	VEXPath            string
+	VEXSources         []vex.Source
 }
 
 // Filter filters out the report
@@ -49,7 +49,7 @@ func Filter(ctx context.Context, report types.Report, opts FilterOptions) error 
 	// Filter out vulnerabilities based on the given VEX document.
 	if err = vex.Filter(ctx, &report, vex.Options{
 		CacheDir: opts.CacheDir,
-		VEXPath:  opts.VEXPath,
+		Sources:  opts.VEXSources,
 	}); err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
 	}

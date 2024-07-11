@@ -2,10 +2,10 @@ package operation
 
 import (
 	"context"
-	"errors"
 	"sync"
 
 	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/db"
@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
@@ -48,17 +49,23 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 	return nil
 }
 
-func DownloadVEXRepositories(ctx context.Context, cacheDir string, skipUpdate, insecure bool) error {
+func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	ctx = log.WithContextPrefix(ctx, "vex")
-	err := repo.NewManager(cacheDir).DownloadRepositories(ctx, nil, repo.Options{
-		Insecure: insecure,
+	// Download VEX repositories only if `--vex repo` is passed.
+	_, enabled := lo.Find(opts.VEXSources, func(src vex.Source) bool {
+		return src.Type == vex.TypeRepository
 	})
-	if errors.Is(err, repo.ErrNoConfig) {
+	if !enabled {
 		return nil
-	} else if err != nil {
+	}
+
+	ctx = log.WithContextPrefix(ctx, "vex")
+	err := repo.NewManager(opts.CacheDir).DownloadRepositories(ctx, nil, repo.Options{
+		Insecure: opts.Insecure,
+	})
+	if err != nil {
 		return xerrors.Errorf("failed to get vex repository config: %w", err)
 	}
 

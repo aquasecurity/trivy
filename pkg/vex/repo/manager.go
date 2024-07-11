@@ -81,8 +81,10 @@ func (m *Manager) writeConfig(conf Config) error {
 
 func (m *Manager) Config(ctx context.Context) (Config, error) {
 	if !fsutils.FileExists(m.configFile) {
-		log.DebugContext(ctx, "No config found", log.String("path", m.configFile))
-		return Config{}, ErrNoConfig
+		log.DebugContext(ctx, "No repository config found", log.String("path", m.configFile))
+		if err := m.Init(ctx); err != nil {
+			return Config{}, xerrors.Errorf("unable to initialize the VEX repository config: %w", err)
+		}
 	}
 
 	f, err := os.Open(m.configFile)
@@ -119,7 +121,7 @@ func (m *Manager) Init(ctx context.Context) error {
 	if err != nil {
 		return xerrors.Errorf("failed to write the default config: %w", err)
 	}
-	log.InfoContext(ctx, "The default configuration file has been created", log.FilePath(m.configFile))
+	log.InfoContext(ctx, "The default repository config has been created", log.FilePath(m.configFile))
 	return nil
 }
 

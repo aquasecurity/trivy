@@ -1285,10 +1285,8 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			RunE: func(cmd *cobra.Command, args []string) error {
 				err := vexrepo.NewManager(vexOptions.CacheDir).DownloadRepositories(cmd.Context(), args,
 					vexrepo.Options{Insecure: vexOptions.Insecure})
-				if errors.Is(err, vexrepo.ErrNoConfig) {
-					return errors.New("no config found, run 'trivy vex repo init' first")
-				} else if err != nil {
-					return xerrors.Errorf("repository manifest update error: %w", err)
+				if err != nil {
+					return xerrors.Errorf("repository download error: %w", err)
 				}
 				return nil
 			},

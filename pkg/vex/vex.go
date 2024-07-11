@@ -2,7 +2,6 @@ package vex
 
 import (
 	"context"
-	"errors"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -12,7 +11,11 @@ import (
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
-	vexrepo "github.com/aquasecurity/trivy/pkg/vex/repo"
+)
+
+const (
+	TypeFile       SourceType = "file"
+	TypeRepository SourceType = "repo"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -28,7 +31,26 @@ type Client struct {
 
 type Options struct {
 	CacheDir string
-	VEXPath  string
+	Sources  []Source
+}
+
+type SourceType string
+
+type Source struct {
+	Type     SourceType
+	FilePath string // Used only for the file type
+}
+
+func NewSource(src string) Source {
+	switch src {
+	case "repository", "repo":
+		return Source{Type: TypeRepository}
+	default:
+		return Source{
+			Type:     TypeFile,
+			FilePath: src,
+		}
+	}
 }
 
 type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
@@ -60,18 +82,25 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 
 func New(ctx context.Context, report *types.Report, opts Options) (*Client, error) {
 	var vexes []VEX
-	v, err := NewDocument(opts.VEXPath, report)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to load VEX: %w", err)
-	} else if v != nil {
+	for _, src := range opts.Sources {
+		var v VEX
+		var err error
+		switch src.Type {
+		case TypeFile:
+			v, err = NewDocument(src.FilePath, report)
+			if err != nil {
+				return nil, xerrors.Errorf("unable to load VEX: %w", err)
+			}
+		case TypeRepository:
+			v, err = NewRepositorySet(ctx, opts.CacheDir)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to create a repository set: %w", err)
+			}
+		default:
+			log.Warn("Unsupported VEX source", log.String("type", string(src.Type)))
+			continue
+		}
 		vexes = append(vexes, v)
-	}
-
-	rs, err := NewRepositorySet(ctx, opts.CacheDir)
-	if !errors.Is(err, vexrepo.ErrNoConfig) && err != nil {
-		return nil, xerrors.Errorf("failed to create a repository set: %w", err)
-	} else if rs != nil {
-		vexes = append(vexes, rs)
 	}
 
 	if len(vexes) == 0 {

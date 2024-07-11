@@ -446,7 +446,7 @@ func (o *Options) FilterOpts() result.FilterOptions {
 		PolicyFile:         o.IgnorePolicy,
 		IgnoreLicenses:     o.IgnoredLicenses,
 		CacheDir:           o.CacheDir,
-		VEXPath:            o.VEXPath,
+		VEXSources:         o.VEXSources,
 	}
 }
 

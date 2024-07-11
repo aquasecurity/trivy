@@ -120,7 +120,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	}
 
 	// Update the VEX repositories if needed
-	if err := operation.DownloadVEXRepositories(ctx, cliOptions.CacheDir, cliOptions.SkipDBUpdate, cliOptions.Insecure); err != nil {
+	if err := operation.DownloadVEXRepositories(ctx, cliOptions); err != nil {
 		return nil, xerrors.Errorf("VEX repositories download error: %w", err)
 	}
 
