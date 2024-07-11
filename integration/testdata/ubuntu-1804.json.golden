@@ -461,6 +461,50 @@
           ],
           "PublishedDate": "2019-09-24T22:15:00Z",
           "LastModifiedDate": "2021-01-11T19:21:00Z"
+        }, 
+        {
+          "VulnerabilityID": "CVE-2024-3596",
+          "PkgID": "abc",
+          "PkgName": "freeradius",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/libss2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04",
+            "UID": "7a50c6bc4279c93b"
+          },
+          "InstalledVersion": "dd",
+          "Status": "needed",
+          "Layer": {
+            "Digest": "sha256:",
+            "DiffID": "sha256:"
+          },
+          "SeveritySource": "ubuntu",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/CVE-2024-3596",
+          "DataSource": {
+            "ID": "ubuntu",
+            "Name": "Ubuntu CVE Tracker",
+            "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+          },
+          "Title": "tbd",
+          "Description": "tbd",
+          "Severity": "tbd",
+          "CweIDs": [
+            "CWE-xxx"
+          ],
+          "VendorSeverity": {
+            "ubuntu": 0
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "tbd",
+              "V3Vector": "tbd",
+              "V2Score": 0,
+              "V3Score": 0
+            }
+          },
+          "References": [
+             "https://access.redhat.com/security/cve/xxx"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2021-01-11T19:21:00Z"
         }
       ]
     }
