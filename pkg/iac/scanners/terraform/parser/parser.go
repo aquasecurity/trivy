@@ -229,6 +229,16 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 			return nil, err
 		}
 		p.debug.Log("Added %d variables from tfvars.", len(inputVars))
+
+		for _, varBlock := range blocks.OfType("variable") {
+			if varBlock.GetAttribute("default") == nil {
+				if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
+					p.debug.Log(
+						"Variable %q was not found in the environment or variable files. Evaluating may not work correctly.",
+						varBlock.TypeLabel())
+				}
+			}
+		}
 	}
 
 	modulesMetadata, metadataPath, err := loadModuleMetadata(p.moduleFS, p.projectRoot)
