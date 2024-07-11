@@ -5,36 +5,29 @@ import (
 	"strings"
 )
 
-var Mapping = map[string]string{
+// All mapping keys must be uppercase
+var mapping = map[string]string{
 	// GPL
+	"GPL1":                           GPL10,
 	"GPL-1":                          GPL10,
-	"GPL-1+":                         GPL10,
-	"GPL 1.0":                        GPL10,
+	"GPL-1.0":                        GPL10,
 	"GPL 1":                          GPL10,
+	"GPL 1.0":                        GPL10,
 	"GPL2":                           GPL20,
-	"GPL 2.0":                        GPL20,
-	"GPL 2":                          GPL20,
 	"GPL-2":                          GPL20,
-	"GPL-2.0-ONLY":                   GPL20,
-	"GPL2+":                          GPL20,
+	"GPL-2.0":                        GPL20,
+	"GPL 2":                          GPL20,
+	"GPL 2.0":                        GPL20,
 	"GPLV2":                          GPL20,
-	"GPLV2+":                         GPL20,
-	"GPL-2+":                         GPL20,
-	"GPL-2.0+":                       GPL20,
-	"GPL-2.0-OR-LATER":               GPL20,
 	"GPL-2+ WITH AUTOCONF EXCEPTION": GPL20withautoconfexception,
 	"GPL-2+-WITH-BISON-EXCEPTION":    GPL20withbisonexception,
 	"GPL2 W/ CPE":                    GPL20withclasspathexception,
 	"GPL3":                           GPL30,
-	"GPL 3.0":                        GPL30,
-	"GPL 3":                          GPL30,
-	"GPLV3":                          GPL30,
-	"GPLV3+":                         GPL30,
 	"GPL-3":                          GPL30,
-	"GPL-3.0-ONLY":                   GPL30,
-	"GPL3+":                          GPL30,
-	"GPL-3+":                         GPL30,
-	"GPL-3.0-OR-LATER":               GPL30,
+	"GPL-3.0":                        GPL30,
+	"GPL 3":                          GPL30,
+	"GPL 3.0":                        GPL30,
+	"GPLV3":                          GPL30,
 	"GPL-3+ WITH AUTOCONF EXCEPTION": GPL30withautoconfexception,
 	"GPL-3+-WITH-BISON-EXCEPTION":    GPL20withbisonexception,
 	"GPL":                            GPL30, // 2? 3?
@@ -44,16 +37,15 @@ var Mapping = map[string]string{
 	"LGPL 2":     LGPL20,
 	"LGPL 2.0":   LGPL20,
 	"LGPL-2":     LGPL20,
-	"LGPL2+":     LGPL20,
-	"LGPL-2+":    LGPL20,
-	"LGPL-2.0+":  LGPL20,
+	"LGPL-2.0":   LGPL20,
 	"LGPL-2.1":   LGPL21,
 	"LGPL 2.1":   LGPL21,
-	"LGPL-2.1+":  LGPL21,
-	"LGPLV2.1+":  LGPL21,
-	"LGPL-3":     LGPL30,
+	"LGPLV2.1":   LGPL21,
+	"LGPL3":      LGPL30,
 	"LGPL 3":     LGPL30,
-	"LGPL-3+":    LGPL30,
+	"LGPL 3.0":   LGPL30,
+	"LGPL-3":     LGPL30,
+	"LGPL-3.0":   LGPL30,
 	"LGPL":       LGPL30, // 2? 3?
 	"GNU LESSER": LGPL30, // 2? 3?
 
@@ -180,7 +172,11 @@ func Normalize(name string) string {
 	name = strings.ToUpper(name)
 	name = strings.TrimPrefix(name, "THE ")
 	name = strings.TrimSuffix(name, " LICENSE")
-	if l, ok := Mapping[name]; ok {
+	// from https://spdx.dev/learn/handling-license-info/
+	name = strings.TrimSuffix(name, "+")
+	name = strings.TrimSuffix(name, "-ONLY")
+	name = strings.TrimSuffix(name, "-OR-LATER")
+	if l, ok := mapping[name]; ok {
 		return l
 	}
 	return name

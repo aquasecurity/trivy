@@ -1,7 +1,6 @@
 package licensing_test
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,6 +21,9 @@ func TestNormalize(t *testing.T) {
 				"The Apache License",
 				"THE APACHE LICENSE",
 				"  THE APACHE LICENSE  ",
+				"Apache-1.0-only",
+				"Apache-1.0-or-later",
+				"Apache+",
 			},
 			"Apache-1.0",
 		},
@@ -34,12 +36,6 @@ func TestNormalize(t *testing.T) {
 			}
 		})
 	}
-	t.Run("All mapping keys must be uppercase", func(t *testing.T) {
-		for k := range licensing.Mapping {
-			res := strings.ToUpper(k)
-			assert.Equal(t, k, res)
-		}
-	})
 }
 
 func TestSplitLicenses(t *testing.T) {
