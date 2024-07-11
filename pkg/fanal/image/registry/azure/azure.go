@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/preview/preview/containerregistry/runtime/containerregistry"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"golang.org/x/xerrors"
@@ -20,8 +22,8 @@ type Registry struct {
 }
 
 const (
-	azureURL = ".azurecr.io"
-	scope    = "https://management.azure.com/.default"
+	azureURL = ".azurecr.cn"
+	scope    = "https://management.chinacloudapi.cn/.default"
 	scheme   = "https"
 )
 
@@ -34,7 +36,8 @@ func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) error {
 }
 
 func (r *Registry) GetCredential(ctx context.Context) (string, string, error) {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	opts := azcore.ClientOptions{Cloud: cloud.AzureChina}
+	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{ClientOptions: opts})
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to generate acr credential error: %w", err)
 	}
