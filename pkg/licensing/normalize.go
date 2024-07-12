@@ -168,15 +168,15 @@ var pythonLicenseExceptions = map[string]string{
 var licenseSplitRegexp = regexp.MustCompile("(,?[_ ]+(?:or|and)[_ ]+)|(,[ ]*)")
 
 func Normalize(name string) string {
-	name = strings.TrimSpace(name)
-	name = strings.ToUpper(name)
-	name = strings.TrimPrefix(name, "THE ")
-	name = strings.TrimSuffix(name, " LICENSE")
+	license = strings.TrimSpace(name)
+	license = strings.ToUpper(license)
+	license = strings.TrimPrefix(license, "THE ")
+	license = strings.TrimSuffix(license, " LICENSE")
 	// from https://spdx.dev/learn/handling-license-info/
-	name = strings.TrimSuffix(name, "+")
-	name = strings.TrimSuffix(name, "-ONLY")
-	name = strings.TrimSuffix(name, "-OR-LATER")
-	if l, ok := mapping[name]; ok {
+	license = strings.TrimSuffix(license, "+")
+	license = strings.TrimSuffix(license, "-ONLY")
+	license = strings.TrimSuffix(license, "-OR-LATER")
+	if l, ok := mapping[license]; ok {
 		return l
 	}
 	return name

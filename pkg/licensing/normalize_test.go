@@ -27,6 +27,12 @@ func TestNormalize(t *testing.T) {
 			},
 			"Apache-1.0",
 		},
+		{
+			[]string{
+				" The unmapped license ",
+			},
+			" The unmapped license ",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.normalized, func(t *testing.T) {
