@@ -296,6 +296,15 @@ func TestFlags(t *testing.T) {
 			},
 			wantErr: `invalid argument "foo" for "--format" flag`,
 		},
+		{
+			name: "missing config file",
+			arguments: []string{
+				"test",
+				"--config",
+				"none",
+			},
+			wantErr: `config file "none" loading error: open none: no such file or directory`,
+		},
 	}
 
 	for _, tt := range tests {
