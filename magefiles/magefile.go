@@ -314,7 +314,7 @@ type Lint mg.Namespace
 // Run runs linters
 func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--verbose")
+	return sh.RunV("golangci-lint", "run")
 }
 
 // Fix auto fixes linters
