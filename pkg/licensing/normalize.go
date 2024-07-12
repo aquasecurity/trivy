@@ -388,6 +388,8 @@ var mapping = map[string]string{
 	"GPL V2":                          GPL20,
 	"GPL V3":                          GPL30,
 	"GPL VERSION 2":                   GPL20,
+	"GPL-2+ WITH AUTOCONF EXCEPTION":  GPL20withautoconfexception,
+	"GPL-3+ WITH AUTOCONF EXCEPTION":  GPL30withautoconfexception,
 	"GPL2 W/ CPE":                     GPL20withclasspathexception,
 	"GPLV2 LICENSE, INCLUDES THE CLASSPATH EXCEPTION":                       GPL20withclasspathexception,
 	"GPLV2 WITH CLASSPATH EXCEPTION":                                        GPL20withclasspathexception,
