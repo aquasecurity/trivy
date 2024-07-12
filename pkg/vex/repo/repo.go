@@ -85,9 +85,12 @@ type rawIndex struct {
 }
 
 type Repository struct {
-	Name    string
-	URL     string
-	Enabled bool
+	Name     string
+	URL      string
+	Enabled  bool
+	Username string
+	Password string
+	Token    string // For Bearer
 
 	dir string // Root directory for this VEX repository, $CACHE_DIR/vex/repositories/$REPO_NAME/
 }
@@ -158,7 +161,15 @@ func (r *Repository) downloadManifest(ctx context.Context, opts Options) error {
 	}
 
 	log.DebugContext(ctx, "Downloading the repository metadata...", log.String("url", u.String()), log.String("dst", r.dir))
-	if _, err = downloader.Download(ctx, u.String(), r.dir, ".", downloader.Options{Insecure: opts.Insecure}); err != nil {
+	_, err = downloader.Download(ctx, u.String(), r.dir, ".", downloader.Options{
+		Insecure: opts.Insecure,
+		Auth: downloader.Auth{
+			Username: r.Username,
+			Password: r.Password,
+			Token:    r.Token,
+		},
+	})
+	if err != nil {
 		_ = os.RemoveAll(r.dir)
 		return xerrors.Errorf("failed to download the repository: %w", err)
 	}
@@ -231,7 +242,12 @@ func (r *Repository) download(ctx context.Context, ver Version, dst string, opts
 			log.String("dir", dst), log.String("etag", etags[loc.URL]))
 		etag, err := downloader.Download(ctx, loc.URL, dst, ".", downloader.Options{
 			Insecure: opts.Insecure,
-			ETag:     etags[loc.URL],
+			Auth: downloader.Auth{
+				Username: r.Username,
+				Password: r.Password,
+				Token:    r.Token,
+			},
+			ETag: etags[loc.URL],
 		})
 		switch {
 		case errors.Is(err, downloader.ErrSkipDownload):
@@ -258,7 +274,10 @@ func (r *Repository) download(ctx context.Context, ver Version, dst string, opts
 			log.Time("updated_at", now))
 		return nil
 	}
-	return errs
+	if errs != nil {
+		return xerrors.Errorf("failed to download the repository: %w", errs)
+	}
+	return nil
 }
 
 func (r *Repository) cacheMetadata() (CacheMetadata, error) {
