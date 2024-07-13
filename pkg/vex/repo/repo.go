@@ -48,6 +48,10 @@ type Duration struct {
 	time.Duration
 }
 
+func (d Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.String())
+}
+
 // UnmarshalJSON implements the json.Unmarshaler interface
 func (d *Duration) UnmarshalJSON(b []byte) error {
 	var s string
@@ -79,7 +83,7 @@ type PackageEntry struct {
 	Format   string `json:"format"`
 }
 
-type rawIndex struct {
+type RawIndex struct {
 	UpdatedAt time.Time      `json:"updated_at"`
 	Packages  []PackageEntry `json:"packages"`
 }
@@ -100,10 +104,10 @@ type CacheMetadata struct {
 	ETags     map[string]string // Last ETag for each URL
 }
 
-func (r *Repository) Manifest(ctx context.Context) (Manifest, error) {
+func (r *Repository) Manifest(ctx context.Context, opts Options) (Manifest, error) {
 	filePath := filepath.Join(r.dir, manifestFile)
 	if !fsutils.FileExists(filePath) {
-		if err := r.downloadManifest(ctx, Options{}); err != nil {
+		if err := r.downloadManifest(ctx, opts); err != nil {
 			return Manifest{}, xerrors.Errorf("failed to download the repository metadata: %w", err)
 		}
 	}
@@ -132,7 +136,7 @@ func (r *Repository) Index(ctx context.Context) (Index, error) {
 	}
 	defer f.Close()
 
-	var raw rawIndex
+	var raw RawIndex
 	if err = json.NewDecoder(f).Decode(&raw); err != nil {
 		return Index{}, xerrors.Errorf("failed to decode the index: %w", err)
 	}
@@ -177,7 +181,7 @@ func (r *Repository) downloadManifest(ctx context.Context, opts Options) error {
 }
 
 func (r *Repository) Update(ctx context.Context, opts Options) error {
-	manifest, err := r.Manifest(ctx)
+	manifest, err := r.Manifest(ctx, opts)
 	if err != nil {
 		return xerrors.Errorf("failed to get the repository metadata: %w", err)
 	}
