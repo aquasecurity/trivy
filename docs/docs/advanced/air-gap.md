@@ -1,142 +1,125 @@
 # Air-Gapped Environment
+Trivy needs to connect to the internet to download databases. If you are running Trivy in an air-gapped environment, or an tightly controlled network, this document will explain your options.
+In an air-gapped environment it is your responsibility to update the Trivy databases on a regular basis, so that the scanner can detect newly disclosed vulnerabilities.  
 
-Trivy can be used in air-gapped environments. Note that an allowlist is [here][allowlist].
+## Network requirements
+Trivy's Databases are distributed as OCI images via GitHub Container registry (GHCR):
 
-## Air-Gapped Environment for vulnerabilities
+- <https://ghcr.io/aquasecurity/trivy-db>
+- <https://ghcr.io/aquasecurity/trivy-java-db>
+- <https://ghcr.io/aquasecurity/trivy-checks>
 
-### Download the vulnerability database
-At first, you need to download the vulnerability database for use in air-gapped environments.
+If Trivy is running behind a firewall, you'll need to add the following urls to your allowlist:
 
-=== "Trivy"
+- `ghcr.io`
+- `pkg-containers.githubusercontent.com`
 
-    ```
-    TRIVY_TEMP_DIR=$(mktemp -d)
-    trivy --cache-dir $TRIVY_TEMP_DIR image --download-db-only
-    tar -cf ./db.tar.gz -C $TRIVY_TEMP_DIR/db metadata.json trivy.db
-    rm -rf $TRIVY_TEMP_DIR
-    ```
+The databases are pulled by Trivy using the [OCI Distribution](https://github.com/opencontainers/distribution-spec) specification, which is based on simple HTTPS protocol.
 
-=== "oras >= v0.13.0"
-    Please follow [oras installation instruction][oras].
+## Running Trivy in air-gapped environment
+In an air-gapped environment, you have to tell Trivy on every scan to not attempt to download the latest database files, otherwise the scan will fail. The following flags are relevant:
 
-    Download `db.tar.gz`:
+- `--skip-db-update` to skip updating the main vulnerability database.
+- `--skip-java-db-update` to skip updating the Java vulnerability database.
+- `--offline-scan` to scan Java applications without issuing API requests.
+- `--skip-check-update` to skip updating the misconfiguration database.
 
-    ```
-    $ oras pull ghcr.io/aquasecurity/trivy-db:2
-    ```
-
-=== "oras < v0.13.0"
-    Please follow [oras installation instruction][oras].
-
-    Download `db.tar.gz`:
-
-    ```
-    $ oras pull -a ghcr.io/aquasecurity/trivy-db:2
-    ```
-
-### Download the Java index database[^1]
-Java users also need to download the Java index database for use in air-gapped environments.
-
-!!! note
-    You container image may contain JAR files even though you don't use Java directly.
-    In that case, you also need to download the Java index database.
-
-=== "Trivy"
-
-    ```
-    TRIVY_TEMP_DIR=$(mktemp -d)
-    trivy --cache-dir $TRIVY_TEMP_DIR image --download-java-db-only
-    tar -cf ./javadb.tar.gz -C $TRIVY_TEMP_DIR/java-db metadata.json trivy-java.db
-    rm -rf $TRIVY_TEMP_DIR
-    ```
-=== "oras >= v0.13.0"
-    Please follow [oras installation instruction][oras].
-
-    Download `javadb.tar.gz`:
-
-    ```
-    $ oras pull ghcr.io/aquasecurity/trivy-java-db:1
-    ```
-
-=== "oras < v0.13.0"
-    Please follow [oras installation instruction][oras].
-
-    Download `javadb.tar.gz`:
-
-    ```
-    $ oras pull -a ghcr.io/aquasecurity/trivy-java-db:1
-    ```
-
-
-### Transfer the DB files into the air-gapped environment
-The way of transfer depends on the environment.
-
-=== "Vulnerability db"
-    ```
-    $ rsync -av -e ssh /path/to/db.tar.gz [user]@[host]:dst
-    ```
-
-=== "Java index db[^1]"
-    ```
-    $ rsync -av -e ssh /path/to/javadb.tar.gz [user]@[host]:dst
-    ```
-
-### Put the DB files in Trivy's cache directory
-You have to know where to put the DB files. The following command shows the default cache directory.
-
-```
-$ ssh user@host
-$ trivy -h | grep cache
-   --cache-dir value  cache directory (default: "/home/myuser/.cache/trivy") [$TRIVY_CACHE_DIR]
-```
-=== "Vulnerability db"
-    Put the DB file in the cache directory + `/db`.
-    
-    ```
-    $ mkdir -p /home/myuser/.cache/trivy/db
-    $ cd /home/myuser/.cache/trivy/db
-    $ tar xvf /path/to/db.tar.gz -C /home/myuser/.cache/trivy/db
-    x trivy.db
-    x metadata.json
-    $ rm /path/to/db.tar.gz
-    ```
-
-=== "Java index db[^1]"
-    Put the DB file in the cache directory + `/java-db`.
-
-    ```
-    $ mkdir -p /home/myuser/.cache/trivy/java-db
-    $ cd /home/myuser/.cache/trivy/java-db
-    $ tar xvf /path/to/javadb.tar.gz -C /home/myuser/.cache/trivy/java-db
-    x trivy-java.db
-    x metadata.json
-    $ rm /path/to/javadb.tar.gz
-    ```
-
-
-
-In an air-gapped environment it is your responsibility to update the Trivy databases on a regular basis, so that the scanner can detect recently-identified vulnerabilities. 
-
-### Run Trivy with the specific flags.
-In an air-gapped environment, you have to specify `--skip-db-update` and `--skip-java-db-update`[^1] so that Trivy doesn't attempt to download the latest database files.
-In addition, if you want to scan `pom.xml` dependencies, you need to specify `--offline-scan` since Trivy tries to issue API requests for scanning Java applications by default.
-
-```
-$ trivy image --skip-db-update --skip-java-db-update --offline-scan alpine:3.12
+```shell
+trivy image --skip-db-update --skip-java-db-update --offline-scan --skip-check-update myimage
 ```
 
-## Air-Gapped Environment for misconfigurations
+## Self-Hosting
+You can also host the databases on your own OCI registry, in order to avoid having Trivy reaching out of your network.  
 
-No special measures are required to detect misconfigurations in an air-gapped environment.
+First, make a copy of the databases in a container registry that is accessible to Trivy. The databases are in:
+- `ghcr.io/aquasecurity/trivy-db:2`
+- `ghcr.io/aquasecurity/trivy-java-db:1`
+-  `ghcr.io/aquasecurity/trivy-checks:0`
 
-### Run Trivy with `--skip-check-update` option
-In an air-gapped environment, specify `--skip-check-update` so that Trivy doesn't attempt to download the latest misconfiguration checks.
+Then, tell Trivy to use the private images:
 
+```shell
+trivy image \
+    --db-repository myregistry.local/trivy-db \
+    --java-db-repository myregistry.local/trivy-java-db \
+    --offline-scan \
+    --checks-bundle-repository myregistry.local/trivy-checks \
+    myimage
 ```
-$ trivy conf --skip-policy-update /path/to/conf
+
+### Authentication
+
+For Trivy DB, configure it in the [same way as for private images](../advanced/private-registries/index.md).
+
+For Java DB, you need to run `docker login YOUR_REGISTRY`. Currently, specifying a username and password is not supported.
+
+## Manual cache population
+You can also download the databases files manually and surgically populate the Trivy cache directory with them.
+
+### Downloading the DB files
+On a machine with internet access, pull the database container archive from the registry into your local workspace:
+
+Note that these examples operate in the current working directory.
+
+=== "Using ORAS"
+This example uses [ORAS](https://oras.land), but you can use any other container registry manipulation tool.
+
+```shell
+oras pull ghcr.io/aquasecurity/trivy-db:2
 ```
 
-[allowlist]: ../references/troubleshooting.md
+You should now have a file called `db.tar.gz`. Next, extract it to reveal the db files:
+
+```shell
+tar -xzf db.tar.gz
+```
+
+You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files.
+
+=== "Using Trivy"
+This example uses Trivy to pull the database container archive. The `--cache-dir` flag makes Trivy download the database files into our current working directory. The `--download-db-only` flag tells Trivy to only download the database files, not to scan any images.
+
+```shell
+trivy --cache-dir . image --download-db-only
+```
+
+You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files.
+
+### Populating the Trivy Cache
+Once you obtained the Trivy DB files (`metadata.json` and `trivy.db`), copy them over to the air-gapped environment.
+
+In order to populate the cache, you need to identify the location of the cache directory. If it is under the default location, you can run the following command to find it:
+
+```shell
+trivy -h | grep cache
+```
+
+For the example, we will assume the `TRIVY_CACHE_DIR` variable holds the cache location:
+
+```shell
+TRIVY_CACHE_DIR=/home/user/.cache/trivy
+```
+
+Put the Trivy DB files in the Trivy cache directory under a `db` subdirectory:
+
+```shell
+# ensure cache db directory exists
+mkdir -p ${TRIVY_CACHE_DIR}/db
+# copy the db files
+cp /path/to/trivy.db /path/to/metadata.json ${TRIVY_CACHE_DIR}/db/
+```
+
+### Java DB
+
+For Java DB the process is the same, except for the following:
+1. Image location is `ghcr.io/aquasecurity/trivy-java-db:1`
+2. Archive file name is `javadb.tar.gz`
+3. DB file name is `trivy-java.db`
+
+## Misconfigurations scanning
+
+Note that the misconfigurations database is also embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
+
+[allowlist]: ../references/troubleshooting.md#error-downloading-vulnerability-db
 [oras]: https://oras.land/docs/installation
 
-[^1]: This is only required to scan `jar` files. More information about `Java index db` [here](../coverage/language/java.md)
