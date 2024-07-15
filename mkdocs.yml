@@ -137,7 +137,7 @@ nav:
           - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Air-Gapped Environment: docs/advanced/air-gap.md
+          - Advanced Network Scenarios: docs/advanced/air-gap.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
