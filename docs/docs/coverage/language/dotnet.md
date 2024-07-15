@@ -21,14 +21,11 @@ The following table provides an outline of the features Trivy offers.
 ## *.deps.json
 Trivy parses `*.deps.json` files. Trivy currently excludes dev dependencies from the report.
 
+!!! note
+    Trivy only includes runtime dependencies in the report.
+
 ## packages.config
 Trivy only finds dependency names and versions from `packages.config` files. To build dependency graph, it is better to use `packages.lock.json` files.
-
-### libraries built into .NET Core
-[libraries section][net-core-libraries] of `*deps.json` file may contain dependencies that included to `.NET Core` (dependencies with empty `runtime`, `runtimeTarget` and `native` fields in [target][net-core-target] section).
-These dependencies are not needed by the runtime, and the `dotnet build` command doesn't create `*.dll` files for them.
-
-Trivy marks these dependencies as the development dependencies and skip them by default. If you need to show them, use the `--include-dev-deps` flag.
 
 ## *Packages.props
 Trivy parses `*Packages.props` files. Both legacy `Packages.props` and modern `Directory.Packages.props` are supported.
