@@ -83,6 +83,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		skipIndirect = lessThan117(modFileParsed.Go.Version)
 	}
 
+	// Stdlib
+	if toolchain := modFileParsed.Toolchain; toolchain != nil {
+		// `go1.22.5` => `1.22.5`
+		ver := strings.TrimPrefix(toolchain.Name, "go")
+		pkgs["stdlib"] = ftypes.Package{
+			// Add the toolchain version as stdlib version
+			ID:           packageID("stdlib", ver),
+			Name:         "stdlib",
+			Version:      ver,
+			Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+		}
+	}
+
 	// Main module
 	if m := modFileParsed.Module; m != nil {
 		ver := strings.TrimPrefix(m.Mod.Version, "v")
