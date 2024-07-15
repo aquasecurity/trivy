@@ -92,7 +92,7 @@ var pkgs = []types.Package{
 		Version:    "1.1-r0",
 		SrcName:    "alpine-keys",
 		SrcVersion: "1.1-r0",
-		Licenses:   []string{"GPL-3.0"},
+		Licenses:   []string{"GPL-2.0"},
 		Arch:       "x86_64",
 		Digest:     "sha1:4def7ffaee6aeba700c1d62570326f75cbb8fa25",
 		InstalledFiles: []string{
@@ -231,7 +231,7 @@ var pkgs = []types.Package{
 		Version:    "0.7-r0",
 		SrcName:    "libc-dev",
 		SrcVersion: "0.7-r0",
-		Licenses:   []string{"GPL-3.0"},
+		Licenses:   []string{"GPL-2.0"},
 		Digest:     "sha1:9055bc7afd76cf2672198042f72fc4a5ed4fa961",
 		DependsOn:  []string{"musl-utils@1.1.14-r10"},
 		Arch:       "x86_64",
@@ -255,7 +255,6 @@ var pkgs = []types.Package{
 			"usr/share/aclocal/pkg.m4",
 		},
 	},
-
 	{
 		ID:         "sqlite-libs@3.26.0-r3",
 		Name:       "sqlite-libs",
@@ -271,7 +270,6 @@ var pkgs = []types.Package{
 			"usr/lib/libsqlite3.so.0.8.6",
 		},
 	},
-
 	{
 		ID:         "test@2.9.11_pre20061021-r2",
 		Name:       "test",
@@ -292,7 +290,6 @@ var pkgs = []types.Package{
 			"usr/include/sqlite3.h",
 		},
 	},
-
 	{
 		ID:         "ada-libs@2.7.4-r0",
 		Name:       "ada-libs",

@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -288,7 +289,7 @@ func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
 	choices := lo.Map(licenses, func(license string, i int) cdx.LicenseChoice {
 		return cdx.LicenseChoice{
 			License: &cdx.License{
-				Name: license,
+				Name: licensing.Normalize(license),
 			},
 		}
 	})

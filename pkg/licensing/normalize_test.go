@@ -10,40 +10,82 @@ import (
 
 func TestNormalize(t *testing.T) {
 	tests := []struct {
-		licenses   []string
-		normalized string
+		licenses      []string
+		normalized    string
+		normalizedKey string
 	}{
 		{
 			[]string{
 				"APACHE",
 				" APACHE ",
 				"APACHE License",
+				"ApacheLicense",
+				"ApacheLicence",
 				"The Apache License",
 				"THE APACHE LICENSE",
 				"  THE APACHE LICENSE  ",
 				"  THE\tAPACHE  \r\nLICENSE  \r\n ",
-				"Apache-2.0-only",
-				"Apache-2.0-or-later",
-				"Apache+",
 				"apache-license",
 				"apache-licence",
 				"apache-licensed",
 				"apache-licensed",
 			},
 			"Apache-2.0",
+			"Apache-2.0",
+		},
+		{
+			[]string{
+				"Apache+",
+			},
+			"Apache-2.0+",
+			"Apache-2.0",
+		},
+		{
+			[]string{
+				"GPL-only",
+			},
+			"GPL-2.0-only",
+			"GPL-2.0",
+		},
+		{
+			[]string{
+				"GPL-or-later",
+			},
+			"GPL-2.0-or-later",
+			"GPL-2.0",
+		},
+		{
+			[]string{
+				"Unlicense",
+				"Unlicensed",
+				"UNLICENSE",
+				"UNLICENSED",
+			},
+			"Unlicense",
+			"Unlicense",
+		},
+		{
+			[]string{
+				"MIT License",
+			},
+			"MIT",
+			"MIT",
 		},
 		{
 			[]string{
 				" The unmapped license ",
 			},
 			" The unmapped license ",
+			" The unmapped license ",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.normalized, func(t *testing.T) {
 			for _, ll := range tt.licenses {
-				res := licensing.Normalize(ll)
-				assert.Equal(t, tt.normalized, res)
+				normalized := licensing.Normalize(ll)
+				normalizedKey := licensing.NormalizeKey(ll)
+				assert.Equal(t, tt.normalized, normalized)
+				assert.Equal(t, tt.normalizedKey, normalizedKey)
 			}
 		})
 	}
