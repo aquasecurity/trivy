@@ -65,6 +65,13 @@ To identify licenses and dependency relationships, you need to download modules 
 such as `go mod download`, `go mod tidy`, etc.
 Trivy traverses `$GOPATH/pkg/mod` and collects those extra information.
 
+#### stdlib
+By default, `Go` selects the higher version from of `toolchan` or local version of `Go`. 
+See [toolchain] for more details.
+But Trivy doesn't use third-party application or utilities, so Trivy can't detect the local version of `Go`.
+
+This is why Trivy uses the `toolchain` version for `stdlib` - as the minimum required version for the `go.mod` file.
+
 ### Go binaries
 Trivy scans binaries built by Go, which include [module information](https://tip.golang.org/doc/go1.18#go-version).
 If there is a Go binary in your container image, Trivy automatically finds and scans it.
@@ -96,3 +103,4 @@ empty if it cannot do so[^5]. For the second case, the version of such packages 
 [^6]: Only available if `toolchain` directive exists
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[toolchain]: https://go.dev/doc/toolchain
