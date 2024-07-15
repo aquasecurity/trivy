@@ -17,9 +17,9 @@ import (
 )
 
 type dotNetDependencies struct {
-	Libraries     map[string]dotNetLibrary     `json:"libraries"`
-	RuntimeTarget RuntimeTarget                `json:"runtimeTarget"`
-	Targets       map[string]map[string]Target `json:"targets"`
+	Libraries     map[string]dotNetLibrary        `json:"libraries"`
+	RuntimeTarget RuntimeTarget                   `json:"runtimeTarget"`
+	Targets       map[string]map[string]TargetLib `json:"targets"`
 }
 
 type dotNetLibrary struct {
@@ -32,7 +32,7 @@ type RuntimeTarget struct {
 	Name string `json:"name"`
 }
 
-type Target struct {
+type TargetLib struct {
 	Runtime        any `json:"runtime"`
 	RuntimeTargets any `json:"runtimeTargets"`
 	Native         any `json:"native"`
@@ -61,9 +61,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
-	// Select target for RuntimeTarget
-	target := depsFile.Targets[depsFile.RuntimeTarget.Name]
-
 	var pkgs ftypes.Packages
 	for nameVer, lib := range depsFile.Libraries {
 		if !strings.EqualFold(lib.Type, "package") {
@@ -77,6 +74,18 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			continue
 		}
 
+		// Take target libraries for RuntimeTarget
+		if targetLibs, ok := depsFile.Targets[depsFile.RuntimeTarget.Name]; !ok {
+			// If the target is not found, take all dependencies
+			p.once.Do(func() {
+				p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
+			})
+		} else if !p.isRuntimeLibrary(targetLibs, nameVer) {
+			// Skip non-runtime libraries
+			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
+			continue
+		}
+
 		pkgs = append(pkgs, ftypes.Package{
 			ID:      dependency.ID(ftypes.DotNetCore, split[0], split[1]),
 			Name:    split[0],
@@ -87,9 +96,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 					EndLine:   lib.EndLine,
 				},
 			},
-			// We're still not sure that we need to skip libraries built into .NETCore (or that we detect them correctly).
-			// So we mark these libraries as Dev to skip the scan by default, but keep the options for displaying these libraries.
-			Dev: p.isLibraryBuiltIntoNetCore(target, depsFile.RuntimeTarget.Name, nameVer),
 		})
 	}
 
@@ -97,26 +103,20 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	return pkgs, nil, nil
 }
 
-// isLibraryBuiltIntoNetCore returns true if library doesn't contain `runtime`, `runtimeTarget` and `native` sections.
+// isRuntimeLibrary returns true if library doesn't contain `runtime`, `runtimeTarget` and `native` sections.
 // See https://github.com/aquasecurity/trivy/discussions/4282#discussioncomment-8830365 for more details.
-func (p *Parser) isLibraryBuiltIntoNetCore(target map[string]Target, runtimeTargetName, library string) bool {
-	// `Target` for `RuntimeTarget.Name` not found
-	if target == nil {
-		p.once.Do(func() {
-			p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("RuntimeTarget", runtimeTargetName))
-		})
-		return false
-	}
-	lib, ok := target[library]
+func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library string) bool {
+	lib, ok := targetLibs[library]
 	// Selected target doesn't contain library
+	// Mark these libraries as runtime to avoid mistaken omission
 	if !ok {
 		p.once.Do(func() {
-			p.logger.Debug("Unable to determine that the library is built into .NET Core. Library not found in `Target` section.", log.String("RuntimeTarget", runtimeTargetName), log.String("Library", library))
+			p.logger.Debug("Unable to determine that this is runtime library. Library not found in `Target` section.", log.String("Library", library))
 		})
-		return false
+		return true
 	}
 	// Check that `runtime`, `runtimeTarget` and `native` sections are empty
-	return lo.IsEmpty(lib)
+	return !lo.IsEmpty(lib)
 }
 
 // UnmarshalJSONWithMetadata needed to detect start and end lines of deps

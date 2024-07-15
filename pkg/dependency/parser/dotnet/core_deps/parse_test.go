@@ -28,7 +28,8 @@ func TestParse(t *testing.T) {
 					Version: "13.0.1",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 33, EndLine: 39,
+							StartLine: 33,
+							EndLine:   39,
 						},
 					},
 				},
@@ -44,7 +45,8 @@ func TestParse(t *testing.T) {
 					Version: "2.0.61",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 60, EndLine: 66,
+							StartLine: 60,
+							EndLine:   66,
 						},
 					},
 				},
@@ -54,31 +56,10 @@ func TestParse(t *testing.T) {
 					Version: "1.9.1",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 67, EndLine: 73,
+							StartLine: 67,
+							EndLine:   73,
 						},
 					},
-				},
-				{
-					ID:      "Microsoft.NETCore.App/1.1.2",
-					Name:    "Microsoft.NETCore.App",
-					Version: "1.1.2",
-					Locations: []ftypes.Location{
-						{
-							StartLine: 74, EndLine: 80,
-						},
-					},
-					Dev: true,
-				},
-				{
-					ID:      "Microsoft.NETCore.Platforms/1.1.0",
-					Name:    "Microsoft.NETCore.Platforms",
-					Version: "1.1.0",
-					Locations: []ftypes.Location{
-						{
-							StartLine: 81, EndLine: 87,
-						},
-					},
-					Dev: true,
 				},
 				{
 					ID:      "System.Collections.Immutable/1.3.0",
@@ -86,11 +67,10 @@ func TestParse(t *testing.T) {
 					Version: "1.3.0",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 88, EndLine: 94,
+							StartLine: 88,
+							EndLine:   94,
 						},
 					},
-					// Is false because `targets[.NETCoreApp,Version=v6.0]` doesn't contain this library
-					Dev: false,
 				},
 			},
 		},
