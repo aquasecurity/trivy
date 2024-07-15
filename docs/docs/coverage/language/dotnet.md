@@ -52,5 +52,3 @@ Same as [packages.config](#license-detection)
 [global-packages]: https://learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders
 [license]: https://learn.microsoft.com/en-us/nuget/reference/nuspec#license
 [license-url]: https://learn.microsoft.com/en-us/nuget/reference/nuspec#licenseurl
-[net-core-libraries]: https://github.com/dotnet/sdk/blob/529132850841a6bcfce96799262ce688e3851875/documentation/specs/runtime-configuration-file.md#libraries-section-depsjson
-[net-core-target]: https://github.com/dotnet/sdk/blob/529132850841a6bcfce96799262ce688e3851875/documentation/specs/runtime-configuration-file.md#targets-section-depsjson
