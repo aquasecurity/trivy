@@ -11,7 +11,7 @@
     "SrcName": "adduser",
     "SrcVersion": "3.118",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-only"
     ],
     "Maintainer": "Debian Adduser Developers \u003cadduser@packages.debian.org\u003e",
     "DependsOn": [
@@ -142,8 +142,8 @@
     "SrcName": "apt",
     "SrcVersion": "1.8.2",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0"
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
     ],
     "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e",
     "DependsOn": [
@@ -387,7 +387,7 @@
     "SrcName": "base-files",
     "SrcVersion": "10.3+deb10u1",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e",
     "Layer": {
@@ -482,7 +482,7 @@
     "SrcName": "base-passwd",
     "SrcVersion": "3.5.46",
     "Licenses": [
-      "GPL-2.0",
+      "GPL-2.0-only",
       "PD"
     ],
     "Maintainer": "Colin Watson \u003ccjwatson@debian.org\u003e",
@@ -530,7 +530,7 @@
     "SrcVersion": "5.0",
     "SrcRelease": "4",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-3.0-only"
     ],
     "Maintainer": "Matthias Klose \u003cdoko@debian.org\u003e",
     "DependsOn": [
@@ -628,21 +628,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "Layer": {
@@ -686,7 +686,7 @@
     "SrcVersion": "8.30",
     "SrcRelease": "3",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-3.0-only"
     ],
     "Maintainer": "Michael Stone \u003cmstone@debian.org\u003e",
     "Layer": {
@@ -976,7 +976,7 @@
     "SrcVersion": "0.5.10.2",
     "SrcRelease": "5",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Andrej Shadura \u003candrewsh@debian.org\u003e",
     "DependsOn": [
@@ -1183,7 +1183,7 @@
     "SrcName": "debian-archive-keyring",
     "SrcVersion": "2019.1",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Debian Release Team \u003cpackages@release.debian.org\u003e",
     "Layer": {
@@ -1229,7 +1229,7 @@
     "SrcName": "debianutils",
     "SrcVersion": "4.8.6.1",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Clint Adams \u003cclint@debian.org\u003e",
     "Layer": {
@@ -1325,8 +1325,8 @@
     "SrcRelease": "3",
     "SrcEpoch": 1,
     "Licenses": [
-      "GPL-2.0",
-      "GFDL-1.3"
+      "GPL-2.0-or-later",
+      "GFDL-1.3-or-later"
     ],
     "Maintainer": "Santiago Vila \u003csanvila@debian.org\u003e",
     "Layer": {
@@ -1396,8 +1396,8 @@
     "SrcName": "dpkg",
     "SrcVersion": "1.19.7",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "BSD-2-Clause",
       "public-domain-s-s-d",
       "public-domain-md5"
@@ -1561,8 +1561,8 @@
     "SrcVersion": "1.44.5",
     "SrcRelease": "1+deb10u1",
     "Licenses": [
-      "GPL-2.0",
-      "LGPL-2.0"
+      "GPL-2.0-only",
+      "LGPL-2.0-only"
     ],
     "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
     "Layer": {
@@ -1648,21 +1648,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [
@@ -1707,8 +1707,8 @@
     "SrcVersion": "4.6.0+git+20190209",
     "SrcRelease": "2",
     "Licenses": [
-      "GPL-3.0",
-      "GFDL-1.3"
+      "GPL-3.0-only",
+      "GFDL-1.3-only"
     ],
     "Maintainer": "Andreas Metzler \u003cametzler@debian.org\u003e",
     "Layer": {
@@ -1789,11 +1789,12 @@
     "SrcVersion": "8.3.0",
     "SrcRelease": "6",
     "Licenses": [
-      "GPL-2.0",
-      "GPL-3.0",
-      "GFDL-1.2",
+      "GPL-2.0-or-later",
+      "GPL-3.0-only",
+      "GFDL-1.2-only",
+      "GPL-2.0-only",
       "Artistic-2.0",
-      "LGPL-2.0"
+      "LGPL-2.0-or-later"
     ],
     "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
     "Layer": {
@@ -1823,18 +1824,18 @@
     "SrcVersion": "2.2.12",
     "SrcRelease": "1+deb10u1",
     "Licenses": [
-      "GPL-3.0+",
+      "GPL-3.0-or-later",
       "permissive",
-      "LGPL-2.1+",
+      "LGPL-2.1-or-later",
       "MIT",
       "BSD-3-Clause",
-      "LGPL-3.0+",
+      "LGPL-3.0-or-later",
       "RFC-Reference",
       "TinySCHEME",
       "CC0-1.0",
-      "GPL-3.0",
-      "LGPL-3.0",
-      "LGPL-2.1"
+      "GPL-3.0-only",
+      "LGPL-3.0-only",
+      "LGPL-2.1-only"
     ],
     "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -1872,8 +1873,8 @@
     "SrcVersion": "3.3",
     "SrcRelease": "1",
     "Licenses": [
-      "GPL-3.0+",
-      "GPL-3.0"
+      "GPL-3.0-or-later",
+      "GPL-3.0-only"
     ],
     "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
     "DependsOn": [
@@ -1961,7 +1962,7 @@
     "SrcVersion": "1.9",
     "SrcRelease": "3",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e",
     "DependsOn": [
@@ -2022,7 +2023,7 @@
     "SrcName": "hostname",
     "SrcVersion": "3.21",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-only"
     ],
     "Maintainer": "Michael Meskes \u003cmeskes@debian.org\u003e",
     "Layer": {
@@ -2058,8 +2059,8 @@
     "SrcVersion": "1.56+nmu1",
     "Licenses": [
       "BSD-3-Clause",
-      "GPL-2.0+",
-      "GPL-2.0"
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
     ],
     "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -2113,7 +2114,7 @@
     "SrcVersion": "4.20.0",
     "SrcRelease": "2",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-only"
     ],
     "Maintainer": "Alexander Wirt \u003cformorer@debian.org\u003e",
     "DependsOn": [
@@ -2303,7 +2304,7 @@
     "SrcRelease": "2",
     "SrcEpoch": 3,
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Noah Meyerhans \u003cnoahm@debian.org\u003e",
     "DependsOn": [
@@ -2343,10 +2344,10 @@
     "SrcVersion": "2.2.53",
     "SrcRelease": "4",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
-      "LGPL-2.0+",
-      "LGPL-2.1"
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-only"
     ],
     "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e",
     "DependsOn": [
@@ -2378,8 +2379,8 @@
     "SrcName": "apt",
     "SrcVersion": "1.8.2",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0"
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
     ],
     "Maintainer": "APT Development Team \u003cdeity@lists.debian.org\u003e",
     "DependsOn": [
@@ -2466,10 +2467,10 @@
     "SrcRelease": "4",
     "SrcEpoch": 1,
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
-      "LGPL-2.0+",
-      "LGPL-2.1"
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-only"
     ],
     "Maintainer": "Guillem Jover \u003cguillem@debian.org\u003e",
     "DependsOn": [
@@ -2505,9 +2506,9 @@
     "SrcRelease": "3",
     "SrcEpoch": 1,
     "Licenses": [
-      "GPL-2.0",
-      "LGPL-2.1",
-      "GPL-1.0"
+      "GPL-2.0-only",
+      "LGPL-2.1-only",
+      "GPL-1.0-only"
     ],
     "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e",
     "Layer": {
@@ -2539,9 +2540,9 @@
     "SrcRelease": "3",
     "SrcEpoch": 1,
     "Licenses": [
-      "GPL-2.0",
-      "LGPL-2.1",
-      "GPL-1.0"
+      "GPL-2.0-only",
+      "LGPL-2.1-only",
+      "GPL-1.0-only"
     ],
     "Maintainer": "Laurent Bigonville \u003cbigon@debian.org\u003e",
     "DependsOn": [
@@ -2576,21 +2577,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [
@@ -2625,7 +2626,7 @@
     "SrcRelease": "9.2~deb10u1",
     "Licenses": [
       "BSD-3-Clause",
-      "GPL-2.0"
+      "GPL-2.0-only"
     ],
     "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
     "DependsOn": [
@@ -2659,8 +2660,8 @@
     "SrcVersion": "2.28",
     "SrcRelease": "10",
     "Licenses": [
-      "LGPL-2.1",
-      "GPL-2.0"
+      "LGPL-2.1-only",
+      "GPL-2.0-only"
     ],
     "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
     "DependsOn": [
@@ -2726,8 +2727,8 @@
     "SrcVersion": "2.28",
     "SrcRelease": "10",
     "Licenses": [
-      "LGPL-2.1",
-      "GPL-2.0"
+      "LGPL-2.1-only",
+      "GPL-2.0-only"
     ],
     "Maintainer": "GNU Libc Maintainers \u003cdebian-glibc@lists.debian.org\u003e",
     "DependsOn": [
@@ -3064,9 +3065,9 @@
     "SrcVersion": "0.7.9",
     "SrcRelease": "2",
     "Licenses": [
-      "LGPL-2.1",
-      "GPL-2.0",
-      "GPL-3.0"
+      "LGPL-2.1-only",
+      "GPL-2.0-only",
+      "GPL-3.0-only"
     ],
     "Maintainer": "Pierre Chifflier \u003cpollux@debian.org\u003e",
     "DependsOn": [
@@ -3103,8 +3104,8 @@
     "SrcEpoch": 1,
     "Licenses": [
       "BSD-3-Clause",
-      "GPL-2.0",
-      "GPL-2.0+"
+      "GPL-2.0-only",
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e",
     "DependsOn": [
@@ -3139,8 +3140,8 @@
     "SrcEpoch": 1,
     "Licenses": [
       "BSD-3-Clause",
-      "GPL-2.0",
-      "GPL-2.0+"
+      "GPL-2.0-only",
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Christian Kastner \u003cckk@debian.org\u003e",
     "DependsOn": [
@@ -3269,9 +3270,9 @@
     "SrcVersion": "0.176",
     "SrcRelease": "1.1",
     "Licenses": [
-      "GPL-2.0",
-      "GPL-3.0",
-      "LGPL-2.0"
+      "GPL-2.0-only",
+      "GPL-3.0-only",
+      "LGPL-2.0-or-later"
     ],
     "Maintainer": "Kurt Roeckx \u003ckurt@roeckx.be\u003e",
     "DependsOn": [
@@ -3311,8 +3312,8 @@
     "SrcVersion": "1.44.5",
     "SrcRelease": "1+deb10u1",
     "Licenses": [
-      "GPL-2.0",
-      "LGPL-2.0"
+      "GPL-2.0-only",
+      "LGPL-2.0-only"
     ],
     "Maintainer": "Theodore Y. Ts'o \u003ctytso@mit.edu\u003e",
     "DependsOn": [
@@ -3346,21 +3347,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [
@@ -3395,7 +3396,7 @@
     "SrcVersion": "3.2.1",
     "SrcRelease": "9",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Debian GCC Maintainers \u003cdebian-gcc@lists.debian.org\u003e",
     "DependsOn": [
@@ -3457,8 +3458,8 @@
     "SrcVersion": "1.8.4",
     "SrcRelease": "5",
     "Licenses": [
-      "LGPL-2.0",
-      "GPL-2.0"
+      "LGPL-2.0-or-later",
+      "GPL-2.0-only"
     ],
     "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -3498,9 +3499,10 @@
     "SrcRelease": "4",
     "SrcEpoch": 2,
     "Licenses": [
-      "LGPL-3.0",
-      "GPL-2.0",
-      "GPL-3.0"
+      "LGPL-3.0-only",
+      "GPL-2.0-only",
+      "GPL-3.0-only",
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Debian Science Team \u003cdebian-science-maintainers@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -3533,18 +3535,17 @@
     "SrcVersion": "3.6.7",
     "SrcRelease": "4",
     "Licenses": [
-      "LGPL-2.1",
-      "LGPL-2.0",
-      "LGPL-3.0",
-      "GPL-2.0",
-      "GPL-3.0",
-      "GFDL-1.3",
+      "LGPL-2.1-only",
+      "LGPL-2.0-or-later",
+      "LGPL-3.0-only",
+      "GPL-2.0-or-later",
+      "GPL-3.0-only",
+      "GFDL-1.3-only",
       "CC0-1.0",
       "MIT",
-      "LGPL-3.0+",
-      "GPL-2.0+",
+      "LGPL-3.0-or-later",
       "Apache-2.0",
-      "GPL-3.0+"
+      "GPL-3.0-or-later"
     ],
     "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -3606,12 +3607,12 @@
     "SrcVersion": "1.35",
     "SrcRelease": "1",
     "Licenses": [
-      "LGPL-2.1+",
+      "LGPL-2.1-or-later",
       "BSD-3-Clause",
       "g10-permissive",
-      "GPL-3.0+",
-      "LGPL-2.1",
-      "GPL-3.0"
+      "GPL-3.0-or-later",
+      "LGPL-2.1-only",
+      "GPL-3.0-only"
     ],
     "Maintainer": "Debian GnuPG Maintainers \u003cpkg-gnupg-maint@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -3675,13 +3676,13 @@
     "SrcVersion": "2.0.5",
     "SrcRelease": "1",
     "Licenses": [
-      "GPL-3.0+",
-      "LGPL-3.0+",
-      "GPL-2.0+",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-2.0-or-later",
       "Unicode",
-      "GPL-3.0",
-      "GPL-2.0",
-      "LGPL-3.0"
+      "GPL-3.0-only",
+      "GPL-2.0-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "Debian Libidn team \u003chelp-libidn@gnu.org\u003e",
     "DependsOn": [
@@ -3742,8 +3743,8 @@
     "SrcRelease": "1",
     "Licenses": [
       "BSD-2-Clause",
-      "GPL-2.0+",
-      "GPL-2.0"
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
     ],
     "Maintainer": "Nobuhiro Iwamatsu \u003ciwamatsu@debian.org\u003e",
     "DependsOn": [
@@ -3777,19 +3778,19 @@
     "Licenses": [
       "PD",
       "probably-PD",
-      "GPL-2.0+",
-      "LGPL-2.1+",
+      "GPL-2.0-or-later",
+      "LGPL-2.1-or-later",
       "permissive-fsf",
       "Autoconf",
       "permissive-nowarranty",
-      "GPL-2.0",
+      "GPL-2.0-only",
       "none",
       "config-h",
-      "LGPL-2.0",
-      "LGPL-2.1",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
       "noderivs",
       "PD-debian",
-      "GPL-3.0"
+      "GPL-3.0-only"
     ],
     "Maintainer": "Jonathan Nieder \u003cjrnieder@gmail.com\u003e",
     "DependsOn": [
@@ -3825,9 +3826,9 @@
     "SrcVersion": "1.0.4",
     "SrcRelease": "2",
     "Licenses": [
-      "LGPL-2.1",
-      "GPL-2.0+",
-      "GPL-2.0"
+      "LGPL-2.1-only",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
     ],
     "Maintainer": "Anibal Monsalve Salazar \u003canibal@debian.org\u003e",
     "DependsOn": [
@@ -3858,21 +3859,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [
@@ -3942,14 +3943,14 @@
     "SrcVersion": "3.4.1",
     "SrcRelease": "1",
     "Licenses": [
-      "LGPL-2.1+",
-      "LGPL-2.0+",
-      "LGPL-2.0",
+      "LGPL-2.1-or-later",
+      "LGPL-2.0-or-later",
+      "LGPL-2.0-only",
       "other",
-      "GPL-2.0+",
-      "GPL-2.0-with-autoconf-exception",
+      "GPL-2.0-or-later",
+      "GPL-2.0-with-autoconf-exception+",
       "public-domain",
-      "GPL-2.0",
+      "GPL-2.0-only",
       "GAP"
     ],
     "Maintainer": "Magnus Holmgren \u003cholmgren@debian.org\u003e",
@@ -4024,7 +4025,7 @@
     "SrcVersion": "1.3.1",
     "SrcRelease": "5",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
     "Layer": {
@@ -4158,7 +4159,7 @@
     "SrcVersion": "1.3.1",
     "SrcRelease": "5",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
     "DependsOn": [
@@ -4204,7 +4205,7 @@
     "SrcVersion": "1.3.1",
     "SrcRelease": "5",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
     "DependsOn": [
@@ -4358,7 +4359,7 @@
     "SrcVersion": "1.3.1",
     "SrcRelease": "5",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
     "DependsOn": [
@@ -4444,7 +4445,7 @@
     "SrcVersion": "2.3.3",
     "SrcRelease": "4",
     "Licenses": [
-      "LGPL-2.1"
+      "LGPL-2.1-only"
     ],
     "Maintainer": "Kees Cook \u003ckees@debian.org\u003e",
     "DependsOn": [
@@ -4477,8 +4478,8 @@
     "SrcVersion": "2.8",
     "SrcRelease": "1",
     "Licenses": [
-      "LGPL-2.1",
-      "GPL-2.0"
+      "LGPL-2.1-only",
+      "GPL-2.0-only"
     ],
     "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -4511,8 +4512,8 @@
     "SrcVersion": "2.8",
     "SrcRelease": "2",
     "Licenses": [
-      "LGPL-2.0",
-      "GPL-2.0"
+      "LGPL-2.0-or-later",
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
     "Layer": {
@@ -4541,8 +4542,8 @@
     "SrcVersion": "2.8",
     "SrcRelease": "2",
     "Licenses": [
-      "LGPL-2.0",
-      "GPL-2.0"
+      "LGPL-2.0-or-later",
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -4578,8 +4579,8 @@
     "SrcVersion": "2.8",
     "SrcRelease": "1",
     "Licenses": [
-      "LGPL-2.0",
-      "GPL-2.0"
+      "LGPL-2.0-or-later",
+      "GPL-2.0-or-later"
     ],
     "Maintainer": "Debian SELinux maintainers \u003cselinux-devel@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -4610,21 +4611,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [
@@ -4722,13 +4723,13 @@
     "SrcVersion": "241",
     "SrcRelease": "7~deb10u1",
     "Licenses": [
-      "LGPL-2.1+",
+      "LGPL-2.1-or-later",
       "CC0-1.0",
-      "GPL-2.0",
-      "GPL-2.0+",
+      "GPL-2.0-only",
+      "GPL-2.0-or-later",
       "MIT",
       "public-domain",
-      "LGPL-2.1"
+      "LGPL-2.1-only"
     ],
     "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
     "Layer": {
@@ -4757,10 +4758,10 @@
     "SrcVersion": "4.13",
     "SrcRelease": "3",
     "Licenses": [
-      "LGPL-2.0",
-      "LGPL-2.1",
-      "GPL-3.0",
-      "GFDL-1.3"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-only",
+      "GPL-3.0-only",
+      "GFDL-1.3-only"
     ],
     "Maintainer": "Debian GnuTLS Maintainers \u003cpkg-gnutls-maint@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -4830,13 +4831,13 @@
     "SrcVersion": "241",
     "SrcRelease": "7~deb10u1",
     "Licenses": [
-      "LGPL-2.1+",
+      "LGPL-2.1-or-later",
       "CC0-1.0",
-      "GPL-2.0",
-      "GPL-2.0+",
+      "GPL-2.0-only",
+      "GPL-2.0-or-later",
       "MIT",
       "public-domain",
-      "LGPL-2.1"
+      "LGPL-2.1-only"
     ],
     "Maintainer": "Debian systemd Maintainers \u003cpkg-systemd-maintainers@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -4868,17 +4869,17 @@
     "SrcVersion": "0.9.10",
     "SrcRelease": "1",
     "Licenses": [
-      "LGPL-3.0+",
-      "GPL-2.0+",
+      "LGPL-3.0-or-later",
+      "GPL-2.0-or-later",
       "FreeSoftware",
       "GPL-2+ with distribution exception",
-      "GPL-3.0+",
-      "GFDL-1.2+",
+      "GPL-3.0-or-later",
+      "GFDL-1.2-or-later",
       "MIT",
-      "LGPL-3.0",
-      "GPL-3.0",
-      "GPL-2.0",
-      "GFDL-1.2"
+      "LGPL-3.0-only",
+      "GPL-3.0-only",
+      "GPL-2.0-only",
+      "GFDL-1.2-only"
     ],
     "Maintainer": "Jörg Frings-Fürst \u003cdebian@jff.email\u003e",
     "DependsOn": [
@@ -4911,21 +4912,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [
@@ -4958,9 +4959,9 @@
     "SrcVersion": "1.8.2",
     "SrcRelease": "4",
     "Licenses": [
-      "GPL-2.0",
+      "GPL-2.0-only",
       "Artistic-2",
-      "GPL-2.0+",
+      "GPL-2.0-or-later",
       "custom"
     ],
     "Maintainer": "Debian Netfilter Packaging Team \u003cpkg-netfilter-team@lists.alioth.debian.org\u003e",
@@ -4995,9 +4996,9 @@
     "SrcRelease": "3",
     "Licenses": [
       "BSD-3-Clause",
-      "GPL-2.0",
+      "GPL-2.0-only",
       "Zlib",
-      "GPL-2.0+",
+      "GPL-2.0-or-later",
       "MIT"
     ],
     "Maintainer": "Debian Med Packaging Team \u003cdebian-med-packaging@lists.alioth.debian.org\u003e",
@@ -5033,7 +5034,7 @@
     "SrcRelease": "1.1",
     "SrcEpoch": 1,
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-only"
     ],
     "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e",
     "Layer": {
@@ -5194,7 +5195,7 @@
     "SrcVersion": "1.3.3",
     "SrcRelease": "17",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-only"
     ],
     "Maintainer": "Steve Langasek \u003cvorlon@debian.org\u003e",
     "Layer": {
@@ -5237,21 +5238,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [
@@ -5430,7 +5431,7 @@
     "SrcRelease": "1.1",
     "SrcEpoch": 1,
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0-only"
     ],
     "Maintainer": "Shadow package maintainers \u003cpkg-shadow-devel@lists.alioth.debian.org\u003e",
     "DependsOn": [
@@ -6371,7 +6372,7 @@
     "SrcVersion": "4.7",
     "SrcRelease": "1",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-3.0-only"
     ],
     "Maintainer": "Clint Adams \u003cclint@debian.org\u003e",
     "Layer": {
@@ -6448,8 +6449,8 @@
     "SrcVersion": "2.93",
     "SrcRelease": "8",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0"
+      "GPL-2.0-or-later",
+      "GPL-2.0-only"
     ],
     "Maintainer": "Debian sysvinit maintainers \u003cdebian-init-diversity@chiark.greenend.org.uk\u003e",
     "DependsOn": [
@@ -6492,8 +6493,8 @@
     "SrcVersion": "1.30+dfsg",
     "SrcRelease": "6",
     "Licenses": [
-      "GPL-3.0",
-      "GPL-2.0"
+      "GPL-3.0-only",
+      "GPL-2.0-only"
     ],
     "Maintainer": "Bdale Garbee \u003cbdale@gag.com\u003e",
     "Layer": {
@@ -8429,21 +8430,21 @@
     "SrcVersion": "2.33.1",
     "SrcRelease": "0.1",
     "Licenses": [
-      "GPL-2.0+",
-      "GPL-2.0",
+      "GPL-2.0-or-later",
+      "GPL-2.0-only",
       "public-domain",
       "BSD-4-Clause",
       "MIT",
       "BSD-2-Clause",
       "BSD-3-Clause",
-      "LGPL-2.0+",
-      "LGPL-2.1+",
-      "GPL-3.0+",
-      "LGPL-2.0",
-      "LGPL-3.0+",
-      "GPL-3.0",
-      "LGPL-2.1",
-      "LGPL-3.0"
+      "LGPL-2.0-or-later",
+      "LGPL-2.1-or-later",
+      "GPL-3.0-or-later",
+      "LGPL-3.0-or-later",
+      "GPL-3.0-only",
+      "LGPL-2.0-only",
+      "LGPL-2.1-only",
+      "LGPL-3.0-only"
     ],
     "Maintainer": "LaMont Jones \u003clamont@debian.org\u003e",
     "DependsOn": [

@@ -81,7 +81,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -121,12 +121,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -166,7 +166,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -206,7 +206,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -251,7 +251,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -295,12 +295,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -330,42 +330,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -409,12 +409,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -459,7 +459,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -503,7 +503,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -587,7 +587,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -627,7 +627,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -667,12 +667,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3"
+            "name": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -720,12 +720,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -780,12 +780,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-only"
           }
         }
       ],
@@ -829,12 +829,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -864,42 +864,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -943,12 +943,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3"
+            "name": "GFDL-1.3-only"
           }
         }
       ],
@@ -992,17 +992,22 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.2"
+            "name": "GFDL-1.2-only"
+          }
+        },
+        {
+          "license": {
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -1012,7 +1017,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-or-later"
           }
         }
       ],
@@ -1056,7 +1061,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
@@ -1066,7 +1071,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
@@ -1081,7 +1086,7 @@
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
@@ -1101,17 +1106,17 @@
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         }
       ],
@@ -1155,12 +1160,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -1204,7 +1209,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -1248,7 +1253,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -1293,12 +1298,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -1338,22 +1343,22 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         }
       ],
@@ -1397,12 +1402,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -1442,22 +1447,22 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         }
       ],
@@ -1505,17 +1510,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-1.0"
+            "name": "GPL-1.0-only"
           }
         }
       ],
@@ -1563,17 +1568,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-1.0"
+            "name": "GPL-1.0-only"
           }
         }
       ],
@@ -1621,12 +1626,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -1656,42 +1661,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -1740,7 +1745,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -1784,12 +1789,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -1833,12 +1838,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -1882,17 +1887,17 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -2043,12 +2048,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-only"
           }
         }
       ],
@@ -2092,12 +2097,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -2127,42 +2132,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -2206,7 +2211,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -2287,12 +2292,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -2336,27 +2341,27 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3+"
+            "name": "GFDL-1.3-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -2400,27 +2405,27 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3+"
+            "name": "GFDL-1.3-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -2464,17 +2469,22 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
+          }
+        },
+        {
+          "license": {
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -2522,32 +2532,32 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3"
+            "name": "GFDL-1.3-only"
           }
         },
         {
@@ -2562,12 +2572,7 @@
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
-          }
-        },
-        {
-          "license": {
-            "name": "GPL-2.0+"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
@@ -2577,7 +2582,7 @@
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         }
       ],
@@ -2621,7 +2626,7 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
@@ -2636,17 +2641,17 @@
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -2727,17 +2732,17 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
@@ -2747,17 +2752,17 @@
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -2875,12 +2880,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -2934,12 +2939,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
@@ -2959,7 +2964,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -2974,12 +2979,12 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
@@ -2994,7 +2999,7 @@
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -3038,12 +3043,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -3073,42 +3078,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -3226,17 +3231,17 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
@@ -3246,12 +3251,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0-with-autoconf-exception"
+            "name": "GPL-2.0-with-autoconf-exception+"
           }
         },
         {
@@ -3261,7 +3266,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -3374,7 +3379,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3418,7 +3423,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3462,7 +3467,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3506,7 +3511,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3591,12 +3596,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3"
+            "name": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -3655,7 +3660,7 @@
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
@@ -3700,7 +3705,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -3715,7 +3720,7 @@
         },
         {
           "license": {
-            "name": "GPL-1.0+"
+            "name": "GPL-1.0-or-later"
           }
         },
         {
@@ -3735,12 +3740,12 @@
         },
         {
           "license": {
-            "name": "GPL-1.0"
+            "name": "GPL-1.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -3784,7 +3789,7 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         }
       ],
@@ -3828,12 +3833,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -3877,12 +3882,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3926,12 +3931,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -3975,12 +3980,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -4024,12 +4029,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -4059,42 +4064,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -4249,7 +4254,7 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
@@ -4259,12 +4264,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
@@ -4279,7 +4284,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         }
       ],
@@ -4323,22 +4328,22 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3"
+            "name": "GFDL-1.3-only"
           }
         }
       ],
@@ -4419,7 +4424,7 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
@@ -4429,12 +4434,12 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
@@ -4449,7 +4454,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         }
       ],
@@ -4493,12 +4498,12 @@
       "licenses": [
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
@@ -4508,17 +4513,17 @@
         },
         {
           "license": {
-            "name": "GPL-2+ with distribution exception"
+            "name": "GPL-2.0-or-later WITH distribution exception"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.2+"
+            "name": "GFDL-1.2-or-later"
           }
         },
         {
@@ -4528,22 +4533,22 @@
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.2"
+            "name": "GFDL-1.2-only"
           }
         }
       ],
@@ -4587,12 +4592,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -4622,42 +4627,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -4755,7 +4760,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -4765,7 +4770,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
@@ -4814,7 +4819,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -4862,7 +4867,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -4906,12 +4911,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -4941,42 +4946,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],
@@ -5131,7 +5136,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -5260,12 +5265,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GFDL-1.3"
+            "name": "GFDL-1.3-or-later"
           }
         }
       ],
@@ -5505,7 +5510,7 @@
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         }
       ],
@@ -5608,7 +5613,7 @@
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
@@ -5653,7 +5658,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -5668,7 +5673,7 @@
         },
         {
           "license": {
-            "name": "GPL-1.0+"
+            "name": "GPL-1.0-or-later"
           }
         },
         {
@@ -5688,12 +5693,12 @@
         },
         {
           "license": {
-            "name": "GPL-1.0"
+            "name": "GPL-1.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -5742,7 +5747,7 @@
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-or-later"
           }
         }
       ],
@@ -5826,7 +5831,7 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         }
       ],
@@ -5870,12 +5875,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -5919,12 +5924,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         }
       ],
@@ -6005,12 +6010,12 @@
       "licenses": [
         {
           "license": {
-            "name": "GPL-2.0+"
+            "name": "GPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-2.0"
+            "name": "GPL-2.0-only"
           }
         },
         {
@@ -6040,42 +6045,42 @@
         },
         {
           "license": {
-            "name": "LGPL-2.0+"
+            "name": "LGPL-2.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1+"
+            "name": "LGPL-2.1-or-later"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0+"
+            "name": "GPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.0"
+            "name": "LGPL-3.0-or-later"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0+"
+            "name": "GPL-3.0-only"
           }
         },
         {
           "license": {
-            "name": "GPL-3.0"
+            "name": "LGPL-2.0-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-2.1"
+            "name": "LGPL-2.1-only"
           }
         },
         {
           "license": {
-            "name": "LGPL-3.0"
+            "name": "LGPL-3.0-only"
           }
         }
       ],

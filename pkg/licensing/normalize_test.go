@@ -42,17 +42,22 @@ func TestNormalize(t *testing.T) {
 		},
 		{
 			[]string{
-				"GPL-only",
+				"GPL-or-later",
+				"GPL+",
+				"GPL-2.0-only+",
 			},
-			"GPL-2.0-only",
+			"GPL-2.0-or-later",
 			"GPL-2.0",
 		},
 		{
 			[]string{
-				"GPL-or-later",
+				"GPL (≥ 3)",
+				"GPL3+",
+				"GPL3-or-later",
+				"GPL3 or later licence",
 			},
-			"GPL-2.0-or-later",
-			"GPL-2.0",
+			"GPL-3.0-or-later",
+			"GPL-3.0",
 		},
 		{
 			[]string{
@@ -83,7 +88,7 @@ func TestNormalize(t *testing.T) {
 		t.Run(tt.normalized, func(t *testing.T) {
 			for _, ll := range tt.licenses {
 				normalized := licensing.Normalize(ll)
-				normalizedKey := licensing.NormalizeKey(ll)
+				normalizedKey := licensing.NormalizeLicense(ll).License
 				assert.Equal(t, tt.normalized, normalized)
 				assert.Equal(t, tt.normalizedKey, normalizedKey)
 			}

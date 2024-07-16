@@ -33,7 +33,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 								Name:    "kitchen",
 								Version: "1.2.6",
 								Licenses: []string{
-									"LGPL-2.1",
+									"LGPL-2.1-only",
 								},
 								FilePath: "kitchen-1.2.6-py2.7.egg",
 							},

@@ -1249,7 +1249,7 @@ func Test_GetLicense(t *testing.T) {
 				"GPLv2+",
 				"LGPL 2.0 or GNU LESSER",
 			},
-			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-3.0-only)",
+			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-2.1-only)",
 		},
 		{
 			name: "happy path with AND operator",
@@ -1257,7 +1257,7 @@ func Test_GetLicense(t *testing.T) {
 				"GPLv2+",
 				"LGPL 2.0 and GNU LESSER",
 			},
-			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-3.0-only",
+			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only",
 		},
 		{
 			name: "happy path with WITH operator",

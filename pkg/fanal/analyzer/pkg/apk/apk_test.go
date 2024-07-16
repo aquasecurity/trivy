@@ -33,7 +33,7 @@ var pkgs = []types.Package{
 		Version:    "1.24.2-r9",
 		SrcName:    "busybox",
 		SrcVersion: "1.24.2-r9",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-only"},
 		DependsOn:  []string{"musl@1.1.14-r10"},
 		Arch:       "x86_64",
 		Digest:     "sha1:ca124719267cd0bedc2f4cb850a286ac13f0ad44",
@@ -51,7 +51,7 @@ var pkgs = []types.Package{
 		Version:    "3.0.3-r0",
 		SrcName:    "alpine-baselayout",
 		SrcVersion: "3.0.3-r0",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-only"},
 		DependsOn: []string{
 			"busybox@1.24.2-r9",
 			"musl@1.1.14-r10",
@@ -92,7 +92,7 @@ var pkgs = []types.Package{
 		Version:    "1.1-r0",
 		SrcName:    "alpine-keys",
 		SrcVersion: "1.1-r0",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-or-later"},
 		Arch:       "x86_64",
 		Digest:     "sha1:4def7ffaee6aeba700c1d62570326f75cbb8fa25",
 		InstalledFiles: []string{
@@ -124,7 +124,7 @@ var pkgs = []types.Package{
 		Version:    "1.0.2h-r1",
 		SrcName:    "openssl",
 		SrcVersion: "1.0.2h-r1",
-		Licenses:   []string{"openssl"},
+		Licenses:   []string{"OpenSSL"},
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 			"zlib@1.2.8-r2",
@@ -155,7 +155,7 @@ var pkgs = []types.Package{
 		Version:    "1.0.2h-r1",
 		SrcName:    "openssl",
 		SrcVersion: "1.0.2h-r1",
-		Licenses:   []string{"openssl"},
+		Licenses:   []string{"OpenSSL"},
 		Digest:     "sha1:7120f337e93b2b4c44e0f5f31a15b60dc678ca14",
 		DependsOn: []string{
 			"libcrypto1.0@1.0.2h-r1",
@@ -173,7 +173,7 @@ var pkgs = []types.Package{
 		Version:    "2.6.7-r0",
 		SrcName:    "apk-tools",
 		SrcVersion: "2.6.7-r0",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-only"},
 		Digest:     "sha1:0990c0acd62b4175818c3a4cc60ed11f14e23bd8",
 		DependsOn: []string{
 			"libcrypto1.0@1.0.2h-r1",
@@ -192,7 +192,7 @@ var pkgs = []types.Package{
 		Version:    "1.1.6-r0",
 		SrcName:    "pax-utils",
 		SrcVersion: "1.1.6-r0",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-only"},
 		Digest:     "sha1:f9bab817c5ad93e92a6218bc0f7596b657c02d90",
 		DependsOn:  []string{"musl@1.1.14-r10"},
 		Arch:       "x86_64",
@@ -209,7 +209,7 @@ var pkgs = []types.Package{
 		Licenses: []string{
 			"MIT",
 			"BSD-3-Clause",
-			"GPL-2.0",
+			"GPL-2.0-or-later",
 		},
 		Digest: "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
 		DependsOn: []string{
@@ -231,7 +231,7 @@ var pkgs = []types.Package{
 		Version:    "0.7-r0",
 		SrcName:    "libc-dev",
 		SrcVersion: "0.7-r0",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-or-later"},
 		Digest:     "sha1:9055bc7afd76cf2672198042f72fc4a5ed4fa961",
 		DependsOn:  []string{"musl-utils@1.1.14-r10"},
 		Arch:       "x86_64",
