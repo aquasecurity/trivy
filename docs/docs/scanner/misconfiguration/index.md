@@ -315,6 +315,9 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
+### External connectivity
+Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../advanced/air-gap.md).
+
 ### Enabling a subset of misconfiguration scanners
 It's possible to only enable certain misconfiguration scanners if you prefer.
 You can do so by passing the `--misconfig-scanners` option.
@@ -327,18 +330,18 @@ trivy config --misconfig-scanners=terraform,dockerfile .
 Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
 
 ### Loading custom checks
-You can load policy files or directories including your custom checks through `--config-check` flag.
+You can load check files or directories including your custom checks using the `--config-check` flag.
 This can be repeated for specifying multiple files or directories.
 
 ```bash
-cd examplex/misconf/
-trivy conf --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user misconf/mixed
+trivy conf --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
 ```
 
-For more details, see [Custom Checks](./custom/index.md).
+You can load checks bundle as OCI Image from a Container Registry using the `--checks-bundle-repository` flag.
 
-!!! tip
-You also need to specify `--namespaces` option.
+```bash
+trivy conf --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+```
 
 ### Passing custom data
 You can pass directories including your custom data through `--data` option.
