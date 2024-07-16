@@ -1,0 +1,86 @@
+name: tag-promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      productionBuild:
+        description: 'Production Build: Set to 1'
+        required: false
+        default: ''
+      buildVersion:
+        description: 'Build Version: Set 0.0 only for non-sprint/release dev builds'
+        required: false
+        default: ''
+      buildNumber:
+        description: 'Build Number: to a positive integer to match jenkins build'
+        required: false
+        default: ''
+      buildTag:
+        description: 'Build Tag: set to v$DF_BUILD_VERSION in builds'
+        required: true
+      baseBuildTag:
+        description: 'Build Base Tag: set to base build for patch builds'
+        required: false
+        default: ''
+defaults:
+  run:
+    # for ${var:1}, etc.
+    shell: bash
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure Git
+      run: |
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+    # Debug
+    - name: Debug
+      run: |
+        pwd
+        echo HOME=${HOME}
+        echo GITHUB_WORKSPACE=${GITHUB_WORKSPACE}
+        echo "branch=${GITHUB_REF#refs/heads/}"
+        echo "tag=${GITHUB_REF#refs/tags/}"
+        echo "buildTag=${{ github.event.inputs.buildTag }}"
+        echo "baseBuildTag=${{ github.event.inputs.baseBuildTag }}"
+        echo "buildVersion=${{ github.event.inputs.buildVersion }}"
+
+    - name: Tag a Build branch/ref and Promote
+      run: |
+        buildTag=${{ github.event.inputs.buildTag }}
+        baseBuildTag=${{ github.event.inputs.baseBuildTag }}
+        buildVersion=${{ github.event.inputs.buildVersion }}
+        # Validate build args v1
+        if [ ! "${buildTag:0:1}" = "v" ]; then
+          echo "Error, buildTag: ${buildTag} must start with 'v'" >&2
+          exit 1
+        fi
+        if [ -n "$baseBuildTag" ]; then
+          if [ ! "${baseBuildTag:0:1}" = "v" ]; then
+            echo "Error, patch build baseBuildTag: ${baseBuildTag} must start with 'v'" >&2
+            exit 1
+          fi
+          # verify baseBuildTag is the same as GITHUBREF when ref is a tag
+          if [ "${GITHUB_REF_TYPE}" = "tag" ] && [ ! "${baseBuildTag}" = "${GITHUB_REF#refs/tags/}" ]; then
+            echo "Error, patch build baseBuildTag: ${baseBuildTag} must start with 'v'" >&2
+            exit 1
+          fi
+        fi
+        if [ ! "${buildTag}" == "v${buildVersion}" ]; then
+          echo "Error, buildTag: ${buildTag} must match buildVersion convention: v${buildVersion}" >&2
+          exit 1
+        fi
+
+        git config --global url."https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com".insteadOf "https://github.com"
+        git tag -a "${buildTag}" -m "tag ${GITHUB_REF} with ${buildTag}"
+        git push origin ${buildTag}
+        echo "promote artifacts: N/A, workflow artifacts are not promoted"
+        git config --global --remove-section "url.https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com"
+      env:
+        GITHUB_USER: "dfbuilds"
+        GITHUB_TOKEN: ${{ secrets.DFBUILD_GITHUB_TOKEN }}
