@@ -192,14 +192,14 @@
     "Name": "apr",
     "Identifier": {
       "PURL": "pkg:apk/alpine/apr@1.6.3-r0?arch=x86_64\u0026distro=3.7.1",
-      "UID": "715dd499dcec48f9"
+      "UID": "f821b33c1aa11924"
     },
     "Version": "1.6.3-r0",
     "Arch": "x86_64",
     "SrcName": "apr",
     "SrcVersion": "1.6.3-r0",
     "Licenses": [
-      "ASL2.0"
+      "Apache-2.02.0"
     ],
     "DependsOn": [
       "libuuid@2.31-r0",
@@ -221,14 +221,14 @@
     "Name": "apr-util",
     "Identifier": {
       "PURL": "pkg:apk/alpine/apr-util@1.6.1-r1?arch=x86_64\u0026distro=3.7.1",
-      "UID": "2aa1dd25c68a60eb"
+      "UID": "37da3cb6e9a016a2"
     },
     "Version": "1.6.1-r1",
     "Arch": "x86_64",
     "SrcName": "apr-util",
     "SrcVersion": "1.6.1-r1",
     "Licenses": [
-      "ASL2.0"
+      "Apache-2.02.0"
     ],
     "DependsOn": [
       "apr@1.6.3-r0",
@@ -253,14 +253,14 @@
     "Name": "bash",
     "Identifier": {
       "PURL": "pkg:apk/alpine/bash@4.4.19-r1?arch=x86_64\u0026distro=3.7.1",
-      "UID": "32e82b55d6afc293"
+      "UID": "44e895507af2a34a"
     },
     "Version": "4.4.19-r1",
     "Arch": "x86_64",
     "SrcName": "bash",
     "SrcVersion": "4.4.19-r1",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-3.0+"
     ],
     "DependsOn": [
       "busybox@1.27.2-r11",
@@ -399,15 +399,15 @@
     "Name": "ca-certificates",
     "Identifier": {
       "PURL": "pkg:apk/alpine/ca-certificates@20171114-r0?arch=x86_64\u0026distro=3.7.1",
-      "UID": "fc49474e56f2cdca"
+      "UID": "e0940de547a323a1"
     },
     "Version": "20171114-r0",
     "Arch": "x86_64",
     "SrcName": "ca-certificates",
     "SrcVersion": "20171114-r0",
     "Licenses": [
-      "MPL-2.0",
-      "GPL-2.0"
+      "MPL-2.02.0",
+      "GPL-2.0+"
     ],
     "DependsOn": [
       "busybox@1.27.2-r11",
@@ -666,14 +666,14 @@
     "Name": "gdbm",
     "Identifier": {
       "PURL": "pkg:apk/alpine/gdbm@1.13-r1?arch=x86_64\u0026distro=3.7.1",
-      "UID": "eb4b3efac8d4d73f"
+      "UID": "d54772e78a224652"
     },
     "Version": "1.13-r1",
     "Arch": "x86_64",
     "SrcName": "gdbm",
     "SrcVersion": "1.13-r1",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "musl@1.1.18-r3"
@@ -698,14 +698,14 @@
     "Name": "git",
     "Identifier": {
       "PURL": "pkg:apk/alpine/git@2.15.2-r0?arch=x86_64\u0026distro=3.7.1",
-      "UID": "845b6214d48ea80e"
+      "UID": "b214cd63a8f430d6"
     },
     "Version": "2.15.2-r0",
     "Arch": "x86_64",
     "SrcName": "git",
     "SrcVersion": "2.15.2-r0",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0+"
     ],
     "DependsOn": [
       "expat@2.2.5-r0",
@@ -1271,7 +1271,7 @@
     "Name": "libuuid",
     "Identifier": {
       "PURL": "pkg:apk/alpine/libuuid@2.31-r0?arch=x86_64\u0026distro=3.7.1",
-      "UID": "ec8a9d1580eb93d7"
+      "UID": "a33d565dd3c48905"
     },
     "Version": "2.31-r0",
     "Arch": "x86_64",
@@ -1279,8 +1279,8 @@
     "SrcVersion": "2.31-r0",
     "Licenses": [
       "GPL-2.0",
-      "GPL-2.0",
-      "LGPL-2.0",
+      "GPL-2.0+",
+      "LGPL-2.1+",
       "BSD-3-Clause",
       "Public",
       "Domain"
@@ -1331,14 +1331,14 @@
     "Name": "mercurial",
     "Identifier": {
       "PURL": "pkg:apk/alpine/mercurial@4.5.2-r0?arch=x86_64\u0026distro=3.7.1",
-      "UID": "28d12c554475942a"
+      "UID": "a6aff748c4171d58"
     },
     "Version": "4.5.2-r0",
     "Arch": "x86_64",
     "SrcName": "mercurial",
     "SrcVersion": "4.5.2-r0",
     "Licenses": [
-      "GPL-2.0"
+      "GPL-2.0+"
     ],
     "DependsOn": [
       "musl@1.1.18-r3",
@@ -2100,7 +2100,7 @@
     "Name": "musl-utils",
     "Identifier": {
       "PURL": "pkg:apk/alpine/musl-utils@1.1.18-r3?arch=x86_64\u0026distro=3.7.1",
-      "UID": "c2765ad0d8dd83f9"
+      "UID": "2893d35b7bcc7a6c"
     },
     "Version": "1.1.18-r3",
     "Arch": "x86_64",
@@ -2109,7 +2109,7 @@
     "Licenses": [
       "MIT",
       "BSD-3-Clause",
-      "GPL-2.0"
+      "GPL-2.0+"
     ],
     "DependsOn": [
       "musl@1.1.18-r3",
@@ -5136,14 +5136,14 @@
     "Name": "patch",
     "Identifier": {
       "PURL": "pkg:apk/alpine/patch@2.7.5-r2?arch=x86_64\u0026distro=3.7.1",
-      "UID": "c3945b28493e2842"
+      "UID": "e1067452c70b495c"
     },
     "Version": "2.7.5-r2",
     "Arch": "x86_64",
     "SrcName": "patch",
     "SrcVersion": "2.7.5-r2",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "musl@1.1.18-r3"
@@ -7667,14 +7667,14 @@
     "Name": "readline",
     "Identifier": {
       "PURL": "pkg:apk/alpine/readline@7.0.003-r0?arch=x86_64\u0026distro=3.7.1",
-      "UID": "2cb2c7047f5911f5"
+      "UID": "6e96a83f1d5e4434"
     },
     "Version": "7.0.003-r0",
     "Arch": "x86_64",
     "SrcName": "readline",
     "SrcVersion": "7.0.003-r0",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "musl@1.1.18-r3",
@@ -7721,14 +7721,14 @@
     "Name": "serf",
     "Identifier": {
       "PURL": "pkg:apk/alpine/serf@1.3.9-r3?arch=x86_64\u0026distro=3.7.1",
-      "UID": "34d5052ef0071707"
+      "UID": "77b67691991332e3"
     },
     "Version": "1.3.9-r3",
     "Arch": "x86_64",
     "SrcName": "serf",
     "SrcVersion": "1.3.9-r3",
     "Licenses": [
-      "ASL2.0"
+      "Apache-2.02.0"
     ],
     "DependsOn": [
       "apr-util@1.6.1-r1",
@@ -7930,14 +7930,14 @@
     "Name": "tar",
     "Identifier": {
       "PURL": "pkg:apk/alpine/tar@1.29-r1?arch=x86_64\u0026distro=3.7.1",
-      "UID": "636f4bd512a19da9"
+      "UID": "677e07090c8bbf70"
     },
     "Version": "1.29-r1",
     "Arch": "x86_64",
     "SrcName": "tar",
     "SrcVersion": "1.29-r1",
     "Licenses": [
-      "GPL-3.0"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "musl@1.1.18-r3"
