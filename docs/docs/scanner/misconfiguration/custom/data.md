@@ -31,5 +31,5 @@ Then, you need to pass data paths through `--data` option.
 Trivy recursively searches the specified paths for JSON (`*.json`) and YAML (`*.yaml`) files.
 
 ```bash
-$ trivy conf --policy ./policy --data data --namespaces user ./configs
+$ trivy conf --config-check ./checks --data ./data --namespaces user ./configs
 ```

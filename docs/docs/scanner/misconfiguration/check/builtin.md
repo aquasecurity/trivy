@@ -6,7 +6,7 @@ Trivy checks are mainly written in [Rego][rego], while some checks are written i
 See [here](../../../coverage/iac/index.md) for the list of supported config types.
 
 ## Checks Bundle
-When performing a misconfiguration scan, Trivy will automatically downloads the relevant Checks bundle. The bundle is cached locally and Trivy will reuse it for subsequent scans on the same machine. Trivy takes care of updating the cache automatically so normally can be oblivious to it.
+When performing a misconfiguration scan, Trivy will automatically download the relevant Checks bundle. The bundle is cached locally and Trivy will reuse it for subsequent scans on the same machine. Trivy takes care of updating the cache automatically, so normally users can be oblivious to it.
 
 For CLI flags related to the database, please refer to [this page](../configuration/db.md).
 

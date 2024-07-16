@@ -119,6 +119,7 @@ cp /path/to/trivy.db /path/to/metadata.json ${TRIVY_CACHE_DIR}/db/
 ### Java DB
 
 For Java DB the process is the same, except for the following:
+
 1. Image location is `ghcr.io/aquasecurity/trivy-java-db:1`
 2. Archive file name is `javadb.tar.gz`
 3. DB file name is `trivy-java.db`
@@ -126,3 +127,5 @@ For Java DB the process is the same, except for the following:
 ## Misconfigurations scanning
 
 Note that the misconfigurations database is also embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
+
+The misconfiguration can be configured to load checks from a local directory, using the `--config-check` flag. In an air-gapped scenario you can copy the checks library from [Trivy checks repository](https://github.com/aquasecurity/trivy-checks) into a local directory, and load it with this flag. See more in the [Misconfiguration scanner documentation](../scanner/misconfiguration/index.md).
