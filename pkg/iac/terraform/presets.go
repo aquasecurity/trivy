@@ -19,13 +19,16 @@ func createPresetValues(b *Block) map[string]cty.Value {
 		presets["arn"] = cty.StringVal(b.ID())
 	}
 
-	// workaround for weird iam feature
 	switch b.TypeLabel() {
+	// workaround for weird iam feature
 	case "aws_iam_policy_document":
 		presets["json"] = cty.StringVal(b.ID())
 	// If the user leaves the name blank, Terraform will automatically generate a unique name
 	case "aws_launch_template":
 		presets["name"] = cty.StringVal(uuid.New().String())
+	// allow referencing the current region name
+	case "aws_region":
+		presets["name"] = cty.StringVal("region-" + uuid.New().String())
 	}
 
 	return presets

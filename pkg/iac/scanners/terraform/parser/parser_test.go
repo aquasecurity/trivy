@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
@@ -1796,4 +1797,36 @@ resource "test" "values" {
 	bad_attr_2 := resources[0].GetAttribute("p")
 	require.NotNil(t, bad_attr_2)
 	assert.Nil(t, bad_attr_2.GetRawValue())
+}
+
+func Test_AWSRegionNameDefined(t *testing.T) {
+
+	fs := testutil.CreateFS(t, map[string]string{
+		"code/test.tf": `
+data "aws_region" "current" {}
+
+resource "something" "blah" {
+  x = data.aws_region.current.name
+}
+`,
+	})
+
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	assert.NoError(t, err)
+	require.Len(t, modules, 1)
+	rootModule := modules[0]
+
+	blocks := rootModule.GetResourcesByType("something")
+	require.Len(t, blocks, 1)
+	block := blocks[0]
+
+	attr := block.GetAttribute("x")
+	require.NotNil(t, attr)
+
+	assert.Equal(t, true, attr.IsResolvable())
+
+	value := attr.Value().AsString()
+	assert.True(t, strings.HasPrefix(value, "region-"))
 }
