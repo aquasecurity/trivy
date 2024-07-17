@@ -1218,7 +1218,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			spdxDoc, err := marshaler.MarshalReport(ctx, tc.inputReport)
 			require.NoError(t, err)
 
-			assert.Equal(t, nil, spdxlib.ValidateDocument(tc.wantSBOM))
+			assert.NoError(t, spdxlib.ValidateDocument(spdxDoc))
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
 		})
 	}
