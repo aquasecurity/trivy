@@ -103,7 +103,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	return pkgs, nil, nil
 }
 
-// isRuntimeLibrary returns true if library doesn't contain `runtime`, `runtimeTarget` and `native` sections.
+// isRuntimeLibrary returns true if library contains `runtime`, `runtimeTarget` or `native` sections, or if the library is missing from `targetLibs`.
 // See https://github.com/aquasecurity/trivy/discussions/4282#discussioncomment-8830365 for more details.
 func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library string) bool {
 	lib, ok := targetLibs[library]
@@ -115,7 +115,7 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 		})
 		return true
 	}
-	// Check that `runtime`, `runtimeTarget` and `native` sections are empty
+	// Check that `runtime`, `runtimeTarget` and `native` sections are not empty
 	return !lo.IsEmpty(lib)
 }
 
