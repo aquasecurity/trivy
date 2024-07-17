@@ -3,8 +3,11 @@ package spec
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
@@ -70,18 +73,29 @@ func scannerByCheckID(checkID string) types.Scanner {
 	}
 }
 
-// GetComplianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
+// GetComplianceSpec accept compliance flag name/path and return builtin or file system loaded spec
 func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
 	var b []byte
 	var err error
-	if strings.HasPrefix(specNameOrPath, "@") {
+	if strings.HasPrefix(specNameOrPath, "@") { // load user specified spec from disk
 		b, err = os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
+			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from specified path: %w", err)
 		}
 	} else {
-		// TODO: GetSpecByName() should return []byte
-		b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
+		_, err := os.ReadFile(filepath.Join(cache.GetChecksDir(), "metadata.json"))
+		if err != nil { // cache corrupt or bundle does not exist, load embedded version
+			// TODO: GetSpecByName() should return []byte
+			b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
+			log.Debug("Compliance spec loaded from embedded library", log.String("spec", specNameOrPath))
+		} else {
+			// load from bundle on disk
+			b, err = os.ReadFile(filepath.Join(cache.GetComplianceSpecsDir(), specNameOrPath+".yaml"))
+			if err != nil {
+				return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from bundle %s: %w", specNameOrPath, err)
+			}
+			log.Debug("Compliance spec loaded from disk bundle", log.String("spec", specNameOrPath))
+		}
 	}
 
 	var complianceSpec ComplianceSpec

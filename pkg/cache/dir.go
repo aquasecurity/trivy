@@ -13,3 +13,11 @@ func DefaultDir() string {
 	}
 	return filepath.Join(tmpDir, "trivy")
 }
+
+func GetChecksDir() string {
+	return filepath.Join(DefaultDir(), "/policy")
+}
+
+func GetComplianceSpecsDir() string {
+	return filepath.Join(GetChecksDir(), "/content/specs/compliance")
+}
