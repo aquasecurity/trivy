@@ -11,6 +11,7 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
+	"github.com/spdx/tools-golang/spdxlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -1217,6 +1218,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			spdxDoc, err := marshaler.MarshalReport(ctx, tc.inputReport)
 			require.NoError(t, err)
 
+			assert.Equal(t, nil, spdxlib.ValidateDocument(tc.wantSBOM))
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
 		})
 	}
