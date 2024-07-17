@@ -45,8 +45,8 @@ func TestParse(t *testing.T) {
 					Version: "2.0.61",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 60,
-							EndLine:   66,
+							StartLine: 66,
+							EndLine:   72,
 						},
 					},
 				},
@@ -56,8 +56,8 @@ func TestParse(t *testing.T) {
 					Version: "1.9.1",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 67,
-							EndLine:   73,
+							StartLine: 73,
+							EndLine:   79,
 						},
 					},
 				},
@@ -67,8 +67,8 @@ func TestParse(t *testing.T) {
 					Version: "1.3.0",
 					Locations: []ftypes.Location{
 						{
-							StartLine: 88,
-							EndLine:   94,
+							StartLine: 101,
+							EndLine:   107,
 						},
 					},
 				},
