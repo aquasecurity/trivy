@@ -158,7 +158,7 @@ func initConfig(configFile string, pathChanged bool) error {
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			if !pathChanged {
-				log.Warnf("Default config file %q not found, using built in values", log.FilePath(configFile))
+				log.Debugf("Default config file %q not found, using built in values", log.FilePath(configFile))
 				return nil
 			}
 		}
