@@ -121,7 +121,7 @@ os:
 - redhat
 - alma
 - rocky
-- mariner
+- azure
 - oracle
 - debian
 - ubuntu

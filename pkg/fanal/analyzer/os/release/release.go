@@ -61,6 +61,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			family = types.Wolfi
 		case "chainguard":
 			family = types.Chainguard
+		case "azurelinux":
+			family = types.Azure
 		}
 
 		if family != "" && versionID != "" {
