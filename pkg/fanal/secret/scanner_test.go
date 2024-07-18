@@ -961,7 +961,7 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "secret inside another word",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
-			inputFilePath: "testdata/wrapped-aws-secret.txt",
+			inputFilePath: "testdata/wrapped-secrets.txt",
 			want:          types.Secret{},
 		},
 		{
