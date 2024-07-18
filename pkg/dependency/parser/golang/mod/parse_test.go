@@ -131,13 +131,22 @@ func TestToolchainVersion(t *testing.T) {
 			want: "",
 		},
 		{
-			name: "'1.22' from go line",
+			name: "'1.20' from go line",
 			modFile: modfile.File{
 				Go: &modfile.Go{
-					Version: "1.22",
+					Version: "1.20",
 				},
 			},
 			want: "",
+		},
+		{
+			name: "'1.21' from go line",
+			modFile: modfile.File{
+				Go: &modfile.Go{
+					Version: "1.21",
+				},
+			},
+			want: "1.21.0",
 		},
 		{
 			name: "'1.21rc1' from go line",

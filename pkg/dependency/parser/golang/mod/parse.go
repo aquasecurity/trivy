@@ -165,6 +165,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`
 func lessThan(ver string, majorVer, minorVer int) bool {
+	if ver == "" {
+		return false
+	}
+
 	ss := strings.Split(ver, ".")
 	if len(ss) != 2 {
 		return false
@@ -190,38 +194,35 @@ func toolchainVersion(toolchain *modfile.Toolchain, goVer *modfile.Go) string {
 		return strings.TrimPrefix(toolchain.Name, "go")
 	}
 
-	if goVer != nil && isToolchainVer(goVer.Version) {
-		return goVer.Version
+	if goVer != nil {
+		return toolchainVersionFromGoLine(goVer.Version)
 	}
 	return ""
 }
 
-// isToolchainVer returns true if `ver` is the toolchain format version
-// e.g. `1.22.0` or `1.21rc1`
-// cf. https://go.dev/doc/toolchain
-func isToolchainVer(ver string) bool {
-	ss := strings.Split(ver, ".")
+// toolchainVersionFromGoLine detects Go version from `go` line if `toolchain` line is omitted
+func toolchainVersionFromGoLine(ver string) string {
+	var majorMinorVer string
+
+	// `1.N.P` or `1.N.P-suffix` version
 	// e.g. `1.22.0` or `1.22.0-suffix.with.dot`.
-	// go toolchain discards off any suffix beginning with `-` when compares versions
-	// `toolchain` has been added in go 1.21
-	// So we need to check that minor version <= 21
-	if len(ss) > 2 && !lessThan(strings.Join(ss[:2], "."), 1, 21) {
-		return true
+	if ss := strings.Split(ver, "."); len(ss) > 2 {
+		majorMinorVer = strings.Join(ss[:2], ".")
+	} else if v, _, rcFound := strings.Cut(ver, "rc"); rcFound { // `1.NrcR` version.  e.g. `1.22rc1`
+		majorMinorVer = v
+	} else { // `1.N` version. e.g. `1.22`
+		majorMinorVer = ver
+		// Add patch `0` to get version format
+		ver = v + ".0"
 	}
 
-	// Go `1.N` release candidates, which are issued before `1.N.0`, use the version syntax `1.NrcR` format.
-	majorMinorVer, _, rcFound := strings.Cut(ver, "rc")
-	// This is `1.N` version (e.g. `1.21`)
-	// We can't be sure this is toolchain version:
-	// cf. https://github.com/aquasecurity/trivy/pull/7163#discussion_r1680436648
-	// Or this can be old beta format (e.g. `1.18beta2`)
-	if !rcFound {
-		return false
+	// `toolchain` has been added in go 1.21.
+	// So we need to check that Go version is 1.21 or higher.
+	// cf. https://github.com/aquasecurity/trivy/pull/7163#discussion_r1682424315
+	if lessThan(majorMinorVer, 1, 21) {
+		return ""
 	}
-
-	// `toolchain` has been added in go 1.21
-	// So we need to check that minor version <= 21
-	return !lessThan(majorMinorVer, 1, 21)
+	return ver
 }
 
 func packageID(name, version string) string {
