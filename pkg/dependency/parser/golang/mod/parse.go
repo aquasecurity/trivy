@@ -80,20 +80,20 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	skipIndirect := true
 	if modFileParsed.Go != nil { // Old go.mod file may not include the go version. Go version for these files  is less than 1.17
-		skipIndirect = lessThan117(modFileParsed.Go.Version)
+		skipIndirect = lessThan(modFileParsed.Go.Version, 1, 17)
 	}
 
-	// Stdlib
-	if toolchain := modFileParsed.Toolchain; toolchain != nil {
-		// `go1.22.5` => `1.22.5`
-		ver := strings.TrimPrefix(toolchain.Name, "go")
+	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`
+	if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); toolchainVer != "" {
 		pkgs["stdlib"] = ftypes.Package{
-			// Add the toolchain version as stdlib version
-			ID:           packageID("stdlib", ver),
+			ID:           packageID("stdlib", toolchainVer),
 			Name:         "stdlib",
-			Version:      ver,
+			Version:      toolchainVer,
 			Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 		}
+	}
+	if toolchain := modFileParsed.Toolchain; toolchain != nil {
+
 	}
 
 	// Main module
@@ -163,8 +163,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	return lo.Values(pkgs), nil, nil
 }
 
-// Check if the Go version is less than 1.17
-func lessThan117(ver string) bool {
+// lessThan checks if the Go version is less than `<majorVer>.<minorVer>`
+func lessThan(ver string, majorVer, minorVer int) bool {
 	ss := strings.Split(ver, ".")
 	if len(ss) != 2 {
 		return false
@@ -178,7 +178,50 @@ func lessThan117(ver string) bool {
 		return false
 	}
 
-	return major <= 1 && minor < 17
+	return major <= majorVer && minor < minorVer
+}
+
+// toolchainVersion returns version from `toolchain`.
+// If `toolchain` is omitted - return version from `go` line (if it is version in toolchain format)
+// cf. https://go.dev/doc/toolchain
+func toolchainVersion(toolchain *modfile.Toolchain, goVer *modfile.Go) string {
+	if toolchain != nil && toolchain.Name != "" {
+		// `go1.22.5` => `1.22.5`
+		return strings.TrimPrefix(toolchain.Name, "go")
+	}
+
+	if goVer != nil && isToolchainVer(goVer.Version) {
+		return goVer.Version
+	}
+	return ""
+}
+
+// isToolchainVer returns true if `ver` is the toolchain format version
+// e.g. `1.22.0` or `1.21rc1`
+// cf. https://go.dev/doc/toolchain
+func isToolchainVer(ver string) bool {
+	ss := strings.Split(ver, ".")
+	// e.g. `1.22.0` or `1.22.0-suffix.with.dot`.
+	// go toolchain discards off any suffix beginning with `-` when compares versions
+	// `toolchain` has been added in go 1.21
+	// So we need to check that minor version <= 21
+	if len(ss) > 2 && !lessThan(strings.Join(ss[:2], "."), 1, 21) {
+		return true
+	}
+
+	// Go `1.N` release candidates, which are issued before `1.N.0`, use the version syntax `1.NrcR` format.
+	majorMinorVer, _, rcFound := strings.Cut(ver, "rc")
+	// This is `1.N` version (e.g. `1.21`)
+	// We can't be sure this is toolchain version:
+	// cf. https://github.com/aquasecurity/trivy/pull/7163#discussion_r1680436648
+	// Or this can be old beta format (e.g. `1.18beta2`)
+	if !rcFound {
+		return false
+	}
+
+	// `toolchain` has been added in go 1.21
+	// So we need to check that minor version <= 21
+	return !lessThan(majorMinorVer, 1, 21)
 }
 
 func packageID(name, version string) string {
