@@ -70,7 +70,10 @@ By default, `Go` selects the higher version from of `toolchan` or local version 
 See [toolchain] for more details.
 But Trivy doesn't use third-party application or utilities, so Trivy can't detect the local version of `Go`.
 
-This is why Trivy uses the `toolchain` version for `stdlib` - as the minimum required version for the `go.mod` file.
+This is why Trivy uses the `toolchain` version (or version from `go` line, if `toolchain` line is omitted) for `stdlib` - as the minimum required version for the `go.mod` file.
+
+!!! note
+    `toolchain` was added in Go `1.21`, so Trivy detects `stdlib` only for `Go` 1.21 or higher.
 
 ### Go binaries
 Trivy scans binaries built by Go, which include [module information](https://tip.golang.org/doc/go1.18#go-version).
