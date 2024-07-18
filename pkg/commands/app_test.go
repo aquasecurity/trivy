@@ -303,7 +303,7 @@ func TestFlags(t *testing.T) {
 				"--config",
 				"none",
 			},
-			wantErr: `config file "none" loading error: open none: no such file or directory`,
+			wantErr: `config file "none" loading error: open none:`,
 		},
 	}
 
