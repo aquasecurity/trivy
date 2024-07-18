@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/samber/lo"
@@ -21,20 +20,18 @@ import (
 )
 
 const (
-	SchemaVersion = "v0.1"
+	SchemaVersion = "0.1"
 
 	manifestFile      = "vex-repository.json"
 	indexFile         = "index.json"
 	cacheMetadataFile = "cache.json"
 )
 
-var majorVersion, _, _ = strings.Cut(SchemaVersion, ".")
-
 type Manifest struct {
-	Name          string             `json:"name"`
-	Description   string             `json:"description"`
-	Versions      map[string]Version `json:"versions"`
-	LatestVersion string             `json:"latest_version"`
+	Name          string    `json:"name"`
+	Description   string    `json:"description"`
+	Versions      []Version `json:"versions"`
+	LatestVersion string    `json:"latest_version"`
 }
 
 type Version struct {
@@ -127,7 +124,7 @@ func (r *Repository) Manifest(ctx context.Context, opts Options) (Manifest, erro
 }
 
 func (r *Repository) Index(ctx context.Context) (Index, error) {
-	filePath := filepath.Join(r.dir, majorVersion, indexFile)
+	filePath := filepath.Join(r.dir, SchemaVersion, indexFile)
 	log.DebugContext(ctx, "Reading the repository index...", log.String("repo", r.Name), log.FilePath(filePath))
 
 	f, err := os.Open(filePath)
@@ -186,13 +183,12 @@ func (r *Repository) Update(ctx context.Context, opts Options) error {
 		return xerrors.Errorf("failed to get the repository metadata: %w", err)
 	}
 
-	ver, ok := manifest.Versions[majorVersion]
-	if !ok {
-		// TODO: improve error
-		return xerrors.Errorf("version %s not found", majorVersion)
+	ver, err := r.selectSupportedVersion(manifest.Versions)
+	if err != nil {
+		return xerrors.Errorf("version %s not found", SchemaVersion)
 	}
 
-	versionDir := filepath.Join(r.dir, majorVersion)
+	versionDir := filepath.Join(r.dir, SchemaVersion)
 	if !r.needUpdate(ctx, ver, versionDir) {
 		log.InfoContext(ctx, "No need to check repository updates", log.String("repo", r.Name))
 		return nil
@@ -300,6 +296,17 @@ func (r *Repository) cacheMetadata() (CacheMetadata, error) {
 		return CacheMetadata{}, xerrors.Errorf("failed to decode the cache metadata: %w", err)
 	}
 	return metadata, nil
+}
+
+func (r *Repository) selectSupportedVersion(versions []Version) (Version, error) {
+	for _, ver := range versions {
+		// Versions should exactly match until the spec version reaches 1.0.
+		// After reaching 1.0, we can select the latest version that has the same major version.
+		if ver.SpecVersion == SchemaVersion {
+			return ver, nil
+		}
+	}
+	return Version{}, xerrors.New("no supported version found")
 }
 
 func (r *Repository) updateCacheMetadata(ctx context.Context, metadata CacheMetadata) error {

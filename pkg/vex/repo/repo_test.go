@@ -22,9 +22,9 @@ import (
 var manifest = repo.Manifest{
 	Name:        "test-repo",
 	Description: "test repository",
-	Versions: map[string]repo.Version{
-		"v0": {
-			SpecVersion: "v0.1",
+	Versions: []repo.Version{
+		{
+			SpecVersion: "0.1",
 			Locations: []repo.Location{
 				{
 					URL: "https://localhost",
@@ -123,7 +123,7 @@ func TestRepository_Index(t *testing.T) {
 					},
 				}
 
-				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "v0", "index.json")
+				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "0.1", "index.json")
 				mustEncode(t, indexPath, indexData)
 			},
 			want: repo.Index{
@@ -150,7 +150,7 @@ func TestRepository_Index(t *testing.T) {
 		{
 			name: "invalid JSON in index file",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
-				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "v0", "index.json")
+				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "0.1", "index.json")
 				mustWriteFile(t, indexPath, []byte("invalid JSON"))
 			},
 			wantErr: "failed to decode the index",
@@ -172,7 +172,7 @@ func TestRepository_Index(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			tt.want.Path = filepath.Join(tempDir, "vex", "repositories", r.Name, "v0", "index.json")
+			tt.want.Path = filepath.Join(tempDir, "vex", "repositories", r.Name, "0.1", "index.json")
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -226,7 +226,7 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, "") // No location as the test server is not used
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "v0"))
+				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 
 				cacheMetadata := repo.CacheMetadata{
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -246,7 +246,7 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "v0"))
+				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 
 				cacheMetadata := repo.CacheMetadata{
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -266,7 +266,7 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "v0"))
+				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 
 				cacheMetadata := repo.CacheMetadata{
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -286,7 +286,7 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "v0"))
+				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 			},
 			clockTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -306,7 +306,7 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/error")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "v0"))
+				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 			},
 			clockTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 			wantErr:   "failed to download the repository",
@@ -350,9 +350,9 @@ func setUpManifest(t *testing.T, dir, url string) {
 	manifest := repo.Manifest{
 		Name:        "test-repo",
 		Description: "test repository",
-		Versions: map[string]repo.Version{
-			"v0": {
-				SpecVersion: "v0.1",
+		Versions: []repo.Version{
+			{
+				SpecVersion: "0.1",
 				Locations: []repo.Location{
 					{
 						URL: url,
