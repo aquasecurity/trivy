@@ -315,6 +315,59 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingMyAwsAccessKey := types.SecretFinding{
+		RuleID:    "aws-secret-access-key",
+		Category:  secret.CategoryAWS,
+		Title:     "AWS Secret Access Key",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     `MyAWS_secret_KEY="****************************************"`,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "MyAWS_secret_KEY=\"****************************************\"",
+					Highlighted: "MyAWS_secret_KEY=\"****************************************\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "our*********************************************************************************************",
+					Highlighted: "our*********************************************************************************************",
+				},
+			},
+		},
+	}
+
+	wantFindingMyGitHubPAT := types.SecretFinding{
+		RuleID:    "github-fine-grained-pat",
+		Category:  secret.CategoryGitHub,
+		Title:     "GitHub Fine-grained personal access tokens",
+		Severity:  "CRITICAL",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "our*********************************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "MyAWS_secret_KEY=\"****************************************\"",
+					Highlighted: "MyAWS_secret_KEY=\"****************************************\"",
+				},
+				{
+					Number:      2,
+					Content:     "our*********************************************************************************************",
+					Highlighted: "our*********************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
 	wantFindingGHButDisableAWS := types.SecretFinding{
 		RuleID:    "github-pat",
 		Category:  secret.CategoryGitHub,
@@ -419,6 +472,7 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+
 	wantFinding10 := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
 		Category:  secret.CategoryAWS,
@@ -963,6 +1017,18 @@ func TestSecretScanner(t *testing.T) {
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: "testdata/wrapped-secrets.txt",
 			want:          types.Secret{},
+		},
+		{
+			name:          "secret inside another word, but they're still secret",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: "testdata/wrapped-secrets-sensitive.txt",
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "wrapped-secrets-sensitive.txt"),
+				Findings: []types.SecretFinding{
+					wantFindingMyAwsAccessKey,
+					wantFindingMyGitHubPAT,
+				},
+			},
 		},
 		{
 			name:          "asymmetric file",
