@@ -614,7 +614,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 			require.NoError(t, err)
 
 			// Create a virtual filesystem
-			composite, err := analyzer.NewCompositeFS(analyzer.AnalyzerGroup{})
+			composite, err := analyzer.NewCompositeFS()
 			require.NoError(t, err)
 
 			mfs := mapfs.New()
