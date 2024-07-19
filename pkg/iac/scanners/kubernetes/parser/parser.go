@@ -14,20 +14,16 @@ import (
 	"gopkg.in/yaml.v3"
 	kyaml "sigs.k8s.io/yaml"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
-	debug        debug.Logger
+	logger       *log.Logger
 	skipRequired bool
-}
-
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "kubernetes", "parser")
 }
 
 func (p *Parser) SetSkipRequiredCheck(b bool) {
@@ -36,7 +32,9 @@ func (p *Parser) SetSkipRequiredCheck(b bool) {
 
 // New creates a new K8s parser
 func New(opts ...options.ParserOption) *Parser {
-	p := &Parser{}
+	p := &Parser{
+		logger: log.WithPrefix("k8s parser"),
+	}
 	for _, option := range opts {
 		option(p)
 	}
@@ -62,7 +60,7 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 		}
 		parsed, err := p.ParseFile(ctx, target, path)
 		if err != nil {
-			p.debug.Log("Parse error in '%s': %s", path, err)
+			p.logger.Error("Parse error", log.FilePath(path), log.Err(err))
 			return nil
 		}
 		files[path] = parsed

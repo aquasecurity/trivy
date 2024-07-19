@@ -6,6 +6,7 @@ import (
 	"io/fs"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type ModuleResolver interface {
@@ -20,12 +21,13 @@ var defaultResolvers = []ModuleResolver{
 }
 
 func resolveModule(ctx context.Context, current fs.FS, opt resolvers.Options) (filesystem fs.FS, sourcePrefix, downloadPath string, err error) {
-	opt.Debug("Resolving module '%s' with source: '%s'...", opt.Name, opt.Source)
+	opt.DebugLogger.Debug("Resolving module",
+		log.String("name", opt.Name), log.String("source", opt.Source))
 	for _, resolver := range defaultResolvers {
 		if filesystem, prefix, path, applies, err := resolver.Resolve(ctx, current, opt); err != nil {
 			return nil, "", "", err
 		} else if applies {
-			opt.Debug("Module path is %s", path)
+			opt.DebugLogger.Debug("Module resolved", log.FilePath(path))
 			return filesystem, prefix, path, nil
 		}
 	}

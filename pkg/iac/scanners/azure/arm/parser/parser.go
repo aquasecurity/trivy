@@ -8,22 +8,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Parser struct {
 	targetFS     fs.FS
 	skipRequired bool
-	debug        debug.Logger
-}
-
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "azure", "arm")
+	logger       *log.Logger
 }
 
 func (p *Parser) SetSkipRequiredCheck(b bool) {
@@ -33,6 +29,7 @@ func (p *Parser) SetSkipRequiredCheck(b bool) {
 func New(targetFS fs.FS, opts ...options.ParserOption) *Parser {
 	p := &Parser{
 		targetFS: targetFS,
+		logger:   log.WithPrefix("arm parser"),
 	}
 	for _, opt := range opts {
 		opt(p)
@@ -94,7 +91,10 @@ func (p *Parser) Required(path string) bool {
 		"",
 	)
 	if err := armjson.Unmarshal(data, &template, &root); err != nil {
-		p.debug.Log("Error scanning %s: %s", path, err)
+		p.logger.Error(
+			"Error unmarshalling template",
+			log.FilePath(path), log.Err(err),
+		)
 		return false
 	}
 

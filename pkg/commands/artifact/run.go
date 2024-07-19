@@ -509,7 +509,6 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
-			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
 			Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
 			PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),

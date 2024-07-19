@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -14,20 +13,21 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/json/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
-	debug         debug.Logger
-	policyDirs    []string
-	policyReaders []io.Reader
-	parser        *parser.Parser
-	regoScanner   *rego.Scanner
-	skipRequired  bool
-	options       []options.ScannerOption
-	sync.Mutex
+type Scanner struct {
+	mu                    sync.Mutex
+	logger                *log.Logger
+	policyDirs            []string
+	policyReaders         []io.Reader
+	parser                *parser.Parser
+	regoScanner           *rego.Scanner
+	skipRequired          bool
+	options               []options.ScannerOption
 	frameworks            []framework.Framework
 	spec                  string
 	loadEmbeddedPolicies  bool
@@ -59,10 +59,6 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "json", "scanner")
-}
-
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
 }
 
@@ -92,6 +88,7 @@ func (s *Scanner) SetRegoErrorLimit(_ int) {}
 func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("json scanner"),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -136,7 +133,7 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 	if err != nil {
 		return nil, err
 	}
-	s.debug.Log("Scanning %s...", path)
+	s.logger.Debug("Scanning", log.FilePath(path))
 	return s.scanRego(ctx, fsys, rego.Input{
 		Path:     path,
 		Contents: parsed,
@@ -144,13 +141,12 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
 	regoScanner := rego.NewScanner(types.SourceJSON, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return nil, err
 	}

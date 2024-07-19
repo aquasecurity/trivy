@@ -11,7 +11,6 @@ import (
 
 	"github.com/liamg/memoryfs"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -21,6 +20,7 @@ import (
 	kparser "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -29,7 +29,7 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 type Scanner struct {
 	policyDirs            []string
 	dataDirs              []string
-	debug                 debug.Logger
+	logger                *log.Logger
 	options               []options.ScannerOption
 	parserOptions         []options.ParserOption
 	policyReaders         []io.Reader
@@ -60,6 +60,7 @@ func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("helm scanner"),
 	}
 
 	for _, option := range opts {
@@ -90,10 +91,6 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 
 func (s *Scanner) SetSkipRequiredCheck(skip bool) {
 	s.skipRequired = skip
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "helm", "scanner")
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -183,13 +180,16 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 
 	chartFiles, err := helmParser.RenderedChartFiles()
 	if err != nil { // not valid helm, maybe some other yaml etc., abort
-		s.debug.Log("Failed to render Chart files: %s", err)
+		s.logger.Error(
+			"Failed to render Chart files",
+			log.FilePath(path), log.Err(err),
+		)
 		return nil, nil
 	}
 
 	for _, file := range chartFiles {
 		file := file
-		s.debug.Log("Processing rendered chart file: %s", file.TemplateFilePath)
+		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
 
 		manifests, err := kparser.New().Parse(strings.NewReader(file.ManifestContent), file.TemplateFilePath)
 		if err != nil {
@@ -232,7 +232,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 		return nil
 	}
 	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return err
 	}
