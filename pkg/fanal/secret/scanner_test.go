@@ -1015,13 +1015,13 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "secret inside another word",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
-			inputFilePath: "testdata/wrapped-secrets.txt",
+			inputFilePath: filepath.Join("testdata", "wrapped-secrets.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "sensitive secret inside another word",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
-			inputFilePath: "testdata/wrapped-secrets-sensitive.txt",
+			inputFilePath: filepath.Join("testdata", "wrapped-secrets-sensitive.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "wrapped-secrets-sensitive.txt"),
 				Findings: []types.SecretFinding{
