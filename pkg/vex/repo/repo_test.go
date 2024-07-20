@@ -57,7 +57,7 @@ func TestRepository_Manifest(t *testing.T) {
 			name: "local manifest exists",
 			setup: func(t *testing.T, dir string, _ *repo.Repository) {
 				manifestFile := filepath.Join(dir, "vex", "repositories", "test-repo", "vex-repository.json")
-				mustEncode(t, manifestFile, manifest)
+				mustWriteJSON(t, manifestFile, manifest)
 			},
 			want: manifest,
 		},
@@ -124,7 +124,7 @@ func TestRepository_Index(t *testing.T) {
 				}
 
 				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "0.1", "index.json")
-				mustEncode(t, indexPath, indexData)
+				mustWriteJSON(t, indexPath, indexData)
 			},
 			want: repo.Index{
 				UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -179,27 +179,7 @@ func TestRepository_Index(t *testing.T) {
 }
 
 func TestRepository_Update(t *testing.T) {
-	manifestFile := "testdata/test-repo/vex-repository.json"
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/vex-repository.json":
-			http.ServeFile(w, r, manifestFile)
-		case "/archive.zip":
-			if r.Header.Get("If-None-Match") == "current-etag" {
-				w.WriteHeader(http.StatusNotModified)
-				return
-			}
-			w.Header().Set("Content-Type", "application/zip")
-			w.Header().Set("ETag", "new-etag")
-			zw := zip.NewWriter(w)
-			assert.NoError(t, zw.AddFS(os.DirFS("testdata/test-repo")))
-			assert.NoError(t, zw.Close())
-		case "/error":
-			w.WriteHeader(http.StatusInternalServerError)
-		default:
-			w.WriteHeader(http.StatusNotFound)
-		}
-	}))
+	ts := setUpRepository(t)
 	defer ts.Close()
 
 	tests := []struct {
@@ -232,7 +212,7 @@ func TestRepository_Update(t *testing.T) {
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 					ETags:     map[string]string{ts.URL + "/archive.zip": "current-etag"},
 				}
-				mustEncode(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
+				mustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
 			},
 			clockTime: time.Date(2023, 1, 1, 1, 30, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -252,7 +232,7 @@ func TestRepository_Update(t *testing.T) {
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 					ETags:     map[string]string{ts.URL + "/archive.zip": "old-etag"},
 				}
-				mustEncode(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
+				mustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
 			},
 			clockTime: time.Date(2023, 1, 2, 3, 0, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -272,7 +252,7 @@ func TestRepository_Update(t *testing.T) {
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 					ETags:     map[string]string{ts.URL + "/archive.zip": "current-etag"},
 				}
-				mustEncode(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
+				mustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
 			},
 			clockTime: time.Date(2023, 1, 2, 3, 0, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -334,7 +314,7 @@ func TestRepository_Update(t *testing.T) {
 
 			cacheFile := filepath.Join(tempDir, "vex", "repositories", r.Name, "cache.json")
 			var gotCache repo.CacheMetadata
-			mustDecode(t, cacheFile, &gotCache)
+			mustReadJSON(t, cacheFile, &gotCache)
 			assert.Equal(t, tt.wantCache, gotCache)
 		})
 	}
@@ -363,8 +343,28 @@ func setUpManifest(t *testing.T, dir, url string) {
 		},
 	}
 	manifestPath := filepath.Join(dir, "vex", "repositories", "test-repo", "vex-repository.json")
-	mustMkdirAll(t, filepath.Dir(manifestPath))
-	mustEncode(t, manifestPath, manifest)
+	mustWriteJSON(t, manifestPath, manifest)
+}
+
+func setUpRepository(t *testing.T) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/archive.zip":
+			if r.Header.Get("If-None-Match") == "current-etag" {
+				w.WriteHeader(http.StatusNotModified)
+				return
+			}
+			w.Header().Set("Content-Type", "application/zip")
+			w.Header().Set("ETag", "new-etag")
+			zw := zip.NewWriter(w)
+			assert.NoError(t, zw.AddFS(os.DirFS("testdata/test-repo")))
+			assert.NoError(t, zw.Close())
+		case "/error":
+			w.WriteHeader(http.StatusInternalServerError)
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
 }
 
 func mustMkdirAll(t *testing.T, dir string) {
@@ -372,14 +372,14 @@ func mustMkdirAll(t *testing.T, dir string) {
 	require.NoError(t, err)
 }
 
-func mustDecode(t *testing.T, filePath string, v interface{}) {
+func mustReadJSON(t *testing.T, filePath string, v interface{}) {
 	b, err := os.ReadFile(filePath)
 	require.NoError(t, err)
 	err = json.Unmarshal(b, v)
 	require.NoError(t, err)
 }
 
-func mustEncode(t *testing.T, filePath string, v interface{}) {
+func mustWriteJSON(t *testing.T, filePath string, v interface{}) {
 	data, err := json.Marshal(v)
 	require.NoError(t, err)
 
