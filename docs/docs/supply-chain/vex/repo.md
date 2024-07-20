@@ -108,6 +108,12 @@ The "Affected" status from the higher-priority repository (`repo1`) takes preced
 VEX repositories are automatically updated during scanning.
 Updates are performed based on the update frequency specified by the repository.
 
+To disable auto-update, pass `--skip-vex-repo-update`.
+
+```shell
+$ trivy image ghcr.io/aquasecurity/trivy:0.50.0 --vex repo --skip-vex-repo-update
+```
+
 To download VEX repositories in advance without scanning, use `trivy vex repo download`.
 
 The cache can be cleared with `trivy clean --vex-repo`.

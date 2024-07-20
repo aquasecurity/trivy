@@ -50,6 +50,12 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 }
 
 func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
+	ctx = log.WithContextPrefix(ctx, "vex")
+	if opts.SkipVEXRepoUpdate {
+		log.InfoContext(ctx, "Skipping VEX repository update")
+		return nil
+	}
+
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -61,7 +67,6 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 		return nil
 	}
 
-	ctx = log.WithContextPrefix(ctx, "vex")
 	err := repo.NewManager(opts.CacheDir).DownloadRepositories(ctx, nil, repo.Options{
 		Insecure: opts.Insecure,
 	})

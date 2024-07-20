@@ -95,16 +95,19 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 		case TypeRepository:
 			v, err = NewRepositorySet(ctx, opts.CacheDir)
 			if err != nil {
-				return nil, xerrors.Errorf("failed to create a repository set: %w", err)
+				return nil, xerrors.Errorf("failed to create a vex repository set: %w", err)
 			}
 		default:
 			log.Warn("Unsupported VEX source", log.String("type", string(src.Type)))
 			continue
 		}
-		vexes = append(vexes, v)
+		if !lo.IsNil(v) {
+			vexes = append(vexes, v)
+		}
 	}
 
 	if len(vexes) == 0 {
+		log.DebugContext(ctx, "VEX filtering is disabled")
 		return nil, nil
 	}
 	return &Client{VEXes: vexes}, nil

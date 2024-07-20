@@ -34,11 +34,12 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 		return nil, xerrors.Errorf("failed to get VEX repository config: %w", err)
 	}
 
+	logger := log.WithPrefix("vex")
 	var indexes []RepositoryIndex
 	for _, r := range conf.EnabledRepositories() {
 		index, err := r.Index(ctx)
 		if errors.Is(err, os.ErrNotExist) {
-			log.Warn("VEX repository not found locally, skipping this repository", log.String("repo", r.Name))
+			logger.Warn("VEX repository not found locally, skipping this repository", log.String("repo", r.Name))
 			continue
 		} else if err != nil {
 			return nil, xerrors.Errorf("failed to get VEX repository index: %w", err)
@@ -49,9 +50,14 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 			Index: index,
 		})
 	}
+	if len(indexes) == 0 {
+		logger.Warn("No available VEX repository found locally")
+		return nil, nil
+	}
+
 	return &RepositorySet{
 		indexes: indexes, // In precedence order
-		logger:  log.WithPrefix("vex"),
+		logger:  logger,
 	}, nil
 }
 
@@ -83,7 +89,7 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 		source := fmt.Sprintf("VEX Repository: %s (%s)", index.Name, index.URL)
 		doc, err := rs.OpenDocument(source, filepath.Dir(index.Path), entry)
 		if err != nil {
-			log.Warn("Failed to open the VEX document", log.String("location", entry.Location), log.Err(err))
+			rs.logger.Warn("Failed to open the VEX document", log.String("location", entry.Location), log.Err(err))
 			return types.ModifiedFinding{}, false
 		}
 
@@ -91,7 +97,7 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 			return m, notAffected
 		}
 
-		log.Debug("VEX found, but affected", log.String("vulnerability", vuln.VulnerabilityID),
+		rs.logger.Debug("VEX found, but affected", log.String("vulnerability", vuln.VulnerabilityID),
 			log.String("package", pkgID), log.String("repo", index.Name), log.String("repo_url", index.URL))
 		break // Stop searching for the next VEX document as this repository has higher precedence.
 	}
