@@ -27,9 +27,9 @@ var (
 		ConfigName: "clean.checks-bundle",
 		Usage:      "remove checks bundle",
 	}
-	CleanVEXRepos = Flag[bool]{
-		Name:       "vex-repos",
-		ConfigName: "clean.vex-repos",
+	CleanVEXRepo = Flag[bool]{
+		Name:       "vex-repo",
+		ConfigName: "clean.vex-repo",
 		Usage:      "remove VEX repositories",
 	}
 )
@@ -59,7 +59,7 @@ func NewCleanFlagGroup() *CleanFlagGroup {
 		CleanVulnerabilityDB: CleanVulnerabilityDB.Clone(),
 		CleanJavaDB:          CleanJavaDB.Clone(),
 		CleanChecksBundle:    CleanChecksBundle.Clone(),
-		CleanVEXRepositories: CleanVEXRepos.Clone(),
+		CleanVEXRepositories: CleanVEXRepo.Clone(),
 	}
 }
 
