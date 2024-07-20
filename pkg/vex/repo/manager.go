@@ -2,10 +2,12 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -31,6 +33,12 @@ func WithWriter(w io.Writer) ManagerOption {
 
 type Config struct {
 	Repositories []Repository `json:"repositories"`
+}
+
+func (c *Config) EnabledRepositories() []Repository {
+	return lo.Filter(c.Repositories, func(r Repository, _ int) bool {
+		return r.Enabled
+	})
 }
 
 type Options struct {
@@ -96,11 +104,9 @@ func (m *Manager) Config(ctx context.Context) (Config, error) {
 		return conf, xerrors.Errorf("unable to decode metadata: %w", err)
 	}
 
-	// Filter out disabled repositories
-	conf.Repositories = lo.FilterMap(conf.Repositories, func(r Repository, _ int) (Repository, bool) {
-		r.dir = filepath.Join(m.cacheDir, repoDir, r.Name)
-		return r, r.Enabled
-	})
+	for i, repo := range conf.Repositories {
+		conf.Repositories[i].dir = filepath.Join(m.cacheDir, repoDir, repo.Name)
+	}
 
 	return conf, nil
 }
@@ -131,12 +137,12 @@ func (m *Manager) DownloadRepositories(ctx context.Context, names []string, opts
 	conf, err := m.Config(ctx)
 	if err != nil {
 		return xerrors.Errorf("unable to read config: %w", err)
-	} else if len(conf.Repositories) == 0 {
+	} else if len(conf.EnabledRepositories()) == 0 {
 		log.WarnContext(ctx, "No enabled repositories found in config", log.String("path", m.configFile))
 		return nil
 	}
 
-	for _, repo := range conf.Repositories {
+	for _, repo := range conf.EnabledRepositories() {
 		if len(names) > 0 && !slices.Contains(names, repo.Name) {
 			continue
 		}
@@ -144,6 +150,36 @@ func (m *Manager) DownloadRepositories(ctx context.Context, names []string, opts
 			return xerrors.Errorf("failed to update the repository: %w", err)
 		}
 	}
+	return nil
+}
+
+// List returns a list of all repositories in the configuration
+func (m *Manager) List(ctx context.Context) error {
+	conf, err := m.Config(ctx)
+	if err != nil {
+		return xerrors.Errorf("unable to read config: %w", err)
+	}
+
+	var output strings.Builder
+
+	output.WriteString(fmt.Sprintf("VEX Repositories (config: %s)\n\n", m.configFile))
+
+	if len(conf.Repositories) == 0 {
+		output.WriteString("No repositories configured.\n")
+	} else {
+		for _, repo := range conf.Repositories {
+			status := "Enabled"
+			if !repo.Enabled {
+				status = "Disabled"
+			}
+			output.WriteString(fmt.Sprintf("- Name: %s\n  URL: %s\n  Status: %s\n\n", repo.Name, repo.URL, status))
+		}
+	}
+
+	if _, err = io.WriteString(m.w, output.String()); err != nil {
+		return xerrors.Errorf("failed to write output: %w", err)
+	}
+
 	return nil
 }
 

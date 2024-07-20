@@ -1277,6 +1277,20 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 		&cobra.Command{
+			Use:                   "list",
+			Short:                 "List VEX repositories",
+			SilenceErrors:         true,
+			SilenceUsage:          true,
+			DisableFlagsInUseLine: true,
+			Args:                  cobra.ExactArgs(0),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := vexrepo.NewManager(vexOptions.CacheDir).List(cmd.Context()); err != nil {
+					return xerrors.Errorf("list error: %w", err)
+				}
+				return nil
+			},
+		},
+		&cobra.Command{
 			Use:                   "download [REPO_NAMES]",
 			Short:                 "Download the VEX repositories",
 			DisableFlagsInUseLine: true,

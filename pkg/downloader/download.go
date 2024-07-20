@@ -97,7 +97,7 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 	}
 
 	if err := client.Get(); err != nil {
-		return "", xerrors.Errorf("failed to download: %w", err)
+		return "", xerrors.Errorf("failed to download %s: %w", src, err)
 	}
 
 	return transport.newETag, nil

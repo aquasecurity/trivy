@@ -1,7 +1,9 @@
 package repo_test
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -29,11 +31,6 @@ func TestManager_Config(t *testing.T) {
 							Name:    "test-repo",
 							URL:     "https://example.com/repo",
 							Enabled: true,
-						},
-						{
-							Name:    "test-disabled-repo",
-							URL:     "https://example.com/disabled-repo",
-							Enabled: false,
 						},
 					},
 				}
@@ -173,7 +170,7 @@ func TestManager_DownloadRepositories(t *testing.T) {
 				Repositories: []repo.Repository{
 					{
 						Name:    "test-repo",
-						URL:     ts.URL,
+						URL:     "https://localhost:10000", // Will not be reached
 						Enabled: false,
 					},
 				},
@@ -245,6 +242,76 @@ func TestManager_DownloadRepositories(t *testing.T) {
 				assert.FileExists(t, filepath.Join(repoDir, "vex-repository.json"))
 				assert.FileExists(t, filepath.Join(repoDir, "0.1", "index.json"))
 			}
+		})
+	}
+}
+
+func TestManager_List(t *testing.T) {
+	tests := []struct {
+		name    string
+		config  repo.Config
+		want    string
+		wantErr string
+	}{
+		{
+			name: "list repositories",
+			config: repo.Config{
+				Repositories: []repo.Repository{
+					{
+						Name:    "default",
+						URL:     "https://github.com/aquasecurity/vexhub",
+						Enabled: true,
+					},
+					{
+						Name:    "custom",
+						URL:     "https://example.com/custom-vex-repo",
+						Enabled: false,
+					},
+				},
+			},
+			want: `VEX Repositories (config: %s)
+
+- Name: default
+  URL: https://github.com/aquasecurity/vexhub
+  Status: Enabled
+
+- Name: custom
+  URL: https://example.com/custom-vex-repo
+  Status: Disabled
+
+`,
+		},
+		{
+			name: "no repositories",
+			config: repo.Config{
+				Repositories: []repo.Repository{},
+			},
+			want: `VEX Repositories (config: %s)
+
+No repositories configured.
+`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tempDir := t.TempDir()
+			t.Setenv("XDG_DATA_HOME", tempDir)
+			configPath := filepath.Join(tempDir, ".trivy", "vex", "repository.yaml")
+			mustWriteYAML(t, configPath, tt.config)
+
+			var buf bytes.Buffer
+			m := repo.NewManager(tempDir, repo.WithWriter(&buf))
+
+			err := m.List(context.Background())
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+
+			want := fmt.Sprintf(tt.want, configPath)
+			require.NoError(t, err)
+			assert.Equal(t, want, buf.String())
 		})
 	}
 }

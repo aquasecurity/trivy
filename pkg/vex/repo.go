@@ -35,7 +35,7 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 	}
 
 	var indexes []RepositoryIndex
-	for _, r := range conf.Repositories {
+	for _, r := range conf.EnabledRepositories() {
 		index, err := r.Index(ctx)
 		if errors.Is(err, os.ErrNotExist) {
 			log.Warn("VEX repository not found locally, skipping this repository", log.String("repo", r.Name))
