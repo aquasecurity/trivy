@@ -511,9 +511,16 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	rawLines := lines[codeStart:codeEnd]
 	var foundFirst bool
 	for i, rawLine := range rawLines {
-		strRawLine := string(rawLine)
 		realLine := codeStart + i
 		inCause := realLine >= startLineNum && realLine <= endLineNum
+
+		var strRawLine string
+		if len(rawLine) > 2000 {
+			strRawLine = lo.Ternary(inCause, matchLine, string(rawLine[:1000]))
+		} else {
+			strRawLine = string(rawLine)
+		}
+
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
 			Content:     strRawLine,
