@@ -1,0 +1,9 @@
+NAME="Microsoft Azure Linux"
+VERSION="3.0.20240624"
+ID=azurelinux
+VERSION_ID="3.0"
+PRETTY_NAME="Microsoft Azure Linux 3.0"
+ANSI_COLOR="1;34"
+HOME_URL="https://aka.ms/azurelinux"
+BUG_REPORT_URL="https://aka.ms/azurelinux"
+SUPPORT_URL="https://aka.ms/azurelinux"
