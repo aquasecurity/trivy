@@ -292,7 +292,7 @@ func TestFilter(t *testing.T) {
 								Type:      types.FindingTypeVulnerability,
 								Status:    types.FindingStatusNotAffected,
 								Statement: "vulnerable_code_not_in_execute_path",
-								Source:    "OpenVEX",
+								Source:    "testdata/openvex.json",
 								Finding:   vuln1,
 							},
 						},
