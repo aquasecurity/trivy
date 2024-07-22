@@ -3,6 +3,7 @@ package downloader
 import (
 	"cmp"
 	"context"
+	"crypto/tls"
 	"errors"
 	"maps"
 	"net/http"
@@ -72,7 +73,7 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 	// it cannot enable WithInsecure() afterwards because its state is preserved.
 	// Therefore, we need to create a new "HttpGetter" instance every time.
 	// cf. https://github.com/hashicorp/go-getter/blob/5a63fd9c0d5b8da8a6805e8c283f46f0dacb30b3/get.go#L63-L65
-	transport := NewCustomTransport(opts.Auth, opts.ETag)
+	transport := NewCustomTransport(opts)
 	httpGetter := &getter.HttpGetter{
 		Netrc: true,
 		Client: &http.Client{
@@ -90,7 +91,6 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 		Dst:     dst,
 		Pwd:     pwd,
 		Getters: getters,
-		Mode:    getter.ClientModeAny,
 		Mode:    lo.Ternary(opts.ClientMode == 0, getter.ClientModeAny, opts.ClientMode),
 		Options: clientOpts,
 	}
@@ -106,12 +106,14 @@ type CustomTransport struct {
 	auth       Auth
 	cachedETag string
 	newETag    string
+	insecure   bool
 }
 
-func NewCustomTransport(auth Auth, etag string) *CustomTransport {
+func NewCustomTransport(opts Options) *CustomTransport {
 	return &CustomTransport{
-		auth:       auth,
-		cachedETag: etag,
+		auth:       opts.Auth,
+		cachedETag: opts.ETag,
+		insecure:   opts.Insecure,
 	}
 }
 
@@ -127,10 +129,10 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	var transport http.RoundTripper
 	if req.URL.Host == "github.com" {
-		transport = NewGitHubTransport(req.URL, t.auth.Token)
+		transport = NewGitHubTransport(req.URL, t.insecure, t.auth.Token)
 	}
 	if transport == nil {
-		transport = http.DefaultTransport
+		transport = httpTransport(t.insecure)
 	}
 
 	res, err := transport.RoundTrip(req)
@@ -149,8 +151,8 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return res, nil
 }
 
-func NewGitHubTransport(u *url.URL, token string) http.RoundTripper {
-	client := newGitHubClient(token)
+func NewGitHubTransport(u *url.URL, insecure bool, token string) http.RoundTripper {
+	client := newGitHubClient(insecure, token)
 	ss := strings.SplitN(u.Path, "/", 4)
 	if len(ss) < 4 || strings.HasPrefix(ss[3], "archive/") {
 		// Use the default transport from go-github for authentication
@@ -182,11 +184,17 @@ func (t *GitHubContentTransport) RoundTrip(req *http.Request) (*http.Response, e
 	return res.Response, nil
 }
 
-func newGitHubClient(token string) *github.Client {
-	client := github.NewClient(nil)
+func newGitHubClient(insecure bool, token string) *github.Client {
+	client := github.NewClient(&http.Client{Transport: httpTransport(insecure)})
 	token = cmp.Or(token, os.Getenv("GITHUB_TOKEN"))
 	if token != "" {
 		client = client.WithAuthToken(token)
 	}
 	return client
+}
+
+func httpTransport(insecure bool) *http.Transport {
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure}
+	return tr
 }
