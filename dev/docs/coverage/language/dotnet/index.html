@@ -4064,6 +4064,10 @@ You're not viewing the latest version.
 </table>
 <h2 id="depsjson">*.deps.json</h2>
 <p>Trivy parses <code>*.deps.json</code> files. Trivy currently excludes dev dependencies from the report.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Trivy only includes runtime dependencies in the report.</p>
+</div>
 <h2 id="packagesconfig">packages.config</h2>
 <p>Trivy only finds dependency names and versions from <code>packages.config</code> files. To build dependency graph, it is better to use <code>packages.lock.json</code> files.</p>
 <h2 id="packagesprops">*Packages.props</h2>
