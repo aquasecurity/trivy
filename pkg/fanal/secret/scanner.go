@@ -477,8 +477,8 @@ func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
 }
 
 const (
-	secretHighlightRadius = 2    // number of lines above + below each secret to include in code output
-	maxLineLength         = 2000 //
+	secretHighlightRadius = 2   // number of lines above + below each secret to include in code output
+	maxLineLength         = 100 //
 )
 
 func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
