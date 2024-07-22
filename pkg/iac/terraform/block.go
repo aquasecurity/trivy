@@ -3,6 +3,7 @@ package terraform
 import (
 	"fmt"
 	"io/fs"
+	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -296,6 +297,113 @@ func (b *Block) GetAttribute(name string) *Attribute {
 		}
 	}
 	return nil
+}
+
+// GetValueByPath returns the value of the attribute located at the given path.
+// Supports special paths like "count.index," "each.key," and "each.value."
+// The path may contain indices, keys and dots (used as separators).
+func (b *Block) GetValueByPath(path string) cty.Value {
+
+	if path == "count.index" || path == "each.key" || path == "each.value" {
+		return b.Context().GetByDot(path)
+	}
+
+	if restPath, ok := strings.CutPrefix(path, "each.value."); ok {
+		if restPath == "" {
+			return cty.NilVal
+		}
+
+		val := b.Context().GetByDot("each.value")
+		res, err := getValueByPath(val, strings.Split(restPath, "."))
+		if err != nil {
+			return cty.NilVal
+		}
+		return res
+	}
+
+	attr, restPath := b.getAttributeByPath(path)
+
+	if attr == nil {
+		return cty.NilVal
+	}
+
+	if !attr.IsIterable() || len(restPath) == 0 {
+		return attr.Value()
+	}
+
+	res, err := getValueByPath(attr.Value(), restPath)
+	if err != nil {
+		return cty.NilVal
+	}
+	return res
+}
+
+func (b *Block) getAttributeByPath(path string) (*Attribute, []string) {
+	steps := strings.Split(path, ".")
+
+	if len(steps) == 1 {
+		return b.GetAttribute(steps[0]), nil
+	}
+
+	var (
+		attribute *Attribute
+		stepIndex int
+	)
+
+	currentBlock := b
+	for currentBlock != nil && stepIndex <= len(steps)-1 {
+		blocks := currentBlock.GetBlocks(steps[stepIndex])
+
+		var nextBlock *Block
+		if len(blocks) == 1 {
+			nextBlock = blocks[0]
+		} else if len(blocks) > 1 && stepIndex < len(steps)-2 {
+			// handling the case when there are multiple blocks with the same name,
+			// e.g. when using a `dynamic` block
+			indexVal, err := strconv.Atoi(steps[stepIndex+1])
+			if err == nil && indexVal >= 0 && indexVal < len(blocks) {
+				nextBlock = blocks[indexVal]
+				stepIndex++
+			}
+		}
+
+		if nextBlock == nil {
+			attribute = currentBlock.GetAttribute(steps[stepIndex])
+		}
+
+		currentBlock = nextBlock
+		stepIndex++
+	}
+
+	return attribute, steps[stepIndex:]
+}
+
+func getValueByPath(val cty.Value, path []string) (cty.Value, error) {
+	var err error
+	for _, step := range path {
+		switch valType := val.Type(); {
+		case valType.IsMapType():
+			val, err = cty.IndexStringPath(step).Apply(val)
+		case valType.IsObjectType():
+			val, err = cty.GetAttrPath(step).Apply(val)
+		case valType.IsListType() || valType.IsTupleType():
+			var idx int
+			idx, err = strconv.Atoi(step)
+			if err != nil {
+				return cty.NilVal, fmt.Errorf("index %q is not a number", step)
+			}
+			val, err = cty.IndexIntPath(idx).Apply(val)
+		default:
+			return cty.NilVal, fmt.Errorf(
+				"unexpected value type %s for path step %q",
+				valType.FriendlyName(), step,
+			)
+		}
+		if err != nil {
+			return cty.NilVal, err
+		}
+	}
+	return val, nil
 }
 
 func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
