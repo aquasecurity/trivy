@@ -156,12 +156,13 @@ var builtinRules = []Rule{
 		Keywords: []string{"github_pat_"},
 	},
 	{
-		ID:       "gitlab-pat",
-		Category: CategoryGitLab,
-		Title:    "GitLab Personal Access Token",
-		Severity: "CRITICAL",
-		Regex:    MustCompile(`glpat-[0-9a-zA-Z\-\_]{20}`),
-		Keywords: []string{"glpat-"},
+		ID:              "gitlab-pat",
+		Category:        CategoryGitLab,
+		Title:           "GitLab Personal Access Token",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>glpat-[0-9a-zA-Z\-\_]{20}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"glpat-"},
 	},
 	{
 		// cf. https://huggingface.co/docs/hub/en/security-tokens
