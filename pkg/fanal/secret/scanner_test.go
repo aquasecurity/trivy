@@ -667,6 +667,27 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingTokenInsideJs := types.SecretFinding{
+		RuleID:    "stripe-publishable-token",
+		Category:  "Stripe",
+		Title:     "Stripe Publishable Key",
+		Severity:  "LOW",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "){case a.ez.PRODUCTION:return\"********************************\";case a.ez.TEST:cas",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "){case a.ez.PRODUCTION:return\"********************************\";case a.ez.TEST:cas",
+					Highlighted: "){case a.ez.PRODUCTION:return\"********************************\";case a.ez.TEST:cas",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -980,6 +1001,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/multi-line.txt",
 				Findings: []types.SecretFinding{wantMultiLine},
+			},
+		},
+		{
+			name:          "long obfuscated js code with secrets",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "obfuscated.js"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "obfuscated.js"),
+				Findings: []types.SecretFinding{wantFindingTokenInsideJs},
 			},
 		},
 	}
