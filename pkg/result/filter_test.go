@@ -15,6 +15,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
 func TestFilter(t *testing.T) {
@@ -1007,9 +1008,17 @@ func TestFilter(t *testing.T) {
 			fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
 			ctx := clock.With(context.Background(), fakeTime)
 
+			var vexSources []vex.Source
+			if tt.args.vexPath != "" {
+				vexSources = append(vexSources, vex.Source{
+					Type:     vex.TypeFile,
+					FilePath: tt.args.vexPath,
+				})
+			}
+
 			err := result.Filter(ctx, tt.args.report, result.FilterOptions{
 				Severities:     tt.args.severities,
-				VEXPath:        tt.args.vexPath,
+				VEXSources:     vexSources,
 				IgnoreStatuses: tt.args.ignoreStatuses,
 				IgnoreFile:     tt.args.ignoreFile,
 				PolicyFile:     tt.args.policyFile,

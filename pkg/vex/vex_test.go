@@ -174,7 +174,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/openvex.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex.json",
+						},
+					},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -198,7 +203,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/openvex-multiple.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-multiple.json",
+						},
+					},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -221,7 +231,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/openvex-oci.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-oci.json",
+						},
+					},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -240,7 +255,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/openvex-oci-mismatch.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-oci-mismatch.json",
+						},
+					},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -260,7 +280,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/openvex-nested.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-nested.json",
+						},
+					},
 				},
 			},
 			want: fsReport([]types.Result{
@@ -281,7 +306,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/openvex-nested.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-nested.json",
+						},
+					},
 				},
 			},
 			want: fsReport([]types.Result{
@@ -306,7 +336,12 @@ func TestFilter(t *testing.T) {
 					},
 				},
 				opts: vex.Options{
-					VEXPath: "testdata/cyclonedx.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/cyclonedx.json",
+						},
+					},
 				},
 			},
 			want: &types.Report{
@@ -339,7 +374,12 @@ func TestFilter(t *testing.T) {
 					},
 				},
 				opts: vex.Options{
-					VEXPath: "testdata/cyclonedx.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/cyclonedx.json",
+						},
+					},
 				},
 			},
 			want: &types.Report{
@@ -366,7 +406,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/csaf.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf.json",
+						},
+					},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -387,7 +432,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/csaf-relationships.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-relationships.json",
+						},
+					},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -408,7 +458,12 @@ func TestFilter(t *testing.T) {
 					}),
 				}),
 				opts: vex.Options{
-					VEXPath: "testdata/csaf-relationships.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-relationships.json",
+						},
+					},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -428,7 +483,8 @@ func TestFilter(t *testing.T) {
 				configContent := `
 repositories:
   - name: default
-    url: https://example.com/vex/default`
+    url: https://example.com/vex/default
+    enabled: true`
 				require.NoError(t, os.WriteFile(configPath, []byte(configContent), 0644))
 			},
 			args: args{
@@ -441,6 +497,7 @@ repositories:
 				}),
 				opts: vex.Options{
 					CacheDir: "testdata/single-repo",
+					Sources:  []vex.Source{{Type: vex.TypeRepository}},
 				},
 			},
 			want: imageReport([]types.Result{
@@ -453,31 +510,16 @@ repositories:
 			}),
 		},
 		{
-			name: "VEX Repository without config",
-			args: args{
-				report: imageReport([]types.Result{
-					bashResult(types.Result{
-						Vulnerabilities: []types.DetectedVulnerability{
-							vuln3, // not filtered by VEX
-						},
-					}),
-				}),
-				opts: vex.Options{
-					CacheDir: "testdata/no-repo",
-				},
-			},
-			want: imageReport([]types.Result{
-				bashResult(types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{vuln3},
-				}),
-			}),
-		},
-		{
 			name: "unknown format",
 			args: args{
 				report: &types.Report{},
 				opts: vex.Options{
-					VEXPath: "testdata/unknown.json",
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/unknown.json",
+						},
+					},
 				},
 			},
 			wantErr: "unable to load VEX",
