@@ -10,8 +10,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
@@ -35,7 +35,7 @@ func TestManager_Config(t *testing.T) {
 					},
 				}
 				configPath := filepath.Join(dir, ".trivy", "vex", "repository.yaml")
-				mustWriteYAML(t, configPath, config)
+				testutil.MustWriteYAML(t, configPath, config)
 			},
 			want: repo.Config{
 				Repositories: []repo.Repository{
@@ -105,7 +105,7 @@ func TestManager_Init(t *testing.T) {
 			name: "config already exists",
 			setup: func(t *testing.T, dir string) {
 				configPath := filepath.Join(dir, ".trivy", "vex", "repository.yaml")
-				mustWriteYAML(t, configPath, repo.Config{})
+				testutil.MustWriteYAML(t, configPath, repo.Config{})
 			},
 			want: repo.Config{
 				Repositories: []repo.Repository{},
@@ -132,7 +132,7 @@ func TestManager_Init(t *testing.T) {
 			assert.FileExists(t, configPath)
 
 			var got repo.Config
-			mustReadYAML(t, configPath, &got)
+			testutil.MustReadYAML(t, configPath, &got)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -222,11 +222,11 @@ func TestManager_DownloadRepositories(t *testing.T) {
 			m := repo.NewManager(tempDir)
 
 			configPath := filepath.Join(tempDir, ".trivy", "vex", "repository.yaml")
-			mustWriteYAML(t, configPath, tt.config)
+			testutil.MustWriteYAML(t, configPath, tt.config)
 
 			manifestPath := filepath.Join(tempDir, "vex", "repositories", "test-repo", "vex-repository.json")
 			manifest.Versions[0].Locations[0].URL = tt.location
-			mustWriteJSON(t, manifestPath, manifest)
+			testutil.MustWriteJSON(t, manifestPath, manifest)
 
 			err := m.DownloadRepositories(context.Background(), tt.names, repo.Options{})
 			if tt.wantErr != "" {
@@ -298,7 +298,7 @@ No repositories configured.
 			tempDir := t.TempDir()
 			t.Setenv("XDG_DATA_HOME", tempDir)
 			configPath := filepath.Join(tempDir, ".trivy", "vex", "repository.yaml")
-			mustWriteYAML(t, configPath, tt.config)
+			testutil.MustWriteYAML(t, configPath, tt.config)
 
 			var buf bytes.Buffer
 			m := repo.NewManager(tempDir, repo.WithWriter(&buf))
@@ -332,22 +332,4 @@ func TestManager_Clear(t *testing.T) {
 	// Check if the cache directory was removed
 	_, err = os.Stat(cacheDir)
 	assert.True(t, os.IsNotExist(err))
-}
-
-func mustWriteYAML(t *testing.T, path string, data interface{}) {
-	t.Helper()
-	dir := filepath.Dir(path)
-	require.NoError(t, os.MkdirAll(dir, 0755))
-	f, err := os.Create(path)
-	require.NoError(t, err)
-	defer f.Close()
-	require.NoError(t, yaml.NewEncoder(f).Encode(data))
-}
-
-func mustReadYAML(t *testing.T, path string, out interface{}) {
-	t.Helper()
-	f, err := os.Open(path)
-	require.NoError(t, err)
-	defer f.Close()
-	require.NoError(t, yaml.NewDecoder(f).Decode(out))
 }

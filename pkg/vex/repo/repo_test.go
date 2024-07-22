@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
@@ -57,7 +58,7 @@ func TestRepository_Manifest(t *testing.T) {
 			name: "local manifest exists",
 			setup: func(t *testing.T, dir string, _ *repo.Repository) {
 				manifestFile := filepath.Join(dir, "vex", "repositories", "test-repo", "vex-repository.json")
-				mustWriteJSON(t, manifestFile, manifest)
+				testutil.MustWriteJSON(t, manifestFile, manifest)
 			},
 			want: manifest,
 		},
@@ -124,7 +125,7 @@ func TestRepository_Index(t *testing.T) {
 				}
 
 				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "0.1", "index.json")
-				mustWriteJSON(t, indexPath, indexData)
+				testutil.MustWriteJSON(t, indexPath, indexData)
 			},
 			want: repo.Index{
 				UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -151,7 +152,7 @@ func TestRepository_Index(t *testing.T) {
 			name: "invalid JSON in index file",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
 				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "0.1", "index.json")
-				mustWriteFile(t, indexPath, []byte("invalid JSON"))
+				testutil.MustWriteFile(t, indexPath, []byte("invalid JSON"))
 			},
 			wantErr: "failed to decode the index",
 		},
@@ -206,13 +207,13 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, "") // No location as the test server is not used
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
+				testutil.MustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 
 				cacheMetadata := repo.CacheMetadata{
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 					ETags:     map[string]string{ts.URL + "/archive.zip": "current-etag"},
 				}
-				mustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
+				testutil.MustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
 			},
 			clockTime: time.Date(2023, 1, 1, 1, 30, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -226,13 +227,13 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
+				testutil.MustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 
 				cacheMetadata := repo.CacheMetadata{
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 					ETags:     map[string]string{ts.URL + "/archive.zip": "old-etag"},
 				}
-				mustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
+				testutil.MustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
 			},
 			clockTime: time.Date(2023, 1, 2, 3, 0, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -246,13 +247,13 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
+				testutil.MustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 
 				cacheMetadata := repo.CacheMetadata{
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 					ETags:     map[string]string{ts.URL + "/archive.zip": "current-etag"},
 				}
-				mustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
+				testutil.MustWriteJSON(t, filepath.Join(repoDir, "cache.json"), cacheMetadata)
 			},
 			clockTime: time.Date(2023, 1, 2, 3, 0, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -266,7 +267,7 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
+				testutil.MustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 			},
 			clockTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 			wantCache: repo.CacheMetadata{
@@ -286,7 +287,7 @@ func TestRepository_Update(t *testing.T) {
 				setUpManifest(t, cacheDir, ts.URL+"/error")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
-				mustMkdirAll(t, filepath.Join(repoDir, "0.1"))
+				testutil.MustMkdirAll(t, filepath.Join(repoDir, "0.1"))
 			},
 			clockTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 			wantErr:   "failed to download the repository",
@@ -314,7 +315,7 @@ func TestRepository_Update(t *testing.T) {
 
 			cacheFile := filepath.Join(tempDir, "vex", "repositories", r.Name, "cache.json")
 			var gotCache repo.CacheMetadata
-			mustReadJSON(t, cacheFile, &gotCache)
+			testutil.MustReadJSON(t, cacheFile, &gotCache)
 			assert.Equal(t, tt.wantCache, gotCache)
 		})
 	}
@@ -343,7 +344,7 @@ func setUpManifest(t *testing.T, dir, url string) {
 		},
 	}
 	manifestPath := filepath.Join(dir, "vex", "repositories", "test-repo", "vex-repository.json")
-	mustWriteJSON(t, manifestPath, manifest)
+	testutil.MustWriteJSON(t, manifestPath, manifest)
 }
 
 func setUpRepository(t *testing.T) *httptest.Server {
@@ -365,31 +366,4 @@ func setUpRepository(t *testing.T) *httptest.Server {
 			w.WriteHeader(http.StatusNotFound)
 		}
 	}))
-}
-
-func mustMkdirAll(t *testing.T, dir string) {
-	err := os.MkdirAll(dir, 0755)
-	require.NoError(t, err)
-}
-
-func mustReadJSON(t *testing.T, filePath string, v interface{}) {
-	b, err := os.ReadFile(filePath)
-	require.NoError(t, err)
-	err = json.Unmarshal(b, v)
-	require.NoError(t, err)
-}
-
-func mustWriteJSON(t *testing.T, filePath string, v interface{}) {
-	data, err := json.Marshal(v)
-	require.NoError(t, err)
-
-	mustWriteFile(t, filePath, data)
-}
-
-func mustWriteFile(t *testing.T, filePath string, content []byte) {
-	dir := filepath.Dir(filePath)
-	mustMkdirAll(t, dir)
-
-	err := os.WriteFile(filePath, content, 0744)
-	require.NoError(t, err)
 }
