@@ -352,9 +352,9 @@ rego:
   # Default is false
   trace: false
 
-  # Same as '--skip-policy-update'
+  # Same as '--skip-check-update'
   # Default is false
-  skip-policy-update: false
+  skip-check-update: false
 
   # Same as '--config-policy'
   # Default is empty
