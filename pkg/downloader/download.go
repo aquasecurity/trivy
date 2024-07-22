@@ -13,17 +13,17 @@ import (
 
 	"github.com/google/go-github/v62/github"
 	getter "github.com/hashicorp/go-getter"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var ErrSkipDownload = errors.New("skip download")
 
 type Options struct {
-	Insecure bool
-	Auth     Auth
-	ETag     string
+	Insecure   bool
+	Auth       Auth
+	ETag       string
+	ClientMode getter.ClientMode
 }
 
 type Auth struct {
@@ -54,9 +54,7 @@ func DownloadToTempDir(ctx context.Context, url string, opts Options) (string, e
 // Download downloads the configured source to the destination.
 func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, error) {
 	// go-getter doesn't allow the dst directory already exists if the src is directory.
-	if fsutils.DirExists(src) {
-		_ = os.RemoveAll(dst)
-	}
+	_ = os.RemoveAll(dst)
 
 	var clientOpts []getter.ClientOption
 	if opts.Insecure {
@@ -93,6 +91,7 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 		Pwd:     pwd,
 		Getters: getters,
 		Mode:    getter.ClientModeAny,
+		Mode:    lo.Ternary(opts.ClientMode == 0, getter.ClientModeAny, opts.ClientMode),
 		Options: clientOpts,
 	}
 

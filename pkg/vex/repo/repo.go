@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/hashicorp/go-getter"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -162,13 +163,14 @@ func (r *Repository) downloadManifest(ctx context.Context, opts Options) error {
 	}
 
 	log.DebugContext(ctx, "Downloading the repository metadata...", log.String("url", u.String()), log.String("dst", r.dir))
-	_, err = downloader.Download(ctx, u.String(), r.dir, ".", downloader.Options{
+	_, err = downloader.Download(ctx, u.String(), filepath.Join(r.dir, manifestFile), ".", downloader.Options{
 		Insecure: opts.Insecure,
 		Auth: downloader.Auth{
 			Username: r.Username,
 			Password: r.Password,
 			Token:    r.Token,
 		},
+		ClientMode: getter.ClientModeFile,
 	})
 	if err != nil {
 		_ = os.RemoveAll(r.dir)
