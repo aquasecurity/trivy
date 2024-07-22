@@ -235,7 +235,7 @@ func (r *Repository) download(ctx context.Context, ver Version, dst string, opts
 	if err != nil {
 		return xerrors.Errorf("failed to get the repository cache metadata: %w", err)
 	}
-	etags := lo.Ternary(m.ETags == nil, map[string]string{}, m.ETags)
+	etags := lo.Ternary(m.ETags == nil, make(map[string]string), m.ETags)
 
 	var errs error
 	for _, loc := range ver.Locations {

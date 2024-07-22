@@ -48,7 +48,6 @@ type Options struct {
 // Manager manages the plugins
 type Manager struct {
 	w          io.Writer
-	indexURL   string
 	configFile string
 	cacheDir   string
 }

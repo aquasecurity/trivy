@@ -13,10 +13,9 @@ import (
 )
 
 func CopyFile(t *testing.T, src, dst string) {
-	err := os.MkdirAll(filepath.Dir(dst), 0755)
-	require.NoError(t, err)
+	MustMkdirAll(t, filepath.Dir(dst))
 
-	_, err = fsutils.CopyFile(src, dst)
+	_, err := fsutils.CopyFile(src, dst)
 	require.NoError(t, err)
 }
 
@@ -45,10 +44,9 @@ func CopyDir(t *testing.T, src, dst string) {
 	}
 }
 
-func MustWriteYAML(t *testing.T, path string, data interface{}) {
+func MustWriteYAML(t *testing.T, path string, data any) {
 	t.Helper()
-	dir := filepath.Dir(path)
-	require.NoError(t, os.MkdirAll(dir, 0755))
+	MustMkdirAll(t, filepath.Dir(path))
 
 	f, err := os.Create(path)
 	require.NoError(t, err)
@@ -57,7 +55,7 @@ func MustWriteYAML(t *testing.T, path string, data interface{}) {
 	require.NoError(t, yaml.NewEncoder(f).Encode(data))
 }
 
-func MustReadYAML(t *testing.T, path string, out interface{}) {
+func MustReadYAML(t *testing.T, path string, out any) {
 	t.Helper()
 	f, err := os.Open(path)
 	require.NoError(t, err)
@@ -67,18 +65,18 @@ func MustReadYAML(t *testing.T, path string, out interface{}) {
 }
 
 func MustMkdirAll(t *testing.T, dir string) {
-	err := os.MkdirAll(dir, 0755)
+	err := os.MkdirAll(dir, 0750)
 	require.NoError(t, err)
 }
 
-func MustReadJSON(t *testing.T, filePath string, v interface{}) {
+func MustReadJSON(t *testing.T, filePath string, v any) {
 	b, err := os.ReadFile(filePath)
 	require.NoError(t, err)
 	err = json.Unmarshal(b, v)
 	require.NoError(t, err)
 }
 
-func MustWriteJSON(t *testing.T, filePath string, v interface{}) {
+func MustWriteJSON(t *testing.T, filePath string, v any) {
 	data, err := json.Marshal(v)
 	require.NoError(t, err)
 
@@ -89,6 +87,6 @@ func MustWriteFile(t *testing.T, filePath string, content []byte) {
 	dir := filepath.Dir(filePath)
 	MustMkdirAll(t, dir)
 
-	err := os.WriteFile(filePath, content, 0744)
+	err := os.WriteFile(filePath, content, 0600)
 	require.NoError(t, err)
 }

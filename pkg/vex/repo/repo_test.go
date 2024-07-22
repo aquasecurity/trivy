@@ -39,8 +39,7 @@ var manifest = repo.Manifest{
 func TestRepository_Manifest(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.URL.Path)
-		switch r.URL.Path {
-		case "/.well-known/vex-repository.json":
+		if r.URL.Path == "/.well-known/vex-repository.json" {
 			err := json.NewEncoder(w).Encode(manifest)
 			assert.NoError(t, err)
 		}
