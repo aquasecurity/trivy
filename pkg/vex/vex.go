@@ -2,6 +2,7 @@ package vex
 
 import (
 	"context"
+	"errors"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -94,16 +95,16 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 			}
 		case TypeRepository:
 			v, err = NewRepositorySet(ctx, opts.CacheDir)
-			if err != nil {
+			if errors.Is(err, errNoRepository) {
+				continue
+			} else if err != nil {
 				return nil, xerrors.Errorf("failed to create a vex repository set: %w", err)
 			}
 		default:
 			log.Warn("Unsupported VEX source", log.String("type", string(src.Type)))
 			continue
 		}
-		if !lo.IsNil(v) {
-			vexes = append(vexes, v)
-		}
+		vexes = append(vexes, v)
 	}
 
 	if len(vexes) == 0 {

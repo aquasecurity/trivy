@@ -19,7 +19,7 @@ import (
 
 func NewDocument(filePath string, report *types.Report) (VEX, error) {
 	if filePath == "" {
-		return nil, nil
+		return nil, xerrors.New("VEX file path is empty")
 	}
 	f, err := os.Open(filePath)
 	if err != nil {

@@ -37,6 +37,7 @@ func TestRepositorySet_NotAffected(t *testing.T) {
 repositories:
   - name: default
     url: https://example.com/vex/default
+    enabled: true
 `,
 			vuln:    vuln3,
 			product: bashComponent,
@@ -56,8 +57,11 @@ repositories:
 repositories:
   - name: high-priority
     url: https://example.com/vex/high-priority
+    enabled: true
   - name: default
-    url: https://example.com/vex/default`,
+    url: https://example.com/vex/default
+    enabled: true
+`,
 			vuln:            vuln3,
 			product:         bashComponent,
 			wantNotAffected: false,
@@ -69,6 +73,7 @@ repositories:
 repositories:
   - name: default
     url: https://example.com/vex/default
+    enabled: true
 `,
 			vuln:            vuln4,
 			product:         bashComponent,

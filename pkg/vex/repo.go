@@ -16,6 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
+var errNoRepository = errors.New("no available VEX repository found")
+
 // RepositoryIndex wraps the repository index
 type RepositoryIndex struct {
 	Name string
@@ -52,7 +54,7 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 	}
 	if len(indexes) == 0 {
 		logger.Warn("No available VEX repository found locally")
-		return nil, nil
+		return nil, errNoRepository
 	}
 
 	return &RepositorySet{
