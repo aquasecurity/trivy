@@ -14,3 +14,11 @@
     - bucket: vim
       pairs:
         - key: CVE-2022-0261
+
+- bucket: Azure Linux 3.0
+  pairs:
+    - bucket: php
+      pairs:
+        - key: CVE-2024-2408
+          value:
+            FixedVersion: 8.3.8-1.azl3

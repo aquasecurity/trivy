@@ -504,7 +504,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 
 // PostAnalyzerFS returns a composite filesystem that contains multiple filesystems for each post-analyzer
 func (ag AnalyzerGroup) PostAnalyzerFS() (*CompositeFS, error) {
-	return NewCompositeFS(ag)
+	return NewCompositeFS()
 }
 
 func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {
