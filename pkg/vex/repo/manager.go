@@ -45,7 +45,7 @@ type Options struct {
 	Insecure bool
 }
 
-// Manager manages the plugins
+// Manager manages the repositories
 type Manager struct {
 	w          io.Writer
 	configFile string
