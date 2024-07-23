@@ -72,11 +72,12 @@ trivy vm [flags] VM_IMAGE
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
+      --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
-      --vex string                        [EXPERIMENTAL] file path to VEX
+      --vex strings                       [EXPERIMENTAL] VEX sources ("repo" or file path)
 ```
 
 ### Options inherited from parent commands
