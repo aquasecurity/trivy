@@ -410,15 +410,10 @@ func (o *Options) enableSBOM() {
 		o.Scanners.Enable(types.SBOMScanner)
 	}
 
-	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
-		log.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
-		o.Scanners = types.Scanners{types.SBOMScanner}
-	}
-
-	if o.Format == types.FormatCycloneDX {
+	if o.Format == types.FormatCycloneDX || o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
 		// Vulnerability scanning is disabled by default for CycloneDX.
 		if !viper.IsSet(ScannersFlag.ConfigName) {
-			log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+			log.Info(fmt.Sprintf(`"--format %s" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`, o.Format))
 			o.Scanners = nil
 		}
 		o.Scanners.Enable(types.SBOMScanner)
