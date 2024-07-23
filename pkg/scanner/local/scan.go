@@ -108,9 +108,8 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	var results types.Results
 
-	// By default, we need to remove dev dependencies from the result
-	// IncludeDevDeps option allows you not to remove them
-	excludeDevDeps(target.Applications, options.IncludeDevDeps)
+	// Filter packages according to the options
+	excludePackages(&target, options)
 
 	// Add packages if needed and scan packages for vulnerabilities
 	vulnResults, eosl, err := s.scanVulnerabilities(ctx, target, options)
@@ -393,6 +392,32 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 
 func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
+}
+
+func excludePackages(target *types.ScanTarget, options types.ScanOptions) {
+	// Filter packages by relationship
+	filterPkgByRelationship(target, options)
+
+	// By default, development packages are removed from the result
+	// '--include-dev-deps' option allows including them
+	excludeDevDeps(target.Applications, false)
+}
+
+func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions) {
+	if slices.Compare(options.PkgRelationships, ftypes.Relationships) == 0 {
+		return // No need to filter
+	}
+
+	filter := func(pkgs []ftypes.Package) []ftypes.Package {
+		return lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+			return slices.Contains(options.PkgRelationships, pkg.Relationship)
+		})
+	}
+
+	target.Packages = filter(target.Packages)
+	for i, app := range target.Applications {
+		target.Applications[i].Packages = filter(app.Packages)
+	}
 }
 
 // excludeDevDeps removes development dependencies from the list of applications

@@ -17,6 +17,13 @@ const (
 	LevelWarn  = slog.LevelWarn
 	LevelError = slog.LevelError
 	LevelFatal = slog.Level(12)
+
+	PrefixContainerImage   = "image"
+	PrefixPackage          = "pkg"
+	PrefixVulnerability    = "vuln"
+	PrefixMisconfiguration = "misconfig"
+	PrefixSecret           = "secret"
+	PrefixLicense          = "license"
 )
 
 // Logger is an alias of slog.Logger
