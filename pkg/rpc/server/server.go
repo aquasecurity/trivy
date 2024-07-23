@@ -9,6 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -46,10 +47,17 @@ func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpc
 	scanners := lo.Map(in.Options.Scanners, func(s string, index int) types.Scanner {
 		return types.Scanner(s)
 	})
+
+	licenseCategories := lo.MapEntries(in.Options.LicenseCategories,
+		func(k string, v *rpcScanner.Licenses) (ftypes.LicenseCategory, []string) {
+			return ftypes.LicenseCategory(k), v.Names
+		})
+
 	options := types.ScanOptions{
-		VulnType:       in.Options.VulnType,
-		Scanners:       scanners,
-		IncludeDevDeps: in.Options.IncludeDevDeps,
+		PkgTypes:          in.Options.PkgTypes,
+		Scanners:          scanners,
+		IncludeDevDeps:    in.Options.IncludeDevDeps,
+		LicenseCategories: licenseCategories,
 	}
 	results, os, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {

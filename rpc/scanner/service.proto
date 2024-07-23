@@ -23,7 +23,7 @@ message Licenses {
 }
 
 message ScanOptions {
-  repeated string       vuln_type          = 1;
+  repeated string       pkg_types          = 1;
   repeated string       scanners           = 2;
   map<string, Licenses> license_categories = 4;
   bool                  include_dev_deps   = 5;

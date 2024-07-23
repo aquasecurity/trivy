@@ -160,7 +160,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	var eosl bool
 	var results types.Results
 
-	if slices.Contains(options.VulnType, types.VulnTypeOS) {
+	if slices.Contains(options.PkgTypes, types.PkgTypeOS) {
 		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
 		switch {
 		case errors.Is(err, ospkgDetector.ErrUnsupportedOS):
@@ -173,7 +173,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 		}
 	}
 
-	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
+	if slices.Contains(options.PkgTypes, types.PkgTypeLibrary) {
 		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
@@ -198,7 +198,7 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 	log.Info("Detected config files", log.Int("num", len(misconfs)))
 	var results types.Results
 	for _, misconf := range misconfs {
-		log.Debug("Scanned config file", log.String("path", misconf.FilePath))
+		log.Debug("Scanned config file", log.FilePath(misconf.FilePath))
 
 		var detected []types.DetectedMisconfiguration
 
@@ -237,7 +237,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 
 	var results types.Results
 	for _, secret := range secrets {
-		log.Debug("Secret file", log.String("path", secret.FilePath))
+		log.Debug("Secret file", log.FilePath(secret.FilePath))
 
 		results = append(results, types.Result{
 			Target: secret.FilePath,

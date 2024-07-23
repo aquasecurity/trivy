@@ -436,14 +436,14 @@ The following reports are available out of the box:
 
 | Compliance                             | Version | Name for command | More info                                                                                   |
 |----------------------------------------|---------|------------------|---------------------------------------------------------------------------------------------|
-| CIS Docker Community Edition Benchmark | 1.1.0   | `docker-cis`     | [Link](https://www.aquasec.com/cloud-native-academy/docker-container/docker-cis-benchmark/) |
+| CIS Docker Community Edition Benchmark | 1.1.0   | `docker-cis-1.6.0`     | [Link](https://www.aquasec.com/cloud-native-academy/docker-container/docker-cis-benchmark/) |
 
 ### Examples
 
 Scan a container image configuration and generate a compliance summary report:
 
 ```
-$ trivy image --compliance docker-cis [YOUR_IMAGE_NAME]
+trivy image --compliance docker-cis-1.6.0 [YOUR_IMAGE_NAME]
 ```
 
 !!! note

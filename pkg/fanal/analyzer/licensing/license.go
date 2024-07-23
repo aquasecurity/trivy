@@ -92,7 +92,7 @@ func newLicenseFileAnalyzer() *licenseFileAnalyzer {
 
 func (a *licenseFileAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	ctx = log.WithContextPrefix(ctx, "license")
-	log.DebugContext(ctx, "License scanning", log.String("file_path", input.FilePath))
+	log.DebugContext(ctx, "License scanning", log.FilePath(input.FilePath))
 
 	// need files to be text based, readable files
 	readable, err := isHumanReadable(input.Content, input.Info.Size())

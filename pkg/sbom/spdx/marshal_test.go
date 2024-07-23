@@ -64,6 +64,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   0,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "F4C10A4371C93487",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeRPM,
 										Namespace: "centos",
@@ -101,6 +102,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "B1A9DE534F2737AF",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "actionpack",
@@ -112,6 +114,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actioncontroller",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "1628B51BD543965D",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "actioncontroller",
@@ -130,6 +133,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "92D6B6D3FF6F8FF5",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "actionpack",
@@ -387,6 +391,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   1,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "740219943F17B1DF",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeRPM,
 										Namespace: "centos",
@@ -427,6 +432,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "E8DB2C6E35F8B990",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "actionpack",
@@ -443,6 +449,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "B3E70B2159CFAC50",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "actionpack",
@@ -1063,6 +1070,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "161541A259EF014B",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeGolang,
 										Namespace: "golang.org/x",

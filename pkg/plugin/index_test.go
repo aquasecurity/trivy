@@ -21,12 +21,12 @@ func TestManager_Update(t *testing.T) {
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte(`this is index`))
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	}))
 	t.Cleanup(ts.Close)
 
 	manager := plugin.NewManager(plugin.WithIndexURL(ts.URL + "/index.yaml"))
-	err := manager.Update(context.Background())
+	err := manager.Update(context.Background(), plugin.Options{})
 	require.NoError(t, err)
 
 	indexPath := filepath.Join(tempDir, ".trivy", "plugins", "index.yaml")

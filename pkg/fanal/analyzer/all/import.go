@@ -41,7 +41,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/debian"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/mariner"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/redhatbase"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/release"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"

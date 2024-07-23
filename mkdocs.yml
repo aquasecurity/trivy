@@ -75,7 +75,7 @@ nav:
               - AlmaLinux: docs/coverage/os/alma.md
               - Alpine Linux: docs/coverage/os/alpine.md
               - Amazon Linux: docs/coverage/os/amazon.md
-              - CBL-Mariner: docs/coverage/os/cbl-mariner.md
+              - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
               - Conda: docs/coverage/os/conda.md
@@ -152,6 +152,7 @@ nav:
           - Configuration:
               - CLI:
                   - Overview: docs/references/configuration/cli/trivy.md
+                  - Clean: docs/references/configuration/cli/trivy_clean.md
                   - Config: docs/references/configuration/cli/trivy_config.md
                   - Convert: docs/references/configuration/cli/trivy_convert.md
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md

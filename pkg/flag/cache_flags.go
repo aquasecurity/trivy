@@ -2,10 +2,6 @@ package flag
 
 import (
 	"time"
-
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy/pkg/cache"
 )
 
 // e.g. config yaml:
@@ -18,16 +14,18 @@ import (
 //	  cert: cert.pem
 //	  key: key.pem
 var (
+	// Deprecated
 	ClearCacheFlag = Flag[bool]{
 		Name:       "clear-cache",
 		ConfigName: "cache.clear",
 		Usage:      "clear image caches without scanning",
+		Removed:    `Use "trivy clean --scan-cache" instead`,
 	}
 	CacheBackendFlag = Flag[string]{
 		Name:       "cache-backend",
 		ConfigName: "cache.backend",
 		Default:    "fs",
-		Usage:      "cache backend (e.g. redis://localhost:6379)",
+		Usage:      "[EXPERIMENTAL] cache backend (e.g. redis://localhost:6379)",
 	}
 	CacheTTLFlag = Flag[time.Duration]{
 		Name:       "cache-ttl",
@@ -69,14 +67,19 @@ type CacheFlagGroup struct {
 }
 
 type CacheOptions struct {
-	ClearCache          bool
-	CacheBackendOptions cache.Options
+	ClearCache bool
+
+	CacheBackend string
+	CacheTTL     time.Duration
+	RedisTLS     bool
+	RedisCACert  string
+	RedisCert    string
+	RedisKey     string
 }
 
 // NewCacheFlagGroup returns a default CacheFlagGroup
 func NewCacheFlagGroup() *CacheFlagGroup {
 	return &CacheFlagGroup{
-		ClearCache:   ClearCacheFlag.Clone(),
 		CacheBackend: CacheBackendFlag.Clone(),
 		CacheTTL:     CacheTTLFlag.Clone(),
 		RedisTLS:     RedisTLSFlag.Clone(),
@@ -107,14 +110,12 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 		return CacheOptions{}, err
 	}
 
-	backendOpts, err := cache.NewOptions(fg.CacheBackend.Value(), fg.RedisCACert.Value(), fg.RedisCert.Value(),
-		fg.RedisKey.Value(), fg.RedisTLS.Value(), fg.CacheTTL.Value())
-	if err != nil {
-		return CacheOptions{}, xerrors.Errorf("failed to initialize cache options: %w", err)
-	}
-
 	return CacheOptions{
-		ClearCache:          fg.ClearCache.Value(),
-		CacheBackendOptions: backendOpts,
+		CacheBackend: fg.CacheBackend.Value(),
+		CacheTTL:     fg.CacheTTL.Value(),
+		RedisTLS:     fg.RedisTLS.Value(),
+		RedisCACert:  fg.RedisCACert.Value(),
+		RedisCert:    fg.RedisCert.Value(),
+		RedisKey:     fg.RedisKey.Value(),
 	}, nil
 }

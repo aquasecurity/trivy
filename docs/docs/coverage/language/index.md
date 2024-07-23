@@ -26,7 +26,8 @@ On the other hand, when the target is a post-build artifact, like a container im
 |                      | egg package[^1]                                                                            |     ✅     |     ✅      |       -        |       -        |
 |                      | wheel package[^2]                                                                          |     ✅     |     ✅      |       -        |       -        |
 |                      | conda package[^3]                                                                          |     ✅     |     ✅      |       -        |       -        |
-| [PHP](php.md)        | composer.lock                                                                              |     ✅     |     ✅      |       ✅        |       ✅        |
+| [PHP](php.md)        | composer.lock                                                                              |     -     |     -      |       ✅        |       ✅        |
+|                      | installed.json                                                                             |     ✅     |     ✅      |       -        |       -        |
 | [Node.js](nodejs.md) | package-lock.json                                                                          |     -     |     -      |       ✅        |       ✅        |
 |                      | yarn.lock                                                                                  |     -     |     -      |       ✅        |       ✅        |
 |                      | pnpm-lock.yaml                                                                             |     -     |     -      |       ✅        |       ✅        |

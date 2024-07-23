@@ -1,0 +1,9 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex
+  - _openmp_mutex=5.1
+  - blas=1.0=openblas
+  - bzip2=1.0.8=h998d150_5
+prefix: testdata

@@ -19,12 +19,11 @@ trivy filesystem [flags] PATH
 ### Options
 
 ```
-      --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "memory")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --cf-params strings                 specify paths to override the CloudFormation parameters files
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
-      --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
@@ -64,6 +63,7 @@ trivy filesystem [flags] PATH
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -71,8 +71,6 @@ trivy filesystem [flags] PATH
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --report string                     specify a compliance report format for the output (all,summary) (default "all")
-      --reset                             remove all caches and database
-      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
@@ -92,7 +90,6 @@ trivy filesystem [flags] PATH
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex string                        [EXPERIMENTAL] file path to VEX
-      --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 
 ### Options inherited from parent commands

@@ -448,6 +448,8 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeGem
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		return packageurl.TypeNuget
+	case ftypes.Composer, ftypes.ComposerVendor:
+		return packageurl.TypeComposer
 	case ftypes.CondaPkg, ftypes.CondaEnv:
 		return packageurl.TypeConda
 	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry:
@@ -475,7 +477,7 @@ func purlType(t ftypes.TargetType) string {
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
 		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.Photon,
-		ftypes.CBLMariner:
+		ftypes.Azure, ftypes.CBLMariner:
 		return packageurl.TypeRPM
 	case TypeOCI:
 		return packageurl.TypeOCI

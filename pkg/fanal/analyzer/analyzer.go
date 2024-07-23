@@ -413,7 +413,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		}
 		rc, err := opener()
 		if errors.Is(err, fs.ErrPermission) {
-			ag.logger.Debug("Permission error", log.String("file_path", filePath))
+			ag.logger.Debug("Permission error", log.FilePath(filePath))
 			break
 		} else if err != nil {
 			return xerrors.Errorf("unable to open %s: %w", filePath, err)
@@ -504,7 +504,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 
 // PostAnalyzerFS returns a composite filesystem that contains multiple filesystems for each post-analyzer
 func (ag AnalyzerGroup) PostAnalyzerFS() (*CompositeFS, error) {
-	return NewCompositeFS(ag)
+	return NewCompositeFS()
 }
 
 func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {

@@ -39,7 +39,7 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 			if err != nil {
 				return err
 			} else if info.Size() == 0 {
-				log.Debug("Skip the empty file", log.String("file_path", path))
+				log.Debug("Skip the empty file", log.FilePath(path))
 				return nil
 			}
 
@@ -105,7 +105,7 @@ func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile 
 	}
 	res, err := onFile(path, info, rsa)
 	if err != nil {
-		log.Debug("Walk error", log.String("file_path", path), log.Err(err))
+		log.Debug("Walk error", log.FilePath(path), log.Err(err))
 		return nil
 	}
 

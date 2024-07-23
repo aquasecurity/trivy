@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -24,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -58,8 +57,8 @@ type ScannerConfig struct {
 	Target string
 
 	// Cache
-	ArtifactCache      cache.ArtifactCache
-	LocalArtifactCache cache.LocalArtifactCache
+	CacheOptions       cache.Options
+	RemoteCacheOptions cache.RemoteOptions
 
 	// Client/Server options
 	ServerOption client.ScannerOption
@@ -90,35 +89,29 @@ type Runner interface {
 }
 
 type runner struct {
-	cache      cache.ArtifactCache
-	localCache cache.LocalArtifactCache
-	dbOpen     bool
+	initializeScanner InitializeScanner
+	dbOpen            bool
 
 	// WASM modules
 	module *module.Manager
 }
 
-type runnerOption func(*runner)
+type RunnerOption func(*runner)
 
-// WithCacheClient takes a custom cache implementation
+// WithInitializeScanner takes a custom scanner initialization function.
 // It is useful when Trivy is imported as a library.
-func WithCacheClient(c cache.Cache) runnerOption {
+func WithInitializeScanner(f InitializeScanner) RunnerOption {
 	return func(r *runner) {
-		r.cache = c
-		r.localCache = c
+		r.initializeScanner = f
 	}
 }
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOption) (Runner, error) {
+func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOption) (Runner, error) {
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
-	}
-
-	if err := r.initCache(cliOptions); err != nil {
-		return nil, xerrors.Errorf("cache error: %w", err)
 	}
 
 	// Update the vulnerability database if needed.
@@ -143,10 +136,6 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 // Close closes everything
 func (r *runner) Close(ctx context.Context) error {
 	var errs error
-	if err := r.localCache.Close(); err != nil {
-		errs = multierror.Append(errs, err)
-	}
-
 	if r.dbOpen {
 		if err := db.Close(); err != nil {
 			errs = multierror.Append(errs, err)
@@ -212,7 +201,7 @@ func (r *runner) scanFS(ctx context.Context, opts flag.Options) (types.Report, e
 
 func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Do not scan OS packages
-	opts.VulnType = []string{types.VulnTypeLibrary}
+	opts.PkgTypes = []string{types.PkgTypeLibrary}
 
 	// Disable the OS analyzers, individual package analyzers and SBOM analyzer
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
@@ -259,6 +248,9 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
+	if r.initializeScanner != nil {
+		initializeScanner = r.initializeScanner
+	}
 	report, err := r.scan(ctx, opts, initializeScanner)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
@@ -303,7 +295,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 		return SkipScan
 	}
 
-	if err := db.Init(opts.CacheDir); err != nil {
+	if err := db.Init(db.Dir(opts.CacheDir)); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 	r.dbOpen = true
@@ -333,58 +325,6 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 		return SkipScan
 	}
 
-	return nil
-}
-
-func (r *runner) initCache(opts flag.Options) error {
-	// Skip initializing cache when custom cache is passed
-	if r.cache != nil {
-		return nil
-	}
-
-	// client/server mode
-	if opts.ServerAddr != "" {
-		r.cache = cache.NewRemoteCache(opts.ServerAddr, opts.CustomHeaders, opts.Insecure)
-		r.localCache = cache.NewNopCache() // No need to use local cache in client/server mode
-		return nil
-	}
-
-	// standalone mode
-	cacheClient, err := cache.NewClient(opts.CacheDir, opts.CacheOptions.CacheBackendOptions)
-	if err != nil {
-		return xerrors.Errorf("unable to initialize the cache: %w", err)
-	}
-	log.Debug("Cache dir", log.String("dir", opts.CacheDir))
-
-	if opts.Reset {
-		defer cacheClient.Close()
-		if err = cacheClient.Reset(); err != nil {
-			return xerrors.Errorf("cache reset error: %w", err)
-		}
-		return SkipScan
-	}
-
-	if opts.ResetChecksBundle {
-		c, err := policy.NewClient(opts.CacheDir, true, opts.MisconfOptions.ChecksBundleRepository)
-		if err != nil {
-			return xerrors.Errorf("failed to instantiate check client: %w", err)
-		}
-		if err := c.Clear(); err != nil {
-			return xerrors.Errorf("failed to remove the cache: %w", err)
-		}
-		return SkipScan
-	}
-
-	if opts.ClearCache {
-		defer cacheClient.Close()
-		if err = cacheClient.ClearArtifacts(); err != nil {
-			return xerrors.Errorf("cache clear error: %w", err)
-		}
-		return SkipScan
-	}
-
-	r.cache = cacheClient.Cache
-	r.localCache = cacheClient.Cache
 	return nil
 }
 
@@ -465,7 +405,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not analyze programming language packages when not running in 'library'
-	if !slices.Contains(opts.VulnType, types.VulnTypeLibrary) {
+	if !slices.Contains(opts.PkgTypes, types.PkgTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
@@ -533,7 +473,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	}
 
 	scanOptions := types.ScanOptions{
-		VulnType:            opts.VulnType,
+		PkgTypes:            opts.PkgTypes,
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
@@ -548,7 +488,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 
 	if opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		log.Info("Vulnerability scanning is enabled")
-		log.Debug("Vulnerability type", log.Any("type", scanOptions.VulnType))
+		log.Debug("Package types", log.Any("types", scanOptions.PkgTypes))
 	}
 
 	// ScannerOption is filled only when config scanning is enabled.
@@ -616,8 +556,8 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 
 	return ScannerConfig{
 		Target:             target,
-		ArtifactCache:      r.cache,
-		LocalArtifactCache: r.localCache,
+		CacheOptions:       opts.CacheOpts(),
+		RemoteCacheOptions: opts.RemoteCacheOpts(),
 		ServerOption: client.ScannerOption{
 			RemoteURL:     opts.ServerAddr,
 			CustomHeaders: opts.CustomHeaders,
@@ -635,10 +575,9 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
-			//Platform:          opts.Platform,
-			AWSRegion:    opts.Region,
-			AWSEndpoint:  opts.Endpoint,
-			FileChecksum: fileChecksum,
+			AWSRegion:         opts.Region,
+			AWSEndpoint:       opts.Endpoint,
+			FileChecksum:      fileChecksum,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{

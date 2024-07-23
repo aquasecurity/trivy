@@ -5,9 +5,9 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
@@ -19,16 +19,11 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	log.InitLogger(opts.Debug, opts.Quiet)
 
 	// configure cache dir
-	cacheClient, err := cache.NewClient(opts.CacheDir, opts.CacheOptions.CacheBackendOptions)
+	cacheClient, cleanup, err := cache.New(opts.CacheOpts())
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
-	defer cacheClient.Close()
-	log.Debug("Cache", log.String("dir", opts.CacheDir))
-
-	if opts.Reset {
-		return cacheClient.Reset()
-	}
+	defer cleanup()
 
 	// download the database file
 	if err = operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository,
@@ -40,7 +35,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return nil
 	}
 
-	if err = db.Init(opts.CacheDir); err != nil {
+	if err = db.Init(db.Dir(opts.CacheDir)); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 

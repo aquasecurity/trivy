@@ -16,6 +16,7 @@ import (
 
 type environment struct {
 	Entries []Entry `yaml:"dependencies"`
+	Prefix  string  `yaml:"prefix"`
 }
 
 type Entry struct {
@@ -25,6 +26,11 @@ type Entry struct {
 type Dependency struct {
 	Value string
 	Line  int
+}
+
+type Packages struct {
+	Packages ftypes.Packages
+	Prefix   string
 }
 
 type Parser struct {
@@ -39,10 +45,10 @@ func NewParser() *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) (Packages, error) {
 	var env environment
 	if err := yaml.NewDecoder(r).Decode(&env); err != nil {
-		return nil, nil, xerrors.Errorf("unable to decode conda environment.yml file: %w", err)
+		return Packages{}, xerrors.Errorf("unable to decode conda environment.yml file: %w", err)
 	}
 
 	var pkgs ftypes.Packages
@@ -58,7 +64,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	sort.Sort(pkgs)
-	return pkgs, nil, nil
+	return Packages{
+		Packages: pkgs,
+		Prefix:   env.Prefix,
+	}, nil
 }
 
 func (p *Parser) toPackage(dep Dependency) ftypes.Package {

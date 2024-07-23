@@ -264,10 +264,10 @@ $ brew install aquasecurity/trivy/trivy
 ## Others
 ### Unknown error
 
-Try again with `--reset` option:
+Try again after running `trivy clean --all`:
 
 ```
-$ trivy image --reset
+$ trivy clean --all
 ```
 
 [air-gapped]: ../advanced/air-gap.md

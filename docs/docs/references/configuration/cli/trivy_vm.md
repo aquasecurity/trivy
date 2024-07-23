@@ -21,10 +21,9 @@ trivy vm [flags] VM_IMAGE
 
 ```
       --aws-region string                 AWS region to scan
-      --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
-      --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
@@ -57,13 +56,12 @@ trivy vm [flags] VM_IMAGE
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
+      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --reset                             remove all caches and database
-      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
@@ -79,7 +77,6 @@ trivy vm [flags] VM_IMAGE
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --vex string                        [EXPERIMENTAL] file path to VEX
-      --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 
 ### Options inherited from parent commands

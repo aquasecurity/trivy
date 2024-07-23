@@ -213,6 +213,13 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/opensuse-leap-151.json.golden",
 		},
 		{
+			name: "opensuse tumbleweed",
+			args: csArgs{
+				Input: "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
+			},
+			golden: "testdata/opensuse-tumbleweed.json.golden",
+		},
+		{
 			name: "photon 3.0",
 			args: csArgs{
 				Input: "testdata/fixtures/images/photon-30.tar.gz",

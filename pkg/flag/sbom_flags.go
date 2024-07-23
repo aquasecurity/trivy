@@ -1,23 +1,17 @@
 package flag
 
-import (
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-)
-
 var (
 	ArtifactTypeFlag = Flag[string]{
 		Name:       "artifact-type",
 		ConfigName: "sbom.artifact-type",
 		Usage:      "deprecated",
-		Deprecated: true,
+		Removed:    `Use 'trivy image' or other subcommands. See also https://github.com/aquasecurity/trivy/discussions/2407`,
 	}
 	SBOMFormatFlag = Flag[string]{
 		Name:       "sbom-format",
 		ConfigName: "sbom.format",
 		Usage:      "deprecated",
-		Deprecated: true,
+		Removed:    `Use 'trivy image' or other subcommands. See also https://github.com/aquasecurity/trivy/discussions/2407`,
 	}
 )
 
@@ -26,8 +20,7 @@ type SBOMFlagGroup struct {
 	SBOMFormat   *Flag[string] // deprecated
 }
 
-type SBOMOptions struct {
-}
+type SBOMOptions struct{}
 
 func NewSBOMFlagGroup() *SBOMFlagGroup {
 	return &SBOMFlagGroup{
@@ -50,15 +43,6 @@ func (f *SBOMFlagGroup) Flags() []Flagger {
 func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
 	if err := parseFlags(f); err != nil {
 		return SBOMOptions{}, err
-	}
-
-	artifactType := f.ArtifactType.Value()
-	sbomFormat := f.SBOMFormat.Value()
-
-	if artifactType != "" || sbomFormat != "" {
-		log.Error("'trivy sbom' is now for scanning SBOM. " +
-			"See https://github.com/aquasecurity/trivy/discussions/2407 for the detail")
-		return SBOMOptions{}, xerrors.New("'--artifact-type' and '--sbom-format' are no longer available")
 	}
 
 	return SBOMOptions{}, nil

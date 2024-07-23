@@ -37,7 +37,7 @@ jobs:
         id: lint
         uses: golangci/golangci-lint-action@v6.0.1
         with:
-          version: v1.58
+          version: v1.59
           args: --verbose --out-format=line-number
         if: matrix.operating-system == 'ubuntu-latest-m'
 
@@ -178,5 +178,5 @@ jobs:
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v6
       with:
-        version: v2.0.0
+        version: v2.1.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}

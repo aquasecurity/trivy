@@ -61,7 +61,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	// parse `available` file to get digest for packages
 	digests, err := a.parseDpkgAvailable(input.FS)
 	if err != nil {
-		a.logger.Debug("Unable to parse the available file", log.String("file", availableFile), log.Err(err))
+		a.logger.Debug("Unable to parse the available file", log.FilePath(availableFile), log.Err(err))
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
@@ -169,7 +169,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 	for scanner.Scan() {
 		header, err := scanner.Header()
 		if !errors.Is(err, io.EOF) && err != nil {
-			a.logger.Warn("Parse error", log.String("file", availableFile), log.Err(err))
+			a.logger.Warn("Parse error", log.FilePath(availableFile), log.Err(err))
 			continue
 		}
 		name, version, checksum := header.Get("Package"), header.Get("Version"), header.Get("SHA256")
@@ -195,7 +195,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 	for scanner.Scan() {
 		header, err := scanner.Header()
 		if !errors.Is(err, io.EOF) && err != nil {
-			a.logger.Warn("Parse error", log.String("file", filePath), log.Err(err))
+			a.logger.Warn("Parse error", log.FilePath(filePath), log.Err(err))
 			continue
 		}
 
