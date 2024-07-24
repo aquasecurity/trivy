@@ -10,9 +10,11 @@ import (
 var mapping = make(map[string]expression.SimpleExpr)
 
 func addMap(name, key string, hasPlus bool) {
+	// Check all licenses in map can actually be used after normalization,
+	// all licenses must be uppercase, without common suffixes (+, -only,-or-later,...), etc.
 	license := normalizeKeyAndSuffix(name)
 	if license.License != name {
-		panic("Invalid license: " + name)
+		panic("Invalid non-normalized license in map: " + name)
 	}
 	mapping[name] = expression.SimpleExpr{License: key, HasPlus: hasPlus}
 }
@@ -704,6 +706,7 @@ func normalizeKeyAndSuffix(name string) expression.SimpleExpr {
 	name = strings.Join(strings.Fields(name), " ")
 	name = strings.TrimSpace(name)
 	name = strings.ToUpper(name)
+	// Do not perform any further normalization for URLs
 	if strings.HasPrefix(name, "HTTP") {
 		return expression.SimpleExpr{License: name, HasPlus: false}
 	}
@@ -713,6 +716,7 @@ func normalizeKeyAndSuffix(name string) expression.SimpleExpr {
 	name = strings.TrimSuffix(name, " LICENSED")
 	name = strings.TrimSuffix(name, "-LICENSE")
 	name = strings.TrimSuffix(name, "-LICENSED")
+	// Remove License and Licensed suffixes except for licenses already containing those suffixes such as Unlicense
 	if name != "UNLICENSE" {
 		name = strings.TrimSuffix(name, "LICENSE")
 	}
