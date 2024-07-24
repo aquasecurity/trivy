@@ -118,6 +118,16 @@ var tests = []testCase{
 		},
 	},
 	{
+		// from registry.suse.com/suse/sle15:15.3.17.8.16
+		name:            "happy path, suse linux micro for rancher 5.4 (NDB)",
+		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:sle-micro-rancher-5.4_ndb",
+		imageFile:       "../../../../integration/testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+		wantOS: types.OS{
+			Name:   "5.4",
+			Family: "suse linux enterprise micro",
+		},
+	},
+	{
 		name:            "happy path, Fedora 35",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:fedora-35",
 		imageFile:       "../../../../integration/testdata/fixtures/images/fedora-35.tar.gz",
