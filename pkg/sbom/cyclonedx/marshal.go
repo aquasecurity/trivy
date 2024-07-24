@@ -18,8 +18,6 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
-	"github.com/aquasecurity/trivy/pkg/licensing"
-	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -290,7 +288,7 @@ func (*Marshaler) Licenses(licenses []string) *cdx.Licenses {
 	choices := lo.Map(licenses, func(license string, i int) cdx.LicenseChoice {
 		return cdx.LicenseChoice{
 			License: &cdx.License{
-				Name: NormalizeLicense(license),
+				Name: license,
 			},
 		}
 	})
@@ -516,14 +514,4 @@ func (*Marshaler) nvdSeverityV2(score float64) cdx.Severity {
 		return cdx.SeverityHigh
 	}
 	return cdx.SeverityUnknown
-}
-
-func NormalizeLicense(license string) string {
-	s, err := expression.Normalize(license, licensing.NormalizeLicense)
-	if err != nil {
-		// Not fail on the invalid license
-		log.Warn("Unable to marshal CycloneDX license", log.String("license", license))
-		return ""
-	}
-	return s
 }

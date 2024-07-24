@@ -502,7 +502,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{
 								License: &cdx.License{
-									Name: "GPL-3.0-or-later",
+									Name: "GPLv3+",
 								},
 							},
 						},
@@ -1020,7 +1020,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{
 								License: &cdx.License{
-									Name: "GPL-2.0-or-later",
+									Name: "GPLv2+",
 								},
 							},
 						},
@@ -1066,7 +1066,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{
 								License: &cdx.License{
-									Name: "GPL-2.0-or-later",
+									Name: "GPLv2+",
 								},
 							},
 						},
