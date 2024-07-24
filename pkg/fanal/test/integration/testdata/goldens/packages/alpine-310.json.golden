@@ -4,14 +4,14 @@
     "Name": "alpine-baselayout",
     "Identifier": {
       "PURL": "pkg:apk/alpine/alpine-baselayout@3.1.2-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "2d19d30821e01d2c"
+      "UID": "3ca42aecf84bfa9"
     },
     "Version": "3.1.2-r0",
     "Arch": "x86_64",
     "SrcName": "alpine-baselayout",
     "SrcVersion": "3.1.2-r0",
     "Licenses": [
-      "GPL-2.0-only"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "busybox@1.30.1-r2",
@@ -95,14 +95,14 @@
     "Name": "apk-tools",
     "Identifier": {
       "PURL": "pkg:apk/alpine/apk-tools@2.10.4-r2?arch=x86_64\u0026distro=3.10.2",
-      "UID": "e967fd57e4033819"
+      "UID": "fa7ca40ce236844e"
     },
     "Version": "2.10.4-r2",
     "Arch": "x86_64",
     "SrcName": "apk-tools",
     "SrcVersion": "2.10.4-r2",
     "Licenses": [
-      "GPL-2.0-only"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "libcrypto1.1@1.1.1c-r0",
@@ -124,14 +124,14 @@
     "Name": "busybox",
     "Identifier": {
       "PURL": "pkg:apk/alpine/busybox@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
-      "UID": "f3002aff2b6b251d"
+      "UID": "1941d9acbebe7f44"
     },
     "Version": "1.30.1-r2",
     "Arch": "x86_64",
     "SrcName": "busybox",
     "SrcVersion": "1.30.1-r2",
     "Licenses": [
-      "GPL-2.0-only"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "musl@1.1.22-r3"
@@ -155,7 +155,7 @@
     "Name": "ca-certificates-cacert",
     "Identifier": {
       "PURL": "pkg:apk/alpine/ca-certificates-cacert@20190108-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "1d3125ae903daa3c"
+      "UID": "9b1db91ad655d76c"
     },
     "Version": "20190108-r0",
     "Arch": "x86_64",
@@ -163,7 +163,7 @@
     "SrcVersion": "20190108-r0",
     "Licenses": [
       "MPL-2.0",
-      "GPL-2.0-or-later"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
@@ -321,7 +321,7 @@
     "Name": "musl-utils",
     "Identifier": {
       "PURL": "pkg:apk/alpine/musl-utils@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
-      "UID": "112ed00987ba9c7d"
+      "UID": "40edadcb74964baa"
     },
     "Version": "1.1.22-r3",
     "Arch": "x86_64",
@@ -330,7 +330,7 @@
     "Licenses": [
       "MIT",
       "BSD-3-Clause",
-      "GPL-2.0-or-later"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "musl@1.1.22-r3",
@@ -354,14 +354,14 @@
     "Name": "scanelf",
     "Identifier": {
       "PURL": "pkg:apk/alpine/scanelf@1.2.3-r0?arch=x86_64\u0026distro=3.10.2",
-      "UID": "3ae1856359a8e719"
+      "UID": "6e5cf642f47e44d0"
     },
     "Version": "1.2.3-r0",
     "Arch": "x86_64",
     "SrcName": "pax-utils",
     "SrcVersion": "1.2.3-r0",
     "Licenses": [
-      "GPL-2.0-only"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "musl@1.1.22-r3"
@@ -380,14 +380,14 @@
     "Name": "ssl_client",
     "Identifier": {
       "PURL": "pkg:apk/alpine/ssl_client@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
-      "UID": "92ce33a8acb582f6"
+      "UID": "3338164dd993d2c8"
     },
     "Version": "1.30.1-r2",
     "Arch": "x86_64",
     "SrcName": "busybox",
     "SrcVersion": "1.30.1-r2",
     "Licenses": [
-      "GPL-2.0-only"
+      "GPL-2.0"
     ],
     "DependsOn": [
       "libtls-standalone@2.9.1-r0",
