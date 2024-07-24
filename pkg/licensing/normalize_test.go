@@ -61,6 +61,7 @@ func TestNormalize(t *testing.T) {
 		},
 		{
 			[]string{
+				"The Unlicense",
 				"Unlicense",
 				"Unlicensed",
 				"UNLICENSE",
@@ -72,6 +73,7 @@ func TestNormalize(t *testing.T) {
 		{
 			[]string{
 				"MIT License",
+				"http://json.codeplex.com/license",
 			},
 			"MIT",
 			"MIT",
