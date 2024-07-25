@@ -194,8 +194,6 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		}
 	}
 
-	bom.Vulnerabilities()
-
 	sortPackages(packages)
 	sortRelationships(relationShips)
 	sortFiles(files)
