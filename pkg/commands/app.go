@@ -1294,11 +1294,11 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "download [REPO_NAMES]",
-			Short:                 "Download the VEX repositories",
-			DisableFlagsInUseLine: true,
-			SilenceErrors:         true,
-			SilenceUsage:          true,
+			Use:           "download [REPO_NAMES]",
+			Short:         "Download the VEX repositories",
+			Long:          `Downloads enabled VEX repositories. If specific repository names are provided as arguments, only those repositories will be downloaded. Otherwise, all enabled repositories are downloaded.`,
+			SilenceErrors: true,
+			SilenceUsage:  true,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				err := vexrepo.NewManager(vexOptions.CacheDir).DownloadRepositories(cmd.Context(), args,
 					vexrepo.Options{Insecure: vexOptions.Insecure})

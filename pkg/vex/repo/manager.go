@@ -136,15 +136,17 @@ func (m *Manager) DownloadRepositories(ctx context.Context, names []string, opts
 	conf, err := m.Config(ctx)
 	if err != nil {
 		return xerrors.Errorf("unable to read config: %w", err)
-	} else if len(conf.EnabledRepositories()) == 0 {
+	}
+
+	repos := lo.Filter(conf.EnabledRepositories(), func(r Repository, _ int) bool {
+		return len(names) == 0 || slices.Contains(names, r.Name)
+	})
+	if len(repos) == 0 {
 		log.WarnContext(ctx, "No enabled repositories found in config", log.String("path", m.configFile))
 		return nil
 	}
 
-	for _, repo := range conf.EnabledRepositories() {
-		if len(names) > 0 && !slices.Contains(names, repo.Name) {
-			continue
-		}
+	for _, repo := range repos {
 		if err = repo.Update(ctx, opts); err != nil {
 			return xerrors.Errorf("failed to update the repository: %w", err)
 		}
