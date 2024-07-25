@@ -1745,3 +1745,31 @@ func TestTFVarsFileDoesNotExist(t *testing.T) {
 	_, _, err := parser.EvaluateAll(context.TODO())
 	assert.ErrorContains(t, err, "file does not exist")
 }
+
+func Test_OptionsWithTfVars(t *testing.T) {
+	fs := testutil.CreateFS(t, map[string]string{
+		"main.tf": `resource "test" "this" {
+  foo = var.foo
+}
+
+variable "foo" {}
+`})
+
+	parser := New(fs, "", OptionsWithTfVars(
+		map[string]cty.Value{
+			"foo": cty.StringVal("bar"),
+		},
+	))
+
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+	assert.Len(t, modules, 1)
+
+	rootModule := modules[0]
+
+	blocks := rootModule.GetResourcesByType("test")
+	assert.Len(t, blocks, 1)
+	assert.Equal(t, "bar", blocks[0].GetAttribute("foo").Value().AsString())
+}
