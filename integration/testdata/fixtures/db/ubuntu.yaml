@@ -6,7 +6,8 @@
           value:
             FixedVersion: 4.4-5ubuntu1
         - key: CVE-2019-18276
-          value: {}
+          value:
+            Status: 2
     - bucket: e2fsprogs
       pairs:
         - key: CVE-2019-5094
@@ -15,10 +16,12 @@
     - bucket: coreutils
       pairs:
         - key: CVE-2016-2781
-          value: {}
+          value: 
+            Status: 2
 - bucket: ubuntu 22.04
   pairs:
     - bucket: bash
       pairs:
         - key: CVE-2022-3715
-          value: {}
+          value: 
+            Status: 2

@@ -4,7 +4,7 @@
       pairs:
         - key: CVE-2019-9243
           value:
-            FixedVersion: ""
+            Status: 0
 - bucket: ubuntu 20.04
   pairs:
     - bucket: wpa
@@ -14,7 +14,6 @@
             FixedVersion: "2:2.9-1ubuntu4.3"
         - key: CVE-2019-9243
           value:
-            FixedVersion: ""
             Status: 6 #this is the code for deferred
         - key: CVE-2016-4476
           value:
