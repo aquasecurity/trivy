@@ -13,6 +13,7 @@ const (
 	TypeOSRelease  Type = "os-release"
 	TypeAlpine     Type = "alpine"
 	TypeAmazon     Type = "amazon"
+	TypeAzure      Type = "azurelinux"
 	TypeCBLMariner Type = "cbl-mariner"
 	TypeDebian     Type = "debian"
 	TypePhoton     Type = "photon"
