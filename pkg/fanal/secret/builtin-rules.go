@@ -82,6 +82,10 @@ const (
 	aws = `aws_?`
 )
 
+func GetBuiltinRules() []Rule {
+	return builtinRules
+}
+
 // This function is exported for trivy-plugin-aqua purposes only
 func GetSecretRulesMetadata() []iacRules.Check {
 	return lo.Map(builtinRules, func(rule Rule, i int) iacRules.Check {
