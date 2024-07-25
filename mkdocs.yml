@@ -124,10 +124,13 @@ nav:
       - Supply Chain:
           - SBOM: docs/supply-chain/sbom.md
           - Attestation:
-                - SBOM: docs/supply-chain/attestation/sbom.md
-                - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
-                - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
-          - VEX: docs/supply-chain/vex.md
+              - SBOM: docs/supply-chain/attestation/sbom.md
+              - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
+              - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
+          - VEX:
+              - Overview: docs/supply-chain/vex/index.md
+              - VEX Repository: docs/supply-chain/vex/repo.md
+              - Local VEX Files: docs/supply-chain/vex/file.md
       - Compliance:
           - Built-in Compliance:  docs/compliance/compliance.md
           - Custom Compliance: docs/compliance/contrib-compliance.md

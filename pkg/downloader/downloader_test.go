@@ -44,7 +44,9 @@ func TestDownload(t *testing.T) {
 			dst := t.TempDir()
 
 			// Execute the download
-			err := downloader.Download(context.Background(), server.URL, dst, "", tt.insecure)
+			_, err := downloader.Download(context.Background(), server.URL, dst, "", downloader.Options{
+				Insecure: tt.insecure,
+			})
 
 			if tt.wantErr {
 				assert.Error(t, err)
