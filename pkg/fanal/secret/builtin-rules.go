@@ -82,6 +82,7 @@ const (
 	aws = `aws_?`
 )
 
+// This function is exported for trivy-plugin-aqua purposes only
 func GetBuiltinRules() []Rule {
 	return builtinRules
 }
