@@ -71,7 +71,7 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 		Insecure: opts.Insecure,
 	})
 	if err != nil {
-		return xerrors.Errorf("failed to get vex repository config: %w", err)
+		return xerrors.Errorf("failed to download vex repositories: %w", err)
 	}
 
 	return nil
