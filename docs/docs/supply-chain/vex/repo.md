@@ -1,5 +1,8 @@
 # VEX Repository
 
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
 ## Using VEX Repository
 
 Trivy can download and utilize VEX documents from repositories that comply with [the VEX Repository Specification][vex-repo].
