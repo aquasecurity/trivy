@@ -68,6 +68,9 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 		return types.ModifiedFinding{}, false
 	}
 	p := *product.PkgIdentifier.PURL
+
+	// Exclude version, qualifiers, and subpath from the package URL except for OCI
+	// cf. https://github.com/aquasecurity/vex-repo-spec?tab=readme-ov-file#32-indexjson
 	p.Version = ""
 	p.Qualifiers = nil
 	p.Subpath = ""
