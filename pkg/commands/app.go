@@ -1235,7 +1235,6 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var vexOptions flag.Options
 	cmd := &cobra.Command{
 		Use:           "vex subcommand",
-		Aliases:       []string{"p"},
 		GroupID:       groupManagement,
 		Short:         "[EXPERIMENTAL] VEX utilities",
 		SilenceErrors: true,
@@ -1258,17 +1257,22 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SilenceUsage:  true,
 		Example: `  # Initialize the configuration file
   $ trivy vex repo init
+
+  # List VEX repositories
+  $ trivy vex repo list
+
+  # Download the VEX repositories
+  $ trivy vex repo download
 `,
 	}
 
 	repoCmd.AddCommand(
 		&cobra.Command{
-			Use:                   "init",
-			Short:                 "Initialize a configuration file",
-			SilenceErrors:         true,
-			SilenceUsage:          true,
-			DisableFlagsInUseLine: true,
-			Args:                  cobra.ExactArgs(0),
+			Use:           "init",
+			Short:         "Initialize a configuration file",
+			SilenceErrors: true,
+			SilenceUsage:  true,
+			Args:          cobra.ExactArgs(0),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).Init(cmd.Context()); err != nil {
 					return xerrors.Errorf("config init error: %w", err)
@@ -1277,12 +1281,11 @@ func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "list",
-			Short:                 "List VEX repositories",
-			SilenceErrors:         true,
-			SilenceUsage:          true,
-			DisableFlagsInUseLine: true,
-			Args:                  cobra.ExactArgs(0),
+			Use:           "list",
+			Short:         "List VEX repositories",
+			SilenceErrors: true,
+			SilenceUsage:  true,
+			Args:          cobra.ExactArgs(0),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err := vexrepo.NewManager(vexOptions.CacheDir).List(cmd.Context()); err != nil {
 					return xerrors.Errorf("list error: %w", err)
