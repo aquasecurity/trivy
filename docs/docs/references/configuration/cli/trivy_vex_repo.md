@@ -8,6 +8,12 @@ Manage VEX repositories
   # Initialize the configuration file
   $ trivy vex repo init
 
+  # List VEX repositories
+  $ trivy vex repo list
+
+  # Download the VEX repositories
+  $ trivy vex repo download
+
 ```
 
 ### Options

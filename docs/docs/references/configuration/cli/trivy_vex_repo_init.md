@@ -3,7 +3,7 @@
 Initialize a configuration file
 
 ```
-trivy vex repo init
+trivy vex repo init [flags]
 ```
 
 ### Options

@@ -2,8 +2,12 @@
 
 Download the VEX repositories
 
+### Synopsis
+
+Downloads enabled VEX repositories. If specific repository names are provided as arguments, only those repositories will be downloaded. Otherwise, all enabled repositories are downloaded.
+
 ```
-trivy vex repo download [REPO_NAMES]
+trivy vex repo download [REPO_NAMES] [flags]
 ```
 
 ### Options

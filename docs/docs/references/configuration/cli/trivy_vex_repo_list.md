@@ -3,7 +3,7 @@
 List VEX repositories
 
 ```
-trivy vex repo list
+trivy vex repo list [flags]
 ```
 
 ### Options
