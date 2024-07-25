@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/preview/preview/containerregistry/runtime/containerregistry"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"golang.org/x/xerrors"
@@ -17,28 +19,41 @@ import (
 
 type Registry struct {
 	domain string
+	scope  string
+	cloud  cloud.Configuration
 }
 
 const (
-	azureURL = ".azurecr.io"
-	scope    = "https://management.azure.com/.default"
-	scheme   = "https"
+	azureURL      = ".azurecr.io"
+	chinaAzureURL = ".azurecr.cn"
+	scope         = "https://management.azure.com/.default"
+	chinaScope    = "https://management.chinacloudapi.cn/.default"
+	scheme        = "https"
 )
 
 func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) error {
-	if !strings.HasSuffix(domain, azureURL) {
-		return xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
+	if strings.HasSuffix(domain, azureURL) {
+		r.domain = domain
+		r.scope = scope
+		r.cloud = cloud.AzurePublic
+		return nil
+	} else if strings.HasSuffix(domain, chinaAzureURL) {
+		r.domain = domain
+		r.scope = chinaScope
+		r.cloud = cloud.AzureChina
+		return nil
 	}
-	r.domain = domain
-	return nil
+
+	return xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
 }
 
 func (r *Registry) GetCredential(ctx context.Context) (string, string, error) {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	opts := azcore.ClientOptions{Cloud: r.cloud}
+	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{ClientOptions: opts})
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to generate acr credential error: %w", err)
 	}
-	aadToken, err := cred.GetToken(ctx, policy.TokenRequestOptions{Scopes: []string{scope}})
+	aadToken, err := cred.GetToken(ctx, policy.TokenRequestOptions{Scopes: []string{r.scope}})
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to get an access token: %w", err)
 	}

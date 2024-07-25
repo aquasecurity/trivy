@@ -21,6 +21,10 @@ func TestRegistry_CheckOptions(t *testing.T) {
 			domain: "test.azurecr.io",
 		},
 		{
+			name:   "china happy path",
+			domain: "test.azurecr.cn",
+		},
+		{
 			name:    "invalidURL",
 			domain:  "not-azurecr.io",
 			wantErr: "Azure registry: invalid url pattern",

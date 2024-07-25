@@ -1,4 +1,4 @@
-package mariner
+package azure
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/mariner"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/azure"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -16,14 +16,22 @@ import (
 
 // Scanner implements the CBL-Mariner scanner
 type Scanner struct {
-	vs mariner.VulnSrc
+	vs azure.VulnSrc
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner() *Scanner {
+func newScanner(distribution azure.Distribution) *Scanner {
 	return &Scanner{
-		vs: mariner.NewVulnSrc(),
+		vs: azure.NewVulnSrc(distribution),
 	}
+}
+
+func NewAzureScanner() *Scanner {
+	return newScanner(azure.Azure)
+}
+
+func NewMarinerScanner() *Scanner {
+	return newScanner(azure.Mariner)
 }
 
 // Detect vulnerabilities in package using CBL-Mariner scanner
@@ -36,10 +44,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		// CBL Mariner OVAL contains source package names only.
+		// Azure Linux OVAL contains source package names only.
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get CBL-Mariner advisories: %w", err)
+			return nil, xerrors.Errorf("failed to get Azure Linux advisories: %w", err)
 		}
 
 		sourceVersion := version.NewVersion(utils.FormatSrcVersion(pkg))
