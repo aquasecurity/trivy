@@ -165,7 +165,7 @@ var builtinRules = []Rule{
 		Category: CategoryHuggingFace,
 		Severity: "CRITICAL",
 		Title:    "Hugging Face Access Token",
-		Regex:    MustCompile(`hf_[A-Za-z0-9]{39}`),
+		Regex:    MustCompile(`hf_[A-Za-z0-9]{34,40}`),
 		Keywords: []string{"hf_"},
 	},
 	{
