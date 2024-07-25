@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -38,7 +37,6 @@ var manifest = repo.Manifest{
 
 func TestRepository_Manifest(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.URL.Path)
 		if r.URL.Path == "/.well-known/vex-repository.json" {
 			err := json.NewEncoder(w).Encode(manifest)
 			assert.NoError(t, err)
