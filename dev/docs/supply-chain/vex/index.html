@@ -17,7 +17,7 @@
     
     
       
-        <title>VEX - Trivy</title>
+        <title>Overview - Trivy</title>
       
     
     
@@ -114,7 +114,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              VEX
+              Overview
             
           </span>
         </div>
@@ -1573,8 +1573,8 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/cbl-mariner/" class="md-nav__link">
-        CBL-Mariner
+      <a href="../../coverage/os/azure/" class="md-nav__link">
+        Azure Linux (CBL-Mariner)
       </a>
     </li>
   
@@ -2410,6 +2410,34 @@ You're not viewing the latest version.
     
   
   
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_3" type="checkbox" id="__nav_3_6_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6_3">
+          VEX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="VEX" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_6_3">
+          <span class="md-nav__icon md-icon"></span>
+          VEX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
@@ -2419,12 +2447,12 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          VEX
+          Overview
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        VEX
+        Overview
       </a>
       
         
@@ -2443,138 +2471,16 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cyclonedx" class="md-nav__link">
-    CycloneDX
+  <a href="#vex-usage-methods" class="md-nav__link">
+    VEX Usage Methods
   </a>
   
-    <nav class="md-nav" aria-label="CycloneDX">
+    <nav class="md-nav" aria-label="VEX Usage Methods">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#generate-the-sbom" class="md-nav__link">
-    Generate the SBOM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex" class="md-nav__link">
-    Create the VEX
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-sbom-with-vex" class="md-nav__link">
-    Scan SBOM with VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#openvex" class="md-nav__link">
-    OpenVEX
-  </a>
-  
-    <nav class="md-nav" aria-label="OpenVEX">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex-document" class="md-nav__link">
-    Create the VEX document
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-with-vex" class="md-nav__link">
-    Scan with VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#csaf" class="md-nav__link">
-    CSAF
-  </a>
-  
-    <nav class="md-nav" aria-label="CSAF">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#create-the-csaf-document" class="md-nav__link">
-    Create the CSAF document
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-with-csaf-vex" class="md-nav__link">
-    Scan with CSAF VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#appendix" class="md-nav__link">
-    Appendix
-  </a>
-  
-    <nav class="md-nav" aria-label="Appendix">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#purl-matching" class="md-nav__link">
-    PURL matching
-  </a>
-  
-    <nav class="md-nav" aria-label="PURL matching">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#matching-without-version" class="md-nav__link">
-    Matching Without Version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#matching-without-qualifiers" class="md-nav__link">
-    Matching Without Qualifiers
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#matching-with-specific-qualifiers" class="md-nav__link">
-    Matching With Specific Qualifiers
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#applying-vex-to-dependency-trees" class="md-nav__link">
-    Applying VEX to Dependency Trees
+  <a href="#enabling-vex" class="md-nav__link">
+    Enabling VEX
   </a>
   
 </li>
@@ -2588,6 +2494,41 @@ You're not viewing the latest version.
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="repo/" class="md-nav__link">
+        VEX Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="file/" class="md-nav__link">
+        Local VEX Files
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -4003,138 +3944,16 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cyclonedx" class="md-nav__link">
-    CycloneDX
+  <a href="#vex-usage-methods" class="md-nav__link">
+    VEX Usage Methods
   </a>
   
-    <nav class="md-nav" aria-label="CycloneDX">
+    <nav class="md-nav" aria-label="VEX Usage Methods">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#generate-the-sbom" class="md-nav__link">
-    Generate the SBOM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex" class="md-nav__link">
-    Create the VEX
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-sbom-with-vex" class="md-nav__link">
-    Scan SBOM with VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#openvex" class="md-nav__link">
-    OpenVEX
-  </a>
-  
-    <nav class="md-nav" aria-label="OpenVEX">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex-document" class="md-nav__link">
-    Create the VEX document
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-with-vex" class="md-nav__link">
-    Scan with VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#csaf" class="md-nav__link">
-    CSAF
-  </a>
-  
-    <nav class="md-nav" aria-label="CSAF">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#create-the-csaf-document" class="md-nav__link">
-    Create the CSAF document
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-with-csaf-vex" class="md-nav__link">
-    Scan with CSAF VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#appendix" class="md-nav__link">
-    Appendix
-  </a>
-  
-    <nav class="md-nav" aria-label="Appendix">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#purl-matching" class="md-nav__link">
-    PURL matching
-  </a>
-  
-    <nav class="md-nav" aria-label="PURL matching">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#matching-without-version" class="md-nav__link">
-    Matching Without Version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#matching-without-qualifiers" class="md-nav__link">
-    Matching Without Qualifiers
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#matching-with-specific-qualifiers" class="md-nav__link">
-    Matching With Specific Qualifiers
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#applying-vex-to-dependency-trees" class="md-nav__link">
-    Applying VEX to Dependency Trees
+  <a href="#enabling-vex" class="md-nav__link">
+    Enabling VEX
   </a>
   
 </li>
@@ -4156,7 +3975,7 @@ You're not viewing the latest version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/supply-chain/vex.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/supply-chain/vex/index.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
@@ -4167,581 +3986,30 @@ You're not viewing the latest version.
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>Trivy supports filtering detected vulnerabilities using <a href="https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf">the Vulnerability Exploitability Exchange (VEX)</a>, a standardized format for sharing and exchanging information about vulnerabilities.
-By providing VEX during scanning, it is possible to filter vulnerabilities based on their status.
-Currently, Trivy supports the following three formats:</p>
-<ul>
-<li><a href="https://cyclonedx.org/capabilities/vex/">CycloneDX</a></li>
-<li><a href="https://github.com/openvex/spec">OpenVEX</a></li>
-<li><a href="https://oasis-open.github.io/csaf-documentation/specification.html">CSAF</a></li>
-</ul>
-<h2 id="cyclonedx">CycloneDX</h2>
-<table>
-<thead>
-<tr>
-<th align="center">Target</th>
-<th align="center">Supported</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">Container Image</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Filesystem</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Code Repository</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">VM Image</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Kubernetes</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">SBOM</td>
-<td align="center">✅</td>
-</tr>
-</tbody>
-</table>
-<p>There are <a href="https://cyclonedx.org/capabilities/vex/">two VEX formats</a> for CycloneDX:</p>
-<ul>
-<li>Independent BOM and VEX BOM</li>
-<li>BOM With Embedded VEX</li>
-</ul>
-<p>Trivy only supports the Independent BOM and VEX BOM format, so you need to provide a separate VEX file alongside the SBOM.
-The input SBOM format must be in CycloneDX format.</p>
-<p>The following steps are required:</p>
+<p>Trivy supports filtering detected vulnerabilities using the <a href="https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf">Vulnerability Exploitability eXchange (VEX)</a>, a standardized format for sharing and exchanging information about vulnerabilities.
+By providing VEX during scanning, it is possible to filter vulnerabilities based on their status.</p>
+<h2 id="vex-usage-methods">VEX Usage Methods</h2>
+<p>Trivy currently supports two methods for utilizing VEX:</p>
 <ol>
-<li>Generate a CycloneDX SBOM</li>
-<li>Create a VEX based on the SBOM generated in step 1</li>
-<li>Provide the VEX when scanning the CycloneDX SBOM</li>
+<li><a href="repo/">VEX Repository</a></li>
+<li><a href="file/">Local VEX Files</a></li>
 </ol>
-<h3 id="generate-the-sbom">Generate the SBOM</h3>
-<p>You can generate a CycloneDX SBOM with Trivy as follows:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format cyclonedx --output debian11.sbom.cdx debian:11
-</code></pre></div>
-<h3 id="create-the-vex">Create the VEX</h3>
-<p>Next, create a VEX based on the generated SBOM.
-Multiple vulnerability statuses can be defined under <code>vulnerabilities</code>.
-Take a look at the example below.</p>
-<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; trivy.vex.cdx</span>
-<span class="s">{</span>
-<span class="s">  &quot;bomFormat&quot;: &quot;CycloneDX&quot;,</span>
-<span class="s">  &quot;specVersion&quot;: &quot;1.5&quot;,</span>
-<span class="s">  &quot;version&quot;: 1,</span>
-<span class="s">  &quot;vulnerabilities&quot;: [</span>
-<span class="s">    {</span>
-<span class="s">      &quot;id&quot;: &quot;CVE-2020-8911&quot;,</span>
-<span class="s">      &quot;analysis&quot;: {</span>
-<span class="s">        &quot;state&quot;: &quot;not_affected&quot;,</span>
-<span class="s">        &quot;justification&quot;: &quot;code_not_reachable&quot;,</span>
-<span class="s">        &quot;response&quot;: [&quot;will_not_fix&quot;, &quot;update&quot;],</span>
-<span class="s">        &quot;detail&quot;: &quot;The vulnerable function is not called&quot;</span>
-<span class="s">      },</span>
-<span class="s">      &quot;affects&quot;: [</span>
-<span class="s">        {</span>
-<span class="s">          &quot;ref&quot;: &quot;urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@1.44.234&quot;</span>
-<span class="s">        }</span>
-<span class="s">      ]</span>
-<span class="s">    }</span>
-<span class="s">  ]</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
-<p>This is a VEX document in the CycloneDX format.
-The vulnerability ID, such as a CVE-ID or GHSA-ID, should be placed in <code>vulnerabilities.id</code>.
-When the <code>analysis.state</code> is set to <code>not_affected</code>, Trivy will not detect the vulnerability.</p>
-<p>BOM-Links must be placed in <code>affects.ref</code>.
-The BOM-Link has the following syntax and consists of three elements:</p>
-<div class="highlight"><pre><span></span><code>urn:cdx:serialNumber/version#bom-ref
-</code></pre></div>
+<h3 id="enabling-vex">Enabling VEX</h3>
+<p>To enable VEX, use the <code>--vex</code> option.
+You can specify the method to use:</p>
 <ul>
-<li>serialNumber</li>
-<li>version</li>
-<li>bom-ref</li>
+<li>To enable the VEX Repository: <code>--vex repo</code></li>
+<li>To use a local VEX file: <code>--vex /path/to/vex-document.json</code></li>
 </ul>
-<p>These values must be obtained from the CycloneDX SBOM.
-Please note that while the serialNumber starts with <code>urn:uuid:</code>, the BOM-Link starts with <code>urn:cdx:</code>.</p>
-<p>The <code>bom-ref</code> must contain the BOM-Ref of the package affected by the vulnerability.
-In the example above, since the Go package <code>github.com/aws/aws-sdk-go</code> is affected by CVE-2020-8911, it was necessary to specify the SBOM's BOM-Ref, <code>pkg:golang/github.com/aws/aws-sdk-go@1.44.234</code>.</p>
-<p>For more details on CycloneDX VEX and BOM-Link, please refer to the following links:</p>
+<div class="highlight"><pre><span></span><code>$ trivy image ghcr.io/aquasecurity/trivy:0.52.0 --vex repo
+</code></pre></div>
+<p>You can enable both methods simultaneously.
+The order of specification determines the priority:</p>
 <ul>
-<li><a href="https://cyclonedx.org/capabilities/vex/">CycloneDX VEX</a></li>
-<li><a href="https://cyclonedx.org/capabilities/bomlink/">BOM-Link</a></li>
-<li><a href="https://github.com/CycloneDX/bom-examples/tree/master">Examples</a></li>
+<li><code>--vex repo --vex /path/to/vex-document.json</code>: VEX Repository has priority</li>
+<li><code>--vex /path/to/vex-document.json --vex repo</code>: Local file has priority</li>
 </ul>
-<h3 id="scan-sbom-with-vex">Scan SBOM with VEX</h3>
-<p>Provide the VEX when scanning the CycloneDX SBOM.</p>
-<div class="highlight"><pre><span></span><code>$ trivy sbom trivy.sbom.cdx --vex trivy.vex.cdx
-...
-<span class="m">2023</span>-04-13T12:55:44.838+0300    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;CycloneDX&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2020-8911&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span>, <span class="s2">&quot;justification&quot;</span>: <span class="s2">&quot;code_not_reachable&quot;</span><span class="o">}</span>
-
-go.mod <span class="o">(</span>gomod<span class="o">)</span>
-<span class="o">==============</span>
-Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
-
-┌───────────────────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
-│          Library          │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                           Title                            │
-├───────────────────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
-│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ <span class="m">1</span>.44.234          │               │ aws-sdk-go: In-band key negotiation issue <span class="k">in</span> AWS S3 Crypto │
-│                           │               │          │                   │               │ SDK <span class="k">for</span> golang...                                          │
-│                           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-8912                  │
-└───────────────────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
-</code></pre></div>
-<p>CVE-2020-8911 is no longer shown as it is filtered out according to the given CycloneDX VEX document.</p>
-<h2 id="openvex">OpenVEX</h2>
-<table>
-<thead>
-<tr>
-<th align="center">Target</th>
-<th align="center">Supported</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">Container Image</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">Filesystem</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">Code Repository</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">VM Image</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">Kubernetes</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">SBOM</td>
-<td align="center">✅</td>
-</tr>
-</tbody>
-</table>
-<p>Trivy also supports <a href="https://github.com/openvex/spec">OpenVEX</a> that is designed to be minimal, compliant, interoperable, and embeddable.
-OpenVEX can be used in all Trivy targets, unlike CycloneDX VEX.</p>
-<p>The following steps are required:</p>
-<ol>
-<li>Create a VEX document</li>
-<li>Provide the VEX when scanning your target</li>
-</ol>
-<h3 id="create-the-vex-document">Create the VEX document</h3>
-<p>Please see also <a href="https://github.com/openvex/examples">the example</a>.
-Trivy requires <a href="https://github.com/package-url/purl-spec">the Package URL (PURL)</a> as the product identifier.</p>
-<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; debian11.openvex.json</span>
-<span class="s">{</span>
-<span class="s">  &quot;@context&quot;: &quot;https://openvex.dev/ns/v0.2.0&quot;,</span>
-<span class="s">  &quot;@id&quot;: &quot;https://openvex.dev/docs/public/vex-2e67563e128250cbcb3e98930df948dd053e43271d70dc50cfa22d57e03fe96f&quot;,</span>
-<span class="s">  &quot;author&quot;: &quot;Aqua Security&quot;,</span>
-<span class="s">  &quot;timestamp&quot;: &quot;2023-08-29T19:07:16.853479631-06:00&quot;,</span>
-<span class="s">  &quot;version&quot;: 1,</span>
-<span class="s">  &quot;statements&quot;: [</span>
-<span class="s">    {</span>
-<span class="s">      &quot;vulnerability&quot;: {&quot;name&quot;: &quot;CVE-2019-8457&quot;},</span>
-<span class="s">      &quot;products&quot;: [</span>
-<span class="s">        {&quot;@id&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8&quot;}</span>
-<span class="s">      ],</span>
-<span class="s">      &quot;status&quot;: &quot;not_affected&quot;,</span>
-<span class="s">      &quot;justification&quot;: &quot;vulnerable_code_not_in_execute_path&quot;</span>
-<span class="s">    }</span>
-<span class="s">  ]</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
-<p>In the above example, PURLs, <code>pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8</code> are used for the product identifier.
-You can find PURLs in the JSON report generated by Trivy.
-This VEX statement is applied if the PURL specified in the VEX matches the PURL found during the scan.
-See <a href="#purl-matching">here</a> for more details of PURL matching.</p>
-<p>Trivy also supports <a href="https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#subcomponent">OpenVEX subcomponents</a>, which allow for more precise specification of the scope of a VEX statement, reducing the risk of incorrect filtering.
-Let's say you want to suppress vulnerabilities within a container image.
-If you only specify the PURL of the container image as the product, the resulting VEX would look like this:</p>
-<details>
-<summary>OpenVEX products only</summary>
-
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">  </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-32002&quot;</span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">      </span><span class="p">{</span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy&quot;</span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">],</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">]</span><span class="w"></span>
-</code></pre></div>
-
-</details>
-
-<p>However, this approach would suppress all instances of CVE-2024-32002 within the container image.
-If the intention is to declare that the <code>git</code> package distributed by Alpine Linux within this image is not affected, subcomponents can be utilized as follows:</p>
-<details>
-<summary>OpenVEX subcomponents</summary>
-
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">  </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-32002&quot;</span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">      </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:oci/trivy?repository_url=ghcr.io%2Faquasecurity%2Ftrivy&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">          </span><span class="p">{</span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/git&quot;</span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">],</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">]</span><span class="w"></span>
-</code></pre></div>
-
-</details>
-
-<p>By declaring the subcomponent in this manner, Trivy will filter the results, considering only the <code>git</code> package within the <code>ghcr.io/aquasecurity/trivy</code> container image as not affected.
-Omitting the version in the PURL applies the statement to all versions of the package.
-More details about PURL matching can be found <a href="#purl-matching">here</a>.</p>
-<p>Furthermore, the product specified in a VEX statement does not necessarily need to be the target of the scan.
-It is possible to specify a component that is included in the scan target as the product.
-For example, you can designate a specific Go project as the product and its dependent modules as subcomponents.</p>
-<p>In the following example, the VEX statement declares that the <code>github.com/docker/docker</code> module, which is a dependency of the <code>github.com/aquasecurity/trivy</code> Go project, is not affected by CVE-2024-29018.</p>
-<details>
-<summary>OpenVEX intermediate components</summary>
-
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">  </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2024-29018&quot;</span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">      </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/github.com/aquasecurity/trivy&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/github.com/docker/docker&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">],</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">]</span><span class="w"></span>
-</code></pre></div>
-
-</details>
-
-<p>This VEX document can be used when scanning a container image as well as other targets.
-The VEX statement will be applied when Trivy finds the Go binary within the container image.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image ghcr.io/aquasecurity/trivy:0.50.0 --vex trivy.openvex.json
-</code></pre></div>
-<p>VEX documents can indeed be reused across different container images, eliminating the need to issue separate VEX documents for each image.
-This is particularly useful when there is a common component or library that is used across multiple projects or container images.</p>
-<p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
-<h3 id="scan-with-vex">Scan with VEX</h3>
-<p>Provide the VEX when scanning your target.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.openvex.json
-...
-<span class="m">2023</span>-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;OpenVEX&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2019-8457&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span>, <span class="s2">&quot;justification&quot;</span>: <span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="o">}</span>
-
-debian11.spdx.json <span class="o">(</span>debian <span class="m">11</span>.6<span class="o">)</span>
-<span class="o">================================</span>
-Total: <span class="m">80</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">58</span>, MEDIUM: <span class="m">6</span>, HIGH: <span class="m">16</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
-</code></pre></div>
-<p>CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.</p>
-<h2 id="csaf">CSAF</h2>
-<table>
-<thead>
-<tr>
-<th align="center">Target</th>
-<th align="center">Supported</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">Container Image</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">Filesystem</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">Code Repository</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">VM Image</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">Kubernetes</td>
-<td align="center">✅</td>
-</tr>
-<tr>
-<td align="center">SBOM</td>
-<td align="center">✅</td>
-</tr>
-</tbody>
-</table>
-<p>Trivy also supports <a href="https://oasis-open.github.io/csaf-documentation/specification.html">CSAF</a> format for VEX.
-Since CSAF aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.</p>
-<p>The following steps are required:</p>
-<ol>
-<li>Create a CSAF document</li>
-<li>Provide the CSAF when scanning your target</li>
-</ol>
-<h3 id="create-the-csaf-document">Create the CSAF document</h3>
-<p>Create a CSAF document in JSON format as follows:</p>
-<details>
-<summary>CSAF VEX</summary>
-
-<div class="highlight"><pre><span></span><code>$ cat <span class="s">&lt;&lt;EOF &gt; debian11.vex.csaf</span>
-<span class="s">{</span>
-<span class="s">  &quot;document&quot;: {</span>
-<span class="s">    &quot;category&quot;: &quot;csaf_vex&quot;,</span>
-<span class="s">    &quot;csaf_version&quot;: &quot;2.0&quot;,</span>
-<span class="s">    &quot;notes&quot;: [</span>
-<span class="s">      {</span>
-<span class="s">        &quot;category&quot;: &quot;summary&quot;,</span>
-<span class="s">        &quot;text&quot;: &quot;Example Company VEX document. Unofficial content for demonstration purposes only.&quot;,</span>
-<span class="s">        &quot;title&quot;: &quot;Author comment&quot;</span>
-<span class="s">      }</span>
-<span class="s">    ],</span>
-<span class="s">    &quot;publisher&quot;: {</span>
-<span class="s">      &quot;category&quot;: &quot;vendor&quot;,</span>
-<span class="s">      &quot;name&quot;: &quot;Example Company ProductCERT&quot;,</span>
-<span class="s">      &quot;namespace&quot;: &quot;https://psirt.example.com&quot;</span>
-<span class="s">    },</span>
-<span class="s">    &quot;title&quot;: &quot;AquaSecurity example VEX document&quot;,</span>
-<span class="s">    &quot;tracking&quot;: {</span>
-<span class="s">      &quot;current_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
-<span class="s">      &quot;generator&quot;: {</span>
-<span class="s">        &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
-<span class="s">        &quot;engine&quot;: {</span>
-<span class="s">          &quot;name&quot;: &quot;Secvisogram&quot;,</span>
-<span class="s">          &quot;version&quot;: &quot;1.11.0&quot;</span>
-<span class="s">        }</span>
-<span class="s">      },</span>
-<span class="s">      &quot;id&quot;: &quot;2024-EVD-UC-01-A-001&quot;,</span>
-<span class="s">      &quot;initial_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
-<span class="s">      &quot;revision_history&quot;: [</span>
-<span class="s">        {</span>
-<span class="s">          &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,</span>
-<span class="s">          &quot;number&quot;: &quot;1&quot;,</span>
-<span class="s">          &quot;summary&quot;: &quot;Initial version.&quot;</span>
-<span class="s">        }</span>
-<span class="s">      ],</span>
-<span class="s">      &quot;status&quot;: &quot;final&quot;,</span>
-<span class="s">      &quot;version&quot;: &quot;1&quot;</span>
-<span class="s">    }</span>
-<span class="s">  },</span>
-<span class="s">  &quot;product_tree&quot;: {</span>
-<span class="s">    &quot;branches&quot;: [</span>
-<span class="s">      {</span>
-<span class="s">        &quot;branches&quot;: [</span>
-<span class="s">          {</span>
-<span class="s">            &quot;branches&quot;: [</span>
-<span class="s">              {</span>
-<span class="s">                &quot;category&quot;: &quot;product_version&quot;,</span>
-<span class="s">                &quot;name&quot;: &quot;5.3&quot;,</span>
-<span class="s">                &quot;product&quot;: {</span>
-<span class="s">                  &quot;name&quot;: &quot;Database Libraries 5.3&quot;,</span>
-<span class="s">                  &quot;product_id&quot;: &quot;LIBDB-5328&quot;,</span>
-<span class="s">                  &quot;product_identification_helper&quot;: {</span>
-<span class="s">                    &quot;purl&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.8?arch=amd64\u0026distro=debian-11.8&quot;</span>
-<span class="s">                  }</span>
-<span class="s">                }</span>
-<span class="s">              }</span>
-<span class="s">            ],</span>
-<span class="s">            &quot;category&quot;: &quot;product_name&quot;,</span>
-<span class="s">            &quot;name&quot;: &quot;Database Libraries&quot;</span>
-<span class="s">          }</span>
-<span class="s">        ],</span>
-<span class="s">        &quot;category&quot;: &quot;vendor&quot;,</span>
-<span class="s">        &quot;name&quot;: &quot;Debian&quot;</span>
-<span class="s">      }</span>
-<span class="s">    ]</span>
-<span class="s">  },</span>
-<span class="s">  &quot;vulnerabilities&quot;: [</span>
-<span class="s">    {</span>
-<span class="s">      &quot;cve&quot;: &quot;CVE-2019-8457&quot;,</span>
-<span class="s">      &quot;notes&quot;: [</span>
-<span class="s">        {</span>
-<span class="s">          &quot;category&quot;: &quot;description&quot;,</span>
-<span class="s">          &quot;text&quot;: &quot;SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.&quot;,</span>
-<span class="s">          &quot;title&quot;: &quot;CVE description&quot;</span>
-<span class="s">        }</span>
-<span class="s">      ],</span>
-<span class="s">      &quot;product_status&quot;: {</span>
-<span class="s">        &quot;known_not_affected&quot;: [</span>
-<span class="s">          &quot;LIBDB-5328&quot;</span>
-<span class="s">        ]</span>
-<span class="s">      },</span>
-<span class="s">      &quot;threats&quot;: [</span>
-<span class="s">        {</span>
-<span class="s">          &quot;category&quot;: &quot;impact&quot;,</span>
-<span class="s">          &quot;details&quot;: &quot;Vulnerable code not in execute path.&quot;,</span>
-<span class="s">          &quot;product_ids&quot;: [</span>
-<span class="s">            &quot;LIBDB-5328&quot;</span>
-<span class="s">          ]</span>
-<span class="s">        }</span>
-<span class="s">      ]</span>
-<span class="s">    }</span>
-<span class="s">  ]</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
-
-</details>
-
-<p>Trivy also supports <a href="https://docs.oasis-open.org/csaf/csaf/v2.0/os/csaf-v2.0-os.html#3224-product-tree-property---relationships">CSAF relationships</a>, reducing the risk of incorrect filtering.
-It works in the same way as OpenVEX subcomponents.
-At present, the specified relationship category is not taken into account and all the following categories are treated internally as "depends_on".</p>
-<ul>
-<li>default_component_of</li>
-<li>installed_on</li>
-<li>installed_with</li>
-</ul>
-<p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
-<h3 id="scan-with-csaf-vex">Scan with CSAF VEX</h3>
-<p>Provide the CSAF document when scanning your target.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image debian:11 --vex debian11.vex.csaf
-...
-<span class="m">2024</span>-01-02T10:28:26.704+0100    INFO    Filtered out the detected vulnerability <span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>: <span class="s2">&quot;CSAF&quot;</span>, <span class="s2">&quot;vulnerability-id&quot;</span>: <span class="s2">&quot;CVE-2019-8457&quot;</span>, <span class="s2">&quot;status&quot;</span>: <span class="s2">&quot;not_affected&quot;</span><span class="o">}</span>
-
-debian11.spdx.json <span class="o">(</span>debian <span class="m">11</span>.6<span class="o">)</span>
-<span class="o">================================</span>
-Total: <span class="m">80</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">58</span>, MEDIUM: <span class="m">6</span>, HIGH: <span class="m">16</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
-</code></pre></div>
-<p>CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.</p>
-<h2 id="appendix">Appendix</h2>
-<h3 id="purl-matching">PURL matching</h3>
-<p>In the context of VEX, Package URLs (PURLs) are utilized to identify specific software packages and their versions.
-The PURL matching specification outlines how PURLs are interpreted for vulnerability exception processing, ensuring precise identification and broad coverage of software packages.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The following PURL matching rules are not formally defined within the current official PURL specification.
-Instead, they represent <a href="https://github.com/openvex/spec/issues/27">a community consensus</a> on how to interpret PURLs.</p>
-</div>
-<p>Below are the key aspects of the PURL matching rules:</p>
-<h4 id="matching-without-version">Matching Without Version</h4>
-<p>A PURL without a specified version (e.g., <code>pkg:maven/com.google.guava/guava</code>) matches all versions of that package.
-This rule simplifies the application of vulnerability exceptions to all versions of a package.</p>
-<p><strong>Example</strong>: <code>pkg:maven/com.google.guava/guava</code> matches:</p>
-<ul>
-<li>All versions of <code>guava</code>, such as <code>com.google.guava:guava:24.1.1</code>, <code>com.google.guava:guava:30.0</code>.</li>
-</ul>
-<h4 id="matching-without-qualifiers">Matching Without Qualifiers</h4>
-<p>A PURL without any qualifiers (e.g., <code>pkg:maven/com.google.guava/guava@24.1.1</code>) matches any variation of that package, irrespective of qualifiers.
-This approach ensures broad matching capabilities, covering all architectural or platform-specific variations of a package version.</p>
-<p><strong>Example</strong>: <code>pkg:maven/com.google.guava/guava@24.1.1</code> matches:</p>
-<ul>
-<li><code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86</code></li>
-<li><code>pkg:maven/com.google.guava/guava@24.1.1?type=pom</code></li>
-</ul>
-<h4 id="matching-with-specific-qualifiers">Matching With Specific Qualifiers</h4>
-<p>A PURL that includes specific qualifiers (e.g., <code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86</code>) matches only those package versions that include the same qualifiers.</p>
-<p><strong>Example</strong>: <code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86</code> matches:</p>
-<ul>
-<li><code>pkg:maven/com.google.guava/guava@24.1.1?classifier=x86&amp;type=dll</code><ul>
-<li>Extra qualifiers (e.g., <code>type=dll</code>) are ignored.</li>
-</ul>
-</li>
-</ul>
-<p>does not match:</p>
-<ul>
-<li><code>pkg:maven/com.google.guava/guava@24.1.1</code><ul>
-<li><code>classifier=x86</code> is missing.</li>
-</ul>
-</li>
-<li><code>pkg:maven/com.google.guava/guava@24.1.1?classifier=sources</code><ul>
-<li><code>classifier</code> must have the same value.</li>
-</ul>
-</li>
-</ul>
-<h3 id="applying-vex-to-dependency-trees">Applying VEX to Dependency Trees</h3>
-<p>Trivy internally generates a dependency tree and applies VEX statements to this graph.
-Let's consider a project with the following dependency tree, where <code>Module C v2.0.0</code> is assumed to have a vulnerability CVE-XXXX-YYYY:</p>
-<pre class="mermaid"><code>graph TD;
-  modRootA(Module Root A v1.0.0)
-  modB(Module B v1.0.0) 
-  modC(Module C v2.0.0)
-
-  modRootA--&gt;modB
-  modB--&gt;modC</code></pre>
-<p>Now, suppose a VEX statement is issued for <code>Module B</code> as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;statements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">  </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-XXXX-YYYY&quot;</span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">      </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-b@1.0.0&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-c@2.0.0&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">]</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">],</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="w">  </span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">]</span><span class="w"></span>
-</code></pre></div>
-<p>It declares that <code>Module B</code> is not affected by CVE-XXXX-YYYY on <code>Module C</code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The VEX in this example defines the relationship between <code>Module B</code> and <code>Module C</code>.
-However, as Trivy traverses all parents from vulnerable packages, it is also possible to define a VEX for the relationship between a vulnerable package and any parent, such as <code>Module A</code> and <code>Module C</code>, etc.</p>
-</div>
-<p>Mapping this VEX onto the dependency tree would look like this:</p>
-<pre class="mermaid"><code>graph TD;
-  modRootA(Module Root A v1.0.0)
-
-  subgraph "VEX (Not Affected)"
-  modB(Module B v1.0.0)
-  modC(Module C v2.0.0)
-  end
-
-  modRootA--&gt;modB
-  modB--&gt;modC</code></pre>
-<p>In this case, it's clear that <code>Module Root A</code> is also not affected by CVE-XXXX-YYYY, so this vulnerability is suppressed.</p>
-<p>Now, let's consider another project:</p>
-<pre class="mermaid"><code>graph TD;
-  modRootZ(Module Root Z v1.0.0)
-  modB'(Module B v1.0.0)
-  modC'(Module C v2.0.0)
-  modD'(Module D v3.0.0)
-
-  modRootZ--&gt;modB'
-  modRootZ--&gt;modD'
-  modB'--&gt;modC'
-  modD'--&gt;modC'</code></pre>
-<p>Assuming the same VEX as before, applying it to this dependency tree would look like:</p>
-<pre class="mermaid"><code>graph TD;
-  modRootZ(Module Root Z v1.0.0)
-
-  subgraph "VEX (Not Affected)"
-  modB'(Module B v1.0.0)
-  modC'(Module C v2.0.0)
-  end
-
-  modD'(Module D v3.0.0)
-
-  modRootZ--&gt;modB'
-  modRootZ--&gt;modD'
-  modB'--&gt;modC'
-  modD'--&gt;modC'</code></pre>
-<p><code>Module Root Z</code> depends on <code>Module C</code> via multiple paths.
-While the VEX tells us that <code>Module B</code> is not affected by the vulnerability, <code>Module D</code> might be.
-In the absence of a VEX, the default assumption is that it is affected.
-Taking all of this into account, Trivy determines that <code>Module Root Z</code> is affected by this vulnerability.</p>
+<p>For detailed information on each method, please refer to each page.</p>
 
               
             </article>
@@ -4775,13 +4043,13 @@ Taking all of this into account, Trivy determines that <code>Module Root Z</code
       
       
         
-        <a href="../../compliance/compliance/" class="md-footer__link md-footer__link--next" aria-label="Next: Built-in Compliance" rel="next">
+        <a href="repo/" class="md-footer__link md-footer__link--next" aria-label="Next: VEX Repository" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Built-in Compliance
+              VEX Repository
             </div>
           </div>
           <div class="md-footer__button md-icon">

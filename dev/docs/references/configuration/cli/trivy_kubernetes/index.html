@@ -1573,8 +1573,8 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../../../coverage/os/cbl-mariner/" class="md-nav__link">
-        CBL-Mariner
+      <a href="../../../../coverage/os/azure/" class="md-nav__link">
+        Azure Linux (CBL-Mariner)
       </a>
     </li>
   
@@ -2406,10 +2406,71 @@ You're not viewing the latest version.
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_3" type="checkbox" id="__nav_3_6_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6_3">
+          VEX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="VEX" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_6_3">
+          <span class="md-nav__icon md-icon"></span>
+          VEX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../../../supply-chain/vex/" class="md-nav__link">
-        VEX
+        Overview
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../supply-chain/vex/repo/" class="md-nav__link">
+        VEX Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../supply-chain/vex/file/" class="md-nav__link">
+        Local VEX Files
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -4060,12 +4121,13 @@ You're not viewing the latest version.
       --skip-files strings                specify the files or glob patterns to skip
       --skip-images                       skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources
       --skip-java-db-update               skip updating Java index database
+      --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
-      --vex string                        [EXPERIMENTAL] file path to VEX
+      --vex strings                       [EXPERIMENTAL] VEX sources (&quot;repo&quot; or file path)
 </code></pre></div>
 <h3 id="options-inherited-from-parent-commands">Options inherited from parent commands</h3>
 <div class="highlight"><pre><span></span><code>      --cache-dir string          cache directory (default &quot;/path/to/cache&quot;)
