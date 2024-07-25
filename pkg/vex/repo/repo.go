@@ -29,10 +29,9 @@ const (
 )
 
 type Manifest struct {
-	Name          string    `json:"name"`
-	Description   string    `json:"description"`
-	Versions      []Version `json:"versions"`
-	LatestVersion string    `json:"latest_version"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Versions    []Version `json:"versions"`
 }
 
 type Version struct {
