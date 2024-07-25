@@ -476,7 +476,10 @@ func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
 	}
 }
 
-const secretHighlightRadius = 2 // number of lines above + below each secret to include in code output
+const (
+	secretHighlightRadius = 2   // number of lines above + below each secret to include in code output
+	maxLineLength         = 100 // all lines longer will be cut off
+)
 
 func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
 	startLineNum := bytes.Count(content[:start], lineSep)
@@ -511,9 +514,16 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	rawLines := lines[codeStart:codeEnd]
 	var foundFirst bool
 	for i, rawLine := range rawLines {
-		strRawLine := string(rawLine)
 		realLine := codeStart + i
 		inCause := realLine >= startLineNum && realLine <= endLineNum
+
+		var strRawLine string
+		if len(rawLine) > maxLineLength {
+			strRawLine = lo.Ternary(inCause, matchLine, string(rawLine[:maxLineLength]))
+		} else {
+			strRawLine = string(rawLine)
+		}
+
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
 			Content:     strRawLine,
