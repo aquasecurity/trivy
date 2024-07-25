@@ -151,14 +151,16 @@ func loadPluginCommands() []*cobra.Command {
 	return commands
 }
 
-func initConfig(configFile string) error {
+func initConfig(configFile string, pathChanged bool) error {
 	// Read from config
 	viper.SetConfigFile(configFile)
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Debug("Config file not found", log.FilePath(configFile))
-			return nil
+			if !pathChanged {
+				log.Debugf("Default config file %q not found, using built in values", log.FilePath(configFile))
+				return nil
+			}
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
@@ -201,7 +203,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 			// Configure environment variables and config file
 			// It cannot be called in init() because it must be called after viper.BindPFlags.
-			if err := initConfig(configPath); err != nil {
+			if err := initConfig(configPath, cmd.Flags().Changed(flag.ConfigFileFlag.ConfigName)); err != nil {
 				return err
 			}
 
