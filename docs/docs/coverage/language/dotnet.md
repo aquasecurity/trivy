@@ -21,6 +21,9 @@ The following table provides an outline of the features Trivy offers.
 ## *.deps.json
 Trivy parses `*.deps.json` files. Trivy currently excludes dev dependencies from the report.
 
+!!! note
+    Trivy only includes runtime dependencies in the report.
+
 ## packages.config
 Trivy only finds dependency names and versions from `packages.config` files. To build dependency graph, it is better to use `packages.lock.json` files.
 

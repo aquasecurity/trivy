@@ -15,19 +15,17 @@ import (
 
 // CompositeFS contains multiple filesystems for post-analyzers
 type CompositeFS struct {
-	group AnalyzerGroup
 	dir   string
 	files *sync.Map[Type, *mapfs.FS]
 }
 
-func NewCompositeFS(group AnalyzerGroup) (*CompositeFS, error) {
+func NewCompositeFS() (*CompositeFS, error) {
 	tmpDir, err := os.MkdirTemp("", "analyzer-fs-*")
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create temporary directory: %w", err)
 	}
 
 	return &CompositeFS{
-		group: group,
 		dir:   tmpDir,
 		files: new(sync.Map[Type, *mapfs.FS]),
 	}, nil
