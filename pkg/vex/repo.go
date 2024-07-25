@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
@@ -14,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 var errNoRepository = errors.New("no available VEX repository found")
@@ -27,6 +29,7 @@ type RepositoryIndex struct {
 
 type RepositorySet struct {
 	indexes []RepositoryIndex
+	logOnce *xsync.Map[string, *sync.Once]
 	logger  *log.Logger
 }
 
@@ -59,6 +62,7 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 
 	return &RepositorySet{
 		indexes: indexes, // In precedence order
+		logOnce: new(xsync.Map[string, *sync.Once]),
 		logger:  logger,
 	}, nil
 }
@@ -91,6 +95,8 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 		if !ok {
 			continue
 		}
+		rs.logVEXFound(pkgID, index.Name, index.URL, entry.Location)
+
 		source := fmt.Sprintf("VEX Repository: %s (%s)", index.Name, index.URL)
 		doc, err := rs.OpenDocument(source, filepath.Dir(index.Path), entry)
 		if err != nil {
@@ -102,8 +108,6 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 			return m, notAffected
 		}
 
-		rs.logger.Debug("VEX found, but affected", log.String("vulnerability", vuln.VulnerabilityID),
-			log.String("package", pkgID), log.String("repo", index.Name), log.String("repo_url", index.URL))
 		break // Stop searching for the next VEX document as this repository has higher precedence.
 	}
 	return types.ModifiedFinding{}, false
@@ -124,4 +128,16 @@ func (rs *RepositorySet) OpenDocument(source, dir string, entry repo.PackageEntr
 	default:
 		return nil, xerrors.Errorf("unsupported VEX format: %s", entry.Format)
 	}
+}
+
+func (rs *RepositorySet) logVEXFound(pkgID, repoName, repoURL, filePath string) {
+	once, _ := rs.logOnce.LoadOrStore(pkgID, &sync.Once{})
+	once.Do(func() {
+		rs.logger.Debug("VEX found in the repository",
+			log.String("package", pkgID),
+			log.String("repo", repoName),
+			log.String("repo_url", repoURL),
+			log.FilePath(filePath),
+		)
+	})
 }
