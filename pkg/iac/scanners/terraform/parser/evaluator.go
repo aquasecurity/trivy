@@ -340,6 +340,18 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 			ctx.Set(idx, block.TypeLabel(), "key")
 			ctx.Set(val, block.TypeLabel(), "value")
 
+			if isDynamic {
+				if iterAttr := block.GetAttribute("iterator"); iterAttr.IsNotNil() {
+					refs := iterAttr.AllReferences()
+					if len(refs) == 1 {
+						ctx.Set(idx, refs[0].TypeLabel(), "key")
+						ctx.Set(val, refs[0].TypeLabel(), "value")
+					} else {
+						e.debug.Log("Ignoring iterator attribute in dynamic block, expected one reference but got %d", len(refs))
+					}
+				}
+			}
+
 			forEachFiltered = append(forEachFiltered, clone)
 
 			values := clone.Values()

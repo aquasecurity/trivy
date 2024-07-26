@@ -1745,3 +1745,39 @@ func TestTFVarsFileDoesNotExist(t *testing.T) {
 	_, _, err := parser.EvaluateAll(context.TODO())
 	assert.ErrorContains(t, err, "file does not exist")
 }
+
+func TestDynamicWithIterator(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(`resource "aws_s3_bucket" "this" {
+  dynamic versioning {
+    for_each = [true]
+    iterator = ver
+
+    content {
+      enabled = ver.value
+    }
+  }
+}`),
+		},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	assert.Len(t, modules, 1)
+
+	buckets := modules.GetResourcesByType("aws_s3_bucket")
+	assert.Len(t, buckets, 1)
+
+	attr, _ := buckets[0].GetNestedAttribute("versioning.enabled")
+
+	assert.True(t, attr.Value().True())
+}
