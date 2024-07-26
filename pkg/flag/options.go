@@ -374,7 +374,7 @@ func (o *Options) Align(f *Flags) error {
 
 	if f.PackageFlagGroup != nil && f.PackageFlagGroup.PkgRelationships != nil &&
 		slices.Compare(o.PkgRelationships, ftypes.Relationships) != 0 &&
-		(o.DependencyTree || slices.Contains(types.SupportedSBOMFormats, o.Format) || o.VEXPath != "") {
+		(o.DependencyTree || slices.Contains(types.SupportedSBOMFormats, o.Format) || len(o.VEXSources) != 0) {
 		return xerrors.Errorf("'--pkg-relationships' cannot be used with '--dependency-tree', '--vex' or SBOM formats")
 	}
 
