@@ -269,7 +269,7 @@ func parseDependency(line string) (string, error) {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string]string, error) {
 	lineNumber := 1
 	var pkgs []ftypes.Package
 
@@ -285,7 +285,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		lib, deps, newLine, err := p.parseBlock(block, lineNumber)
 		lineNumber = newLine + 2
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		} else if lib.Name == "" {
 			continue
 		}
@@ -310,13 +310,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, nil, xerrors.Errorf("failed to scan yarn.lock, got scanner error: %s", err.Error())
+		return nil, nil, nil, xerrors.Errorf("failed to scan yarn.lock, got scanner error: %s", err.Error())
 	}
 
 	// Replace dependency patterns with library IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
 	deps := parseResults(patternIDs, dependsOn)
-	return pkgs, deps, nil
+	return pkgs, deps, lo.Invert(patternIDs), nil
 }
 
 func packageID(name, version string) string {

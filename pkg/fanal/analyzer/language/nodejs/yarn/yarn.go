@@ -17,6 +17,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
@@ -51,10 +52,19 @@ func newYarnAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error
 	return &yarnAnalyzer{
 		logger:            log.WithPrefix("yarn"),
 		packageJsonParser: packagejson.NewParser(),
-		lockParser:        yarn.NewParser(),
 		comparer:          npm.Comparer{},
 		license:           license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
+}
+
+type parserWithPatterns struct {
+	patterns map[string]string
+}
+
+func (p *parserWithPatterns) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	pkgs, deps, patterns, err := yarn.NewParser().Parse(r)
+	p.patterns = patterns
+	return pkgs, deps, err
 }
 
 func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -65,8 +75,9 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
+		parser := &parserWithPatterns{}
 		// Parse yarn.lock
-		app, err := a.parseYarnLock(filePath, r)
+		app, err := language.Parse(types.Yarn, filePath, r, parser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -79,7 +90,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		}
 
 		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
-		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app); err != nil {
+		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app, parser.patterns); err != nil {
 			a.logger.Warn("Unable to parse package.json to remove dev dependencies",
 				log.FilePath(path.Join(path.Dir(filePath), types.NpmPkg)), log.Err(err))
 		}
@@ -153,7 +164,7 @@ func (a yarnAnalyzer) parseYarnLock(filePath string, r io.Reader) (*types.Applic
 
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
-func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
+func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application, patterns map[string]string) error {
 	packageJsonPath := path.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -170,13 +181,13 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	})
 
 	// Walk prod dependencies
-	pkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDeps, false)
+	pkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDeps, patterns, false)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
 
 	// Walk dev dependencies
-	devPkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDevDeps, true)
+	devPkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDevDeps, patterns, true)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
@@ -194,7 +205,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 }
 
 func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]types.Package,
-	directDeps map[string]string, dev bool) (map[string]types.Package, error) {
+	directDeps, patterns map[string]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
 	directPkgs := make(map[string]types.Package)
@@ -211,11 +222,16 @@ func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]t
 			constraint = m[4]
 		}
 
-		// npm has own comparer to compare versions
-		if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-			return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
-		} else if !match {
-			continue
+		// Try to find an exact match to the pattern.
+		// In some cases, patterns from yarn.lock and package.json may not match (e.g., yarn v2 uses the allowed version for ID).
+		// Therefore, if the patterns don't match - compare versions.
+		if pattern, found := patterns[pkg.ID]; !found || pattern != dependency.ID(types.Yarn, pkg.Name, constraint) {
+			// npm has own comparer to compare versions
+			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+			} else if !match {
+				continue
+			}
 		}
 
 		// Mark as a direct dependency
