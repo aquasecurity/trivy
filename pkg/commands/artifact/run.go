@@ -494,8 +494,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	}
 
 	if opts.Scanners.Enabled(types.VulnerabilityScanner) {
-		logger := log.WithPrefix(log.PrefixVulnerability)
-		logger.Info("Vulnerability scanning is enabled")
+		log.WithPrefix(log.PrefixVulnerability).Info("Vulnerability scanning is enabled")
 	}
 
 	// ScannerOption is filled only when config scanning is enabled.
