@@ -27,6 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/version/app"
+	vexrepo "github.com/aquasecurity/trivy/pkg/vex/repo"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -98,6 +99,7 @@ func NewApp() *cobra.Command {
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
 		NewCleanCommand(globalFlags),
+		NewVEXCommand(globalFlags),
 	)
 
 	if plugins := loadPluginCommands(); len(plugins) > 0 {
@@ -151,14 +153,16 @@ func loadPluginCommands() []*cobra.Command {
 	return commands
 }
 
-func initConfig(configFile string) error {
+func initConfig(configFile string, pathChanged bool) error {
 	// Read from config
 	viper.SetConfigFile(configFile)
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Debug("Config file not found", log.FilePath(configFile))
-			return nil
+			if !pathChanged {
+				log.Debugf("Default config file %q not found, using built in values", log.FilePath(configFile))
+				return nil
+			}
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
@@ -201,7 +205,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 			// Configure environment variables and config file
 			// It cannot be called in init() because it must be called after viper.BindPFlags.
-			if err := initConfig(configPath); err != nil {
+			if err := initConfig(configPath, cmd.Flags().Changed(flag.ConfigFileFlag.ConfigName)); err != nil {
 				return err
 			}
 
@@ -1226,6 +1230,92 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cleanFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, cleanFlags.Usages(cmd)))
 
+	return cmd
+}
+
+func NewVEXCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	vexFlags := &flag.Flags{
+		GlobalFlagGroup: globalFlags,
+	}
+	var vexOptions flag.Options
+	cmd := &cobra.Command{
+		Use:           "vex subcommand",
+		GroupID:       groupManagement,
+		Short:         "[EXPERIMENTAL] VEX utilities",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
+			cmd.SetContext(log.WithContextPrefix(cmd.Context(), "vex"))
+
+			vexOptions, err = vexFlags.ToOptions(args)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+
+	repoCmd := &cobra.Command{
+		Use:           "repo subcommand",
+		Short:         "Manage VEX repositories",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Example: `  # Initialize the configuration file
+  $ trivy vex repo init
+
+  # List VEX repositories
+  $ trivy vex repo list
+
+  # Download the VEX repositories
+  $ trivy vex repo download
+`,
+	}
+
+	repoCmd.AddCommand(
+		&cobra.Command{
+			Use:           "init",
+			Short:         "Initialize a configuration file",
+			SilenceErrors: true,
+			SilenceUsage:  true,
+			Args:          cobra.ExactArgs(0),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := vexrepo.NewManager(vexOptions.CacheDir).Init(cmd.Context()); err != nil {
+					return xerrors.Errorf("config init error: %w", err)
+				}
+				return nil
+			},
+		},
+		&cobra.Command{
+			Use:           "list",
+			Short:         "List VEX repositories",
+			SilenceErrors: true,
+			SilenceUsage:  true,
+			Args:          cobra.ExactArgs(0),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err := vexrepo.NewManager(vexOptions.CacheDir).List(cmd.Context()); err != nil {
+					return xerrors.Errorf("list error: %w", err)
+				}
+				return nil
+			},
+		},
+		&cobra.Command{
+			Use:           "download [REPO_NAMES]",
+			Short:         "Download the VEX repositories",
+			Long:          `Downloads enabled VEX repositories. If specific repository names are provided as arguments, only those repositories will be downloaded. Otherwise, all enabled repositories are downloaded.`,
+			SilenceErrors: true,
+			SilenceUsage:  true,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				err := vexrepo.NewManager(vexOptions.CacheDir).DownloadRepositories(cmd.Context(), args,
+					vexrepo.Options{Insecure: vexOptions.Insecure})
+				if err != nil {
+					return xerrors.Errorf("repository download error: %w", err)
+				}
+				return nil
+			},
+		},
+	)
+
+	cmd.AddCommand(repoCmd)
 	return cmd
 }
 

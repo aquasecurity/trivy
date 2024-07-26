@@ -28,6 +28,7 @@ trivy clean [flags]
   -h, --help            help for clean
       --java-db         remove Java database
       --scan-cache      remove scan cache (container and VM image analysis results)
+      --vex-repo        remove VEX repositories
       --vuln-db         remove vulnerability database
 ```
 

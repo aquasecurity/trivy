@@ -35,6 +35,10 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	}
 
 	e.bom = core.NewBOM(e.opts)
+	if report.BOM != nil {
+		e.bom.SerialNumber = report.BOM.SerialNumber
+		e.bom.Version = report.BOM.Version
+	}
 	e.bom.AddComponent(root)
 
 	for _, result := range report.Results {

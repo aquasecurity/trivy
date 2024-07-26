@@ -75,7 +75,12 @@ func Errorf(format string, args ...any) { slog.Default().Error(fmt.Sprintf(forma
 // Fatal for logging fatal errors
 func Fatal(msg string, args ...any) {
 	// Fatal errors should be logged to stderr even if the logger is disabled.
-	New(NewHandler(os.Stderr, &Options{})).Log(context.Background(), LevelFatal, msg, args...)
+	if h, ok := slog.Default().Handler().(*ColorHandler); ok {
+		h.out = os.Stderr
+	} else {
+		slog.SetDefault(New(NewHandler(os.Stderr, &Options{})))
+	}
+	slog.Default().Log(context.Background(), LevelFatal, msg, args...)
 	os.Exit(1)
 }
 

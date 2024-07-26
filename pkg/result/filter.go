@@ -13,8 +13,6 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
@@ -24,31 +22,35 @@ const (
 	DefaultIgnoreFile = ".trivyignore"
 )
 
-type FilterOption struct {
+type FilterOptions struct {
 	Severities         []dbTypes.Severity
 	IgnoreStatuses     []dbTypes.Status
 	IncludeNonFailures bool
 	IgnoreFile         string
 	PolicyFile         string
 	IgnoreLicenses     []string
-	VEXPath            string
+	CacheDir           string
+	VEXSources         []vex.Source
 }
 
 // Filter filters out the report
-func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
-	ignoreConf, err := ParseIgnoreFile(ctx, opt.IgnoreFile)
+func Filter(ctx context.Context, report types.Report, opts FilterOptions) error {
+	ignoreConf, err := ParseIgnoreFile(ctx, opts.IgnoreFile)
 	if err != nil {
-		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
+		return xerrors.Errorf("%s error: %w", opts.IgnoreFile, err)
 	}
 
 	for i := range report.Results {
-		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opt); err != nil {
+		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opts); err != nil {
 			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
 
 	// Filter out vulnerabilities based on the given VEX document.
-	if err = filterByVEX(report, opt); err != nil {
+	if err = vex.Filter(ctx, &report, vex.Options{
+		CacheDir: opts.CacheDir,
+		Sources:  opts.VEXSources,
+	}); err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
 	}
 
@@ -56,7 +58,7 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 }
 
 // FilterResult filters out the result
-func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOption) error {
+func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOptions) error {
 	// Convert dbTypes.Severity to string
 	severities := lo.Map(opt.Severities, func(s dbTypes.Severity, _ int) string {
 		return s.String()
@@ -74,31 +76,6 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	}
 	sort.Sort(types.BySeverity(result.Vulnerabilities))
 
-	return nil
-}
-
-// filterByVEX determines whether a detected vulnerability should be filtered out based on the provided VEX document.
-// If the VEX document is not nil and the vulnerability is either not affected or fixed according to the VEX statement,
-// the vulnerability is filtered out.
-func filterByVEX(report types.Report, opt FilterOption) error {
-	vexDoc, err := vex.New(opt.VEXPath, report)
-	if err != nil {
-		return err
-	} else if vexDoc == nil {
-		return nil
-	}
-
-	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(report)
-	if err != nil {
-		return xerrors.Errorf("unable to encode the SBOM: %w", err)
-	}
-
-	for i, result := range report.Results {
-		if len(result.Vulnerabilities) == 0 {
-			continue
-		}
-		vexDoc.Filter(&report.Results[i], bom)
-	}
 	return nil
 }
 

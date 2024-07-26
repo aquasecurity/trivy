@@ -137,11 +137,11 @@ func (m *Decoder) decodeComponents(ctx context.Context, sbom *types.SBOM) error 
 
 		// Third-party SBOMs may contain packages in types other than "Library"
 		if c.Type == core.TypeLibrary || c.PkgIdentifier.PURL != nil {
-			pkg, err := m.decodeLibrary(ctx, c)
+			pkg, err := m.decodePackage(ctx, c)
 			if errors.Is(err, ErrUnsupportedType) || errors.Is(err, ErrPURLEmpty) {
 				continue
 			} else if err != nil {
-				return xerrors.Errorf("failed to decode library: %w", err)
+				return xerrors.Errorf("failed to decode package: %w", err)
 			}
 			m.pkgs[id] = pkg
 		}
@@ -184,7 +184,7 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 	return &app
 }
 
-func (m *Decoder) decodeLibrary(ctx context.Context, c *core.Component) (*ftypes.Package, error) {
+func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes.Package, error) {
 	p := (*purl.PackageURL)(c.PkgIdentifier.PURL)
 	if p == nil {
 		m.logger.DebugContext(ctx, "Skipping a component without PURL",

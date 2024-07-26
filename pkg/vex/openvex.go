@@ -8,12 +8,14 @@ import (
 )
 
 type OpenVEX struct {
-	vex openvex.VEX
+	vex    openvex.VEX
+	source string
 }
 
-func newOpenVEX(vex openvex.VEX) VEX {
+func newOpenVEX(vex openvex.VEX, source string) *OpenVEX {
 	return &OpenVEX{
-		vex: vex,
+		vex:    vex,
+		source: source,
 	}
 }
 
@@ -32,7 +34,7 @@ func (v *OpenVEX) NotAffected(vuln types.DetectedVulnerability, product, subComp
 	// cf. https://github.com/openvex/spec/blob/fa5ba0c0afedb008dc5ebad418548cacf16a3ca7/OPENVEX-SPEC.md#the-vex-statement
 	stmt := stmts[len(stmts)-1]
 	if stmt.Status == openvex.StatusNotAffected || stmt.Status == openvex.StatusFixed {
-		modifiedFindings := types.NewModifiedFinding(vuln, findingStatus(stmt.Status), string(stmt.Justification), "OpenVEX")
+		modifiedFindings := types.NewModifiedFinding(vuln, findingStatus(stmt.Status), string(stmt.Justification), v.source)
 		return modifiedFindings, true
 	}
 	return types.ModifiedFinding{}, false
