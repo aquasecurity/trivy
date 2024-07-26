@@ -83,6 +83,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
 				PkgTypes:          opts.PkgTypes,
+				PkgRelationships:  xstrings.ToStringSlice(opts.PkgRelationships),
 				Scanners:          xstrings.ToStringSlice(opts.Scanners),
 				LicenseCategories: licenseCategories,
 				IncludeDevDeps:    opts.IncludeDevDeps,
