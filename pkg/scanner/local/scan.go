@@ -400,7 +400,7 @@ func excludePackages(target *types.ScanTarget, options types.ScanOptions) {
 
 	// By default, development packages are removed from the result
 	// '--include-dev-deps' option allows including them
-	excludeDevDeps(target.Applications, false)
+	excludeDevDeps(target.Applications, options.IncludeDevDeps)
 }
 
 func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions) {
