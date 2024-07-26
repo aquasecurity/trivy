@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/samber/lo"
@@ -127,7 +128,7 @@ func ignoreProtocol(protocol string) bool {
 	return false
 }
 
-func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps []ftypes.Dependency) {
+func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps ftypes.Dependencies) {
 	// find dependencies by patterns
 	for pkgID, depPatterns := range dependsOn {
 		depIDs := lo.Map(depPatterns, func(pattern string, index int) string {
@@ -269,13 +270,19 @@ func parseDependency(line string) (string, error) {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string]string, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string][]string, error) {
 	lineNumber := 1
-	var pkgs []ftypes.Package
+	var pkgs ftypes.Packages
 
-	// patternIDs holds mapping between patterns and library IDs
+	// patternIDs holds mapping between patterns and package IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
+	// This is needed to update dependencies from `DependsOn`.
 	patternIDs := make(map[string]string)
+
+	// patternIDs holds mapping between package ID and patterns
+	// e.g. `@babel/helper-regex@7.4.4` => [`@babel/helper-regex@^7.0.0`, `@babel/helper-regex@^7.4.4`]
+	// This is needed to compare package patterns with patterns from package.json files in `fanal` package.
+	pkgIDPatterns := make(map[string][]string)
 
 	scanner := bufio.NewScanner(r)
 	scanner.Split(p.scanBlocks)
@@ -298,6 +305,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Locations: []ftypes.Location{lib.Location},
 		})
 
+		pkgIDPatterns[pkgID] = lib.Patterns
 		for _, pattern := range lib.Patterns {
 			// e.g.
 			//   combined-stream@^1.0.6 => combined-stream@1.0.8
@@ -313,10 +321,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, nil, xerrors.Errorf("failed to scan yarn.lock, got scanner error: %s", err.Error())
 	}
 
-	// Replace dependency patterns with library IDs
+	// Replace dependency patterns with package IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
 	deps := parseResults(patternIDs, dependsOn)
-	return pkgs, deps, lo.Invert(patternIDs), nil
+
+	sort.Sort(pkgs)
+	sort.Sort(deps)
+	return pkgs, deps, pkgIDPatterns, nil
 }
 
 func packageID(name, version string) string {

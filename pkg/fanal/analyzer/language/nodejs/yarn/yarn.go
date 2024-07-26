@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 
@@ -43,7 +44,6 @@ var fragmentRegexp = regexp.MustCompile(`(\S+):(@?.*?)(@(.*?)|)$`)
 type yarnAnalyzer struct {
 	logger            *log.Logger
 	packageJsonParser *packagejson.Parser
-	lockParser        language.Parser
 	comparer          npm.Comparer
 	license           *license.License
 }
@@ -58,7 +58,7 @@ func newYarnAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error
 }
 
 type parserWithPatterns struct {
-	patterns map[string]string
+	patterns map[string][]string
 }
 
 func (p *parserWithPatterns) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
@@ -158,13 +158,9 @@ func (a yarnAnalyzer) Version() int {
 	return version
 }
 
-func (a yarnAnalyzer) parseYarnLock(filePath string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Yarn, filePath, r, a.lockParser)
-}
-
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
-func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application, patterns map[string]string) error {
+func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application, patterns map[string][]string) error {
 	packageJsonPath := path.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -205,7 +201,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 }
 
 func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]types.Package,
-	directDeps, patterns map[string]string, dev bool) (map[string]types.Package, error) {
+	directDeps map[string]string, patterns map[string][]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
 	directPkgs := make(map[string]types.Package)
@@ -225,7 +221,7 @@ func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]t
 		// Try to find an exact match to the pattern.
 		// In some cases, patterns from yarn.lock and package.json may not match (e.g., yarn v2 uses the allowed version for ID).
 		// Therefore, if the patterns don't match - compare versions.
-		if pattern, found := patterns[pkg.ID]; !found || pattern != dependency.ID(types.Yarn, pkg.Name, constraint) {
+		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, constraint)) {
 			// npm has own comparer to compare versions
 			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
 				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
