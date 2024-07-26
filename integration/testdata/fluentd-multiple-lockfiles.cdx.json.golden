@@ -2351,7 +2351,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "name": "GFDL-1.3-no-invariants-or-later"
           }
         },
         {
@@ -2415,7 +2415,7 @@
         },
         {
           "license": {
-            "name": "GFDL-1.3-or-later"
+            "name": "GFDL-1.3-no-invariants-or-later"
           }
         },
         {

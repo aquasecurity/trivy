@@ -450,3 +450,23 @@ func TestParseApkInfo(t *testing.T) {
 		})
 	}
 }
+
+func TestParseLicense(t *testing.T) {
+	var tests = []struct {
+		license      string
+		wantLicenses []string
+	}{
+		{
+			license:      "L:ASL 2.0",
+			wantLicenses: []string{"Apache-2.0"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.license, func(t *testing.T) {
+			a := alpinePkgAnalyzer{}
+			parsed := a.parseLicense(tt.license)
+			assert.Equal(t, tt.wantLicenses, parsed)
+		})
+	}
+}
