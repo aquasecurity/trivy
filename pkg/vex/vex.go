@@ -17,6 +17,7 @@ import (
 const (
 	TypeFile       SourceType = "file"
 	TypeRepository SourceType = "repo"
+	TypeOCI        SourceType = "oci"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -46,6 +47,8 @@ func NewSource(src string) Source {
 	switch src {
 	case "repository", "repo":
 		return Source{Type: TypeRepository}
+	case "oci":
+		return Source{Type: TypeOCI}
 	default:
 		return Source{
 			Type:     TypeFile,
@@ -61,16 +64,16 @@ type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *c
 // the vulnerability is filtered out.
 func Filter(ctx context.Context, report *types.Report, opts Options) error {
 	ctx = log.WithContextPrefix(ctx, "vex")
-	client, err := New(ctx, report, opts)
+	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(*report)
+	if err != nil {
+		return xerrors.Errorf("unable to encode the SBOM: %w", err)
+	}
+
+	client, err := New(ctx, report, bom, opts)
 	if err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
 	} else if client == nil {
 		return nil
-	}
-
-	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(*report)
-	if err != nil {
-		return xerrors.Errorf("unable to encode the SBOM: %w", err)
 	}
 
 	for i, result := range report.Results {
@@ -82,7 +85,7 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 	return nil
 }
 
-func New(ctx context.Context, report *types.Report, opts Options) (*Client, error) {
+func New(ctx context.Context, report *types.Report, bom *core.BOM, opts Options) (*Client, error) {
 	var vexes []VEX
 	for _, src := range opts.Sources {
 		var v VEX
@@ -99,6 +102,13 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 				continue
 			} else if err != nil {
 				return nil, xerrors.Errorf("failed to create a vex repository set: %w", err)
+			}
+		case TypeOCI:
+			v, err = NewOCI(bom.Root())
+			if err != nil {
+				return nil, xerrors.Errorf("VEX OCI error: %w", err)
+			} else if v == nil {
+				continue
 			}
 		default:
 			log.Warn("Unsupported VEX source", log.String("type", string(src.Type)))

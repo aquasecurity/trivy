@@ -2,8 +2,11 @@ package vex_test
 
 import (
 	"context"
+	"fmt"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/v1"
@@ -152,6 +155,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestFilter(t *testing.T) {
+	// Set up the OCI registry
+	tr, d := setUpRegistry(t)
+
 	type args struct {
 		report *types.Report
 		opts   vex.Options
@@ -510,6 +516,34 @@ repositories:
 			}),
 		},
 		{
+			name: "VEX attestation from OCI registry",
+			args: args{
+				// - oci:debian?tag=12
+				//     - pkg:deb/debian/bash@5.3
+				report: imageReportWithAttestation([]types.Result{
+					bashResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3, // filtered by VEX
+						},
+					}),
+				}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{Type: vex.TypeOCI},
+					},
+				},
+			},
+			want: imageReportWithAttestation([]types.Result{
+				bashResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{
+						modifiedFinding(vuln3, vulnerableCodeNotInExecutePath,
+							fmt.Sprintf("VEX attestation in OCI registry (%s)", ociPURLString(tr, d))),
+					},
+				}),
+			}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
+		},
+		{
 			name: "unknown format",
 			args: args{
 				report: &types.Report{},
@@ -550,7 +584,7 @@ func imageReport(results types.Results) *types.Report {
 		ArtifactType: artifact.TypeContainerImage,
 		Metadata: types.Metadata{
 			RepoDigests: []string{
-				"debian:@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+				"debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
 			},
 			ImageConfig: v1.ConfigFile{
 				Architecture: "amd64",
@@ -558,6 +592,31 @@ func imageReport(results types.Results) *types.Report {
 		},
 		Results: results,
 	}
+}
+
+func imageReportWithAttestation(results types.Results, repoDigest string) *types.Report {
+	report := imageReport(results)
+	report.Metadata.RepoDigests[0] = repoDigest
+	return report
+}
+
+func ociPURLString(ts *httptest.Server, d v1.Hash) string {
+	p := &packageurl.PackageURL{
+		Type:    packageurl.TypeOCI,
+		Name:    "debian",
+		Version: d.String(),
+		Qualifiers: packageurl.Qualifiers{
+			{
+				Key:   "arch",
+				Value: "amd64",
+			},
+			{
+				Key:   "repository_url",
+				Value: strings.TrimPrefix(ts.URL, "http://") + "/debian",
+			},
+		},
+	}
+	return p.String()
 }
 
 func fsReport(results types.Results) *types.Report {
