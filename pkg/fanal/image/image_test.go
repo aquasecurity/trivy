@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http/httptest"
-	"os"
 	"testing"
 	"time"
 
@@ -40,7 +39,7 @@ func setupEngineAndRegistry(t *testing.T) (*httptest.Server, *httptest.Server) {
 		Auth:   auth.Auth{},
 	})
 
-	os.Setenv("DOCKER_HOST", fmt.Sprintf("tcp://%s", te.Listener.Addr().String()))
+	t.Setenv("DOCKER_HOST", fmt.Sprintf("tcp://%s", te.Listener.Addr().String()))
 
 	return te, tr
 }
