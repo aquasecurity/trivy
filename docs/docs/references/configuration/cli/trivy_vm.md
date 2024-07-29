@@ -77,7 +77,7 @@ trivy vm [flags] VM_IMAGE
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
-      --vex strings                       [EXPERIMENTAL] VEX sources ("repo" or file path)
+      --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 
 ### Options inherited from parent commands
