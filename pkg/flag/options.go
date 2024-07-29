@@ -320,6 +320,7 @@ type Flags struct {
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	ModuleFlagGroup        *ModuleFlagGroup
+	PackageFlagGroup       *PackageFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
 	RegistryFlagGroup      *RegistryFlagGroup
 	RegoFlagGroup          *RegoFlagGroup
@@ -343,6 +344,7 @@ type Options struct {
 	LicenseOptions
 	MisconfOptions
 	ModuleOptions
+	PackageOptions
 	RegistryOptions
 	RegoOptions
 	RemoteOptions
@@ -368,6 +370,12 @@ type Options struct {
 func (o *Options) Align(f *Flags) error {
 	if f.ScanFlagGroup != nil && f.ScanFlagGroup.Scanners != nil {
 		o.enableSBOM()
+	}
+
+	if f.PackageFlagGroup != nil && f.PackageFlagGroup.PkgRelationships != nil &&
+		slices.Compare(o.PkgRelationships, ftypes.Relationships) != 0 &&
+		(o.DependencyTree || slices.Contains(types.SupportedSBOMFormats, o.Format) || len(o.VEXSources) != 0) {
+		return xerrors.Errorf("'--pkg-relationships' cannot be used with '--dependency-tree', '--vex' or SBOM formats")
 	}
 
 	if o.Compliance.Spec.ID != "" {
@@ -568,6 +576,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
 	}
+	if f.PackageFlagGroup != nil {
+		groups = append(groups, f.PackageFlagGroup)
+	}
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
 	}
@@ -704,6 +715,13 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		opts.ModuleOptions, err = f.ModuleFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("module flag error: %w", err)
+		}
+	}
+
+	if f.PackageFlagGroup != nil {
+		opts.PackageOptions, err = f.PackageFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("package flag error: %w", err)
 		}
 	}
 

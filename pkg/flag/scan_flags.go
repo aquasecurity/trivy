@@ -96,51 +96,43 @@ var (
 		Default:    "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
-	IncludeDevDepsFlag = Flag[bool]{
-		Name:       "include-dev-deps",
-		ConfigName: "scan.include-dev-deps",
-		Usage:      "include development dependencies in the report (supported: npm, yarn)",
-	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs       *Flag[[]string]
-	SkipFiles      *Flag[[]string]
-	OfflineScan    *Flag[bool]
-	Scanners       *Flag[[]string]
-	FilePatterns   *Flag[[]string]
-	Slow           *Flag[bool] // deprecated
-	Parallel       *Flag[int]
-	SBOMSources    *Flag[[]string]
-	RekorURL       *Flag[string]
-	IncludeDevDeps *Flag[bool]
+	SkipDirs     *Flag[[]string]
+	SkipFiles    *Flag[[]string]
+	OfflineScan  *Flag[bool]
+	Scanners     *Flag[[]string]
+	FilePatterns *Flag[[]string]
+	Slow         *Flag[bool] // deprecated
+	Parallel     *Flag[int]
+	SBOMSources  *Flag[[]string]
+	RekorURL     *Flag[string]
 }
 
 type ScanOptions struct {
-	Target         string
-	SkipDirs       []string
-	SkipFiles      []string
-	OfflineScan    bool
-	Scanners       types.Scanners
-	FilePatterns   []string
-	Parallel       int
-	SBOMSources    []string
-	RekorURL       string
-	IncludeDevDeps bool
+	Target       string
+	SkipDirs     []string
+	SkipFiles    []string
+	OfflineScan  bool
+	Scanners     types.Scanners
+	FilePatterns []string
+	Parallel     int
+	SBOMSources  []string
+	RekorURL     string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:       SkipDirsFlag.Clone(),
-		SkipFiles:      SkipFilesFlag.Clone(),
-		OfflineScan:    OfflineScanFlag.Clone(),
-		Scanners:       ScannersFlag.Clone(),
-		FilePatterns:   FilePatternsFlag.Clone(),
-		Parallel:       ParallelFlag.Clone(),
-		SBOMSources:    SBOMSourcesFlag.Clone(),
-		RekorURL:       RekorURLFlag.Clone(),
-		IncludeDevDeps: IncludeDevDepsFlag.Clone(),
-		Slow:           SlowFlag.Clone(),
+		SkipDirs:     SkipDirsFlag.Clone(),
+		SkipFiles:    SkipFilesFlag.Clone(),
+		OfflineScan:  OfflineScanFlag.Clone(),
+		Scanners:     ScannersFlag.Clone(),
+		FilePatterns: FilePatternsFlag.Clone(),
+		Parallel:     ParallelFlag.Clone(),
+		SBOMSources:  SBOMSourcesFlag.Clone(),
+		RekorURL:     RekorURLFlag.Clone(),
+		Slow:         SlowFlag.Clone(),
 	}
 }
 
@@ -159,7 +151,6 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.Parallel,
 		f.SBOMSources,
 		f.RekorURL,
-		f.IncludeDevDeps,
 	}
 }
 
@@ -180,15 +171,14 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}
 
 	return ScanOptions{
-		Target:         target,
-		SkipDirs:       f.SkipDirs.Value(),
-		SkipFiles:      f.SkipFiles.Value(),
-		OfflineScan:    f.OfflineScan.Value(),
-		Scanners:       xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
-		FilePatterns:   f.FilePatterns.Value(),
-		Parallel:       parallel,
-		SBOMSources:    f.SBOMSources.Value(),
-		RekorURL:       f.RekorURL.Value(),
-		IncludeDevDeps: f.IncludeDevDeps.Value(),
+		Target:       target,
+		SkipDirs:     f.SkipDirs.Value(),
+		SkipFiles:    f.SkipFiles.Value(),
+		OfflineScan:  f.OfflineScan.Value(),
+		Scanners:     xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
+		FilePatterns: f.FilePatterns.Value(),
+		Parallel:     parallel,
+		SBOMSources:  f.SBOMSources.Value(),
+		RekorURL:     f.RekorURL.Value(),
 	}, nil
 }
