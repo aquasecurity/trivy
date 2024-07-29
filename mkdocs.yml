@@ -180,6 +180,12 @@ nav:
                   - SBOM: docs/references/configuration/cli/trivy_sbom.md
                   - Server: docs/references/configuration/cli/trivy_server.md
                   - Version: docs/references/configuration/cli/trivy_version.md
+                  - VEX:
+                      - VEX: docs/references/configuration/cli/trivy_vex.md
+                      - VEX Download: docs/references/configuration/cli/trivy_vex_repo_download.md
+                      - VEX Init: docs/references/configuration/cli/trivy_vex_repo_init.md
+                      - VEX List: docs/references/configuration/cli/trivy_vex_repo_list.md
+                      - VEX Repo: docs/references/configuration/cli/trivy_vex_repo.md
                   - VM: docs/references/configuration/cli/trivy_vm.md
               - Config file: docs/references/configuration/config-file.md
           - Modes:
