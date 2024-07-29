@@ -416,4 +416,8 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )
 
+// cf. https://github.com/openvex/discovery/pull/40
 replace github.com/openvex/discovery => github.com/knqyf263/discovery v0.1.1-0.20240726113521-97873005fd03
+
+// TODO: delete it after https://github.com/aquasecurity/testdocker/pull/21 gets merged
+replace github.com/aquasecurity/testdocker v0.0.0-20240613070307-2c3868d658ac => github.com/aquasecurity/testdocker v0.0.0-20240729133945-d189218db29e

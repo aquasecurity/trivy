@@ -16,10 +16,11 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/engine"
 	"github.com/aquasecurity/testdocker/registry"
+	"github.com/aquasecurity/testdocker/tarfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
+func setupEngineAndRegistry(t *testing.T) (*httptest.Server, *httptest.Server) {
 	imagePaths := map[string]string{
 		"alpine:3.10":  "../test/testdata/alpine-310.tar.gz",
 		"alpine:3.11":  "../test/testdata/alpine-311.tar.gz",
@@ -31,11 +32,11 @@ func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
 	}
 	te := engine.NewDockerEngine(opt)
 
-	imagePaths = map[string]string{
-		"v2/library/alpine:3.10": "../test/testdata/alpine-310.tar.gz",
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
 	}
 	tr := registry.NewDockerRegistry(registry.Option{
-		Images: imagePaths,
+		Images: images,
 		Auth:   auth.Auth{},
 	})
 
@@ -45,7 +46,7 @@ func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
 }
 
 func TestNewDockerImage(t *testing.T) {
-	te, tr := setupEngineAndRegistry()
+	te, tr := setupEngineAndRegistry(t)
 	defer func() {
 		te.Close()
 		tr.Close()
@@ -301,12 +302,12 @@ func TestNewDockerImage(t *testing.T) {
 	}
 }
 
-func setupPrivateRegistry() *httptest.Server {
-	imagePaths := map[string]string{
-		"v2/library/alpine:3.10": "../test/testdata/alpine-310.tar.gz",
+func setupPrivateRegistry(t *testing.T) *httptest.Server {
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
 	}
 	tr := registry.NewDockerRegistry(registry.Option{
-		Images: imagePaths,
+		Images: images,
 		Auth: auth.Auth{
 			User:     "test",
 			Password: "testpass",
@@ -318,7 +319,7 @@ func setupPrivateRegistry() *httptest.Server {
 }
 
 func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
-	tr := setupPrivateRegistry()
+	tr := setupPrivateRegistry(t)
 	defer tr.Close()
 
 	serverAddr := tr.Listener.Addr().String()
@@ -503,7 +504,7 @@ func TestNewArchiveImage(t *testing.T) {
 }
 
 func TestDockerPlatformArguments(t *testing.T) {
-	tr := setupPrivateRegistry()
+	tr := setupPrivateRegistry(t)
 	defer tr.Close()
 
 	serverAddr := tr.Listener.Addr().String()
@@ -554,4 +555,10 @@ func TestDockerPlatformArguments(t *testing.T) {
 			}
 		})
 	}
+}
+
+func localImage(t *testing.T) v1.Image {
+	img, err := tarfile.ImageFromPath("../test/testdata/alpine-310.tar.gz")
+	require.NoError(t, err)
+	return img
 }
