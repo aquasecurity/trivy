@@ -23,8 +23,7 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/registry"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
@@ -102,7 +101,7 @@ func createVEXAttestation(t *testing.T) dsse.Envelope {
 	}
 }
 
-func TestNewOCI(t *testing.T) {
+func TestRetrieveVEXAttestation(t *testing.T) {
 	tr, _ := setUpRegistry(t)
 	t.Cleanup(tr.Close)
 
@@ -130,23 +129,17 @@ func TestNewOCI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			root := &core.Component{
-				Type: core.TypeContainerImage,
-				Root: true,
-				PkgIdentifier: types.PkgIdentifier{
-					PURL: &packageurl.PackageURL{
-						Type: packageurl.TypeOCI,
-						Name: "debian",
-						Qualifiers: packageurl.Qualifiers{
-							{
-								Key:   "repository_url",
-								Value: tt.url,
-							},
-						},
+			p := &purl.PackageURL{
+				Type: packageurl.TypeOCI,
+				Name: "debian",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "repository_url",
+						Value: tt.url,
 					},
 				},
 			}
-			_, err := vex.NewOCI(root)
+			_, err := vex.RetrieveVEXAttestation(p)
 			tt.wantErr(t, err)
 		})
 	}

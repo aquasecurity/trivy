@@ -64,16 +64,17 @@ type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *c
 // the vulnerability is filtered out.
 func Filter(ctx context.Context, report *types.Report, opts Options) error {
 	ctx = log.WithContextPrefix(ctx, "vex")
-	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(*report)
-	if err != nil {
-		return xerrors.Errorf("unable to encode the SBOM: %w", err)
-	}
-
-	client, err := New(ctx, report, bom, opts)
+	client, err := New(ctx, report, opts)
 	if err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
 	} else if client == nil {
 		return nil
+	}
+
+	// NOTE: This method call has a side effect on the report
+	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(*report)
+	if err != nil {
+		return xerrors.Errorf("unable to encode the SBOM: %w", err)
 	}
 
 	for i, result := range report.Results {
@@ -85,7 +86,7 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 	return nil
 }
 
-func New(ctx context.Context, report *types.Report, bom *core.BOM, opts Options) (*Client, error) {
+func New(ctx context.Context, report *types.Report, opts Options) (*Client, error) {
 	var vexes []VEX
 	for _, src := range opts.Sources {
 		var v VEX
@@ -104,7 +105,7 @@ func New(ctx context.Context, report *types.Report, bom *core.BOM, opts Options)
 				return nil, xerrors.Errorf("failed to create a vex repository set: %w", err)
 			}
 		case TypeOCI:
-			v, err = NewOCI(bom.Root())
+			v, err = NewOCI(report)
 			if err != nil {
 				return nil, xerrors.Errorf("VEX OCI error: %w", err)
 			} else if v == nil {
