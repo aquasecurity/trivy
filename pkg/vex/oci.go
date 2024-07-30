@@ -43,11 +43,11 @@ func RetrieveVEXAttestation(p *purl.PackageURL) (*OpenVEX, error) {
 		return nil, xerrors.Errorf("failed to probe the package URL: %w", err)
 	}
 	if len(vexDocuments) == 0 {
-		logger.Info("No VEX documents found")
+		logger.Info("No VEX attestations found")
 		return nil, nil
 	}
 
-	logger.Debug("VEX document found, taking the first one")
+	logger.Debug("VEX attestation found, taking the first one")
 	return &OpenVEX{
 		vex:    *vexDocuments[0],
 		source: fmt.Sprintf("VEX attestation in OCI registry (%s)", p.String()),

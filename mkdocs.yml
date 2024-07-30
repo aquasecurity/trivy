@@ -131,6 +131,7 @@ nav:
               - Overview: docs/supply-chain/vex/index.md
               - VEX Repository: docs/supply-chain/vex/repo.md
               - Local VEX Files: docs/supply-chain/vex/file.md
+              - VEX Attestation: docs/supply-chain/vex/oci.md
       - Compliance:
           - Built-in Compliance:  docs/compliance/compliance.md
           - Custom Compliance: docs/compliance/contrib-compliance.md
