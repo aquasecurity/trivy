@@ -73,6 +73,15 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 			Value: r.Metadata.ImageID,
 		})
 
+		// Save image labels as properties with `Labels:` prefix.
+		// e.g. `LABEL vendor="aquasecurity"` => `Labels:vendor` -> `aquasecurity`
+		for label, value := range r.Metadata.ImageConfig.Config.Labels {
+			props = append(props, core.Property{
+				Name:  core.PropertyLabelsPrefix + ":" + label,
+				Value: value,
+			})
+		}
+
 		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)

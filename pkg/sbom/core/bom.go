@@ -25,11 +25,12 @@ const (
 	PropertyClass         = "Class"
 
 	// Image properties
-	PropertySize       = "Size"
-	PropertyImageID    = "ImageID"
-	PropertyRepoDigest = "RepoDigest"
-	PropertyDiffID     = "DiffID"
-	PropertyRepoTag    = "RepoTag"
+	PropertySize         = "Size"
+	PropertyImageID      = "ImageID"
+	PropertyRepoDigest   = "RepoDigest"
+	PropertyDiffID       = "DiffID"
+	PropertyRepoTag      = "RepoTag"
+	PropertyLabelsPrefix = "Labels"
 
 	// Package properties
 	PropertyPkgID           = "PkgID"
