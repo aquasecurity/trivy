@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sort"
 	"strings"
 
 	"golang.org/x/text/cases"
@@ -85,12 +86,12 @@ func getFlagMetadata(flagGroup any) []*flagMetadata {
 	return result
 }
 
-func addToMap(m map[string]any, parts []string, defaultValue any) {
+func addToMap(m map[string]any, parts []string, value *flagMetadata) {
 	if len(parts) == 0 {
 		return
 	}
 	if len(parts) == 1 {
-		m[parts[0]] = defaultValue
+		m[parts[0]] = value
 		return
 	}
 
@@ -104,7 +105,7 @@ func addToMap(m map[string]any, parts []string, defaultValue any) {
 		m[parts[0]] = subMap
 	}
 
-	addToMap(subMap, parts[1:], defaultValue)
+	addToMap(subMap, parts[1:], value)
 }
 
 func buildFlagsTree() map[string]any {
@@ -112,9 +113,10 @@ func buildFlagsTree() map[string]any {
 	metadata := getFlagMetadata(*flag.NewImageFlagGroup())
 	metadata = append(metadata, getFlagMetadata(*flag.NewCacheFlagGroup())...)
 	metadata = append(metadata, getFlagMetadata(*flag.NewReportFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata(*flag.NewGlobalFlagGroup())...)
 
 	for _, m := range metadata {
-		addToMap(res, strings.Split(m.configName, "."), m.defaultValue)
+		addToMap(res, strings.Split(m.configName, "."), m)
 	}
 	return res
 }
@@ -123,18 +125,28 @@ var caser = cases.Title(language.English)
 
 func genMarkdown(m map[string]any, indent int, w *os.File) {
 	indentation := strings.Repeat("  ", indent)
-	for key, value := range m {
+
+	// Extract and sort keys
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
 		if indent == 0 {
 			w.WriteString("## " + caser.String(key) + " options\n\n")
 			w.WriteString("```yaml\n")
 		}
 
-		switch v := value.(type) {
+		switch v := m[key].(type) {
 		case map[string]any:
-			w.WriteString(fmt.Sprintf("%s%s:\n", indentation, key))
+			fmt.Fprintf(w, "%s%s:\n", indentation, key)
 			genMarkdown(v, indent+1, w)
-		default:
-			w.WriteString(fmt.Sprintf("%s%s: %v\n", indentation, key, v))
+		case *flagMetadata:
+			fmt.Fprintf(w, "%s# Same as '--%s'\n", indentation, v.name)
+			fmt.Fprintf(w, "%s# Default is %v\n", indentation, v.defaultValue)
+			fmt.Fprintf(w, "%s%s: %+v\n\n", indentation, key, v.defaultValue)
 		}
 		if indent == 0 {
 			w.WriteString("```\n\n")

@@ -5,76 +5,137 @@ The config path can be overridden by the `--config` flag.
 
 An example is [here][example].
 
-## Output options
+## Cache options
 
 ```yaml
-output: 
+cache:
+  # Same as '--cache-backend'
+  # Default is fs
+  backend: fs
+
+  # Same as '--cache-dir'
+  # Default is /path/to/cache
+  dir: /path/to/cache
+
+  redis:
+    # Same as '--redis-ca'
+    # Default is 
+    ca: 
+
+    # Same as '--redis-cert'
+    # Default is 
+    cert: 
+
+    # Same as '--redis-key'
+    # Default is 
+    key: 
+
+```
+
+## Config options
+
+```yaml
+# Same as '--config'
+# Default is trivy.yaml
+config: trivy.yaml
+
 ```
 
 ## Format options
 
 ```yaml
+# Same as '--format'
+# Default is table
 format: table
-```
 
-## Ignorefile options
-
-```yaml
-ignorefile: .trivyignore
 ```
 
 ## Ignore-Policy options
 
 ```yaml
+# Same as '--ignore-policy'
+# Default is 
 ignore-policy: 
+
 ```
 
-## Template options
+## Ignorefile options
 
 ```yaml
-template: 
-```
+# Same as '--ignorefile'
+# Default is .trivyignore
+ignorefile: .trivyignore
 
-## Output-Plugin-Arg options
-
-```yaml
-output-plugin-arg: 
-```
-
-## Scan options
-
-```yaml
-scan:
-  compliance: 
 ```
 
 ## Image options
 
 ```yaml
 image:
-  podman:
-    host: 
-  input: 
-  platform: 
   docker:
+    # Same as '--docker-host'
+    # Default is 
     host: 
+
+  # Same as '--input'
+  # Default is 
+  input: 
+
+  # Same as '--platform'
+  # Default is 
+  platform: 
+
+  podman:
+    # Same as '--podman-host'
+    # Default is 
+    host: 
+
 ```
 
-## Cache options
+## Output options
 
 ```yaml
-cache:
-  backend: fs
-  redis:
-    key: 
-    ca: 
-    cert: 
+# Same as '--output'
+# Default is 
+output: 
+
+```
+
+## Output-Plugin-Arg options
+
+```yaml
+# Same as '--output-plugin-arg'
+# Default is 
+output-plugin-arg: 
+
 ```
 
 ## Report options
 
 ```yaml
+# Same as '--report'
+# Default is all
 report: all
+
+```
+
+## Scan options
+
+```yaml
+scan:
+  # Same as '--compliance'
+  # Default is 
+  compliance: 
+
+```
+
+## Template options
+
+```yaml
+# Same as '--template'
+# Default is 
+template: 
+
 ```
 
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
