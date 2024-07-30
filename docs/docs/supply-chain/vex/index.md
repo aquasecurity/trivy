@@ -12,6 +12,7 @@ Trivy currently supports two methods for utilizing VEX:
 
 1. [VEX Repository](./repo.md)
 2. [Local VEX Files](./file.md)
+3. [VEX Attestation](./oci.md)
 
 ### Enabling VEX
 To enable VEX, use the `--vex` option.
@@ -19,12 +20,13 @@ You can specify the method to use:
 
 - To enable the VEX Repository: `--vex repo`
 - To use a local VEX file: `--vex /path/to/vex-document.json`
+- To enable VEX attestation discovery in OCI registry: `--vex oci`
 
 ```bash
 $ trivy image ghcr.io/aquasecurity/trivy:0.52.0 --vex repo
 ```
 
-You can enable both methods simultaneously.
+You can enable these methods simultaneously.
 The order of specification determines the priority:
 
 - `--vex repo --vex /path/to/vex-document.json`: VEX Repository has priority

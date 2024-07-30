@@ -91,7 +91,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
-      --vex strings                       [EXPERIMENTAL] VEX sources ("repo" or file path)
+      --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 
 ### Options inherited from parent commands

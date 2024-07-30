@@ -17,6 +17,7 @@ import (
 const (
 	TypeFile       SourceType = "file"
 	TypeRepository SourceType = "repo"
+	TypeOCI        SourceType = "oci"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -46,6 +47,8 @@ func NewSource(src string) Source {
 	switch src {
 	case "repository", "repo":
 		return Source{Type: TypeRepository}
+	case "oci":
+		return Source{Type: TypeOCI}
 	default:
 		return Source{
 			Type:     TypeFile,
@@ -68,6 +71,7 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 		return nil
 	}
 
+	// NOTE: This method call has a side effect on the report
 	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(*report)
 	if err != nil {
 		return xerrors.Errorf("unable to encode the SBOM: %w", err)
@@ -99,6 +103,13 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 				continue
 			} else if err != nil {
 				return nil, xerrors.Errorf("failed to create a vex repository set: %w", err)
+			}
+		case TypeOCI:
+			v, err = NewOCI(report)
+			if err != nil {
+				return nil, xerrors.Errorf("VEX OCI error: %w", err)
+			} else if v == nil {
+				continue
 			}
 		default:
 			log.Warn("Unsupported VEX source", log.String("type", string(src.Type)))
