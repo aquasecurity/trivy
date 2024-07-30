@@ -77,7 +77,7 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 		// e.g. `LABEL vendor="aquasecurity"` => `Labels:vendor` -> `aquasecurity`
 		for label, value := range r.Metadata.ImageConfig.Config.Labels {
 			props = append(props, core.Property{
-				Name:  core.PropertyLabelsPrefix + label,
+				Name:  core.PropertyLabelsPrefix + ":" + label,
 				Value: value,
 			})
 		}
