@@ -30,7 +30,7 @@ const (
 	PropertyRepoDigest   = "RepoDigest"
 	PropertyDiffID       = "DiffID"
 	PropertyRepoTag      = "RepoTag"
-	PropertyLabelsPrefix = "Labels:"
+	PropertyLabelsPrefix = "Labels"
 
 	// Package properties
 	PropertyPkgID           = "PkgID"
