@@ -2527,6 +2527,20 @@ You're not viewing the latest version.
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="oci/" class="md-nav__link">
+        VEX Attestation
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -4096,6 +4110,7 @@ By providing VEX during scanning, it is possible to filter vulnerabilities based
 <ol>
 <li><a href="repo/">VEX Repository</a></li>
 <li><a href="file/">Local VEX Files</a></li>
+<li><a href="oci/">VEX Attestation</a></li>
 </ol>
 <h3 id="enabling-vex">Enabling VEX</h3>
 <p>To enable VEX, use the <code>--vex</code> option.
@@ -4103,10 +4118,11 @@ You can specify the method to use:</p>
 <ul>
 <li>To enable the VEX Repository: <code>--vex repo</code></li>
 <li>To use a local VEX file: <code>--vex /path/to/vex-document.json</code></li>
+<li>To enable VEX attestation discovery in OCI registry: <code>--vex oci</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code>$ trivy image ghcr.io/aquasecurity/trivy:0.52.0 --vex repo
 </code></pre></div>
-<p>You can enable both methods simultaneously.
+<p>You can enable these methods simultaneously.
 The order of specification determines the priority:</p>
 <ul>
 <li><code>--vex repo --vex /path/to/vex-document.json</code>: VEX Repository has priority</li>
