@@ -99,11 +99,13 @@ func getFlagDetails(section string, flagGroup any) []*flagDetails {
 		case *flag.Flag[[]string]:
 			name = p.Name
 			configName = p.ConfigName
-			defaultValue = p.Default
 			if len(p.Default) > 0 {
+				defaultValue = strings.Join(p.Default, ", ")
 				for _, line := range p.Default {
 					example = append(example, line)
 				}
+			} else {
+				defaultValue = p.Default
 			}
 		case *flag.Flag[time.Duration]:
 			name = p.Name
