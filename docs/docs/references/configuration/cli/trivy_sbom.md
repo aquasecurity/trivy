@@ -43,7 +43,8 @@ trivy sbom [flags] SBOM_PATH
       --offline-scan                do not issue API requests to identify dependencies
   -o, --output string               output file name
       --output-plugin-arg string    [EXPERIMENTAL] output plugin arguments
-      --pkg-types strings           comma-separated list of package types (os,library) (default [os,library])
+      --pkg-relationships strings   list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
+      --pkg-types strings           list of package types (os,library) (default [os,library])
       --redis-ca string             redis ca file location, if using redis as cache backend
       --redis-cert string           redis certificate file location, if using redis as cache backend
       --redis-key string            redis key file location, if using redis as cache backend
@@ -62,7 +63,7 @@ trivy sbom [flags] SBOM_PATH
   -t, --template string             output template
       --token string                for authentication in client/server mode
       --token-header string         specify a header name for token in client/server mode (default "Trivy-Token")
-      --vex strings                 [EXPERIMENTAL] VEX sources ("repo" or file path)
+      --vex strings                 [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 
 ### Options inherited from parent commands

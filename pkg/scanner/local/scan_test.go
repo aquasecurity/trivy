@@ -65,8 +65,17 @@ var (
 		Licenses: []string{"MIT"},
 	}
 	laravelPkg = ftypes.Package{
-		Name:    "laravel/framework",
-		Version: "6.0.0",
+		Name:         "laravel/framework",
+		Version:      "6.0.0",
+		Relationship: ftypes.RelationshipDirect,
+		Layer: ftypes.Layer{
+			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+		},
+	}
+	guzzlePkg = ftypes.Package{
+		Name:         "guzzlehttp/guzzle",
+		Version:      "7.9.2",
+		Relationship: ftypes.RelationshipIndirect,
 		Layer: ftypes.Layer{
 			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 		},
@@ -98,7 +107,8 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -198,7 +208,8 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					Scanners: types.Scanners{types.LicenseScanner},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.LicenseScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -298,7 +309,8 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -377,8 +389,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "./result.cdx",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					PkgTypes: []string{types.PkgTypeLibrary},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgTypes:         []string{types.PkgTypeLibrary},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -477,7 +490,8 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -558,7 +572,8 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -630,7 +645,8 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -645,12 +661,17 @@ func TestScanner_Scan(t *testing.T) {
 			wantResults: nil,
 		},
 		{
-			name: "happy path with only language-specific package detection",
+			name: "happy path with only language-specific package detection, excluding direct packages",
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"},
 				options: types.ScanOptions{
 					PkgTypes: []string{types.PkgTypeLibrary},
+					PkgRelationships: []ftypes.Relationship{
+						ftypes.RelationshipUnknown,
+						ftypes.RelationshipRoot,
+						ftypes.RelationshipIndirect,
+					},
 					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
@@ -680,7 +701,8 @@ func TestScanner_Scan(t *testing.T) {
 								Type:     "composer",
 								FilePath: "/app/composer-lock.json",
 								Packages: []ftypes.Package{
-									laravelPkg,
+									laravelPkg, // will be excluded
+									guzzlePkg,
 								},
 							},
 						},
@@ -721,19 +743,7 @@ func TestScanner_Scan(t *testing.T) {
 					Target:   "/app/composer-lock.json",
 					Class:    types.ClassLangPkg,
 					Type:     ftypes.Composer,
-					Packages: ftypes.Packages{laravelPkg},
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2021-21263",
-							PkgName:          laravelPkg.Name,
-							InstalledVersion: laravelPkg.Version,
-							FixedVersion:     "8.22.1, 7.30.3, 6.20.12",
-							Status:           dbTypes.StatusFixed,
-							Layer: ftypes.Layer{
-								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
-							},
-						},
-					},
+					Packages: ftypes.Packages{guzzlePkg},
 				},
 			},
 			wantOS: ftypes.OS{
@@ -900,7 +910,8 @@ func TestScanner_Scan(t *testing.T) {
 						types.PkgTypeOS,
 						types.PkgTypeLibrary,
 					},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -920,8 +931,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					PkgTypes: []string{types.PkgTypeLibrary},
-					Scanners: types.Scanners{types.VulnerabilityScanner},
+					PkgTypes:         []string{types.PkgTypeLibrary},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/sad.yaml"},
@@ -1103,8 +1115,7 @@ func TestScanner_Scan(t *testing.T) {
 			s := NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
-				require.Error(t, err, tt.name)
-				require.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			}
 

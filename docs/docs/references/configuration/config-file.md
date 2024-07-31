@@ -620,11 +620,6 @@ output:
 # Default is empty
 output-plugin-arg: 
 
-# Same as '--pkg-types'
-# Default is os, library
-pkg-types:
- - os
- - library
 # Same as '--report'
 # Default is all
 report: all
@@ -677,10 +672,6 @@ scan:
   # Same as '--file-patterns'
   # Default is []
   file-patterns: []
-
-  # Same as '--include-dev-deps'
-  # Default is false
-  include-dev-deps: false
 
   # Same as '--offline-scan'
   # Default is false

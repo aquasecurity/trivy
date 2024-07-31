@@ -49,6 +49,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
 					ImageConfig: v1.ConfigFile{
 						Architecture: "arm64",
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
 					},
 				},
 				Results: types.Results{
@@ -199,6 +204,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"DiffID: sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							"Labels:vendor: aquasecurity",
 							"RepoDigest: rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
 							"RepoTag: rails:latest",
 							"SchemaVersion: 2",
