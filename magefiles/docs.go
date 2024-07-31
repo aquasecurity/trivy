@@ -156,6 +156,7 @@ func buildFlagsTree() map[string]any {
 	metadata = append(metadata, getFlagMetadata("Vulnerability", *flag.NewVulnerabilityFlagGroup())...)
 	metadata = append(metadata, getFlagMetadata("Kubernetes", *flag.NewK8sFlagGroup())...)
 	metadata = append(metadata, getFlagMetadata("Repository", *flag.NewRepoFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Clean", *flag.NewCleanFlagGroup())...)
 
 	for _, m := range metadata {
 		addToMap(res, strings.Split(m.configName, "."), m)

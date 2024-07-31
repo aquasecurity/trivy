@@ -36,6 +36,36 @@ cache:
 
 ```
 
+## Clean options
+
+```yaml
+clean:
+  # Same as '--all'
+  # Default is false
+  all: false
+
+  # Same as '--checks-bundle'
+  # Default is false
+  checks-bundle: false
+
+  # Same as '--java-db'
+  # Default is false
+  java-db: false
+
+  # Same as '--scan-cache'
+  # Default is false
+  scan-cache: false
+
+  # Same as '--vex-repo'
+  # Default is false
+  vex-repo: false
+
+  # Same as '--vuln-db'
+  # Default is false
+  vuln-db: false
+
+```
+
 ## Client/Server options
 
 ```yaml
