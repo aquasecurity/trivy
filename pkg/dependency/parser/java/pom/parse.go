@@ -681,7 +681,7 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 	repoURL, err := url.Parse(repo)
 	if err != nil {
 		p.logger.Error("URL parse error", log.String("repo", repo))
-		return nil, nil
+		return nil, err
 	}
 
 	paths = append([]string{repoURL.Path}, paths...)
@@ -691,7 +691,7 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
 	if err != nil {
 		logger.Debug("HTTP request failed")
-		return nil, nil
+		return nil, err
 	}
 	if repoURL.User != nil {
 		password, _ := repoURL.User.Password()
