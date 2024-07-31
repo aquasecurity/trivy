@@ -40,7 +40,6 @@ const (
 	TargetFilesystem     TargetKind = "fs"
 	TargetRootfs         TargetKind = "rootfs"
 	TargetRepository     TargetKind = "repo"
-	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
 )
@@ -345,6 +344,15 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		}
 	}()
 
+	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
+		log.WarnContext(ctx,
+			fmt.Sprintf(
+				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
+				doc.URL("/docs/references/modes/client-server", ""),
+			),
+		)
+	}
+
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
 		return viper.SafeWriteConfigAs("trivy-default.yaml")
@@ -359,32 +367,23 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	}
 	defer r.Close(ctx)
 
-	var report types.Report
-	switch targetKind {
-	case TargetContainerImage, TargetImageArchive:
-		if report, err = r.ScanImage(ctx, opts); err != nil {
-			return xerrors.Errorf("image scan error: %w", err)
-		}
-	case TargetFilesystem:
-		if report, err = r.ScanFilesystem(ctx, opts); err != nil {
-			return xerrors.Errorf("filesystem scan error: %w", err)
-		}
-	case TargetRootfs:
-		if report, err = r.ScanRootfs(ctx, opts); err != nil {
-			return xerrors.Errorf("rootfs scan error: %w", err)
-		}
-	case TargetRepository:
-		if report, err = r.ScanRepository(ctx, opts); err != nil {
-			return xerrors.Errorf("repository scan error: %w", err)
-		}
-	case TargetSBOM:
-		if report, err = r.ScanSBOM(ctx, opts); err != nil {
-			return xerrors.Errorf("sbom scan error: %w", err)
-		}
-	case TargetVM:
-		if report, err = r.ScanVM(ctx, opts); err != nil {
-			return xerrors.Errorf("vm scan error: %w", err)
-		}
+	scans := map[TargetKind]func(context.Context, flag.Options) (types.Report, error){
+		TargetContainerImage: r.ScanImage,
+		TargetFilesystem:     r.ScanFilesystem,
+		TargetRootfs:         r.ScanRootfs,
+		TargetRepository:     r.ScanRepository,
+		TargetSBOM:           r.ScanSBOM,
+		TargetVM:             r.ScanVM,
+	}
+
+	scanFunction, exists := scans[targetKind]
+	if !exists {
+		return xerrors.Errorf("unknown target kind: %s", targetKind)
+	}
+
+	report, err := scanFunction(ctx, opts)
+	if err != nil {
+		return xerrors.Errorf("%s scan error: %w", targetKind, err)
 	}
 
 	report, err = r.Filter(ctx, opts, report)
