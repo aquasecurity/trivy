@@ -12,13 +12,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
 func Run(ctx context.Context, opts flag.Options) error {
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
-	if !opts.CleanAll && !opts.CleanScanCache && !opts.CleanVulnerabilityDB && !opts.CleanJavaDB && !opts.CleanChecksBundle {
+	if !opts.CleanAll && !opts.CleanScanCache && !opts.CleanVulnerabilityDB && !opts.CleanJavaDB &&
+		!opts.CleanChecksBundle && !opts.CleanVEXRepositories {
 		return xerrors.New("no clean option is specified")
 	}
 
@@ -49,6 +51,12 @@ func Run(ctx context.Context, opts flag.Options) error {
 			return xerrors.Errorf("check bundle clean error: %w", err)
 		}
 	}
+
+	if opts.CleanVEXRepositories {
+		if err := cleanVEXRepositories(opts); err != nil {
+			return xerrors.Errorf("VEX repositories clean error: %w", err)
+		}
+	}
 	return nil
 }
 
@@ -76,7 +84,7 @@ func cleanScanCache(ctx context.Context, opts flag.Options) error {
 
 func cleanVulnerabilityDB(ctx context.Context, opts flag.Options) error {
 	log.InfoContext(ctx, "Removing vulnerability database...")
-	if err := db.NewClient(opts.CacheDir, true).Clear(ctx); err != nil {
+	if err := db.NewClient(db.Dir(opts.CacheDir), true).Clear(ctx); err != nil {
 		return xerrors.Errorf("clear vulnerability database: %w", err)
 
 	}
@@ -99,6 +107,14 @@ func cleanCheckBundle(opts flag.Options) error {
 	}
 	if err := c.Clear(); err != nil {
 		return xerrors.Errorf("clear check bundle: %w", err)
+	}
+	return nil
+}
+
+func cleanVEXRepositories(opts flag.Options) error {
+	log.Info("Removing VEX repositories...")
+	if err := repo.NewManager(opts.CacheDir).Clear(); err != nil {
+		return xerrors.Errorf("clear VEX repositories: %w", err)
 	}
 	return nil
 }

@@ -50,7 +50,7 @@ func TestScanner_Scan(t *testing.T) {
 				imageID:  "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{"os"},
+					PkgTypes: []string{"os"},
 				},
 			},
 			expectation: &rpc.ScanResponse{
@@ -166,7 +166,7 @@ func TestScanner_Scan(t *testing.T) {
 				imageID:  "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType: []string{"os"},
+					PkgTypes: []string{"os"},
 				},
 			},
 			wantErr: "failed to detect vulnerabilities via RPC",

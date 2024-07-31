@@ -31,6 +31,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		severities       string
 		compliance       string
 		debug            bool
+		pkgTypes         string
 	}
 	tests := []struct {
 		name     string

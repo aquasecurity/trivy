@@ -8,9 +8,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/require"
 )
 
 // TestRepository tests `trivy repo` with the local code repositories
@@ -32,6 +33,7 @@ func TestRepository(t *testing.T) {
 		format         types.Format
 		includeDevDeps bool
 		parallel       int
+		vex            string
 	}
 	tests := []struct {
 		name     string
@@ -75,6 +77,24 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/gomod.json.golden",
 		},
 		{
+			name: "gomod with local VEX file",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/gomod",
+				vex:     "testdata/fixtures/vex/file/openvex.json",
+			},
+			golden: "testdata/gomod-vex.json.golden",
+		},
+		{
+			name: "gomod with VEX repository",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/gomod",
+				vex:     "repo",
+			},
+			golden: "testdata/gomod-vex.json.golden",
+		},
+		{
 			name: "npm",
 			args: args{
 				scanner:     types.VulnerabilityScanner,
@@ -105,8 +125,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "pnpm",
 			args: args{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/pnpm",
+				scanner:     types.VulnerabilityScanner,
+				input:       "testdata/fixtures/repo/pnpm",
+				listAllPkgs: true,
 			},
 			golden: "testdata/pnpm.json.golden",
 		},
@@ -436,8 +457,14 @@ func TestRepository(t *testing.T) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
-	// Set a temp dir so that modules will not be loaded
+	// Set up VEX
+	initVEXRepository(t, cacheDir, cacheDir)
+
+	// Set a temp dir so that the VEX config will be loaded and modules will not be loaded
 	t.Setenv("XDG_DATA_HOME", cacheDir)
+
+	// Disable Go license detection
+	t.Setenv("GOPATH", cacheDir)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -529,6 +556,10 @@ func TestRepository(t *testing.T) {
 
 			if tt.args.secretConfig != "" {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
+			}
+
+			if tt.args.vex != "" {
+				osArgs = append(osArgs, "--vex", tt.args.vex)
 			}
 
 			runTest(t, osArgs, tt.golden, "", format, runOptions{

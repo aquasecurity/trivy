@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -28,6 +29,10 @@ const (
 var (
 	DefaultRepository    = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
 	defaultRepository, _ = name.NewTag(DefaultRepository)
+
+	Init  = db.Init
+	Close = db.Close
+	Path  = db.Path
 )
 
 type options struct {
@@ -56,13 +61,17 @@ func WithDBRepository(dbRepository name.Reference) Option {
 type Client struct {
 	*options
 
-	cacheDir string
+	dbDir    string
 	metadata metadata.Client
 	quiet    bool
 }
 
+func Dir(cacheDir string) string {
+	return filepath.Join(cacheDir, "db")
+}
+
 // NewClient is the factory method for DB client
-func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
+func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
 		dbRepository: defaultRepository,
 	}
@@ -73,8 +82,8 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 
 	return &Client{
 		options:  o,
-		cacheDir: cacheDir,
-		metadata: metadata.NewClient(cacheDir),
+		dbDir:    dbDir,
+		metadata: metadata.NewClient(dbDir),
 		quiet:    quiet,
 	}
 }
@@ -149,7 +158,7 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
-	if err = art.Download(ctx, db.Dir(dst), oci.DownloadOption{MediaType: dbMediaType}); err != nil {
+	if err = art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
 		return xerrors.Errorf("database download error: %w", err)
 	}
 
@@ -159,19 +168,19 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 	return nil
 }
 
-func (c *Client) Clear(ctx context.Context) error {
-	if err := os.RemoveAll(db.Dir(c.cacheDir)); err != nil {
+func (c *Client) Clear(_ context.Context) error {
+	if err := os.RemoveAll(c.dbDir); err != nil {
 		return xerrors.Errorf("failed to remove vulnerability database: %w", err)
 	}
 	return nil
 }
 
-func (c *Client) updateDownloadedAt(ctx context.Context, dst string) error {
+func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	log.Debug("Updating database metadata...")
 
 	// We have to initialize a metadata client here
 	// since the destination may be different from the cache directory.
-	client := metadata.NewClient(dst)
+	client := metadata.NewClient(dbDir)
 	meta, err := client.Get()
 	if err != nil {
 		return xerrors.Errorf("unable to get metadata: %w", err)
@@ -206,4 +215,14 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 		return nil, xerrors.Errorf("OCI artifact error: %w", err)
 	}
 	return art, nil
+}
+
+func (c *Client) ShowInfo() error {
+	meta, err := c.metadata.Get()
+	if err != nil {
+		return xerrors.Errorf("something wrong with DB: %w", err)
+	}
+	log.Debug("DB info", log.Int("schema", meta.Version), log.Time("updated_at", meta.UpdatedAt),
+		log.Time("next_update", meta.NextUpdate), log.Time("downloaded_at", meta.DownloadedAt))
+	return nil
 }

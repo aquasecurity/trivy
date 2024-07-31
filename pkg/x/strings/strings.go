@@ -1,17 +1,28 @@
 package strings
 
-import "github.com/samber/lo"
+import (
+	"fmt"
+
+	"github.com/samber/lo"
+)
 
 type String interface {
 	~string
 }
 
-func ToStringSlice[T String](ss []T) []string {
-	if ss == nil {
+func ToStringSlice[T any](ss []T) []string {
+	if len(ss) == 0 {
 		return nil
 	}
 	return lo.Map(ss, func(s T, _ int) string {
-		return string(s)
+		switch v := any(s).(type) {
+		case string:
+			return v
+		case fmt.Stringer:
+			return v.String()
+		default:
+			return fmt.Sprint(v)
+		}
 	})
 }
 

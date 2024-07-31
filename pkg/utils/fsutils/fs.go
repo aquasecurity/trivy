@@ -28,6 +28,10 @@ func HomeDir() string {
 	return homeDir
 }
 
+func TrivyHomeDir() string {
+	return filepath.Join(HomeDir(), ".trivy")
+}
+
 // CopyFile copies the file content from scr to dst
 func CopyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
@@ -88,7 +92,7 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		defer f.Close()
 
 		if err = fn(path, d, f); err != nil {
-			log.Debug("Walk error", log.String("file_path", path), log.Err(err))
+			log.Debug("Walk error", log.FilePath(path), log.Err(err))
 		}
 		return nil
 	})

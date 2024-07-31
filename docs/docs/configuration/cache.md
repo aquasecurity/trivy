@@ -1,10 +1,11 @@
 # Cache
 The cache directory includes 
 
+- Cache of previous scans (Scan cache).
 - [Vulnerability Database][trivy-db][^1]
 - [Java Index Database][trivy-java-db][^2]
 - [Misconfiguration Checks][misconf-checks][^3]
-- Cache of previous scans.
+- [VEX Repositories](../supply-chain/vex/repo.md)
  
 The cache option is common to all scanners.
 

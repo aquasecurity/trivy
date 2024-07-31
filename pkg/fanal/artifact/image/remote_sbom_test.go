@@ -10,6 +10,7 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
+	typesv1 "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -181,8 +182,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 		switch r.URL.Path {
 		case "/v2":
 			_, err := w.Write([]byte("ok"))
-			require.NoError(t, err)
+			assert.NoError(t, err)
 		case "/v2/test/image/referrers/sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02":
+			w.Header().Set("Content-Type", string(typesv1.OCIImageIndex))
 			http.ServeFile(w, r, "testdata/index.json")
 		case "/v2/test/image/manifests/sha256:37c89af4907fa0af078aeba12d6f18dc0c63937c010030baaaa88e958f0719a5":
 			http.ServeFile(w, r, "testdata/manifest.json")

@@ -21,7 +21,7 @@ func TestManager_Update(t *testing.T) {
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte(`this is index`))
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	}))
 	t.Cleanup(ts.Close)
 

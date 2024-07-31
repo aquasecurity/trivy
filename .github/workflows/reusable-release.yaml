@@ -91,7 +91,7 @@ jobs:
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
-          version: v2.0.0
+          version: v2.1.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
@@ -108,7 +108,7 @@ jobs:
       # because GoReleaser Free doesn't support pushing images with the `--snapshot` flag.
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64, linux/arm64
           file: ./Dockerfile.canary # path to Dockerfile

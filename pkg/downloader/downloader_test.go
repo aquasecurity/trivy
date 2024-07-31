@@ -17,7 +17,7 @@ func TestDownload(t *testing.T) {
 	// Set up a test server with a self-signed certificate
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte("test content"))
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	}))
 	defer server.Close()
 
@@ -44,7 +44,9 @@ func TestDownload(t *testing.T) {
 			dst := t.TempDir()
 
 			// Execute the download
-			err := downloader.Download(context.Background(), server.URL, dst, "", tt.insecure)
+			_, err := downloader.Download(context.Background(), server.URL, dst, "", downloader.Options{
+				Insecure: tt.insecure,
+			})
 
 			if tt.wantErr {
 				assert.Error(t, err)

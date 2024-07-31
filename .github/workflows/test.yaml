@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4.1.6
 
@@ -31,15 +31,15 @@ jobs:
             echo "Run 'go mod tidy' and push it"
             exit 1
           fi
-        if: matrix.operating-system == 'ubuntu-latest-m'
+        if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
         id: lint
         uses: golangci/golangci-lint-action@v6.0.1
         with:
-          version: v1.58
+          version: v1.59
           args: --verbose --out-format=line-number
-        if: matrix.operating-system == 'ubuntu-latest-m'
+        if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Check if linter failed
         run: |
@@ -60,14 +60,14 @@ jobs:
             echo "Run 'mage docs:generate' and push it"
             exit 1
           fi
-        if: matrix.operating-system == 'ubuntu-latest-m'
+        if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Run unit tests
         run: mage test:unit
 
   integration:
     name: Integration Test
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4.1.6
@@ -87,7 +87,7 @@ jobs:
 
   k8s-integration:
     name: K8s Integration Test
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4.1.6
@@ -129,7 +129,7 @@ jobs:
 
   vm-test:
     name: VM Integration Test
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.6
@@ -151,7 +151,7 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest-m, windows-latest, macos-latest]
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
@@ -178,5 +178,5 @@ jobs:
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v6
       with:
-        version: v2.0.0
+        version: v2.1.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}

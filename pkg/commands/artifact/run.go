@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -119,6 +119,11 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
+	// Update the VEX repositories if needed
+	if err := operation.DownloadVEXRepositories(ctx, cliOptions); err != nil {
+		return nil, xerrors.Errorf("VEX repositories download error: %w", err)
+	}
+
 	// Initialize WASM modules
 	m, err := module.NewManager(ctx, module.Options{
 		Dir:            cliOptions.ModuleDir,
@@ -201,7 +206,7 @@ func (r *runner) scanFS(ctx context.Context, opts flag.Options) (types.Report, e
 
 func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Do not scan OS packages
-	opts.VulnType = []string{types.VulnTypeLibrary}
+	opts.PkgTypes = []string{types.PkgTypeLibrary}
 
 	// Disable the OS analyzers, individual package analyzers and SBOM analyzer
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
@@ -295,7 +300,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 		return SkipScan
 	}
 
-	if err := db.Init(opts.CacheDir); err != nil {
+	if err := db.Init(db.Dir(opts.CacheDir)); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 	r.dbOpen = true
@@ -405,7 +410,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not analyze programming language packages when not running in 'library'
-	if !slices.Contains(opts.VulnType, types.VulnTypeLibrary) {
+	if !slices.Contains(opts.PkgTypes, types.PkgTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
@@ -473,7 +478,8 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	}
 
 	scanOptions := types.ScanOptions{
-		VulnType:            opts.VulnType,
+		PkgTypes:            opts.PkgTypes,
+		PkgRelationships:    opts.PkgRelationships,
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
@@ -483,18 +489,24 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	}
 
 	if len(opts.ImageConfigScanners) != 0 {
-		log.Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))
+		log.WithPrefix(log.PrefixContainerImage).Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))
+	}
+
+	if opts.Scanners.Enabled(types.SBOMScanner) {
+		logger := log.WithPrefix(log.PrefixPackage)
+		logger.Debug("Package types", log.Any("types", scanOptions.PkgTypes))
+		logger.Debug("Package relationships", log.Any("relationships", scanOptions.PkgRelationships))
 	}
 
 	if opts.Scanners.Enabled(types.VulnerabilityScanner) {
-		log.Info("Vulnerability scanning is enabled")
-		log.Debug("Vulnerability type", log.Any("type", scanOptions.VulnType))
+		log.WithPrefix(log.PrefixVulnerability).Info("Vulnerability scanning is enabled")
 	}
 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
-		log.Info("Misconfiguration scanning is enabled")
+		logger := log.WithPrefix(log.PrefixMisconfiguration)
+		logger.Info("Misconfiguration scanning is enabled")
 
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
@@ -502,10 +514,10 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 		if err != nil {
 			if !opts.SkipCheckUpdate {
-				log.Error("Falling back to embedded checks", log.Err(err))
+				logger.Error("Falling back to embedded checks", log.Err(err))
 			}
 		} else {
-			log.Debug("Policies successfully loaded from disk")
+			logger.Debug("Policies successfully loaded from disk")
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
@@ -532,19 +544,21 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 
 	// Do not load config file for secret scanning
 	if opts.Scanners.Enabled(types.SecretScanner) {
-		log.Info("Secret scanning is enabled")
-		log.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
+		logger := log.WithPrefix(log.PrefixSecret)
+		logger.Info("Secret scanning is enabled")
+		logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
 		// e.g. https://aquasecurity.github.io/trivy/latest/docs/scanner/secret/#recommendation
-		log.Infof("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation"))
+		logger.Info(fmt.Sprintf("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
 	}
 
 	if opts.Scanners.Enabled(types.LicenseScanner) {
+		logger := log.WithPrefix(log.PrefixLicense)
 		if opts.LicenseFull {
-			log.Info("Full license scanning is enabled")
+			logger.Info("Full license scanning is enabled")
 		} else {
-			log.Info("License scanning is enabled")
+			logger.Info("License scanning is enabled")
 		}
 	}
 

@@ -223,7 +223,7 @@ func parseIgnoreYAML(ignoreFile string) (IgnoreConfig, error) {
 		return IgnoreConfig{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
-	log.Debug("Found an ignore yaml", log.String("path", ignoreFile))
+	log.Debug("Found an ignore yaml", log.FilePath(ignoreFile))
 
 	// Parse the YAML content
 	var ignoreConfig IgnoreConfig
@@ -239,7 +239,7 @@ func parseIgnore(ignoreFile string) (IgnoreFindings, error) {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
-	log.Debug("Found an ignore file", log.String("path", ignoreFile))
+	log.Debug("Found an ignore file", log.FilePath(ignoreFile))
 
 	var ignoredFindings IgnoreFindings
 	scanner := bufio.NewScanner(f)

@@ -72,7 +72,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
 		if err = a.removeDevDependencies(input.FS, path.Dir(filePath), app); err != nil {
 			a.logger.Warn("Unable to parse Cargo.toml q to identify direct dependencies",
-				log.String("path", path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
+				log.FilePath(path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
 		}
 		sort.Sort(app.Packages)
 		apps = append(apps, *app)
@@ -109,7 +109,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	cargoTOMLPath := path.Join(dir, types.CargoToml)
 	directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		a.logger.Debug("Cargo.toml not found", log.String("path", cargoTOMLPath))
+		a.logger.Debug("Cargo.toml not found", log.FilePath(cargoTOMLPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)

@@ -5,15 +5,17 @@ import (
 	"sync"
 
 	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/db"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex"
+	"github.com/aquasecurity/trivy/pkg/vex/repo"
 )
 
 var mu sync.Mutex
@@ -24,36 +26,56 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 	mu.Lock()
 	defer mu.Unlock()
 
-	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
+	ctx = log.WithContextPrefix(ctx, "db")
+	dbDir := db.Dir(cacheDir)
+	client := db.NewClient(dbDir, quiet, db.WithDBRepository(dbRepository))
 	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
 	}
 
 	if needsUpdate {
-		log.Info("Need to update DB")
-		log.Info("Downloading DB...", log.String("repository", dbRepository.String()))
-		if err = client.Download(ctx, cacheDir, opt); err != nil {
+		log.InfoContext(ctx, "Need to update DB")
+		log.InfoContext(ctx, "Downloading DB...", log.String("repository", dbRepository.String()))
+		if err = client.Download(ctx, dbDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
 	}
 
 	// for debug
-	if err = showDBInfo(cacheDir); err != nil {
+	if err = client.ShowInfo(); err != nil {
 		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil
 }
 
-func showDBInfo(cacheDir string) error {
-	m := metadata.NewClient(cacheDir)
-	meta, err := m.Get()
-	if err != nil {
-		return xerrors.Errorf("something wrong with DB: %w", err)
+func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
+	ctx = log.WithContextPrefix(ctx, "vex")
+	if opts.SkipVEXRepoUpdate {
+		log.InfoContext(ctx, "Skipping VEX repository update")
+		return nil
 	}
-	log.Debug("DB info", log.Int("schema", meta.Version), log.Time("updated_at", meta.UpdatedAt),
-		log.Time("next_update", meta.NextUpdate), log.Time("downloaded_at", meta.DownloadedAt))
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	// Download VEX repositories only if `--vex repo` is passed.
+	_, enabled := lo.Find(opts.VEXSources, func(src vex.Source) bool {
+		return src.Type == vex.TypeRepository
+	})
+	if !enabled {
+		return nil
+	}
+
+	err := repo.NewManager(opts.CacheDir).DownloadRepositories(ctx, nil, repo.Options{
+		Insecure: opts.Insecure,
+	})
+	if err != nil {
+		return xerrors.Errorf("failed to download vex repositories: %w", err)
+	}
+
 	return nil
+
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them

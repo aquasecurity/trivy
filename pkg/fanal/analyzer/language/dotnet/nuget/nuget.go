@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -39,6 +40,7 @@ type nugetLibraryAnalyzer struct {
 	lockParser    language.Parser
 	configParser  language.Parser
 	licenseParser nuspecParser
+	logger        *log.Logger
 }
 
 func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -46,12 +48,16 @@ func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer,
 		lockParser:    lock.NewParser(),
 		configParser:  config.NewParser(),
 		licenseParser: newNuspecParser(),
+		logger:        log.WithPrefix("nuget"),
 	}, nil
 }
 
 func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 	foundLicenses := make(map[string][]string)
+	if a.licenseParser.packagesDir == "" {
+		a.logger.Debug("The nuget packages directory couldn't be found. License search disabled")
+	}
 
 	// We saved only config and lock files in the FS,
 	// so we need to parse all saved files

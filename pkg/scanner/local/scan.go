@@ -108,9 +108,8 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	var results types.Results
 
-	// By default, we need to remove dev dependencies from the result
-	// IncludeDevDeps option allows you not to remove them
-	excludeDevDeps(target.Applications, options.IncludeDevDeps)
+	// Filter packages according to the options
+	excludePackages(&target, options)
 
 	// Add packages if needed and scan packages for vulnerabilities
 	vulnResults, eosl, err := s.scanVulnerabilities(ctx, target, options)
@@ -160,7 +159,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	var eosl bool
 	var results types.Results
 
-	if slices.Contains(options.VulnType, types.VulnTypeOS) {
+	if slices.Contains(options.PkgTypes, types.PkgTypeOS) {
 		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
 		switch {
 		case errors.Is(err, ospkgDetector.ErrUnsupportedOS):
@@ -173,7 +172,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 		}
 	}
 
-	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
+	if slices.Contains(options.PkgTypes, types.PkgTypeLibrary) {
 		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
@@ -198,7 +197,7 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 	log.Info("Detected config files", log.Int("num", len(misconfs)))
 	var results types.Results
 	for _, misconf := range misconfs {
-		log.Debug("Scanned config file", log.String("path", misconf.FilePath))
+		log.Debug("Scanned config file", log.FilePath(misconf.FilePath))
 
 		var detected []types.DetectedMisconfiguration
 
@@ -237,7 +236,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 
 	var results types.Results
 	for _, secret := range secrets {
-		log.Debug("Secret file", log.String("path", secret.FilePath))
+		log.Debug("Secret file", log.FilePath(secret.FilePath))
 
 		results = append(results, types.Result{
 			Target: secret.FilePath,
@@ -393,6 +392,32 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 
 func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
+}
+
+func excludePackages(target *types.ScanTarget, options types.ScanOptions) {
+	// Filter packages by relationship
+	filterPkgByRelationship(target, options)
+
+	// By default, development packages are removed from the result
+	// '--include-dev-deps' option allows including them
+	excludeDevDeps(target.Applications, options.IncludeDevDeps)
+}
+
+func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions) {
+	if slices.Compare(options.PkgRelationships, ftypes.Relationships) == 0 {
+		return // No need to filter
+	}
+
+	filter := func(pkgs []ftypes.Package) []ftypes.Package {
+		return lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+			return slices.Contains(options.PkgRelationships, pkg.Relationship)
+		})
+	}
+
+	target.Packages = filter(target.Packages)
+	for i, app := range target.Applications {
+		target.Applications[i].Packages = filter(app.Packages)
+	}
 }
 
 // excludeDevDeps removes development dependencies from the list of applications

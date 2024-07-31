@@ -12,7 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
-	api "github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/require"
 )
@@ -193,6 +193,12 @@ func TestDockerEngine(t *testing.T) {
 			golden:   "testdata/opensuse-leap-151.json.golden",
 		},
 		{
+			name:     "opensuse tumbleweed",
+			imageTag: "ghcr.io/aquasecurity/trivy-test-images:opensuse-tumbleweed",
+			input:    "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
+			golden:   "testdata/opensuse-tumbleweed.json.golden",
+		},
+		{
 			name:     "photon 3.0",
 			imageTag: "ghcr.io/aquasecurity/trivy-test-images:photon-30",
 			input:    "testdata/fixtures/images/photon-30.tar.gz",
@@ -237,7 +243,7 @@ func TestDockerEngine(t *testing.T) {
 				require.NoError(t, err, tt.name)
 
 				// ensure image doesnt already exists
-				_, _ = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
+				_, _ = cli.ImageRemove(ctx, tt.input, image.RemoveOptions{
 					Force:         true,
 					PruneChildren: true,
 				})
@@ -256,11 +262,11 @@ func TestDockerEngine(t *testing.T) {
 
 				// cleanup
 				t.Cleanup(func() {
-					_, _ = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
+					_, _ = cli.ImageRemove(ctx, tt.input, image.RemoveOptions{
 						Force:         true,
 						PruneChildren: true,
 					})
-					_, _ = cli.ImageRemove(ctx, tt.imageTag, api.ImageRemoveOptions{
+					_, _ = cli.ImageRemove(ctx, tt.imageTag, image.RemoveOptions{
 						Force:         true,
 						PruneChildren: true,
 					})

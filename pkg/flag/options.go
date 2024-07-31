@@ -320,6 +320,7 @@ type Flags struct {
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	ModuleFlagGroup        *ModuleFlagGroup
+	PackageFlagGroup       *PackageFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
 	RegistryFlagGroup      *RegistryFlagGroup
 	RegoFlagGroup          *RegoFlagGroup
@@ -343,6 +344,7 @@ type Options struct {
 	LicenseOptions
 	MisconfOptions
 	ModuleOptions
+	PackageOptions
 	RegistryOptions
 	RegoOptions
 	RemoteOptions
@@ -368,6 +370,12 @@ type Options struct {
 func (o *Options) Align(f *Flags) error {
 	if f.ScanFlagGroup != nil && f.ScanFlagGroup.Scanners != nil {
 		o.enableSBOM()
+	}
+
+	if f.PackageFlagGroup != nil && f.PackageFlagGroup.PkgRelationships != nil &&
+		slices.Compare(o.PkgRelationships, ftypes.Relationships) != 0 &&
+		(o.DependencyTree || slices.Contains(types.SupportedSBOMFormats, o.Format) || len(o.VEXSources) != 0) {
+		return xerrors.Errorf("'--pkg-relationships' cannot be used with '--dependency-tree', '--vex' or SBOM formats")
 	}
 
 	if o.Compliance.Spec.ID != "" {
@@ -410,15 +418,10 @@ func (o *Options) enableSBOM() {
 		o.Scanners.Enable(types.SBOMScanner)
 	}
 
-	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
-		log.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
-		o.Scanners = types.Scanners{types.SBOMScanner}
-	}
-
-	if o.Format == types.FormatCycloneDX {
+	if o.Format == types.FormatCycloneDX || o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
 		// Vulnerability scanning is disabled by default for CycloneDX.
 		if !viper.IsSet(ScannersFlag.ConfigName) {
-			log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+			log.Info(fmt.Sprintf(`"--format %[1]s" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the "%[1]s" report.`, o.Format))
 			o.Scanners = nil
 		}
 		o.Scanners.Enable(types.SBOMScanner)
@@ -437,15 +440,16 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 }
 
 // FilterOpts returns options for filtering
-func (o *Options) FilterOpts() result.FilterOption {
-	return result.FilterOption{
+func (o *Options) FilterOpts() result.FilterOptions {
+	return result.FilterOptions{
 		Severities:         o.Severities,
 		IgnoreStatuses:     o.IgnoreStatuses,
 		IncludeNonFailures: o.IncludeNonFailures,
 		IgnoreFile:         o.IgnoreFile,
 		PolicyFile:         o.IgnorePolicy,
 		IgnoreLicenses:     o.IgnoredLicenses,
-		VEXPath:            o.VEXPath,
+		CacheDir:           o.CacheDir,
+		VEXSources:         o.VEXSources,
 	}
 }
 
@@ -571,6 +575,9 @@ func (f *Flags) groups() []FlagGroup {
 	}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
+	}
+	if f.PackageFlagGroup != nil {
+		groups = append(groups, f.PackageFlagGroup)
 	}
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
@@ -708,6 +715,13 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 		opts.ModuleOptions, err = f.ModuleFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("module flag error: %w", err)
+		}
+	}
+
+	if f.PackageFlagGroup != nil {
+		opts.PackageOptions, err = f.PackageFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("package flag error: %w", err)
 		}
 	}
 
