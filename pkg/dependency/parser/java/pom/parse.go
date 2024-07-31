@@ -13,7 +13,7 @@ import (
 	"sort"
 	"strings"
 
-	multierror "github.com/hashicorp/go-multierror"
+	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
@@ -680,18 +680,15 @@ func (p *Parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, error) {
 	repoURL, err := url.Parse(repo)
 	if err != nil {
-		p.logger.Error("URL parse error", log.String("repo", repo))
-		return nil, nil
+		return nil, xerrors.Errorf("unable to parse URL: %w", err)
 	}
 
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
-	logger := p.logger.With(log.String("host", repoURL.Host), log.String("path", repoURL.Path))
 	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
 	if err != nil {
-		logger.Debug("HTTP request failed")
-		return nil, nil
+		return nil, xerrors.Errorf("unable to create HTTP request: %w", err)
 	}
 	if repoURL.User != nil {
 		password, _ := repoURL.User.Password()
@@ -709,7 +706,8 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 
 	req, err := p.remoteRepoRequest(repo, mavenMetadataPaths)
 	if err != nil {
-		return "", xerrors.Errorf("unable to create request for maven-metadata.xml file")
+		p.logger.Debug("Unable to create request", log.String("repo", repo), log.Err(err))
+		return "", nil
 	}
 
 	client := &http.Client{}
@@ -739,7 +737,8 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 	req, err := p.remoteRepoRequest(repo, paths)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to create request for pom file")
+		p.logger.Debug("Unable to create request", log.String("repo", repo), log.Err(err))
+		return nil, nil
 	}
 
 	client := &http.Client{}
