@@ -8,9 +8,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
-
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
+	"time"
 
 	"github.com/spf13/cobra/doc"
 
@@ -57,7 +55,7 @@ func generateConfigDocs(filename string) error {
 	f.WriteString(description + "\n")
 
 	flagsMetadata := buildFlagsTree()
-	genMarkdown(flagsMetadata, 0, f)
+	genMarkdown(flagsMetadata, -1, f)
 
 	f.WriteString(footer)
 	return nil
@@ -69,18 +67,47 @@ type flagMetadata struct {
 	defaultValue any
 }
 
-func getFlagMetadata(flagGroup any) []*flagMetadata {
+func getFlagMetadata(section string, flagGroup any) []*flagMetadata {
 	result := []*flagMetadata{}
 	val := reflect.ValueOf(flagGroup)
 	for i := 0; i < val.NumField(); i++ {
-		p, ok := val.Field(i).Interface().(*flag.Flag[string])
-		if !ok {
+		var name, configName string
+		var defaultValue any
+		switch p := val.Field(i).Interface().(type) {
+		case *flag.Flag[int]:
+			name = p.Name
+			configName = section + "." + p.ConfigName
+			defaultValue = p.Default
+		case *flag.Flag[bool]:
+			if p == nil {
+				continue
+			}
+			name = p.Name
+			configName = section + "." + p.ConfigName
+			defaultValue = p.Default
+		case *flag.Flag[string]:
+			name = p.Name
+			configName = section + "." + p.ConfigName
+			defaultValue = p.Default
+		case *flag.Flag[[]string]:
+			name = p.Name
+			configName = section + "." + p.ConfigName
+			defaultValue = p.Default
+		case *flag.Flag[time.Duration]:
+			name = p.Name
+			configName = section + "." + p.ConfigName
+			defaultValue = p.Default
+		case *flag.Flag[float64]:
+			name = p.Name
+			configName = section + "." + p.ConfigName
+			defaultValue = p.Default
+		default:
 			continue
 		}
 		result = append(result, &flagMetadata{
-			name:         p.Name,
-			configName:   p.ConfigName,
-			defaultValue: p.Default,
+			name:         name,
+			configName:   configName,
+			defaultValue: defaultValue,
 		})
 	}
 	return result
@@ -110,20 +137,26 @@ func addToMap(m map[string]any, parts []string, value *flagMetadata) {
 
 func buildFlagsTree() map[string]any {
 	res := map[string]any{}
-	metadata := getFlagMetadata(*flag.NewImageFlagGroup())
-	metadata = append(metadata, getFlagMetadata(*flag.NewCacheFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata(*flag.NewReportFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata(*flag.NewGlobalFlagGroup())...)
-
+	metadata := getFlagMetadata("Global", *flag.NewGlobalFlagGroup())
+	metadata = append(metadata, getFlagMetadata("Report", *flag.NewReportFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Image", *flag.NewImageFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Cache", *flag.NewCacheFlagGroup())...)
 	for _, m := range metadata {
 		addToMap(res, strings.Split(m.configName, "."), m)
 	}
 	return res
 }
 
-var caser = cases.Title(language.English)
-
 func genMarkdown(m map[string]any, indent int, w *os.File) {
+	if indent == -1 {
+		for k, v := range m {
+			w.WriteString("## " + k + " options\n\n")
+			w.WriteString("```yaml\n")
+			genMarkdown(v.(map[string]any), 0, w)
+			w.WriteString("```\n\n")
+		}
+		return
+	}
 	indentation := strings.Repeat("  ", indent)
 
 	// Extract and sort keys
@@ -134,11 +167,6 @@ func genMarkdown(m map[string]any, indent int, w *os.File) {
 	sort.Strings(keys)
 
 	for _, key := range keys {
-		if indent == 0 {
-			w.WriteString("## " + caser.String(key) + " options\n\n")
-			w.WriteString("```yaml\n")
-		}
-
 		switch v := m[key].(type) {
 		case map[string]any:
 			fmt.Fprintf(w, "%s%s:\n", indentation, key)
@@ -147,9 +175,6 @@ func genMarkdown(m map[string]any, indent int, w *os.File) {
 			fmt.Fprintf(w, "%s# Same as '--%s'\n", indentation, v.name)
 			fmt.Fprintf(w, "%s# Default is %v\n", indentation, v.defaultValue)
 			fmt.Fprintf(w, "%s%s: %+v\n\n", indentation, key, v.defaultValue)
-		}
-		if indent == 0 {
-			w.WriteString("```\n\n")
 		}
 	}
 }
