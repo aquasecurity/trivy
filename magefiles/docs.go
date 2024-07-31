@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/spf13/cobra/doc"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
@@ -61,18 +62,20 @@ func generateConfigDocs(filename string) error {
 	return nil
 }
 
-type flagMetadata struct {
+type flagDetails struct {
 	name         string
 	configName   string
 	defaultValue any
+	example      []string
 }
 
-func getFlagMetadata(section string, flagGroup any) []*flagMetadata {
-	result := []*flagMetadata{}
+func getFlagDetails(section string, flagGroup any) []*flagDetails {
+	result := []*flagDetails{}
 	val := reflect.ValueOf(flagGroup)
 	for i := 0; i < val.NumField(); i++ {
 		var name, configName string
 		var defaultValue any
+		var example []string
 		switch p := val.Field(i).Interface().(type) {
 		case *flag.Flag[int]:
 			name = p.Name
@@ -91,7 +94,8 @@ func getFlagMetadata(section string, flagGroup any) []*flagMetadata {
 			}
 			name = p.Name
 			configName = p.ConfigName
-			defaultValue = p.Default
+			defaultValue = lo.Ternary(len(p.Default) > 0, p.Default, "empty")
+			example = append(example, lo.Ternary(len(p.Default) > 0, p.Default, ""))
 		case *flag.Flag[[]string]:
 			name = p.Name
 			configName = p.ConfigName
@@ -107,16 +111,20 @@ func getFlagMetadata(section string, flagGroup any) []*flagMetadata {
 		default:
 			continue
 		}
-		result = append(result, &flagMetadata{
+		if len(example) == 0 {
+			example = append(example, fmt.Sprintf("%v", defaultValue))
+		}
+		result = append(result, &flagDetails{
 			name:         name,
 			configName:   section + "." + configName,
 			defaultValue: defaultValue,
+			example:      example,
 		})
 	}
 	return result
 }
 
-func addToMap(m map[string]any, parts []string, value *flagMetadata) {
+func addToMap(m map[string]any, parts []string, value *flagDetails) {
 	if len(parts) == 0 {
 		return
 	}
@@ -140,25 +148,25 @@ func addToMap(m map[string]any, parts []string, value *flagMetadata) {
 
 func buildFlagsTree() map[string]any {
 	res := map[string]any{}
-	metadata := getFlagMetadata("Global", *flag.NewGlobalFlagGroup())
-	metadata = append(metadata, getFlagMetadata("Report", *flag.NewReportFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Image", *flag.NewImageFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("DB", *flag.NewDBFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Cache", *flag.NewCacheFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("License", *flag.NewLicenseFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Misconfiguration", *flag.NewMisconfFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Scan", *flag.NewScanFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Module", *flag.NewModuleFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Client/Server", *flag.NewClientFlags())...)
-	metadata = append(metadata, getFlagMetadata("Registry", *flag.NewRegistryFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Rego", *flag.NewRegoFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Secret", *flag.NewSecretFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Vulnerability", *flag.NewVulnerabilityFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Kubernetes", *flag.NewK8sFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Repository", *flag.NewRepoFlagGroup())...)
-	metadata = append(metadata, getFlagMetadata("Clean", *flag.NewCleanFlagGroup())...)
+	details := getFlagDetails("Global", *flag.NewGlobalFlagGroup())
+	details = append(details, getFlagDetails("Report", *flag.NewReportFlagGroup())...)
+	details = append(details, getFlagDetails("Image", *flag.NewImageFlagGroup())...)
+	details = append(details, getFlagDetails("DB", *flag.NewDBFlagGroup())...)
+	details = append(details, getFlagDetails("Cache", *flag.NewCacheFlagGroup())...)
+	details = append(details, getFlagDetails("License", *flag.NewLicenseFlagGroup())...)
+	details = append(details, getFlagDetails("Misconfiguration", *flag.NewMisconfFlagGroup())...)
+	details = append(details, getFlagDetails("Scan", *flag.NewScanFlagGroup())...)
+	details = append(details, getFlagDetails("Module", *flag.NewModuleFlagGroup())...)
+	details = append(details, getFlagDetails("Client/Server", *flag.NewClientFlags())...)
+	details = append(details, getFlagDetails("Registry", *flag.NewRegistryFlagGroup())...)
+	details = append(details, getFlagDetails("Rego", *flag.NewRegoFlagGroup())...)
+	details = append(details, getFlagDetails("Secret", *flag.NewSecretFlagGroup())...)
+	details = append(details, getFlagDetails("Vulnerability", *flag.NewVulnerabilityFlagGroup())...)
+	details = append(details, getFlagDetails("Kubernetes", *flag.NewK8sFlagGroup())...)
+	details = append(details, getFlagDetails("Repository", *flag.NewRepoFlagGroup())...)
+	details = append(details, getFlagDetails("Clean", *flag.NewCleanFlagGroup())...)
 
-	for _, m := range metadata {
+	for _, m := range details {
 		addToMap(res, strings.Split(m.configName, "."), m)
 	}
 	return res
@@ -188,10 +196,14 @@ func genMarkdown(m map[string]any, indent int, w *os.File) {
 		case map[string]any:
 			fmt.Fprintf(w, "%s%s:\n", indentation, key)
 			genMarkdown(v, indent+1, w)
-		case *flagMetadata:
+		case *flagDetails:
 			fmt.Fprintf(w, "%s# Same as '--%s'\n", indentation, v.name)
 			fmt.Fprintf(w, "%s# Default is %v\n", indentation, v.defaultValue)
-			fmt.Fprintf(w, "%s%s: %+v\n\n", indentation, key, v.defaultValue)
+			if len(v.example) > 1 {
+				fmt.Fprintf(w, "%s%s:\n", indentation, key)
+			} else {
+				fmt.Fprintf(w, "%s%s: %s\n\n", indentation, key, v.example[0])
+			}
 		}
 	}
 }

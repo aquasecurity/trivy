@@ -15,15 +15,15 @@ cache:
 
   redis:
     # Same as '--redis-ca'
-    # Default is 
+    # Default is empty
     ca: 
 
     # Same as '--redis-cert'
-    # Default is 
+    # Default is empty
     cert: 
 
     # Same as '--redis-key'
-    # Default is 
+    # Default is empty
     key: 
 
     # Same as '--redis-tls'
@@ -71,7 +71,7 @@ clean:
 ```yaml
 server:
   # Same as '--server'
-  # Default is 
+  # Default is empty
   addr: 
 
   # Same as '--custom-headers'
@@ -79,7 +79,7 @@ server:
   custom-headers: []
 
   # Same as '--token'
-  # Default is 
+  # Default is empty
   token: 
 
   # Same as '--token-header'
@@ -174,7 +174,7 @@ version: false
 image:
   docker:
     # Same as '--docker-host'
-    # Default is 
+    # Default is empty
     host: 
 
   # Same as '--image-config-scanners'
@@ -182,16 +182,16 @@ image:
   image-config-scanners: []
 
   # Same as '--input'
-  # Default is 
+  # Default is empty
   input: 
 
   # Same as '--platform'
-  # Default is 
+  # Default is empty
   platform: 
 
   podman:
     # Same as '--podman-host'
-    # Default is 
+    # Default is empty
     host: 
 
   # Same as '--removed-pkgs'
@@ -242,11 +242,11 @@ kubernetes:
   includeNamespaces: []
 
   # Same as '--k8s-version'
-  # Default is 
+  # Default is empty
   k8s-version: 
 
   # Same as '--kubeconfig'
-  # Default is 
+  # Default is empty
   kubeconfig: 
 
   node-collector:
@@ -333,7 +333,7 @@ misconfiguration:
     api-versions: []
 
     # Same as '--helm-kube-version'
-    # Default is 
+    # Default is empty
     kube-version: 
 
     # Same as '--helm-set'
@@ -398,7 +398,7 @@ registry:
   password: []
 
   # Same as '--registry-token'
-  # Default is 
+  # Default is empty
   token: 
 
   # Same as '--username'
@@ -457,7 +457,7 @@ exit-on-eol: 0
 format: table
 
 # Same as '--ignore-policy'
-# Default is 
+# Default is empty
 ignore-policy: 
 
 # Same as '--ignorefile'
@@ -469,11 +469,11 @@ ignorefile: .trivyignore
 list-all-pkgs: false
 
 # Same as '--output'
-# Default is 
+# Default is empty
 output: 
 
 # Same as '--output-plugin-arg'
-# Default is 
+# Default is empty
 output-plugin-arg: 
 
 # Same as '--pkg-types'
@@ -486,7 +486,7 @@ report: all
 
 scan:
   # Same as '--compliance'
-  # Default is 
+  # Default is empty
   compliance: 
 
   # Same as '--show-suppressed'
@@ -498,7 +498,7 @@ scan:
 severity: [UNKNOWN LOW MEDIUM HIGH CRITICAL]
 
 # Same as '--template'
-# Default is 
+# Default is empty
 template: 
 
 ```
@@ -508,15 +508,15 @@ template:
 ```yaml
 repository:
   # Same as '--branch'
-  # Default is 
+  # Default is empty
   branch: 
 
   # Same as '--commit'
-  # Default is 
+  # Default is empty
   commit: 
 
   # Same as '--tag'
-  # Default is 
+  # Default is empty
   tag: 
 
 ```
