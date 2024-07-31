@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -568,6 +569,12 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		fileChecksum = true
 	}
 
+	// Disable the post handler for system file filtering when detection priority is coverage.
+
+	if opts.DetectionPriority == ftypes.PriorityCoverage {
+		handler.DeregisterPostHandler(ftypes.SystemFileFilteringPostHandler)
+	}
+
 	return ScannerConfig{
 		Target:             target,
 		CacheOptions:       opts.CacheOpts(),
@@ -592,6 +599,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 			AWSRegion:         opts.Region,
 			AWSEndpoint:       opts.Endpoint,
 			FileChecksum:      fileChecksum,
+			DetectionPriority: opts.DetectionPriority,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{
