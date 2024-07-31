@@ -181,6 +181,12 @@ nav:
                   - Server: docs/references/configuration/cli/trivy_server.md
                   - Version: docs/references/configuration/cli/trivy_version.md
                   - VM: docs/references/configuration/cli/trivy_vm.md
+                  - VEX:
+                      - VEX: docs/references/configuration/cli/trivy_vex.md
+                      - VEX Repository: docs/references/configuration/cli/trivy_vex_repo.md
+                      - VEX Repository Download: docs/references/configuration/cli/trivy_vex_repo_download.md
+                      - VEX Repository Init: docs/references/configuration/cli/trivy_vex_repo_init.md
+                      - VEX Repository List: docs/references/configuration/cli/trivy_vex_repo_list.md
               - Config file: docs/references/configuration/config-file.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
