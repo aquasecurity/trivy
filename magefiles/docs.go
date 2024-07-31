@@ -76,40 +76,40 @@ func getFlagMetadata(section string, flagGroup any) []*flagMetadata {
 		switch p := val.Field(i).Interface().(type) {
 		case *flag.Flag[int]:
 			name = p.Name
-			configName = section + "." + p.ConfigName
+			configName = p.ConfigName
 			defaultValue = p.Default
 		case *flag.Flag[bool]:
 			if p == nil {
 				continue
 			}
 			name = p.Name
-			configName = section + "." + p.ConfigName
+			configName = p.ConfigName
 			defaultValue = p.Default
 		case *flag.Flag[string]:
 			if p == nil {
 				continue
 			}
 			name = p.Name
-			configName = section + "." + p.ConfigName
+			configName = p.ConfigName
 			defaultValue = p.Default
 		case *flag.Flag[[]string]:
 			name = p.Name
-			configName = section + "." + p.ConfigName
+			configName = p.ConfigName
 			defaultValue = p.Default
 		case *flag.Flag[time.Duration]:
 			name = p.Name
-			configName = section + "." + p.ConfigName
+			configName = p.ConfigName
 			defaultValue = p.Default
 		case *flag.Flag[float64]:
 			name = p.Name
-			configName = section + "." + p.ConfigName
+			configName = p.ConfigName
 			defaultValue = p.Default
 		default:
 			continue
 		}
 		result = append(result, &flagMetadata{
 			name:         name,
-			configName:   configName,
+			configName:   section + "." + configName,
 			defaultValue: defaultValue,
 		})
 	}
@@ -164,23 +164,23 @@ func buildFlagsTree() map[string]any {
 }
 
 func genMarkdown(m map[string]any, indent int, w *os.File) {
-	if indent == -1 {
-		for k, v := range m {
-			w.WriteString("## " + k + " options\n\n")
-			w.WriteString("```yaml\n")
-			genMarkdown(v.(map[string]any), 0, w)
-			w.WriteString("```\n\n")
-		}
-		return
-	}
-	indentation := strings.Repeat("  ", indent)
-
 	// Extract and sort keys
 	keys := make([]string, 0, len(m))
 	for key := range m {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
+
+	if indent == -1 {
+		for _, key := range keys {
+			w.WriteString("## " + key + " options\n\n")
+			w.WriteString("```yaml\n")
+			genMarkdown(m[key].(map[string]any), 0, w)
+			w.WriteString("```\n\n")
+		}
+		return
+	}
+	indentation := strings.Repeat("  ", indent)
 
 	for _, key := range keys {
 		switch v := m[key].(type) {

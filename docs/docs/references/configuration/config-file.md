@@ -5,39 +5,172 @@ The config path can be overridden by the `--config` flag.
 
 An example is [here][example].
 
-## Module options
+## Cache options
 
 ```yaml
-module:
-  # Same as '--module-dir'
-  # Default is $HOME/.trivy/modules
-  dir: $HOME/.trivy/modules
+cache:
+  # Same as '--cache-backend'
+  # Default is fs
+  backend: fs
 
-  # Same as '--enable-modules'
-  # Default is []
-  enable-modules: []
+  redis:
+    # Same as '--redis-ca'
+    # Default is 
+    ca: 
+
+    # Same as '--redis-cert'
+    # Default is 
+    cert: 
+
+    # Same as '--redis-key'
+    # Default is 
+    key: 
+
+    # Same as '--redis-tls'
+    # Default is false
+    tls: false
+
+  # Same as '--cache-ttl'
+  # Default is 0s
+  ttl: 0s
 
 ```
 
-## Vulnerability options
+## Client/Server options
 
 ```yaml
-vulnerability:
-  # Same as '--ignore-status'
+server:
+  # Same as '--server'
+  # Default is 
+  addr: 
+
+  # Same as '--custom-headers'
   # Default is []
-  ignore-status: []
+  custom-headers: []
 
-  # Same as '--ignore-unfixed'
+  # Same as '--token'
+  # Default is 
+  token: 
+
+  # Same as '--token-header'
+  # Default is Trivy-Token
+  token-header: Trivy-Token
+
+```
+
+## DB options
+
+```yaml
+db:
+  # Same as '--download-java-db-only'
   # Default is false
-  ignore-unfixed: false
+  download-java-only: false
 
-  # Same as '--skip-vex-repo-update'
+  # Same as '--download-db-only'
   # Default is false
-  skip-vex-repo-update: false
+  download-only: false
 
-  # Same as '--vex'
+  # Same as '--java-db-repository'
+  # Default is ghcr.io/aquasecurity/trivy-java-db:1
+  java-repository: ghcr.io/aquasecurity/trivy-java-db:1
+
+  # Same as '--skip-java-db-update'
+  # Default is false
+  java-skip-update: false
+
+  # Same as '--light'
+  # Default is false
+  light: false
+
+  # Same as '--no-progress'
+  # Default is false
+  no-progress: false
+
+  # Same as '--db-repository'
+  # Default is ghcr.io/aquasecurity/trivy-db:2
+  repository: ghcr.io/aquasecurity/trivy-db:2
+
+  # Same as '--skip-db-update'
+  # Default is false
+  skip-update: false
+
+# Same as '--reset'
+# Default is false
+reset: false
+
+```
+
+## Global options
+
+```yaml
+cache:
+  # Same as '--cache-dir'
+  # Default is /path/to/cache
+  dir: /path/to/cache
+
+# Same as '--config'
+# Default is trivy.yaml
+config: trivy.yaml
+
+# Same as '--debug'
+# Default is false
+debug: false
+
+# Same as '--generate-default-config'
+# Default is false
+generate-default-config: false
+
+# Same as '--insecure'
+# Default is false
+insecure: false
+
+# Same as '--quiet'
+# Default is false
+quiet: false
+
+# Same as '--timeout'
+# Default is 5m0s
+timeout: 5m0s
+
+# Same as '--version'
+# Default is false
+version: false
+
+```
+
+## Image options
+
+```yaml
+image:
+  docker:
+    # Same as '--docker-host'
+    # Default is 
+    host: 
+
+  # Same as '--image-config-scanners'
   # Default is []
-  vex: []
+  image-config-scanners: []
+
+  # Same as '--input'
+  # Default is 
+  input: 
+
+  # Same as '--platform'
+  # Default is 
+  platform: 
+
+  podman:
+    # Same as '--podman-host'
+    # Default is 
+    host: 
+
+  # Same as '--removed-pkgs'
+  # Default is false
+  removed-pkgs: false
+
+  # Same as '--image-src'
+  # Default is [docker containerd podman remote]
+  source: [docker containerd podman remote]
 
 ```
 
@@ -151,241 +284,6 @@ license:
 
 ```
 
-## Registry options
-
-```yaml
-registry:
-  # Same as '--password'
-  # Default is []
-  password: []
-
-  # Same as '--registry-token'
-  # Default is 
-  token: 
-
-  # Same as '--username'
-  # Default is []
-  username: []
-
-```
-
-## Global options
-
-```yaml
-cache:
-  # Same as '--cache-dir'
-  # Default is /path/to/cache
-  dir: /path/to/cache
-
-# Same as '--config'
-# Default is trivy.yaml
-config: trivy.yaml
-
-# Same as '--debug'
-# Default is false
-debug: false
-
-# Same as '--generate-default-config'
-# Default is false
-generate-default-config: false
-
-# Same as '--insecure'
-# Default is false
-insecure: false
-
-# Same as '--quiet'
-# Default is false
-quiet: false
-
-# Same as '--timeout'
-# Default is 5m0s
-timeout: 5m0s
-
-# Same as '--version'
-# Default is false
-version: false
-
-```
-
-## DB options
-
-```yaml
-db:
-  # Same as '--download-java-db-only'
-  # Default is false
-  download-java-only: false
-
-  # Same as '--download-db-only'
-  # Default is false
-  download-only: false
-
-  # Same as '--java-db-repository'
-  # Default is ghcr.io/aquasecurity/trivy-java-db:1
-  java-repository: ghcr.io/aquasecurity/trivy-java-db:1
-
-  # Same as '--skip-java-db-update'
-  # Default is false
-  java-skip-update: false
-
-  # Same as '--light'
-  # Default is false
-  light: false
-
-  # Same as '--no-progress'
-  # Default is false
-  no-progress: false
-
-  # Same as '--db-repository'
-  # Default is ghcr.io/aquasecurity/trivy-db:2
-  repository: ghcr.io/aquasecurity/trivy-db:2
-
-  # Same as '--skip-db-update'
-  # Default is false
-  skip-update: false
-
-# Same as '--reset'
-# Default is false
-reset: false
-
-```
-
-## Cache options
-
-```yaml
-cache:
-  # Same as '--cache-backend'
-  # Default is fs
-  backend: fs
-
-  redis:
-    # Same as '--redis-ca'
-    # Default is 
-    ca: 
-
-    # Same as '--redis-cert'
-    # Default is 
-    cert: 
-
-    # Same as '--redis-key'
-    # Default is 
-    key: 
-
-    # Same as '--redis-tls'
-    # Default is false
-    tls: false
-
-  # Same as '--cache-ttl'
-  # Default is 0s
-  ttl: 0s
-
-```
-
-## Client/Server options
-
-```yaml
-server:
-  # Same as '--server'
-  # Default is 
-  addr: 
-
-  # Same as '--custom-headers'
-  # Default is []
-  custom-headers: []
-
-  # Same as '--token'
-  # Default is 
-  token: 
-
-  # Same as '--token-header'
-  # Default is Trivy-Token
-  token-header: Trivy-Token
-
-```
-
-## Rego options
-
-```yaml
-rego:
-  # Same as '--config-check'
-  # Default is []
-  check: []
-
-  # Same as '--config-data'
-  # Default is []
-  data: []
-
-  # Same as '--include-deprecated-checks'
-  # Default is false
-  include-deprecated-checks: false
-
-  # Same as '--check-namespaces'
-  # Default is []
-  namespaces: []
-
-  # Same as '--skip-check-update'
-  # Default is false
-  skip-check-update: false
-
-  # Same as '--trace'
-  # Default is false
-  trace: false
-
-```
-
-## Repository options
-
-```yaml
-repository:
-  # Same as '--branch'
-  # Default is 
-  branch: 
-
-  # Same as '--commit'
-  # Default is 
-  commit: 
-
-  # Same as '--tag'
-  # Default is 
-  tag: 
-
-```
-
-## Image options
-
-```yaml
-image:
-  docker:
-    # Same as '--docker-host'
-    # Default is 
-    host: 
-
-  # Same as '--image-config-scanners'
-  # Default is []
-  image-config-scanners: []
-
-  # Same as '--input'
-  # Default is 
-  input: 
-
-  # Same as '--platform'
-  # Default is 
-  platform: 
-
-  podman:
-    # Same as '--podman-host'
-    # Default is 
-    host: 
-
-  # Same as '--removed-pkgs'
-  # Default is false
-  removed-pkgs: false
-
-  # Same as '--image-src'
-  # Default is [docker containerd podman remote]
-  source: [docker containerd podman remote]
-
-```
-
 ## Misconfiguration options
 
 ```yaml
@@ -447,59 +345,65 @@ misconfiguration:
 
 ```
 
-## Scan options
+## Module options
 
 ```yaml
-scan:
-  # Same as '--file-patterns'
+module:
+  # Same as '--module-dir'
+  # Default is $HOME/.trivy/modules
+  dir: $HOME/.trivy/modules
+
+  # Same as '--enable-modules'
   # Default is []
-  file-patterns: []
-
-  # Same as '--include-dev-deps'
-  # Default is false
-  include-dev-deps: false
-
-  # Same as '--offline-scan'
-  # Default is false
-  offline: false
-
-  # Same as '--parallel'
-  # Default is 5
-  parallel: 5
-
-  # Same as '--rekor-url'
-  # Default is https://rekor.sigstore.dev
-  rekor-url: https://rekor.sigstore.dev
-
-  # Same as '--sbom-sources'
-  # Default is []
-  sbom-sources: []
-
-  # Same as '--scanners'
-  # Default is [vuln secret]
-  scanners: [vuln secret]
-
-  # Same as '--skip-dirs'
-  # Default is []
-  skip-dirs: []
-
-  # Same as '--skip-files'
-  # Default is []
-  skip-files: []
-
-  # Same as '--slow'
-  # Default is false
-  slow: false
+  enable-modules: []
 
 ```
 
-## Secret options
+## Registry options
 
 ```yaml
-secret:
-  # Same as '--secret-config'
-  # Default is trivy-secret.yaml
-  config: trivy-secret.yaml
+registry:
+  # Same as '--password'
+  # Default is []
+  password: []
+
+  # Same as '--registry-token'
+  # Default is 
+  token: 
+
+  # Same as '--username'
+  # Default is []
+  username: []
+
+```
+
+## Rego options
+
+```yaml
+rego:
+  # Same as '--config-check'
+  # Default is []
+  check: []
+
+  # Same as '--config-data'
+  # Default is []
+  data: []
+
+  # Same as '--include-deprecated-checks'
+  # Default is false
+  include-deprecated-checks: false
+
+  # Same as '--check-namespaces'
+  # Default is []
+  namespaces: []
+
+  # Same as '--skip-check-update'
+  # Default is false
+  skip-check-update: false
+
+  # Same as '--trace'
+  # Default is false
+  trace: false
 
 ```
 
@@ -566,6 +470,102 @@ severity: [UNKNOWN LOW MEDIUM HIGH CRITICAL]
 # Same as '--template'
 # Default is 
 template: 
+
+```
+
+## Repository options
+
+```yaml
+repository:
+  # Same as '--branch'
+  # Default is 
+  branch: 
+
+  # Same as '--commit'
+  # Default is 
+  commit: 
+
+  # Same as '--tag'
+  # Default is 
+  tag: 
+
+```
+
+## Scan options
+
+```yaml
+scan:
+  # Same as '--file-patterns'
+  # Default is []
+  file-patterns: []
+
+  # Same as '--include-dev-deps'
+  # Default is false
+  include-dev-deps: false
+
+  # Same as '--offline-scan'
+  # Default is false
+  offline: false
+
+  # Same as '--parallel'
+  # Default is 5
+  parallel: 5
+
+  # Same as '--rekor-url'
+  # Default is https://rekor.sigstore.dev
+  rekor-url: https://rekor.sigstore.dev
+
+  # Same as '--sbom-sources'
+  # Default is []
+  sbom-sources: []
+
+  # Same as '--scanners'
+  # Default is [vuln secret]
+  scanners: [vuln secret]
+
+  # Same as '--skip-dirs'
+  # Default is []
+  skip-dirs: []
+
+  # Same as '--skip-files'
+  # Default is []
+  skip-files: []
+
+  # Same as '--slow'
+  # Default is false
+  slow: false
+
+```
+
+## Secret options
+
+```yaml
+secret:
+  # Same as '--secret-config'
+  # Default is trivy-secret.yaml
+  config: trivy-secret.yaml
+
+```
+
+## Vulnerability options
+
+```yaml
+vulnerability:
+  # Same as '--ignore-status'
+  # Default is []
+  ignore-status: []
+
+  # Same as '--ignore-unfixed'
+  # Default is false
+  ignore-unfixed: false
+
+  # Same as '--skip-vex-repo-update'
+  # Default is false
+  skip-vex-repo-update: false
+
+  # Same as '--vex'
+  # Default is []
+  vex: []
 
 ```
 
