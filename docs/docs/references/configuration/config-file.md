@@ -5,6 +5,170 @@ The config path can be overridden by the `--config` flag.
 
 An example is [here][example].
 
+## Module options
+
+```yaml
+module:
+  # Same as '--module-dir'
+  # Default is $HOME/.trivy/modules
+  dir: $HOME/.trivy/modules
+
+  # Same as '--enable-modules'
+  # Default is []
+  enable-modules: []
+
+```
+
+## Vulnerability options
+
+```yaml
+vulnerability:
+  # Same as '--ignore-status'
+  # Default is []
+  ignore-status: []
+
+  # Same as '--ignore-unfixed'
+  # Default is false
+  ignore-unfixed: false
+
+  # Same as '--skip-vex-repo-update'
+  # Default is false
+  skip-vex-repo-update: false
+
+  # Same as '--vex'
+  # Default is []
+  vex: []
+
+```
+
+## Kubernetes options
+
+```yaml
+kubernetes:
+  # Same as '--burst'
+  # Default is 10
+  burst: 10
+
+  # Same as '--disable-node-collector'
+  # Default is false
+  disableNodeCollector: false
+
+  exclude:
+    # Same as '--exclude-nodes'
+    # Default is []
+    nodes: []
+
+    # Same as '--exclude-owned'
+    # Default is false
+    owned: false
+
+  # Same as '--exclude-kinds'
+  # Default is []
+  excludeKinds: []
+
+  # Same as '--exclude-namespaces'
+  # Default is []
+  excludeNamespaces: []
+
+  # Same as '--include-kinds'
+  # Default is []
+  includeKinds: []
+
+  # Same as '--include-namespaces'
+  # Default is []
+  includeNamespaces: []
+
+  # Same as '--k8s-version'
+  # Default is 
+  k8s-version: 
+
+  # Same as '--kubeconfig'
+  # Default is 
+  kubeconfig: 
+
+  node-collector:
+    # Same as '--node-collector-imageref'
+    # Default is ghcr.io/aquasecurity/node-collector:0.3.1
+    imageref: ghcr.io/aquasecurity/node-collector:0.3.1
+
+    # Same as '--node-collector-namespace'
+    # Default is trivy-temp
+    namespace: trivy-temp
+
+  # Same as '--qps'
+  # Default is 5
+  qps: 5
+
+  # Same as '--skip-images'
+  # Default is false
+  skipImages: false
+
+  # Same as '--tolerations'
+  # Default is []
+  tolerations: []
+
+```
+
+## License options
+
+```yaml
+license:
+  # Same as '--license-confidence-level'
+  # Default is 0.9
+  confidenceLevel: 0.9
+
+  # Same as '--'
+  # Default is [AGPL-1.0 AGPL-3.0 CC-BY-NC-1.0 CC-BY-NC-2.0 CC-BY-NC-2.5 CC-BY-NC-3.0 CC-BY-NC-4.0 CC-BY-NC-ND-1.0 CC-BY-NC-ND-2.0 CC-BY-NC-ND-2.5 CC-BY-NC-ND-3.0 CC-BY-NC-ND-4.0 CC-BY-NC-SA-1.0 CC-BY-NC-SA-2.0 CC-BY-NC-SA-2.5 CC-BY-NC-SA-3.0 CC-BY-NC-SA-4.0 Commons-Clause Facebook-2-Clause Facebook-3-Clause Facebook-Examples WTFPL]
+  forbidden: [AGPL-1.0 AGPL-3.0 CC-BY-NC-1.0 CC-BY-NC-2.0 CC-BY-NC-2.5 CC-BY-NC-3.0 CC-BY-NC-4.0 CC-BY-NC-ND-1.0 CC-BY-NC-ND-2.0 CC-BY-NC-ND-2.5 CC-BY-NC-ND-3.0 CC-BY-NC-ND-4.0 CC-BY-NC-SA-1.0 CC-BY-NC-SA-2.0 CC-BY-NC-SA-2.5 CC-BY-NC-SA-3.0 CC-BY-NC-SA-4.0 Commons-Clause Facebook-2-Clause Facebook-3-Clause Facebook-Examples WTFPL]
+
+  # Same as '--license-full'
+  # Default is false
+  full: false
+
+  # Same as '--ignored-licenses'
+  # Default is []
+  ignored: []
+
+  # Same as '--'
+  # Default is [AFL-1.1 AFL-1.2 AFL-2.0 AFL-2.1 AFL-3.0 Apache-1.0 Apache-1.1 Apache-2.0 Artistic-1.0-cl8 Artistic-1.0-Perl Artistic-1.0 Artistic-2.0 BSL-1.0 BSD-2-Clause-FreeBSD BSD-2-Clause-NetBSD BSD-2-Clause BSD-3-Clause-Attribution BSD-3-Clause-Clear BSD-3-Clause-LBNL BSD-3-Clause BSD-4-Clause BSD-4-Clause-UC BSD-Protection CC-BY-1.0 CC-BY-2.0 CC-BY-2.5 CC-BY-3.0 CC-BY-4.0 FTL ISC ImageMagick Libpng Lil-1.0 Linux-OpenIB LPL-1.02 LPL-1.0 MS-PL MIT NCSA OpenSSL PHP-3.01 PHP-3.0 PIL Python-2.0 Python-2.0-complete PostgreSQL SGI-B-1.0 SGI-B-1.1 SGI-B-2.0 Unicode-DFS-2015 Unicode-DFS-2016 Unicode-TOU UPL-1.0 W3C-19980720 W3C-20150513 W3C X11 Xnet Zend-2.0 zlib-acknowledgement Zlib ZPL-1.1 ZPL-2.0 ZPL-2.1]
+  notice: [AFL-1.1 AFL-1.2 AFL-2.0 AFL-2.1 AFL-3.0 Apache-1.0 Apache-1.1 Apache-2.0 Artistic-1.0-cl8 Artistic-1.0-Perl Artistic-1.0 Artistic-2.0 BSL-1.0 BSD-2-Clause-FreeBSD BSD-2-Clause-NetBSD BSD-2-Clause BSD-3-Clause-Attribution BSD-3-Clause-Clear BSD-3-Clause-LBNL BSD-3-Clause BSD-4-Clause BSD-4-Clause-UC BSD-Protection CC-BY-1.0 CC-BY-2.0 CC-BY-2.5 CC-BY-3.0 CC-BY-4.0 FTL ISC ImageMagick Libpng Lil-1.0 Linux-OpenIB LPL-1.02 LPL-1.0 MS-PL MIT NCSA OpenSSL PHP-3.01 PHP-3.0 PIL Python-2.0 Python-2.0-complete PostgreSQL SGI-B-1.0 SGI-B-1.1 SGI-B-2.0 Unicode-DFS-2015 Unicode-DFS-2016 Unicode-TOU UPL-1.0 W3C-19980720 W3C-20150513 W3C X11 Xnet Zend-2.0 zlib-acknowledgement Zlib ZPL-1.1 ZPL-2.0 ZPL-2.1]
+
+  # Same as '--'
+  # Default is []
+  permissive: []
+
+  # Same as '--'
+  # Default is [APSL-1.0 APSL-1.1 APSL-1.2 APSL-2.0 CDDL-1.0 CDDL-1.1 CPL-1.0 EPL-1.0 EPL-2.0 FreeImage IPL-1.0 MPL-1.0 MPL-1.1 MPL-2.0 Ruby]
+  reciprocal: [APSL-1.0 APSL-1.1 APSL-1.2 APSL-2.0 CDDL-1.0 CDDL-1.1 CPL-1.0 EPL-1.0 EPL-2.0 FreeImage IPL-1.0 MPL-1.0 MPL-1.1 MPL-2.0 Ruby]
+
+  # Same as '--'
+  # Default is [BCL CC-BY-ND-1.0 CC-BY-ND-2.0 CC-BY-ND-2.5 CC-BY-ND-3.0 CC-BY-ND-4.0 CC-BY-SA-1.0 CC-BY-SA-2.0 CC-BY-SA-2.5 CC-BY-SA-3.0 CC-BY-SA-4.0 GPL-1.0 GPL-2.0 GPL-2.0-with-autoconf-exception GPL-2.0-with-bison-exception GPL-2.0-with-classpath-exception GPL-2.0-with-font-exception GPL-2.0-with-GCC-exception GPL-3.0 GPL-3.0-with-autoconf-exception GPL-3.0-with-GCC-exception LGPL-2.0 LGPL-2.1 LGPL-3.0 NPL-1.0 NPL-1.1 OSL-1.0 OSL-1.1 OSL-2.0 OSL-2.1 OSL-3.0 QPL-1.0 Sleepycat]
+  restricted: [BCL CC-BY-ND-1.0 CC-BY-ND-2.0 CC-BY-ND-2.5 CC-BY-ND-3.0 CC-BY-ND-4.0 CC-BY-SA-1.0 CC-BY-SA-2.0 CC-BY-SA-2.5 CC-BY-SA-3.0 CC-BY-SA-4.0 GPL-1.0 GPL-2.0 GPL-2.0-with-autoconf-exception GPL-2.0-with-bison-exception GPL-2.0-with-classpath-exception GPL-2.0-with-font-exception GPL-2.0-with-GCC-exception GPL-3.0 GPL-3.0-with-autoconf-exception GPL-3.0-with-GCC-exception LGPL-2.0 LGPL-2.1 LGPL-3.0 NPL-1.0 NPL-1.1 OSL-1.0 OSL-1.1 OSL-2.0 OSL-2.1 OSL-3.0 QPL-1.0 Sleepycat]
+
+  # Same as '--'
+  # Default is [CC0-1.0 Unlicense 0BSD]
+  unencumbered: [CC0-1.0 Unlicense 0BSD]
+
+```
+
+## Registry options
+
+```yaml
+registry:
+  # Same as '--password'
+  # Default is []
+  password: []
+
+  # Same as '--registry-token'
+  # Default is 
+  token: 
+
+  # Same as '--username'
+  # Default is []
+  username: []
+
+```
+
 ## Global options
 
 ```yaml
@@ -116,6 +280,173 @@ cache:
 
 ```
 
+## Client/Server options
+
+```yaml
+server:
+  # Same as '--server'
+  # Default is 
+  addr: 
+
+  # Same as '--custom-headers'
+  # Default is []
+  custom-headers: []
+
+  # Same as '--token'
+  # Default is 
+  token: 
+
+  # Same as '--token-header'
+  # Default is Trivy-Token
+  token-header: Trivy-Token
+
+```
+
+## Rego options
+
+```yaml
+rego:
+  # Same as '--config-check'
+  # Default is []
+  check: []
+
+  # Same as '--config-data'
+  # Default is []
+  data: []
+
+  # Same as '--include-deprecated-checks'
+  # Default is false
+  include-deprecated-checks: false
+
+  # Same as '--check-namespaces'
+  # Default is []
+  namespaces: []
+
+  # Same as '--skip-check-update'
+  # Default is false
+  skip-check-update: false
+
+  # Same as '--trace'
+  # Default is false
+  trace: false
+
+```
+
+## Repository options
+
+```yaml
+repository:
+  # Same as '--branch'
+  # Default is 
+  branch: 
+
+  # Same as '--commit'
+  # Default is 
+  commit: 
+
+  # Same as '--tag'
+  # Default is 
+  tag: 
+
+```
+
+## Image options
+
+```yaml
+image:
+  docker:
+    # Same as '--docker-host'
+    # Default is 
+    host: 
+
+  # Same as '--image-config-scanners'
+  # Default is []
+  image-config-scanners: []
+
+  # Same as '--input'
+  # Default is 
+  input: 
+
+  # Same as '--platform'
+  # Default is 
+  platform: 
+
+  podman:
+    # Same as '--podman-host'
+    # Default is 
+    host: 
+
+  # Same as '--removed-pkgs'
+  # Default is false
+  removed-pkgs: false
+
+  # Same as '--image-src'
+  # Default is [docker containerd podman remote]
+  source: [docker containerd podman remote]
+
+```
+
+## Misconfiguration options
+
+```yaml
+misconfiguration:
+  # Same as '--checks-bundle-repository'
+  # Default is ghcr.io/aquasecurity/trivy-checks:0
+  checks-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0
+
+  cloudformation:
+    # Same as '--cf-params'
+    # Default is []
+    params: []
+
+  helm:
+    # Same as '--helm-api-versions'
+    # Default is []
+    api-versions: []
+
+    # Same as '--helm-kube-version'
+    # Default is 
+    kube-version: 
+
+    # Same as '--helm-set'
+    # Default is []
+    set: []
+
+    # Same as '--helm-set-file'
+    # Default is []
+    set-file: []
+
+    # Same as '--helm-set-string'
+    # Default is []
+    set-string: []
+
+    # Same as '--helm-values'
+    # Default is []
+    values: []
+
+  # Same as '--include-non-failures'
+  # Default is false
+  include-non-failures: false
+
+  # Same as '--reset-checks-bundle'
+  # Default is false
+  reset-checks-bundle: false
+
+  # Same as '--misconfig-scanners'
+  # Default is [azure-arm cloudformation dockerfile helm kubernetes terraform terraformplan-json terraformplan-snapshot]
+  scanners: [azure-arm cloudformation dockerfile helm kubernetes terraform terraformplan-json terraformplan-snapshot]
+
+  terraform:
+    # Same as '--tf-exclude-downloaded-modules'
+    # Default is false
+    exclude-downloaded-modules: false
+
+    # Same as '--tf-vars'
+    # Default is []
+    vars: []
+
+```
+
 ## Scan options
 
 ```yaml
@@ -162,21 +493,13 @@ scan:
 
 ```
 
-## Registry options
+## Secret options
 
 ```yaml
-registry:
-  # Same as '--password'
-  # Default is []
-  password: []
-
-  # Same as '--registry-token'
-  # Default is 
-  token: 
-
-  # Same as '--username'
-  # Default is []
-  username: []
+secret:
+  # Same as '--secret-config'
+  # Default is trivy-secret.yaml
+  config: trivy-secret.yaml
 
 ```
 
@@ -243,243 +566,6 @@ severity: [UNKNOWN LOW MEDIUM HIGH CRITICAL]
 # Same as '--template'
 # Default is 
 template: 
-
-```
-
-## Rego options
-
-```yaml
-rego:
-  # Same as '--config-check'
-  # Default is []
-  check: []
-
-  # Same as '--config-data'
-  # Default is []
-  data: []
-
-  # Same as '--include-deprecated-checks'
-  # Default is false
-  include-deprecated-checks: false
-
-  # Same as '--check-namespaces'
-  # Default is []
-  namespaces: []
-
-  # Same as '--skip-check-update'
-  # Default is false
-  skip-check-update: false
-
-  # Same as '--trace'
-  # Default is false
-  trace: false
-
-```
-
-## Vulnerability options
-
-```yaml
-vulnerability:
-  # Same as '--ignore-status'
-  # Default is []
-  ignore-status: []
-
-  # Same as '--ignore-unfixed'
-  # Default is false
-  ignore-unfixed: false
-
-  # Same as '--skip-vex-repo-update'
-  # Default is false
-  skip-vex-repo-update: false
-
-  # Same as '--vex'
-  # Default is []
-  vex: []
-
-```
-
-## Image options
-
-```yaml
-image:
-  docker:
-    # Same as '--docker-host'
-    # Default is 
-    host: 
-
-  # Same as '--image-config-scanners'
-  # Default is []
-  image-config-scanners: []
-
-  # Same as '--input'
-  # Default is 
-  input: 
-
-  # Same as '--platform'
-  # Default is 
-  platform: 
-
-  podman:
-    # Same as '--podman-host'
-    # Default is 
-    host: 
-
-  # Same as '--removed-pkgs'
-  # Default is false
-  removed-pkgs: false
-
-  # Same as '--image-src'
-  # Default is [docker containerd podman remote]
-  source: [docker containerd podman remote]
-
-```
-
-## Client/server options
-
-```yaml
-server:
-  # Same as '--server'
-  # Default is 
-  addr: 
-
-  # Same as '--custom-headers'
-  # Default is []
-  custom-headers: []
-
-  # Same as '--token'
-  # Default is 
-  token: 
-
-  # Same as '--token-header'
-  # Default is Trivy-Token
-  token-header: Trivy-Token
-
-```
-
-## Secret options
-
-```yaml
-secret:
-  # Same as '--secret-config'
-  # Default is trivy-secret.yaml
-  config: trivy-secret.yaml
-
-```
-
-## License options
-
-```yaml
-license:
-  # Same as '--license-confidence-level'
-  # Default is 0.9
-  confidenceLevel: 0.9
-
-  # Same as '--'
-  # Default is [AGPL-1.0 AGPL-3.0 CC-BY-NC-1.0 CC-BY-NC-2.0 CC-BY-NC-2.5 CC-BY-NC-3.0 CC-BY-NC-4.0 CC-BY-NC-ND-1.0 CC-BY-NC-ND-2.0 CC-BY-NC-ND-2.5 CC-BY-NC-ND-3.0 CC-BY-NC-ND-4.0 CC-BY-NC-SA-1.0 CC-BY-NC-SA-2.0 CC-BY-NC-SA-2.5 CC-BY-NC-SA-3.0 CC-BY-NC-SA-4.0 Commons-Clause Facebook-2-Clause Facebook-3-Clause Facebook-Examples WTFPL]
-  forbidden: [AGPL-1.0 AGPL-3.0 CC-BY-NC-1.0 CC-BY-NC-2.0 CC-BY-NC-2.5 CC-BY-NC-3.0 CC-BY-NC-4.0 CC-BY-NC-ND-1.0 CC-BY-NC-ND-2.0 CC-BY-NC-ND-2.5 CC-BY-NC-ND-3.0 CC-BY-NC-ND-4.0 CC-BY-NC-SA-1.0 CC-BY-NC-SA-2.0 CC-BY-NC-SA-2.5 CC-BY-NC-SA-3.0 CC-BY-NC-SA-4.0 Commons-Clause Facebook-2-Clause Facebook-3-Clause Facebook-Examples WTFPL]
-
-  # Same as '--license-full'
-  # Default is false
-  full: false
-
-  # Same as '--ignored-licenses'
-  # Default is []
-  ignored: []
-
-  # Same as '--'
-  # Default is [AFL-1.1 AFL-1.2 AFL-2.0 AFL-2.1 AFL-3.0 Apache-1.0 Apache-1.1 Apache-2.0 Artistic-1.0-cl8 Artistic-1.0-Perl Artistic-1.0 Artistic-2.0 BSL-1.0 BSD-2-Clause-FreeBSD BSD-2-Clause-NetBSD BSD-2-Clause BSD-3-Clause-Attribution BSD-3-Clause-Clear BSD-3-Clause-LBNL BSD-3-Clause BSD-4-Clause BSD-4-Clause-UC BSD-Protection CC-BY-1.0 CC-BY-2.0 CC-BY-2.5 CC-BY-3.0 CC-BY-4.0 FTL ISC ImageMagick Libpng Lil-1.0 Linux-OpenIB LPL-1.02 LPL-1.0 MS-PL MIT NCSA OpenSSL PHP-3.01 PHP-3.0 PIL Python-2.0 Python-2.0-complete PostgreSQL SGI-B-1.0 SGI-B-1.1 SGI-B-2.0 Unicode-DFS-2015 Unicode-DFS-2016 Unicode-TOU UPL-1.0 W3C-19980720 W3C-20150513 W3C X11 Xnet Zend-2.0 zlib-acknowledgement Zlib ZPL-1.1 ZPL-2.0 ZPL-2.1]
-  notice: [AFL-1.1 AFL-1.2 AFL-2.0 AFL-2.1 AFL-3.0 Apache-1.0 Apache-1.1 Apache-2.0 Artistic-1.0-cl8 Artistic-1.0-Perl Artistic-1.0 Artistic-2.0 BSL-1.0 BSD-2-Clause-FreeBSD BSD-2-Clause-NetBSD BSD-2-Clause BSD-3-Clause-Attribution BSD-3-Clause-Clear BSD-3-Clause-LBNL BSD-3-Clause BSD-4-Clause BSD-4-Clause-UC BSD-Protection CC-BY-1.0 CC-BY-2.0 CC-BY-2.5 CC-BY-3.0 CC-BY-4.0 FTL ISC ImageMagick Libpng Lil-1.0 Linux-OpenIB LPL-1.02 LPL-1.0 MS-PL MIT NCSA OpenSSL PHP-3.01 PHP-3.0 PIL Python-2.0 Python-2.0-complete PostgreSQL SGI-B-1.0 SGI-B-1.1 SGI-B-2.0 Unicode-DFS-2015 Unicode-DFS-2016 Unicode-TOU UPL-1.0 W3C-19980720 W3C-20150513 W3C X11 Xnet Zend-2.0 zlib-acknowledgement Zlib ZPL-1.1 ZPL-2.0 ZPL-2.1]
-
-  # Same as '--'
-  # Default is []
-  permissive: []
-
-  # Same as '--'
-  # Default is [APSL-1.0 APSL-1.1 APSL-1.2 APSL-2.0 CDDL-1.0 CDDL-1.1 CPL-1.0 EPL-1.0 EPL-2.0 FreeImage IPL-1.0 MPL-1.0 MPL-1.1 MPL-2.0 Ruby]
-  reciprocal: [APSL-1.0 APSL-1.1 APSL-1.2 APSL-2.0 CDDL-1.0 CDDL-1.1 CPL-1.0 EPL-1.0 EPL-2.0 FreeImage IPL-1.0 MPL-1.0 MPL-1.1 MPL-2.0 Ruby]
-
-  # Same as '--'
-  # Default is [BCL CC-BY-ND-1.0 CC-BY-ND-2.0 CC-BY-ND-2.5 CC-BY-ND-3.0 CC-BY-ND-4.0 CC-BY-SA-1.0 CC-BY-SA-2.0 CC-BY-SA-2.5 CC-BY-SA-3.0 CC-BY-SA-4.0 GPL-1.0 GPL-2.0 GPL-2.0-with-autoconf-exception GPL-2.0-with-bison-exception GPL-2.0-with-classpath-exception GPL-2.0-with-font-exception GPL-2.0-with-GCC-exception GPL-3.0 GPL-3.0-with-autoconf-exception GPL-3.0-with-GCC-exception LGPL-2.0 LGPL-2.1 LGPL-3.0 NPL-1.0 NPL-1.1 OSL-1.0 OSL-1.1 OSL-2.0 OSL-2.1 OSL-3.0 QPL-1.0 Sleepycat]
-  restricted: [BCL CC-BY-ND-1.0 CC-BY-ND-2.0 CC-BY-ND-2.5 CC-BY-ND-3.0 CC-BY-ND-4.0 CC-BY-SA-1.0 CC-BY-SA-2.0 CC-BY-SA-2.5 CC-BY-SA-3.0 CC-BY-SA-4.0 GPL-1.0 GPL-2.0 GPL-2.0-with-autoconf-exception GPL-2.0-with-bison-exception GPL-2.0-with-classpath-exception GPL-2.0-with-font-exception GPL-2.0-with-GCC-exception GPL-3.0 GPL-3.0-with-autoconf-exception GPL-3.0-with-GCC-exception LGPL-2.0 LGPL-2.1 LGPL-3.0 NPL-1.0 NPL-1.1 OSL-1.0 OSL-1.1 OSL-2.0 OSL-2.1 OSL-3.0 QPL-1.0 Sleepycat]
-
-  # Same as '--'
-  # Default is [CC0-1.0 Unlicense 0BSD]
-  unencumbered: [CC0-1.0 Unlicense 0BSD]
-
-```
-
-## Misconfiguration options
-
-```yaml
-misconfiguration:
-  # Same as '--checks-bundle-repository'
-  # Default is ghcr.io/aquasecurity/trivy-checks:0
-  checks-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0
-
-  cloudformation:
-    # Same as '--cf-params'
-    # Default is []
-    params: []
-
-  helm:
-    # Same as '--helm-api-versions'
-    # Default is []
-    api-versions: []
-
-    # Same as '--helm-kube-version'
-    # Default is 
-    kube-version: 
-
-    # Same as '--helm-set'
-    # Default is []
-    set: []
-
-    # Same as '--helm-set-file'
-    # Default is []
-    set-file: []
-
-    # Same as '--helm-set-string'
-    # Default is []
-    set-string: []
-
-    # Same as '--helm-values'
-    # Default is []
-    values: []
-
-  # Same as '--include-non-failures'
-  # Default is false
-  include-non-failures: false
-
-  # Same as '--reset-checks-bundle'
-  # Default is false
-  reset-checks-bundle: false
-
-  # Same as '--misconfig-scanners'
-  # Default is [azure-arm cloudformation dockerfile helm kubernetes terraform terraformplan-json terraformplan-snapshot]
-  scanners: [azure-arm cloudformation dockerfile helm kubernetes terraform terraformplan-json terraformplan-snapshot]
-
-  terraform:
-    # Same as '--tf-exclude-downloaded-modules'
-    # Default is false
-    exclude-downloaded-modules: false
-
-    # Same as '--tf-vars'
-    # Default is []
-    vars: []
-
-```
-
-## Module options
-
-```yaml
-module:
-  # Same as '--module-dir'
-  # Default is $HOME/.trivy/modules
-  dir: $HOME/.trivy/modules
-
-  # Same as '--enable-modules'
-  # Default is []
-  enable-modules: []
 
 ```
 
