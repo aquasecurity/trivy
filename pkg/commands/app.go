@@ -1146,7 +1146,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlagGroup,
-		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		LicenseFlagGroup:       licenseFlagGroup,
 	}
