@@ -133,7 +133,6 @@ func buildFlagsTree() map[string]any {
 	details = append(details, getFlagDetails("Misconfiguration", flag.NewMisconfFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Scan", flag.NewScanFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Module", flag.NewModuleFlagGroup().Flags())...)
-	details = append(details, getFlagDetails("Client/Server", flag.NewClientFlags().Flags())...)
 	details = append(details, getFlagDetails("Registry", flag.NewRegistryFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Rego", flag.NewRegoFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Secret", flag.NewSecretFlagGroup().Flags())...)
@@ -141,6 +140,12 @@ func buildFlagsTree() map[string]any {
 	details = append(details, getFlagDetails("Kubernetes", flag.NewK8sFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Repository", flag.NewRepoFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Clean", flag.NewCleanFlagGroup().Flags())...)
+
+	// remoteFlags should contain Client and Server flags.
+	// NewClientFlags doesn't initialize `Listen` field
+	remoteFlags := flag.NewClientFlags()
+	remoteFlags.Listen = flag.ServerListenFlag.Clone()
+	details = append(details, getFlagDetails("Client/Server", remoteFlags.Flags())...)
 
 	res := map[string]any{}
 	for _, m := range details {
