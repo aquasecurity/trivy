@@ -43,6 +43,143 @@ version: false
 
 ```
 
+## DB options
+
+```yaml
+db:
+  # Same as '--download-java-db-only'
+  # Default is false
+  download-java-only: false
+
+  # Same as '--download-db-only'
+  # Default is false
+  download-only: false
+
+  # Same as '--java-db-repository'
+  # Default is ghcr.io/aquasecurity/trivy-java-db:1
+  java-repository: ghcr.io/aquasecurity/trivy-java-db:1
+
+  # Same as '--skip-java-db-update'
+  # Default is false
+  java-skip-update: false
+
+  # Same as '--light'
+  # Default is false
+  light: false
+
+  # Same as '--no-progress'
+  # Default is false
+  no-progress: false
+
+  # Same as '--db-repository'
+  # Default is ghcr.io/aquasecurity/trivy-db:2
+  repository: ghcr.io/aquasecurity/trivy-db:2
+
+  # Same as '--skip-db-update'
+  # Default is false
+  skip-update: false
+
+# Same as '--reset'
+# Default is false
+reset: false
+
+```
+
+## Cache options
+
+```yaml
+cache:
+  # Same as '--cache-backend'
+  # Default is fs
+  backend: fs
+
+  redis:
+    # Same as '--redis-ca'
+    # Default is 
+    ca: 
+
+    # Same as '--redis-cert'
+    # Default is 
+    cert: 
+
+    # Same as '--redis-key'
+    # Default is 
+    key: 
+
+    # Same as '--redis-tls'
+    # Default is false
+    tls: false
+
+  # Same as '--cache-ttl'
+  # Default is 0s
+  ttl: 0s
+
+```
+
+## Scan options
+
+```yaml
+scan:
+  # Same as '--file-patterns'
+  # Default is []
+  file-patterns: []
+
+  # Same as '--include-dev-deps'
+  # Default is false
+  include-dev-deps: false
+
+  # Same as '--offline-scan'
+  # Default is false
+  offline: false
+
+  # Same as '--parallel'
+  # Default is 5
+  parallel: 5
+
+  # Same as '--rekor-url'
+  # Default is https://rekor.sigstore.dev
+  rekor-url: https://rekor.sigstore.dev
+
+  # Same as '--sbom-sources'
+  # Default is []
+  sbom-sources: []
+
+  # Same as '--scanners'
+  # Default is [vuln secret]
+  scanners: [vuln secret]
+
+  # Same as '--skip-dirs'
+  # Default is []
+  skip-dirs: []
+
+  # Same as '--skip-files'
+  # Default is []
+  skip-files: []
+
+  # Same as '--slow'
+  # Default is false
+  slow: false
+
+```
+
+## Registry options
+
+```yaml
+registry:
+  # Same as '--password'
+  # Default is []
+  password: []
+
+  # Same as '--registry-token'
+  # Default is 
+  token: 
+
+  # Same as '--username'
+  # Default is []
+  username: []
+
+```
+
 ## Report options
 
 ```yaml
@@ -109,6 +246,58 @@ template:
 
 ```
 
+## Rego options
+
+```yaml
+rego:
+  # Same as '--config-check'
+  # Default is []
+  check: []
+
+  # Same as '--config-data'
+  # Default is []
+  data: []
+
+  # Same as '--include-deprecated-checks'
+  # Default is false
+  include-deprecated-checks: false
+
+  # Same as '--check-namespaces'
+  # Default is []
+  namespaces: []
+
+  # Same as '--skip-check-update'
+  # Default is false
+  skip-check-update: false
+
+  # Same as '--trace'
+  # Default is false
+  trace: false
+
+```
+
+## Vulnerability options
+
+```yaml
+vulnerability:
+  # Same as '--ignore-status'
+  # Default is []
+  ignore-status: []
+
+  # Same as '--ignore-unfixed'
+  # Default is false
+  ignore-unfixed: false
+
+  # Same as '--skip-vex-repo-update'
+  # Default is false
+  skip-vex-repo-update: false
+
+  # Same as '--vex'
+  # Default is []
+  vex: []
+
+```
+
 ## Image options
 
 ```yaml
@@ -145,34 +334,152 @@ image:
 
 ```
 
-## Cache options
+## Client/server options
 
 ```yaml
-cache:
-  # Same as '--cache-backend'
-  # Default is fs
-  backend: fs
+server:
+  # Same as '--server'
+  # Default is 
+  addr: 
 
-  redis:
-    # Same as '--redis-ca'
+  # Same as '--custom-headers'
+  # Default is []
+  custom-headers: []
+
+  # Same as '--token'
+  # Default is 
+  token: 
+
+  # Same as '--token-header'
+  # Default is Trivy-Token
+  token-header: Trivy-Token
+
+```
+
+## Secret options
+
+```yaml
+secret:
+  # Same as '--secret-config'
+  # Default is trivy-secret.yaml
+  config: trivy-secret.yaml
+
+```
+
+## License options
+
+```yaml
+license:
+  # Same as '--license-confidence-level'
+  # Default is 0.9
+  confidenceLevel: 0.9
+
+  # Same as '--'
+  # Default is [AGPL-1.0 AGPL-3.0 CC-BY-NC-1.0 CC-BY-NC-2.0 CC-BY-NC-2.5 CC-BY-NC-3.0 CC-BY-NC-4.0 CC-BY-NC-ND-1.0 CC-BY-NC-ND-2.0 CC-BY-NC-ND-2.5 CC-BY-NC-ND-3.0 CC-BY-NC-ND-4.0 CC-BY-NC-SA-1.0 CC-BY-NC-SA-2.0 CC-BY-NC-SA-2.5 CC-BY-NC-SA-3.0 CC-BY-NC-SA-4.0 Commons-Clause Facebook-2-Clause Facebook-3-Clause Facebook-Examples WTFPL]
+  forbidden: [AGPL-1.0 AGPL-3.0 CC-BY-NC-1.0 CC-BY-NC-2.0 CC-BY-NC-2.5 CC-BY-NC-3.0 CC-BY-NC-4.0 CC-BY-NC-ND-1.0 CC-BY-NC-ND-2.0 CC-BY-NC-ND-2.5 CC-BY-NC-ND-3.0 CC-BY-NC-ND-4.0 CC-BY-NC-SA-1.0 CC-BY-NC-SA-2.0 CC-BY-NC-SA-2.5 CC-BY-NC-SA-3.0 CC-BY-NC-SA-4.0 Commons-Clause Facebook-2-Clause Facebook-3-Clause Facebook-Examples WTFPL]
+
+  # Same as '--license-full'
+  # Default is false
+  full: false
+
+  # Same as '--ignored-licenses'
+  # Default is []
+  ignored: []
+
+  # Same as '--'
+  # Default is [AFL-1.1 AFL-1.2 AFL-2.0 AFL-2.1 AFL-3.0 Apache-1.0 Apache-1.1 Apache-2.0 Artistic-1.0-cl8 Artistic-1.0-Perl Artistic-1.0 Artistic-2.0 BSL-1.0 BSD-2-Clause-FreeBSD BSD-2-Clause-NetBSD BSD-2-Clause BSD-3-Clause-Attribution BSD-3-Clause-Clear BSD-3-Clause-LBNL BSD-3-Clause BSD-4-Clause BSD-4-Clause-UC BSD-Protection CC-BY-1.0 CC-BY-2.0 CC-BY-2.5 CC-BY-3.0 CC-BY-4.0 FTL ISC ImageMagick Libpng Lil-1.0 Linux-OpenIB LPL-1.02 LPL-1.0 MS-PL MIT NCSA OpenSSL PHP-3.01 PHP-3.0 PIL Python-2.0 Python-2.0-complete PostgreSQL SGI-B-1.0 SGI-B-1.1 SGI-B-2.0 Unicode-DFS-2015 Unicode-DFS-2016 Unicode-TOU UPL-1.0 W3C-19980720 W3C-20150513 W3C X11 Xnet Zend-2.0 zlib-acknowledgement Zlib ZPL-1.1 ZPL-2.0 ZPL-2.1]
+  notice: [AFL-1.1 AFL-1.2 AFL-2.0 AFL-2.1 AFL-3.0 Apache-1.0 Apache-1.1 Apache-2.0 Artistic-1.0-cl8 Artistic-1.0-Perl Artistic-1.0 Artistic-2.0 BSL-1.0 BSD-2-Clause-FreeBSD BSD-2-Clause-NetBSD BSD-2-Clause BSD-3-Clause-Attribution BSD-3-Clause-Clear BSD-3-Clause-LBNL BSD-3-Clause BSD-4-Clause BSD-4-Clause-UC BSD-Protection CC-BY-1.0 CC-BY-2.0 CC-BY-2.5 CC-BY-3.0 CC-BY-4.0 FTL ISC ImageMagick Libpng Lil-1.0 Linux-OpenIB LPL-1.02 LPL-1.0 MS-PL MIT NCSA OpenSSL PHP-3.01 PHP-3.0 PIL Python-2.0 Python-2.0-complete PostgreSQL SGI-B-1.0 SGI-B-1.1 SGI-B-2.0 Unicode-DFS-2015 Unicode-DFS-2016 Unicode-TOU UPL-1.0 W3C-19980720 W3C-20150513 W3C X11 Xnet Zend-2.0 zlib-acknowledgement Zlib ZPL-1.1 ZPL-2.0 ZPL-2.1]
+
+  # Same as '--'
+  # Default is []
+  permissive: []
+
+  # Same as '--'
+  # Default is [APSL-1.0 APSL-1.1 APSL-1.2 APSL-2.0 CDDL-1.0 CDDL-1.1 CPL-1.0 EPL-1.0 EPL-2.0 FreeImage IPL-1.0 MPL-1.0 MPL-1.1 MPL-2.0 Ruby]
+  reciprocal: [APSL-1.0 APSL-1.1 APSL-1.2 APSL-2.0 CDDL-1.0 CDDL-1.1 CPL-1.0 EPL-1.0 EPL-2.0 FreeImage IPL-1.0 MPL-1.0 MPL-1.1 MPL-2.0 Ruby]
+
+  # Same as '--'
+  # Default is [BCL CC-BY-ND-1.0 CC-BY-ND-2.0 CC-BY-ND-2.5 CC-BY-ND-3.0 CC-BY-ND-4.0 CC-BY-SA-1.0 CC-BY-SA-2.0 CC-BY-SA-2.5 CC-BY-SA-3.0 CC-BY-SA-4.0 GPL-1.0 GPL-2.0 GPL-2.0-with-autoconf-exception GPL-2.0-with-bison-exception GPL-2.0-with-classpath-exception GPL-2.0-with-font-exception GPL-2.0-with-GCC-exception GPL-3.0 GPL-3.0-with-autoconf-exception GPL-3.0-with-GCC-exception LGPL-2.0 LGPL-2.1 LGPL-3.0 NPL-1.0 NPL-1.1 OSL-1.0 OSL-1.1 OSL-2.0 OSL-2.1 OSL-3.0 QPL-1.0 Sleepycat]
+  restricted: [BCL CC-BY-ND-1.0 CC-BY-ND-2.0 CC-BY-ND-2.5 CC-BY-ND-3.0 CC-BY-ND-4.0 CC-BY-SA-1.0 CC-BY-SA-2.0 CC-BY-SA-2.5 CC-BY-SA-3.0 CC-BY-SA-4.0 GPL-1.0 GPL-2.0 GPL-2.0-with-autoconf-exception GPL-2.0-with-bison-exception GPL-2.0-with-classpath-exception GPL-2.0-with-font-exception GPL-2.0-with-GCC-exception GPL-3.0 GPL-3.0-with-autoconf-exception GPL-3.0-with-GCC-exception LGPL-2.0 LGPL-2.1 LGPL-3.0 NPL-1.0 NPL-1.1 OSL-1.0 OSL-1.1 OSL-2.0 OSL-2.1 OSL-3.0 QPL-1.0 Sleepycat]
+
+  # Same as '--'
+  # Default is [CC0-1.0 Unlicense 0BSD]
+  unencumbered: [CC0-1.0 Unlicense 0BSD]
+
+```
+
+## Misconfiguration options
+
+```yaml
+misconfiguration:
+  # Same as '--checks-bundle-repository'
+  # Default is ghcr.io/aquasecurity/trivy-checks:0
+  checks-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0
+
+  cloudformation:
+    # Same as '--cf-params'
+    # Default is []
+    params: []
+
+  helm:
+    # Same as '--helm-api-versions'
+    # Default is []
+    api-versions: []
+
+    # Same as '--helm-kube-version'
     # Default is 
-    ca: 
+    kube-version: 
 
-    # Same as '--redis-cert'
-    # Default is 
-    cert: 
+    # Same as '--helm-set'
+    # Default is []
+    set: []
 
-    # Same as '--redis-key'
-    # Default is 
-    key: 
+    # Same as '--helm-set-file'
+    # Default is []
+    set-file: []
 
-    # Same as '--redis-tls'
+    # Same as '--helm-set-string'
+    # Default is []
+    set-string: []
+
+    # Same as '--helm-values'
+    # Default is []
+    values: []
+
+  # Same as '--include-non-failures'
+  # Default is false
+  include-non-failures: false
+
+  # Same as '--reset-checks-bundle'
+  # Default is false
+  reset-checks-bundle: false
+
+  # Same as '--misconfig-scanners'
+  # Default is [azure-arm cloudformation dockerfile helm kubernetes terraform terraformplan-json terraformplan-snapshot]
+  scanners: [azure-arm cloudformation dockerfile helm kubernetes terraform terraformplan-json terraformplan-snapshot]
+
+  terraform:
+    # Same as '--tf-exclude-downloaded-modules'
     # Default is false
-    tls: false
+    exclude-downloaded-modules: false
 
-  # Same as '--cache-ttl'
-  # Default is 0s
-  ttl: 0s
+    # Same as '--tf-vars'
+    # Default is []
+    vars: []
+
+```
+
+## Module options
+
+```yaml
+module:
+  # Same as '--module-dir'
+  # Default is $HOME/.trivy/modules
+  dir: $HOME/.trivy/modules
+
+  # Same as '--enable-modules'
+  # Default is []
+  enable-modules: []
 
 ```
 

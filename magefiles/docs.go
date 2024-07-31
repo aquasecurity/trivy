@@ -86,6 +86,9 @@ func getFlagMetadata(section string, flagGroup any) []*flagMetadata {
 			configName = section + "." + p.ConfigName
 			defaultValue = p.Default
 		case *flag.Flag[string]:
+			if p == nil {
+				continue
+			}
 			name = p.Name
 			configName = section + "." + p.ConfigName
 			defaultValue = p.Default
@@ -140,7 +143,18 @@ func buildFlagsTree() map[string]any {
 	metadata := getFlagMetadata("Global", *flag.NewGlobalFlagGroup())
 	metadata = append(metadata, getFlagMetadata("Report", *flag.NewReportFlagGroup())...)
 	metadata = append(metadata, getFlagMetadata("Image", *flag.NewImageFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("DB", *flag.NewDBFlagGroup())...)
 	metadata = append(metadata, getFlagMetadata("Cache", *flag.NewCacheFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("License", *flag.NewLicenseFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Misconfiguration", *flag.NewMisconfFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Scan", *flag.NewScanFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Module", *flag.NewModuleFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Client/Server", *flag.NewClientFlags())...)
+	metadata = append(metadata, getFlagMetadata("Registry", *flag.NewRegistryFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Rego", *flag.NewRegoFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Secret", *flag.NewSecretFlagGroup())...)
+	metadata = append(metadata, getFlagMetadata("Vulnerability", *flag.NewVulnerabilityFlagGroup())...)
+
 	for _, m := range metadata {
 		addToMap(res, strings.Split(m.configName, "."), m)
 	}
