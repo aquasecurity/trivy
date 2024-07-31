@@ -196,6 +196,14 @@ func (f *Flag[T]) GetName() string {
 	return f.Name
 }
 
+func (f *Flag[T]) GetConfigName() string {
+	return f.ConfigName
+}
+
+func (f *Flag[T]) GetDefaultValue() any {
+	return f.Default
+}
+
 func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
 }
@@ -302,6 +310,8 @@ type FlagGroup interface {
 
 type Flagger interface {
 	GetName() string
+	GetConfigName() string
+	GetDefaultValue() any
 	GetAliases() []Alias
 
 	Parse() error

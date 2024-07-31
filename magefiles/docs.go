@@ -5,10 +5,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra/doc"
@@ -69,61 +67,36 @@ type flagDetails struct {
 	example      []string
 }
 
-func getFlagDetails(section string, flagGroup any) []*flagDetails {
+func getFlagDetails(section string, flagGroup []flag.Flagger) []*flagDetails {
 	result := []*flagDetails{}
-	val := reflect.ValueOf(flagGroup)
-	for i := 0; i < val.NumField(); i++ {
-		var name, configName string
+	for _, flg := range flagGroup {
+		if flg == nil {
+			continue
+		}
 		var defaultValue any
 		var example []string
-		switch p := val.Field(i).Interface().(type) {
-		case *flag.Flag[int]:
-			name = p.Name
-			configName = p.ConfigName
-			defaultValue = p.Default
-		case *flag.Flag[bool]:
-			if p == nil {
-				continue
-			}
-			name = p.Name
-			configName = p.ConfigName
-			defaultValue = p.Default
-		case *flag.Flag[string]:
-			if p == nil {
-				continue
-			}
-			name = p.Name
-			configName = p.ConfigName
-			defaultValue = lo.Ternary(len(p.Default) > 0, p.Default, "empty")
-			example = append(example, lo.Ternary(len(p.Default) > 0, p.Default, ""))
-		case *flag.Flag[[]string]:
-			name = p.Name
-			configName = p.ConfigName
-			if len(p.Default) > 0 {
-				defaultValue = strings.Join(p.Default, ", ")
-				for _, line := range p.Default {
+
+		switch p := flg.GetDefaultValue().(type) {
+		case string:
+			defaultValue = lo.Ternary(len(p) > 0, p, "empty")
+			example = append(example, lo.Ternary(len(p) > 0, p, ""))
+		case []string:
+			if len(p) > 0 {
+				defaultValue = strings.Join(p, ", ")
+				for _, line := range p {
 					example = append(example, line)
 				}
-			} else {
-				defaultValue = p.Default
 			}
-		case *flag.Flag[time.Duration]:
-			name = p.Name
-			configName = p.ConfigName
-			defaultValue = p.Default
-		case *flag.Flag[float64]:
-			name = p.Name
-			configName = p.ConfigName
-			defaultValue = p.Default
-		default:
-			continue
+		}
+		if defaultValue == nil {
+			defaultValue = flg.GetDefaultValue()
 		}
 		if len(example) == 0 {
 			example = append(example, fmt.Sprintf("%v", defaultValue))
 		}
 		result = append(result, &flagDetails{
-			name:         name,
-			configName:   section + "." + configName,
+			name:         flg.GetName(),
+			configName:   section + "." + flg.GetConfigName(),
 			defaultValue: defaultValue,
 			example:      example,
 		})
@@ -139,40 +112,37 @@ func addToMap(m map[string]any, parts []string, value *flagDetails) {
 		m[parts[0]] = value
 		return
 	}
-
 	if _, exists := m[parts[0]]; !exists {
 		m[parts[0]] = make(map[string]any)
 	}
-
 	subMap, ok := m[parts[0]].(map[string]any)
 	if !ok {
 		subMap = make(map[string]any)
 		m[parts[0]] = subMap
 	}
-
 	addToMap(subMap, parts[1:], value)
 }
 
 func buildFlagsTree() map[string]any {
-	res := map[string]any{}
-	details := getFlagDetails("Global", *flag.NewGlobalFlagGroup())
-	details = append(details, getFlagDetails("Report", *flag.NewReportFlagGroup())...)
-	details = append(details, getFlagDetails("Image", *flag.NewImageFlagGroup())...)
-	details = append(details, getFlagDetails("DB", *flag.NewDBFlagGroup())...)
-	details = append(details, getFlagDetails("Cache", *flag.NewCacheFlagGroup())...)
-	details = append(details, getFlagDetails("License", *flag.NewLicenseFlagGroup())...)
-	details = append(details, getFlagDetails("Misconfiguration", *flag.NewMisconfFlagGroup())...)
-	details = append(details, getFlagDetails("Scan", *flag.NewScanFlagGroup())...)
-	details = append(details, getFlagDetails("Module", *flag.NewModuleFlagGroup())...)
-	details = append(details, getFlagDetails("Client/Server", *flag.NewClientFlags())...)
-	details = append(details, getFlagDetails("Registry", *flag.NewRegistryFlagGroup())...)
-	details = append(details, getFlagDetails("Rego", *flag.NewRegoFlagGroup())...)
-	details = append(details, getFlagDetails("Secret", *flag.NewSecretFlagGroup())...)
-	details = append(details, getFlagDetails("Vulnerability", *flag.NewVulnerabilityFlagGroup())...)
-	details = append(details, getFlagDetails("Kubernetes", *flag.NewK8sFlagGroup())...)
-	details = append(details, getFlagDetails("Repository", *flag.NewRepoFlagGroup())...)
-	details = append(details, getFlagDetails("Clean", *flag.NewCleanFlagGroup())...)
+	details := getFlagDetails("Global", flag.NewGlobalFlagGroup().Flags())
+	details = append(details, getFlagDetails("Report", flag.NewReportFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Image", flag.NewImageFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("DB", flag.NewDBFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Cache", flag.NewCacheFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("License", flag.NewLicenseFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Misconfiguration", flag.NewMisconfFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Scan", flag.NewScanFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Module", flag.NewModuleFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Client/Server", flag.NewClientFlags().Flags())...)
+	details = append(details, getFlagDetails("Registry", flag.NewRegistryFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Rego", flag.NewRegoFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Secret", flag.NewSecretFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Vulnerability", flag.NewVulnerabilityFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Kubernetes", flag.NewK8sFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Repository", flag.NewRepoFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Clean", flag.NewCleanFlagGroup().Flags())...)
 
+	res := map[string]any{}
 	for _, m := range details {
 		addToMap(res, strings.Split(m.configName, "."), m)
 	}
@@ -204,7 +174,9 @@ func genMarkdown(m map[string]any, indent int, w *os.File) {
 			fmt.Fprintf(w, "%s%s:\n", indentation, key)
 			genMarkdown(v, indent+1, w)
 		case *flagDetails:
-			fmt.Fprintf(w, "%s# Same as '--%s'\n", indentation, v.name)
+			if v.name != "" {
+				fmt.Fprintf(w, "%s# Same as '--%s'\n", indentation, v.name)
+			}
 			fmt.Fprintf(w, "%s# Default is %v\n", indentation, v.defaultValue)
 			if len(v.example) > 1 {
 				fmt.Fprintf(w, "%s%s:\n", indentation, key)
