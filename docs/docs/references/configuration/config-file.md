@@ -96,6 +96,37 @@ server:
 
 ```
 
+## Cloud options
+
+```yaml
+cloud:
+  aws:
+    # Same as '--account'
+    # Default is empty
+    account: 
+
+    # Same as '--arn'
+    # Default is empty
+    arn: 
+
+    # Same as '--endpoint'
+    # Default is empty
+    endpoint: 
+
+    # Same as '--region'
+    # Default is empty
+    region: 
+
+    # Same as '--service'
+    # Default is []
+    service: []
+
+    # Same as '--skip-service'
+    # Default is []
+    skip-service: []
+
+```
+
 ## DB options
 
 ```yaml

@@ -140,6 +140,7 @@ func buildFlagsTree() map[string]any {
 	details = append(details, getFlagDetails("Kubernetes", flag.NewK8sFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Repository", flag.NewRepoFlagGroup().Flags())...)
 	details = append(details, getFlagDetails("Clean", flag.NewCleanFlagGroup().Flags())...)
+	details = append(details, getFlagDetails("Cloud", flag.NewAWSFlagGroup().Flags())...)
 
 	// remoteFlags should contain Client and Server flags.
 	// NewClientFlags doesn't initialize `Listen` field
