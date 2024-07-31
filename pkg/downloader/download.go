@@ -154,7 +154,8 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 func NewGitHubTransport(u *url.URL, insecure bool, token string) http.RoundTripper {
 	client := newGitHubClient(insecure, token)
 	ss := strings.SplitN(u.Path, "/", 4)
-	if len(ss) < 4 || strings.HasPrefix(ss[3], "archive/") {
+	if len(ss) < 4 || strings.HasPrefix(ss[3], "archive/") || strings.HasPrefix(ss[3], "releases/") ||
+		strings.HasPrefix(ss[3], "tags/") {
 		// Use the default transport from go-github for authentication
 		return client.Client().Transport
 	}
