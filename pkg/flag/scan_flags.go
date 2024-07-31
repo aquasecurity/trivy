@@ -126,15 +126,16 @@ type ScanFlagGroup struct {
 }
 
 type ScanOptions struct {
-	Target       string
-	SkipDirs     []string
-	SkipFiles    []string
-	OfflineScan  bool
-	Scanners     types.Scanners
-	FilePatterns []string
-	Parallel     int
-	SBOMSources  []string
-	RekorURL     string
+	Target            string
+	SkipDirs          []string
+	SkipFiles         []string
+	OfflineScan       bool
+	Scanners          types.Scanners
+	FilePatterns      []string
+	Parallel          int
+	SBOMSources       []string
+	RekorURL          string
+	DetectionPriority ftypes.DetectionPriority
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -188,14 +189,15 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}
 
 	return ScanOptions{
-		Target:       target,
-		SkipDirs:     f.SkipDirs.Value(),
-		SkipFiles:    f.SkipFiles.Value(),
-		OfflineScan:  f.OfflineScan.Value(),
-		Scanners:     xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
-		FilePatterns: f.FilePatterns.Value(),
-		Parallel:     parallel,
-		SBOMSources:  f.SBOMSources.Value(),
-		RekorURL:     f.RekorURL.Value(),
+		Target:            target,
+		SkipDirs:          f.SkipDirs.Value(),
+		SkipFiles:         f.SkipFiles.Value(),
+		OfflineScan:       f.OfflineScan.Value(),
+		Scanners:          xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
+		FilePatterns:      f.FilePatterns.Value(),
+		Parallel:          parallel,
+		SBOMSources:       f.SBOMSources.Value(),
+		RekorURL:          f.RekorURL.Value(),
+		DetectionPriority: ftypes.DetectionPriority(f.DetectionPriority.Value()),
 	}, nil
 }

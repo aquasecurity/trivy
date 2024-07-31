@@ -44,6 +44,7 @@ type AnalyzerOptions struct {
 	Parallel             int
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
+	DetectionPriority    types.DetectionPriority
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  SecretScannerOption
 	LicenseScannerOption LicenseScannerOption
@@ -120,10 +121,11 @@ type CustomGroup interface {
 type Opener func() (xio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
-	logger        *log.Logger
-	analyzers     []analyzer
-	postAnalyzers []PostAnalyzer
-	filePatterns  map[Type][]*regexp.Regexp
+	logger            *log.Logger
+	analyzers         []analyzer
+	postAnalyzers     []PostAnalyzer
+	filePatterns      map[Type][]*regexp.Regexp
+	detectionPriority types.DetectionPriority
 }
 
 ///////////////////////////
@@ -145,9 +147,8 @@ type PostAnalysisInput struct {
 }
 
 type AnalysisOptions struct {
-	Offline           bool
-	FileChecksum      bool
-	DetectionPriority types.DetectionPriority
+	Offline      bool
+	FileChecksum bool
 }
 
 type AnalysisResult struct {
@@ -313,17 +314,18 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 
 const separator = ":"
 
-func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
-	groupName := opt.Group
+func NewAnalyzerGroup(opts AnalyzerOptions) (AnalyzerGroup, error) {
+	groupName := opts.Group
 	if groupName == "" {
 		groupName = GroupBuiltin
 	}
 
 	group := AnalyzerGroup{
-		logger:       log.WithPrefix("analyzer"),
-		filePatterns: make(map[Type][]*regexp.Regexp),
+		logger:            log.WithPrefix("analyzer"),
+		filePatterns:      make(map[Type][]*regexp.Regexp),
+		detectionPriority: opts.DetectionPriority,
 	}
-	for _, p := range opt.FilePatterns {
+	for _, p := range opts.FilePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
 		if len(s) != 2 {
@@ -344,12 +346,12 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	}
 
 	for analyzerType, a := range analyzers {
-		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
+		if !belongToGroup(groupName, analyzerType, opts.DisabledAnalyzers, a) {
 			continue
 		}
 		// Initialize only scanners that have Init()
 		if ini, ok := a.(Initializer); ok {
-			if err := ini.Init(opt); err != nil {
+			if err := ini.Init(opts); err != nil {
 				return AnalyzerGroup{}, xerrors.Errorf("analyzer initialization error: %w", err)
 			}
 		}
@@ -357,11 +359,11 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	}
 
 	for analyzerType, init := range postAnalyzers {
-		a, err := init(opt)
+		a, err := init(opts)
 		if err != nil {
 			return AnalyzerGroup{}, xerrors.Errorf("post-analyzer init error: %w", err)
 		}
-		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
+		if !belongToGroup(groupName, analyzerType, opts.DisabledAnalyzers, a) {
 			continue
 		}
 		group.postAnalyzers = append(group.postAnalyzers, a)
@@ -474,6 +476,11 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 		}
 
 		skippedFiles := result.SystemInstalledFiles
+		if ag.detectionPriority == types.PriorityCoverage {
+			// If the detection priority is coverage, system files installed by the OS package manager will not be skipped.
+			// It can lead to false positives and duplicates, but it may be necessary to detect all possible vulnerabilities.
+			skippedFiles = nil
+		}
 		for _, app := range result.Applications {
 			skippedFiles = append(skippedFiles, app.FilePath)
 			for _, pkg := range app.Packages {
