@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
+	"github.com/aquasecurity/go-version/pkg/version"
 )
 
 func main() {
-	if _, err := mod.Parse(nil); err != nil {
+	if _, err := version.Parse("v0.1.2"); err != nil {
 		log.Fatal(err)
 	}
 }
