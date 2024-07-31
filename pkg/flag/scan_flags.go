@@ -5,6 +5,7 @@ import (
 
 	"github.com/samber/lo"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
@@ -96,18 +97,32 @@ var (
 		Default:    "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
+	DetectionPriority = Flag[string]{
+		Name:       "detection-priority",
+		ConfigName: "scan.detection-priority",
+		Default:    string(ftypes.PriorityPrecise),
+		Values: xstrings.ToStringSlice([]ftypes.DetectionPriority{
+			ftypes.PriorityPrecise,
+			ftypes.PriorityCoverage,
+		}),
+		Usage: `specify the detection priority:
+  - "precise": Prioritizes precise by minimizing false positives.
+  - "coverage": Increases security finding coverage at the cost of potential false positives.
+`,
+	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs     *Flag[[]string]
-	SkipFiles    *Flag[[]string]
-	OfflineScan  *Flag[bool]
-	Scanners     *Flag[[]string]
-	FilePatterns *Flag[[]string]
-	Slow         *Flag[bool] // deprecated
-	Parallel     *Flag[int]
-	SBOMSources  *Flag[[]string]
-	RekorURL     *Flag[string]
+	SkipDirs          *Flag[[]string]
+	SkipFiles         *Flag[[]string]
+	OfflineScan       *Flag[bool]
+	Scanners          *Flag[[]string]
+	FilePatterns      *Flag[[]string]
+	Slow              *Flag[bool] // deprecated
+	Parallel          *Flag[int]
+	SBOMSources       *Flag[[]string]
+	RekorURL          *Flag[string]
+	DetectionPriority *Flag[string]
 }
 
 type ScanOptions struct {
@@ -124,15 +139,16 @@ type ScanOptions struct {
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:     SkipDirsFlag.Clone(),
-		SkipFiles:    SkipFilesFlag.Clone(),
-		OfflineScan:  OfflineScanFlag.Clone(),
-		Scanners:     ScannersFlag.Clone(),
-		FilePatterns: FilePatternsFlag.Clone(),
-		Parallel:     ParallelFlag.Clone(),
-		SBOMSources:  SBOMSourcesFlag.Clone(),
-		RekorURL:     RekorURLFlag.Clone(),
-		Slow:         SlowFlag.Clone(),
+		SkipDirs:          SkipDirsFlag.Clone(),
+		SkipFiles:         SkipFilesFlag.Clone(),
+		OfflineScan:       OfflineScanFlag.Clone(),
+		Scanners:          ScannersFlag.Clone(),
+		FilePatterns:      FilePatternsFlag.Clone(),
+		Parallel:          ParallelFlag.Clone(),
+		SBOMSources:       SBOMSourcesFlag.Clone(),
+		RekorURL:          RekorURLFlag.Clone(),
+		Slow:              SlowFlag.Clone(),
+		DetectionPriority: DetectionPriority.Clone(),
 	}
 }
 
@@ -151,6 +167,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.Parallel,
 		f.SBOMSources,
 		f.RekorURL,
+		f.DetectionPriority,
 	}
 }
 
