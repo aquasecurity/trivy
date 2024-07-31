@@ -100,6 +100,11 @@ func getFlagDetails(section string, flagGroup any) []*flagDetails {
 			name = p.Name
 			configName = p.ConfigName
 			defaultValue = p.Default
+			if len(p.Default) > 0 {
+				for _, line := range p.Default {
+					example = append(example, line)
+				}
+			}
 		case *flag.Flag[time.Duration]:
 			name = p.Name
 			configName = p.ConfigName
@@ -201,6 +206,9 @@ func genMarkdown(m map[string]any, indent int, w *os.File) {
 			fmt.Fprintf(w, "%s# Default is %v\n", indentation, v.defaultValue)
 			if len(v.example) > 1 {
 				fmt.Fprintf(w, "%s%s:\n", indentation, key)
+				for _, line := range v.example {
+					fmt.Fprintf(w, "%s - %s\n", indentation, line)
+				}
 			} else {
 				fmt.Fprintf(w, "%s%s: %s\n\n", indentation, key, v.example[0])
 			}
