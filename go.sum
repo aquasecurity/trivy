@@ -1022,8 +1022,8 @@ github.com/markbates/oncer v1.0.0 h1:E83IaVAHygyndzPimgUYJjbshhDTALZyXxvk9FOlQRY
 github.com/markbates/oncer v1.0.0/go.mod h1:Z59JA581E9GP6w96jai+TGqafHPW+cPfRxz2aSZ0mcI=
 github.com/markbates/safe v1.0.1 h1:yjZkbvRM6IzKj9tlu/zMJLS0n/V351OZWRnF3QfaUxI=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
-github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac h1:QyRucnGOLHJag1eB9CtuZwZk+/LpvTSYr5mnFLLFlgA=
-github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac/go.mod h1:J7Vb0sf0JzOhT0uHTeCqO6dqP/ELVcQvQ6yQ/56ZRGw=
+github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee h1:cgm8mE25x5XXX2oyvJDlyJ72K+rDu/4ZCYce2worNb8=
+github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee/go.mod h1:rojbW5tVhH1cuVYFKZS+QX+VGXK45JVsRO+jW92kkKM=
 github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323 h1:uQubA711SeYStvStohMLrdvRTTohdPHrEPFzerLcY9I=
 github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323/go.mod h1:OdtzwqTtu49Gh5RFkNEU1SbcihIuVTtUipwHflqxckE=
 github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4 h1:uHO44vOunB0oEtk+r8ifBbFOD0mr6+fmoyFNCgLE66k=
@@ -1032,8 +1032,8 @@ github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08 h1:AevU
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08/go.mod h1:JOkBRrE1HvgTyjk6diFtNGgr8XJMtIfiBzkL5krqzVk=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd h1:Y30EzvuoVp97b0unb/GOFXzBUKRXZXUN2e0wYmvC+ic=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd/go.mod h1:5f7mCJGW9cJb8SDn3z8qodGxpMCOo8d/2nls/tiwRrw=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20230608043311-a335f4599b70 h1:X6W6raTo07X0q4pvSI/68Pj/Ic4iIU2CfQU65OH0Zhc=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20230608043311-a335f4599b70/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20231205045356-1b22259a6c44 h1:VmSjn0UCyfXUNdePDr7uM/uZTnGSp+mKD5+cYkEoLx4=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20231205045356-1b22259a6c44/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
 github.com/mattn/go-colorable v0.1.7/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=

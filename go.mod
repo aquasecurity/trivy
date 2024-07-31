@@ -76,12 +76,12 @@ require (
 	github.com/liamg/jfather v0.0.7
 	github.com/liamg/memoryfs v1.6.0
 	github.com/magefile/mage v1.15.0
-	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
+	github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee
 	github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
-	github.com/masahiro331/go-xfs-filesystem v0.0.0-20230608043311-a335f4599b70
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20231205045356-1b22259a6c44
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032
 	github.com/mitchellh/go-homedir v1.1.0
