@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.54.1](https://github.com/aquasecurity/trivy/compare/v0.54.0...v0.54.1) (2024-07-31)
+
+
+### Bug Fixes
+
+* **flag:** incorrect behavior for deprected flag `--clear-cache` [backport: release/v0.54] ([#7285](https://github.com/aquasecurity/trivy/issues/7285)) ([334a1c2](https://github.com/aquasecurity/trivy/commit/334a1c293bb3d490af2a6d80732f399efaac22f7))
+* **java:** Return error when trying to find a remote pom to avoid segfault [backport: release/v0.54] ([#7283](https://github.com/aquasecurity/trivy/issues/7283)) ([f61725c](https://github.com/aquasecurity/trivy/commit/f61725c28b56d80fb46395479842a2ab0c517c5f))
+* **plugin:** do not call GitHub content API for releases and tags [backport: release/v0.54] ([#7279](https://github.com/aquasecurity/trivy/issues/7279)) ([a7b7117](https://github.com/aquasecurity/trivy/commit/a7b7117fe2c9608e990b42e702cc83675c48f888))
+
 ## [0.54.0](https://github.com/aquasecurity/trivy/compare/v0.53.0...v0.54.0) (2024-07-30)
 
 
