@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"io/fs"
 	"path/filepath"
 	"regexp"
@@ -21,19 +20,19 @@ import (
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/releaseutil"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var manifestNameRegex = regexp.MustCompile("# Source: [^/]+/(.+)")
 
 type Parser struct {
+	logger       *log.Logger
 	helmClient   *action.Install
 	rootPath     string
 	ChartSource  string
 	filepaths    []string
-	debug        debug.Logger
 	skipRequired bool
 	workingFS    fs.FS
 	valuesFiles  []string
@@ -47,10 +46,6 @@ type Parser struct {
 type ChartFile struct {
 	TemplateFilePath string
 	ManifestContent  string
-}
-
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "helm", "parser")
 }
 
 func (p *Parser) SetSkipRequiredCheck(b bool) {
@@ -91,6 +86,7 @@ func New(path string, opts ...options.ParserOption) (*Parser, error) {
 	p := &Parser{
 		helmClient:  client,
 		ChartSource: path,
+		logger:      log.WithPrefix("helm parser"),
 	}
 
 	for _, option := range opts {

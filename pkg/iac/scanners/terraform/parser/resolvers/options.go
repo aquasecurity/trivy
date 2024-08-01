@@ -3,12 +3,12 @@ package resolvers
 import (
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Options struct {
 	Source, OriginalSource, Version, OriginalVersion, WorkingDir, Name, ModulePath string
-	DebugLogger                                                                    debug.Logger
+	DebugLogger                                                                    *log.Logger
 	AllowDownloads                                                                 bool
 	SkipCache                                                                      bool
 	RelativePath                                                                   string
@@ -22,8 +22,4 @@ func (o *Options) hasPrefix(prefixes ...string) bool {
 		}
 	}
 	return false
-}
-
-func (o *Options) Debug(format string, args ...any) {
-	o.DebugLogger.Log(format, args...)
 }

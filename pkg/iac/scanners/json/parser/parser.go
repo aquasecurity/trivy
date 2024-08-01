@@ -3,24 +3,19 @@ package parser
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"io/fs"
 	"path/filepath"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
-	debug        debug.Logger
+	logger       *log.Logger
 	skipRequired bool
-}
-
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "json", "parser")
 }
 
 func (p *Parser) SetSkipRequiredCheck(b bool) {
@@ -56,7 +51,7 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 		}
 		df, err := p.ParseFile(ctx, target, path)
 		if err != nil {
-			p.debug.Log("Parse error in '%s': %s", path, err)
+			p.logger.Error("Parse error", log.FilePath(path), log.Err(err))
 			return nil
 		}
 		files[path] = df

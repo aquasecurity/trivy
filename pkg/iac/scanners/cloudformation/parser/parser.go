@@ -14,16 +14,16 @@ import (
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
-	debug               debug.Logger
+	logger              *log.Logger
 	skipRequired        bool
 	parameterFiles      []string
 	parameters          map[string]any
@@ -55,16 +55,14 @@ func WithConfigsFS(fsys fs.FS) options.ParserOption {
 	}
 }
 
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "cloudformation", "parser")
-}
-
 func (p *Parser) SetSkipRequiredCheck(b bool) {
 	p.skipRequired = b
 }
 
 func New(opts ...options.ParserOption) *Parser {
-	p := &Parser{}
+	p := &Parser{
+		logger: log.WithPrefix("cloudformation parser"),
+	}
 	for _, option := range opts {
 		option(p)
 	}
@@ -87,13 +85,13 @@ func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, dir string) (FileConte
 		}
 
 		if !p.Required(fsys, path) {
-			p.debug.Log("not a CloudFormation file, skipping %s", path)
+			p.logger.Debug("not a CloudFormation file, skipping", log.FilePath(path))
 			return nil
 		}
 
 		c, err := p.ParseFile(ctx, fsys, path)
 		if err != nil {
-			p.debug.Log("Error parsing file '%s': %s", path, err)
+			p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
 			return nil
 		}
 		contexts = append(contexts, c)
@@ -184,7 +182,7 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 	fctx.SourceFormat = sourceFmt
 	fctx.filepath = path
 
-	p.debug.Log("Context loaded from source %s", path)
+	p.logger.Debug("Context loaded from source", log.FilePath(path))
 
 	// the context must be set to conditions before resources
 	for _, c := range fctx.Conditions {

@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"io"
+	"log/slog"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -17,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 //go:embed all:testdata/policies
@@ -28,10 +30,10 @@ var embeddedChecksFS embed.FS
 func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 	t.Run("allow no errors", func(t *testing.T) {
 		var debugBuf bytes.Buffer
+		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
 			types.SourceDockerfile,
 			options.ScannerWithRegoErrorLimits(0),
-			options.ScannerWithDebug(&debugBuf),
 		)
 
 		err := scanner.LoadPolicies(false, false, testEmbedFS, []string{"."}, nil)
@@ -41,16 +43,16 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 
 	t.Run("allow up to max 1 error", func(t *testing.T) {
 		var debugBuf bytes.Buffer
+		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
 			types.SourceDockerfile,
 			options.ScannerWithRegoErrorLimits(1),
-			options.ScannerWithDebug(&debugBuf),
 		)
 
 		err := scanner.LoadPolicies(false, false, testEmbedFS, []string{"."}, nil)
 		require.NoError(t, err)
 
-		assert.Contains(t, debugBuf.String(), "Error occurred while parsing: testdata/policies/invalid.rego, testdata/policies/invalid.rego:7")
+		assert.Contains(t, debugBuf.String(), "Error occurred while parsing\tfile_path=\"testdata/policies/invalid.rego\" err=\"testdata/policies/invalid.rego:7")
 	})
 
 	t.Run("schema does not exist", func(t *testing.T) {

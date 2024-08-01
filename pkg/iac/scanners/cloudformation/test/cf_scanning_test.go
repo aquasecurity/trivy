@@ -1,7 +1,6 @@
 package test
 
 import (
-	"bytes"
 	"context"
 	"os"
 	"testing"
@@ -29,20 +28,4 @@ func Test_cloudformation_scanning_has_expected_errors(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.NotEmpty(t, results.GetFailed())
-}
-
-func Test_cloudformation_scanning_with_debug(t *testing.T) {
-
-	debugWriter := bytes.NewBufferString("")
-
-	scannerOptions := []options.ScannerOption{
-		options.ScannerWithDebug(debugWriter),
-	}
-	cfScanner := cloudformation.New(scannerOptions...)
-
-	_, err := cfScanner.ScanFS(context.TODO(), os.DirFS("./examples/bucket"), ".")
-	require.NoError(t, err)
-
-	// check debug is as expected
-	assert.NotEmpty(t, debugWriter.String())
 }

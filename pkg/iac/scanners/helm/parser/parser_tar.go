@@ -14,6 +14,7 @@ import (
 	"github.com/liamg/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var errSkipFS = errors.New("skip parse FS")
@@ -75,13 +76,13 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 				return nil, err
 			}
 		case tar.TypeReg:
-			p.debug.Log("Unpacking tar entry %s", targetPath)
+			p.logger.Debug("Unpacking tar entry", log.FilePath(targetPath))
 			if err := copyFile(tarFS, tr, targetPath); err != nil {
 				return nil, err
 			}
 		case tar.TypeSymlink:
 			if path.IsAbs(link) {
-				p.debug.Log("Symlink %s is absolute, skipping", link)
+				p.logger.Debug("Symlink is absolute, skipping", log.String("link", link))
 				continue
 			}
 

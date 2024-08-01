@@ -6,20 +6,20 @@ import (
 	"io/fs"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/yaml/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct { // nolint: gocritic
 	options       []options.ScannerOption
-	debug         debug.Logger
+	logger        *log.Logger
 	policyDirs    []string
 	policyReaders []io.Reader
 	parser        *parser.Parser
@@ -64,10 +64,6 @@ func (s *Scanner) SetSkipRequiredCheck(skip bool) {
 	s.skipRequired = skip
 }
 
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "yaml", "scanner")
-}
-
 func (s *Scanner) SetTraceWriter(_ io.Writer)        {}
 func (s *Scanner) SetPerResultTracingEnabled(_ bool) {}
 
@@ -89,6 +85,7 @@ func (s *Scanner) SetRegoErrorLimit(_ int) {}
 func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("yaml scanner"),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -131,7 +128,7 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 	if err != nil {
 		return nil, err
 	}
-	s.debug.Log("Scanning %s...", path)
+	s.logger.Debug("Scanning", log.String("path", path))
 	return s.scanRego(ctx, fsys, rego.Input{
 		Path:     path,
 		Contents: parsed,
@@ -145,7 +142,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 		return s.regoScanner, nil
 	}
 	regoScanner := rego.NewScanner(types.SourceYAML, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return nil, err
 	}

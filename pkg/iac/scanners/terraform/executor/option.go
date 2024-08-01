@@ -1,9 +1,6 @@
 package executor
 
 import (
-	"io"
-
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -20,12 +17,6 @@ func OptionWithFrameworks(frameworks ...framework.Framework) Option {
 func OptionWithResultsFilter(f func(scan.Results) scan.Results) Option {
 	return func(s *Executor) {
 		s.resultsFilters = append(s.resultsFilters, f)
-	}
-}
-
-func OptionWithDebugWriter(w io.Writer) Option {
-	return func(s *Executor) {
-		s.debug = debug.New(w, "terraform", "executor")
 	}
 }
 
