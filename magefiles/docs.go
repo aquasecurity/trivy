@@ -43,7 +43,7 @@ func main() {
 	}
 }
 
-// generateConfigDocs creates custom markdown output.
+// generateConfigDocs creates markdown file for Trivy config.
 func generateConfigDocs(filename string) error {
 	f, err := os.Create(filename)
 	if err != nil {
