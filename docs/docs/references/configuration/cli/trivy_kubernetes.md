@@ -39,6 +39,10 @@ trivy kubernetes [flags] [CONTEXT]
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --detection-priority string         specify the detection priority:
+                                            - "precise": Prioritizes precise by minimizing false positives.
+                                            - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
+                                           (precise,comprehensive) (default "precise")
       --disable-node-collector            When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
