@@ -36,7 +36,7 @@ timeout: 5m0s
 server:
   # Same as '--server'
   # Default is empty
-  addr: 
+  addr:
 
   # Same as '--custom-headers'
   # Default is []
@@ -48,7 +48,7 @@ server:
 
   # Same as '--token'
   # Default is empty
-  token: 
+  token:
 
   # Same as '--token-header'
   # Default is Trivy-Token
@@ -70,15 +70,15 @@ cache:
   redis:
     # Same as '--redis-ca'
     # Default is empty
-    ca: 
+    ca:
 
     # Same as '--redis-cert'
     # Default is empty
-    cert: 
+    cert:
 
     # Same as '--redis-key'
     # Default is empty
-    key: 
+    key:
 
     # Same as '--redis-tls'
     # Default is false
@@ -166,7 +166,7 @@ image:
   docker:
     # Same as '--docker-host'
     # Default is empty
-    host: 
+    host:
 
   # Same as '--image-config-scanners'
   # Default is []
@@ -174,16 +174,16 @@ image:
 
   # Same as '--input'
   # Default is empty
-  input: 
+  input:
 
   # Same as '--platform'
   # Default is empty
-  platform: 
+  platform:
 
   podman:
     # Same as '--podman-host'
     # Default is empty
-    host: 
+    host:
 
   # Same as '--removed-pkgs'
   # Default is false
@@ -237,11 +237,11 @@ kubernetes:
 
   # Same as '--k8s-version'
   # Default is empty
-  k8s-version: 
+  k8s-version:
 
   # Same as '--kubeconfig'
   # Default is empty
-  kubeconfig: 
+  kubeconfig:
 
   node-collector:
     # Same as '--node-collector-imageref'
@@ -457,7 +457,7 @@ misconfiguration:
 
     # Same as '--helm-kube-version'
     # Default is empty
-    kube-version: 
+    kube-version:
 
     # Same as '--helm-set'
     # Default is []
@@ -528,7 +528,7 @@ registry:
 
   # Same as '--registry-token'
   # Default is empty
-  token: 
+  token:
 
   # Same as '--username'
   # Default is []
@@ -585,7 +585,7 @@ format: table
 
 # Same as '--ignore-policy'
 # Default is empty
-ignore-policy: 
+ignore-policy:
 
 # Same as '--ignorefile'
 # Default is .trivyignore
@@ -597,11 +597,11 @@ list-all-pkgs: false
 
 # Same as '--output'
 # Default is empty
-output: 
+output:
 
 # Same as '--output-plugin-arg'
 # Default is empty
-output-plugin-arg: 
+output-plugin-arg:
 
 # Same as '--report'
 # Default is all
@@ -610,7 +610,7 @@ report: all
 scan:
   # Same as '--compliance'
   # Default is empty
-  compliance: 
+  compliance:
 
   # Same as '--show-suppressed'
   # Default is false
@@ -627,7 +627,7 @@ severity:
 
 # Same as '--template'
 # Default is empty
-template: 
+template:
 
 ```
 ## Repository options
@@ -636,15 +636,15 @@ template:
 repository:
   # Same as '--branch'
   # Default is empty
-  branch: 
+  branch:
 
   # Same as '--commit'
   # Default is empty
-  commit: 
+  commit:
 
   # Same as '--tag'
   # Default is empty
-  tag: 
+  tag:
 
 ```
 ## Scan options
@@ -727,19 +727,19 @@ cloud:
   aws:
     # Same as '--account'
     # Default is empty
-    account: 
+    account:
 
     # Same as '--arn'
     # Default is empty
-    arn: 
+    arn:
 
     # Same as '--endpoint'
     # Default is empty
-    endpoint: 
+    endpoint:
 
     # Same as '--region'
     # Default is empty
-    region: 
+    region:
 
     # Same as '--service'
     # Default is []

@@ -149,13 +149,19 @@ func defaultValueString(val any) string {
 func writeFlagValue(val any, ind string, w *os.File) {
 	switch v := val.(type) {
 	case []string:
-		if len(v) == 0 {
-			w.WriteString(" []\n")
-		} else {
+		if len(v) > 0 {
 			w.WriteString("\n")
 			for _, vv := range v {
 				fmt.Fprintf(w, "%s - %s\n", ind, vv)
 			}
+		} else {
+			w.WriteString(" []\n")
+		}
+	case string:
+		if len(v) > 0 {
+			fmt.Fprintf(w, " %v\n", v)
+		} else {
+			w.WriteString("\n")
 		}
 	default:
 		fmt.Fprintf(w, " %v\n", v)
