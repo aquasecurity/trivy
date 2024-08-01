@@ -569,9 +569,8 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		fileChecksum = true
 	}
 
-	// Disable the post handler for system file filtering when detection priority is coverage.
-
-	if opts.DetectionPriority == ftypes.PriorityCoverage {
+	// Disable the post handler for system file filtering when detection priority is comprehensive.
+	if opts.DetectionPriority == ftypes.PriorityComprehensive {
 		handler.DeregisterPostHandler(ftypes.SystemFileFilteringPostHandler)
 	}
 

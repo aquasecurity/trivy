@@ -6,5 +6,5 @@ type DetectionPriority string
 // PriorityPrecise tries to minimize false positives
 const PriorityPrecise DetectionPriority = "precise"
 
-// PriorityCoverage tries to minimize false negatives
-const PriorityCoverage DetectionPriority = "coverage"
+// PriorityComprehensive tries to minimize false negatives
+const PriorityComprehensive DetectionPriority = "comprehensive"

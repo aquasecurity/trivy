@@ -476,8 +476,8 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 		}
 
 		skippedFiles := result.SystemInstalledFiles
-		if ag.detectionPriority == types.PriorityCoverage {
-			// If the detection priority is coverage, system files installed by the OS package manager will not be skipped.
+		if ag.detectionPriority == types.PriorityComprehensive {
+			// If the detection priority is comprehensive, system files installed by the OS package manager will not be skipped.
 			// It can lead to false positives and duplicates, but it may be necessary to detect all possible vulnerabilities.
 			skippedFiles = nil
 		}

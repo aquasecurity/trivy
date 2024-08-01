@@ -40,7 +40,7 @@ type pubSpecLockAnalyzer struct {
 func newPubSpecLockAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return pubSpecLockAnalyzer{
 		logger: log.WithPrefix("pub"),
-		parser: pub.NewParser(opts.DetectionPriority == types.PriorityCoverage),
+		parser: pub.NewParser(opts.DetectionPriority == types.PriorityComprehensive),
 	}, nil
 }
 

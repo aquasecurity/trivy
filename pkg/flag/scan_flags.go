@@ -103,11 +103,11 @@ var (
 		Default:    string(ftypes.PriorityPrecise),
 		Values: xstrings.ToStringSlice([]ftypes.DetectionPriority{
 			ftypes.PriorityPrecise,
-			ftypes.PriorityCoverage,
+			ftypes.PriorityComprehensive,
 		}),
 		Usage: `specify the detection priority:
   - "precise": Prioritizes precise by minimizing false positives.
-  - "coverage": Increases security finding coverage at the cost of potential false positives.
+  - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
 `,
 	}
 )

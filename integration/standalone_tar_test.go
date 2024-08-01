@@ -277,13 +277,13 @@ func TestTar(t *testing.T) {
 			golden: "testdata/ubi-7.json.golden",
 		},
 		{
-			name: "ubi 7 with coverage priority",
+			name: "ubi 7 with comprehensive priority",
 			args: args{
 				Format:            types.FormatJSON,
 				Input:             "testdata/fixtures/images/ubi-7.tar.gz",
-				DetectionPriority: ftypes.PriorityCoverage,
+				DetectionPriority: ftypes.PriorityComprehensive,
 			},
-			golden: "testdata/ubi-7-coverage.json.golden",
+			golden: "testdata/ubi-7-comprehensive.json.golden",
 		},
 		{
 			name: "almalinux 8",
