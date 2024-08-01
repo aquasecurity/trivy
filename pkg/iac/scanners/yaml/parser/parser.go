@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/fs"
 	"path/filepath"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -85,15 +84,15 @@ func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) ([]any, e
 
 	var results []any
 
-	marker := "\n---\n"
-	altMarker := "\r\n---\r\n"
+	marker := []byte("\n---\n")
+	altMarker := []byte("\r\n---\r\n")
 	if bytes.Contains(contents, []byte(altMarker)) {
 		marker = altMarker
 	}
 
-	for _, partial := range strings.Split(string(contents), marker) {
+	for _, partial := range bytes.Split(contents, marker) {
 		var target any
-		if err := yaml.Unmarshal([]byte(partial), &target); err != nil {
+		if err := yaml.Unmarshal(partial, &target); err != nil {
 			return nil, err
 		}
 		results = append(results, target)
