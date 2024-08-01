@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -569,10 +568,9 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		fileChecksum = true
 	}
 
-	// Disable the post handler for system file filtering when detection priority is comprehensive.
-	if opts.DetectionPriority == ftypes.PriorityComprehensive {
-		handler.DeregisterPostHandler(ftypes.SystemFileFilteringPostHandler)
-	}
+	// Disable the post handler for filtering system file when detection priority is comprehensive.
+	disabledHandlers := lo.Ternary(opts.DetectionPriority == ftypes.PriorityComprehensive,
+		[]ftypes.HandlerType{ftypes.SystemFileFilteringPostHandler}, nil)
 
 	return ScannerConfig{
 		Target:             target,
@@ -585,6 +583,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		},
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
+			DisabledHandlers:  disabledHandlers,
 			FilePatterns:      opts.FilePatterns,
 			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
