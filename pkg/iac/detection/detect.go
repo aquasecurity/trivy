@@ -135,12 +135,17 @@ func init() {
 		}
 
 		sniff := struct {
-			ContentType string         `json:"contentType"`
-			Parameters  map[string]any `json:"parameters"`
-			Resources   []any          `json:"resources"`
+			Schema     string         `json:"$schema"`
+			Parameters map[string]any `json:"parameters"`
+			Resources  []any          `json:"resources"`
 		}{}
 		metadata := types.NewUnmanagedMetadata()
 		if err := armjson.UnmarshalFromReader(r, &sniff, &metadata); err != nil {
+			return false
+		}
+
+		// schema is required https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/syntax
+		if !strings.HasPrefix(sniff.Schema, "https://schema.management.azure.com/schemas") {
 			return false
 		}
 

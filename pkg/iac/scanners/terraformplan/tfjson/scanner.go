@@ -23,8 +23,8 @@ var tfPlanExts = []string{
 }
 
 type Scanner struct {
-	parser    parser.Parser
-	parserOpt []options.ParserOption
+	parser    *parser.Parser
+	parserOpt []parser.Option
 	debug     debug.Logger
 
 	options                 []options.ScannerOption
@@ -68,12 +68,8 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.parserOpt = append(s.parserOpt, options.ParserWithSkipRequiredCheck(skip))
-}
-
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.parserOpt = append(s.parserOpt, options.ParserWithDebug(writer))
+	s.parserOpt = append(s.parserOpt, parser.OptionWithDebugWriter(writer))
 	s.executorOpt = append(s.executorOpt, executor.OptionWithDebugWriter(writer))
 	s.debug = debug.New(writer, "tfplan", "scanner")
 }
@@ -128,12 +124,12 @@ func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.R
 
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
-		parser:  *parser.New(),
 		options: opts,
 	}
 	for _, o := range opts {
 		o(scanner)
 	}
+	scanner.parser = parser.New(scanner.parserOpt...)
 	return scanner
 }
 

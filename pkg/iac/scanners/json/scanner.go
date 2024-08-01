@@ -19,15 +19,15 @@ import (
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
-	debug         debug.Logger
-	policyDirs    []string
-	policyReaders []io.Reader
-	parser        *parser.Parser
-	regoScanner   *rego.Scanner
-	skipRequired  bool
-	options       []options.ScannerOption
-	sync.Mutex
+type Scanner struct {
+	mu                    sync.Mutex
+	debug                 debug.Logger
+	policyDirs            []string
+	policyReaders         []io.Reader
+	parser                *parser.Parser
+	regoScanner           *rego.Scanner
+	options               []options.ScannerOption
+	parserOpts            []options.ParserOption
 	frameworks            []framework.Framework
 	spec                  string
 	loadEmbeddedPolicies  bool
@@ -61,6 +61,7 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
 	s.debug = debug.New(writer, "json", "scanner")
+	s.parserOpts = append(s.parserOpts, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -75,10 +76,6 @@ func (s *Scanner) SetPolicyDirs(dirs ...string) {
 
 func (s *Scanner) SetDataDirs(_ ...string)         {}
 func (s *Scanner) SetPolicyNamespaces(_ ...string) {}
-
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
 
 func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
 	// handled by rego when option is passed on
@@ -96,7 +93,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(options.ParserWithSkipRequiredCheck(s.skipRequired))
+	s.parser = parser.New(s.parserOpts...)
 	return s
 }
 
@@ -144,8 +141,8 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
