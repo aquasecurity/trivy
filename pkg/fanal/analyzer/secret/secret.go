@@ -56,7 +56,7 @@ var (
 		".tar",
 	}
 
-	allowedExt = []string{
+	allowedBinaries = []string{
 		".pyc",
 	}
 )
@@ -67,7 +67,7 @@ func init() {
 }
 
 func isAllowedBinary(filename string) bool {
-	return slices.Contains(allowedExt, filepath.Ext(filename))
+	return slices.Contains(allowedBinaries, filepath.Ext(filename))
 }
 
 // SecretAnalyzer is an analyzer for secrets
