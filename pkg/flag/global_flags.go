@@ -106,7 +106,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 }
 
 func (f *GlobalFlagGroup) Name() string {
-	return "global"
+	return "Global"
 }
 
 func (f *GlobalFlagGroup) Flags() []Flagger {

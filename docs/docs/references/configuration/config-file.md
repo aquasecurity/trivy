@@ -5,6 +5,56 @@ The config path can be overridden by the `--config` flag.
 
 An example is [here][example].
 
+## Global options
+
+```yaml
+cache:
+  # Same as '--cache-dir'
+  # Default is /path/to/cache
+  dir: /path/to/cache
+
+# Same as '--debug'
+# Default is false
+debug: false
+
+# Same as '--insecure'
+# Default is false
+insecure: false
+
+# Same as '--quiet'
+# Default is false
+quiet: false
+
+# Same as '--timeout'
+# Default is 5m0s
+timeout: 5m0s
+
+```
+## Client/Server options
+
+```yaml
+server:
+  # Same as '--server'
+  # Default is empty
+  addr: 
+
+  # Same as '--custom-headers'
+  # Default is []
+  custom-headers: []
+
+  # Same as '--listen'
+  # Default is localhost:4954
+  listen: localhost:4954
+
+  # Same as '--token'
+  # Default is empty
+  token: 
+
+  # Same as '--token-header'
+  # Default is Trivy-Token
+  token-header: Trivy-Token
+
+```
 ## Cache options
 
 ```yaml
@@ -39,7 +89,6 @@ cache:
   ttl: 0s
 
 ```
-
 ## Clean options
 
 ```yaml
@@ -69,64 +118,6 @@ clean:
   vuln-db: false
 
 ```
-
-## Client/Server options
-
-```yaml
-server:
-  # Same as '--server'
-  # Default is empty
-  addr: 
-
-  # Same as '--custom-headers'
-  # Default is []
-  custom-headers: []
-
-  # Same as '--listen'
-  # Default is localhost:4954
-  listen: localhost:4954
-
-  # Same as '--token'
-  # Default is empty
-  token: 
-
-  # Same as '--token-header'
-  # Default is Trivy-Token
-  token-header: Trivy-Token
-
-```
-
-## Cloud options
-
-```yaml
-cloud:
-  aws:
-    # Same as '--account'
-    # Default is empty
-    account: 
-
-    # Same as '--arn'
-    # Default is empty
-    arn: 
-
-    # Same as '--endpoint'
-    # Default is empty
-    endpoint: 
-
-    # Same as '--region'
-    # Default is empty
-    region: 
-
-    # Same as '--service'
-    # Default is []
-    service: []
-
-    # Same as '--skip-service'
-    # Default is []
-    skip-service: []
-
-```
-
 ## DB options
 
 ```yaml
@@ -168,45 +159,6 @@ db:
 reset: false
 
 ```
-
-## Global options
-
-```yaml
-cache:
-  # Same as '--cache-dir'
-  # Default is /path/to/cache
-  dir: /path/to/cache
-
-# Same as '--config'
-# Default is trivy.yaml
-config: trivy.yaml
-
-# Same as '--debug'
-# Default is false
-debug: false
-
-# Same as '--generate-default-config'
-# Default is false
-generate-default-config: false
-
-# Same as '--insecure'
-# Default is false
-insecure: false
-
-# Same as '--quiet'
-# Default is false
-quiet: false
-
-# Same as '--timeout'
-# Default is 5m0s
-timeout: 5m0s
-
-# Same as '--version'
-# Default is false
-version: false
-
-```
-
 ## Image options
 
 ```yaml
@@ -244,8 +196,8 @@ image:
    - containerd
    - podman
    - remote
-```
 
+```
 ## Kubernetes options
 
 ```yaml
@@ -313,7 +265,6 @@ kubernetes:
   tolerations: []
 
 ```
-
 ## License options
 
 ```yaml
@@ -346,6 +297,7 @@ license:
    - Facebook-3-Clause
    - Facebook-Examples
    - WTFPL
+
   # Same as '--license-full'
   # Default is false
   full: false
@@ -420,6 +372,7 @@ license:
    - ZPL-1.1
    - ZPL-2.0
    - ZPL-2.1
+
   # Default is []
   permissive: []
 
@@ -440,6 +393,7 @@ license:
    - MPL-1.1
    - MPL-2.0
    - Ruby
+
   # Default is BCL, CC-BY-ND-1.0, CC-BY-ND-2.0, CC-BY-ND-2.5, CC-BY-ND-3.0, CC-BY-ND-4.0, CC-BY-SA-1.0, CC-BY-SA-2.0, CC-BY-SA-2.5, CC-BY-SA-3.0, CC-BY-SA-4.0, GPL-1.0, GPL-2.0, GPL-2.0-with-autoconf-exception, GPL-2.0-with-bison-exception, GPL-2.0-with-classpath-exception, GPL-2.0-with-font-exception, GPL-2.0-with-GCC-exception, GPL-3.0, GPL-3.0-with-autoconf-exception, GPL-3.0-with-GCC-exception, LGPL-2.0, LGPL-2.1, LGPL-3.0, NPL-1.0, NPL-1.1, OSL-1.0, OSL-1.1, OSL-2.0, OSL-2.1, OSL-3.0, QPL-1.0, Sleepycat
   restricted:
    - BCL
@@ -475,13 +429,14 @@ license:
    - OSL-3.0
    - QPL-1.0
    - Sleepycat
+
   # Default is CC0-1.0, Unlicense, 0BSD
   unencumbered:
    - CC0-1.0
    - Unlicense
    - 0BSD
-```
 
+```
 ## Misconfiguration options
 
 ```yaml
@@ -539,6 +494,7 @@ misconfiguration:
    - terraform
    - terraformplan-json
    - terraformplan-snapshot
+
   terraform:
     # Same as '--tf-exclude-downloaded-modules'
     # Default is false
@@ -549,7 +505,6 @@ misconfiguration:
     vars: []
 
 ```
-
 ## Module options
 
 ```yaml
@@ -563,7 +518,6 @@ module:
   enable-modules: []
 
 ```
-
 ## Registry options
 
 ```yaml
@@ -581,7 +535,6 @@ registry:
   username: []
 
 ```
-
 ## Rego options
 
 ```yaml
@@ -611,7 +564,6 @@ rego:
   trace: false
 
 ```
-
 ## Report options
 
 ```yaml
@@ -672,12 +624,12 @@ severity:
  - MEDIUM
  - HIGH
  - CRITICAL
+
 # Same as '--template'
 # Default is empty
 template: 
 
 ```
-
 ## Repository options
 
 ```yaml
@@ -695,7 +647,6 @@ repository:
   tag: 
 
 ```
-
 ## Scan options
 
 ```yaml
@@ -725,6 +676,7 @@ scan:
   scanners:
    - vuln
    - secret
+
   # Same as '--skip-dirs'
   # Default is []
   skip-dirs: []
@@ -738,7 +690,6 @@ scan:
   slow: false
 
 ```
-
 ## Secret options
 
 ```yaml
@@ -748,7 +699,6 @@ secret:
   config: trivy-secret.yaml
 
 ```
-
 ## Vulnerability options
 
 ```yaml
@@ -770,5 +720,34 @@ vulnerability:
   vex: []
 
 ```
+## AWS options
 
+```yaml
+cloud:
+  aws:
+    # Same as '--account'
+    # Default is empty
+    account: 
+
+    # Same as '--arn'
+    # Default is empty
+    arn: 
+
+    # Same as '--endpoint'
+    # Default is empty
+    endpoint: 
+
+    # Same as '--region'
+    # Default is empty
+    region: 
+
+    # Same as '--service'
+    # Default is []
+    service: []
+
+    # Same as '--skip-service'
+    # Default is []
+    skip-service: []
+
+```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
