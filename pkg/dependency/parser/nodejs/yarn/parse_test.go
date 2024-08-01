@@ -301,32 +301,14 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, deps, err := NewParser().Parse(f)
+			got, deps, _, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			sortPkgs(got)
-			sortPkgs(tt.want)
 			assert.Equal(t, tt.want, got)
 
 			if tt.wantDeps != nil {
-				sortDeps(deps)
-				sortDeps(tt.wantDeps)
 				assert.Equal(t, tt.wantDeps, deps)
 			}
 		})
-	}
-}
-
-func sortPkgs(pkgs ftypes.Packages) {
-	sort.Sort(pkgs)
-	for _, pkg := range pkgs {
-		sort.Sort(pkg.Locations)
-	}
-}
-
-func sortDeps(deps ftypes.Dependencies) {
-	sort.Sort(deps)
-	for _, dep := range deps {
-		sort.Strings(dep.DependsOn)
 	}
 }

@@ -18,16 +18,17 @@ import (
 
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/registry"
+	"github.com/aquasecurity/testdocker/tarfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
-func setupPrivateRegistry() *httptest.Server {
-	imagePaths := map[string]string{
-		"v2/library/alpine:3.10": "../fanal/test/testdata/alpine-310.tar.gz",
+func setupPrivateRegistry(t *testing.T) *httptest.Server {
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
 	}
 	tr := registry.NewDockerRegistry(registry.Option{
-		Images: imagePaths,
+		Images: images,
 		Auth: auth.Auth{
 			User:     "test",
 			Password: "testpass",
@@ -60,7 +61,7 @@ func encode(user, pass string) string {
 }
 
 func TestGet(t *testing.T) {
-	tr := setupPrivateRegistry()
+	tr := setupPrivateRegistry(t)
 	defer tr.Close()
 
 	serverAddr := tr.Listener.Addr().String()
@@ -219,7 +220,10 @@ type userAgentsTrackingHandler struct {
 }
 
 func newUserAgentsTrackingHandler(hr http.Handler) *userAgentsTrackingHandler {
-	return &userAgentsTrackingHandler{hr: hr, agents: make(map[string]struct{})}
+	return &userAgentsTrackingHandler{
+		hr:     hr,
+		agents: make(map[string]struct{}),
+	}
 }
 
 func (uh *userAgentsTrackingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
@@ -232,12 +236,12 @@ func (uh *userAgentsTrackingHandler) ServeHTTP(rw http.ResponseWriter, r *http.R
 	uh.hr.ServeHTTP(rw, r)
 }
 
-func setupAgentTrackingRegistry() (*httptest.Server, *userAgentsTrackingHandler) {
-	imagePaths := map[string]string{
-		"v2/library/alpine:3.10": "../fanal/test/testdata/alpine-310.tar.gz",
+func setupAgentTrackingRegistry(t *testing.T) (*httptest.Server, *userAgentsTrackingHandler) {
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
 	}
 	tr := registry.NewDockerRegistry(registry.Option{
-		Images: imagePaths,
+		Images: images,
 	})
 
 	tracker := newUserAgentsTrackingHandler(tr.Config.Handler)
@@ -247,7 +251,7 @@ func setupAgentTrackingRegistry() (*httptest.Server, *userAgentsTrackingHandler)
 }
 
 func TestUserAgents(t *testing.T) {
-	tr, tracker := setupAgentTrackingRegistry()
+	tr, tracker := setupAgentTrackingRegistry(t)
 	defer tr.Close()
 
 	serverAddr := tr.Listener.Addr().String()
@@ -269,4 +273,10 @@ func TestUserAgents(t *testing.T) {
 	require.Len(t, tracker.agents, 1)
 	_, ok := tracker.agents[fmt.Sprintf("trivy/%s go-containerregistry", app.Version())]
 	require.True(t, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
+}
+
+func localImage(t *testing.T) v1.Image {
+	img, err := tarfile.ImageFromPath("../fanal/test/testdata/alpine-310.tar.gz")
+	require.NoError(t, err)
+	return img
 }

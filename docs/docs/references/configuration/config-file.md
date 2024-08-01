@@ -81,6 +81,13 @@ severity:
   - MEDIUM
   - HIGH
   - CRITICAL
+    
+# Same as '--pkg-types'
+# Default is 'os,library'
+pkg-types:
+  - os
+  - library
+    
 
 scan:
   # Same as '--compliance'
@@ -261,12 +268,6 @@ Available with vulnerability scanning
 
 ```yaml
 vulnerability:
-  # Same as '--vuln-type'
-  # Default is 'os,library'
-  type:
-    - os
-    - library
-
   # Same as '--ignore-unfixed'
   # Default is false
   ignore-unfixed: false
@@ -275,6 +276,16 @@ vulnerability:
   # Default is empty
   ignore-status: 
     - end_of_life
+
+  # Same as '--vex'
+  # Default is empty
+  vex:
+    - path/to/vex/file
+    - repo
+
+  # Same as '--skip-vex-repo-update'
+  # Default is false
+  skip-vex-repo-update: true
 ```
 
 ## License Options
@@ -351,9 +362,9 @@ rego:
   # Default is false
   trace: false
 
-  # Same as '--skip-policy-update'
+  # Same as '--skip-check-update'
   # Default is false
-  skip-policy-update: false
+  skip-check-update: false
 
   # Same as '--config-policy'
   # Default is empty

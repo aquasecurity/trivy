@@ -1,5 +1,10 @@
 - bucket: data-source
   pairs:
+    - key: openSUSE Tumbleweed
+      value:
+        ID: "suse-cvrf"
+        Name: "SUSE CVRF"
+        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
     - key: openSUSE Leap 15.3
       value:
         ID: "suse-cvrf"
