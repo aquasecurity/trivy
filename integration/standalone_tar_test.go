@@ -380,7 +380,7 @@ func TestTar(t *testing.T) {
 				"-q",
 				"--format",
 				string(tt.args.Format),
-				"--skip-update",
+				"--skip-db-update",
 			}
 
 			if tt.args.IgnoreUnfixed {
