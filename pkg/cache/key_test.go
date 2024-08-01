@@ -115,7 +115,10 @@ func TestCalcKey(t *testing.T) {
 						"debian": 1,
 					},
 				},
-				patterns: []string{"test", ""},
+				patterns: []string{
+					"test",
+					"",
+				},
 			},
 			want: "sha256:71abf09bf1422531e2838db692b80f9b9f48766f56b7d3d02aecdb36b019e103",
 		},
@@ -129,7 +132,10 @@ func TestCalcKey(t *testing.T) {
 						"debian": 1,
 					},
 				},
-				patterns: []string{"", "test"},
+				patterns: []string{
+					"",
+					"test",
+				},
 			},
 			want: "sha256:71abf09bf1422531e2838db692b80f9b9f48766f56b7d3d02aecdb36b019e103",
 		},
@@ -249,7 +255,6 @@ func TestCalcKey(t *testing.T) {
 			}
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
 			if tt.wantErr != "" {
-				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
