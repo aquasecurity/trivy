@@ -105,6 +105,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
 					ImageConfig: v1.ConfigFile{
 						Architecture: "arm64",
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
 					},
 				},
 				Results: types.Results{
@@ -300,6 +305,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:ImageID",
 								Value: "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							},
+							{
+								Name:  "aquasecurity:trivy:Labels:vendor",
+								Value: "aquasecurity",
 							},
 							{
 								Name:  "aquasecurity:trivy:RepoDigest",

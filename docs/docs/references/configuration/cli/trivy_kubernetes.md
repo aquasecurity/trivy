@@ -78,7 +78,8 @@ trivy kubernetes [flags] [CONTEXT]
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
+      --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
+      --pkg-types strings                 list of package types (os,library) (default [os,library])
       --qps float                         specify the maximum QPS to the master from this client (default 5)
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
@@ -98,12 +99,13 @@ trivy kubernetes [flags] [CONTEXT]
       --skip-files strings                specify the files or glob patterns to skip
       --skip-images                       skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources
       --skip-java-db-update               skip updating Java index database
+      --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
-      --vex string                        [EXPERIMENTAL] file path to VEX
+      --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 
 ### Options inherited from parent commands

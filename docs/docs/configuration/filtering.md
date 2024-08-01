@@ -493,7 +493,7 @@ You can find more example checks [here](https://github.com/aquasecurity/trivy/tr
 |      Secret      |           |
 |     License      |           |
 
-Please refer to the [VEX documentation](../supply-chain/vex.md) for the details.
+Please refer to the [VEX documentation](../supply-chain/vex/index.md) for the details.
 
 
 [^1]: license name is used as id for `.trivyignore.yaml` files.

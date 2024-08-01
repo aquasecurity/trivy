@@ -276,6 +276,16 @@ vulnerability:
   # Default is empty
   ignore-status: 
     - end_of_life
+
+  # Same as '--vex'
+  # Default is empty
+  vex:
+    - path/to/vex/file
+    - repo
+
+  # Same as '--skip-vex-repo-update'
+  # Default is false
+  skip-vex-repo-update: true
 ```
 
 ## License Options
