@@ -1,15 +1,20 @@
-package licensing_test
+package licensing
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
+// All map keys must be standardized to be matched
+// (uppercase, no common suffixes, standardized version, etc.)
 func TestMap(t *testing.T) {
-	assert.Empty(t, licensing.InvalidMappingKeys((nil)))
+	for key := range mapping {
+		t.Run(key, func(t *testing.T) {
+			standardized := standardizeKeyAndSuffix(key)
+			assert.Equal(t, standardized.License, key)
+		})
+	}
 }
 
 func TestNormalize(t *testing.T) {
@@ -30,6 +35,8 @@ func TestNormalize(t *testing.T) {
 				"al2",
 				"alv2",
 				"apache - v 2.0",
+				"apache - v. 2.0",
+				"apache - ver 2.0",
 				"apache - version 2.0",
 				"apache 2",
 				"apache 2.0",
@@ -66,8 +73,11 @@ func TestNormalize(t *testing.T) {
 				"apache software license, version 2.0",
 				"apache software-2.0",
 				"apache v 2.0",
+				"apache v. 2.0",
 				"apache v2",
 				"apache v2.0",
+				"apache ver 2.0",
+				"apache ver. 2.0",
 				"apache version 2.0",
 				"apache version 2.0, january 2004",
 				"apache version-2",
@@ -212,8 +222,8 @@ func TestNormalize(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.normalized, func(t *testing.T) {
 			for _, ll := range tt.licenses {
-				normalized := licensing.Normalize(ll)
-				normalizedKey := licensing.NormalizeLicense(ll).License
+				normalized := Normalize(ll)
+				normalizedKey := NormalizeLicense(ll).License
 				assert.Equal(t, tt.normalized, normalized)
 				assert.Equal(t, tt.normalizedKey, normalizedKey)
 			}
@@ -314,8 +324,30 @@ func TestSplitLicenses(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			res := licensing.SplitLicenses(tt.license)
+			res := SplitLicenses(tt.license)
 			assert.Equal(t, tt.licenses, res)
+		})
+	}
+}
+
+func TestLaxSplitLicense(t *testing.T) {
+	var tests = []struct {
+		license      string
+		wantLicenses []string
+	}{
+		{
+			license:      "ASL 2.0",
+			wantLicenses: []string{"Apache-2.0"},
+		},
+		{
+			license:      "MPL 2.0 GPL2+",
+			wantLicenses: []string{"MPL-2.0", "GPL-2.0-or-later"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.license, func(t *testing.T) {
+			parsed := LaxSplitLicenses(tt.license)
+			assert.Equal(t, tt.wantLicenses, parsed)
 		})
 	}
 }
