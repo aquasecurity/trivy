@@ -40,7 +40,7 @@ server:
 
   # Same as '--custom-headers'
   # Default is []
-  custom-headers: []
+  custom-headers: empty
 
   # Same as '--listen'
   # Default is localhost:4954
@@ -170,7 +170,7 @@ image:
 
   # Same as '--image-config-scanners'
   # Default is []
-  image-config-scanners: []
+  image-config-scanners: empty
 
   # Same as '--input'
   # Default is empty
@@ -213,7 +213,7 @@ kubernetes:
   exclude:
     # Same as '--exclude-nodes'
     # Default is []
-    nodes: []
+    nodes: empty
 
     # Same as '--exclude-owned'
     # Default is false
@@ -221,19 +221,19 @@ kubernetes:
 
   # Same as '--exclude-kinds'
   # Default is []
-  excludeKinds: []
+  excludeKinds: empty
 
   # Same as '--exclude-namespaces'
   # Default is []
-  excludeNamespaces: []
+  excludeNamespaces: empty
 
   # Same as '--include-kinds'
   # Default is []
-  includeKinds: []
+  includeKinds: empty
 
   # Same as '--include-namespaces'
   # Default is []
-  includeNamespaces: []
+  includeNamespaces: empty
 
   # Same as '--k8s-version'
   # Default is empty
@@ -262,7 +262,7 @@ kubernetes:
 
   # Same as '--tolerations'
   # Default is []
-  tolerations: []
+  tolerations: empty
 
 ```
 ## License options
@@ -304,7 +304,7 @@ license:
 
   # Same as '--ignored-licenses'
   # Default is []
-  ignored: []
+  ignored: empty
 
   # Default is AFL-1.1, AFL-1.2, AFL-2.0, AFL-2.1, AFL-3.0, Apache-1.0, Apache-1.1, Apache-2.0, Artistic-1.0-cl8, Artistic-1.0-Perl, Artistic-1.0, Artistic-2.0, BSL-1.0, BSD-2-Clause-FreeBSD, BSD-2-Clause-NetBSD, BSD-2-Clause, BSD-3-Clause-Attribution, BSD-3-Clause-Clear, BSD-3-Clause-LBNL, BSD-3-Clause, BSD-4-Clause, BSD-4-Clause-UC, BSD-Protection, CC-BY-1.0, CC-BY-2.0, CC-BY-2.5, CC-BY-3.0, CC-BY-4.0, FTL, ISC, ImageMagick, Libpng, Lil-1.0, Linux-OpenIB, LPL-1.02, LPL-1.0, MS-PL, MIT, NCSA, OpenSSL, PHP-3.01, PHP-3.0, PIL, Python-2.0, Python-2.0-complete, PostgreSQL, SGI-B-1.0, SGI-B-1.1, SGI-B-2.0, Unicode-DFS-2015, Unicode-DFS-2016, Unicode-TOU, UPL-1.0, W3C-19980720, W3C-20150513, W3C, X11, Xnet, Zend-2.0, zlib-acknowledgement, Zlib, ZPL-1.1, ZPL-2.0, ZPL-2.1
   notice:
@@ -374,7 +374,7 @@ license:
    - ZPL-2.1
 
   # Default is []
-  permissive: []
+  permissive: empty
 
   # Default is APSL-1.0, APSL-1.1, APSL-1.2, APSL-2.0, CDDL-1.0, CDDL-1.1, CPL-1.0, EPL-1.0, EPL-2.0, FreeImage, IPL-1.0, MPL-1.0, MPL-1.1, MPL-2.0, Ruby
   reciprocal:
@@ -448,12 +448,12 @@ misconfiguration:
   cloudformation:
     # Same as '--cf-params'
     # Default is []
-    params: []
+    params: empty
 
   helm:
     # Same as '--helm-api-versions'
     # Default is []
-    api-versions: []
+    api-versions: empty
 
     # Same as '--helm-kube-version'
     # Default is empty
@@ -461,19 +461,19 @@ misconfiguration:
 
     # Same as '--helm-set'
     # Default is []
-    set: []
+    set: empty
 
     # Same as '--helm-set-file'
     # Default is []
-    set-file: []
+    set-file: empty
 
     # Same as '--helm-set-string'
     # Default is []
-    set-string: []
+    set-string: empty
 
     # Same as '--helm-values'
     # Default is []
-    values: []
+    values: empty
 
   # Same as '--include-non-failures'
   # Default is false
@@ -502,7 +502,7 @@ misconfiguration:
 
     # Same as '--tf-vars'
     # Default is []
-    vars: []
+    vars: empty
 
 ```
 ## Module options
@@ -515,7 +515,7 @@ module:
 
   # Same as '--enable-modules'
   # Default is []
-  enable-modules: []
+  enable-modules: empty
 
 ```
 ## Registry options
@@ -524,7 +524,7 @@ module:
 registry:
   # Same as '--password'
   # Default is []
-  password: []
+  password: empty
 
   # Same as '--registry-token'
   # Default is empty
@@ -532,7 +532,7 @@ registry:
 
   # Same as '--username'
   # Default is []
-  username: []
+  username: empty
 
 ```
 ## Rego options
@@ -541,11 +541,11 @@ registry:
 rego:
   # Same as '--config-check'
   # Default is []
-  check: []
+  check: empty
 
   # Same as '--config-data'
   # Default is []
-  data: []
+  data: empty
 
   # Same as '--include-deprecated-checks'
   # Default is false
@@ -553,7 +553,7 @@ rego:
 
   # Same as '--check-namespaces'
   # Default is []
-  namespaces: []
+  namespaces: empty
 
   # Same as '--skip-check-update'
   # Default is false
@@ -653,7 +653,7 @@ repository:
 scan:
   # Same as '--file-patterns'
   # Default is []
-  file-patterns: []
+  file-patterns: empty
 
   # Same as '--offline-scan'
   # Default is false
@@ -669,7 +669,7 @@ scan:
 
   # Same as '--sbom-sources'
   # Default is []
-  sbom-sources: []
+  sbom-sources: empty
 
   # Same as '--scanners'
   # Default is vuln, secret
@@ -679,11 +679,11 @@ scan:
 
   # Same as '--skip-dirs'
   # Default is []
-  skip-dirs: []
+  skip-dirs: empty
 
   # Same as '--skip-files'
   # Default is []
-  skip-files: []
+  skip-files: empty
 
   # Same as '--slow'
   # Default is false
@@ -705,7 +705,7 @@ secret:
 vulnerability:
   # Same as '--ignore-status'
   # Default is []
-  ignore-status: []
+  ignore-status: empty
 
   # Same as '--ignore-unfixed'
   # Default is false
@@ -717,7 +717,7 @@ vulnerability:
 
   # Same as '--vex'
   # Default is []
-  vex: []
+  vex: empty
 
 ```
 ## AWS options
@@ -743,11 +743,11 @@ cloud:
 
     # Same as '--service'
     # Default is []
-    service: []
+    service: empty
 
     # Same as '--skip-service'
     # Default is []
-    skip-service: []
+    skip-service: empty
 
 ```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml

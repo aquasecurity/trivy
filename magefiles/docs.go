@@ -155,7 +155,7 @@ func writeFlagValue(val any, ind string, w *os.File) {
 				fmt.Fprintf(w, "%s - %s\n", ind, vv)
 			}
 		} else {
-			w.WriteString(" []\n")
+			w.WriteString(" empty\n")
 		}
 	case string:
 		if len(v) > 0 {
