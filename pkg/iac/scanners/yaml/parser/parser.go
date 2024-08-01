@@ -86,7 +86,7 @@ func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) ([]any, e
 
 	marker := []byte("\n---\n")
 	altMarker := []byte("\r\n---\r\n")
-	if bytes.Contains(contents, []byte(altMarker)) {
+	if bytes.Contains(contents, altMarker) {
 		marker = altMarker
 	}
 
