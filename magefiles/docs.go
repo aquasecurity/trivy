@@ -9,7 +9,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/samber/lo"
 	"github.com/spf13/cobra/doc"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
@@ -124,7 +123,6 @@ func writeFlags(group flag.FlagGroup, w *os.File) {
 				if flg.GetName() != "" {
 					fmt.Fprintf(w, "%s# Same as '--%s'\n", ind, flg.GetName())
 				}
-				fmt.Fprintf(w, "%s# Default is %v\n", ind, defaultValueString(flg.GetDefaultValue()))
 			}
 			w.WriteString(ind + parts[i] + ":")
 			if isLastPart {
@@ -135,19 +133,6 @@ func writeFlags(group flag.FlagGroup, w *os.File) {
 		lastParts = parts
 	}
 	w.WriteString("```\n")
-}
-
-func defaultValueString(val any) string {
-	var value string
-	switch v := val.(type) {
-	case string:
-		value = lo.Ternary(len(v) > 0, v, "empty")
-	case []string:
-		value = lo.Ternary(len(v) > 0, strings.Join(v, ", "), "empty")
-	default:
-		value = fmt.Sprintf("%v", v)
-	}
-	return value
 }
 
 func writeFlagValue(val any, ind string, w *os.File) {
@@ -161,6 +146,8 @@ func writeFlagValue(val any, ind string, w *os.File) {
 		} else {
 			w.WriteString(" []\n")
 		}
+	case string:
+		fmt.Fprintf(w, " %q\n", v)
 	default:
 		fmt.Fprintf(w, " %v\n", v)
 	}
