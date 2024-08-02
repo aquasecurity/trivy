@@ -36,7 +36,6 @@ type Scanner struct {
 	loadEmbeddedLibraries bool
 	loadEmbeddedPolicies  bool
 	policyFS              fs.FS
-	skipRequired          bool
 	frameworks            []framework.Framework
 	spec                  string
 	regoScanner           *rego.Scanner
@@ -88,12 +87,9 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
 	s.debug = debug.New(writer, "helm", "scanner")
+	s.parserOptions = append(s.parserOptions, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {

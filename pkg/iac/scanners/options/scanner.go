@@ -14,7 +14,6 @@ type ConfigurableScanner interface {
 	SetPolicyDirs(...string)
 	SetDataDirs(...string)
 	SetPolicyNamespaces(...string)
-	SetSkipRequiredCheck(bool)
 	SetPolicyReaders([]io.Reader)
 	SetPolicyFilesystem(fs.FS)
 	SetDataFilesystem(fs.FS)
@@ -101,12 +100,6 @@ func ScannerWithDataDirs(paths ...string) ScannerOption {
 func ScannerWithPolicyNamespaces(namespaces ...string) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetPolicyNamespaces(namespaces...)
-	}
-}
-
-func ScannerWithSkipRequiredCheck(skip bool) ScannerOption {
-	return func(s ConfigurableScanner) {
-		s.SetSkipRequiredCheck(skip)
 	}
 }
 

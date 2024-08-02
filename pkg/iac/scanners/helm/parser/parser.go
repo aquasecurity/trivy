@@ -34,7 +34,6 @@ type Parser struct {
 	ChartSource  string
 	filepaths    []string
 	debug        debug.Logger
-	skipRequired bool
 	workingFS    fs.FS
 	valuesFiles  []string
 	values       []string
@@ -51,10 +50,6 @@ type ChartFile struct {
 
 func (p *Parser) SetDebugWriter(writer io.Writer) {
 	p.debug = debug.New(writer, "helm", "parser")
-}
-
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
 }
 
 func (p *Parser) SetValuesFile(s ...string) {
@@ -126,10 +121,6 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
 			return err
 		}
 		if entry.IsDir() {
-			return nil
-		}
-
-		if !p.required(path, p.workingFS) {
 			return nil
 		}
 
@@ -309,16 +300,4 @@ func getManifestPath(manifest string) string {
 		return manifestFilePathParts[1]
 	}
 	return manifestFilePathParts[0]
-}
-
-func (p *Parser) required(path string, workingFS fs.FS) bool {
-	if p.skipRequired {
-		return true
-	}
-	content, err := fs.ReadFile(workingFS, path)
-	if err != nil {
-		return false
-	}
-
-	return detection.IsType(path, bytes.NewReader(content), detection.FileTypeHelm)
 }

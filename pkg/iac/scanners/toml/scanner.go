@@ -17,15 +17,15 @@ import (
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
-	debug         debug.Logger
-	options       []options.ScannerOption
-	policyDirs    []string
-	policyReaders []io.Reader
-	parser        *parser.Parser
-	regoScanner   *rego.Scanner
-	skipRequired  bool
-	sync.Mutex
+type Scanner struct {
+	mu                    sync.Mutex
+	debug                 debug.Logger
+	options               []options.ScannerOption
+	parserOptions         []options.ParserOption
+	policyDirs            []string
+	policyReaders         []io.Reader
+	parser                *parser.Parser
+	regoScanner           *rego.Scanner
 	frameworks            []framework.Framework
 	spec                  string
 	loadEmbeddedPolicies  bool
@@ -60,12 +60,9 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
 	s.debug = debug.New(writer, "toml", "scanner")
+	s.parserOptions = append(s.parserOptions, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer)        {}
@@ -94,7 +91,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(options.ParserWithSkipRequiredCheck(s.skipRequired))
+	s.parser = parser.New(s.parserOptions...)
 	return s
 }
 
@@ -138,8 +135,8 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
