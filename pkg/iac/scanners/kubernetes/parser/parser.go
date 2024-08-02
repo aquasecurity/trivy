@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -15,23 +14,17 @@ import (
 	kyaml "sigs.k8s.io/yaml"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
-	debug        debug.Logger
-	skipRequired bool
+	debug debug.Logger
 }
 
 func (p *Parser) SetDebugWriter(writer io.Writer) {
 	p.debug = debug.New(writer, "kubernetes", "parser")
-}
-
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
 }
 
 // New creates a new K8s parser
@@ -57,14 +50,13 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 		if entry.IsDir() {
 			return nil
 		}
-		if !p.required(target, path) {
-			return nil
-		}
+
 		parsed, err := p.ParseFile(ctx, target, path)
 		if err != nil {
 			p.debug.Log("Parse error in '%s': %s", path, err)
 			return nil
 		}
+
 		files[path] = parsed
 		return nil
 	}); err != nil {
@@ -81,21 +73,6 @@ func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) ([]any, e
 	}
 	defer func() { _ = f.Close() }()
 	return p.Parse(f, path)
-}
-
-func (p *Parser) required(fsys fs.FS, path string) bool {
-	if p.skipRequired {
-		return true
-	}
-	f, err := fsys.Open(filepath.ToSlash(path))
-	if err != nil {
-		return false
-	}
-	defer func() { _ = f.Close() }()
-	if data, err := io.ReadAll(f); err == nil {
-		return detection.IsType(path, bytes.NewReader(data), detection.FileTypeKubernetes)
-	}
-	return false
 }
 
 func (p *Parser) Parse(r io.Reader, path string) ([]any, error) {
