@@ -60,9 +60,9 @@ func generateConfigDocs(filename string) error {
 
 	var allFlagGroups = []flag.FlagGroup{
 		globalFlags,
-		remoteFlags,
 		flag.NewCacheFlagGroup(),
 		flag.NewCleanFlagGroup(),
+		remoteFlags,
 		flag.NewDBFlagGroup(),
 		flag.NewImageFlagGroup(),
 		flag.NewK8sFlagGroup(),

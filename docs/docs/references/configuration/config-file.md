@@ -30,31 +30,6 @@ quiet: false
 timeout: 5m0s
 
 ```
-## Client/Server options
-
-```yaml
-server:
-  # Same as '--server'
-  # Default is empty
-  addr: 
-
-  # Same as '--custom-headers'
-  # Default is empty
-  custom-headers: []
-
-  # Same as '--listen'
-  # Default is localhost:4954
-  listen: localhost:4954
-
-  # Same as '--token'
-  # Default is empty
-  token: 
-
-  # Same as '--token-header'
-  # Default is Trivy-Token
-  token-header: Trivy-Token
-
-```
 ## Cache options
 
 ```yaml
@@ -116,6 +91,31 @@ clean:
   # Same as '--vuln-db'
   # Default is false
   vuln-db: false
+
+```
+## Client/Server options
+
+```yaml
+server:
+  # Same as '--server'
+  # Default is empty
+  addr: 
+
+  # Same as '--custom-headers'
+  # Default is empty
+  custom-headers: []
+
+  # Same as '--listen'
+  # Default is localhost:4954
+  listen: localhost:4954
+
+  # Same as '--token'
+  # Default is empty
+  token: 
+
+  # Same as '--token-header'
+  # Default is Trivy-Token
+  token-header: Trivy-Token
 
 ```
 ## DB options
