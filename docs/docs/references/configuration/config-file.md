@@ -602,28 +602,4 @@ vulnerability:
   vex: []
 
 ```
-## AWS options
-
-```yaml
-cloud:
-  aws:
-    # Same as '--account'
-    account: ""
-
-    # Same as '--arn'
-    arn: ""
-
-    # Same as '--endpoint'
-    endpoint: ""
-
-    # Same as '--region'
-    region: ""
-
-    # Same as '--service'
-    service: []
-
-    # Same as '--skip-service'
-    skip-service: []
-
-```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml

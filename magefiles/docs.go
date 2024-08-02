@@ -75,7 +75,6 @@ func generateConfigDocs(filename string) error {
 		flag.NewScanFlagGroup(),
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
-		flag.NewAWSFlagGroup(),
 	}
 
 	f, err := os.Create(filename)
