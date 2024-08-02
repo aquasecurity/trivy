@@ -12,12 +12,12 @@ Each artifact supports the following scanners:
 
 The following table provides an outline of the features Trivy offers.
 
-| Artifact         |    Internet access    | Dev dependencies | [Dependency graph][dependency-graph] | Position |
-|------------------|:---------------------:|:----------------:|:------------------------------------:|:--------:|
-| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |    -     |
-| pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |  ✓[^7]   |
-| *gradle.lockfile |           -           |     Exclude      |                  ✓                   |    ✓     |
-| *.sbt.lock       |          -            |     Exclude      |                  -                   |    ✓     |
+| Artifact         |    Internet access    | Dev dependencies | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
+|------------------|:---------------------:|:----------------:|:------------------------------------:|:--------:|:----------------------------------------:|
+| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |    -     |                Not needed                |
+| pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |  ✓[^7]   |                    -                     |
+| *gradle.lockfile |           -           |     Exclude      |                  ✓                   |    ✓     |                Not needed                |
+| *.sbt.lock       |           -           |     Exclude      |                  -                   |    ✓     |                Not needed                |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -119,3 +119,4 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [maven-central]: https://repo.maven.apache.org/maven2/
 [maven-pom-repos]: https://maven.apache.org/settings.html#repositories
 [sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
+[detection-priority]: ../../scanner/vulnerability.md#detection-priority
