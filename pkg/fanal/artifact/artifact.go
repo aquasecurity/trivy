@@ -28,6 +28,7 @@ type Option struct {
 	AWSRegion         string
 	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
+	DetectionPriority types.DetectionPriority
 
 	// Git repositories
 	RepoBranch string
@@ -50,6 +51,7 @@ func (o *Option) AnalyzerOptions() analyzer.AnalyzerOptions {
 		FilePatterns:         o.FilePatterns,
 		Parallel:             o.Parallel,
 		DisabledAnalyzers:    o.DisabledAnalyzers,
+		DetectionPriority:    o.DetectionPriority,
 		MisconfScannerOption: o.MisconfScannerOption,
 		SecretScannerOption:  o.SecretScannerOption,
 		LicenseScannerOption: o.LicenseScannerOption,

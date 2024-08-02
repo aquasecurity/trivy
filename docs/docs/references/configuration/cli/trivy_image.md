@@ -44,6 +44,10 @@ trivy image [flags] IMAGE_NAME
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --detection-priority string         specify the detection priority:
+                                            - "precise": Prioritizes precise by minimizing false positives.
+                                            - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
+                                           (precise,comprehensive) (default "precise")
       --docker-host string                unix domain socket path to use for docker scanning
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan

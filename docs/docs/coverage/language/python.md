@@ -21,11 +21,11 @@ The following scanners are supported for Python packages.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File             | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
-|-----------------|------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
-| pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |
-| Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |
-| Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |    -     |
+| Package manager | File             | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
+|-----------------|------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|:----------------------------------------:|
+| pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |                    -                     |
+| Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |                Not needed                |
+| Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |    -     |                Not needed                |
 
 
 | Packaging | Dependency graph |
@@ -130,3 +130,4 @@ Trivy looks for `.dist-info/META-DATA` to identify Python packages.
 [^1]: Trivy checks `python`, `python3`, `python2` and `python.exe` file names.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[detection-priority]: ../../scanner/vulnerability.md#detection-priority

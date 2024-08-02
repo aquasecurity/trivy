@@ -568,6 +568,10 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		fileChecksum = true
 	}
 
+	// Disable the post handler for filtering system file when detection priority is comprehensive.
+	disabledHandlers := lo.Ternary(opts.DetectionPriority == ftypes.PriorityComprehensive,
+		[]ftypes.HandlerType{ftypes.SystemFileFilteringPostHandler}, nil)
+
 	return ScannerConfig{
 		Target:             target,
 		CacheOptions:       opts.CacheOpts(),
@@ -579,6 +583,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		},
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
+			DisabledHandlers:  disabledHandlers,
 			FilePatterns:      opts.FilePatterns,
 			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
@@ -592,6 +597,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 			AWSRegion:         opts.Region,
 			AWSEndpoint:       opts.Endpoint,
 			FileChecksum:      fileChecksum,
+			DetectionPriority: opts.DetectionPriority,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{
