@@ -4143,6 +4143,7 @@ You're not viewing the latest version.
 <th align="center">Dev dependencies</th>
 <th align="center"><a href="../../../configuration/reporting/#show-origins-of-vulnerable-dependencies">Dependency graph</a></th>
 <th align="center">Position</th>
+<th align="center"><a href="../../../scanner/vulnerability/#detection-priority">Detection Priority</a></th>
 </tr>
 </thead>
 <tbody>
@@ -4153,6 +4154,7 @@ You're not viewing the latest version.
 <td align="center">Included</td>
 <td align="center">✓</td>
 <td align="center">-</td>
+<td align="center">✓</td>
 </tr>
 </tbody>
 </table>
@@ -4161,9 +4163,11 @@ You're not viewing the latest version.
 <p>Trivy marks indirect dependencies, but <code>pubspec.lock</code> file doesn't have options to separate root and dev transitive dependencies.
 So Trivy includes all dependencies in report.</p>
 <h3 id="sdk-dependencies">SDK dependencies</h3>
-<p>Dart uses version <code>0.0.0</code> for SDK dependencies (e.g. Flutter). It is not possible to accurately determine the versions of these dependencies.</p>
-<p>Therefore, we use the first version of the constraint for the SDK.</p>
-<p>For example in this case the version of <code>flutter</code> should be <code>3.3.0</code>:
+<p>Dart uses version <code>0.0.0</code> for SDK dependencies (e.g. Flutter).
+It is not possible to accurately determine the versions of these dependencies.
+Trivy just treats them as <code>0.0.0</code>.</p>
+<p>If <a href="../../../scanner/vulnerability/#detection-priority">--detection-priority comprehensive</a> is passed, Trivy uses the minimum version of the constraint for the SDK.
+For example, in the following case, the version of <code>flutter</code> would be <code>3.3.0</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">flutter</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">dependency</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;direct</span><span class="nv"> </span><span class="s">main&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flutter</span><span class="w"></span>
@@ -4172,7 +4176,7 @@ So Trivy includes all dependencies in report.</p>
 <span class="nt">sdks</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">dart</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&gt;=2.18.0</span><span class="nv"> </span><span class="s">&lt;3.0.0&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">flutter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^3.3.0&quot;</span><span class="w"></span>
-</code></pre></div></p>
+</code></pre></div>
 <h3 id="dependency-tree">Dependency tree</h3>
 <p>To build <code>dependency tree</code> Trivy parses <a href="https://dart.dev/tools/pub/glossary#system-cache">cache directory</a>. Currently supported default directories and <code>PUB_CACHE</code> environment (absolute path only).</p>
 <div class="admonition note">

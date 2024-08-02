@@ -4179,6 +4179,10 @@ You're not viewing the latest version.
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --db-repository string              OCI repository to retrieve trivy-db from (default &quot;ghcr.io/aquasecurity/trivy-db:2&quot;)
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --detection-priority string         specify the detection priority:
+                                            - &quot;precise&quot;: Prioritizes precise by minimizing false positives.
+                                            - &quot;comprehensive&quot;: Aims to detect more security findings at the cost of potential false positives.
+                                           (precise,comprehensive) (default &quot;precise&quot;)
       --disable-node-collector            When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --download-db-only                  download/update vulnerability database but don&#39;t run a scan
       --download-java-db-only             download/update Java index database but don&#39;t run a scan
