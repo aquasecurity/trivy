@@ -36,11 +36,11 @@ timeout: 5m0s
 server:
   # Same as '--server'
   # Default is empty
-  addr:
+  addr: 
 
   # Same as '--custom-headers'
-  # Default is []
-  custom-headers: empty
+  # Default is empty
+  custom-headers: []
 
   # Same as '--listen'
   # Default is localhost:4954
@@ -48,7 +48,7 @@ server:
 
   # Same as '--token'
   # Default is empty
-  token:
+  token: 
 
   # Same as '--token-header'
   # Default is Trivy-Token
@@ -70,15 +70,15 @@ cache:
   redis:
     # Same as '--redis-ca'
     # Default is empty
-    ca:
+    ca: 
 
     # Same as '--redis-cert'
     # Default is empty
-    cert:
+    cert: 
 
     # Same as '--redis-key'
     # Default is empty
-    key:
+    key: 
 
     # Same as '--redis-tls'
     # Default is false
@@ -166,24 +166,24 @@ image:
   docker:
     # Same as '--docker-host'
     # Default is empty
-    host:
+    host: 
 
   # Same as '--image-config-scanners'
-  # Default is []
-  image-config-scanners: empty
+  # Default is empty
+  image-config-scanners: []
 
   # Same as '--input'
   # Default is empty
-  input:
+  input: 
 
   # Same as '--platform'
   # Default is empty
-  platform:
+  platform: 
 
   podman:
     # Same as '--podman-host'
     # Default is empty
-    host:
+    host: 
 
   # Same as '--removed-pkgs'
   # Default is false
@@ -212,36 +212,36 @@ kubernetes:
 
   exclude:
     # Same as '--exclude-nodes'
-    # Default is []
-    nodes: empty
+    # Default is empty
+    nodes: []
 
     # Same as '--exclude-owned'
     # Default is false
     owned: false
 
   # Same as '--exclude-kinds'
-  # Default is []
-  excludeKinds: empty
+  # Default is empty
+  excludeKinds: []
 
   # Same as '--exclude-namespaces'
-  # Default is []
-  excludeNamespaces: empty
+  # Default is empty
+  excludeNamespaces: []
 
   # Same as '--include-kinds'
-  # Default is []
-  includeKinds: empty
+  # Default is empty
+  includeKinds: []
 
   # Same as '--include-namespaces'
-  # Default is []
-  includeNamespaces: empty
+  # Default is empty
+  includeNamespaces: []
 
   # Same as '--k8s-version'
   # Default is empty
-  k8s-version:
+  k8s-version: 
 
   # Same as '--kubeconfig'
   # Default is empty
-  kubeconfig:
+  kubeconfig: 
 
   node-collector:
     # Same as '--node-collector-imageref'
@@ -261,8 +261,8 @@ kubernetes:
   skipImages: false
 
   # Same as '--tolerations'
-  # Default is []
-  tolerations: empty
+  # Default is empty
+  tolerations: []
 
 ```
 ## License options
@@ -303,8 +303,8 @@ license:
   full: false
 
   # Same as '--ignored-licenses'
-  # Default is []
-  ignored: empty
+  # Default is empty
+  ignored: []
 
   # Default is AFL-1.1, AFL-1.2, AFL-2.0, AFL-2.1, AFL-3.0, Apache-1.0, Apache-1.1, Apache-2.0, Artistic-1.0-cl8, Artistic-1.0-Perl, Artistic-1.0, Artistic-2.0, BSL-1.0, BSD-2-Clause-FreeBSD, BSD-2-Clause-NetBSD, BSD-2-Clause, BSD-3-Clause-Attribution, BSD-3-Clause-Clear, BSD-3-Clause-LBNL, BSD-3-Clause, BSD-4-Clause, BSD-4-Clause-UC, BSD-Protection, CC-BY-1.0, CC-BY-2.0, CC-BY-2.5, CC-BY-3.0, CC-BY-4.0, FTL, ISC, ImageMagick, Libpng, Lil-1.0, Linux-OpenIB, LPL-1.02, LPL-1.0, MS-PL, MIT, NCSA, OpenSSL, PHP-3.01, PHP-3.0, PIL, Python-2.0, Python-2.0-complete, PostgreSQL, SGI-B-1.0, SGI-B-1.1, SGI-B-2.0, Unicode-DFS-2015, Unicode-DFS-2016, Unicode-TOU, UPL-1.0, W3C-19980720, W3C-20150513, W3C, X11, Xnet, Zend-2.0, zlib-acknowledgement, Zlib, ZPL-1.1, ZPL-2.0, ZPL-2.1
   notice:
@@ -373,8 +373,8 @@ license:
    - ZPL-2.0
    - ZPL-2.1
 
-  # Default is []
-  permissive: empty
+  # Default is empty
+  permissive: []
 
   # Default is APSL-1.0, APSL-1.1, APSL-1.2, APSL-2.0, CDDL-1.0, CDDL-1.1, CPL-1.0, EPL-1.0, EPL-2.0, FreeImage, IPL-1.0, MPL-1.0, MPL-1.1, MPL-2.0, Ruby
   reciprocal:
@@ -447,33 +447,33 @@ misconfiguration:
 
   cloudformation:
     # Same as '--cf-params'
-    # Default is []
-    params: empty
+    # Default is empty
+    params: []
 
   helm:
     # Same as '--helm-api-versions'
-    # Default is []
-    api-versions: empty
+    # Default is empty
+    api-versions: []
 
     # Same as '--helm-kube-version'
     # Default is empty
-    kube-version:
+    kube-version: 
 
     # Same as '--helm-set'
-    # Default is []
-    set: empty
+    # Default is empty
+    set: []
 
     # Same as '--helm-set-file'
-    # Default is []
-    set-file: empty
+    # Default is empty
+    set-file: []
 
     # Same as '--helm-set-string'
-    # Default is []
-    set-string: empty
+    # Default is empty
+    set-string: []
 
     # Same as '--helm-values'
-    # Default is []
-    values: empty
+    # Default is empty
+    values: []
 
   # Same as '--include-non-failures'
   # Default is false
@@ -501,8 +501,8 @@ misconfiguration:
     exclude-downloaded-modules: false
 
     # Same as '--tf-vars'
-    # Default is []
-    vars: empty
+    # Default is empty
+    vars: []
 
 ```
 ## Module options
@@ -514,8 +514,8 @@ module:
   dir: $HOME/.trivy/modules
 
   # Same as '--enable-modules'
-  # Default is []
-  enable-modules: empty
+  # Default is empty
+  enable-modules: []
 
 ```
 ## Registry options
@@ -523,16 +523,16 @@ module:
 ```yaml
 registry:
   # Same as '--password'
-  # Default is []
-  password: empty
+  # Default is empty
+  password: []
 
   # Same as '--registry-token'
   # Default is empty
-  token:
+  token: 
 
   # Same as '--username'
-  # Default is []
-  username: empty
+  # Default is empty
+  username: []
 
 ```
 ## Rego options
@@ -540,20 +540,20 @@ registry:
 ```yaml
 rego:
   # Same as '--config-check'
-  # Default is []
-  check: empty
+  # Default is empty
+  check: []
 
   # Same as '--config-data'
-  # Default is []
-  data: empty
+  # Default is empty
+  data: []
 
   # Same as '--include-deprecated-checks'
   # Default is false
   include-deprecated-checks: false
 
   # Same as '--check-namespaces'
-  # Default is []
-  namespaces: empty
+  # Default is empty
+  namespaces: []
 
   # Same as '--skip-check-update'
   # Default is false
@@ -585,7 +585,7 @@ format: table
 
 # Same as '--ignore-policy'
 # Default is empty
-ignore-policy:
+ignore-policy: 
 
 # Same as '--ignorefile'
 # Default is .trivyignore
@@ -597,11 +597,11 @@ list-all-pkgs: false
 
 # Same as '--output'
 # Default is empty
-output:
+output: 
 
 # Same as '--output-plugin-arg'
 # Default is empty
-output-plugin-arg:
+output-plugin-arg: 
 
 # Same as '--report'
 # Default is all
@@ -610,7 +610,7 @@ report: all
 scan:
   # Same as '--compliance'
   # Default is empty
-  compliance:
+  compliance: 
 
   # Same as '--show-suppressed'
   # Default is false
@@ -627,7 +627,7 @@ severity:
 
 # Same as '--template'
 # Default is empty
-template:
+template: 
 
 ```
 ## Repository options
@@ -636,15 +636,15 @@ template:
 repository:
   # Same as '--branch'
   # Default is empty
-  branch:
+  branch: 
 
   # Same as '--commit'
   # Default is empty
-  commit:
+  commit: 
 
   # Same as '--tag'
   # Default is empty
-  tag:
+  tag: 
 
 ```
 ## Scan options
@@ -652,8 +652,8 @@ repository:
 ```yaml
 scan:
   # Same as '--file-patterns'
-  # Default is []
-  file-patterns: empty
+  # Default is empty
+  file-patterns: []
 
   # Same as '--offline-scan'
   # Default is false
@@ -668,8 +668,8 @@ scan:
   rekor-url: https://rekor.sigstore.dev
 
   # Same as '--sbom-sources'
-  # Default is []
-  sbom-sources: empty
+  # Default is empty
+  sbom-sources: []
 
   # Same as '--scanners'
   # Default is vuln, secret
@@ -678,12 +678,12 @@ scan:
    - secret
 
   # Same as '--skip-dirs'
-  # Default is []
-  skip-dirs: empty
+  # Default is empty
+  skip-dirs: []
 
   # Same as '--skip-files'
-  # Default is []
-  skip-files: empty
+  # Default is empty
+  skip-files: []
 
   # Same as '--slow'
   # Default is false
@@ -704,8 +704,8 @@ secret:
 ```yaml
 vulnerability:
   # Same as '--ignore-status'
-  # Default is []
-  ignore-status: empty
+  # Default is empty
+  ignore-status: []
 
   # Same as '--ignore-unfixed'
   # Default is false
@@ -716,8 +716,8 @@ vulnerability:
   skip-vex-repo-update: false
 
   # Same as '--vex'
-  # Default is []
-  vex: empty
+  # Default is empty
+  vex: []
 
 ```
 ## AWS options
@@ -727,27 +727,27 @@ cloud:
   aws:
     # Same as '--account'
     # Default is empty
-    account:
+    account: 
 
     # Same as '--arn'
     # Default is empty
-    arn:
+    arn: 
 
     # Same as '--endpoint'
     # Default is empty
-    endpoint:
+    endpoint: 
 
     # Same as '--region'
     # Default is empty
-    region:
+    region: 
 
     # Same as '--service'
-    # Default is []
-    service: empty
+    # Default is empty
+    service: []
 
     # Same as '--skip-service'
-    # Default is []
-    skip-service: empty
+    # Default is empty
+    skip-service: []
 
 ```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
