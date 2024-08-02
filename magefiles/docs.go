@@ -98,6 +98,7 @@ func generateConfigDocs(filename string) error {
 
 func writeFlags(group flag.FlagGroup, w *os.File) {
 	flags := group.Flags()
+	// Sort flags to avoid duplicates of non-last parts of config file
 	slices.SortFunc(flags, func(a, b flag.Flagger) int {
 		return cmp.Compare(a.GetConfigName(), b.GetConfigName())
 	})
@@ -108,6 +109,7 @@ func writeFlags(group flag.FlagGroup, w *os.File) {
 		if flg.GetConfigName() == "" {
 			continue
 		}
+		// We need to split the config name on `.` to make the indentations needed in yaml.
 		parts := strings.Split(flg.GetConfigName(), ".")
 		for i := range parts {
 			// Skip already added part
@@ -115,8 +117,10 @@ func writeFlags(group flag.FlagGroup, w *os.File) {
 				continue
 			}
 			ind := strings.Repeat("  ", i)
+			// We need to add a comment and example values only for the last part of the config name.
 			isLastPart := i == len(parts)-1
 			if isLastPart {
+				// Some `Flags` don't support flag for CLI. (e.g.`LicenseForbidden`).
 				if flg.GetName() != "" {
 					fmt.Fprintf(w, "%s# Same as '--%s'\n", ind, flg.GetName())
 				}
@@ -139,7 +143,7 @@ func defaultValueString(val any) string {
 	case string:
 		value = lo.Ternary(len(v) > 0, v, "empty")
 	case []string:
-		value = lo.Ternary(len(v) > 0, strings.Join(v, ", "), "[]")
+		value = lo.Ternary(len(v) > 0, strings.Join(v, ", "), "empty")
 	default:
 		value = fmt.Sprintf("%v", v)
 	}
@@ -155,13 +159,7 @@ func writeFlagValue(val any, ind string, w *os.File) {
 				fmt.Fprintf(w, "%s - %s\n", ind, vv)
 			}
 		} else {
-			w.WriteString(" empty\n")
-		}
-	case string:
-		if len(v) > 0 {
-			fmt.Fprintf(w, " %v\n", v)
-		} else {
-			w.WriteString("\n")
+			w.WriteString(" []\n")
 		}
 	default:
 		fmt.Fprintf(w, " %v\n", v)
