@@ -1,4 +1,4 @@
-//go:build integration || vm_integration || module_integration || k8s_integration || plugin_integration
+//go:build integration || vm_integration || module_integration || k8s_integration
 
 package integration
 

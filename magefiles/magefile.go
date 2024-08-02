@@ -285,11 +285,6 @@ func (t Test) K8s() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=k8s_integration", "./integration/...")
 }
 
-// Plugin runs plugin integration tests
-func (t Test) Plugin() error {
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=plugin_integration", "./integration/...")
-}
-
 // Module runs Wasm integration tests
 func (t Test) Module() error {
 	mg.Deps(t.FixtureContainerImages, t.GenerateExampleModules)
