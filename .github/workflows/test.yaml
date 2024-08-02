@@ -126,6 +126,27 @@ jobs:
         shell: bash
         run: |
           mage test:module
+  plugin-test:
+    name: Plugin Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v1.25.0
+
+      - name: Run plugin integration tests
+        shell: bash
+        run: |
+          mage test:plugin          
 
   vm-test:
     name: VM Integration Test
