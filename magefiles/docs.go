@@ -20,7 +20,8 @@ const (
 	title       = "Config file"
 	description = "Trivy can be customized by tweaking a `trivy.yaml` file.\n" +
 		"The config path can be overridden by the `--config` flag.\n\n" +
-		"An example is [here][example].\n"
+		"An example is [here][example].\n\n" +
+		"These samples contain default values for flags."
 	footer = "[example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml"
 )
 

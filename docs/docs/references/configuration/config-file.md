@@ -5,6 +5,7 @@ The config path can be overridden by the `--config` flag.
 
 An example is [here][example].
 
+These samples contain default values for flags.
 ## Global options
 
 ```yaml
