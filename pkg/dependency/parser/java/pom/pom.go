@@ -18,6 +18,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
+const enabled = "true"
+
 type pom struct {
 	filePath string
 	content  *pomXML
@@ -42,6 +44,7 @@ func (p *pom) inherit(result analysisResult) {
 
 func (p pom) properties() properties {
 	props := p.content.Properties
+	props = utils.MergeMaps(props, p.profileProperties())
 	return utils.MergeMaps(props, p.projectProperties())
 }
 
@@ -68,6 +71,26 @@ func (p pom) projectProperties() map[string]string {
 		// It is deprecated, but still available.
 		// e.g. ${groupId}
 		projectProperties[k] = v
+	}
+
+	return projectProperties
+}
+
+// Get properties from any maven profiles, only for now if one is active by default
+func (p pom) profileProperties() map[string]string {
+	profiles := p.content.Profiles
+	logger := log.WithPrefix("pom")
+
+	projectProperties := make(map[string]string)
+	for _, profile := range profiles.Profile {
+		activation := profile.Activation
+		if activation.ActiveByDefault == enabled {
+			logger.Debug("Adding properties from profile", log.String("id", profile.ID))
+
+			for k, v := range profile.Properties {
+				projectProperties[k] = v
+			}
+		}
 	}
 
 	return projectProperties
@@ -120,8 +143,8 @@ func (p pom) repositories(servers []Server) ([]string, []string) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []string
 	for _, rep := range p.content.Repositories.Repository {
-		snapshot := rep.Snapshots.Enabled == "true"
-		release := rep.Releases.Enabled == "true"
+		snapshot := rep.Snapshots.Enabled == enabled
+		release := rep.Releases.Enabled == enabled
 		// Add only enabled repositories
 		if !release && !snapshot {
 			continue
@@ -171,6 +194,7 @@ type pomXML struct {
 	} `xml:"dependencyManagement"`
 	Dependencies pomDependencies `xml:"dependencies"`
 	Repositories pomRepositories `xml:"repositories"`
+	Profiles     pomProfiles     `xml:"profiles"`
 }
 
 type pomParent struct {
@@ -384,4 +408,20 @@ type pomRepository struct {
 		Text    string `xml:",chardata"`
 		Enabled string `xml:"enabled"`
 	} `xml:"snapshots"`
+}
+
+type pomProfiles struct {
+	Text    string       `xml:",chardata"`
+	Profile []pomProfile `xml:"profile"`
+}
+
+type pomProfile struct {
+	Text       string     `xml:",chardata"`
+	ID         string     `xml:"id"`
+	Properties properties `xml:"properties"`
+	Activation activation `xml:"activation"`
+}
+
+type activation struct {
+	ActiveByDefault string `xml:"activeByDefault"`
 }
