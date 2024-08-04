@@ -28,3 +28,7 @@ func newKubernetesConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAn
 	}
 	return &kubernetesConfigAnalyzer{Analyzer: a}, nil
 }
+
+func (k kubernetesConfigAnalyzer) Description() string {
+	return string(analyzer.TypeKubernetes)
+}

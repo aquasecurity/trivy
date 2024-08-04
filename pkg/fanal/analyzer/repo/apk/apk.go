@@ -96,3 +96,7 @@ func (a apkRepoAnalyzer) Type() analyzer.Type {
 func (a apkRepoAnalyzer) Version() int {
 	return version
 }
+
+func (a apkRepoAnalyzer) Description() string {
+	return string(analyzer.TypeApkRepo)
+}

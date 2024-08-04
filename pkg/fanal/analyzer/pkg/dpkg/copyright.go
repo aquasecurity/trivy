@@ -138,6 +138,10 @@ func (a *dpkgLicenseAnalyzer) Version() int {
 	return dpkgLicenseAnalyzerVersion
 }
 
+func (a *dpkgLicenseAnalyzer) Description() string {
+	return string(analyzer.TypeDpkgLicense)
+}
+
 // normalizeLicense returns a normalized license identifier in a heuristic way
 func normalizeLicense(s string) string {
 	// "The MIT License (MIT)" => "The MIT License"

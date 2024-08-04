@@ -115,6 +115,10 @@ func (a gradleLockAnalyzer) Version() int {
 	return version
 }
 
+func (a gradleLockAnalyzer) Description() string {
+	return string(analyzer.TypeGradleLock)
+}
+
 func packageID(groupId, artifactId, ver string) string {
 	return fmt.Sprintf("%s:%s:%s", groupId, artifactId, ver)
 }

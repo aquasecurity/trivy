@@ -98,6 +98,10 @@ func (a juliaAnalyzer) Version() int {
 	return version
 }
 
+func (a juliaAnalyzer) Description() string {
+	return string(analyzer.TypeJulia)
+}
+
 func (a juliaAnalyzer) parseJuliaManifest(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Julia, path, r, a.lockParser)
 }

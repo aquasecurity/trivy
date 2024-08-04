@@ -117,3 +117,7 @@ func (a environmentAnalyzer) Type() analyzer.Type {
 func (a environmentAnalyzer) Version() int {
 	return version
 }
+
+func (a environmentAnalyzer) Description() string {
+	return string(analyzer.TypeCondaEnv)
+}

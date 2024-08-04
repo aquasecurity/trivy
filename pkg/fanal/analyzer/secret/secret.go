@@ -180,3 +180,7 @@ func (a *SecretAnalyzer) Type() analyzer.Type {
 func (a *SecretAnalyzer) Version() int {
 	return version
 }
+
+func (a *SecretAnalyzer) Description() string {
+	return string(analyzer.TypeSecret)
+}

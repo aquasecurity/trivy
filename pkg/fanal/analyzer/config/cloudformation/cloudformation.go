@@ -28,3 +28,7 @@ func newCloudFormationConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.Po
 	}
 	return &cloudFormationConfigAnalyzer{Analyzer: a}, nil
 }
+
+func (c cloudFormationConfigAnalyzer) Description() string {
+	return string(analyzer.TypeCloudFormation)
+}

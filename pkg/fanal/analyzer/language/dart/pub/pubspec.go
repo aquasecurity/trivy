@@ -181,3 +181,7 @@ func (a pubSpecLockAnalyzer) Type() analyzer.Type {
 func (a pubSpecLockAnalyzer) Version() int {
 	return version
 }
+
+func (a pubSpecLockAnalyzer) Description() string {
+	return string(analyzer.TypePubSpecLock)
+}

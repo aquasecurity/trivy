@@ -57,3 +57,7 @@ func (a nodePkgLibraryAnalyzer) Type() analyzer.Type {
 func (a nodePkgLibraryAnalyzer) Version() int {
 	return version
 }
+
+func (a nodePkgLibraryAnalyzer) Description() string {
+	return string(analyzer.TypeNodePkg)
+}

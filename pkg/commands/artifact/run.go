@@ -485,6 +485,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
+		MaxFileSize:         opts.MaxFileSize,
 		IncludeDevDeps:      opts.IncludeDevDeps,
 	}
 
@@ -585,6 +586,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 			DisabledAnalyzers: disabledAnalyzers(opts),
 			DisabledHandlers:  disabledHandlers,
 			FilePatterns:      opts.FilePatterns,
+			MaxFileSize:       opts.MaxFileSize,
 			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,

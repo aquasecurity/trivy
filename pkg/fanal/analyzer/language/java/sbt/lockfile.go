@@ -45,3 +45,7 @@ func (a sbtDependencyLockAnalyzer) Type() analyzer.Type {
 func (a sbtDependencyLockAnalyzer) Version() int {
 	return version
 }
+
+func (a sbtDependencyLockAnalyzer) Description() string {
+	return string(analyzer.TypeSbtLock)
+}

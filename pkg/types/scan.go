@@ -120,5 +120,6 @@ type ScanOptions struct {
 	ScanRemovedPackages bool
 	LicenseCategories   map[types.LicenseCategory][]string
 	FilePatterns        []string
+	MaxFileSize         []string
 	IncludeDevDeps      bool
 }

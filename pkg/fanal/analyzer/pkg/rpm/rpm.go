@@ -209,6 +209,10 @@ func (a rpmPkgAnalyzer) Version() int {
 	return version
 }
 
+func (a rpmPkgAnalyzer) Description() string {
+	return string(analyzer.TypeRpm)
+}
+
 // splitFileName returns a name, version, release, epoch, arch:
 //
 //	e.g.

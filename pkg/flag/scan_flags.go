@@ -69,6 +69,11 @@ var (
 		ConfigName: "scan.file-patterns",
 		Usage:      "specify config file patterns",
 	}
+	MaxFileSizeFlag = Flag[[]string]{
+		Name:       "max-file-size",
+		ConfigName: "scan.max-file-size",
+		Usage:      "specify the maximum file size",
+	}
 	SlowFlag = Flag[bool]{
 		Name:       "slow",
 		ConfigName: "scan.slow",
@@ -118,6 +123,7 @@ type ScanFlagGroup struct {
 	OfflineScan       *Flag[bool]
 	Scanners          *Flag[[]string]
 	FilePatterns      *Flag[[]string]
+	MaxFileSize       *Flag[[]string]
 	Slow              *Flag[bool] // deprecated
 	Parallel          *Flag[int]
 	SBOMSources       *Flag[[]string]
@@ -132,6 +138,7 @@ type ScanOptions struct {
 	OfflineScan       bool
 	Scanners          types.Scanners
 	FilePatterns      []string
+	MaxFileSize       []string
 	Parallel          int
 	SBOMSources       []string
 	RekorURL          string
@@ -164,6 +171,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.OfflineScan,
 		f.Scanners,
 		f.FilePatterns,
+		f.MaxFileSize,
 		f.Slow,
 		f.Parallel,
 		f.SBOMSources,
@@ -195,6 +203,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:       f.OfflineScan.Value(),
 		Scanners:          xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
 		FilePatterns:      f.FilePatterns.Value(),
+		MaxFileSize:       f.MaxFileSize.Value(),
 		Parallel:          parallel,
 		SBOMSources:       f.SBOMSources.Value(),
 		RekorURL:          f.RekorURL.Value(),

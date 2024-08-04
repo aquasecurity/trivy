@@ -91,3 +91,7 @@ func (a osReleaseAnalyzer) Type() analyzer.Type {
 func (a osReleaseAnalyzer) Version() int {
 	return version
 }
+
+func (a osReleaseAnalyzer) Description() string {
+	return string(analyzer.TypeOSRelease)
+}

@@ -3,8 +3,10 @@
 package main
 
 import (
+	"bytes"
 	"os"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/spf13/cobra/doc"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
@@ -26,4 +28,14 @@ func main() {
 	if err := doc.GenMarkdownTree(cmd, "./docs/docs/references/configuration/cli"); err != nil {
 		log.Fatal("Fatal error", log.Err(err))
 	}
+
+	buf := bytes.NewBuffer([]byte(`
+## Analyzers
+Use the following types of analyzers for the [--max-file-size] flags`))
+	buf.WriteString("\n```\n")
+	for _, t := range analyzer.AllAnalyzerTypes() {
+		buf.WriteString(string(t) + "\n")
+	}
+	buf.WriteString("```")
+	os.WriteFile("./docs/docs/analyzers/analyzers.md", buf.Bytes(), 0644)
 }

@@ -36,3 +36,7 @@ func newAzureARMConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnal
 func (a *azureARMConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return filepath.Ext(filePath) == ".json"
 }
+
+func (a *azureARMConfigAnalyzer) Description() string {
+	return string(analyzer.TypeAzureARM)
+}

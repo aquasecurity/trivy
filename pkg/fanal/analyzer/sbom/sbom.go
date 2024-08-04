@@ -74,6 +74,10 @@ func (a sbomAnalyzer) Version() int {
 	return version
 }
 
+func (a sbomAnalyzer) Description() string {
+	return string(analyzer.TypeSBOM)
+}
+
 func handleBitnamiImages(componentPath string, bom types.SBOM) {
 	for i, app := range bom.Applications {
 		if app.Type == ftypes.Bitnami {

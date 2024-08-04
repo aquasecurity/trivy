@@ -36,3 +36,7 @@ func newTerraformConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAna
 func (*terraformConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return detection.IsTerraformFile(filePath)
 }
+
+func (*terraformConfigAnalyzer) Description() string {
+	return string(analyzer.TypeTerraform)
+}

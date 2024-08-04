@@ -194,3 +194,7 @@ func (a conanLockAnalyzer) Type() analyzer.Type {
 func (a conanLockAnalyzer) Version() int {
 	return version
 }
+
+func (a conanLockAnalyzer) Description() string {
+	return string(analyzer.TypeConanLock)
+}

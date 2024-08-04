@@ -103,6 +103,10 @@ func (a pipLibraryAnalyzer) Version() int {
 	return version
 }
 
+func (a pipLibraryAnalyzer) Description() string {
+	return string(analyzer.TypePip)
+}
+
 // pkgLicense parses `METADATA` pkg file to look for licenses
 func (a pipLibraryAnalyzer) pkgLicense(pkgName, pkgVer, spDir string) []string {
 	// METADATA path is `**/site-packages/<pkg_name>-<pkg_version>.dist-info/METADATA`

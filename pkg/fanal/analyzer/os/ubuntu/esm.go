@@ -77,3 +77,7 @@ func esmEnabled(st status) bool {
 	}
 	return false
 }
+
+func (a ubuntuESMAnalyzer) Description() string {
+	return string(analyzer.TypeUbuntuESM)
+}

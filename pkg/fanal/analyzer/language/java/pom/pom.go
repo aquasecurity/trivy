@@ -55,6 +55,10 @@ func (a pomAnalyzer) Version() int {
 	return version
 }
 
+func (a pomAnalyzer) Description() string {
+	return string(analyzer.TypePom)
+}
+
 // isIntegrationTestDir checks that pom file is in directory with integration tests of `maven-invoker-plugin`
 // https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
 func isIntegrationTestDir(filePath string) bool {

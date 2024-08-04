@@ -119,6 +119,10 @@ func (a *gomodAnalyzer) Version() int {
 	return version
 }
 
+func (a *gomodAnalyzer) Description() string {
+	return string(analyzer.TypeGoMod)
+}
+
 // fillAdditionalData collects licenses and dependency relationships, then update applications.
 func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	gopath := os.Getenv("GOPATH")

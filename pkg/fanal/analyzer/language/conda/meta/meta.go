@@ -37,3 +37,7 @@ func (a metaAnalyzer) Type() analyzer.Type {
 func (a metaAnalyzer) Version() int {
 	return version
 }
+
+func (a metaAnalyzer) Description() string {
+	return string(analyzer.TypeCondaPkg)
+}

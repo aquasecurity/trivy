@@ -47,3 +47,7 @@ func (a packagesPropsAnalyzer) Type() analyzer.Type {
 func (a packagesPropsAnalyzer) Version() int {
 	return version
 }
+
+func (a packagesPropsAnalyzer) Description() string {
+	return string(analyzer.TypePackagesProps)
+}

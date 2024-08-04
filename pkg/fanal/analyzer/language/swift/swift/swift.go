@@ -44,3 +44,7 @@ func (a swiftLockAnalyzer) Type() analyzer.Type {
 func (a swiftLockAnalyzer) Version() int {
 	return version
 }
+
+func (a swiftLockAnalyzer) Description() string {
+	return string(analyzer.TypeSwift)
+}

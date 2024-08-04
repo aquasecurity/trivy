@@ -99,6 +99,10 @@ func (a composerAnalyzer) Version() int {
 	return composerAnalyzerVersion
 }
 
+func (a composerAnalyzer) Description() string {
+	return string(analyzer.TypeComposer)
+}
+
 func (a composerAnalyzer) parseComposerLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Composer, path, r, a.lockParser)
 }

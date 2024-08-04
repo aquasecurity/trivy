@@ -443,6 +443,10 @@ func (m *wasmModule) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
+func (m *wasmModule) Description() string {
+	return m.name
+}
+
 func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := "/" + filepath.ToSlash(input.FilePath)
 	log.Debug("Module analyzing...", log.String("module", m.name), log.FilePath(filePath))

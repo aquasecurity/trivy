@@ -58,3 +58,7 @@ func (*helmConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 
 	return false
 }
+
+func (*helmConfigAnalyzer) Description() string {
+	return string(analyzer.TypeHelm)
+}

@@ -52,3 +52,7 @@ func (a *dockerConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 	return false
 }
+
+func (a *dockerConfigAnalyzer) Description() string {
+	return string(analyzer.TypeDockerfile)
+}

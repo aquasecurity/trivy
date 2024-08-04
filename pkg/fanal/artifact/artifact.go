@@ -18,6 +18,7 @@ type Option struct {
 	DisabledAnalyzers []analyzer.Type
 	DisabledHandlers  []types.HandlerType
 	FilePatterns      []string
+	MaxFileSize       []string
 	Parallel          int
 	NoProgress        bool
 	Insecure          bool
@@ -49,6 +50,7 @@ func (o *Option) AnalyzerOptions() analyzer.AnalyzerOptions {
 	return analyzer.AnalyzerOptions{
 		Group:                o.AnalyzerGroup,
 		FilePatterns:         o.FilePatterns,
+		MaxFileSize:          o.MaxFileSize,
 		Parallel:             o.Parallel,
 		DisabledAnalyzers:    o.DisabledAnalyzers,
 		DetectionPriority:    o.DetectionPriority,

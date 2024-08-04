@@ -42,3 +42,7 @@ func newTerraformPlanJSONConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer
 func (*terraformPlanConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return slices.Contains(requiredExts, filepath.Ext(filePath))
 }
+
+func (*terraformPlanConfigAnalyzer) Description() string {
+	return string(analyzer.TypeTerraformPlanJSON)
+}

@@ -220,3 +220,7 @@ func (a packagingAnalyzer) Type() analyzer.Type {
 func (a packagingAnalyzer) Version() int {
 	return version
 }
+
+func (a packagingAnalyzer) Description() string {
+	return string(analyzer.TypePythonPkg)
+}

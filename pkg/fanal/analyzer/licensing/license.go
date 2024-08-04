@@ -158,3 +158,7 @@ func (a *licenseFileAnalyzer) Type() analyzer.Type {
 func (a *licenseFileAnalyzer) Version() int {
 	return version
 }
+
+func (a *licenseFileAnalyzer) Description() string {
+	return string(analyzer.TypeLicenseFile)
+}

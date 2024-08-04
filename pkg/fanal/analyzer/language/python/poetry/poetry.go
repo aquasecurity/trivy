@@ -87,6 +87,10 @@ func (a poetryAnalyzer) Version() int {
 	return version
 }
 
+func (a poetryAnalyzer) Description() string {
+	return string(analyzer.TypePoetry)
+}
+
 func (a poetryAnalyzer) parsePoetryLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Poetry, path, r, a.lockParser)
 }

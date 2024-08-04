@@ -53,3 +53,7 @@ func (a contentManifestAnalyzer) Type() analyzer.Type {
 func (a contentManifestAnalyzer) Version() int {
 	return contentManifestAnalyzerVersion
 }
+
+func (a contentManifestAnalyzer) Description() string {
+	return string(analyzer.TypeRedHatContentManifestType)
+}

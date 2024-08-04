@@ -56,3 +56,7 @@ func (a oracleOSAnalyzer) Type() analyzer.Type {
 func (a oracleOSAnalyzer) Version() int {
 	return oracleAnalyzerVersion
 }
+
+func (a oracleOSAnalyzer) Description() string {
+	return string(analyzer.TypeOracle)
+}
