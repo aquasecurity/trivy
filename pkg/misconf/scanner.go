@@ -22,12 +22,14 @@ import (
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	cfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	dfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
-	helm2 "github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
+	jsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/json"
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	tfprawscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
 	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
+	yamlscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/yaml"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 
@@ -112,6 +114,14 @@ func NewTerraformPlanSnapshotScanner(filePatterns []string, opt ScannerOption) (
 	return newScanner(detection.FileTypeTerraformPlanSnapshot, filePatterns, opt)
 }
 
+func NewYAMLScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeYAML, filePatterns, opt)
+}
+
+func NewJSONScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeJSON, filePatterns, opt)
+}
+
 func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) (*Scanner, error) {
 	opts, err := scannerOptions(t, opt)
 	if err != nil {
@@ -127,7 +137,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 	case detection.FileTypeDockerfile:
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:
-		scanner = helm2.New(opts...)
+		scanner = helm.New(opts...)
 	case detection.FileTypeKubernetes:
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
@@ -136,6 +146,12 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = tfpjsonscanner.New(opts...)
 	case detection.FileTypeTerraformPlanSnapshot:
 		scanner = tfprawscanner.New(opts...)
+	case detection.FileTypeYAML:
+		scanner = yamlscanner.NewScanner(opts...)
+	case detection.FileTypeJSON:
+		scanner = jsonscanner.NewScanner(opts...)
+	default:
+		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
 
 	return &Scanner{
@@ -320,27 +336,27 @@ func addCFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]opt
 
 func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []options.ScannerOption {
 	if len(scannerOption.HelmValueFiles) > 0 {
-		opts = append(opts, helm2.ScannerWithValuesFile(scannerOption.HelmValueFiles...))
+		opts = append(opts, helm.ScannerWithValuesFile(scannerOption.HelmValueFiles...))
 	}
 
 	if len(scannerOption.HelmValues) > 0 {
-		opts = append(opts, helm2.ScannerWithValues(scannerOption.HelmValues...))
+		opts = append(opts, helm.ScannerWithValues(scannerOption.HelmValues...))
 	}
 
 	if len(scannerOption.HelmFileValues) > 0 {
-		opts = append(opts, helm2.ScannerWithFileValues(scannerOption.HelmFileValues...))
+		opts = append(opts, helm.ScannerWithFileValues(scannerOption.HelmFileValues...))
 	}
 
 	if len(scannerOption.HelmStringValues) > 0 {
-		opts = append(opts, helm2.ScannerWithStringValues(scannerOption.HelmStringValues...))
+		opts = append(opts, helm.ScannerWithStringValues(scannerOption.HelmStringValues...))
 	}
 
 	if len(scannerOption.HelmAPIVersions) > 0 {
-		opts = append(opts, helm2.ScannerWithAPIVersions(scannerOption.HelmAPIVersions...))
+		opts = append(opts, helm.ScannerWithAPIVersions(scannerOption.HelmAPIVersions...))
 	}
 
 	if scannerOption.HelmKubeVersion != "" {
-		opts = append(opts, helm2.ScannerWithKubeVersion(scannerOption.HelmKubeVersion))
+		opts = append(opts, helm.ScannerWithKubeVersion(scannerOption.HelmKubeVersion))
 	}
 
 	return opts
