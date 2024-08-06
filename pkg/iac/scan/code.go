@@ -219,7 +219,7 @@ func (r *Result) getOuterRange() iacTypes.Range {
 }
 
 func (r *Result) getTruncatedLines(outerRange, innerRange iacTypes.Range, rawLines, highlightedLines []string) []Line {
-	lines := make([]Line, 0)
+	var lines []Line
 
 	if outerRange.GetStartLine() < innerRange.GetStartLine() {
 		lines = append(lines, Line{
@@ -305,7 +305,7 @@ func readLinesFromFile(fsys fs.FS, path string, from, to int) ([]string, error) 
 	scanner := bufio.NewScanner(file)
 	rawLines := make([]string, 0, to-from+1)
 
-	for lineNum := 0; scanner.Scan() && lineNum <= to-1; lineNum++ {
+	for lineNum := 0; scanner.Scan() && lineNum < to; lineNum++ {
 		if lineNum >= from-1 {
 			rawLines = append(rawLines, scanner.Text())
 		}
