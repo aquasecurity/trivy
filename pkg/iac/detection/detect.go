@@ -45,8 +45,8 @@ func init() {
 			return true
 		}
 
-		var content any
-		return json.NewDecoder(r).Decode(&content) == nil
+		b, err := io.ReadAll(r)
+		return err == nil && json.Valid(b)
 	}
 
 	matchers[FileTypeYAML] = func(name string, r io.ReadSeeker) bool {
