@@ -221,15 +221,15 @@ func init() {
 		}
 		data := buf.Bytes()
 
-		marker := "\n---\n"
-		altMarker := "\r\n---\r\n"
-		if bytes.Contains(data, []byte(altMarker)) {
+		marker := []byte("\n---\n")
+		altMarker := []byte("\r\n---\r\n")
+		if bytes.Contains(data, altMarker) {
 			marker = altMarker
 		}
 
-		for _, partial := range strings.Split(string(data), marker) {
+		for _, partial := range bytes.Split(data, marker) {
 			var result map[string]any
-			if err := yaml.Unmarshal([]byte(partial), &result); err != nil {
+			if err := yaml.Unmarshal(partial, &result); err != nil {
 				continue
 			}
 			match := true
