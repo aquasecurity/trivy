@@ -120,7 +120,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 		return nil
 	}
 
-	p.debug.Log("Parsing '%s'...", fullPath)
+	p.debug.Log("Parsing %q", fullPath)
 	f, err := p.moduleFS.Open(filepath.ToSlash(fullPath))
 	if err != nil {
 		return err
@@ -133,7 +133,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 	}
 
 	if dir := path.Dir(fullPath); p.projectRoot == "" {
-		p.debug.Log("Setting project/module root to '%s'", dir)
+		p.debug.Log("Setting project/module root to %q", dir)
 		p.projectRoot = dir
 		p.modulePath = dir
 	}
@@ -153,8 +153,6 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 		file: file,
 		path: fullPath,
 	})
-
-	p.debug.Log("Added file %s.", fullPath)
 	return nil
 }
 
@@ -164,13 +162,13 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	dir = path.Clean(dir)
 
 	if p.projectRoot == "" {
-		p.debug.Log("Setting project/module root to '%s'", dir)
+		p.debug.Log("Setting project/module root to %q", dir)
 		p.projectRoot = dir
 		p.modulePath = dir
 	}
 
 	slashed := filepath.ToSlash(dir)
-	p.debug.Log("Parsing FS from '%s'", slashed)
+	p.debug.Log("Parsing FS from %q", slashed)
 	fileInfos, err := fs.ReadDir(p.moduleFS, slashed)
 	if err != nil {
 		return err
@@ -190,7 +188,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 			if p.stopOnHCLError {
 				return err
 			}
-			p.debug.Log("error parsing '%s': %s", path, err)
+			p.debug.Log("Error parsing file %q: %s", path, err.Error())
 			continue
 		}
 	}
@@ -201,18 +199,20 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 var ErrNoFiles = errors.New("no files found")
 
 func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
-	p.debug.Log("Evaluating module...")
+	p.debug.Log("Loading module %q", p.moduleName)
 
 	if len(p.files) == 0 {
 		p.debug.Log("No files found, nothing to do.")
 		return nil, ErrNoFiles
 	}
 
+	p.debug.Log("Read %d file(s)", len(p.files))
+
 	blocks, ignores, err := p.readBlocks(p.files)
 	if err != nil {
 		return nil, err
 	}
-	p.debug.Log("Read %d block(s) and %d ignore(s) for module '%s' (%d file[s])...", len(blocks), len(ignores), p.moduleName, len(p.files))
+	p.debug.Log("Read %d block(s) and %d ignore(s)", len(blocks), len(ignores))
 
 	var inputVars map[string]cty.Value
 	if p.moduleBlock != nil {
@@ -224,6 +224,16 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 			return nil, err
 		}
 		p.debug.Log("Added %d variables from tfvars.", len(inputVars))
+
+		for _, varBlock := range blocks.OfType("variable") {
+			if varBlock.GetAttribute("default") == nil {
+				if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
+					p.debug.Log(
+						"Variable %q was not found in the environment or variable files. Evaluating may not work correctly.",
+						varBlock.TypeLabel())
+				}
+			}
+		}
 	}
 
 	modulesMetadata, metadataPath, err := loadModuleMetadata(p.moduleFS, p.projectRoot)
@@ -268,7 +278,7 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 	}
 
 	modules, fsMap := e.EvaluateAll(ctx)
-	p.debug.Log("Finished parsing module '%s'.", p.moduleName)
+	p.debug.Log("Finished parsing module %q.", p.moduleName)
 	p.fsMap = fsMap
 	return modules, e.exportOutputs(), nil
 }

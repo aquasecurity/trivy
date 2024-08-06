@@ -122,13 +122,13 @@ func (e *evaluator) exportOutputs() cty.Value {
 
 func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
 
+	e.debug.Log("Starting module %q evaluation", e.moduleName)
+
 	fsKey := types.CreateFSKey(e.filesystem)
-	e.debug.Log("Filesystem key is '%s'", fsKey)
+	fsMap := map[string]fs.FS{
+		fsKey: e.filesystem,
+	}
 
-	fsMap := make(map[string]fs.FS)
-	fsMap[fsKey] = e.filesystem
-
-	e.debug.Log("Starting module evaluation...")
 	e.evaluateSteps()
 
 	// expand out resources and modules via count, for-each and dynamic
@@ -136,9 +136,26 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
-	e.debug.Log("Starting submodule evaluation...")
+	modules := e.evaluateSubmodules(ctx, fsMap)
+
+	e.debug.Log("Starting post-submodule evaluation...")
+	e.evaluateSteps()
+
+	e.debug.Log("Module evaluation complete.")
+	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
+	return append(terraform.Modules{rootModule}, modules...), fsMap
+}
+
+func (e *evaluator) evaluateSubmodules(ctx context.Context, fsMap map[string]fs.FS) terraform.Modules {
 	submodules := e.loadSubmodules(ctx)
 
+	if len(submodules) == 0 {
+		return nil
+	}
+
+	var modules terraform.Modules
+
+	e.debug.Log("Starting submodule evaluation...")
 	for i := 0; i < maxContextIterations; i++ {
 		changed := false
 		for _, sm := range submodules {
@@ -150,10 +167,6 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 		}
 	}
 
-	e.debug.Log("Starting post-submodule evaluation...")
-	e.evaluateSteps()
-
-	var modules terraform.Modules
 	for _, sm := range submodules {
 		modules = append(modules, sm.modules...)
 		fsMap = lo.Assign(fsMap, sm.fsMap)
@@ -161,9 +174,7 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 
 	e.debug.Log("Finished processing %d submodule(s).", len(modules))
 
-	e.debug.Log("Module evaluation complete.")
-	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
-	return append(terraform.Modules{rootModule}, modules...), fsMap
+	return modules
 }
 
 type submodule struct {
@@ -182,7 +193,7 @@ func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
 		if errors.Is(err, ErrNoFiles) {
 			continue
 		} else if err != nil {
-			e.debug.Log("Failed to load submodule '%s': %s.", definition.Name, err)
+			e.debug.Log("Failed to load submodule %q: %s.", definition.Name, err)
 			continue
 		}
 
@@ -200,12 +211,12 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 	inputVars := sm.definition.inputVars()
 	if len(sm.modules) > 0 {
 		if reflect.DeepEqual(inputVars, sm.lastState) {
-			e.debug.Log("Submodule %s inputs unchanged", sm.definition.Name)
+			e.debug.Log("Submodule %q inputs unchanged", sm.definition.Name)
 			return false
 		}
 	}
 
-	e.debug.Log("Evaluating submodule %s", sm.definition.Name)
+	e.debug.Log("Evaluating submodule %q", sm.definition.Name)
 	sm.eval.inputVars = inputVars
 	sm.modules, sm.fsMap = sm.eval.EvaluateAll(ctx)
 	outputs := sm.eval.exportOutputs()
@@ -296,6 +307,8 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 		forEachVal := forEachAttr.Value()
 
 		if forEachVal.IsNull() || !forEachVal.IsKnown() || !forEachAttr.IsIterable() {
+			e.debug.Log(`Failed to expand block %q. Invalid "for-each" argument: %s. Must be known and iterable.`,
+				block.LocalName(), forEachVal.GoString())
 			continue
 		}
 
@@ -310,7 +323,8 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 			idx, err := convert.Convert(key, cty.String)
 			if err != nil {
 				e.debug.Log(
-					`Invalid "for-each" argument: map key (or set value) is not a string, but %s`,
+					`Failed to expand block %q. Invalid "for-each" argument: map key (or set value) is not a string, but %s`,
+					block.LocalName(),
 					key.Type().FriendlyName(),
 				)
 				return
@@ -323,7 +337,8 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 				!forEachVal.Type().IsMapType() && !isDynamic {
 				stringVal, err := convert.Convert(val, cty.String)
 				if err != nil {
-					e.debug.Log("Failed to convert for-each arg %v to string", val)
+					e.debug.Log("Failed to expand block %q. Failed to convert for-each arg %v to string",
+						block.LocalName(), val)
 					return
 				}
 				idx = stringVal
@@ -355,7 +370,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 			// So we must replace the old resource with a map with the attributes of the resource.
 			e.ctx.Replace(cty.ObjectVal(clones), metadata.Reference())
 		}
-		e.debug.Log("Expanded block '%s' into %d clones via 'for_each' attribute.", block.LocalName(), len(clones))
+		e.debug.Log("Expanded block %q into %d clones via 'for_each' attribute.", block.LocalName(), len(clones))
 	}
 
 	return forEachFiltered
@@ -397,7 +412,7 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 		} else {
 			e.ctx.SetByDot(cty.TupleVal(clones), metadata.Reference())
 		}
-		e.debug.Log("Expanded block '%s' into %d clones via 'count' attribute.", block.LocalName(), len(clones))
+		e.debug.Log("Expanded block %q into %d clones via 'count' attribute.", block.LocalName(), len(clones))
 	}
 
 	return countFiltered

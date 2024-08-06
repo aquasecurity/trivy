@@ -79,7 +79,7 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 	results.Ignore(ignores, ignorers)
 
 	for _, ignored := range results.GetIgnored() {
-		e.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
+		e.debug.Log("Ignored %q at %q.", ignored.Rule().LongID(), ignored.Range())
 	}
 
 	results = e.filterResults(results)

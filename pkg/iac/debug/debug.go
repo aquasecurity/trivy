@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	"time"
 )
-
-const timeFormat = "04:05.000000000"
 
 type Logger struct {
 	writer io.Writer
@@ -33,6 +30,6 @@ func (l *Logger) Log(format string, args ...any) {
 		return
 	}
 	message := fmt.Sprintf(format, args...)
-	line := fmt.Sprintf("%s %-32s %s\n", time.Now().Format(timeFormat), l.prefix, message)
+	line := fmt.Sprintf("%-32s %s\n", l.prefix, message)
 	_, _ = l.writer.Write([]byte(line))
 }

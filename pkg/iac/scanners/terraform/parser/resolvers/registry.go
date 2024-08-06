@@ -69,7 +69,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 
 	if opt.Version != "" {
 		versionUrl := fmt.Sprintf("https://%s/v1/modules/%s/versions", hostname, moduleName)
-		opt.Debug("Requesting module versions from registry using '%s'...", versionUrl)
+		opt.Debug("Requesting module versions from registry using %q...", versionUrl)
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionUrl, nil)
 		if err != nil {
 			return nil, "", "", true, err
@@ -94,7 +94,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		if err != nil {
 			return nil, "", "", true, err
 		}
-		opt.Debug("Found version '%s' for constraint '%s'", opt.Version, inputVersion)
+		opt.Debug("Found version %q for constraint %q", opt.Version, inputVersion)
 	}
 
 	var url string
@@ -104,7 +104,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		url = fmt.Sprintf("https://%s/v1/modules/%s/%s/download", hostname, moduleName, opt.Version)
 	}
 
-	opt.Debug("Requesting module source from registry using '%s'...", url)
+	opt.Debug("Requesting module source from registry using %q...", url)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -145,7 +145,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		return nil, "", "", true, fmt.Errorf("no source was found for the registry at %s", hostname)
 	}
 
-	opt.Debug("Module '%s' resolved via registry to new source: '%s'", opt.Name, opt.Source)
+	opt.Debug("Module %q resolved via registry to new source: %q", opt.Name, opt.Source)
 
 	filesystem, prefix, downloadPath, _, err = Remote.Resolve(ctx, target, opt)
 	if err != nil {
@@ -203,5 +203,5 @@ func resolveVersion(input string, versions moduleVersions) (string, error) {
 			return realVersion.String(), nil
 		}
 	}
-	return "", fmt.Errorf("no available versions for module constraint '%s'", input)
+	return "", fmt.Errorf("no available versions for module constraint %q", input)
 }
