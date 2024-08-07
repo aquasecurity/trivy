@@ -24,12 +24,12 @@ import (
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
+type Scanner struct {
+	mu                    sync.Mutex
 	scannerOptions        []options.ScannerOption
 	parserOptions         []options.ParserOption
 	debug                 debug.Logger
 	frameworks            []framework.Framework
-	skipRequired          bool
 	regoOnly              bool
 	loadEmbeddedPolicies  bool
 	loadEmbeddedLibraries bool
@@ -37,7 +37,6 @@ type Scanner struct { // nolint: gocritic
 	policyReaders         []io.Reader
 	regoScanner           *rego.Scanner
 	spec                  string
-	sync.Mutex
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {}
@@ -73,9 +72,6 @@ func (s *Scanner) SetPolicyDirs(dirs ...string) {
 	s.policyDirs = dirs
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skipRequired bool) {
-	s.skipRequired = skipRequired
-}
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
@@ -106,8 +102,8 @@ func (s *Scanner) SetPolicyNamespaces(...string)   {}
 func (s *Scanner) SetRegoErrorLimit(_ int)         {}
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return nil
 	}

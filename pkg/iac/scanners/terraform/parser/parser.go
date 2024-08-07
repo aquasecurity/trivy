@@ -49,7 +49,6 @@ type Parser struct {
 	allowDownloads    bool
 	skipCachedModules bool
 	fsMap             map[string]fs.FS
-	skipRequired      bool
 	configsFS         fs.FS
 }
 
@@ -79,10 +78,6 @@ func (p *Parser) SetAllowDownloads(b bool) {
 
 func (p *Parser) SetSkipCachedModules(b bool) {
 	p.skipCachedModules = b
-}
-
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
 }
 
 func (p *Parser) SetConfigsFS(fsys fs.FS) {

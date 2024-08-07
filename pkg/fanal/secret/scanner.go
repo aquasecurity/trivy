@@ -3,6 +3,7 @@ package secret
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"slices"
@@ -60,6 +61,10 @@ func (g Global) AllowPath(path string) bool {
 // Regexp adds unmarshalling from YAML for regexp.Regexp
 type Regexp struct {
 	*regexp.Regexp
+}
+
+func MustCompileWithoutWordPrefix(str string) *Regexp {
+	return MustCompile(fmt.Sprintf("%s(%s)", startWord, str))
 }
 
 func MustCompile(str string) *Regexp {

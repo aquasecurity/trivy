@@ -9,9 +9,12 @@ import (
 	"strings"
 
 	"github.com/masahiro331/go-disk"
+	diskFs "github.com/masahiro331/go-disk/fs"
 	"github.com/masahiro331/go-disk/gpt"
 	"github.com/masahiro331/go-disk/mbr"
 	"github.com/masahiro331/go-disk/types"
+	"github.com/masahiro331/go-ext4-filesystem/ext4"
+	"github.com/masahiro331/go-xfs-filesystem/xfs"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
@@ -27,6 +30,11 @@ var requiredDiskName = []string{
 	"1",        // Common image name
 	"2",        // Common image name
 	"3",        // Common image name
+}
+
+var checkFsFuncs = []diskFs.CheckFsFunc{
+	ext4.Check,
+	xfs.Check,
 }
 
 func AppendPermitDiskName(s ...string) {
@@ -53,7 +61,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFun
 	// This function will be called on each file.
 	w.analyzeFn = fn
 
-	driver, err := disk.NewDriver(vreader)
+	driver, err := disk.NewDriver(vreader, checkFsFuncs...)
 	if err != nil {
 		return xerrors.Errorf("failed to new disk driver: %w", err)
 	}

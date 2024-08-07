@@ -23,15 +23,15 @@ import (
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
-	debug         debug.Logger
-	options       []options.ScannerOption
-	policyDirs    []string
-	policyReaders []io.Reader
-	regoScanner   *rego.Scanner
-	parser        *parser.Parser
-	skipRequired  bool
-	sync.Mutex
+type Scanner struct {
+	mu                    sync.Mutex
+	debug                 debug.Logger
+	options               []options.ScannerOption
+	parserOpts            []options.ParserOption
+	policyDirs            []string
+	policyReaders         []io.Reader
+	regoScanner           *rego.Scanner
+	parser                *parser.Parser
 	loadEmbeddedPolicies  bool
 	frameworks            []framework.Framework
 	spec                  string
@@ -62,12 +62,9 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
 	s.debug = debug.New(writer, "kubernetes", "scanner")
+	s.parserOpts = append(s.parserOpts, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -100,7 +97,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(options.ParserWithSkipRequiredCheck(s.skipRequired))
+	s.parser = parser.New(s.parserOpts...)
 	return s
 }
 
@@ -109,8 +106,8 @@ func (s *Scanner) Name() string {
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}

@@ -74,13 +74,18 @@ var (
 
 // Reusable regex patterns
 const (
-	quote       = `["']?`
-	connect     = `\s*(:|=>|=)?\s*`
-	startSecret = `(^|\s+)`
-	endSecret   = `[.,]?(\s+|$)`
+	quote     = `["']?`
+	connect   = `\s*(:|=>|=)?\s*`
+	endSecret = `[.,]?(\s+|$)`
+	startWord = "([^0-9a-zA-Z]|^)"
 
 	aws = `aws_?`
 )
+
+// This function is exported for trivy-plugin-aqua purposes only
+func GetBuiltinRules() []Rule {
+	return builtinRules
+}
 
 // This function is exported for trivy-plugin-aqua purposes only
 func GetSecretRulesMetadata() []iacRules.Check {
@@ -98,7 +103,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Access Key ID",
-		Regex:           MustCompile(fmt.Sprintf(`%s(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s%s`, quote, quote, endSecret)),
+		Regex:           MustCompileWithoutWordPrefix(fmt.Sprintf(`(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s%s`, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"AKIA", "AGPA", "AIDA", "AROA", "AIPA", "ANPA", "ANVA", "ASIA"},
 	},
@@ -107,41 +112,45 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Secret Access Key",
-		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%s(sec(ret)?)?_?(access)?_?key%s%s%s(?P<secret>[A-Za-z0-9\/\+=]{40})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
+		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s(sec(ret)?)?_?(access)?_?key%s%s%s(?P<secret>[A-Za-z0-9\/\+=]{40})%s%s`, quote, aws, quote, connect, quote, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"key"},
 	},
 	{
-		ID:       "github-pat",
-		Category: CategoryGitHub,
-		Title:    "GitHub Personal Access Token",
-		Severity: "CRITICAL",
-		Regex:    MustCompile(`ghp_[0-9a-zA-Z]{36}`),
-		Keywords: []string{"ghp_"},
+		ID:              "github-pat",
+		Category:        CategoryGitHub,
+		Title:           "GitHub Personal Access Token",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>ghp_[0-9a-zA-Z]{36}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ghp_"},
 	},
 	{
-		ID:       "github-oauth",
-		Category: CategoryGitHub,
-		Title:    "GitHub OAuth Access Token",
-		Severity: "CRITICAL",
-		Regex:    MustCompile(`gho_[0-9a-zA-Z]{36}`),
-		Keywords: []string{"gho_"},
+		ID:              "github-oauth",
+		Category:        CategoryGitHub,
+		Title:           "GitHub OAuth Access Token",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>gho_[0-9a-zA-Z]{36}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"gho_"},
 	},
 	{
-		ID:       "github-app-token",
-		Category: CategoryGitHub,
-		Title:    "GitHub App Token",
-		Severity: "CRITICAL",
-		Regex:    MustCompile(`(ghu|ghs)_[0-9a-zA-Z]{36}`),
-		Keywords: []string{"ghu_", "ghs_"},
+		ID:              "github-app-token",
+		Category:        CategoryGitHub,
+		Title:           "GitHub App Token",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(ghu|ghs)_[0-9a-zA-Z]{36}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ghu_", "ghs_"},
 	},
 	{
-		ID:       "github-refresh-token",
-		Category: CategoryGitHub,
-		Title:    "GitHub Refresh Token",
-		Severity: "CRITICAL",
-		Regex:    MustCompile(`ghr_[0-9a-zA-Z]{76}`),
-		Keywords: []string{"ghr_"},
+		ID:              "github-refresh-token",
+		Category:        CategoryGitHub,
+		Title:           "GitHub Refresh Token",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>ghr_[0-9a-zA-Z]{76}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ghr_"},
 	},
 	{
 		ID:       "github-fine-grained-pat",
@@ -152,21 +161,23 @@ var builtinRules = []Rule{
 		Keywords: []string{"github_pat_"},
 	},
 	{
-		ID:       "gitlab-pat",
-		Category: CategoryGitLab,
-		Title:    "GitLab Personal Access Token",
-		Severity: "CRITICAL",
-		Regex:    MustCompile(`glpat-[0-9a-zA-Z\-\_]{20}`),
-		Keywords: []string{"glpat-"},
+		ID:              "gitlab-pat",
+		Category:        CategoryGitLab,
+		Title:           "GitLab Personal Access Token",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>glpat-[0-9a-zA-Z\-\_]{20}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"glpat-"},
 	},
 	{
 		// cf. https://huggingface.co/docs/hub/en/security-tokens
-		ID:       "hugging-face-access-token",
-		Category: CategoryHuggingFace,
-		Severity: "CRITICAL",
-		Title:    "Hugging Face Access Token",
-		Regex:    MustCompile(`hf_[A-Za-z0-9]{39}`),
-		Keywords: []string{"hf_"},
+		ID:              "hugging-face-access-token",
+		Category:        CategoryHuggingFace,
+		Severity:        "CRITICAL",
+		Title:           "Hugging Face Access Token",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>hf_[A-Za-z0-9]{34,40}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"hf_"},
 	},
 	{
 		ID:              "private-key",
@@ -186,28 +197,31 @@ var builtinRules = []Rule{
 		Keywords: []string{"shpss_", "shpat_", "shpca_", "shppa_"},
 	},
 	{
-		ID:       "slack-access-token",
-		Category: CategorySlack,
-		Title:    "Slack token",
-		Severity: "HIGH",
-		Regex:    MustCompile(`xox[baprs]-([0-9a-zA-Z]{10,48})`),
-		Keywords: []string{"xoxb-", "xoxa-", "xoxp-", "xoxr-", "xoxs-"},
+		ID:              "slack-access-token",
+		Category:        CategorySlack,
+		Title:           "Slack token",
+		Severity:        "HIGH",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>xox[baprs]-([0-9a-zA-Z]{10,48})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"xoxb-", "xoxa-", "xoxp-", "xoxr-", "xoxs-"},
 	},
 	{
-		ID:       "stripe-publishable-token",
-		Category: CategoryStripe,
-		Title:    "Stripe Publishable Key",
-		Severity: "LOW",
-		Regex:    MustCompile(`(?i)pk_(test|live)_[0-9a-z]{10,32}`),
-		Keywords: []string{"pk_test_", "pk_live_"},
+		ID:              "stripe-publishable-token",
+		Category:        CategoryStripe,
+		Title:           "Stripe Publishable Key",
+		Severity:        "LOW",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(?i)pk_(test|live)_[0-9a-z]{10,32}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"pk_test_", "pk_live_"},
 	},
 	{
-		ID:       "stripe-secret-token",
-		Category: CategoryStripe,
-		Title:    "Stripe Secret Key",
-		Severity: "CRITICAL",
-		Regex:    MustCompile(`(?i)sk_(test|live)_[0-9a-z]{10,32}`),
-		Keywords: []string{"sk_test_", "sk_live_"},
+		ID:              "stripe-secret-token",
+		Category:        CategoryStripe,
+		Title:           "Stripe Secret Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(?i)sk_(test|live)_[0-9a-z]{10,32}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"sk_test_", "sk_live_"},
 	},
 	{
 		ID:       "pypi-upload-token",
@@ -501,20 +515,22 @@ var builtinRules = []Rule{
 		Keywords:        []string{"finicity"},
 	},
 	{
-		ID:       "flutterwave-public-key",
-		Category: CategoryFlutterwave,
-		Title:    "Flutterwave public/secret key",
-		Severity: "MEDIUM",
-		Regex:    MustCompile(`FLW(PUB|SEC)K_TEST-(?i)[a-h0-9]{32}-X`),
-		Keywords: []string{"FLWSECK_TEST-", "FLWPUBK_TEST-"},
+		ID:              "flutterwave-public-key",
+		Category:        CategoryFlutterwave,
+		Title:           "Flutterwave public/secret key",
+		Severity:        "MEDIUM",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>FLW(PUB|SEC)K_TEST-(?i)[a-h0-9]{32}-X`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"FLWSECK_TEST-", "FLWPUBK_TEST-"},
 	},
 	{
-		ID:       "flutterwave-enc-key",
-		Category: CategoryFlutterwave,
-		Title:    "Flutterwave encrypted key",
-		Severity: "MEDIUM",
-		Regex:    MustCompile(`FLWSECK_TEST[a-h0-9]{12}`),
-		Keywords: []string{"FLWSECK_TEST"},
+		ID:              "flutterwave-enc-key",
+		Category:        CategoryFlutterwave,
+		Title:           "Flutterwave encrypted key",
+		Severity:        "MEDIUM",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>FLWSECK_TEST[a-h0-9]{12}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"FLWSECK_TEST"},
 	},
 	{
 		ID:       "frameio-api-token",

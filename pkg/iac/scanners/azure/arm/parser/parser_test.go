@@ -37,11 +37,6 @@ func TestParser_Parse(t *testing.T) {
 		wantDeployment bool
 	}{
 		{
-			name:           "invalid code",
-			input:          `blah`,
-			wantDeployment: false,
-		},
-		{
 			name: "basic param",
 			input: `{
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#", // another one

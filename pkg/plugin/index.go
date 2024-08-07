@@ -34,7 +34,8 @@ type Index struct {
 
 func (m *Manager) Update(ctx context.Context, opts Options) error {
 	m.logger.InfoContext(ctx, "Updating the plugin index...", log.String("url", m.indexURL))
-	if err := downloader.Download(ctx, m.indexURL, filepath.Dir(m.indexPath), "", opts.Insecure); err != nil {
+	if _, err := downloader.Download(ctx, m.indexURL, filepath.Dir(m.indexPath), "",
+		downloader.Options{Insecure: opts.Insecure}); err != nil {
 		return xerrors.Errorf("unable to download the plugin index: %w", err)
 	}
 	return nil

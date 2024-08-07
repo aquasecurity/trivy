@@ -5,605 +5,605 @@ The config path can be overridden by the `--config` flag.
 
 An example is [here][example].
 
-## Global Options
+These samples contain default values for flags.
+## Global options
 
 ```yaml
-# Same as '--quiet'
-# Default is false
-quiet: false
+cache:
+  # Same as '--cache-dir'
+  dir: "/path/to/cache"
 
 # Same as '--debug'
-# Default is false
 debug: false
 
 # Same as '--insecure'
-# Default is false
 insecure: false
 
+# Same as '--quiet'
+quiet: false
+
 # Same as '--timeout'
-# Default is '5m'
-timeout: 10m
+timeout: 5m0s
 
-# Same as '--cache-dir'
-# Default is your system cache dir
-cache:
-  dir: $HOME/.cache/trivy
 ```
-
-## Report Options
-
-```yaml
-# Same as '--format'
-# Default is 'table'
-format: table
-
-# Same as '--report' (available with 'trivy k8s')
-# Default is all
-report: all
-
-# Same as '--template'
-# Default is empty
-template:
-
-# Same as '--dependency-tree'
-# Default is false
-dependency-tree: false
-
-# Same as '--list-all-pkgs'
-# Default is false
-list-all-pkgs: false
-
-# Same as '--ignorefile'
-# Default is '.trivyignore'
-ignorefile: .trivyignore
-
-# Same as '--ignore-policy'
-# Default is empty
-ignore-policy:
-
-# Same as '--exit-code'
-# Default is 0
-exit-code: 0
-
-# Same as '--exit-on-eol'
-# Default is 0
-exit-on-eol: 0
-
-# Same as '--output'
-# Default is empty (stdout)
-output:
-
-# Same as '--severity'
-# Default is all severities
-severity:
-  - UNKNOWN
-  - LOW
-  - MEDIUM
-  - HIGH
-  - CRITICAL
-    
-# Same as '--pkg-types'
-# Default is 'os,library'
-pkg-types:
-  - os
-  - library
-    
-
-scan:
-  # Same as '--compliance'
-  # Default is empty  
-  compliance:
-
-  # Same as '--show-suppressed'
-  # Default is false  
-  show-suppressed: false
-```
-
-## Scan Options
-Available in client/server mode
-
-```yaml
-scan:
-  # Same as '--file-patterns'
-  # Default is empty
-  file-patterns:
-    -
-
-  # Same as '--skip-dirs'
-  # Default is empty
-  skip-dirs:
-    - usr/local/
-    - etc/
-
-  # Same as '--skip-files'
-  # Default is empty
-  skip-files:
-    - package-dev.json
-
-  # Same as '--offline-scan'
-  # Default is false
-  offline: false
-
-  # Same as '--scanners'
-  # Default depends on subcommand
-  scanners:
-    - vuln
-    - misconfig
-    - secret
-    - license
-    - 
-  # Same as '--parallel'
-  # Default is 5
-  parallel: 1
-
-  # Same as '--sbom-sources'
-  # Default is empty
-  sbom-sources: 
-    - oci
-    - rekor
-
-  # Same as '--rekor-url'
-  # Default is 'https://rekor.sigstore.dev'
-  rekor-url: https://rekor.sigstore.dev
-
-  # Same as '--include-dev-deps'
-  # Default is false
-  include-dev-deps: false
-```
-
-## Cache Options
+## Cache options
 
 ```yaml
 cache:
   # Same as '--cache-backend'
-  # Default is 'fs'
-  backend: 'fs'
+  backend: "fs"
 
-  # Same as '--cache-ttl'
-  # Default is 0 (no ttl)
-  ttl: 0
+  # Same as '--clear-cache'
+  clear: false
 
-  # Redis options
   redis:
-    # Same as '--redis-tls'
-    # Default is false
-    tls:    
     # Same as '--redis-ca'
-    # Default is empty
-    ca:
+    ca: ""
 
     # Same as '--redis-cert'
-    # Default is empty
-    cert:
+    cert: ""
 
     # Same as '--redis-key'
-    # Default is empty
-    key:
-```
+    key: ""
 
-## DB Options
+    # Same as '--redis-tls'
+    tls: false
+
+  # Same as '--cache-ttl'
+  ttl: 0s
+
+```
+## Clean options
 
 ```yaml
-db:
-  # Same as '--no-progress'
-  # Default is false
-  no-progress: false
-  
-  # Same as '--skip-db-update'
-  # Default is false
-  skip-update: false
+clean:
+  # Same as '--all'
+  all: false
 
-  # Same as '--db-repository'
-  # Default is 'ghcr.io/aquasecurity/trivy-db:2'
-  repository: ghcr.io/aquasecurity/trivy-db:2
+  # Same as '--checks-bundle'
+  checks-bundle: false
 
-  # Same as '--skip-java-db-update'
-  # Default is false
-  java-skip-update: false  
+  # Same as '--java-db'
+  java-db: false
 
-  # Same as '--java-db-repository'
-  # Default is 'ghcr.io/aquasecurity/trivy-java-db:1'
-  java-repository: ghcr.io/aquasecurity/trivy-java-db:1
+  # Same as '--scan-cache'
+  scan-cache: false
+
+  # Same as '--vex-repo'
+  vex-repo: false
+
+  # Same as '--vuln-db'
+  vuln-db: false
+
 ```
-
-## Registry Options
-
-```yaml
-registry:
-  # Same as '--username'
-  # Default is empty
-  username:
-
-  # Same as '--password'
-  # Default is empty
-  password:
-    
-  # Same as '--registry-token'
-  # Default is empty
-  registry-token:
-```
-
-## Image Options
-Available with container image scanning
-
-```yaml
-image:
-  # Same as '--input' (available with 'trivy image')
-  # Default is empty
-  input:
-
-  # Same as '--removed-pkgs'
-  # Default is false
-  removed-pkgs: false
-  
-  # Same as '--platform'
-  # Default is empty
-  platform:
-
-  # Same as '--image-src'
-  # Default is 'docker,containerd,podman,remote'
-  source:
-    - podman
-    - docker
-      
-  # Same as '--image-config-scanners'
-  # Default is empty
-  image-config-scanners:
-    - misconfig
-    - secret      
-  
-  docker:
-    # Same as '--docker-host'
-    # Default is empty
-    host: 
-  
-  podman:
-    # Same as '--podman-host'
-    # Default is empty
-    host: 
-```
-
-## Vulnerability Options
-Available with vulnerability scanning
-
-```yaml
-vulnerability:
-  # Same as '--ignore-unfixed'
-  # Default is false
-  ignore-unfixed: false
-
-  # Same as '--ignore-unfixed'
-  # Default is empty
-  ignore-status: 
-    - end_of_life
-```
-
-## License Options
-Available with license scanning
-
-```yaml
-license:
-  # Same as '--license-full'
-  # Default is false
-  full: false
-
-  # Same as '--ignored-licenses'
-  # Default is empty
-  ignored:
-    - MPL-2.0
-    - MIT
-
-  # Same as '--license-confidence-level'
-  # Default is 0.9
-  confidenceLevel: 0.9
-
-  # Set list of forbidden licenses
-  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L171
-  forbidden:
-    - AGPL-1.0
-    - AGPL-3.0
-
-  # Set list of restricted licenses
-  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L199
-  restricted:
-    - AGPL-1.0
-    - AGPL-3.0
-
-  # Set list of reciprocal licenses
-  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L238
-  reciprocal:
-    - AGPL-1.0
-    - AGPL-3.0
-
-  # Set list of notice licenses
-  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L260
-  notice:
-    - AGPL-1.0
-    - AGPL-3.0  
-
-  # Set list of permissive licenses
-  # Default is empty
-  permissive:
-    - AGPL-1.0
-    - AGPL-3.0  
-
-  # Set list of unencumbered licenses
-  # Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L334
-  unencumbered:
-    - AGPL-1.0
-    - AGPL-3.0    
-```
-
-## Secret Options
-Available with secret scanning
-
-```yaml
-secret:
-  # Same as '--secret-config'
-  # Default is 'trivy-secret.yaml'
-  config: config/trivy/secret.yaml
-```
-
-## Rego Options
-
-```yaml
-rego:
-  # Same as '--trace'
-  # Default is false
-  trace: false
-
-  # Same as '--skip-check-update'
-  # Default is false
-  skip-check-update: false
-
-  # Same as '--config-policy'
-  # Default is empty
-  policy:
-    - policy/repository
-    - policy/custom
-    - policy/some-policy.rego
-
-  # Same as '--config-data'
-  # Default is empty
-  data:
-    - data/
-
-  # Same as '--policy-namespaces'
-  # Default is empty
-  namespaces:
-    - opa.examples
-    - users
-```
-
-## Misconfiguration Options
-Available with misconfiguration scanning
-
-```yaml
-misconfiguration:
-  # Same as '--include-non-failures'
-  # Default is false
-  include-non-failures: false
-  
-  # Same as '--include-deprecated-checks'
-  # Default is false
-  include-deprecated-checks: false
-
-  # Same as '--check-bundle-repository' and '--policy-bundle-repository'
-  # Default is 'ghcr.io/aquasecurity/trivy-checks:0'
-  check-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0  
-  
-  # Same as '--miconfig-scanners'
-  # Default is all scanners
-  scanners:
-    - dockerfile
-    - terraform
-
-  # helm value override configurations
-  helm:
-    # set individual values
-    set:
-      - securityContext.runAsUser=10001
-
-    # set values with file
-    values:
-      - overrides.yaml
-
-    # set specific values from specific files
-    set-file:
-      - image=dev-overrides.yaml
-
-    # set as string and preserve type
-    set-string:
-      - name=true
-
-    # Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command.
-    api-versions:
-      - policy/v1/PodDisruptionBudget
-      - apps/v1/Deployment
-
-    # Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
-    kube-version: "v1.21.0"
-
-  # terraform tfvars overrrides
-  terraform:
-    vars:
-      - dev-terraform.tfvars
-      - common-terraform.tfvars
-  
-    # Same as '--tf-exclude-downloaded-modules'
-    # Default is false
-    exclude-downloaded-modules: false
-
-    # Same as '--cf-params'
-    # Default is false
-  cloudformation:
-    params:
-      - params.json
-```
-
-## Kubernetes Options
-Available with Kubernetes scanning
-
-```yaml
-kubernetes:
-  # Same as '--context'
-  # Default is empty
-  context:
-
-  # Same as '--namespace'
-  # Default is empty
-  namespace:
-
-  # Same as '--kubeconfig'
-  # Default is empty
-  kubeconfig: ~/.kube/config2
-
-  # Same as '--components'
-  # Default is 'workload,infra'
-  components: 
-    - workload
-    - infra
-
-  # Same as '--k8s-version'
-  # Default is empty
-  k8s-version: 1.21.0
-
-  # Same as '--tolerations'
-  # Default is empty
-  tolerations:
-    - key1=value1:NoExecute
-    - key2=value2:NoSchedule
-
-  # Same as '--all-namespaces'
-  # Default is false
-  all-namespaces: false
-
-  node-collector:
-    # Same as '--node-collector-namespace'
-    # Default is 'trivy-temp'
-    namespace: ~/.kube/config2
-
-    # Same as '--node-collector-imageref'
-    # Default is 'ghcr.io/aquasecurity/node-collector:0.0.9'
-    imageref: ghcr.io/aquasecurity/node-collector:0.0.9
-
-  exclude:
-    # Same as '--exclude-owned'
-    # Default is false
-    owned: true
-
-    # Same as '--exclude-nodes'
-    # Default is empty
-    nodes:
-      - kubernetes.io/arch:arm64
-      - team:dev
-
-  # Same as '--qps'
-  # Default is 5.0
-  qps: 5.0
-
-  # Same as '--burst'
-  # Default is 10
-  burst: 10
-```
-
-## Repository Options
-Available with git repository scanning (`trivy repo`)
-
-```yaml
-repository:
-  # Same as '--branch'
-  # Default is empty
-  branch:
-
-  # Same as '--commit'
-  # Default is empty
-  commit:
-
-  # Same as '--tag'
-  # Default is empty
-  tag:
-```
-
-## Client/Server Options
-Available in client/server mode
+## Client/Server options
 
 ```yaml
 server:
-  # Same as '--server' (available in client mode)
-  # Default is empty
-  addr: http://localhost:4954
-
-  # Same as '--token'
-  # Default is empty
-  token: "something-secret"
-
-  # Same as '--token-header'
-  # Default is 'Trivy-Token'
-  token-header: 'My-Token-Header'
+  # Same as '--server'
+  addr: ""
 
   # Same as '--custom-headers'
-  # Default is empty
-  custom-headers:
-    - scanner: trivy
-    - x-api-token: xxx
+  custom-headers: []
 
-  # Same as '--listen' (available in server mode)
-  # Default is 'localhost:4954'
-  listen: 0.0.0.0:10000
+  # Same as '--listen'
+  listen: "localhost:4954"
+
+  # Same as '--token'
+  token: ""
+
+  # Same as '--token-header'
+  token-header: "Trivy-Token"
+
 ```
-
-## Cloud Options
-
-Available for cloud scanning (currently only `trivy aws`)
+## DB options
 
 ```yaml
-cloud:
-  # whether to force a cache update for every scan
-  update-cache: false
+db:
+  # Same as '--download-java-db-only'
+  download-java-only: false
 
-  # how old cached results can be before being invalidated
-  max-cache-age: 24h
+  # Same as '--download-db-only'
+  download-only: false
 
-  # aws-specific cloud settings
-  aws:
-    # the aws region to use
-    region: us-east-1
+  # Same as '--java-db-repository'
+  java-repository: "ghcr.io/aquasecurity/trivy-java-db:1"
 
-    # the aws endpoint to use (not required for general use)
-    endpoint: https://my.custom.aws.endpoint
+  # Same as '--skip-java-db-update'
+  java-skip-update: false
 
-    # the aws account to use (this will be determined from your environment when not set)
-    account: 123456789012
+  # Same as '--light'
+  light: false
 
-    # the aws specific services
-    service: 
-      - s3
-      - ec2
-        
-    # the aws specific arn
-    arn: arn:aws:s3:::example-bucket      
+  # Same as '--no-progress'
+  no-progress: false
 
-    # skip the aws specific services
-    skip-service:
-      - s3
-      - ec2 
+  # Same as '--db-repository'
+  repository: "ghcr.io/aquasecurity/trivy-db:2"
+
+  # Same as '--skip-db-update'
+  skip-update: false
+
+# Same as '--reset'
+reset: false
+
 ```
+## Image options
 
-## Module Options
-Available for modules
+```yaml
+image:
+  docker:
+    # Same as '--docker-host'
+    host: ""
+
+  # Same as '--image-config-scanners'
+  image-config-scanners: []
+
+  # Same as '--input'
+  input: ""
+
+  # Same as '--platform'
+  platform: ""
+
+  podman:
+    # Same as '--podman-host'
+    host: ""
+
+  # Same as '--removed-pkgs'
+  removed-pkgs: false
+
+  # Same as '--image-src'
+  source:
+   - docker
+   - containerd
+   - podman
+   - remote
+
+```
+## Kubernetes options
+
+```yaml
+kubernetes:
+  # Same as '--burst'
+  burst: 10
+
+  # Same as '--disable-node-collector'
+  disableNodeCollector: false
+
+  exclude:
+    # Same as '--exclude-nodes'
+    nodes: []
+
+    # Same as '--exclude-owned'
+    owned: false
+
+  # Same as '--exclude-kinds'
+  excludeKinds: []
+
+  # Same as '--exclude-namespaces'
+  excludeNamespaces: []
+
+  # Same as '--include-kinds'
+  includeKinds: []
+
+  # Same as '--include-namespaces'
+  includeNamespaces: []
+
+  # Same as '--k8s-version'
+  k8s-version: ""
+
+  # Same as '--kubeconfig'
+  kubeconfig: ""
+
+  node-collector:
+    # Same as '--node-collector-imageref'
+    imageref: "ghcr.io/aquasecurity/node-collector:0.3.1"
+
+    # Same as '--node-collector-namespace'
+    namespace: "trivy-temp"
+
+  # Same as '--qps'
+  qps: 5
+
+  # Same as '--skip-images'
+  skipImages: false
+
+  # Same as '--tolerations'
+  tolerations: []
+
+```
+## License options
+
+```yaml
+license:
+  # Same as '--license-confidence-level'
+  confidenceLevel: 0.9
+
+  forbidden:
+   - AGPL-1.0
+   - AGPL-3.0
+   - CC-BY-NC-1.0
+   - CC-BY-NC-2.0
+   - CC-BY-NC-2.5
+   - CC-BY-NC-3.0
+   - CC-BY-NC-4.0
+   - CC-BY-NC-ND-1.0
+   - CC-BY-NC-ND-2.0
+   - CC-BY-NC-ND-2.5
+   - CC-BY-NC-ND-3.0
+   - CC-BY-NC-ND-4.0
+   - CC-BY-NC-SA-1.0
+   - CC-BY-NC-SA-2.0
+   - CC-BY-NC-SA-2.5
+   - CC-BY-NC-SA-3.0
+   - CC-BY-NC-SA-4.0
+   - Commons-Clause
+   - Facebook-2-Clause
+   - Facebook-3-Clause
+   - Facebook-Examples
+   - WTFPL
+
+  # Same as '--license-full'
+  full: false
+
+  # Same as '--ignored-licenses'
+  ignored: []
+
+  notice:
+   - AFL-1.1
+   - AFL-1.2
+   - AFL-2.0
+   - AFL-2.1
+   - AFL-3.0
+   - Apache-1.0
+   - Apache-1.1
+   - Apache-2.0
+   - Artistic-1.0-cl8
+   - Artistic-1.0-Perl
+   - Artistic-1.0
+   - Artistic-2.0
+   - BSL-1.0
+   - BSD-2-Clause-FreeBSD
+   - BSD-2-Clause-NetBSD
+   - BSD-2-Clause
+   - BSD-3-Clause-Attribution
+   - BSD-3-Clause-Clear
+   - BSD-3-Clause-LBNL
+   - BSD-3-Clause
+   - BSD-4-Clause
+   - BSD-4-Clause-UC
+   - BSD-Protection
+   - CC-BY-1.0
+   - CC-BY-2.0
+   - CC-BY-2.5
+   - CC-BY-3.0
+   - CC-BY-4.0
+   - FTL
+   - ISC
+   - ImageMagick
+   - Libpng
+   - Lil-1.0
+   - Linux-OpenIB
+   - LPL-1.02
+   - LPL-1.0
+   - MS-PL
+   - MIT
+   - NCSA
+   - OpenSSL
+   - PHP-3.01
+   - PHP-3.0
+   - PIL
+   - Python-2.0
+   - Python-2.0-complete
+   - PostgreSQL
+   - SGI-B-1.0
+   - SGI-B-1.1
+   - SGI-B-2.0
+   - Unicode-DFS-2015
+   - Unicode-DFS-2016
+   - Unicode-TOU
+   - UPL-1.0
+   - W3C-19980720
+   - W3C-20150513
+   - W3C
+   - X11
+   - Xnet
+   - Zend-2.0
+   - zlib-acknowledgement
+   - Zlib
+   - ZPL-1.1
+   - ZPL-2.0
+   - ZPL-2.1
+
+  permissive: []
+
+  reciprocal:
+   - APSL-1.0
+   - APSL-1.1
+   - APSL-1.2
+   - APSL-2.0
+   - CDDL-1.0
+   - CDDL-1.1
+   - CPL-1.0
+   - EPL-1.0
+   - EPL-2.0
+   - FreeImage
+   - IPL-1.0
+   - MPL-1.0
+   - MPL-1.1
+   - MPL-2.0
+   - Ruby
+
+  restricted:
+   - BCL
+   - CC-BY-ND-1.0
+   - CC-BY-ND-2.0
+   - CC-BY-ND-2.5
+   - CC-BY-ND-3.0
+   - CC-BY-ND-4.0
+   - CC-BY-SA-1.0
+   - CC-BY-SA-2.0
+   - CC-BY-SA-2.5
+   - CC-BY-SA-3.0
+   - CC-BY-SA-4.0
+   - GPL-1.0
+   - GPL-2.0
+   - GPL-2.0-with-autoconf-exception
+   - GPL-2.0-with-bison-exception
+   - GPL-2.0-with-classpath-exception
+   - GPL-2.0-with-font-exception
+   - GPL-2.0-with-GCC-exception
+   - GPL-3.0
+   - GPL-3.0-with-autoconf-exception
+   - GPL-3.0-with-GCC-exception
+   - LGPL-2.0
+   - LGPL-2.1
+   - LGPL-3.0
+   - NPL-1.0
+   - NPL-1.1
+   - OSL-1.0
+   - OSL-1.1
+   - OSL-2.0
+   - OSL-2.1
+   - OSL-3.0
+   - QPL-1.0
+   - Sleepycat
+
+  unencumbered:
+   - CC0-1.0
+   - Unlicense
+   - 0BSD
+
+```
+## Misconfiguration options
+
+```yaml
+misconfiguration:
+  # Same as '--checks-bundle-repository'
+  checks-bundle-repository: "ghcr.io/aquasecurity/trivy-checks:0"
+
+  cloudformation:
+    # Same as '--cf-params'
+    params: []
+
+  helm:
+    # Same as '--helm-api-versions'
+    api-versions: []
+
+    # Same as '--helm-kube-version'
+    kube-version: ""
+
+    # Same as '--helm-set'
+    set: []
+
+    # Same as '--helm-set-file'
+    set-file: []
+
+    # Same as '--helm-set-string'
+    set-string: []
+
+    # Same as '--helm-values'
+    values: []
+
+  # Same as '--include-non-failures'
+  include-non-failures: false
+
+  # Same as '--reset-checks-bundle'
+  reset-checks-bundle: false
+
+  # Same as '--misconfig-scanners'
+  scanners:
+   - azure-arm
+   - cloudformation
+   - dockerfile
+   - helm
+   - kubernetes
+   - terraform
+   - terraformplan-json
+   - terraformplan-snapshot
+
+  terraform:
+    # Same as '--tf-exclude-downloaded-modules'
+    exclude-downloaded-modules: false
+
+    # Same as '--tf-vars'
+    vars: []
+
+```
+## Module options
 
 ```yaml
 module:
   # Same as '--module-dir'
-  # Default is '$HOME/.trivy/modules'
-  dir: $HOME/.trivy/modules
+  dir: "$HOME/.trivy/modules"
 
   # Same as '--enable-modules'
-  # Default is empty
-  enable-modules: 
-    - trivy-module-spring4shell
-    - trivy-module-wordpress
-```
+  enable-modules: []
 
+```
+## Registry options
+
+```yaml
+registry:
+  # Same as '--password'
+  password: []
+
+  # Same as '--registry-token'
+  token: ""
+
+  # Same as '--username'
+  username: []
+
+```
+## Rego options
+
+```yaml
+rego:
+  # Same as '--config-check'
+  check: []
+
+  # Same as '--config-data'
+  data: []
+
+  # Same as '--include-deprecated-checks'
+  include-deprecated-checks: false
+
+  # Same as '--check-namespaces'
+  namespaces: []
+
+  # Same as '--skip-check-update'
+  skip-check-update: false
+
+  # Same as '--trace'
+  trace: false
+
+```
+## Report options
+
+```yaml
+# Same as '--dependency-tree'
+dependency-tree: false
+
+# Same as '--exit-code'
+exit-code: 0
+
+# Same as '--exit-on-eol'
+exit-on-eol: 0
+
+# Same as '--format'
+format: "table"
+
+# Same as '--ignore-policy'
+ignore-policy: ""
+
+# Same as '--ignorefile'
+ignorefile: ".trivyignore"
+
+# Same as '--list-all-pkgs'
+list-all-pkgs: false
+
+# Same as '--output'
+output: ""
+
+# Same as '--output-plugin-arg'
+output-plugin-arg: ""
+
+# Same as '--report'
+report: "all"
+
+scan:
+  # Same as '--compliance'
+  compliance: ""
+
+  # Same as '--show-suppressed'
+  show-suppressed: false
+
+# Same as '--severity'
+severity:
+ - UNKNOWN
+ - LOW
+ - MEDIUM
+ - HIGH
+ - CRITICAL
+
+# Same as '--template'
+template: ""
+
+```
+## Repository options
+
+```yaml
+repository:
+  # Same as '--branch'
+  branch: ""
+
+  # Same as '--commit'
+  commit: ""
+
+  # Same as '--tag'
+  tag: ""
+
+```
+## Scan options
+
+```yaml
+scan:
+  # Same as '--detection-priority'
+  detection-priority: "precise"
+
+  # Same as '--file-patterns'
+  file-patterns: []
+
+  # Same as '--offline-scan'
+  offline: false
+
+  # Same as '--parallel'
+  parallel: 5
+
+  # Same as '--rekor-url'
+  rekor-url: "https://rekor.sigstore.dev"
+
+  # Same as '--sbom-sources'
+  sbom-sources: []
+
+  # Same as '--scanners'
+  scanners:
+   - vuln
+   - secret
+
+  # Same as '--skip-dirs'
+  skip-dirs: []
+
+  # Same as '--skip-files'
+  skip-files: []
+
+  # Same as '--slow'
+  slow: false
+
+```
+## Secret options
+
+```yaml
+secret:
+  # Same as '--secret-config'
+  config: "trivy-secret.yaml"
+
+```
+## Vulnerability options
+
+```yaml
+vulnerability:
+  # Same as '--ignore-status'
+  ignore-status: []
+
+  # Same as '--ignore-unfixed'
+  ignore-unfixed: false
+
+  # Same as '--skip-vex-repo-update'
+  skip-vex-repo-update: false
+
+  # Same as '--vex'
+  vex: []
+
+```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml

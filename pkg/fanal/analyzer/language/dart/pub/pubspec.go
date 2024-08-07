@@ -37,10 +37,10 @@ type pubSpecLockAnalyzer struct {
 	parser language.Parser
 }
 
-func newPubSpecLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newPubSpecLockAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return pubSpecLockAnalyzer{
 		logger: log.WithPrefix("pub"),
-		parser: pub.NewParser(),
+		parser: pub.NewParser(opts.DetectionPriority == types.PriorityComprehensive),
 	}, nil
 }
 
