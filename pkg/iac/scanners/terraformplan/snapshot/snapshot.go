@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/liamg/memoryfs"
+	"github.com/zclconf/go-cty/cty"
 
 	iox "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -74,7 +75,8 @@ func parseSnapshot(r io.Reader) (*snapshot, error) {
 	}
 
 	snap := &snapshot{
-		modules: make(map[string]*snapshotModule),
+		modules:        make(map[string]*snapshotModule),
+		inputVariables: make(map[string]cty.Value),
 	}
 
 	var moduleManifest configSnapshotModuleManifest
@@ -89,6 +91,23 @@ func parseSnapshot(r io.Reader) (*snapshot, error) {
 			}
 		case strings.HasPrefix(file.Name, configSnapshotModulePrefix):
 			if err := snap.addFile(file); err != nil {
+				return nil, err
+			}
+		case file.Name == tfplanFilename:
+			r, err := file.Open()
+			if err != nil {
+				return nil, fmt.Errorf("failed to open plan: %w", err)
+			}
+
+			plan, err := readTfPlan(r)
+			if err != nil {
+				_ = r.Close()
+				return nil, fmt.Errorf("failed to read tfplan: %w", err)
+			}
+			_ = r.Close()
+
+			snap.inputVariables, err = plan.inputVariables()
+			if err != nil {
 				return nil, err
 			}
 		}
@@ -140,7 +159,8 @@ type (
 	}
 
 	snapshot struct {
-		modules map[string]*snapshotModule
+		modules        map[string]*snapshotModule
+		inputVariables map[string]cty.Value
 	}
 )
 

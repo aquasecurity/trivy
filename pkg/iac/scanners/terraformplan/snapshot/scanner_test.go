@@ -98,6 +98,10 @@ func Test_ScanFS(t *testing.T) {
 			dir:         "with-remote-module",
 			expectedIDs: []string{"ID001"},
 		},
+		{
+			dir:         "with-var",
+			expectedIDs: []string{"ID001"},
+		},
 	}
 
 	for _, tc := range tests {
@@ -133,5 +137,4 @@ func Test_ScanFS(t *testing.T) {
 			assert.Equal(t, tc.expectedIDs, ids)
 		})
 	}
-
 }

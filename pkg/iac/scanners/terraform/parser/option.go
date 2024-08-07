@@ -3,12 +3,15 @@ package parser
 import (
 	"io/fs"
 
+	"github.com/zclconf/go-cty/cty"
+
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 type ConfigurableTerraformParser interface {
 	options.ConfigurableParser
 	SetTFVarsPaths(...string)
+	SetTFVars(vars map[string]cty.Value)
 	SetStopOnHCLError(bool)
 	SetWorkspaceName(string)
 	SetAllowDownloads(bool)
@@ -22,6 +25,14 @@ func OptionWithTFVarsPaths(paths ...string) options.ParserOption {
 	return func(p options.ConfigurableParser) {
 		if tf, ok := p.(ConfigurableTerraformParser); ok {
 			tf.SetTFVarsPaths(paths...)
+		}
+	}
+}
+
+func OptionsWithTfVars(vars map[string]cty.Value) options.ParserOption {
+	return func(p options.ConfigurableParser) {
+		if tf, ok := p.(ConfigurableTerraformParser); ok {
+			tf.SetTFVars(vars)
 		}
 	}
 }
