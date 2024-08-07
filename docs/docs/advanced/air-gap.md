@@ -43,7 +43,7 @@ trivy image --skip-db-update --skip-java-db-update --offline-scan --skip-check-u
 
 ## Self-Hosting
 
-## OCI Databases
+### OCI Databases
 
 You can host the databases on your own local OCI registry. 
 
@@ -63,11 +63,11 @@ trivy image \
     myimage
 ```
 
-### Authentication
+#### Authentication
 
 If the registry requires authentication, you can configure it as described in the [private registry authentication document](../advanced/private-registries/index.md).
 
-## VEX Hub
+### VEX Hub
 
 You can host a copy of VEX Hub on your own internal server.
 
@@ -82,13 +82,13 @@ First, make a copy of VEX Hub in a location that is accessible to Trivy.
 
 Then, tell Trivy to use the local VEX Repository:
 
-1. Locate you [Trivy VEX configuration file](https://aquasecurity.github.io/trivy/latest/docs/supply-chain/vex/repo/#configuration-file) by running `trivy vex repo init`. Make the following changes to the file:
+1. Locate your [Trivy VEX configuration file](../supply-chain/vex/repo/#configuration-file) by running `trivy vex repo init`. Make the following changes to the file.
 1. Disable the default VEX Hub repo (`enabled: false`)
-1. Add your internal VEX Hub repository as a [custom repository](https://aquasecurity.github.io/trivy/latest/docs/supply-chain/vex/repo/#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
+1. Add your internal VEX Hub repository as a [custom repository](../supply-chain/vex/repo/#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
 
-### Authentication
+#### Authentication
 
-If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](https://aquasecurity.github.io/trivy/latest/docs/supply-chain/vex/repo/#authentication).
+If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](../supply-chain/vex/repo/#authentication).
 
 ## Manual cache population
 
@@ -157,6 +157,6 @@ For Java DB the process is the same, except for the following:
 
 ## Misconfigurations scanning
 
-Note that the misconfigurations database is also embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
+Note that the misconfigurations checks bundle is also embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
 
 The misconfiguration scanner can be configured to load checks from a local directory, using the `--config-check` flag. In an air-gapped scenario you can copy the checks library from [Trivy checks repository](https://github.com/aquasecurity/trivy-checks) into a local directory, and load it with this flag. See more in the [Misconfiguration scanner documentation](../scanner/misconfiguration/index.md).
