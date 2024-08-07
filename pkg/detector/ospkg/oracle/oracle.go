@@ -25,7 +25,7 @@ var (
 		"4": time.Date(2013, 12, 31, 23, 59, 59, 0, time.UTC),
 		"5": time.Date(2017, 12, 31, 23, 59, 59, 0, time.UTC),
 		"6": time.Date(2021, 3, 21, 23, 59, 59, 0, time.UTC),
-		"7": time.Date(2024, 7, 23, 23, 59, 59, 0, time.UTC),
+		"7": time.Date(2024, 12, 31, 23, 59, 59, 0, time.UTC),
 		"8": time.Date(2029, 7, 18, 23, 59, 59, 0, time.UTC),
 		"9": time.Date(2032, 7, 18, 23, 59, 59, 0, time.UTC),
 	}
