@@ -1,6 +1,6 @@
 # Advanced Network Scenarios
 
-Trivy needs to connect to the internet occasionally, in order to download relevant content. This document explains the network connectivity requirements of Trivy and setting up Trivy in particular scenarios.
+Trivy needs to connect to the internet occasionally in order to download relevant content. This document explains the network connectivity requirements of Trivy and setting up Trivy in particular scenarios.
 
 ## Network requirements
 
@@ -10,12 +10,18 @@ Trivy's databases are distributed as OCI images via GitHub Container registry (G
 - <https://ghcr.io/aquasecurity/trivy-java-db>
 - <https://ghcr.io/aquasecurity/trivy-checks>
 
-If Trivy is running behind a firewall, you'll need to add the following urls to your allowlist:
+The following hosts are required in order to fetch them:
 
 - `ghcr.io`
 - `pkg-containers.githubusercontent.com`
 
-The databases are pulled by Trivy using the [OCI Distribution](https://github.com/opencontainers/distribution-spec) specification, which is based on simple HTTPS protocol.
+The databases are pulled by Trivy using the [OCI Distribution](https://github.com/opencontainers/distribution-spec) specification, which is a simple HTTPS-based protocol.
+
+[VEX Hub](https://github.com/aquasecurity/vexhub) is distributed from GitHub over HTTPS.
+The following hosts are required in order to fetch it:
+
+- `api.github.com`
+- `codeload.github.com`
 
 ## Running Trivy in air-gapped environment
 
@@ -37,7 +43,9 @@ trivy image --skip-db-update --skip-java-db-update --offline-scan --skip-check-u
 
 ## Self-Hosting
 
-You can host the databases on your own local OCI registry, in order to prevent Trivy reaching out of your network.  
+## OCI Databases
+
+You can host the databases on your own local OCI registry. 
 
 First, make a copy of the databases in a container registry that is accessible to Trivy. The databases are in:
 
@@ -57,7 +65,30 @@ trivy image \
 
 ### Authentication
 
-If the registry requires authentication, you can configure it in as described in the [private registry authentication document](../advanced/private-registries/index.md).
+If the registry requires authentication, you can configure it as described in the [private registry authentication document](../advanced/private-registries/index.md).
+
+## VEX Hub
+
+You can host a copy of VEX Hub on your own internal server.
+
+First, make a copy of VEX Hub in a location that is accessible to Trivy.
+
+1. Download the [VEX Hub](https://github.com/aquasecurity/vexhub) archive from: <https://github.com/aquasecurity/vexhub/archive/refs/heads/main.zip>.
+1. Download the [VEX Hub Repository Manifest](https://github.com/aquasecurity/vex-repo-spec#2-repository-manifest) file from: <https://github.com/aquasecurity/vexhub/blob/main/vex-repository.json>.
+1. Create or identify an internal HTTP server that can serve the VEX Hub repository in your environment (e.g `https://server.local`).
+1. Make the downloaded archive file available for serving from your server (e.g `https://server.local/main.zip`).
+1. Modify the downloaded manifest file's [Location URL](https://github.com/aquasecurity/vex-repo-spec?tab=readme-ov-file#locations-subfields) field to the URL of the archive file on your server (e.g `url: https://server.local/main.zip`).
+1. Make the manifest file available for serving from your server under the `/.well-known` path  (e.g `https://server.local/.well-known/vex-repository.json`).
+
+Then, tell Trivy to use the local VEX Repository:
+
+1. Locate you [Trivy VEX configuration file](https://aquasecurity.github.io/trivy/latest/docs/supply-chain/vex/repo/#configuration-file) by running `trivy vex repo init`. Make the following changes to the file:
+1. Disable the default VEX Hub repo (`enabled: false`)
+1. Add your internal VEX Hub repository as a [custom repository](https://aquasecurity.github.io/trivy/latest/docs/supply-chain/vex/repo/#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
+
+### Authentication
+
+If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](https://aquasecurity.github.io/trivy/latest/docs/supply-chain/vex/repo/#authentication).
 
 ## Manual cache population
 
