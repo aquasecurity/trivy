@@ -15,9 +15,9 @@ func DefaultDir() string {
 }
 
 func GetChecksDir() string {
-	return filepath.Join(DefaultDir(), "/policy")
+	return filepath.Join(DefaultDir(), "policy")
 }
 
 func GetComplianceSpecsDir() string {
-	return filepath.Join(GetChecksDir(), "/content/specs/compliance")
+	return filepath.Join(GetChecksDir(), "content", "specs", "compliance")
 }
