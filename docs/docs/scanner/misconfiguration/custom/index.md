@@ -2,7 +2,7 @@
 
 ## Overview
 You can write custom checks in [Rego][rego].
-Once you finish writing custom checks, you can pass the policy files or the directory where those checks are stored with --config-check` option.
+Once you finish writing custom checks, you can pass the check files or the directory where those checks are stored with --config-check` option.
 
 ``` bash
 trivy conf --config-check /path/to/policy.rego --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
