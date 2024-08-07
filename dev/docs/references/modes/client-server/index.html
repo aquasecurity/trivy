@@ -4221,7 +4221,6 @@ You're not viewing the latest version.
 <th align="center">Filesystem</th>
 <th align="center">Repository</th>
 <th align="center">Config</th>
-<th align="center">AWS</th>
 <th align="center">K8s</th>
 </tr>
 </thead>
@@ -4232,12 +4231,43 @@ You're not viewing the latest version.
 <td align="center">✅</td>
 <td align="center">✅</td>
 <td align="center">✅</td>
-<td align="center">✅</td>
-<td align="center">X</td>
-<td align="center">X</td>
+<td align="center">-</td>
+<td align="center">-</td>
 </tr>
 </tbody>
 </table>
+<p>Some scanners run on the client side, even in client/server mode.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Scanner</th>
+<th align="center">Run on Client or Server</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Vulnerability</td>
+<td align="center">Server</td>
+</tr>
+<tr>
+<td align="center">Misconfiguration</td>
+<td align="center">Client<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+</tr>
+<tr>
+<td align="center">Secret</td>
+<td align="center">Client<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+</tr>
+<tr>
+<td align="center">License</td>
+<td align="center">Server</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Scanning of misconfigurations and licenses is performed on the client side (as in standalone mode).
+Otherwise, the client would need to send files to the server that may contain sensitive information.</p>
+</div>
 <h2 id="server">Server</h2>
 <p>At first, you need to launch Trivy server. It downloads vulnerability database automatically and continue to fetch the latest DB in the background.
 <div class="highlight"><pre><span></span><code>$ trivy server --listen localhost:8080
@@ -4540,6 +4570,17 @@ ok
 <p>Returns the <code>200 OK</code> status if the request was successful.</p>
 <h2 id="architecture">Architecture</h2>
 <p><img alt="architecture" src="../../../../imgs/client-server.png" /></p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>The checks bundle is also downloaded on the client side.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>The scan result with masked secrets is sent to the server&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
               
             </article>
