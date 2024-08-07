@@ -7,7 +7,9 @@ import (
 	"strings"
 
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/liamg/iamgo"
 
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -37,6 +39,7 @@ func getBuckets(cfFile parser.FileContext) []s3.Bucket {
 			Website:                       getWebsite(r),
 			BucketLocation:                iacTypes.String("", r.Metadata()),
 			Objects:                       nil,
+			BucketPolicies:                getBucketPolicies(cfFile, r),
 		}
 
 		buckets = append(buckets, s3b)
@@ -155,4 +158,36 @@ func getWebsite(r *parser.Resource) *s3.Website {
 			Metadata: block.Metadata(),
 		}
 	}
+}
+
+func getBucketPolicies(fctx parser.FileContext, r *parser.Resource) []iam.Policy {
+
+	var policies []iam.Policy
+	for _, bucketPolicy := range fctx.GetResourcesByType("AWS::S3::BucketPolicy") {
+		bucket := bucketPolicy.GetStringProperty("Bucket")
+		if bucket.NotEqualTo(r.GetStringProperty("BucketName").Value()) && bucket.NotEqualTo(r.ID()) {
+			continue
+		}
+
+		doc := bucketPolicy.GetProperty("PolicyDocument")
+		if doc.IsNil() {
+			continue
+		}
+
+		parsed, err := iamgo.Parse(doc.GetJsonBytes())
+		if err != nil {
+			continue
+		}
+		policies = append(policies, iam.Policy{
+			Metadata: doc.Metadata(),
+			Name:     iacTypes.StringDefault("", doc.Metadata()),
+			Document: iam.Document{
+				Metadata: doc.Metadata(),
+				Parsed:   *parsed,
+			},
+			Builtin: iacTypes.Bool(false, doc.Metadata()),
+		})
+	}
+
+	return policies
 }

@@ -27,8 +27,8 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 var _ ConfigurableTerraformScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
-	sync.Mutex
+type Scanner struct {
+	mu                    sync.Mutex
 	options               []options.ScannerOption
 	parserOpt             []options.ParserOption
 	executorOpt           []executor.Option
@@ -87,10 +87,6 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.parserOpt = append(s.parserOpt, options.ParserWithSkipRequiredCheck(skip))
-}
-
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
 	s.parserOpt = append(s.parserOpt, options.ParserWithDebug(writer))
 	s.executorOpt = append(s.executorOpt, executor.OptionWithDebugWriter(writer))
@@ -131,8 +127,8 @@ func New(opts ...options.ScannerOption) *Scanner {
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}

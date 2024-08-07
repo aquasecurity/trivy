@@ -3,6 +3,7 @@ package io_test
 import (
 	"testing"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -42,6 +43,13 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 					RepoDigests: []string{
 						"debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+					},
+					ImageConfig: v1.ConfigFile{
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
 					},
 				},
 				Results: []types.Result{
@@ -185,6 +193,10 @@ func TestEncoder_Encode(t *testing.T) {
 						BOMRef: "pkg:oci/debian@sha256%3A4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
 					},
 					Properties: []core.Property{
+						{
+							Name:  "Labels:vendor",
+							Value: "aquasecurity",
+						},
 						{
 							Name:  core.PropertyRepoDigest,
 							Value: "debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",

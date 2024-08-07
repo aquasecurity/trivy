@@ -30,6 +30,10 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --detection-priority string         specify the detection priority:
+                                            - "precise": Prioritizes precise by minimizing false positives.
+                                            - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
+                                           (precise,comprehensive) (default "precise")
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
       --enable-modules strings            [EXPERIMENTAL] module names to enable
@@ -63,7 +67,8 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
+      --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
+      --pkg-types strings                 list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -90,7 +95,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
-      --vex strings                       [EXPERIMENTAL] VEX sources ("repo" or file path)
+      --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 
 ### Options inherited from parent commands
