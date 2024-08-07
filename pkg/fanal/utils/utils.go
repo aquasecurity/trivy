@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"unicode"
 
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -92,4 +93,23 @@ func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
+	var printalbe []byte
+	current := make([]byte, 1)
+
+	for {
+		_, err := content.Read(current)
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, err
+		}
+		if unicode.IsPrint(rune(current[0])) {
+			printalbe = append(printalbe, current[0])
+		}
+	}
+
+	return printalbe, nil
 }
