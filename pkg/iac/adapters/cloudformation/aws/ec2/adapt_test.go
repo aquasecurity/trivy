@@ -51,15 +51,15 @@ Resources:
       SecurityGroupIngress:
         - IpProtocol: tcp
           Description: ingress
-          FromPort: 80
+          FromPort: "80"
           ToPort: 80
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
-        - IpProtocol: tcp
+        - IpProtocol: -1
           Description: egress
           FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
+          ToPort: "80"
+          CidrIp: "0.0.0.0/0"
   myNetworkAcl:
       Type: AWS::EC2::NetworkAcl
       Properties:
@@ -73,6 +73,9 @@ Resources:
        Protocol: 6
        RuleAction: allow
        CidrBlock: 172.16.0.0/24
+       PortRange:
+         From: 22
+         To: "23"
   myLaunchConfig: 
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
@@ -137,6 +140,9 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(80),
+								ToPort:   types.IntTest(80),
+								Protocol: types.StringTest("tcp"),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
@@ -145,6 +151,9 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(80),
+								ToPort:   types.IntTest(80),
+								Protocol: types.StringTest("-1"),
 							},
 						},
 					},
@@ -159,6 +168,8 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("172.16.0.0/24"),
 								},
+								FromPort: types.IntTest(22),
+								ToPort:   types.IntTest(23),
 							},
 						},
 					},
@@ -309,6 +320,8 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
@@ -317,6 +330,8 @@ Resources:
 								CIDRs: []types.StringValue{
 									types.StringTest("0.0.0.0/0"),
 								},
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
 							},
 						},
 					},

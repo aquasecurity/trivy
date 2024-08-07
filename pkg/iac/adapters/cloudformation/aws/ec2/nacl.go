@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -29,7 +30,8 @@ func getRules(id string, ctx parser.FileContext) (rules []ec2.NetworkACLRule) {
 				Metadata: ruleResource.Metadata(),
 				Type:     iacTypes.StringDefault(ec2.TypeIngress, ruleResource.Metadata()),
 				Action:   iacTypes.StringDefault(ec2.ActionAllow, ruleResource.Metadata()),
-				Protocol: iacTypes.String("-1", ruleResource.Metadata()),
+				FromPort: iacTypes.IntDefault(-1, ruleResource.Metadata()),
+				ToPort:   iacTypes.IntDefault(-1, ruleResource.Metadata()),
 				CIDRs:    nil,
 			}
 
@@ -60,6 +62,17 @@ func getRules(id string, ctx parser.FileContext) (rules []ec2.NetworkACLRule) {
 
 			if ipv6Cidr := ruleResource.GetProperty("Ipv6CidrBlock"); ipv6Cidr.IsString() {
 				rule.CIDRs = append(rule.CIDRs, ipv6Cidr.AsStringValue())
+			}
+
+			portRange := ruleResource.GetProperty("PortRange")
+			fromPort := portRange.GetProperty("From").ConvertTo(cftypes.Int)
+			if fromPort.IsInt() {
+				rule.FromPort = fromPort.AsIntValue()
+			}
+
+			toPort := portRange.GetProperty("To").ConvertTo(cftypes.Int)
+			if toPort.IsInt() {
+				rule.ToPort = toPort.AsIntValue()
 			}
 
 			rules = append(rules, rule)

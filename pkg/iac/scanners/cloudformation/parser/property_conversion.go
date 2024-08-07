@@ -43,6 +43,8 @@ func (p *Property) isConvertableToBool() bool {
 
 	case cftypes.Int:
 		return p.EqualTo(1) || p.EqualTo(0)
+	case cftypes.Bool:
+		return true
 	}
 	return false
 }
@@ -53,13 +55,17 @@ func (p *Property) isConvertableToInt() bool {
 		if _, err := strconv.Atoi(p.AsString()); err == nil {
 			return true
 		}
-	case cftypes.Bool:
+	case cftypes.Bool, cftypes.Int:
 		return true
 	}
 	return false
 }
 
 func (p *Property) ConvertTo(conversionType cftypes.CfType) *Property {
+
+	if p.Type() == conversionType {
+		return p
+	}
 
 	if !p.IsConvertableTo(conversionType) {
 		_, _ = fmt.Fprintf(os.Stderr, "property of type %s cannot be converted to %s\n", p.Type(), conversionType)

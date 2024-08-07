@@ -4,6 +4,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -75,7 +76,10 @@ func adaptRule(r interface {
 	rule := ec2.SecurityGroupRule{
 		Metadata:    r.Metadata(),
 		Description: r.GetStringProperty("Description"),
+		FromPort:    types.IntDefault(-1, r.Metadata()),
+		ToPort:      types.IntDefault(-1, r.Metadata()),
 	}
+
 	v4Cidr := r.GetProperty("CidrIp")
 	if v4Cidr.IsString() && v4Cidr.AsStringValue().IsNotEmpty() {
 		rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v4Cidr.AsString(), v4Cidr.Metadata()))
@@ -83,6 +87,21 @@ func adaptRule(r interface {
 	v6Cidr := r.GetProperty("CidrIpv6")
 	if v6Cidr.IsString() && v6Cidr.AsStringValue().IsNotEmpty() {
 		rule.CIDRs = append(rule.CIDRs, types.StringExplicit(v6Cidr.AsString(), v6Cidr.Metadata()))
+	}
+
+	fromPort := r.GetProperty("FromPort").ConvertTo(cftypes.Int)
+	if fromPort.IsInt() {
+		rule.FromPort = fromPort.AsIntValue()
+	}
+
+	toPort := r.GetProperty("ToPort").ConvertTo(cftypes.Int)
+	if toPort.IsInt() {
+		rule.ToPort = toPort.AsIntValue()
+	}
+
+	protocol := r.GetProperty("IpProtocol").ConvertTo(cftypes.String)
+	if protocol.IsString() {
+		rule.Protocol = protocol.AsStringValue()
 	}
 
 	return rule
