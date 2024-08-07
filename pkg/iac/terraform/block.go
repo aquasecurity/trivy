@@ -350,12 +350,11 @@ func (b *Block) getAttributeByPath(path string) (*Attribute, []string) {
 		stepIndex int
 	)
 
-	currentBlock := b
-	for currentBlock != nil && stepIndex <= len(steps)-1 {
+	for currentBlock := b; currentBlock != nil && stepIndex < len(steps); {
 		blocks := currentBlock.GetBlocks(steps[stepIndex])
-
 		var nextBlock *Block
-		if len(blocks) == 1 {
+		if !hasIndex(steps, stepIndex) && len(blocks) > 0 {
+			// if index is not provided then return the first block for backwards compatibility
 			nextBlock = blocks[0]
 		} else if len(blocks) > 1 && stepIndex < len(steps)-2 {
 			// handling the case when there are multiple blocks with the same name,
@@ -376,6 +375,14 @@ func (b *Block) getAttributeByPath(path string) (*Attribute, []string) {
 	}
 
 	return attribute, steps[stepIndex:]
+}
+
+func hasIndex(steps []string, idx int) bool {
+	if idx < 0 || idx >= len(steps) {
+		return false
+	}
+	_, err := strconv.Atoi(steps[idx])
+	return err == nil
 }
 
 func getValueByPath(val cty.Value, path []string) (cty.Value, error) {

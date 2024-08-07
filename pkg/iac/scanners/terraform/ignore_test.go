@@ -433,7 +433,7 @@ resource "bad" "my-rule" {
 		{
 			name: "ignore by dynamic block value",
 			inputOptions: `
-// trivy:ignore:*[secure_settings.0.enabled=false]
+// trivy:ignore:*[secure_settings.enabled=false]
 resource "bad" "my-rule" {
   dynamic "secure_settings" {
     for_each = ["false", "true"]
