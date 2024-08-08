@@ -57,14 +57,20 @@ type Flag[T FlagType] struct {
 	// Usage explains how to use the flag.
 	Usage string
 
-	// Persistent represents if the flag is persistent
+	// Persistent represents if the flag is persistent.
 	Persistent bool
 
-	// Deprecated represents if the flag is deprecated
+	// Deprecated represents if the flag is deprecated.
+	// It shows a warning message when the flag is used.
 	Deprecated string
 
-	// Removed represents if the flag is removed and no longer works
+	// Removed represents if the flag is removed and no longer works.
+	// It shows an error message when the flag is used.
 	Removed string
+
+	// Internal represents if the flag is for internal use only.
+	// It is not shown in the usage message.
+	Internal bool
 
 	// Aliases represents aliases
 	Aliases []Alias
@@ -209,6 +215,10 @@ func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
 }
 
+func (f *Flag[T]) Hidden() bool {
+	return f.Deprecated != "" || f.Removed != "" || f.Internal
+}
+
 func (f *Flag[T]) Value() (t T) {
 	if f == nil {
 		return t
@@ -250,7 +260,7 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 		flags.Float64P(f.Name, f.Shorthand, v, f.Usage)
 	}
 
-	if f.Deprecated != "" || f.Removed != "" {
+	if f.Hidden() {
 		_ = flags.MarkHidden(f.Name)
 	}
 }
@@ -314,6 +324,7 @@ type Flagger interface {
 	GetConfigName() string
 	GetDefaultValue() any
 	GetAliases() []Alias
+	Hidden() bool
 
 	Parse() error
 	Add(cmd *cobra.Command)

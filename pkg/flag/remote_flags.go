@@ -43,6 +43,7 @@ var (
 		Name:       "path-prefix",
 		ConfigName: "server.path-prefix",
 		Usage:      "prefix for the server endpoint",
+		Internal:   true, // Internal use
 	}
 )
 
