@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS) (*ast.SchemaSet, bool, error) {
+func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS, customSchemas map[string][]byte) (*ast.SchemaSet, bool, error) {
 	schemaSet := ast.NewSchemaSet()
 	schemaSet.Put(ast.MustParseRef("schema.input"), make(map[string]any)) // for backwards compat only
 	var customFound bool
@@ -26,9 +26,15 @@ func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string,
 					continue
 				}
 
+				if schemaSet.Get(ss.Schema) != nil {
+					continue
+				}
+
 				var schema []byte
 				if s, ok := schemas.SchemaMap[types.Source(schemaName)]; ok {
 					schema = []byte(s)
+				} else if s, ok := customSchemas[schemaName]; ok {
+					schema = s
 				} else {
 					b, err := findSchemaInFS(paths, fsys, schemaName)
 					if err != nil {
@@ -47,7 +53,7 @@ func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string,
 					return schemaSet, false, fmt.Errorf("could not parse schema %q: %w", schemaName, err)
 				}
 				customFound = true
-				schemaSet.Put(ast.MustParseRef(ss.Schema.String()), rawSchema)
+				schemaSet.Put(ss.Schema, rawSchema)
 			}
 		}
 	}

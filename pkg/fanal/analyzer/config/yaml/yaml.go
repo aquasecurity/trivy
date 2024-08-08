@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 const (
@@ -24,7 +24,7 @@ type yamlConfigAnalyzer struct {
 }
 
 func newYAMLConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewYAMLScanner, opts)
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeYAML, opts)
 	if err != nil {
 		return nil, err
 	}

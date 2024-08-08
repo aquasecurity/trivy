@@ -501,43 +501,13 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		log.WithPrefix(log.PrefixVulnerability).Info("Vulnerability scanning is enabled")
 	}
 
-	// ScannerOption is filled only when config scanning is enabled.
+	// Misconfig ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
-		logger := log.WithPrefix(log.PrefixMisconfiguration)
-		logger.Info("Misconfiguration scanning is enabled")
-
-		var downloadedPolicyPaths []string
-		var disableEmbedded bool
-
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+		var err error
+		configScannerOptions, err = initMisconfScannerOption(opts)
 		if err != nil {
-			if !opts.SkipCheckUpdate {
-				logger.Error("Falling back to embedded checks", log.Err(err))
-			}
-		} else {
-			logger.Debug("Policies successfully loaded from disk")
-			disableEmbedded = true
-		}
-		configScannerOptions = misconf.ScannerOption{
-			Debug:                    opts.Debug,
-			Trace:                    opts.Trace,
-			Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
-			PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
-			DataPaths:                opts.DataPaths,
-			HelmValues:               opts.HelmValues,
-			HelmValueFiles:           opts.HelmValueFiles,
-			HelmFileValues:           opts.HelmFileValues,
-			HelmStringValues:         opts.HelmStringValues,
-			HelmAPIVersions:          opts.HelmAPIVersions,
-			HelmKubeVersion:          opts.HelmKubeVersion,
-			TerraformTFVars:          opts.TerraformTFVars,
-			CloudFormationParamVars:  opts.CloudFormationParamVars,
-			K8sVersion:               opts.K8sVersion,
-			DisableEmbeddedPolicies:  disableEmbedded,
-			DisableEmbeddedLibraries: disableEmbedded,
-			IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
-			TfExcludeDownloaded:      opts.TfExcludeDownloaded,
+			return ScannerConfig{}, types.ScanOptions{}, err
 		}
 	}
 
@@ -649,4 +619,50 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner 
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
+}
+
+func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) {
+	logger := log.WithPrefix(log.PrefixMisconfiguration)
+	logger.Info("Misconfiguration scanning is enabled")
+
+	var downloadedPolicyPaths []string
+	var disableEmbedded bool
+
+	downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	if err != nil {
+		if !opts.SkipCheckUpdate {
+			logger.Error("Falling back to embedded checks", log.Err(err))
+		}
+	} else {
+		logger.Debug("Policies successfully loaded from disk")
+		disableEmbedded = true
+	}
+
+	configSchemas, err := misconf.LoadConfigSchemas(opts.ConfigFileSchemas)
+	if err != nil {
+		return misconf.ScannerOption{}, xerrors.Errorf("load schemas error: %w", err)
+	}
+
+	return misconf.ScannerOption{
+		Debug:                    opts.Debug,
+		Trace:                    opts.Trace,
+		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
+		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
+		DataPaths:                opts.DataPaths,
+		HelmValues:               opts.HelmValues,
+		HelmValueFiles:           opts.HelmValueFiles,
+		HelmFileValues:           opts.HelmFileValues,
+		HelmStringValues:         opts.HelmStringValues,
+		HelmAPIVersions:          opts.HelmAPIVersions,
+		HelmKubeVersion:          opts.HelmKubeVersion,
+		TerraformTFVars:          opts.TerraformTFVars,
+		CloudFormationParamVars:  opts.CloudFormationParamVars,
+		K8sVersion:               opts.K8sVersion,
+		DisableEmbeddedPolicies:  disableEmbedded,
+		DisableEmbeddedLibraries: disableEmbedded,
+		IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
+		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
+		FilePatterns:             opts.FilePatterns,
+		ConfigFileSchemas:        configSchemas,
+	}, nil
 }

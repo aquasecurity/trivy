@@ -230,7 +230,7 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 
 func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 
-	schemaSet, custom, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS)
+	schemaSet, custom, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS, s.customSchemas)
 	if err != nil {
 		return err
 	}

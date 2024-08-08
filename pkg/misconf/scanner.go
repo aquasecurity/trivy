@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
+	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -45,6 +46,8 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeHelm:                  types.Helm,
 	detection.FileTypeTerraformPlanJSON:     types.TerraformPlanJSON,
 	detection.FileTypeTerraformPlanSnapshot: types.TerraformPlanSnapshot,
+	detection.FileTypeJSON:                  types.JSON,
+	detection.FileTypeYAML:                  types.YAML,
 }
 
 type ScannerOption struct {
@@ -68,6 +71,9 @@ type ScannerOption struct {
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
 	K8sVersion              string
+
+	FilePatterns      []string
+	ConfigFileSchemas []*ConfigFileSchema
 }
 
 func (o *ScannerOption) Sort() {
@@ -77,52 +83,13 @@ func (o *ScannerOption) Sort() {
 }
 
 type Scanner struct {
-	fileType       detection.FileType
-	scanner        scanners.FSScanner
-	hasFilePattern bool
+	fileType          detection.FileType
+	scanner           scanners.FSScanner
+	hasFilePattern    bool
+	configFileSchemas []*ConfigFileSchema
 }
 
-func NewAzureARMScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeAzureARM, filePatterns, opt)
-}
-
-func NewCloudFormationScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeCloudFormation, filePatterns, opt)
-}
-
-func NewDockerfileScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeDockerfile, filePatterns, opt)
-}
-
-func NewHelmScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeHelm, filePatterns, opt)
-}
-
-func NewKubernetesScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeKubernetes, filePatterns, opt)
-}
-
-func NewTerraformScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraform, filePatterns, opt)
-}
-
-func NewTerraformPlanJSONScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraformPlanJSON, filePatterns, opt)
-}
-
-func NewTerraformPlanSnapshotScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraformPlanSnapshot, filePatterns, opt)
-}
-
-func NewYAMLScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeYAML, filePatterns, opt)
-}
-
-func NewJSONScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeJSON, filePatterns, opt)
-}
-
-func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) (*Scanner, error) {
+func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 	opts, err := scannerOptions(t, opt)
 	if err != nil {
 		return nil, err
@@ -155,9 +122,10 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 	}
 
 	return &Scanner{
-		fileType:       t,
-		scanner:        scanner,
-		hasFilePattern: hasFilePattern(t, filePatterns),
+		fileType:          t,
+		scanner:           scanner,
+		hasFilePattern:    hasFilePattern(t, opt.FilePatterns),
+		configFileSchemas: opt.ConfigFileSchemas,
 	}, nil
 }
 
@@ -201,21 +169,31 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 		return fsys, nil
 	}
 
+	schemas := lo.SliceToMap(s.configFileSchemas, func(schema *ConfigFileSchema) (string, *gojsonschema.Schema) {
+		return schema.path, schema.schema
+	})
+
 	var foundRelevantFile bool
 	filter := func(path string, d fs.DirEntry) (bool, error) {
 		file, err := fsys.Open(path)
 		if err != nil {
 			return false, err
 		}
+		defer file.Close()
+
 		rs, ok := file.(io.ReadSeeker)
 		if !ok {
 			return false, xerrors.Errorf("type assertion error: %w", err)
 		}
-		defer file.Close()
 
-		if !s.hasFilePattern && !detection.IsType(path, rs, s.fileType) {
+		if len(schemas) > 0 &&
+			(s.fileType == detection.FileTypeYAML || s.fileType == detection.FileTypeJSON) &&
+			!detection.IsFileMatchesSchemas(schemas, s.fileType, path, rs) {
+			return true, nil
+		} else if !s.hasFilePattern && !detection.IsType(path, rs, s.fileType) {
 			return true, nil
 		}
+
 		foundRelevantFile = true
 		return false, nil
 	}
@@ -248,9 +226,15 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	if err != nil {
 		return nil, err
 	}
+
+	schemas := lo.SliceToMap(opt.ConfigFileSchemas, func(schema *ConfigFileSchema) (string, []byte) {
+		return schema.name, schema.source
+	})
+
 	opts = append(opts,
 		options.ScannerWithDataDirs(dataPaths...),
 		options.ScannerWithDataFilesystem(dataFS),
+		options.ScannerWithCustomSchemas(schemas),
 	)
 
 	if opt.Debug {

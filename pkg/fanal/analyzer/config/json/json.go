@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 const (
@@ -24,7 +24,7 @@ type jsonConfigAnalyzer struct {
 }
 
 func newJSONConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewJSONScanner, opts)
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeJSON, opts)
 	if err != nil {
 		return nil, err
 	}
