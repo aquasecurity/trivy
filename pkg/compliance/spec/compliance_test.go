@@ -290,7 +290,7 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 
 	t.Run("load user specified spec from disk fails", func(t *testing.T) {
 		_, err := spec.GetComplianceSpec("@doesnotexist", cache.RealCache{})
-		assert.Contains(t, err, "no such file or directory")
+		assert.Contains(t, err.Error(), "no such file or directory")
 	})
 
 	t.Run("bundle does not exist", func(t *testing.T) {
@@ -331,7 +331,7 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 				return "does not exist"
 			},
 		})
-		assert.Contains(t, err, "no such file or directory")
+		assert.Contains(t, err.Error(), "no such file or directory")
 	})
 
 	// TODO: Add check to cover spec yaml unmarshal failure

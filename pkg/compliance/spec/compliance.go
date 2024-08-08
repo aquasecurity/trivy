@@ -75,6 +75,10 @@ func scannerByCheckID(checkID string) types.Scanner {
 
 // GetComplianceSpec accept compliance flag name/path and return builtin or file system loaded spec
 func GetComplianceSpec(specNameOrPath string, cache cache.TrivyCache) (ComplianceSpec, error) {
+	if specNameOrPath == "" {
+		return ComplianceSpec{}, nil
+	}
+
 	var b []byte
 	var err error
 	if strings.HasPrefix(specNameOrPath, "@") { // load user specified spec from disk
@@ -85,7 +89,6 @@ func GetComplianceSpec(specNameOrPath string, cache cache.TrivyCache) (Complianc
 	} else {
 		_, err := os.ReadFile(filepath.Join(cache.GetChecksDir(), "metadata.json"))
 		if err != nil { // cache corrupt or bundle does not exist, load embedded version
-			// TODO: GetSpecByName() should return []byte
 			b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
 			log.Debug("Compliance spec loaded from embedded library", log.String("spec", specNameOrPath))
 		} else {

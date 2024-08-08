@@ -56,7 +56,7 @@ var (
 	CacheDirFlag = Flag[string]{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
-		Default:    cache.DefaultDir(),
+		Default:    cache.RealCache{}.DefaultDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}
