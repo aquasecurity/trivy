@@ -264,7 +264,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 
 	t.Run("load user specified spec from disk", func(t *testing.T) {
-		cs, err := spec.GetComplianceSpec(filepath.Join("@testdata", "testspec.yaml"), cache.RealCache{})
+		cs, err := spec.GetComplianceSpec(filepath.Join("@testdata", "testcache", "content", "specs", "compliance", "testspec.yaml"), cache.RealCache{})
 		require.NoError(t, err)
 		assert.Equal(t, spec.ComplianceSpec{Spec: iacTypes.Spec{
 			ID:          "test-spec-1.2",
@@ -290,7 +290,7 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 
 	t.Run("load user specified spec from disk fails", func(t *testing.T) {
 		_, err := spec.GetComplianceSpec("@doesnotexist", cache.RealCache{})
-		assert.Contains(t, err.Error(), "no such file or directory")
+		assert.Contains(t, err.Error(), "error retrieving compliance spec from specified path")
 	})
 
 	t.Run("bundle does not exist", func(t *testing.T) {
@@ -331,7 +331,7 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 				return "does not exist"
 			},
 		})
-		assert.Contains(t, err.Error(), "no such file or directory")
+		assert.Contains(t, err.Error(), "error retrieving compliance spec from bundle testspec")
 	})
 
 	// TODO: Add check to cover spec yaml unmarshal failure
