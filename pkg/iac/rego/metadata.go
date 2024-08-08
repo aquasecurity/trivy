@@ -128,16 +128,19 @@ func (sm *StaticMetadata) updateFrameworks(meta map[string]any) error {
 			return fmt.Errorf("frameworks metadata is not an object, got %T", raw)
 		}
 		for fw, rawIDs := range frameworks {
-			ids, ok := rawIDs.([]any)
-			if !ok {
-				return fmt.Errorf("framework ids is not an array, got %T", rawIDs)
-			}
 			fr := framework.Framework(fw)
-			for _, id := range ids {
-				if str, ok := id.(string); ok {
-					sm.Frameworks[fr] = append(sm.Frameworks[fr], str)
+
+			switch ids := rawIDs.(type) {
+			case []any:
+				for _, id := range ids {
+					if str, ok := id.(string); ok {
+						sm.Frameworks[fr] = append(sm.Frameworks[fr], str)
+					}
 				}
+			case nil:
+				sm.Frameworks[fr] = []string{}
 			}
+
 		}
 	}
 	return nil
