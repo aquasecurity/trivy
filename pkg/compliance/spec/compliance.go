@@ -74,7 +74,7 @@ func scannerByCheckID(checkID string) types.Scanner {
 }
 
 // GetComplianceSpec accept compliance flag name/path and return builtin or file system loaded spec
-func GetComplianceSpec(specNameOrPath string, cache cache.TrivyCache) (ComplianceSpec, error) {
+func GetComplianceSpec(specNameOrPath string, c cache.TrivyCache) (ComplianceSpec, error) {
 	if specNameOrPath == "" {
 		return ComplianceSpec{}, nil
 	}
@@ -87,13 +87,13 @@ func GetComplianceSpec(specNameOrPath string, cache cache.TrivyCache) (Complianc
 			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from specified path: %w", err)
 		}
 	} else {
-		_, err := os.ReadFile(filepath.Join(cache.GetChecksDir(), "metadata.json"))
+		_, err := os.ReadFile(filepath.Join(c.GetChecksDir(), "metadata.json"))
 		if err != nil { // cache corrupt or bundle does not exist, load embedded version
 			b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
 			log.Debug("Compliance spec loaded from embedded library", log.String("spec", specNameOrPath))
 		} else {
 			// load from bundle on disk
-			b, err = LoadFromBundle(cache, specNameOrPath)
+			b, err = LoadFromBundle(c, specNameOrPath)
 			if err != nil {
 				return ComplianceSpec{}, err
 			}
@@ -109,8 +109,8 @@ func GetComplianceSpec(specNameOrPath string, cache cache.TrivyCache) (Complianc
 
 }
 
-func LoadFromBundle(cache cache.TrivyCache, specNameOrPath string) ([]byte, error) {
-	b, err := os.ReadFile(filepath.Join(cache.GetComplianceSpecsDir(), specNameOrPath+".yaml"))
+func LoadFromBundle(c cache.TrivyCache, specNameOrPath string) ([]byte, error) {
+	b, err := os.ReadFile(filepath.Join(c.GetComplianceSpecsDir(), specNameOrPath+".yaml"))
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving compliance spec from bundle %s: %w", specNameOrPath, err)
 	}
