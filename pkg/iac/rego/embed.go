@@ -2,6 +2,7 @@ package rego
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func init() {
@@ -47,17 +49,34 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 	}
 
 	retriever := NewMetadataRetriever(compiler)
+	regoCheckIDs := make(map[string]struct{})
+
 	for _, module := range modules {
 		metadata, err := retriever.RetrieveMetadata(ctx, module)
 		if err != nil {
+			log.Warn("Failed to retrieve metadata", log.String("avdid", metadata.AVDID), log.Err(err))
 			continue
 		}
+
 		if metadata.AVDID == "" {
+			log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
 			continue
 		}
-		rules.Register(
-			metadata.ToRule(),
-		)
+
+		if !metadata.Deprecated {
+			regoCheckIDs[metadata.AVDID] = struct{}{}
+		}
+
+		rules.Register(metadata.ToRule())
+	}
+
+	for _, check := range rules.GetRegistered() {
+		if !check.Deprecated && check.CanCheck() {
+			if _, exists := regoCheckIDs[check.AVDID]; exists {
+				log.Warn("Ignore duplicate Go check", log.String("avdid", check.AVDID))
+				rules.Deregister(check)
+			}
+		}
 	}
 }
 
@@ -95,8 +114,7 @@ func LoadPoliciesFromDirs(target fs.FS, paths ...string) (map[string]*ast.Module
 				ProcessAnnotation: true,
 			})
 			if err != nil {
-				// s.debug.Log("Failed to load module: %s, err: %s", filepath.ToSlash(path), err.Error())
-				return err
+				return fmt.Errorf("failed to parse Rego module: %w", err)
 			}
 			modules[path] = module
 			return nil
