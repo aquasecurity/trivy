@@ -21,9 +21,10 @@ func TestResolveModuleFromCache(t *testing.T) {
 	}
 
 	tests := []struct {
-		name          string
-		opts          resolvers.Options
-		firstResolver moduleResolver
+		name           string
+		opts           resolvers.Options
+		firstResolver  moduleResolver
+		expectedSubdir string
 	}{
 		{
 			name: "registry",
@@ -32,7 +33,8 @@ func TestResolveModuleFromCache(t *testing.T) {
 				Source:  "terraform-aws-modules/s3-bucket/aws",
 				Version: "4.1.2",
 			},
-			firstResolver: resolvers.Registry,
+			firstResolver:  resolvers.Registry,
+			expectedSubdir: ".",
 		},
 		{
 			name: "registry with subdir",
@@ -41,7 +43,8 @@ func TestResolveModuleFromCache(t *testing.T) {
 				Source:  "terraform-aws-modules/s3-bucket/aws//modules/object",
 				Version: "4.1.2",
 			},
-			firstResolver: resolvers.Registry,
+			firstResolver:  resolvers.Registry,
+			expectedSubdir: "modules/object",
 		},
 		{
 			name: "remote",
@@ -49,7 +52,8 @@ func TestResolveModuleFromCache(t *testing.T) {
 				Name:   "bucket",
 				Source: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.2",
 			},
-			firstResolver: resolvers.Remote,
+			firstResolver:  resolvers.Remote,
+			expectedSubdir: ".",
 		},
 		{
 			name: "remote with subdir",
@@ -57,7 +61,8 @@ func TestResolveModuleFromCache(t *testing.T) {
 				Name:   "object",
 				Source: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/object?ref=v4.1.2",
 			},
-			firstResolver: resolvers.Remote,
+			firstResolver:  resolvers.Remote,
+			expectedSubdir: "modules/object",
 		},
 	}
 
