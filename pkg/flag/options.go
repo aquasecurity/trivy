@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
@@ -480,6 +481,16 @@ func (o *Options) RemoteCacheOpts() cache.RemoteOptions {
 		ServerAddr:    o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
 		Insecure:      o.Insecure,
+		PathPrefix:    o.PathPrefix,
+	}
+}
+
+func (o *Options) ClientScannerOpts() client.ScannerOption {
+	return client.ScannerOption{
+		RemoteURL:     o.ServerAddr,
+		CustomHeaders: o.CustomHeaders,
+		Insecure:      o.Insecure,
+		PathPrefix:    o.PathPrefix,
 	}
 }
 
