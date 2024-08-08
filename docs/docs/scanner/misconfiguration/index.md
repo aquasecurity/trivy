@@ -316,7 +316,7 @@ This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
 ### External connectivity
-Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../advanced/air-gap.md).
+Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../../advanced/air-gap.md).
 
 ### Enabling a subset of misconfiguration scanners
 It's possible to only enable certain misconfiguration scanners if you prefer.
