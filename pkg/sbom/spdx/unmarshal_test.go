@@ -66,6 +66,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 											},
 										},
 									},
+									BOMRef: "Package-b7ebaf0233f1ef7b",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
@@ -90,6 +91,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "log",
 										Version:   "1.13.1",
 									},
+									BOMRef: "Package-2906575950df652b",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -106,6 +108,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "pear_exception",
 										Version:   "v1.0.0",
 									},
+									BOMRef: "Package-5e2e255ac76747ef",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -128,6 +131,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "packageurl-go",
 										Version:   "v0.1.1-0.20220203205134-d70459300c8a",
 									},
+									BOMRef: "Package-84ebffe38343d949",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -148,6 +152,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "child-project",
 										Version:   "1.0",
 									},
+									BOMRef: "Package-2a53baa495b9ddaf",
 								},
 								Version: "1.0",
 								Layer: ftypes.Layer{
@@ -169,6 +174,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "bootstrap",
 										Version: "5.0.2",
 									},
+									BOMRef: "Package-5f1dbaff8de5eb06",
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
@@ -199,6 +205,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "yargs-parser",
 										Version: "21.1.1",
 									},
+									BOMRef: "Package-c3508825bf3861d8",
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 							},
@@ -226,6 +233,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "yargs-parser",
 										Version: "21.1.1",
 									},
+									BOMRef: "Package-c3508825bf3861d8",
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 							},
@@ -254,6 +262,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "log",
 										Version:   "1.13.1",
 									},
+									BOMRef: "Package-2906575950df652b",
 								},
 							},
 							{
@@ -267,6 +276,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "pear_exception",
 										Version:   "v1.0.0",
 									},
+									BOMRef: "Package-5e2e255ac76747ef",
 								},
 							},
 						},
@@ -294,6 +304,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
+									BOMRef: "Package-d6465ccdd5385c16",
 								},
 							},
 							{
@@ -308,6 +319,130 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "apm-agent-cached-lookup-key",
 										Version:   "1.36.0",
 									},
+									BOMRef: "Package-8e3a2cf58d7bd790",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path multiple OS. OS is selected by number of packages",
+			inputFile: "testdata/happy/select-os-by-number-of-pkgs.json",
+			want: types.SBOM{
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "debian",
+						Name:   "12.5",
+					},
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "libmd0@1.0.4-2",
+								Name:       "libmd0",
+								Version:    "1.0.4-2",
+								Arch:       "arm64",
+								SrcName:    "libmd",
+								SrcVersion: "1.0.4",
+								SrcRelease: "2",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libmd0",
+										Version:   "1.0.4-2",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.5",
+											},
+										},
+									},
+									BOMRef: "Package-gnrtd175",
+								},
+							},
+							{
+								ID:         "libmount1@2.38.1-5+deb12u1",
+								Name:       "libmount1",
+								Version:    "2.38.1-5+deb12u1",
+								Arch:       "arm64",
+								SrcName:    "util-linux",
+								SrcVersion: "2.38.1",
+								SrcRelease: "5+deb12u1",
+								Licenses:   []string{"MIT"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libmount1",
+										Version:   "2.38.1-5+deb12u1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.5",
+											},
+										},
+									},
+									BOMRef: "Package-gnrtd259",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path multiple OS. OS is selected by SPDXID",
+			inputFile: "testdata/happy/select-os-by-spdxid.json",
+			want: types.SBOM{
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "debian",
+						Name:   "12.0",
+					},
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "libedit2@3.1-20221030-2",
+								Name:       "libedit2",
+								Version:    "3.1-20221030-2",
+								Arch:       "amd64",
+								SrcName:    "libedit",
+								SrcVersion: "3.1-20221030",
+								SrcRelease: "2",
+								Licenses:   []string{"BSD-3-Clause"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "libedit2",
+										Version:   "3.1-20221030-2",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "amd64",
+											},
+											{
+												Key:   "distro",
+												Value: "debian-12.0",
+											},
+										},
+									},
+									BOMRef: "Package-gnrtd7",
 								},
 							},
 						},

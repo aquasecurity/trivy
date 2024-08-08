@@ -14,6 +14,7 @@ import (
 	"github.com/spdx/tools-golang/tagvalue"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
@@ -164,6 +165,9 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 		Type:    s.parseType(spdxPkg),
 		Name:    spdxPkg.PackageName,
 		Version: spdxPkg.PackageVersion,
+		PkgIdentifier: types.PkgIdentifier{
+			BOMRef: string(spdxPkg.PackageSPDXIdentifier),
+		},
 	}
 
 	// PURL
