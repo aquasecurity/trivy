@@ -1,15 +1,36 @@
 package spec_test
 
 import (
+	"path/filepath"
 	"sort"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+type fakeCache struct {
+	defaultdirFunc            func() string
+	getChecksDirFunc          func() string
+	getComplianceSpecsDirFunc func() string
+}
+
+func (f fakeCache) DefaultDir() string {
+	return f.defaultdirFunc()
+}
+
+func (f fakeCache) GetChecksDir() string {
+	return f.getChecksDirFunc()
+}
+
+func (f fakeCache) GetComplianceSpecsDir() string {
+	return f.getComplianceSpecsDirFunc()
+}
 
 func TestComplianceSpec_Scanners(t *testing.T) {
 	tests := []struct {
@@ -238,4 +259,80 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 			assert.Equalf(t, tt.want, got, "CheckIDs()")
 		})
 	}
+}
+
+func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
+
+	t.Run("load user specified spec from disk", func(t *testing.T) {
+		cs, err := spec.GetComplianceSpec(filepath.Join("@testdata", "testspec.yaml"), cache.RealCache{})
+		require.NoError(t, err)
+		assert.Equal(t, spec.ComplianceSpec{Spec: iacTypes.Spec{
+			ID:          "test-spec-1.2",
+			Title:       "Test Spec",
+			Description: "This is a test spec",
+			RelatedResources: []string{
+				"https://www.google.ca",
+			},
+			Version: "1.2",
+			Controls: []iacTypes.Control{
+				{
+					Name:        "moar-testing",
+					Description: "Test needs foo bar baz",
+					ID:          "1.1",
+					Checks: []iacTypes.SpecCheck{
+						{ID: "AVD-TEST-1234"},
+					},
+					Severity: "LOW",
+				},
+			},
+		}}, cs)
+	})
+
+	t.Run("load user specified spec from disk fails", func(t *testing.T) {
+		_, err := spec.GetComplianceSpec("@doesnotexist", cache.RealCache{})
+		assert.Contains(t, err, "no such file or directory")
+	})
+
+	t.Run("bundle does not exist", func(t *testing.T) {
+		cs, err := spec.GetComplianceSpec("aws-cis-1.2", cache.RealCache{})
+		require.NoError(t, err)
+		assert.Equal(t, "aws-cis-1.2", cs.Spec.ID)
+	})
+
+	t.Run("bundle is corrupted", func(t *testing.T) {
+		cs, err := spec.GetComplianceSpec("aws-cis-1.2", fakeCache{
+			getChecksDirFunc: func() string {
+				return "does not exist"
+			},
+		})
+		require.NoError(t, err)
+		assert.Equal(t, "aws-cis-1.2", cs.Spec.ID)
+	})
+
+	t.Run("load spec from disk", func(t *testing.T) {
+		cs, err := spec.GetComplianceSpec("testspec", fakeCache{
+			getChecksDirFunc: func() string {
+				return filepath.Join("testdata", "testcache")
+			},
+			getComplianceSpecsDirFunc: func() string {
+				return filepath.Join("testdata", "testcache", "content", "specs", "compliance")
+			},
+		})
+		require.NoError(t, err)
+		assert.Equal(t, "test-spec-1.2", cs.Spec.ID)
+	})
+
+	t.Run("load spec from disk fails if bundle not found", func(t *testing.T) {
+		_, err := spec.GetComplianceSpec("testspec", fakeCache{
+			getChecksDirFunc: func() string {
+				return filepath.Join("testdata", "testcache")
+			},
+			getComplianceSpecsDirFunc: func() string {
+				return "does not exist"
+			},
+		})
+		assert.Contains(t, err, "no such file or directory")
+	})
+
+	// TODO: Add check to cover spec yaml unmarshal failure
 }

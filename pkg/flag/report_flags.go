@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -279,7 +280,7 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 
-	cs, err := spec.GetComplianceSpec(compliance)
+	cs, err := spec.GetComplianceSpec(compliance, cache.RealCache{})
 	if err != nil {
 		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
 	}

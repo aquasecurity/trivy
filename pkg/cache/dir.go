@@ -5,8 +5,16 @@ import (
 	"path/filepath"
 )
 
+type TrivyCache interface {
+	DefaultDir() string
+	GetChecksDir() string
+	GetComplianceSpecsDir() string
+}
+
+type RealCache struct{}
+
 // DefaultDir returns/creates the cache-dir to be used for trivy operations
-func DefaultDir() string {
+func (rc RealCache) DefaultDir() string {
 	tmpDir, err := os.UserCacheDir()
 	if err != nil {
 		tmpDir = os.TempDir()
@@ -14,10 +22,10 @@ func DefaultDir() string {
 	return filepath.Join(tmpDir, "trivy")
 }
 
-func GetChecksDir() string {
-	return filepath.Join(DefaultDir(), "policy")
+func (rc RealCache) GetChecksDir() string {
+	return filepath.Join(rc.DefaultDir(), "policy")
 }
 
-func GetComplianceSpecsDir() string {
-	return filepath.Join(GetChecksDir(), "content", "specs", "compliance")
+func (rc RealCache) GetComplianceSpecsDir() string {
+	return filepath.Join(rc.GetChecksDir(), "content", "specs", "compliance")
 }
