@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"path/filepath"
-	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
@@ -17,17 +15,12 @@ import (
 )
 
 type Parser struct {
-	targetFS     fs.FS
-	skipRequired bool
-	debug        debug.Logger
+	targetFS fs.FS
+	debug    debug.Logger
 }
 
 func (p *Parser) SetDebugWriter(writer io.Writer) {
 	p.debug = debug.New(writer, "azure", "arm")
-}
-
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
 }
 
 func New(targetFS fs.FS, opts ...options.ParserOption) *Parser {
@@ -56,14 +49,13 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure2.Deployment, 
 		if entry.IsDir() {
 			return nil
 		}
-		if !p.Required(path) {
-			return nil
-		}
+
 		f, err := p.targetFS.Open(path)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
+
 		deployment, err := p.parseFile(f, path)
 		if err != nil {
 			return err
@@ -75,34 +67,6 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure2.Deployment, 
 	}
 
 	return deployments, nil
-}
-
-func (p *Parser) Required(path string) bool {
-	if p.skipRequired {
-		return true
-	}
-	if !strings.HasSuffix(path, ".json") {
-		return false
-	}
-	data, err := fs.ReadFile(p.targetFS, path)
-	if err != nil {
-		return false
-	}
-	var template Template
-	root := types.NewMetadata(
-		types.NewRange(filepath.Base(path), 0, 0, "", p.targetFS),
-		"",
-	)
-	if err := armjson.Unmarshal(data, &template, &root); err != nil {
-		p.debug.Log("Error scanning %s: %s", path, err)
-		return false
-	}
-
-	if template.Schema.Kind != azure2.KindString {
-		return false
-	}
-
-	return strings.HasPrefix(template.Schema.AsString(), "https://schema.management.azure.com")
 }
 
 func (p *Parser) parseFile(r io.Reader, filename string) (*azure2.Deployment, error) {

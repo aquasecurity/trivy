@@ -6,7 +6,7 @@
   "Metadata": {
     "OS": {
       "Family": "cbl-mariner",
-      "Name": "1.0.20220122"
+      "Name": "1.0"
     },
     "ImageID": "sha256:8cdcbf18341ed8afa5322e7b0077f8ef3f46896882c921df5f97c51b369f6767",
     "DiffIDs": [
@@ -34,7 +34,7 @@
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/mariner-1.0.tar.gz (cbl-mariner 1.0.20220122)",
+      "Target": "testdata/fixtures/images/mariner-1.0.tar.gz (cbl-mariner 1.0)",
       "Class": "os-pkgs",
       "Type": "cbl-mariner",
       "Vulnerabilities": [
@@ -42,7 +42,7 @@
           "VulnerabilityID": "CVE-2022-0261",
           "PkgName": "vim",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0.20220122",
+            "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0",
             "UID": "3f08cd76fa5ba73d"
           },
           "InstalledVersion": "8.2.4081-1.cm1",
@@ -79,7 +79,7 @@
           "VulnerabilityID": "CVE-2022-0158",
           "PkgName": "vim",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0.20220122",
+            "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0",
             "UID": "3f08cd76fa5ba73d"
           },
           "InstalledVersion": "8.2.4081-1.cm1",

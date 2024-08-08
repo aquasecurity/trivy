@@ -47,13 +47,13 @@ func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
+type Scanner struct {
+	mu                    sync.Mutex
 	debug                 debug.Logger
 	policyDirs            []string
 	policyReaders         []io.Reader
 	parser                *parser.Parser
 	regoScanner           *rego.Scanner
-	skipRequired          bool
 	regoOnly              bool
 	loadEmbeddedPolicies  bool
 	loadEmbeddedLibraries bool
@@ -61,7 +61,6 @@ type Scanner struct { // nolint: gocritic
 	parserOptions         []options.ParserOption
 	frameworks            []framework.Framework
 	spec                  string
-	sync.Mutex
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
@@ -98,12 +97,9 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
 	s.debug = debug.New(writer, "cloudformation", "scanner")
+	s.parserOptions = append(s.parserOptions, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetPolicyDirs(dirs ...string) {
@@ -132,14 +128,13 @@ func New(opts ...options.ScannerOption) *Scanner {
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.addParserOptions(options.ParserWithSkipRequiredCheck(s.skipRequired))
 	s.parser = parser.New(s.parserOptions...)
 	return s
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}

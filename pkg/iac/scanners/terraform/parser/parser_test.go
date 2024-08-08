@@ -1745,3 +1745,78 @@ func TestTFVarsFileDoesNotExist(t *testing.T) {
 	_, _, err := parser.EvaluateAll(context.TODO())
 	assert.ErrorContains(t, err, "file does not exist")
 }
+
+func TestDynamicWithIterator(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(`resource "aws_s3_bucket" "this" {
+  dynamic versioning {
+    for_each = [true]
+    iterator = ver
+
+    content {
+      enabled = ver.value
+    }
+  }
+}`),
+		},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	assert.Len(t, modules, 1)
+
+	buckets := modules.GetResourcesByType("aws_s3_bucket")
+	assert.Len(t, buckets, 1)
+
+	attr, _ := buckets[0].GetNestedAttribute("versioning.enabled")
+
+	assert.True(t, attr.Value().True())
+}
+
+func Test_AWSRegionNameDefined(t *testing.T) {
+
+	fs := testutil.CreateFS(t, map[string]string{
+		"code/test.tf": `
+data "aws_region" "current" {}
+
+data "aws_region" "other" {
+  name = "us-east-2"
+}
+
+resource "something" "blah" {
+  r1 = data.aws_region.current.name
+  r2 = data.aws_region.other.name
+}
+`,
+	})
+
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+	rootModule := modules[0]
+
+	blocks := rootModule.GetResourcesByType("something")
+	require.Len(t, blocks, 1)
+	block := blocks[0]
+
+	r1 := block.GetAttribute("r1")
+	require.NotNil(t, r1)
+	assert.True(t, r1.IsResolvable())
+	assert.Equal(t, "current-region", r1.Value().AsString())
+
+	r2 := block.GetAttribute("r2")
+	require.NotNil(t, r2)
+	assert.True(t, r2.IsResolvable())
+	assert.Equal(t, "us-east-2", r2.Value().AsString())
+}

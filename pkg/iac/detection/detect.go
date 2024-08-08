@@ -45,8 +45,8 @@ func init() {
 			return true
 		}
 
-		var content any
-		return json.NewDecoder(r).Decode(&content) == nil
+		b, err := io.ReadAll(r)
+		return err == nil && json.Valid(b)
 	}
 
 	matchers[FileTypeYAML] = func(name string, r io.ReadSeeker) bool {
@@ -135,12 +135,17 @@ func init() {
 		}
 
 		sniff := struct {
-			ContentType string         `json:"contentType"`
-			Parameters  map[string]any `json:"parameters"`
-			Resources   []any          `json:"resources"`
+			Schema     string         `json:"$schema"`
+			Parameters map[string]any `json:"parameters"`
+			Resources  []any          `json:"resources"`
 		}{}
 		metadata := types.NewUnmanagedMetadata()
 		if err := armjson.UnmarshalFromReader(r, &sniff, &metadata); err != nil {
+			return false
+		}
+
+		// schema is required https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/syntax
+		if !strings.HasPrefix(sniff.Schema, "https://schema.management.azure.com/schemas") {
 			return false
 		}
 
@@ -216,15 +221,15 @@ func init() {
 		}
 		data := buf.Bytes()
 
-		marker := "\n---\n"
-		altMarker := "\r\n---\r\n"
-		if bytes.Contains(data, []byte(altMarker)) {
+		marker := []byte("\n---\n")
+		altMarker := []byte("\r\n---\r\n")
+		if bytes.Contains(data, altMarker) {
 			marker = altMarker
 		}
 
-		for _, partial := range strings.Split(string(data), marker) {
+		for _, partial := range bytes.Split(data, marker) {
 			var result map[string]any
-			if err := yaml.Unmarshal([]byte(partial), &result); err != nil {
+			if err := yaml.Unmarshal(partial, &result); err != nil {
 				continue
 			}
 			match := true

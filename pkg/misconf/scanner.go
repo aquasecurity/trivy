@@ -215,7 +215,6 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 
 func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
 	opts := []options.ScannerOption{
-		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),

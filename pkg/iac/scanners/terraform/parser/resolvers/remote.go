@@ -38,7 +38,7 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 		return nil, "", "", false, nil
 	}
 
-	src := removeSubdirFromSource(opt.OriginalSource)
+	src, subdir := splitPackageSubdirRaw(opt.OriginalSource)
 	key := cacheKey(src, opt.OriginalVersion)
 	opt.Debug("Storing with cache key %s", key)
 
@@ -54,7 +54,7 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 	r.incrementCount(opt)
 	opt.Debug("Successfully downloaded %s from %s", opt.Name, opt.Source)
 	opt.Debug("Module '%s' resolved via remote download.", opt.Name)
-	return os.DirFS(cacheDir), opt.Source, filepath.Join(".", opt.RelativePath), true, nil
+	return os.DirFS(cacheDir), opt.Source, subdir, true, nil
 }
 
 func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) error {
