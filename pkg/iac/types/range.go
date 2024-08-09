@@ -146,3 +146,10 @@ func (r Range) GetFS() fs.FS {
 func (r Range) GetSourcePrefix() string {
 	return r.sourcePrefix
 }
+
+func (r Range) Validate() error {
+	if r.startLine < 0 || r.endLine < 0 || r.startLine > r.endLine {
+		return fmt.Errorf("invalid range: %s", r.String())
+	}
+	return nil
+}
