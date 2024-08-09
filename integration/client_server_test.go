@@ -287,7 +287,7 @@ func TestClientServer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 
 			if tt.args.secretConfig != "" {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
@@ -407,7 +407,7 @@ func TestClientServerWithFormat(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("AWS_REGION", "test-region")
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 
 			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
 				override: overrideUID,
@@ -435,7 +435,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, "", types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
@@ -488,7 +488,7 @@ func TestClientServerWithToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				override: overrideUID,
 				wantErr:  tt.wantErr,
@@ -515,7 +515,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	golden := "testdata/alpine-39.json.golden"
 
 	t.Run("alpine 3.9", func(t *testing.T) {
-		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
+		osArgs := setupClient(t, testArgs, addr, cacheDir)
 
 		// Run Trivy client
 		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{
@@ -527,7 +527,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	require.NoError(t, redisC.Terminate(ctx))
 
 	t.Run("sad path", func(t *testing.T) {
-		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
+		osArgs := setupClient(t, testArgs, addr, cacheDir)
 
 		// Run Trivy client
 		runTest(t, osArgs, "", "", types.FormatJSON, runOptions{
@@ -592,7 +592,7 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 	return osArgs
 }
 
-func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) []string {
+func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string {
 	if c.Command == "" {
 		c.Command = "image"
 	}

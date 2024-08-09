@@ -1,11 +1,11 @@
-# Vulnerability Exploitability Exchange (VEX)
+# Local VEX Files
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy supports filtering detected vulnerabilities using [the Vulnerability Exploitability Exchange (VEX)](https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf), a standardized format for sharing and exchanging information about vulnerabilities.
-By providing VEX during scanning, it is possible to filter vulnerabilities based on their status.
-Currently, Trivy supports the following three formats:
+In addition to [VEX repositories](./repo.md), Trivy also supports the use of local VEX files for vulnerability filtering.
+This method is useful when you have specific VEX documents that you want to apply to your scans.
+Currently, Trivy supports the following formats:
 
 - [CycloneDX](https://cyclonedx.org/capabilities/vex/)
 - [OpenVEX](https://github.com/openvex/spec)

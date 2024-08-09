@@ -56,5 +56,6 @@ trivy [global flags] command [flags] target
 * [trivy sbom](trivy_sbom.md)	 - Scan SBOM for vulnerabilities and licenses
 * [trivy server](trivy_server.md)	 - Server mode
 * [trivy version](trivy_version.md)	 - Print the version
+* [trivy vex](trivy_vex.md)	 - [EXPERIMENTAL] VEX utilities
 * [trivy vm](trivy_vm.md)	 - [EXPERIMENTAL] Scan a virtual machine image
 

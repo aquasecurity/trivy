@@ -73,6 +73,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 		},
 	}
 
+	t.Setenv("TRIVY_DISABLE_VEX_NOTICE", "1")
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}

@@ -40,6 +40,11 @@ func NewSecretRenderer(target string, secrets []types.DetectedSecret, ansi bool,
 }
 
 func (r *secretRenderer) Render() string {
+	// Trivy doesn't currently support showing suppressed secrets
+	// So just skip this result
+	if len(r.secrets) == 0 {
+		return ""
+	}
 	target := r.target + " (secrets)"
 	RenderTarget(r.w, target, r.ansi)
 

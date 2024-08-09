@@ -35,6 +35,10 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	}
 
 	e.bom = core.NewBOM(e.opts)
+	if report.BOM != nil {
+		e.bom.SerialNumber = report.BOM.SerialNumber
+		e.bom.Version = report.BOM.Version
+	}
 	e.bom.AddComponent(root)
 
 	for _, result := range report.Results {
@@ -68,6 +72,15 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 			Name:  core.PropertyImageID,
 			Value: r.Metadata.ImageID,
 		})
+
+		// Save image labels as properties with `Labels:` prefix.
+		// e.g. `LABEL vendor="aquasecurity"` => `Labels:vendor` -> `aquasecurity`
+		for label, value := range r.Metadata.ImageConfig.Config.Labels {
+			props = append(props, core.Property{
+				Name:  core.PropertyLabelsPrefix + ":" + label,
+				Value: value,
+			})
+		}
 
 		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {

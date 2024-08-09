@@ -85,7 +85,7 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	}
 
 	b := Block{
-		id:           uuid.New().String(),
+		id:           uuid.NewString(),
 		context:      ctx,
 		hclBlock:     hclBlock,
 		moduleBlock:  moduleBlock,
@@ -446,6 +446,9 @@ func (b *Block) Attributes() map[string]*Attribute {
 func (b *Block) Values() cty.Value {
 	values := createPresetValues(b)
 	for _, attribute := range b.GetAttributes() {
+		if attribute.Name() == "for_each" {
+			continue
+		}
 		values[attribute.Name()] = attribute.Value()
 	}
 	return cty.ObjectVal(postProcessValues(b, values))

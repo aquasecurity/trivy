@@ -355,6 +355,70 @@ rules:
 				FileTypeYAML,
 			},
 		},
+		{
+			name: "Azure ARM template with resources",
+			path: "test.json",
+			r: strings.NewReader(`
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "{provide-unique-name}",
+      "location": "eastus",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true
+      }
+    }
+  ]
+}
+`),
+			expected: []FileType{
+				FileTypeJSON,
+				FileTypeAzureARM,
+			},
+		},
+		{
+			name: "Azure ARM template with parameters",
+			path: "test.json",
+			r: strings.NewReader(`
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 24
+    }
+  }
+}
+`),
+			expected: []FileType{
+				FileTypeJSON,
+				FileTypeAzureARM,
+			},
+		},
+		{
+			name: "empty Azure ARM template",
+			path: "test.json",
+			r: strings.NewReader(`
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": []
+}
+`),
+			expected: []FileType{
+				FileTypeJSON,
+			},
+		},
 	}
 
 	for _, test := range tests {

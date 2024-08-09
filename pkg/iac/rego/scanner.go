@@ -138,10 +138,6 @@ func (s *Scanner) SetPolicyNamespaces(namespaces ...string) {
 	}
 }
 
-func (s *Scanner) SetSkipRequiredCheck(_ bool) {
-	// NOTE: Skip required option not applicable for rego.
-}
-
 func (s *Scanner) SetRegoErrorLimit(limit int) {
 	s.regoErrorLimit = limit
 }
