@@ -65,7 +65,10 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	var credentials []types.Credential
 	users := f.Username.Value()
 	passwords := f.Password.Value()
-	if len(users) != len(passwords) {
+	switch {
+	case len(users) == 1 && len(passwords) > 1:
+		passwords = []string{strings.Join(passwords, ",")}
+	case len(users) != len(passwords):
 		return RegistryOptions{}, xerrors.New("the length of usernames and passwords must match")
 	}
 	for i, user := range users {
