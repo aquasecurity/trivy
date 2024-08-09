@@ -107,7 +107,7 @@ $ trivy conf --severity HIGH,CRITICAL ./iac
 <details>
 <summary>Result</summary>
 
-```
+```bash
 2022-06-06T11:01:21.142+0100	INFO	Detected config files: 8
 
 Dockerfile (dockerfile)
@@ -339,6 +339,59 @@ For more details, see [Custom Checks](./custom/index.md).
 
 !!! tip
 You also need to specify `--namespaces` option.
+
+
+### Scan arbitrary JSON and YAML configurations
+By default, scanning JSON and YAML configurations is disabled, since Trivy does not contain built-in checks for these configurations. To enable it, pass the `json` or `yaml` to `--misconfig-scanners`. See [Enabling a subset of misconfiguration scanners](#enabling-a-subset-of-misconfiguration-scanners) for more information. Trivy will pass each file as is to the checks input.
+
+
+!!! example
+```bash
+$ cat iac/serverless.yaml
+service: serverless-rest-api-with-pynamodb
+
+frameworkVersion: ">=2.24.0"
+
+plugins:
+  - serverless-python-requirements
+...
+
+$ cat serverless.rego
+# METADATA
+# title: Serverless Framework service name not starting with "aws-"
+# description: Ensure that Serverless Framework service names start with "aws-"
+# schemas:
+#   - input: schema["serverless-schema"]
+# custom:
+#   id: SF001
+#   severity: LOW
+package user.serverless001
+
+deny[res] {
+    not startswith(input.service, "aws-")
+    res := result.new(
+        sprintf("Service name %q is not allowed", [input.service]),
+        input.service
+    )
+}
+
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
+serverless.yaml (yaml)
+
+Tests: 4 (SUCCESSES: 3, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+LOW: Service name "serverless-rest-api-with-pynamodb" is not allowed
+═════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure that Serverless Framework service names start with "aws-"
+```
+
+You can also pass schemas using the `config-file-schemas` flag. Trivy will use these schemas for file filtering and type checking in Rego checks. If the file does not match any of the passed schemas, it will be ignored.
+
+!!! example
+```bash
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
+```
 
 ### Passing custom data
 You can pass directories including your custom data through `--data` option.
