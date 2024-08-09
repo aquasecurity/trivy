@@ -7,7 +7,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 const (
@@ -29,7 +29,7 @@ type helmConfigAnalyzer struct {
 }
 
 func newHelmConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewHelmScanner, opts)
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeHelm, opts)
 	if err != nil {
 		return nil, err
 	}

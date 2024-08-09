@@ -97,6 +97,7 @@ var AggregatingTypes = []LangType{
 // Config files
 const (
 	JSON                  ConfigType = "json"
+	YAML                  ConfigType = "yaml"
 	Dockerfile            ConfigType = "dockerfile"
 	Terraform             ConfigType = "terraform"
 	TerraformPlanJSON     ConfigType = "terraformplan"

@@ -7,7 +7,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 const (
@@ -28,7 +28,7 @@ type dockerConfigAnalyzer struct {
 }
 
 func newDockerfileConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewDockerfileScanner, opts)
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeDockerfile, opts)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package rego
 import (
 	"bytes"
 	"context"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -1080,6 +1081,75 @@ deny {
 				Contents: map[string]any{
 					"text": "test",
 				},
+			})
+			require.NoError(t, err)
+			require.Len(t, results, tc.expectedResults, tc.name)
+		})
+	}
+}
+
+func Test_RegoScanner_WithCustomSchemas(t *testing.T) {
+
+	schema := `{
+  "$id": "https://example.com/test.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "service": { "type": "string" }
+  },
+  "required": ["service"]
+}`
+
+	tests := []struct {
+		name            string
+		check           string
+		expectedResults int
+	}{
+		{
+			name: "happy path",
+			check: `# METADATA
+# title: test check
+# schemas:
+# - input: schema["test"]
+package user.test
+
+deny {
+	input.service == "test"
+}
+`,
+			expectedResults: 1,
+		},
+		{
+			name: "sad path",
+			check: `# METADATA
+# title: test check
+# schemas:
+# - input: schema["test"]
+package user.test
+
+deny {
+	input.other == "test"
+}
+`,
+			expectedResults: 0,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			scanner := NewScanner(
+				types.SourceYAML,
+				options.ScannerWithCustomSchemas(map[string][]byte{
+					"test": []byte(schema),
+				}),
+				options.ScannerWithPolicyNamespaces("user"),
+			)
+			err := scanner.LoadPolicies(false, false, nil, nil, []io.Reader{strings.NewReader(tc.check)})
+			require.NoError(t, err)
+
+			results, err := scanner.ScanInput(context.TODO(), Input{
+				Path:     "test.yaml",
+				Contents: map[string]any{"service": "test"},
 			})
 			require.NoError(t, err)
 			require.Len(t, results, tc.expectedResults, tc.name)

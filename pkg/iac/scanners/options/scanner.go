@@ -24,6 +24,7 @@ type ConfigurableScanner interface {
 	SetRegoErrorLimit(limit int)
 	SetUseEmbeddedLibraries(bool)
 	SetIncludeDeprecatedChecks(bool)
+	SetCustomSchemas(map[string][]byte)
 }
 
 type ScannerOption func(s ConfigurableScanner)
@@ -124,5 +125,11 @@ func ScannerWithRegoOnly(regoOnly bool) ScannerOption {
 func ScannerWithRegoErrorLimits(limit int) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetRegoErrorLimit(limit)
+	}
+}
+
+func ScannerWithCustomSchemas(schemas map[string][]byte) ScannerOption {
+	return func(s ConfigurableScanner) {
+		s.SetCustomSchemas(schemas)
 	}
 }

@@ -3,7 +3,7 @@ package cloudformation
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 const (
@@ -22,7 +22,7 @@ type cloudFormationConfigAnalyzer struct {
 }
 
 func newCloudFormationConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewCloudFormationScanner, opts)
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeCloudFormation, opts)
 	if err != nil {
 		return nil, err
 	}

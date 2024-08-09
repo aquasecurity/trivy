@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 const (
@@ -25,7 +25,7 @@ type azureARMConfigAnalyzer struct {
 }
 
 func newAzureARMConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewAzureARMScanner, opts)
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeAzureARM, opts)
 	if err != nil {
 		return nil, err
 	}
