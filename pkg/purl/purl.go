@@ -84,7 +84,7 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		var qs packageurl.Qualifiers
 		name, namespace, qs = parseApk(name, metadata.OS)
 		qualifiers = append(qualifiers, qs...)
-	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
+	case packageurl.TypeMaven, packageurl.TypeGradle:
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
 		name = parsePyPI(name)
