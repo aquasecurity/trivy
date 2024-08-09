@@ -395,3 +395,5 @@ require (
 )
 
 replace github.com/aquasecurity/trivy-db => github.com/skahn007gl/trivy-db v0.0.0-20240723121440-a488d7f107fe
+
+replace github.com/openvex/discovery => github.com/knqyf263/discovery v0.1.1-0.20240726113521-97873005fd03
