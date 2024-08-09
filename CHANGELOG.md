@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.55.0](https://github.com/aquasecurity/trivy/compare/v0.54.0...v0.55.0) (2024-08-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cli:** delete deprecated SBOM flags ([#7266](https://github.com/aquasecurity/trivy/issues/7266))
+
+### Features
+
+* **cli:** delete deprecated SBOM flags ([#7266](https://github.com/aquasecurity/trivy/issues/7266)) ([7024572](https://github.com/aquasecurity/trivy/commit/70245721372720027b7089bd61c693df48add865))
+* **misconf:** iterator argument support for dynamic blocks ([#7236](https://github.com/aquasecurity/trivy/issues/7236)) ([fe92072](https://github.com/aquasecurity/trivy/commit/fe9207255a4f7f984ec1447f8a9219ae60e560c4))
+* **misconf:** support for policy and bucket grants ([#7284](https://github.com/aquasecurity/trivy/issues/7284)) ([a817fae](https://github.com/aquasecurity/trivy/commit/a817fae85b7272b391b737ec86673a7cab722bae))
+* **vm:** Support direct filesystem ([#7058](https://github.com/aquasecurity/trivy/issues/7058)) ([45b3f34](https://github.com/aquasecurity/trivy/commit/45b3f344042bcd90ca63ab696b69bff0e9ab4e36))
+* **vm:** support the Ext2/Ext3 filesystems ([#6983](https://github.com/aquasecurity/trivy/issues/6983)) ([35c60f0](https://github.com/aquasecurity/trivy/commit/35c60f030fa48de8d8e57958e5ba379814126831))
+* **vuln:** Add `--detection-priority` flag for accuracy tuning ([#7288](https://github.com/aquasecurity/trivy/issues/7288)) ([fd8348d](https://github.com/aquasecurity/trivy/commit/fd8348d610f20c6c33da81cd7b0e7d5504ce26be))
+
+
+### Bug Fixes
+
+* **flag:** incorrect behavior for deprected flag `--clear-cache` ([#7281](https://github.com/aquasecurity/trivy/issues/7281)) ([2a0e529](https://github.com/aquasecurity/trivy/commit/2a0e529c36057b572119815af59c28e4790034ca))
+* **java:** Return error when trying to find a remote pom to avoid segfault ([#7275](https://github.com/aquasecurity/trivy/issues/7275)) ([49d5270](https://github.com/aquasecurity/trivy/commit/49d5270163e305f88fedcf50412973736e69dc69))
+* **misconf:** do not set default value for default_cache_behavior ([#7234](https://github.com/aquasecurity/trivy/issues/7234)) ([f0ed5e4](https://github.com/aquasecurity/trivy/commit/f0ed5e4ced7e60af35c88d5d084aa4b7237f4973))
+* **misconf:** load only submodule if it is specified in source ([#7112](https://github.com/aquasecurity/trivy/issues/7112)) ([a4180bd](https://github.com/aquasecurity/trivy/commit/a4180bddd43d86e479edf0afe0c362021d071482))
+* **plugin:** do not call GitHub content API for releases and tags ([#7274](https://github.com/aquasecurity/trivy/issues/7274)) ([b3ee6da](https://github.com/aquasecurity/trivy/commit/b3ee6dac269bd7847674f3ce985a5ff7f8f0ba38))
+* **terraform:** add aws_region name to presets ([#7184](https://github.com/aquasecurity/trivy/issues/7184)) ([bb2e26a](https://github.com/aquasecurity/trivy/commit/bb2e26a0ab707b718f6a890cbc87e2492298b6e5))
+
+
+### Performance Improvements
+
+* **misconf:** do not convert contents of a YAML file to string ([#7292](https://github.com/aquasecurity/trivy/issues/7292)) ([85dadf5](https://github.com/aquasecurity/trivy/commit/85dadf56265647c000191561db10b08a4948c140))
+* **misconf:** optimize work with context ([#6968](https://github.com/aquasecurity/trivy/issues/6968)) ([2b6d8d9](https://github.com/aquasecurity/trivy/commit/2b6d8d9227fb6ecc9386a14333964c23c0370a52))
+* **misconf:** use json.Valid to check validity of JSON ([#7308](https://github.com/aquasecurity/trivy/issues/7308)) ([c766831](https://github.com/aquasecurity/trivy/commit/c766831069e188226efafeec184e41498685ed85))
+
 ## [0.54.0](https://github.com/aquasecurity/trivy/compare/v0.53.0...v0.54.0) (2024-07-30)
 
 
