@@ -3,6 +3,7 @@ package spec
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/samber/lo"
@@ -10,7 +11,9 @@ import (
 	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/trivy-checks/pkg/spec"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -70,18 +73,32 @@ func scannerByCheckID(checkID string) types.Scanner {
 	}
 }
 
-// GetComplianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
-func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
+// GetComplianceSpec accept compliance flag name/path and return builtin or file system loaded spec
+func GetComplianceSpec(specNameOrPath string, c cache.TrivyCache) (ComplianceSpec, error) {
+	if specNameOrPath == "" {
+		return ComplianceSpec{}, nil
+	}
+
 	var b []byte
 	var err error
-	if strings.HasPrefix(specNameOrPath, "@") {
+	if strings.HasPrefix(specNameOrPath, "@") { // load user specified spec from disk
 		b, err = os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
+			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from specified path: %w", err)
 		}
 	} else {
-		// TODO: GetSpecByName() should return []byte
-		b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
+		_, err := os.ReadFile(filepath.Join(c.GetChecksDir(), "metadata.json"))
+		if err != nil { // cache corrupt or bundle does not exist, load embedded version
+			b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
+			log.Debug("Compliance spec loaded from embedded library", log.String("spec", specNameOrPath))
+		} else {
+			// load from bundle on disk
+			b, err = LoadFromBundle(c, specNameOrPath)
+			if err != nil {
+				return ComplianceSpec{}, err
+			}
+			log.Debug("Compliance spec loaded from disk bundle", log.String("spec", specNameOrPath))
+		}
 	}
 
 	var complianceSpec ComplianceSpec
@@ -90,4 +107,12 @@ func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
 	}
 	return complianceSpec, nil
 
+}
+
+func LoadFromBundle(c cache.TrivyCache, specNameOrPath string) ([]byte, error) {
+	b, err := os.ReadFile(filepath.Join(c.GetComplianceSpecsDir(), specNameOrPath+".yaml"))
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving compliance spec from bundle %s: %w", specNameOrPath, err)
+	}
+	return b, nil
 }
