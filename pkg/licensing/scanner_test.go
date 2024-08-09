@@ -7,6 +7,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
 
 func TestScanner_Scan(t *testing.T) {
@@ -21,11 +22,11 @@ func TestScanner_Scan(t *testing.T) {
 			name: "forbidden",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {
-					licensing.BSD3Clause,
-					licensing.Apache20,
+					expression.BSD3Clause,
+					expression.Apache20,
 				},
 			},
-			licenseName:  licensing.Apache20,
+			licenseName:  expression.Apache20,
 			wantCategory: types.CategoryForbidden,
 			wantSeverity: "CRITICAL",
 		},
@@ -33,21 +34,21 @@ func TestScanner_Scan(t *testing.T) {
 			name: "restricted",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {
-					licensing.GPL30,
+					expression.GPL30,
 				},
 				types.CategoryRestricted: {
-					licensing.BSD3Clause,
-					licensing.Apache20,
+					expression.BSD3Clause,
+					expression.Apache20,
 				},
 			},
-			licenseName:  licensing.BSD3Clause,
+			licenseName:  expression.BSD3Clause,
 			wantCategory: types.CategoryRestricted,
 			wantSeverity: "HIGH",
 		},
 		{
 			name:         "unknown",
 			categories:   make(map[types.LicenseCategory][]string),
-			licenseName:  licensing.BSD3Clause,
+			licenseName:  expression.BSD3Clause,
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",
 		},

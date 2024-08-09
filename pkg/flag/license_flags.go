@@ -2,7 +2,7 @@ package flag
 
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
 
 var (
@@ -26,37 +26,37 @@ var (
 	// LicenseForbidden is an option only in a config file
 	LicenseForbidden = Flag[[]string]{
 		ConfigName: "license.forbidden",
-		Default:    licensing.ForbiddenLicenses,
+		Default:    expression.ForbiddenLicenses,
 		Usage:      "forbidden licenses",
 	}
 	// LicenseRestricted is an option only in a config file
 	LicenseRestricted = Flag[[]string]{
 		ConfigName: "license.restricted",
-		Default:    licensing.RestrictedLicenses,
+		Default:    expression.RestrictedLicenses,
 		Usage:      "restricted licenses",
 	}
 	// LicenseReciprocal is an option only in a config file
 	LicenseReciprocal = Flag[[]string]{
 		ConfigName: "license.reciprocal",
-		Default:    licensing.ReciprocalLicenses,
+		Default:    expression.ReciprocalLicenses,
 		Usage:      "reciprocal licenses",
 	}
 	// LicenseNotice is an option only in a config file
 	LicenseNotice = Flag[[]string]{
 		ConfigName: "license.notice",
-		Default:    licensing.NoticeLicenses,
+		Default:    expression.NoticeLicenses,
 		Usage:      "notice licenses",
 	}
 	// LicensePermissive is an option only in a config file
 	LicensePermissive = Flag[[]string]{
 		ConfigName: "license.permissive",
-		Default:    licensing.PermissiveLicenses,
+		Default:    expression.PermissiveLicenses,
 		Usage:      "permissive licenses",
 	}
 	// LicenseUnencumbered is an option only in a config file
 	LicenseUnencumbered = Flag[[]string]{
 		ConfigName: "license.unencumbered",
-		Default:    licensing.UnencumberedLicenses,
+		Default:    expression.UnencumberedLicenses,
 		Usage:      "unencumbered licenses",
 	}
 )

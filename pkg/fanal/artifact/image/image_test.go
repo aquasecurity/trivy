@@ -40,7 +40,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Version:    "3.2.0-r3",
 			SrcName:    "alpine-baselayout",
 			SrcVersion: "3.2.0-r3",
-			Licenses:   []string{"GPL-2.0"},
+			Licenses:   []string{"GPL-2.0-only"},
 			Digest:     "sha1:8f373f5b329c3aaf136eb30c63a387661ee0f3d0",
 			DependsOn: []string{
 				"busybox@1.31.1-r9",
@@ -113,7 +113,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Version:    "2.10.4-r3",
 			SrcName:    "apk-tools",
 			SrcVersion: "2.10.4-r3",
-			Licenses:   []string{"GPL-2.0"},
+			Licenses:   []string{"GPL-2.0-only"},
 			Digest:     "sha1:b15ad0c90e4493dfdc948d6b90a8e020da8936ef",
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
@@ -132,7 +132,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Version:    "1.31.1-r9",
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
-			Licenses:   []string{"GPL-2.0"},
+			Licenses:   []string{"GPL-2.0-only"},
 			Digest:     "sha1:a457703d71654811ea28d8d27a5cfc49ece27b34",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
@@ -156,7 +156,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcVersion: "20191127-r1",
 			Licenses: []string{
 				"MPL-2.0",
-				"GPL-2.0",
+				"GPL-2.0-or-later",
 			},
 			Arch:   "x86_64",
 			Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
@@ -265,7 +265,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses: []string{
 				"MIT",
 				"BSD-3-Clause",
-				"GPL-2.0",
+				"GPL-2.0-or-later",
 			},
 			Digest: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
 			DependsOn: []string{
@@ -287,7 +287,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Version:    "1.2.4-r0",
 			SrcName:    "pax-utils",
 			SrcVersion: "1.2.4-r0",
-			Licenses:   []string{"GPL-2.0"},
+			Licenses:   []string{"GPL-2.0-only"},
 			Digest:     "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
@@ -303,7 +303,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Version:    "1.31.1-r9",
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
-			Licenses:   []string{"GPL-2.0"},
+			Licenses:   []string{"GPL-2.0-only"},
 			Digest:     "sha1:3b685152af320120ae8941c740d3376b54e43c10",
 			DependsOn: []string{
 				"libtls-standalone@2.9.1-r0",
@@ -567,7 +567,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/base-files/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL-3.0"},
+										{Name: "GPL-2.0-or-later"},
 									},
 									PkgName: "base-files",
 								},
@@ -575,7 +575,8 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/ca-certificates/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL-2.0"},
+										{Name: "GPL-2.0-or-later"},
+										{Name: "GPL-2.0-only"},
 										{Name: "MPL-2.0"},
 									},
 									PkgName: "ca-certificates",
@@ -584,7 +585,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/netbase/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL-2.0"},
+										{Name: "GPL-2.0-only"},
 									},
 									PkgName: "netbase",
 								},
@@ -655,8 +656,8 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libc6/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "LGPL-2.1"},
-										{Name: "GPL-2.0"},
+										{Name: "LGPL-2.1-only"},
+										{Name: "GPL-2.0-only"},
 									},
 									PkgName: "libc6",
 								},

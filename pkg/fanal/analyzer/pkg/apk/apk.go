@@ -142,26 +142,8 @@ func (a alpinePkgAnalyzer) trimRequirement(s string) string {
 }
 
 func (a alpinePkgAnalyzer) parseLicense(line string) []string {
-	line = line[2:] // Remove "L:"
-	if line == "" {
-		return nil
-	}
-	var licenses []string
-	// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
-	for i, s := range strings.Fields(line) {
-		s = strings.Trim(s, "()")
-		switch {
-		case s == "":
-			continue
-		case s == "AND" || s == "OR":
-			continue
-		case i > 0 && (s == "1.0" || s == "2.0" || s == "3.0"):
-			licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
-		default:
-			licenses = append(licenses, licensing.Normalize(s))
-		}
-	}
-	return licenses
+	// Remove "L:" before split
+	return licensing.LaxSplitLicenses(line[2:])
 }
 
 func (a alpinePkgAnalyzer) parseProvides(line, pkgID string, provides map[string]string) {

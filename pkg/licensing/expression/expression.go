@@ -11,7 +11,7 @@ var (
 	ErrInvalidExpression = xerrors.New("invalid expression error")
 )
 
-type NormalizeFunc func(license string) string
+type NormalizeFunc func(license string) SimpleExpr
 
 func parse(license string) (Expression, error) {
 	l := NewLexer(strings.NewReader(license))
@@ -38,7 +38,9 @@ func normalize(expr Expression, fn ...NormalizeFunc) Expression {
 	switch e := expr.(type) {
 	case SimpleExpr:
 		for _, f := range fn {
-			e.license = f(e.license)
+			normalized := f(e.License)
+			e.License = normalized.License
+			e.HasPlus = e.HasPlus || normalized.HasPlus
 		}
 		return e
 	case CompoundExpr:
@@ -52,10 +54,10 @@ func normalize(expr Expression, fn ...NormalizeFunc) Expression {
 }
 
 // NormalizeForSPDX replaces ' ' to '-' in license-id.
-// SPDX license MUST NOT be white space between a license-id.
+// SPDX license MUST NOT have white space between a license-id.
 // There MUST be white space on either side of the operator "WITH".
 // ref: https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions
-func NormalizeForSPDX(s string) string {
+func NormalizeForSPDX(s string) SimpleExpr {
 	var b strings.Builder
 	for _, c := range s {
 		switch {
@@ -70,7 +72,7 @@ func NormalizeForSPDX(s string) string {
 			_, _ = b.WriteRune('-')
 		}
 	}
-	return b.String()
+	return SimpleExpr{License: b.String(), HasPlus: false}
 }
 
 func isAlphabet(r rune) bool {
