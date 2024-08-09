@@ -115,7 +115,7 @@ func Test_dbWorker_update(t *testing.T) {
 	}
 }
 
-func Test_newServeMux(t *testing.T) {
+func TestServer_newServeMux(t *testing.T) {
 	type args struct {
 		token       string
 		tokenHeader string
@@ -182,9 +182,8 @@ func Test_newServeMux(t *testing.T) {
 			require.NoError(t, err)
 			defer func() { _ = c.Close() }()
 
-			ts := httptest.NewServer(newServeMux(context.Background(), c, dbUpdateWg, requestWg, tt.args.token,
-				tt.args.tokenHeader, ""),
-			)
+			s := NewServer("", "", "", tt.args.token, tt.args.tokenHeader, "", nil, ftypes.RegistryOptions{})
+			ts := httptest.NewServer(s.newServeMux(context.Background(), c, dbUpdateWg, requestWg))
 			defer ts.Close()
 
 			var resp *http.Response
@@ -214,9 +213,8 @@ func Test_VersionEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = c.Close() }()
 
-	ts := httptest.NewServer(newServeMux(context.Background(), c, dbUpdateWg, requestWg, "", "",
-		"testdata/testcache"),
-	)
+	s := NewServer("", "", "testdata/testcache", "", "", "", nil, ftypes.RegistryOptions{})
+	ts := httptest.NewServer(s.newServeMux(context.Background(), c, dbUpdateWg, requestWg))
 	defer ts.Close()
 
 	resp, err := http.Get(ts.URL + "/version")

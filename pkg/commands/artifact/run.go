@@ -575,11 +575,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		Target:             target,
 		CacheOptions:       opts.CacheOpts(),
 		RemoteCacheOptions: opts.RemoteCacheOpts(),
-		ServerOption: client.ScannerOption{
-			RemoteURL:     opts.ServerAddr,
-			CustomHeaders: opts.CustomHeaders,
-			Insecure:      opts.Insecure,
-		},
+		ServerOption:       opts.ClientScannerOpts(),
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
 			DisabledHandlers:  disabledHandlers,

@@ -33,9 +33,6 @@ cache:
   # Same as '--cache-backend'
   backend: "fs"
 
-  # Same as '--clear-cache'
-  clear: false
-
   redis:
     # Same as '--redis-ca'
     ca: ""
@@ -112,9 +109,6 @@ db:
   # Same as '--skip-java-db-update'
   java-skip-update: false
 
-  # Same as '--light'
-  light: false
-
   # Same as '--no-progress'
   no-progress: false
 
@@ -123,9 +117,6 @@ db:
 
   # Same as '--skip-db-update'
   skip-update: false
-
-# Same as '--reset'
-reset: false
 
 ```
 ## Image options
@@ -408,9 +399,6 @@ misconfiguration:
   # Same as '--include-non-failures'
   include-non-failures: false
 
-  # Same as '--reset-checks-bundle'
-  reset-checks-bundle: false
-
   # Same as '--misconfig-scanners'
   scanners:
    - azure-arm
@@ -576,9 +564,6 @@ scan:
 
   # Same as '--skip-files'
   skip-files: []
-
-  # Same as '--slow'
-  slow: false
 
 ```
 ## Secret options

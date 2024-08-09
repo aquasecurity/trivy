@@ -39,6 +39,12 @@ var (
 		Default:    "localhost:4954",
 		Usage:      "listen address in server mode",
 	}
+	ServerPathPrefixFlag = Flag[string]{
+		Name:       "path-prefix",
+		ConfigName: "server.path-prefix",
+		Usage:      "prefix for the server endpoint",
+		Internal:   true, // Internal use
+	}
 )
 
 // RemoteFlagGroup composes common printer flag structs
@@ -47,6 +53,7 @@ type RemoteFlagGroup struct {
 	// for client/server
 	Token       *Flag[string]
 	TokenHeader *Flag[string]
+	PathPrefix  *Flag[string]
 
 	// for client
 	ServerAddr    *Flag[string]
@@ -63,12 +70,17 @@ type RemoteOptions struct {
 	ServerAddr    string
 	Listen        string
 	CustomHeaders http.Header
+
+	// Server endpoint: <baseURL>[<prefix>]/<package>.<Service>/<Method> (default prefix: /twirp)
+	// e.g., http://localhost:4954/twirp/trivy.scanner.v1.Scanner/Scan
+	PathPrefix string
 }
 
 func NewClientFlags() *RemoteFlagGroup {
 	return &RemoteFlagGroup{
 		Token:         ServerTokenFlag.Clone(),
 		TokenHeader:   ServerTokenHeaderFlag.Clone(),
+		PathPrefix:    ServerPathPrefixFlag.Clone(),
 		ServerAddr:    ServerAddrFlag.Clone(),
 		CustomHeaders: ServerCustomHeadersFlag.Clone(),
 	}
@@ -76,9 +88,10 @@ func NewClientFlags() *RemoteFlagGroup {
 
 func NewServerFlags() *RemoteFlagGroup {
 	return &RemoteFlagGroup{
-		Token:       &ServerTokenFlag,
-		TokenHeader: &ServerTokenHeaderFlag,
-		Listen:      &ServerListenFlag,
+		Token:       ServerTokenFlag.Clone(),
+		TokenHeader: ServerTokenHeaderFlag.Clone(),
+		PathPrefix:  ServerPathPrefixFlag.Clone(),
+		Listen:      ServerListenFlag.Clone(),
 	}
 }
 
@@ -90,6 +103,7 @@ func (f *RemoteFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.Token,
 		f.TokenHeader,
+		f.PathPrefix,
 		f.ServerAddr,
 		f.CustomHeaders,
 		f.Listen,
@@ -129,6 +143,7 @@ func (f *RemoteFlagGroup) ToOptions() (RemoteOptions, error) {
 	return RemoteOptions{
 		Token:         token,
 		TokenHeader:   tokenHeader,
+		PathPrefix:    f.PathPrefix.Value(),
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
 		Listen:        listen,
