@@ -55,6 +55,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			family = types.OpenSUSELeap
 		case "sles":
 			family = types.SLES
+		case "sle-micro", "sl-micro", "sle-micro-rancher":
+			family = types.SLEMicro
 		case "photon":
 			family = types.Photon
 		case "wolfi":

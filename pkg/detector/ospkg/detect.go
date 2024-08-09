@@ -44,6 +44,7 @@ var (
 		ftypes.OpenSUSETumbleweed: suse.NewScanner(suse.OpenSUSETumbleweed),
 		ftypes.OpenSUSELeap:       suse.NewScanner(suse.OpenSUSE),
 		ftypes.SLES:               suse.NewScanner(suse.SUSEEnterpriseLinux),
+		ftypes.SLEMicro:           suse.NewScanner(suse.SUSEEnterpriseLinuxMicro),
 		ftypes.Photon:             photon.NewScanner(),
 		ftypes.Wolfi:              wolfi.NewScanner(),
 		ftypes.Chainguard:         chainguard.NewScanner(),
