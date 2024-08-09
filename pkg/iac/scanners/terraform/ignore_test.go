@@ -446,6 +446,21 @@ resource "bad" "my-rule" {
 			assertLength: 0,
 		},
 		{
+			name: "ignore by indexed dynamic block value",
+			inputOptions: `
+// trivy:ignore:*[secure_settings.0.enabled=false]
+resource "bad" "my-rule" {
+  dynamic "secure_settings" {
+    for_each = ["false", "true"]
+    content {
+      enabled = secure_settings.value
+    }
+  }
+}
+`,
+			assertLength: 0,
+		},
+		{
 			name: "TrivyIgnoreLineStackedAboveTheBlock",
 			inputOptions: `
 // trivy:ignore:*

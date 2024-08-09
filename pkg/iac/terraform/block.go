@@ -353,7 +353,7 @@ func (b *Block) getAttributeByPath(path string) (*Attribute, []string) {
 	for currentBlock := b; currentBlock != nil && stepIndex < len(steps); {
 		blocks := currentBlock.GetBlocks(steps[stepIndex])
 		var nextBlock *Block
-		if !hasIndex(steps, stepIndex) && len(blocks) > 0 {
+		if !hasIndex(steps, stepIndex+1) && len(blocks) > 0 {
 			// if index is not provided then return the first block for backwards compatibility
 			nextBlock = blocks[0]
 		} else if len(blocks) > 1 && stepIndex < len(steps)-2 {
