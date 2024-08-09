@@ -2790,7 +2790,7 @@ You're not viewing the latest version.
   
     <li class="md-nav__item">
       <a href="../../advanced/air-gap/" class="md-nav__link">
-        Air-Gapped Environment
+        Advanced Network Scenarios
       </a>
     </li>
   
@@ -4214,7 +4214,7 @@ If you would like to create your custom compliance report, please reference the 
 </ol>
 <p>Additional information is provided below.</p>
 <h4 id="1-referencing-a-check-that-is-already-part-of-trivy">1. Referencing a check that is already part of Trivy</h4>
-<p>Trivy has a comprehensive list of checks as part of its misconfiguration scanning. These can be found in the <code>trivy-policies/checks</code> directory (<a href="https://github.com/aquasecurity/trivy-checks/tree/main/checks">Link</a>). If the check is present, the <code>AVD_ID</code> and other information from the check has to be used.</p>
+<p>Trivy has a comprehensive list of checks as part of its misconfiguration scanning. These can be found in the <code>trivy-checks/checks</code> directory (<a href="https://github.com/aquasecurity/trivy-checks/tree/main/checks">Link</a>). If the check is present, the <code>AVD_ID</code> and other information from the check has to be used.</p>
 <p>Note: Take a look at the more generic compliance specs that are already available in Trivy. If you are adding new compliance spec to Kubernetes e.g. AWS EKS CIS Benchmarks, chances are high that the check you would like to add to the new spec has already been defined in the general <code>k8s-ci-v.000.yaml</code> compliance spec. The same applies for creating specific Cloud Provider Compliance Specs and the <a href="https://github.com/aquasecurity/trivy-checks/tree/main/specs/compliance">generic compliance specs</a> available. </p>
 <p>For example, the following check is detailed in the AWS EKS CIS v1.4 Benchmark:
 <code>3.1.2 Ensure that the kubelet kubeconfig file ownership is set to root:root (Manual)</code></p>

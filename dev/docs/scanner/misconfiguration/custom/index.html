@@ -2849,7 +2849,7 @@ You're not viewing the latest version.
   
     <li class="md-nav__item">
       <a href="../../../advanced/air-gap/" class="md-nav__link">
-        Air-Gapped Environment
+        Advanced Network Scenarios
       </a>
     </li>
   
@@ -4309,8 +4309,8 @@ You're not viewing the latest version.
 <h1 id="custom-checks">Custom Checks</h1>
 <h2 id="overview">Overview</h2>
 <p>You can write custom checks in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
-Once you finish writing custom checks, you can pass the policy files or the directory where those policies are stored with <code>--policy</code> option.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/policy.rego --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+Once you finish writing custom checks, you can pass the check files or the directory where those checks are stored with --config-check` option.</p>
+<div class="highlight"><pre><span></span><code>trivy conf --config-check /path/to/policy.rego --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 </code></pre></div>
 <p>As for <code>--namespaces</code> option, the detail is described as below.</p>
 <h3 id="file-formats">File formats</h3>
@@ -4429,7 +4429,7 @@ If you add a new custom policy, it must be defined under a new package like <cod
 </div>
 <p>By default, only <code>builtin.*</code> packages will be evaluated.
 If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be <code>user</code> as in this example. It could be anything user-defined.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+<div class="highlight"><pre><span></span><code>trivy conf --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 </code></pre></div>
 <p>In this case, <code>user.*</code> will be evaluated.
 Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>
@@ -4528,7 +4528,7 @@ correct and do not reference incorrect properties/values.</p>
 </tbody>
 </table>
 <h4 id="customavd_id-and-customid">custom.avd_id and custom.id</h4>
-<p>The AVD_ID can be used to link the check to the Aqua Vulnerability Database (AVD) entry. For example, the <code>avd_id</code> <code>AVD-AWS-0176</code> is the ID of the check in the <a href="https://avd.aquasec.com/">AWS Vulnerability Database</a>. If you are <a href="../../../../community/contribute/checks/overview/">contributing your check to trivy-policies</a>, you need to generate an ID using <code>make id</code> in the <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a> repository. The output of the command will provide you the next free IDs for the different providers in Trivy.</p>
+<p>The AVD_ID can be used to link the check to the Aqua Vulnerability Database (AVD) entry. For example, the <code>avd_id</code> <code>AVD-AWS-0176</code> is the ID of the check in the <a href="https://avd.aquasec.com/">AWS Vulnerability Database</a>. If you are <a href="../../../../community/contribute/checks/overview/">contributing your check to trivy-checks</a>, you need to generate an ID using <code>make id</code> in the <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a> repository. The output of the command will provide you the next free IDs for the different providers in Trivy.</p>
 <p>The ID is based on the AVD_ID. For instance if the <code>avd_id</code> is <code>AVD-AWS-0176</code>, the ID is <code>ID0176</code>.</p>
 <h4 id="customprovider">custom.provider</h4>
 <p>The <code>provider</code> field references the <a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers">provider</a> available in Trivy. This should be the same as the provider name in the <code>pkg/iac/providers</code> directory, e.g. <code>aws</code>. </p>

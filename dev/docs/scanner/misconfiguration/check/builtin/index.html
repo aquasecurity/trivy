@@ -1267,23 +1267,36 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#check-sources" class="md-nav__link">
-    Check Sources
+  <a href="#checks-sources" class="md-nav__link">
+    Checks Sources
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#check-distribution" class="md-nav__link">
-    Check Distribution
+  <a href="#checks-bundle" class="md-nav__link">
+    Checks Bundle
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#update-interval" class="md-nav__link">
-    Update Interval
+  <a href="#checks-distribution" class="md-nav__link">
+    Checks Distribution
   </a>
+  
+    <nav class="md-nav" aria-label="Checks Distribution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-connectivity" class="md-nav__link">
+    External connectivity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2747,7 +2760,7 @@ You're not viewing the latest version.
   
     <li class="md-nav__item">
       <a href="../../../../advanced/air-gap/" class="md-nav__link">
-        Air-Gapped Environment
+        Advanced Network Scenarios
       </a>
     </li>
   
@@ -4064,23 +4077,36 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#check-sources" class="md-nav__link">
-    Check Sources
+  <a href="#checks-sources" class="md-nav__link">
+    Checks Sources
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#check-distribution" class="md-nav__link">
-    Check Distribution
+  <a href="#checks-bundle" class="md-nav__link">
+    Checks Bundle
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#update-interval" class="md-nav__link">
-    Update Interval
+  <a href="#checks-distribution" class="md-nav__link">
+    Checks Distribution
   </a>
+  
+    <nav class="md-nav" aria-label="Checks Distribution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-connectivity" class="md-nav__link">
+    External connectivity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -4103,18 +4129,18 @@ You're not viewing the latest version.
 
 
 <h1 id="built-in-checks">Built-in Checks</h1>
-<h2 id="check-sources">Check Sources</h2>
-<p>Built-in checks are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> and Go.
-Those checks are managed under <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks repository</a>.
+<h2 id="checks-sources">Checks Sources</h2>
+<p>Trivy has an extensive library of misconfiguration checks that is maintained at <a href="https://github.com/aquasecurity/trivy-checks">https://github.com/aquasecurity/trivy-checks</a>.<br />
+Trivy checks are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>, while some checks are written in Go.<br />
 See <a href="../../../../coverage/iac/">here</a> for the list of supported config types.</p>
-<p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a> repository.</p>
-<h2 id="check-distribution">Check Distribution</h2>
-<p>Trivy checks are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks">GitHub Container Registry</a> (GHCR).
-When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
-Those checks are then loaded into Trivy OPA engine and used for detecting misconfigurations.
-If Trivy is unable to pull down newer checks, it will use the embedded set of checks as a fallback. This is also the case in air-gap environments where <code>--skip-policy-update</code> might be passed.</p>
-<h2 id="update-interval">Update Interval</h2>
-<p>Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
+<h2 id="checks-bundle">Checks Bundle</h2>
+<p>When performing a misconfiguration scan, Trivy will automatically download the relevant Checks bundle. The bundle is cached locally and Trivy will reuse it for subsequent scans on the same machine. Trivy takes care of updating the cache automatically, so normally users can be oblivious to it.</p>
+<h2 id="checks-distribution">Checks Distribution</h2>
+<p>Trivy checks are distributed as an <a href="opa-bundle">OPA bundle</a> hosted in the following GitHub Container Registry: <a href="https://ghcr.io/aquasecurity/trivy-checks">https://ghcr.io/aquasecurity/trivy-checks</a>.<br />
+Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
+<h3 id="external-connectivity">External connectivity</h3>
+<p>Trivy needs to connect to the internet to download the bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the <a href="../../../../advanced/air-gap/">Advanced Network Scenarios document</a>.<br />
+The Checks bundle is also embedded in the Trivy binary (at build time), and will be used as a fallback if Trivy is unable to download the bundle. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.</p>
 
               
             </article>

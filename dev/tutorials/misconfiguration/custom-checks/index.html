@@ -2764,7 +2764,7 @@ You're not viewing the latest version.
   
     <li class="md-nav__item">
       <a href="../../../docs/advanced/air-gap/" class="md-nav__link">
-        Air-Gapped Environment
+        Advanced Network Scenarios
       </a>
     </li>
   
@@ -4205,7 +4205,7 @@ The first keyword of the package, in this case <code>custom</code>, will be reus
 </ul>
 <h2 id="run-the-check-in-a-trivy-misconfiguration-scan">Run the check in a Trivy misconfiguration scan</h2>
 <p>Ensure that you have Trivy installed and run the following command:</p>
-<div class="highlight"><pre><span></span><code>trivy fs --scanners misconf --policy ./docker-check.rego --namespaces custom ./Dockerfile
+<div class="highlight"><pre><span></span><code>trivy fs --scanners misconf --config-check ./docker-check.rego --namespaces custom ./Dockerfile
 </code></pre></div>
 <p>Please replace:</p>
 <ul>

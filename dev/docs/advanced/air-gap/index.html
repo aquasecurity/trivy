@@ -17,7 +17,7 @@
     
     
       
-        <title>Air-Gapped Environment - Trivy</title>
+        <title>Advanced Network Scenarios - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#air-gapped-environment" class="md-skip">
+        <a href="#advanced-network-scenarios" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Air-Gapped Environment
+              Advanced Network Scenarios
             
           </span>
         </div>
@@ -2697,12 +2697,12 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Air-Gapped Environment
+          Advanced Network Scenarios
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Air-Gapped Environment
+        Advanced Network Scenarios
       </a>
       
         
@@ -2721,44 +2721,104 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-vulnerabilities" class="md-nav__link">
-    Air-Gapped Environment for vulnerabilities
+  <a href="#network-requirements" class="md-nav__link">
+    Network requirements
   </a>
   
-    <nav class="md-nav" aria-label="Air-Gapped Environment for vulnerabilities">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-trivy-in-air-gapped-environment" class="md-nav__link">
+    Running Trivy in air-gapped environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#offline-mode" class="md-nav__link">
+    Offline Mode
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-hosting" class="md-nav__link">
+    Self-Hosting
+  </a>
+  
+    <nav class="md-nav" aria-label="Self-Hosting">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#download-the-vulnerability-database" class="md-nav__link">
-    Download the vulnerability database
+  <a href="#oci-databases" class="md-nav__link">
+    OCI Databases
+  </a>
+  
+    <nav class="md-nav" aria-label="OCI Databases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vex-hub" class="md-nav__link">
+    VEX Hub
+  </a>
+  
+    <nav class="md-nav" aria-label="VEX Hub">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication_1" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-cache-population" class="md-nav__link">
+    Manual cache population
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual cache population">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#downloading-the-db-files" class="md-nav__link">
+    Downloading the DB files
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#download-the-java-index-database1" class="md-nav__link">
-    Download the Java index database1
+  <a href="#populating-the-trivy-cache" class="md-nav__link">
+    Populating the Trivy Cache
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#transfer-the-db-files-into-the-air-gapped-environment" class="md-nav__link">
-    Transfer the DB files into the air-gapped environment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#put-the-db-files-in-trivys-cache-directory" class="md-nav__link">
-    Put the DB files in Trivy's cache directory
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-the-specific-flags" class="md-nav__link">
-    Run Trivy with the specific flags.
+  <a href="#java-db" class="md-nav__link">
+    Java DB
   </a>
   
 </li>
@@ -2769,22 +2829,9 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-misconfigurations" class="md-nav__link">
-    Air-Gapped Environment for misconfigurations
+  <a href="#misconfigurations-scanning" class="md-nav__link">
+    Misconfigurations scanning
   </a>
-  
-    <nav class="md-nav" aria-label="Air-Gapped Environment for misconfigurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-check-update-option" class="md-nav__link">
-    Run Trivy with --skip-check-update option
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -4107,44 +4154,104 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-vulnerabilities" class="md-nav__link">
-    Air-Gapped Environment for vulnerabilities
+  <a href="#network-requirements" class="md-nav__link">
+    Network requirements
   </a>
   
-    <nav class="md-nav" aria-label="Air-Gapped Environment for vulnerabilities">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-trivy-in-air-gapped-environment" class="md-nav__link">
+    Running Trivy in air-gapped environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#offline-mode" class="md-nav__link">
+    Offline Mode
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-hosting" class="md-nav__link">
+    Self-Hosting
+  </a>
+  
+    <nav class="md-nav" aria-label="Self-Hosting">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#download-the-vulnerability-database" class="md-nav__link">
-    Download the vulnerability database
+  <a href="#oci-databases" class="md-nav__link">
+    OCI Databases
+  </a>
+  
+    <nav class="md-nav" aria-label="OCI Databases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vex-hub" class="md-nav__link">
+    VEX Hub
+  </a>
+  
+    <nav class="md-nav" aria-label="VEX Hub">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication_1" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-cache-population" class="md-nav__link">
+    Manual cache population
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual cache population">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#downloading-the-db-files" class="md-nav__link">
+    Downloading the DB files
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#download-the-java-index-database1" class="md-nav__link">
-    Download the Java index database1
+  <a href="#populating-the-trivy-cache" class="md-nav__link">
+    Populating the Trivy Cache
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#transfer-the-db-files-into-the-air-gapped-environment" class="md-nav__link">
-    Transfer the DB files into the air-gapped environment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#put-the-db-files-in-trivys-cache-directory" class="md-nav__link">
-    Put the DB files in Trivy's cache directory
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-the-specific-flags" class="md-nav__link">
-    Run Trivy with the specific flags.
+  <a href="#java-db" class="md-nav__link">
+    Java DB
   </a>
   
 </li>
@@ -4155,22 +4262,9 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-misconfigurations" class="md-nav__link">
-    Air-Gapped Environment for misconfigurations
+  <a href="#misconfigurations-scanning" class="md-nav__link">
+    Misconfigurations scanning
   </a>
-  
-    <nav class="md-nav" aria-label="Air-Gapped Environment for misconfigurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-check-update-option" class="md-nav__link">
-    Run Trivy with --skip-check-update option
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -4192,128 +4286,125 @@ You're not viewing the latest version.
 
 
 
-<h1 id="air-gapped-environment">Air-Gapped Environment</h1>
-<p>Trivy can be used in air-gapped environments. Note that an allowlist is <a href="../../references/troubleshooting/">here</a>.</p>
-<h2 id="air-gapped-environment-for-vulnerabilities">Air-Gapped Environment for vulnerabilities</h2>
-<h3 id="download-the-vulnerability-database">Download the vulnerability database</h3>
-<p>At first, you need to download the vulnerability database for use in air-gapped environments.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Trivy</label><label for="__tabbed_1_2">oras &gt;= v0.13.0</label><label for="__tabbed_1_3">oras &lt; v0.13.0</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>TRIVY_TEMP_DIR=$(mktemp -d)
-trivy --cache-dir $TRIVY_TEMP_DIR image --download-db-only
-tar -cf ./db.tar.gz -C $TRIVY_TEMP_DIR/db metadata.json trivy.db
-rm -rf $TRIVY_TEMP_DIR
+<h1 id="advanced-network-scenarios">Advanced Network Scenarios</h1>
+<p>Trivy needs to connect to the internet occasionally in order to download relevant content. This document explains the network connectivity requirements of Trivy and setting up Trivy in particular scenarios.</p>
+<h2 id="network-requirements">Network requirements</h2>
+<p>Trivy's databases are distributed as OCI images via GitHub Container registry (GHCR):</p>
+<ul>
+<li><a href="https://ghcr.io/aquasecurity/trivy-db">https://ghcr.io/aquasecurity/trivy-db</a></li>
+<li><a href="https://ghcr.io/aquasecurity/trivy-java-db">https://ghcr.io/aquasecurity/trivy-java-db</a></li>
+<li><a href="https://ghcr.io/aquasecurity/trivy-checks">https://ghcr.io/aquasecurity/trivy-checks</a></li>
+</ul>
+<p>The following hosts are required in order to fetch them:</p>
+<ul>
+<li><code>ghcr.io</code></li>
+<li><code>pkg-containers.githubusercontent.com</code></li>
+</ul>
+<p>The databases are pulled by Trivy using the <a href="https://github.com/opencontainers/distribution-spec">OCI Distribution</a> specification, which is a simple HTTPS-based protocol.</p>
+<p><a href="https://github.com/aquasecurity/vexhub">VEX Hub</a> is distributed from GitHub over HTTPS.
+The following hosts are required in order to fetch it:</p>
+<ul>
+<li><code>api.github.com</code></li>
+<li><code>codeload.github.com</code></li>
+</ul>
+<h2 id="running-trivy-in-air-gapped-environment">Running Trivy in air-gapped environment</h2>
+<p>An air-gapped environment refers to situations where the network connectivity from the machine Trivy runs on is blocked or restricted.</p>
+<p>In an air-gapped environment it is your responsibility to update the Trivy databases on a regular basis. </p>
+<h2 id="offline-mode">Offline Mode</h2>
+<p>By default, Trivy will attempt to download latest databases. If it fails, the scan might fail. To avoid this behavior, you can tell Trivy to not attempt to download database files:</p>
+<ul>
+<li><code>--skip-db-update</code> to skip updating the main vulnerability database.</li>
+<li><code>--skip-java-db-update</code> to skip updating the Java vulnerability database.</li>
+<li><code>--skip-check-update</code> to skip updating the misconfiguration database.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>trivy image --skip-db-update --skip-java-db-update --offline-scan --skip-check-update myimage
 </code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>Please follow <a href="https://oras.land/docs/installation">oras installation instruction</a>.</p>
-<p>Download <code>db.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/trivy-db:2
+<h2 id="self-hosting">Self-Hosting</h2>
+<h3 id="oci-databases">OCI Databases</h3>
+<p>You can host the databases on your own local OCI registry. </p>
+<p>First, make a copy of the databases in a container registry that is accessible to Trivy. The databases are in:</p>
+<ul>
+<li><code>ghcr.io/aquasecurity/trivy-db:2</code></li>
+<li><code>ghcr.io/aquasecurity/trivy-java-db:1</code></li>
+<li><code>ghcr.io/aquasecurity/trivy-checks:0</code></li>
+</ul>
+<p>Then, tell Trivy to use the local registry:</p>
+<div class="highlight"><pre><span></span><code>trivy image <span class="se">\</span>
+    --db-repository myregistry.local/trivy-db <span class="se">\</span>
+    --java-db-repository myregistry.local/trivy-java-db <span class="se">\</span>
+    --checks-bundle-repository myregistry.local/trivy-checks <span class="se">\</span>
+    myimage
 </code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>Please follow <a href="https://oras.land/docs/installation">oras installation instruction</a>.</p>
-<p>Download <code>db.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>$ oras pull -a ghcr.io/aquasecurity/trivy-db:2
-</code></pre></div>
-</div>
-</div>
-</div>
-<h3 id="download-the-java-index-database1">Download the Java index database<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h3>
-<p>Java users also need to download the Java index database for use in air-gapped environments.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You container image may contain JAR files even though you don't use Java directly.
-In that case, you also need to download the Java index database.</p>
-</div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Trivy</label><label for="__tabbed_2_2">oras &gt;= v0.13.0</label><label for="__tabbed_2_3">oras &lt; v0.13.0</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>TRIVY_TEMP_DIR=$(mktemp -d)
-trivy --cache-dir $TRIVY_TEMP_DIR image --download-java-db-only
-tar -cf ./javadb.tar.gz -C $TRIVY_TEMP_DIR/java-db metadata.json trivy-java.db
-rm -rf $TRIVY_TEMP_DIR
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>Please follow <a href="https://oras.land/docs/installation">oras installation instruction</a>.</p>
-<p>Download <code>javadb.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/trivy-java-db:1
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>Please follow <a href="https://oras.land/docs/installation">oras installation instruction</a>.</p>
-<p>Download <code>javadb.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>$ oras pull -a ghcr.io/aquasecurity/trivy-java-db:1
-</code></pre></div>
-</div>
-</div>
-</div>
-<h3 id="transfer-the-db-files-into-the-air-gapped-environment">Transfer the DB files into the air-gapped environment</h3>
-<p>The way of transfer depends on the environment.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Vulnerability db</label><label for="__tabbed_3_2">Java index db<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup></label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>$ rsync -av -e ssh /path/to/db.tar.gz [user]@[host]:dst
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>$ rsync -av -e ssh /path/to/javadb.tar.gz [user]@[host]:dst
-</code></pre></div>
-</div>
-</div>
-</div>
-<h3 id="put-the-db-files-in-trivys-cache-directory">Put the DB files in Trivy's cache directory</h3>
-<p>You have to know where to put the DB files. The following command shows the default cache directory.</p>
-<div class="highlight"><pre><span></span><code>$ ssh user@host
-$ trivy -h | grep cache
-   --cache-dir value  cache directory (default: &quot;/home/myuser/.cache/trivy&quot;) [$TRIVY_CACHE_DIR]
-</code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Vulnerability db</label><label for="__tabbed_4_2">Java index db<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup></label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p>Put the DB file in the cache directory + <code>/db</code>.</p>
-<div class="highlight"><pre><span></span><code>$ mkdir -p /home/myuser/.cache/trivy/db
-$ cd /home/myuser/.cache/trivy/db
-$ tar xvf /path/to/db.tar.gz -C /home/myuser/.cache/trivy/db
-x trivy.db
-x metadata.json
-$ rm /path/to/db.tar.gz
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>Put the DB file in the cache directory + <code>/java-db</code>.</p>
-<div class="highlight"><pre><span></span><code>$ mkdir -p /home/myuser/.cache/trivy/java-db
-$ cd /home/myuser/.cache/trivy/java-db
-$ tar xvf /path/to/javadb.tar.gz -C /home/myuser/.cache/trivy/java-db
-x trivy-java.db
-x metadata.json
-$ rm /path/to/javadb.tar.gz
-</code></pre></div>
-</div>
-</div>
-</div>
-<p>In an air-gapped environment it is your responsibility to update the Trivy databases on a regular basis, so that the scanner can detect recently-identified vulnerabilities. </p>
-<h3 id="run-trivy-with-the-specific-flags">Run Trivy with the specific flags.</h3>
-<p>In an air-gapped environment, you have to specify <code>--skip-db-update</code> and <code>--skip-java-db-update</code><sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> so that Trivy doesn't attempt to download the latest database files.
-In addition, if you want to scan <code>pom.xml</code> dependencies, you need to specify <code>--offline-scan</code> since Trivy tries to issue API requests for scanning Java applications by default.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --skip-db-update --skip-java-db-update --offline-scan alpine:3.12
-</code></pre></div>
-<h2 id="air-gapped-environment-for-misconfigurations">Air-Gapped Environment for misconfigurations</h2>
-<p>No special measures are required to detect misconfigurations in an air-gapped environment.</p>
-<h3 id="run-trivy-with-skip-check-update-option">Run Trivy with <code>--skip-check-update</code> option</h3>
-<p>In an air-gapped environment, specify <code>--skip-check-update</code> so that Trivy doesn't attempt to download the latest misconfiguration checks.</p>
-<div class="highlight"><pre><span></span><code>$ trivy conf --skip-policy-update /path/to/conf
-</code></pre></div>
-<div class="footnote">
-<hr />
+<h4 id="authentication">Authentication</h4>
+<p>If the registry requires authentication, you can configure it as described in the <a href="../private-registries/">private registry authentication document</a>.</p>
+<h3 id="vex-hub">VEX Hub</h3>
+<p>You can host a copy of VEX Hub on your own internal server.</p>
+<p>First, make a copy of VEX Hub in a location that is accessible to Trivy.</p>
 <ol>
-<li id="fn:1">
-<p>This is only required to scan <code>jar</code> files. More information about <code>Java index db</code> <a href="../../coverage/language/java/">here</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
+<li>Download the <a href="https://github.com/aquasecurity/vexhub">VEX Hub</a> archive from: <a href="https://github.com/aquasecurity/vexhub/archive/refs/heads/main.zip">https://github.com/aquasecurity/vexhub/archive/refs/heads/main.zip</a>.</li>
+<li>Download the <a href="https://github.com/aquasecurity/vex-repo-spec#2-repository-manifest">VEX Hub Repository Manifest</a> file from: <a href="https://github.com/aquasecurity/vexhub/blob/main/vex-repository.json">https://github.com/aquasecurity/vexhub/blob/main/vex-repository.json</a>.</li>
+<li>Create or identify an internal HTTP server that can serve the VEX Hub repository in your environment (e.g <code>https://server.local</code>).</li>
+<li>Make the downloaded archive file available for serving from your server (e.g <code>https://server.local/main.zip</code>).</li>
+<li>Modify the downloaded manifest file's <a href="https://github.com/aquasecurity/vex-repo-spec?tab=readme-ov-file#locations-subfields">Location URL</a> field to the URL of the archive file on your server (e.g <code>url: https://server.local/main.zip</code>).</li>
+<li>Make the manifest file available for serving from your server under the <code>/.well-known</code> path  (e.g <code>https://server.local/.well-known/vex-repository.json</code>).</li>
 </ol>
+<p>Then, tell Trivy to use the local VEX Repository:</p>
+<ol>
+<li>Locate your <a href="../supply-chain/vex/repo/#configuration-file">Trivy VEX configuration file</a> by running <code>trivy vex repo init</code>. Make the following changes to the file.</li>
+<li>Disable the default VEX Hub repo (<code>enabled: false</code>)</li>
+<li>Add your internal VEX Hub repository as a <a href="../supply-chain/vex/repo/#custom-repositories">custom repository</a> with the URL pointing to your local server (e.g <code>url: https://server.local</code>).</li>
+</ol>
+<h4 id="authentication_1">Authentication</h4>
+<p>If your server requires authentication, you can configure it as described in the <a href="../supply-chain/vex/repo/#authentication">VEX Repository Authentication document</a>.</p>
+<h2 id="manual-cache-population">Manual cache population</h2>
+<p>You can also download the databases files manually and surgically populate the Trivy cache directory with them.</p>
+<h3 id="downloading-the-db-files">Downloading the DB files</h3>
+<p>On a machine with internet access, pull the database container archive from the public registry into your local workspace:</p>
+<p>Note that these examples operate in the current working directory.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Using ORAS</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
 </div>
+</div>
+<p>This example uses <a href="https://oras.land">ORAS</a>, but you can use any other container registry manipulation tool.</p>
+<div class="highlight"><pre><span></span><code>oras pull ghcr.io/aquasecurity/trivy-db:2
+</code></pre></div>
+<p>You should now have a file called <code>db.tar.gz</code>. Next, extract it to reveal the db files:</p>
+<div class="highlight"><pre><span></span><code>tar -xzf db.tar.gz
+</code></pre></div>
+<p>You should now have 2 new files, <code>metadata.json</code> and <code>trivy.db</code>. These are the Trivy DB files.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Using Trivy</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
+</div>
+</div>
+<p>This example uses Trivy to pull the database container archive. The <code>--cache-dir</code> flag makes Trivy download the database files into our current working directory. The <code>--download-db-only</code> flag tells Trivy to only download the database files, not to scan any images.</p>
+<div class="highlight"><pre><span></span><code>trivy image --cache-dir . --download-db-only
+</code></pre></div>
+<p>You should now have 2 new files, <code>metadata.json</code> and <code>trivy.db</code>. These are the Trivy DB files, copy them over to the air-gapped environment.</p>
+<h3 id="populating-the-trivy-cache">Populating the Trivy Cache</h3>
+<p>In order to populate the cache, you need to identify the location of the cache directory. If it is under the default location, you can run the following command to find it:</p>
+<div class="highlight"><pre><span></span><code>trivy -h <span class="p">|</span> grep cache
+</code></pre></div>
+<p>For the example, we will assume the <code>TRIVY_CACHE_DIR</code> variable holds the cache location:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">TRIVY_CACHE_DIR</span><span class="o">=</span>/home/user/.cache/trivy
+</code></pre></div>
+<p>Put the Trivy DB files in the Trivy cache directory under a <code>db</code> subdirectory:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ensure cache db directory exists</span>
+mkdir -p <span class="si">${</span><span class="nv">TRIVY_CACHE_DIR</span><span class="si">}</span>/db
+<span class="c1"># copy the db files</span>
+cp /path/to/trivy.db /path/to/metadata.json <span class="si">${</span><span class="nv">TRIVY_CACHE_DIR</span><span class="si">}</span>/db/
+</code></pre></div>
+<h3 id="java-db">Java DB</h3>
+<p>For Java DB the process is the same, except for the following:</p>
+<ol>
+<li>Image location is <code>ghcr.io/aquasecurity/trivy-java-db:1</code></li>
+<li>Archive file name is <code>javadb.tar.gz</code></li>
+<li>DB file name is <code>trivy-java.db</code></li>
+</ol>
+<h2 id="misconfigurations-scanning">Misconfigurations scanning</h2>
+<p>Note that the misconfigurations checks bundle is also embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.</p>
+<p>The misconfiguration scanner can be configured to load checks from a local directory, using the <code>--config-check</code> flag. In an air-gapped scenario you can copy the checks library from <a href="https://github.com/aquasecurity/trivy-checks">Trivy checks repository</a> into a local directory, and load it with this flag. See more in the <a href="../../scanner/misconfiguration/">Misconfiguration scanner documentation</a>.</p>
 
               
             </article>

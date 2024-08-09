@@ -1247,6 +1247,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#external-connectivity" class="md-nav__link">
+    External connectivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#enabling-a-subset-of-misconfiguration-scanners" class="md-nav__link">
     Enabling a subset of misconfiguration scanners
   </a>
@@ -1254,8 +1261,8 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#passing-custom-checks" class="md-nav__link">
-    Passing custom checks
+  <a href="#loading-custom-checks" class="md-nav__link">
+    Loading custom checks
   </a>
   
 </li>
@@ -2827,7 +2834,7 @@ You're not viewing the latest version.
   
     <li class="md-nav__item">
       <a href="../../advanced/air-gap/" class="md-nav__link">
-        Air-Gapped Environment
+        Advanced Network Scenarios
       </a>
     </li>
   
@@ -4166,6 +4173,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#external-connectivity" class="md-nav__link">
+    External connectivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#enabling-a-subset-of-misconfiguration-scanners" class="md-nav__link">
     Enabling a subset of misconfiguration scanners
   </a>
@@ -4173,8 +4187,8 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#passing-custom-checks" class="md-nav__link">
-    Passing custom checks
+  <a href="#loading-custom-checks" class="md-nav__link">
+    Loading custom checks
   </a>
   
 </li>
@@ -4560,6 +4574,8 @@ Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="
 <h2 id="configuration">Configuration</h2>
 <p>This section describes misconfiguration-specific configuration.
 Other common options are documented <a href="../../configuration/">here</a>.</p>
+<h3 id="external-connectivity">External connectivity</h3>
+<p>Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the <a href="../../advanced/air-gap/">Advanced Network Scenarios document</a>.</p>
 <h3 id="enabling-a-subset-of-misconfiguration-scanners">Enabling a subset of misconfiguration scanners</h3>
 <p>It's possible to only enable certain misconfiguration scanners if you prefer.
 You can do so by passing the <code>--misconfig-scanners</code> option.
@@ -4567,29 +4583,26 @@ This flag takes a comma-separated list of configuration scanner types.</p>
 <div class="highlight"><pre><span></span><code>trivy config --misconfig-scanners<span class="o">=</span>terraform,dockerfile .
 </code></pre></div>
 <p>Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.</p>
-<h3 id="passing-custom-checks">Passing custom checks</h3>
-<p>You can pass policy files or directories including your custom checks through <code>--policy</code> option.
+<h3 id="loading-custom-checks">Loading custom checks</h3>
+<p>You can load check files or directories including your custom checks using the <code>--config-check</code> flag.
 This can be repeated for specifying multiple files or directories.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> examplex/misconf/
-trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
+<div class="highlight"><pre><span></span><code>trivy conf --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
 </code></pre></div>
-<p>For more details, see <a href="custom/">Custom Checks</a>.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-</div>
-<p>You also need to specify <code>--namespaces</code> option.</p>
+<p>You can load checks bundle as OCI Image from a Container Registry using the <code>--checks-bundle-repository</code> flag.</p>
+<div class="highlight"><pre><span></span><code>trivy conf --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+</code></pre></div>
 <h3 id="passing-custom-data">Passing custom data</h3>
 <p>You can pass directories including your custom data through <code>--data</code> option.
 This can be repeated for specifying multiple directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> examples/misconf/custom-data
-trivy conf --policy ./policy --data ./data --namespaces user ./configs
+trivy conf --config-check ./policy --data ./data --namespaces user ./configs
 </code></pre></div>
 <p>For more details, see <a href="custom/data/">Custom Data</a>.</p>
 <h3 id="passing-namespaces">Passing namespaces</h3>
 <p>By default, Trivy evaluates checks defined in <code>builtin.*</code>.
 If you want to evaluate custom checks in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
 This can be repeated for specifying multiple packages.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --policy ./policy --namespaces main --namespaces user ./configs
+<div class="highlight"><pre><span></span><code>trivy conf --config-check ./policy --namespaces main --namespaces user ./configs
 </code></pre></div>
 <h3 id="private-terraform-registries">Private terraform registries</h3>
 <p>Trivy can download terraform code from private registries.
