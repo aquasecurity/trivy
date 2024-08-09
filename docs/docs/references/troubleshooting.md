@@ -203,10 +203,7 @@ Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database o
 !!! error
     FATAL failed to download vulnerability DB
 
-If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
-
-- ghcr.io
-- pkg-containers.githubusercontent.com
+If Trivy is running behind corporate firewall, refer to the necessary connectivity requirements as described [here][network].
 
 ### Denied
 
@@ -271,4 +268,5 @@ $ trivy clean --all
 ```
 
 [air-gapped]: ../advanced/air-gap.md
+[network]: ../advanced/air-gap.md#network-requirements
 [redis-cache]: ../../vulnerability/examples/cache/#cache-backend
