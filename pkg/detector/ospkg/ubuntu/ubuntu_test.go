@@ -57,6 +57,7 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-9243",
 					InstalledVersion: "2.9",
 					FixedVersion:     "",
+					Status:           dbTypes.StatusFixDeferred,
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -108,6 +109,7 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-9243",
 					InstalledVersion: "2.9",
 					FixedVersion:     "",
+					Status:           dbTypes.StatusFixDeferred,
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
