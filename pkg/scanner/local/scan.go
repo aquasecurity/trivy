@@ -281,9 +281,19 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	for _, app := range target.Applications {
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Packages {
+			licenseDetected := false
+			licenseCategories := map[ftypes.LicenseCategory]bool{}
+
+			var libLicenses []types.DetectedLicense
+
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
-				langLicenses = append(langLicenses, types.DetectedLicense{
+				if severity != dbTypes.SeverityUnknown.String() {
+					licenseDetected = true
+				}
+				licenseCategories[category] = true
+
+				libLicenses = append(libLicenses, types.DetectedLicense{
 					Severity: severity,
 					Category: category,
 					PkgName:  lib.Name,
@@ -293,6 +303,20 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
 					Confidence: 1.0,
 				})
+			}
+
+			if _, ok := licenseCategories[ftypes.CategoryUnknown]; !licenseDetected && len(licenseCategories) == 1 && ok {
+				langLicenses = append(langLicenses, types.DetectedLicense{
+					Severity:   dbTypes.SeverityUnknown.String(),
+					Category:   ftypes.CategoryUnknown,
+					PkgName:    lib.Name,
+					Name:       strings.Join(lib.Licenses, "\n"),
+					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
+					Confidence: 1.0,
+				})
+
+			} else {
+				langLicenses = append(langLicenses, libLicenses...)
 			}
 		}
 
