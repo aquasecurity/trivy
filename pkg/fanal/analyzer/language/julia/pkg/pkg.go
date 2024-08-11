@@ -3,12 +3,16 @@ package pkgjl
 import (
 	"context"
 	"errors"
+	"hash/crc32"
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"slices"
 	"sort"
+	"strings"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
@@ -36,17 +40,20 @@ var requiredFiles = []string{
 type juliaAnalyzer struct {
 	lockParser language.Parser
 	logger     *log.Logger
+	crc        *crc32.Table
 }
 
 type Project struct {
 	Dependencies map[string]string `toml:"deps"`
 	Extras       map[string]string `toml:"extras"`
+	License      string            `toml:"license"`
 }
 
 func newJuliaAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &juliaAnalyzer{
 		lockParser: julia.NewParser(),
 		logger:     log.WithPrefix("julia"),
+		crc:        crc32.MakeTable(crc32.Castagnoli),
 	}, nil
 }
 
@@ -55,6 +62,11 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 
 	required := func(path string, d fs.DirEntry) bool {
 		return filepath.Base(path) == types.JuliaManifest
+	}
+
+	depot, depotErr := findDepot()
+	if depotErr != nil {
+		a.logger.Warn("Failed to find Julia depot, license detection is disabled for Julia")
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
@@ -70,6 +82,18 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		if err = a.analyzeDependencies(input.FS, filepath.Dir(path), app); err != nil {
 			a.logger.Warn("Unable to parse file to analyze dependencies",
 				log.FilePath(filepath.Join(filepath.Dir(path), types.JuliaProject)), log.Err(err))
+		}
+
+		// Fill licenses
+		if depotErr == nil {
+			for i, lib := range app.Packages {
+				licenses, err := a.getLicenses(lib, depot)
+				if err == nil {
+					app.Packages[i].Licenses = licenses
+				} else {
+					a.logger.Info("Failed to find licenses for package", "name", lib.Name, "UUID", lib.ID, "error", err.Error()) // FIXME make debug
+				}
+			}
 		}
 
 		sort.Sort(app.Packages)
@@ -103,28 +127,19 @@ func (a juliaAnalyzer) parseJuliaManifest(path string, r io.Reader) (*types.Appl
 }
 
 func (a juliaAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	deps, devDeps, err := a.getProjectDeps(fsys, dir)
-	if err != nil {
-		return err
-	}
-
-	pkgs := walkDependencies(deps, app.Packages, false)
-	devPkgs := walkDependencies(devDeps, app.Packages, true)
-	app.Packages = append(pkgs, devPkgs...)
-	return nil
-}
-
-// getProjectDeps parses project.toml and returns root and dev dependencies.
-func (a juliaAnalyzer) getProjectDeps(fsys fs.FS, dir string) (map[string]string, map[string]string, error) {
 	projectPath := filepath.Join(dir, types.JuliaProject)
 	project, err := parseJuliaProject(fsys, projectPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		a.logger.Debug("Julia project not found", log.String("PROJECT_PATH", projectPath))
-		return nil, nil, nil
+		return nil
 	} else if err != nil {
-		return nil, nil, xerrors.Errorf("unable to parse %s: %w", projectPath, err)
+		return xerrors.Errorf("unable to parse %s: %w", projectPath, err)
 	}
-	return project.Dependencies, project.Extras, nil
+
+	pkgs := walkDependencies(project.Dependencies, app.Packages, false)
+	devPkgs := walkDependencies(project.Extras, app.Packages, true)
+	app.Packages = append(pkgs, devPkgs...)
+	return nil
 }
 
 // Parses Project.toml
@@ -186,4 +201,127 @@ func walkIndirectDependencies(rootPkg types.Package, allPkgIDs, visited map[stri
 		visited[dep.ID] = dep
 		walkIndirectDependencies(dep, allPkgIDs, visited)
 	}
+}
+
+func (a juliaAnalyzer) getLicenses(lib types.Package, depot string) ([]string, error) {
+	// https://github.com/JuliaLang/Pkg.jl/blob/15ef1a1d1dd873fbb265a24ecc02554e364f0063/src/Operations.jl#L48
+
+	// If the package has a path specified in the manifest:
+	if len(lib.InstalledFiles) > 0 {
+		pkgDir := lib.InstalledFiles[0] // the path field from the manifest, set by the parser
+		return a.getLicensesInDir(pkgDir)
+	}
+
+	// If the package has a tree hash:
+	libNameDir := path.Join(depot, "packages", lib.Name)
+	a.logger.Info("scanning", "dir", libNameDir) // FIXME remove
+	if fsutils.DirExists(libNameDir) {
+		return a.getLicensesFromDepotPackage(libNameDir)
+	}
+
+	// If the package is a stdlib:
+	return []string{"MIT"}, nil
+}
+
+func (a juliaAnalyzer) getLicensesFromDepotPackage(libNameDir string) ([]string, error) {
+	// Note we don't actually compute the tree hash or version slug because that gets very complicated and Julia could
+	// change it at any time. Therefore, we only look for the latest modified installation of the package.
+	subdirs, err := os.ReadDir(libNameDir)
+	if err != nil {
+		return nil, err
+	}
+
+	mostRecentTime := time.Unix(0, 0)
+	var mostRecentSubdir fs.DirEntry
+	for _, subdir := range subdirs {
+		if !subdir.IsDir() {
+			continue
+		}
+		info, err := subdir.Info()
+		if err != nil {
+			return nil, err
+		}
+		if info.ModTime().After(mostRecentTime) {
+			mostRecentTime = info.ModTime()
+			mostRecentSubdir = subdir
+		}
+	}
+
+	libDir := path.Join(libNameDir, mostRecentSubdir.Name())
+	return a.getLicensesInDir(libDir)
+}
+
+func (a juliaAnalyzer) getLicensesInDir(libDir string) ([]string, error) {
+	f, err := os.Open(path.Join(libDir, "Project.toml"))
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	project := Project{}
+	if _, err = toml.NewDecoder(f).Decode(&project); err != nil {
+		return nil, xerrors.Errorf("decode error: %w", err)
+	}
+
+	a.logger.Info("project license field", "dir", libDir, "license", project.License)
+
+	// Projects might specify a license, but it's not required
+	if project.License != "" {
+		return []string{project.License}, nil
+	}
+
+	// Many projects have a license but don't set it in their project file, so try to detect the license using the content
+	entries, err := os.ReadDir(libDir)
+	if err != nil {
+		return nil, err
+	}
+	for _, entry := range entries {
+		if !entry.Type().IsRegular() {
+			continue
+		}
+		name := strings.ToLower(entry.Name())
+		if name == "license" || name == "license.txt" || name == "license.md" {
+			buf, err := os.ReadFile(path.Join(libDir, entry.Name()))
+			if err != nil {
+				return nil, err
+			}
+			license, err := detectLicenseFromString(string(buf))
+			if err != nil {
+				return nil, err
+			}
+			return []string{license}, nil
+		}
+	}
+
+	// There is no license information at all
+	return nil, nil
+}
+
+func detectLicenseFromString(s string) (string, error) {
+	s = strings.ToLower(s)
+	if strings.Contains(s, "mit license") || strings.Contains(s, "mit expat license") || strings.Contains(s, "mit \"expat\" license") {
+		return "MIT", nil
+	} else {
+		return "", xerrors.Errorf("could not detect license from content")
+	}
+}
+
+func findDepot() (string, error) {
+	home, _ := os.UserHomeDir()
+	possibleDepotDirs := []string{
+		// Users can set JULIA_DEPOT_PATH https://pkgdocs.julialang.org/v1/glossary/
+		os.Getenv("JULIA_DEPOT_PATH"),
+		// The default depot path is ~/.julia
+		path.Join(home, ".julia"),
+	}
+
+	for _, dir := range possibleDepotDirs {
+		if dir != "" {
+			if fsutils.DirExists(dir) {
+				return dir, nil
+			}
+		}
+	}
+
+	return "", xerrors.Errorf("failed to find Julia depot")
 }

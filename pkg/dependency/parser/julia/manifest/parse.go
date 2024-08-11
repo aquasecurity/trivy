@@ -23,6 +23,7 @@ type primitiveDependency struct {
 	UUID         string         `toml:"uuid"`
 	Version      string         `toml:"version"` // not specified for stdlib packages, which are of the Julia version
 	DependsOn    []string       `toml:"-"`       // list of dependent UUID's.
+	Path         string         `toml:"path"`    // only set for dev'd packages
 }
 
 type Parser struct{}
@@ -87,6 +88,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 						EndLine:   pos.end,
 					},
 				}
+			}
+			if manifestDep.Path != "" {
+				// I am not thrilled about this but there is really nowhere else to put this information.
+				// This is needed later for determining licenses.
+				pkg.InstalledFiles = []string{manifestDep.Path}
 			}
 
 			pkgs = append(pkgs, pkg)
