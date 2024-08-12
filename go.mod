@@ -414,7 +414,6 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )
 
-
 replace github.com/aquasecurity/trivy-db => github.com/skahn007gl/trivy-db v0.0.0-20240723121440-a488d7f107fe
 
 // cf. https://github.com/openvex/discovery/pull/40
