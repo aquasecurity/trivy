@@ -83,8 +83,7 @@ func TestScannerOption_Sort(t *testing.T) {
 
 func TestScanner_Scan(t *testing.T) {
 	type fields struct {
-		filePatterns []string
-		opt          ScannerOption
+		opt ScannerOption
 	}
 	type file struct {
 		path    string
@@ -119,8 +118,9 @@ func TestScanner_Scan(t *testing.T) {
 			name:     "happy path. Dockerfile with custom file name",
 			fileType: detection.FileTypeDockerfile,
 			fields: fields{
-				filePatterns: []string{"dockerfile:dockerf"},
-				opt:          ScannerOption{},
+				opt: ScannerOption{
+					FilePatterns: []string{"dockerfile:dockerf"},
+				},
 			},
 			files: []file{
 				{
