@@ -315,6 +315,9 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
+### External connectivity
+Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../../advanced/air-gap.md).
+
 ### Enabling a subset of misconfiguration scanners
 It's possible to only enable certain misconfiguration scanners if you prefer.
 You can do so by passing the `--misconfig-scanners` option.
@@ -326,19 +329,19 @@ trivy config --misconfig-scanners=terraform,dockerfile .
 
 Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
 
-### Passing custom checks
-You can pass policy files or directories including your custom checks through `--policy` option.
+### Loading custom checks
+You can load check files or directories including your custom checks using the `--config-check` flag.
 This can be repeated for specifying multiple files or directories.
 
 ```bash
-cd examplex/misconf/
-trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
+trivy conf --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
 ```
 
-For more details, see [Custom Checks](./custom/index.md).
+You can load checks bundle as OCI Image from a Container Registry using the `--checks-bundle-repository` flag.
 
-!!! tip
-You also need to specify `--namespaces` option.
+```bash
+trivy conf --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+```
 
 
 ### Scan arbitrary JSON and YAML configurations
@@ -399,7 +402,7 @@ This can be repeated for specifying multiple directories.
 
 ```bash
 cd examples/misconf/custom-data
-trivy conf --policy ./policy --data ./data --namespaces user ./configs
+trivy conf --config-check ./policy --data ./data --namespaces user ./configs
 ```
 
 For more details, see [Custom Data](./custom/data.md).
@@ -410,7 +413,7 @@ If you want to evaluate custom checks in other packages, you have to specify pac
 This can be repeated for specifying multiple packages.
 
 ``` bash
-trivy conf --policy ./policy --namespaces main --namespaces user ./configs
+trivy conf --config-check ./policy --namespaces main --namespaces user ./configs
 ```
 
 ### Private terraform registries
