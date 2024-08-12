@@ -52,6 +52,7 @@ Your PR must pass all the integration tests. You can test it as below.
 
 ```
 $ mage test:integration
+$ mage test:vm
 ```
 
 ### Documentation

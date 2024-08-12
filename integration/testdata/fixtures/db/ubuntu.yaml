@@ -21,5 +21,4 @@
     - bucket: bash
       pairs:
         - key: CVE-2022-3715
-          value: 
-            Status: 6
+          value:  {}
