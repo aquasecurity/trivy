@@ -161,7 +161,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 			if p.stopOnHCLError {
 				return err
 			}
-			p.logger.Error("Error parsing", log.FilePath(path), log.Err(err))
+			p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
 			continue
 		}
 	}
@@ -172,7 +172,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 var ErrNoFiles = errors.New("no files found")
 
 func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
-	p.logger.Debug("Evaluating module...")
+	p.logger.Debug("Loading module", log.String("module", p.moduleName))
 
 	if len(p.files) == 0 {
 		p.logger.Info("No files found, nothing to do.")
@@ -197,6 +197,17 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 			return nil, err
 		}
 		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
+
+		for _, varBlock := range blocks.OfType("variable") {
+			if varBlock.GetAttribute("default") == nil {
+				if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
+					p.logger.Warn(
+						"Variable was not found in the environment or variable files. Evaluating may not work correctly.",
+						log.String("variable", varBlock.TypeLabel()),
+					)
+				}
+			}
+		}
 	}
 
 	modulesMetadata, metadataPath, err := loadModuleMetadata(p.moduleFS, p.projectRoot)

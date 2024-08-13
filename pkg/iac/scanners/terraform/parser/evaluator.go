@@ -125,12 +125,13 @@ func (e *evaluator) exportOutputs() cty.Value {
 
 func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
 
+	e.logger.Debug("Starting module evaluation...", log.String("path", e.modulePath))
+
 	fsKey := types.CreateFSKey(e.filesystem)
+	fsMap := map[string]fs.FS{
+		fsKey: e.filesystem,
+	}
 
-	fsMap := make(map[string]fs.FS)
-	fsMap[fsKey] = e.filesystem
-
-	e.logger.Debug("Starting module evaluation...")
 	e.evaluateSteps()
 
 	// expand out resources and modules via count, for-each and dynamic
@@ -138,8 +139,24 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
-	e.logger.Debug("Starting submodule evaluation...")
+	submodules := e.evaluateSubmodules(ctx, fsMap)
+
+	e.logger.Debug("Starting post-submodules evaluation...")
+	e.evaluateSteps()
+
+	e.logger.Debug("Module evaluation complete.")
+	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
+	return append(terraform.Modules{rootModule}, submodules...), fsMap
+}
+
+func (e *evaluator) evaluateSubmodules(ctx context.Context, fsMap map[string]fs.FS) terraform.Modules {
 	submodules := e.loadSubmodules(ctx)
+
+	if len(submodules) == 0 {
+		return nil
+	}
+
+	e.logger.Debug("Starting submodules evaluation...")
 
 	for i := 0; i < maxContextIterations; i++ {
 		changed := false
@@ -162,9 +179,7 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	}
 
 	e.logger.Debug("Finished processing submodule(s).", log.Int("count", len(modules)))
-	e.logger.Debug("Module evaluation complete.")
-	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
-	return append(terraform.Modules{rootModule}, modules...), fsMap
+	return modules
 }
 
 type submodule struct {
@@ -285,6 +300,7 @@ func isBlockSupportsForEachMetaArgument(block *terraform.Block) bool {
 }
 
 func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool) terraform.Blocks {
+
 	var forEachFiltered terraform.Blocks
 
 	for _, block := range blocks {
@@ -299,6 +315,10 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 		forEachVal := forEachAttr.Value()
 
 		if forEachVal.IsNull() || !forEachVal.IsKnown() || !forEachAttr.IsIterable() {
+			e.logger.Error(`Failed to expand block. Invalid "for-each" argument. Must be known and iterable.`,
+				log.String("block", block.FullName()),
+				log.String("value", forEachVal.GoString()),
+			)
 			continue
 		}
 
@@ -313,7 +333,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 			idx, err := convert.Convert(key, cty.String)
 			if err != nil {
 				e.logger.Error(
-					`Invalid "for-each" argument: map key (or set value) is not a string`,
+					`Failed to expand block. Invalid "for-each" argument: map key (or set value) is not a string`,
 					log.String("block", block.FullName()),
 					log.String("key", key.GoString()),
 					log.String("value", val.GoString()),
@@ -330,7 +350,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 				stringVal, err := convert.Convert(val, cty.String)
 				if err != nil {
 					e.logger.Error(
-						"Failed to convert for-each arg to string",
+						"Failed to expand block. Invalid 'for-each' argument: value is not a string",
 						log.String("block", block.FullName()),
 						log.String("key", idx.AsString()),
 						log.String("value", val.GoString()),
@@ -360,7 +380,8 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 						ctx.Set(idx, refs[0].TypeLabel(), "key")
 						ctx.Set(val, refs[0].TypeLabel(), "value")
 					} else {
-						e.logger.Debug("Ignoring iterator attribute in dynamic block, expected one reference", log.Int("refs", len(refs)))
+						e.logger.Debug("Ignoring iterator attribute in dynamic block, expected one reference",
+							log.Int("refs", len(refs)))
 					}
 				}
 			}
@@ -424,7 +445,7 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 			e.ctx.SetByDot(cty.TupleVal(clones), metadata.Reference())
 		}
 		e.logger.Debug(
-			"Expanded block '%s' into %d clones via 'count' attribute.",
+			"Expanded block into clones via 'count' attribute.",
 			log.String("block", block.FullName()),
 			log.Int("clones", len(clones)),
 		)

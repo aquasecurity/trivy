@@ -78,7 +78,7 @@ func (e *evaluator) loadModule(ctx context.Context, b *terraform.Block) (*Module
 	}
 
 	if def, err := e.loadModuleFromTerraformCache(ctx, b, source); err == nil {
-		e.logger.Debug("found module in .terraform/modules", log.String("source", source))
+		e.logger.Debug("Using module from Terraform cache .terraform/modules", log.String("source", source))
 		return def, nil
 	}
 

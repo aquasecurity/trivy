@@ -152,7 +152,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 	sort.Strings(modulePaths)
 
 	if len(modulePaths) == 0 {
-		s.logger.Info("No modules found, skipping scanning")
+		s.logger.Info("No modules found, skipping directory", log.FilePath(dir))
 		return nil, nil
 	}
 
