@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -14,7 +13,6 @@ import (
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -24,7 +22,6 @@ var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
 	logger              *log.Logger
-	skipRequired        bool
 	parameterFiles      []string
 	parameters          map[string]any
 	overridedParameters Parameters
@@ -55,10 +52,6 @@ func WithConfigsFS(fsys fs.FS) options.ParserOption {
 	}
 }
 
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
-}
-
 func New(opts ...options.ParserOption) *Parser {
 	p := &Parser{
 		logger: log.WithPrefix("cloudformation parser"),
@@ -84,11 +77,6 @@ func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, dir string) (FileConte
 			return nil
 		}
 
-		if !p.Required(fsys, path) {
-			p.logger.Debug("not a CloudFormation file, skipping", log.FilePath(path))
-			return nil
-		}
-
 		c, err := p.ParseFile(ctx, fsys, path)
 		if err != nil {
 			p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
@@ -100,23 +88,6 @@ func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, dir string) (FileConte
 		return nil, err
 	}
 	return contexts, nil
-}
-
-func (p *Parser) Required(fsys fs.FS, path string) bool {
-	if p.skipRequired {
-		return true
-	}
-
-	f, err := fsys.Open(filepath.ToSlash(path))
-	if err != nil {
-		return false
-	}
-	defer func() { _ = f.Close() }()
-	if data, err := io.ReadAll(f); err == nil {
-		return detection.IsType(path, bytes.NewReader(data), detection.FileTypeCloudFormation)
-	}
-	return false
-
 }
 
 func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *FileContext, err error) {

@@ -26,7 +26,6 @@ type Scanner struct {
 	policyReaders         []io.Reader
 	parser                *parser.Parser
 	regoScanner           *rego.Scanner
-	skipRequired          bool
 	options               []options.ScannerOption
 	frameworks            []framework.Framework
 	spec                  string
@@ -61,10 +60,6 @@ func (s *Scanner) Name() string {
 
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
-}
-
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -107,7 +102,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(options.ParserWithSkipRequiredCheck(s.skipRequired))
+	s.parser = parser.New()
 	return s
 }
 

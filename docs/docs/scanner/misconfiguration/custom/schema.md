@@ -1,7 +1,7 @@
 # Input Schema
 
 ## Overview
-Policies can be defined with custom schemas that allow inputs to be verified against them. Adding a policy schema
+Checks can be defined with custom schemas that allow inputs to be verified against them. Adding a policy schema
 enables Trivy to show more detailed error messages when an invalid input is encountered.
 
 In Trivy we have been able to define a schema for a [Dockerfile](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas)

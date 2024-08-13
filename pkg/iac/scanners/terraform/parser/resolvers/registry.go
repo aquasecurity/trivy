@@ -46,7 +46,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	}
 
 	inputVersion := opt.Version
-	source := removeSubdirFromSource(opt.Source)
+	source, _ := splitPackageSubdirRaw(opt.Source)
 	parts := strings.Split(source, "/")
 	if len(parts) < 3 || len(parts) > 4 {
 		return

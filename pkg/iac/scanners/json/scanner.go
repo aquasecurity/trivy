@@ -26,7 +26,6 @@ type Scanner struct {
 	policyReaders         []io.Reader
 	parser                *parser.Parser
 	regoScanner           *rego.Scanner
-	skipRequired          bool
 	options               []options.ScannerOption
 	frameworks            []framework.Framework
 	spec                  string
@@ -72,10 +71,6 @@ func (s *Scanner) SetPolicyDirs(dirs ...string) {
 func (s *Scanner) SetDataDirs(_ ...string)         {}
 func (s *Scanner) SetPolicyNamespaces(_ ...string) {}
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
 func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
 	// handled by rego when option is passed on
 }
@@ -89,11 +84,11 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
 		logger:  log.WithPrefix("json scanner"),
+		parser:  parser.New(),
 	}
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(options.ParserWithSkipRequiredCheck(s.skipRequired))
 	return s
 }
 

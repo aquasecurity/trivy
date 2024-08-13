@@ -23,9 +23,8 @@ var tfPlanExts = []string{
 }
 
 type Scanner struct {
-	parser    parser.Parser
-	parserOpt []options.ParserOption
-	logger    *log.Logger
+	parser parser.Parser
+	logger *log.Logger
 
 	options                 []options.ScannerOption
 	spec                    string
@@ -66,10 +65,6 @@ func (s *Scanner) SetEmbeddedLibrariesEnabled(enabled bool) {
 
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
-}
-
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.parserOpt = append(s.parserOpt, options.ParserWithSkipRequiredCheck(skip))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -122,13 +117,14 @@ func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.R
 
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
-		parser:  *parser.New(),
 		options: opts,
 		logger:  log.WithPrefix("tfjson scanner"),
+		parser:  parser.New(),
 	}
 	for _, o := range opts {
 		o(scanner)
 	}
+
 	return scanner
 }
 

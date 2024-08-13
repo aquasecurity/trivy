@@ -53,7 +53,7 @@ func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesy
 		return nil, "", "", false, nil
 	}
 
-	src := removeSubdirFromSource(opt.Source)
+	src, subdir := splitPackageSubdirRaw(opt.Source)
 	key := cacheKey(src, opt.Version)
 
 	opt.DebugLogger.Debug("Trying to resolve module via cache", log.String("key", key))
@@ -64,7 +64,7 @@ func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesy
 			return nil, "", "", true, err
 		}
 
-		return os.DirFS(filepath.Join(cacheDir, key)), opt.OriginalSource, ".", true, nil
+		return os.DirFS(filepath.Join(cacheDir, key)), opt.OriginalSource, subdir, true, nil
 	}
 	return nil, "", "", false, nil
 }

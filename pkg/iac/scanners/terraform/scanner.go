@@ -88,10 +88,6 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.parserOpt = append(s.parserOpt, options.ParserWithSkipRequiredCheck(skip))
-}
-
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
 }
 

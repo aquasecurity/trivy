@@ -28,6 +28,10 @@ func HomeDir() string {
 	return homeDir
 }
 
+func TrivyHomeDir() string {
+	return filepath.Join(HomeDir(), ".trivy")
+}
+
 // CopyFile copies the file content from scr to dst
 func CopyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)

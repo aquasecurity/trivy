@@ -54,7 +54,6 @@ type Scanner struct {
 	policyReaders         []io.Reader
 	parser                *parser.Parser
 	regoScanner           *rego.Scanner
-	skipRequired          bool
 	regoOnly              bool
 	loadEmbeddedPolicies  bool
 	loadEmbeddedLibraries bool
@@ -98,10 +97,6 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
 func (s *Scanner) SetPolicyDirs(dirs ...string) {
 	s.policyDirs = dirs
 }
@@ -129,7 +124,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.addParserOptions(options.ParserWithSkipRequiredCheck(s.skipRequired))
 	s.parser = parser.New(s.parserOptions...)
 	return s
 }

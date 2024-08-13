@@ -1,0 +1,9 @@
+{
+   "version": 1,
+   "packages": [
+      {
+         "ID": "pkg:golang/github.com/testdata/testdata",
+         "Location": "./openvex.json"
+      }
+   ]
+}

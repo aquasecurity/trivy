@@ -31,7 +31,6 @@ type Scanner struct {
 	policyReaders         []io.Reader
 	regoScanner           *rego.Scanner
 	parser                *parser.Parser
-	skipRequired          bool
 	loadEmbeddedPolicies  bool
 	frameworks            []framework.Framework
 	spec                  string
@@ -62,10 +61,6 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
 }
 
@@ -93,11 +88,11 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
 		logger:  log.WithPrefix("k8s scanner"),
+		parser:  parser.New(),
 	}
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(options.ParserWithSkipRequiredCheck(s.skipRequired))
 	return s
 }
 

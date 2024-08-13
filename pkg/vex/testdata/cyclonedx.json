@@ -4,10 +4,10 @@
   "version": 1,
   "vulnerabilities": [
     {
-      "id": "CVE-2018-7489",
+      "id": "CVE-2021-44228",
       "source": {
         "name": "NVD",
-        "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-9997"
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228"
       },
       "analysis": {
         "state": "not_affected",
@@ -15,7 +15,7 @@
       },
       "affects": [
         {
-          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0"
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:maven/org.springframework.boot/spring-boot@2.6.0"
         }
       ]
     },

@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"path/filepath"
 
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -14,12 +13,7 @@ import (
 var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
-	logger       *log.Logger
-	skipRequired bool
-}
-
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
+	logger *log.Logger
 }
 
 // New creates a new parser
@@ -46,14 +40,13 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 		if entry.IsDir() {
 			return nil
 		}
-		if !p.Required(path) {
-			return nil
-		}
+
 		df, err := p.ParseFile(ctx, target, path)
 		if err != nil {
 			p.logger.Error("Parse error", log.FilePath(path), log.Err(err))
 			return nil
 		}
+
 		files[path] = df
 		return nil
 	}); err != nil {
@@ -74,11 +67,4 @@ func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (any, err
 		return nil, err
 	}
 	return target, nil
-}
-
-func (p *Parser) Required(path string) bool {
-	if p.skipRequired {
-		return true
-	}
-	return detection.IsType(path, nil, detection.FileTypeJSON)
 }

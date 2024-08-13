@@ -137,6 +137,9 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	downloadDBOnly := f.DownloadDBOnly.Value()
 	downloadJavaDBOnly := f.DownloadJavaDBOnly.Value()
 
+	if downloadDBOnly && downloadJavaDBOnly {
+		return DBOptions{}, xerrors.New("--download-db-only and --download-java-db-only options can not be specified both")
+	}
 	if downloadDBOnly && skipDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
