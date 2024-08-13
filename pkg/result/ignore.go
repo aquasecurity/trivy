@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -46,6 +47,14 @@ type IgnoreFinding struct {
 	// Statement describes the reason for ignoring the finding.
 	// required: false
 	Statement string `yaml:"statement"`
+
+	// StartLine is the starting line of the ignore finding
+	// required: false
+	StartLine int `yaml:"start_line"`
+
+	// EndLine is the end line of the ignore finding
+	// required: false
+	EndLine int `yaml:"end_line"`
 }
 
 // UnmarshalYAML is a custom unmarshaler for IgnoreFinding that handles
@@ -83,19 +92,26 @@ func (i *IgnoreFinding) UnmarshalYAML(value *yaml.Node) error {
 
 type IgnoreFindings []IgnoreFinding
 
-func (f *IgnoreFindings) Match(id, path string, pkg *packageurl.PackageURL) *IgnoreFinding {
+func (f *IgnoreFindings) Match(id string, results *FindingsResults) *IgnoreFinding {
 	for _, finding := range *f {
 		if id != finding.ID {
 			continue
 		}
-		if !matchPath(path, finding.Paths) || !matchPURL(pkg, finding.PURLs) {
+		if !matchPath(results.TargetPath, finding.Paths) || !matchPURL(results.PackageURL, finding.PURLs) {
 			continue
 		}
 
-		log.Debug("Ignored", log.String("id", id), log.String("target", path))
-		return &finding
+		if finding.StartLine != 0 && finding.EndLine != 0 &&
+			(finding.StartLine != results.StartLine || finding.EndLine != results.EndLine) {
+			continue
+		}
 
+		log.Debug("Ignored", log.String("id", id), log.String("target", results.TargetPath),
+			log.String("startLine-endLine", fmt.Sprintf("%d-%d", results.StartLine, results.EndLine)))
+
+		return &finding
 	}
+
 	return nil
 }
 
@@ -152,21 +168,24 @@ func (c *IgnoreConfig) MatchVulnerability(vulnID, filePath, pkgPath string, pkg 
 		filePath,
 		pkgPath,
 	}
+
 	for _, p := range paths {
-		if f := c.Vulnerabilities.Match(vulnID, p, pkg); f != nil {
+		findingResults := &FindingsResults{
+			IDS:        []string{vulnID},
+			TargetPath: p,
+			PackageURL: pkg,
+		}
+
+		if f := c.Vulnerabilities.Match(vulnID, findingResults); f != nil {
 			return f
 		}
 	}
 	return nil
 }
 
-func (c *IgnoreConfig) MatchMisconfiguration(misconfID, avdID, filePath string) *IgnoreFinding {
-	ids := []string{
-		misconfID,
-		avdID,
-	}
-	for _, id := range ids {
-		if f := c.Misconfigurations.Match(id, filePath, nil); f != nil {
+func (c *IgnoreConfig) MatchMisconfiguration(results *FindingsResults) *IgnoreFinding {
+	for _, id := range results.IDS {
+		if f := c.Misconfigurations.Match(id, results); f != nil {
 			return f
 		}
 	}
@@ -174,11 +193,11 @@ func (c *IgnoreConfig) MatchMisconfiguration(misconfID, avdID, filePath string) 
 }
 
 func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
-	return c.Secrets.Match(secretID, filePath, nil)
+	return c.Secrets.Match(secretID, &FindingsResults{TargetPath: filePath})
 }
 
 func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
-	return c.Licenses.Match(licenseID, filePath, nil)
+	return c.Licenses.Match(licenseID, &FindingsResults{TargetPath: filePath})
 }
 
 func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {

@@ -147,6 +147,16 @@ func TestFilter(t *testing.T) {
 			Severity: dbTypes.SeverityLow.String(),
 			Status:   types.MisconfStatusFailure,
 		}
+		misconf4 = types.DetectedMisconfiguration{
+			Type:          "Kubernetes Security Check",
+			ID:            "ID300",
+			AVDID:         "AVD-ID300",
+			Title:         "Bad Job with defined ignore lines",
+			Message:       "something bad",
+			Severity:      dbTypes.SeverityLow.String(),
+			Status:        types.MisconfStatusException,
+			CauseMetadata: ftypes.CauseMetadata{StartLine: 10, EndLine: 11},
+		}
 		secret1 = types.DetectedSecret{
 			RuleID:    "generic-wanted-rule",
 			Severity:  dbTypes.SeverityHigh.String(),
@@ -458,6 +468,7 @@ func TestFilter(t *testing.T) {
 								misconf1, // ignored
 								misconf2, // ignored
 								misconf3,
+								misconf4, // ignored
 							},
 						},
 						{
@@ -523,7 +534,7 @@ func TestFilter(t *testing.T) {
 						MisconfSummary: &types.MisconfSummary{
 							Successes:  0,
 							Failures:   1,
-							Exceptions: 2,
+							Exceptions: 3,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf3,
@@ -540,6 +551,12 @@ func TestFilter(t *testing.T) {
 								Status:  types.FindingStatusIgnored,
 								Source:  "testdata/.trivyignore.yaml",
 								Finding: misconf2,
+							},
+							{
+								Type:    types.FindingTypeMisconfiguration,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore.yaml",
+								Finding: misconf4,
 							},
 						},
 					},

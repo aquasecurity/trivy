@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/open-policy-agent/opa/rego"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -32,6 +33,14 @@ type FilterOption struct {
 	PolicyFile         string
 	IgnoreLicenses     []string
 	VEXPath            string
+}
+
+type FindingsResults struct {
+	IDS        []string
+	TargetPath string
+	PackageURL *packageurl.PackageURL
+	StartLine  int
+	EndLine    int
 }
 
 // Filter filters out the report
@@ -151,8 +160,15 @@ func filterMisconfigurations(result *types.Result, severities []string, includeN
 			continue
 		}
 
+		findingsResults := &FindingsResults{
+			IDS:        []string{misconf.ID, misconf.AVDID},
+			TargetPath: result.Target,
+			StartLine:  misconf.CauseMetadata.StartLine,
+			EndLine:    misconf.CauseMetadata.EndLine,
+		}
+
 		// Filter by ignore file
-		if f := ignoreConfig.MatchMisconfiguration(misconf.ID, misconf.AVDID, result.Target); f != nil {
+		if f := ignoreConfig.MatchMisconfiguration(findingsResults); f != nil {
 			result.MisconfSummary.Exceptions++
 			result.ModifiedFindings = append(result.ModifiedFindings,
 				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
