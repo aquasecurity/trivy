@@ -260,8 +260,14 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	// License - OS packages
 	var osPkgLicenses []types.DetectedLicense
 	for _, pkg := range target.Packages {
+		licenseDetected := false
 		for _, license := range pkg.Licenses {
 			category, severity := scanner.Scan(license)
+			if category == ftypes.CategoryUnknown && severity == dbTypes.SeverityUnknown.String() {
+				continue
+			}
+			licenseDetected = true
+
 			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
 				Severity:   severity,
 				Category:   category,
@@ -270,6 +276,16 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 				Confidence: 1.0,
 			})
 		}
+		if !licenseDetected && pkg.LicenseText != "" {
+			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
+				Severity:   dbTypes.SeverityUnknown.String(),
+				Category:   ftypes.CategoryUnknown,
+				PkgName:    pkg.Name,
+				Name:       pkg.LicenseText,
+				Confidence: 1.0,
+			})
+		}
+
 	}
 	results = append(results, types.Result{
 		Target:   "OS Packages",
@@ -281,8 +297,13 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	for _, app := range target.Applications {
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Packages {
+			undetectedLicense := false
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
+				if category == ftypes.CategoryUnknown && severity == dbTypes.SeverityUnknown.String() {
+					undetectedLicense = true
+					continue
+				}
 				langLicenses = append(langLicenses, types.DetectedLicense{
 					Severity: severity,
 					Category: category,
@@ -290,6 +311,16 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 					Name:     license,
 					// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
 					// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
+					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
+					Confidence: 1.0,
+				})
+			}
+			if undetectedLicense && lib.LicenseText != "" {
+				langLicenses = append(langLicenses, types.DetectedLicense{
+					Severity:   dbTypes.SeverityUnknown.String(),
+					Category:   ftypes.CategoryUnknown,
+					PkgName:    lib.Name,
+					Name:       lib.LicenseText,
 					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
 					Confidence: 1.0,
 				})
