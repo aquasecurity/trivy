@@ -54,10 +54,20 @@ func (t *FileContext) Metadata() iacTypes.Metadata {
 	return iacTypes.NewMetadata(rng, NewCFReference("Template", rng).String())
 }
 
-func (t *FileContext) OverrideParameters(params map[string]any) {
+func (t *FileContext) overrideParameters(params map[string]any) {
 	for key := range t.Parameters {
 		if val, ok := params[key]; ok {
 			t.Parameters[key].UpdateDefault(val)
 		}
 	}
+}
+
+func (t *FileContext) missingParameters() []string {
+	var missing []string
+	for key := range t.Parameters {
+		if t.Parameters[key].inner.Default == nil {
+			missing = append(missing, key)
+		}
+	}
+	return missing
 }

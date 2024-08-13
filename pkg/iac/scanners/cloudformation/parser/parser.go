@@ -140,7 +140,11 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 		}
 	}
 
-	fctx.OverrideParameters(p.overridedParameters)
+	fctx.overrideParameters(p.overridedParameters)
+
+	if params := fctx.missingParameters(); len(params) > 0 {
+		p.logger.Warn("Missing parameters", log.FilePath(path), log.String("parameters", strings.Join(params, ", ")))
+	}
 
 	fctx.lines = lines
 	fctx.SourceFormat = sourceFmt
@@ -154,7 +158,7 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 	}
 
 	for name, r := range fctx.Resources {
-		r.ConfigureResource(name, fsys, path, fctx)
+		r.configureResource(name, fsys, path, fctx)
 	}
 
 	return fctx, nil
