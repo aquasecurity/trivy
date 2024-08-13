@@ -260,7 +260,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	// License - OS packages
 	var osPkgLicenses []types.DetectedLicense
 	for _, pkg := range target.Packages {
-		undetectedLicenses := []string{}
+		var undetectedLicenses []string
 		for _, license := range pkg.Licenses {
 			category, severity := scanner.Scan(license)
 			if category == ftypes.CategoryUnknown && severity == dbTypes.SeverityUnknown.String() {
@@ -296,7 +296,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	for _, app := range target.Applications {
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Packages {
-			undetectedLicenses := []string{}
+			var undetectedLicenses []string
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
 				if category == ftypes.CategoryUnknown && severity == dbTypes.SeverityUnknown.String() {
