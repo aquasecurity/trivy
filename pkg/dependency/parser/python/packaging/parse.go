@@ -85,10 +85,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	return []ftypes.Package{
 		{
-			Name:        name,
-			Version:     version,
-			Licenses:    licensing.SplitLicenses(license),
-			LicenseText: license,
+			Name:     name,
+			Version:  version,
+			Licenses: licensing.SplitLicenses(license),
 		},
 	}, nil, nil
 }

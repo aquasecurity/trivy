@@ -187,7 +187,6 @@ type Package struct {
 	SrcRelease         string        `json:",omitempty"`
 	SrcEpoch           int           `json:",omitempty"`
 	Licenses           []string      `json:",omitempty"`
-	LicenseText        string        `json:",omitempty"`
 	Maintainer         string        `json:",omitempty"`
 	ExternalReferences []ExternalRef `json:"-" hash:"ignore"`
 
