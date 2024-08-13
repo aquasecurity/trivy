@@ -10,29 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
-
-var alwaysFailRule = scan.Rule{
-	Provider:  providers.AWSProvider,
-	Service:   "service",
-	ShortCode: "abc",
-	Severity:  severity.High,
-	CustomChecks: scan.CustomChecks{
-		Terraform: &scan.TerraformCustomCheck{
-			RequiredTypes:  []string{},
-			RequiredLabels: []string{},
-			Check: func(resourceBlock *terraform.Block, _ *terraform.Module) (results scan.Results) {
-				results.Add("oh no", resourceBlock)
-				return
-			},
-		},
-	},
-}
 
 const emptyBucketRule = `
 # METADATA
@@ -53,18 +33,6 @@ deny[res] {
   res := result.new("The name of the bucket must not be empty", bucket)
 }
 `
-
-func scanWithOptions(t *testing.T, code string, opt ...options.ScannerOption) scan.Results {
-
-	fs := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": code,
-	})
-
-	scanner := New(opt...)
-	results, err := scanner.ScanFS(context.TODO(), fs, "project")
-	require.NoError(t, err)
-	return results
-}
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
 

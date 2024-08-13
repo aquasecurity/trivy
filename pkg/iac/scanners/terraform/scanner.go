@@ -31,7 +31,7 @@ type Scanner struct {
 	mu            sync.Mutex
 	logger        *log.Logger
 	options       []options.ScannerOption
-	parserOpt     []options.ParserOption
+	parserOpt     []parser.Option
 	executorOpt   []executor.Option
 	dirs          map[string]struct{}
 	forceAllDirs  bool
@@ -76,7 +76,7 @@ func (s *Scanner) SetForceAllDirs(b bool) {
 	s.forceAllDirs = b
 }
 
-func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
+func (s *Scanner) AddParserOptions(opts ...parser.Option) {
 	s.parserOpt = append(s.parserOpt, opts...)
 }
 

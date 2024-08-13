@@ -20,7 +20,6 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 type Scanner struct {
 	mu                    sync.Mutex
 	options               []options.ScannerOption
-	parserOptions         []options.ParserOption
 	logger                *log.Logger
 	policyDirs            []string
 	policyReaders         []io.Reader
@@ -82,11 +81,11 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
 		logger:  log.WithPrefix("yaml scanner"),
+		parser:  parser.New(),
 	}
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(s.parserOptions...)
 	return s
 }
 

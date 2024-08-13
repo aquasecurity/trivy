@@ -27,7 +27,6 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 type Scanner struct {
 	mu                    sync.Mutex
 	scannerOptions        []options.ScannerOption
-	parserOptions         []options.ParserOption
 	logger                *log.Logger
 	frameworks            []framework.Framework
 	regoOnly              bool
@@ -112,7 +111,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
-	p := parser.New(fsys, s.parserOptions...)
+	p := parser.New(fsys)
 	deployments, err := p.ParseFS(ctx, dir)
 	if err != nil {
 		return nil, err

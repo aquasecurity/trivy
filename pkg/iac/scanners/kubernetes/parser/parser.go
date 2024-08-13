@@ -13,25 +13,18 @@ import (
 	"gopkg.in/yaml.v3"
 	kyaml "sigs.k8s.io/yaml"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
-
-var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
 	logger *log.Logger
 }
 
 // New creates a new K8s parser
-func New(opts ...options.ParserOption) *Parser {
-	p := &Parser{
+func New() *Parser {
+	return &Parser{
 		logger: log.WithPrefix("k8s parser"),
 	}
-	for _, option := range opts {
-		option(p)
-	}
-	return p
 }
 
 func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string][]any, error) {

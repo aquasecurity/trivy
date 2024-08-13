@@ -31,7 +31,7 @@ type Scanner struct {
 	dataDirs              []string
 	logger                *log.Logger
 	options               []options.ScannerOption
-	parserOptions         []options.ParserOption
+	parserOptions         []parser.Option
 	policyReaders         []io.Reader
 	loadEmbeddedLibraries bool
 	loadEmbeddedPolicies  bool
@@ -68,7 +68,7 @@ func New(opts ...options.ScannerOption) *Scanner {
 	return s
 }
 
-func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
+func (s *Scanner) addParserOptions(opts ...parser.Option) {
 	s.parserOptions = append(s.parserOptions, opts...)
 }
 

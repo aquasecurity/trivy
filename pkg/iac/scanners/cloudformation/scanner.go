@@ -23,7 +23,7 @@ import (
 func WithParameters(params map[string]any) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithParameters(params))
+			s.addParserOption(parser.WithParameters(params))
 		}
 	}
 }
@@ -31,7 +31,7 @@ func WithParameters(params map[string]any) options.ScannerOption {
 func WithParameterFiles(files ...string) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithParameterFiles(files...))
+			s.addParserOption(parser.WithParameterFiles(files...))
 		}
 	}
 }
@@ -39,7 +39,7 @@ func WithParameterFiles(files ...string) options.ScannerOption {
 func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithConfigsFS(fsys))
+			s.addParserOption(parser.WithConfigsFS(fsys))
 		}
 	}
 }
@@ -58,14 +58,14 @@ type Scanner struct {
 	loadEmbeddedPolicies  bool
 	loadEmbeddedLibraries bool
 	options               []options.ScannerOption
-	parserOptions         []options.ParserOption
+	parserOptions         []parser.Option
 	frameworks            []framework.Framework
 	spec                  string
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
 
-func (s *Scanner) addParserOptions(opt options.ParserOption) {
+func (s *Scanner) addParserOption(opt parser.Option) {
 	s.parserOptions = append(s.parserOptions, opt)
 }
 

@@ -9,7 +9,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -19,15 +18,11 @@ type Parser struct {
 	logger   *log.Logger
 }
 
-func New(targetFS fs.FS, opts ...options.ParserOption) *Parser {
-	p := &Parser{
+func New(targetFS fs.FS) *Parser {
+	return &Parser{
 		targetFS: targetFS,
 		logger:   log.WithPrefix("arm parser"),
 	}
-	for _, opt := range opts {
-		opt(p)
-	}
-	return p
 }
 
 func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure.Deployment, error) {

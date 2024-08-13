@@ -16,7 +16,6 @@ import (
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -26,8 +25,6 @@ type sourceFile struct {
 	file *hcl.File
 	path string
 }
-
-var _ ConfigurableTerraformParser = (*Parser)(nil)
 
 // Parser is a tool for parsing terraform templates at a given file system location
 type Parser struct {
@@ -43,7 +40,7 @@ type Parser struct {
 	workspaceName     string
 	underlying        *hclparse.Parser
 	children          []*Parser
-	options           []options.ParserOption
+	options           []Option
 	logger            *log.Logger
 	allowDownloads    bool
 	skipCachedModules bool
@@ -51,32 +48,8 @@ type Parser struct {
 	configsFS         fs.FS
 }
 
-func (p *Parser) SetTFVarsPaths(s ...string) {
-	p.tfvarsPaths = s
-}
-
-func (p *Parser) SetStopOnHCLError(b bool) {
-	p.stopOnHCLError = b
-}
-
-func (p *Parser) SetWorkspaceName(s string) {
-	p.workspaceName = s
-}
-
-func (p *Parser) SetAllowDownloads(b bool) {
-	p.allowDownloads = b
-}
-
-func (p *Parser) SetSkipCachedModules(b bool) {
-	p.skipCachedModules = b
-}
-
-func (p *Parser) SetConfigsFS(fsys fs.FS) {
-	p.configsFS = fsys
-}
-
 // New creates a new Parser
-func New(moduleFS fs.FS, moduleSource string, opts ...options.ParserOption) *Parser {
+func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 	p := &Parser{
 		workspaceName:  "default",
 		underlying:     hclparse.NewParser(),

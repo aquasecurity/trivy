@@ -21,7 +21,6 @@ import (
 	"helm.sh/helm/v3/pkg/releaseutil"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -47,31 +46,7 @@ type ChartFile struct {
 	ManifestContent  string
 }
 
-func (p *Parser) SetValuesFile(s ...string) {
-	p.valuesFiles = s
-}
-
-func (p *Parser) SetValues(values ...string) {
-	p.values = values
-}
-
-func (p *Parser) SetFileValues(values ...string) {
-	p.fileValues = values
-}
-
-func (p *Parser) SetStringValues(values ...string) {
-	p.stringValues = values
-}
-
-func (p *Parser) SetAPIVersions(values ...string) {
-	p.apiVersions = values
-}
-
-func (p *Parser) SetKubeVersion(value string) {
-	p.kubeVersion = value
-}
-
-func New(path string, opts ...options.ParserOption) (*Parser, error) {
+func New(path string, opts ...Option) (*Parser, error) {
 
 	client := action.NewInstall(&action.Configuration{})
 	client.DryRun = true     // don't do anything

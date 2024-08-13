@@ -7,25 +7,18 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
-
-var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
 	logger *log.Logger
 }
 
 // New creates a new parser
-func New(opts ...options.ParserOption) *Parser {
-	p := &Parser{
+func New() *Parser {
+	return &Parser{
 		logger: log.WithPrefix("toml parser"),
 	}
-	for _, opt := range opts {
-		opt(p)
-	}
-	return p
 }
 
 func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]any, error) {

@@ -14,11 +14,8 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
-
-var _ options.ConfigurableParser = (*Parser)(nil)
 
 type Parser struct {
 	logger              *log.Logger
@@ -28,31 +25,27 @@ type Parser struct {
 	configsFS           fs.FS
 }
 
-func WithParameters(params map[string]any) options.ParserOption {
-	return func(cp options.ConfigurableParser) {
-		if p, ok := cp.(*Parser); ok {
-			p.parameters = params
-		}
+type Option func(*Parser)
+
+func WithParameters(params map[string]any) Option {
+	return func(p *Parser) {
+		p.parameters = params
 	}
 }
 
-func WithParameterFiles(files ...string) options.ParserOption {
-	return func(cp options.ConfigurableParser) {
-		if p, ok := cp.(*Parser); ok {
-			p.parameterFiles = files
-		}
+func WithParameterFiles(files ...string) Option {
+	return func(p *Parser) {
+		p.parameterFiles = files
 	}
 }
 
-func WithConfigsFS(fsys fs.FS) options.ParserOption {
-	return func(cp options.ConfigurableParser) {
-		if p, ok := cp.(*Parser); ok {
-			p.configsFS = fsys
-		}
+func WithConfigsFS(fsys fs.FS) Option {
+	return func(p *Parser) {
+		p.configsFS = fsys
 	}
 }
 
-func New(opts ...options.ParserOption) *Parser {
+func New(opts ...Option) *Parser {
 	p := &Parser{
 		logger: log.WithPrefix("cloudformation parser"),
 	}
