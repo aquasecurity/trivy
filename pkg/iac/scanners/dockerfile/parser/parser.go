@@ -44,7 +44,7 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 
 		df, err := p.ParseFile(ctx, target, path)
 		if err != nil {
-			// TODO add debug for parse errors
+			p.logger.Error("Failed to parse Dockerfile", log.FilePath(path), log.Err(err))
 			return nil
 		}
 		files[path] = df
