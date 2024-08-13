@@ -225,12 +225,12 @@ func (e *evaluator) evaluateSteps() {
 	var lastContext hcl.EvalContext
 	for i := 0; i < maxContextIterations; i++ {
 
-		e.debug.Log("Starting iteration %d", i)
+		e.logger.Debug("Starting iteration", log.Int("iteration", i))
 		e.evaluateStep()
 
 		// if ctx matches the last evaluation, we can bail, nothing left to resolve
 		if i > 0 && reflect.DeepEqual(lastContext.Variables, e.ctx.Inner().Variables) {
-			e.debug.Log("Context unchanged at i=%d", i)
+			e.logger.Debug("Context unchanged", log.Int("iteration", i))
 			break
 		}
 		if len(e.ctx.Inner().Variables) != len(lastContext.Variables) {
@@ -360,7 +360,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 						ctx.Set(idx, refs[0].TypeLabel(), "key")
 						ctx.Set(val, refs[0].TypeLabel(), "value")
 					} else {
-						e.debug.Log("Ignoring iterator attribute in dynamic block, expected one reference but got %d", len(refs))
+						e.logger.Debug("Ignoring iterator attribute in dynamic block, expected one reference", log.Int("refs", len(refs)))
 					}
 				}
 			}

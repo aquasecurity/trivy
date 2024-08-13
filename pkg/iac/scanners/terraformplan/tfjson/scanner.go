@@ -23,9 +23,8 @@ var tfPlanExts = []string{
 }
 
 type Scanner struct {
-	parser parser.Parser
-	logger *log.Logger
-
+	parser                  *parser.Parser
+	logger                  *log.Logger
 	options                 []options.ScannerOption
 	spec                    string
 	executorOpt             []executor.Option
