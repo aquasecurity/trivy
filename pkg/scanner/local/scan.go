@@ -260,14 +260,13 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	// License - OS packages
 	var osPkgLicenses []types.DetectedLicense
 	for _, pkg := range target.Packages {
-		licenseDetected := false
+		undetectedLicense := false
 		for _, license := range pkg.Licenses {
 			category, severity := scanner.Scan(license)
 			if category == ftypes.CategoryUnknown && severity == dbTypes.SeverityUnknown.String() {
+				undetectedLicense = true
 				continue
 			}
-			licenseDetected = true
-
 			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
 				Severity:   severity,
 				Category:   category,
@@ -276,7 +275,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 				Confidence: 1.0,
 			})
 		}
-		if !licenseDetected && pkg.LicenseText != "" {
+		if undetectedLicense && pkg.LicenseText != "" {
 			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
 				Severity:   dbTypes.SeverityUnknown.String(),
 				Category:   ftypes.CategoryUnknown,
