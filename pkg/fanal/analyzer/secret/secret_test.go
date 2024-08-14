@@ -95,6 +95,30 @@ func TestSecretAnalyzer(t *testing.T) {
 			},
 		},
 	}
+	wantFindingGH_PAT := types.SecretFinding{
+		RuleID:    "github-fine-grained-pat",
+		Category:  "GitHub",
+		Title:     "GitHub Fine-grained personal access tokens",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     " o e\xabfx \xe3 @ s d Z e e d S ) \xda]*********************************************************************************************N) \xda secret1\xda print\xa9",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     " o e\xabfx \xe3 @ s d Z e e d S ) \xda]*********************************************************************************************N) \xda secret1\xda print\xa9",
+					IsCause:     true,
+					Annotation:  "",
+					Truncated:   false,
+					Highlighted: " o e\xabfx \xe3 @ s d Z e e d S ) \xda]*********************************************************************************************N) \xda secret1\xda print\xa9",
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
+
 	tests := []struct {
 		name       string
 		configPath string
@@ -152,6 +176,21 @@ func TestSecretAnalyzer(t *testing.T) {
 			configPath: "",
 			filePath:   "testdata/binaryfile",
 			want:       nil,
+		},
+		{
+			name:       "python binary file",
+			configPath: "testdata/skip-tests-config.yaml",
+			filePath:   "testdata/secret.cpython-310.pyc",
+			want: &analyzer.AnalysisResult{
+				Secrets: []types.Secret{
+					{
+						FilePath: "/testdata/secret.cpython-310.pyc",
+						Findings: []types.SecretFinding{
+							wantFindingGH_PAT,
+						},
+					},
+				},
+			},
 		},
 	}
 
