@@ -1557,7 +1557,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:     "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						BOMRef:     "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
 						Type:       cdx.ComponentTypeLibrary,
 						Group:      "com.fasterxml.jackson.core",
 						Name:       "jackson-databind",
@@ -1607,7 +1607,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Updated:   "2022-12-20T10:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+								Ref: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "2.13.4.1",
@@ -1622,11 +1622,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					{
 						Ref: "aff65b54-6009-4c32-968d-748949ef46e8",
 						Dependencies: &[]string{
-							"pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+							"pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
 						},
 					},
 					{
-						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
