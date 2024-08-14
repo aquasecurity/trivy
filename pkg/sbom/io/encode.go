@@ -377,8 +377,9 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		SrcVersion: utils.FormatSrcVersion(pkg),
 		SrcFile:    srcFile,
 		PkgIdentifier: ftypes.PkgIdentifier{
-			UID:  pkg.Identifier.UID,
-			PURL: pkg.Identifier.PURL,
+			UID:    pkg.Identifier.UID,
+			PURL:   pkg.Identifier.PURL,
+			BOMRef: pkg.Identifier.BOMRef,
 		},
 		Supplier:   pkg.Maintainer,
 		Licenses:   pkg.Licenses,
