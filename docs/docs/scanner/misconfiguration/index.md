@@ -101,7 +101,7 @@ For example, the following example holds IaC files for Terraform, CloudFormation
 ``` bash
 $ ls iac/
 Dockerfile  deployment.yaml  main.tf mysql-8.8.26.tar
-$ trivy conf --severity HIGH,CRITICAL ./iac
+$ trivy config --severity HIGH,CRITICAL ./iac
 ```
 
 <details>
@@ -334,13 +334,13 @@ You can load check files or directories including your custom checks using the `
 This can be repeated for specifying multiple files or directories.
 
 ```bash
-trivy conf --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
+trivy config --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
 ```
 
 You can load checks bundle as OCI Image from a Container Registry using the `--checks-bundle-repository` flag.
 
 ```bash
-trivy conf --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+trivy config --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
 ```
 
 ### Passing custom data
@@ -349,7 +349,7 @@ This can be repeated for specifying multiple directories.
 
 ```bash
 cd examples/misconf/custom-data
-trivy conf --config-check ./policy --data ./data --namespaces user ./configs
+trivy config --config-check ./my-check --data ./data --namespaces user ./configs
 ```
 
 For more details, see [Custom Data](./custom/data.md).
@@ -360,7 +360,7 @@ If you want to evaluate custom checks in other packages, you have to specify pac
 This can be repeated for specifying multiple packages.
 
 ``` bash
-trivy conf --config-check ./policy --namespaces main --namespaces user ./configs
+trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 ```
 
 ### Private terraform registries

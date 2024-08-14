@@ -18,13 +18,13 @@ It supports the following formats:
 Trivy can scan Terraform Plan files (snapshots) or their JSON representations. To create a Terraform Plan and scan it, run the following command:
 ```bash
 terraform plan --out tfplan
-trivy conf tfplan
+trivy config tfplan
 ```
 
 To scan a Terraform Plan representation in JSON format, run the following command:
 ```bash
 terraform show -json tfplan > tfplan.json
-trivy conf tfplan.json
+trivy config tfplan.json
 ```
 
 ## Misconfiguration
@@ -35,7 +35,7 @@ It also evaluates variables, imports, and other elements within Terraform files 
 You can provide `tf-vars` files to Trivy to override default values specified in the Terraform HCL code.
 
 ```bash
-trivy conf --tf-vars dev.terraform.tfvars ./infrastructure/tf
+trivy config --tf-vars dev.terraform.tfvars ./infrastructure/tf
 ```
 
 ### Exclude Downloaded Terraform Modules
@@ -43,7 +43,7 @@ By default, downloaded modules are also scanned.
 If you don't want to scan them, you can use the `--tf-exclude-downloaded-modules` flag.
 
 ```bash
-trivy conf --tf-exclude-downloaded-modules ./configs
+trivy config --tf-exclude-downloaded-modules ./configs
 ```
 
 ## Secret
