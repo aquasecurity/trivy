@@ -67,7 +67,7 @@ func (s *Scanner) loadEmbedded() error {
 
 	loaded, err = LoadEmbeddedPolicies()
 	if err != nil {
-		return fmt.Errorf("failed to load embedded rego policies: %w", err)
+		return fmt.Errorf("failed to load embedded rego checks: %w", err)
 	}
 	s.embeddedChecks = loaded
 	s.logger.Debug("Embedded checks are loaded", log.Int("count", len(loaded)))

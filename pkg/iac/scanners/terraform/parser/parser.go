@@ -255,7 +255,7 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 	}
 
 	modules, fsMap := e.EvaluateAll(ctx)
-	p.logger.Debug("Finished parsing module", log.String("module", p.moduleName))
+	p.logger.Debug("Finished parsing module")
 	p.fsMap = fsMap
 	return modules, e.exportOutputs(), nil
 }
