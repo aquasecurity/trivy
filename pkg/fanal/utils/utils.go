@@ -99,6 +99,8 @@ func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
 	var printalbe []byte
 	current := make([]byte, 1)
 
+	wasReadable := false
+
 	for {
 		_, err := content.Read(current)
 		if err == io.EOF {
@@ -107,8 +109,15 @@ func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
 			return nil, err
 		}
 		if unicode.IsPrint(rune(current[0])) {
+			if !wasReadable {
+				printalbe = append(printalbe, byte('\n'))
+				wasReadable = true
+			}
 			printalbe = append(printalbe, current[0])
+		} else {
+			wasReadable = false
 		}
+
 	}
 
 	return printalbe, nil
