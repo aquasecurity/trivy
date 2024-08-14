@@ -110,7 +110,7 @@ func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
 		}
 		if unicode.IsPrint(rune(current[0])) {
 			if !wasReadable {
-				printalbe = append(printalbe, byte('\n'))
+				printalbe = append(printalbe, byte(' '))
 				wasReadable = true
 			}
 			printalbe = append(printalbe, current[0])
