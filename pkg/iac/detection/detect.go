@@ -343,7 +343,7 @@ func IsFileMatchesSchemas(schemas map[string]*gojsonschema.Schema, typ FileType,
 
 	for schemaPath, schema := range schemas {
 		if res, err := schema.Validate(l); err == nil && res.Valid() {
-			log.Debug("The file matches the schema", log.FilePath(name), log.String("schema_path", schemaPath))
+			log.Debug("File matched schema", log.FilePath(name), log.String("schema_path", schemaPath))
 			return true
 		}
 	}

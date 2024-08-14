@@ -634,7 +634,7 @@ func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) 
 			logger.Error("Falling back to embedded checks", log.Err(err))
 		}
 	} else {
-		logger.Debug("Policies successfully loaded from disk")
+		logger.Debug("Checks successfully loaded from disk")
 		disableEmbedded = true
 	}
 

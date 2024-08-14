@@ -567,7 +567,7 @@ func Test_IsFileMatchesSchemas(t *testing.T) {
 			matches: true,
 		},
 		{
-			name: "yaml file dost not matches",
+			name: "yaml file does not matches",
 			args: args{
 				schemas:     []string{schema},
 				fileType:    FileTypeYAML,
