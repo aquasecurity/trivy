@@ -4365,7 +4365,7 @@ Trivy automatically detects config types and applies relevant checks.</p>
 <p>For example, the following example holds IaC files for Terraform, CloudFormation, Kubernetes, Helm Charts, and Dockerfile in the same directory.</p>
 <div class="highlight"><pre><span></span><code>$ ls iac/
 Dockerfile  deployment.yaml  main.tf mysql-8.8.26.tar
-$ trivy conf --severity HIGH,CRITICAL ./iac
+$ trivy config --severity HIGH,CRITICAL ./iac
 </code></pre></div>
 <details>
 <summary>Result</summary>
@@ -4586,23 +4586,23 @@ This flag takes a comma-separated list of configuration scanner types.</p>
 <h3 id="loading-custom-checks">Loading custom checks</h3>
 <p>You can load check files or directories including your custom checks using the <code>--config-check</code> flag.
 This can be repeated for specifying multiple files or directories.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
+<div class="highlight"><pre><span></span><code>trivy config --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
 </code></pre></div>
 <p>You can load checks bundle as OCI Image from a Container Registry using the <code>--checks-bundle-repository</code> flag.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+<div class="highlight"><pre><span></span><code>trivy config --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
 </code></pre></div>
 <h3 id="passing-custom-data">Passing custom data</h3>
 <p>You can pass directories including your custom data through <code>--data</code> option.
 This can be repeated for specifying multiple directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> examples/misconf/custom-data
-trivy conf --config-check ./policy --data ./data --namespaces user ./configs
+trivy config --config-check ./my-check --data ./data --namespaces user ./configs
 </code></pre></div>
 <p>For more details, see <a href="custom/data/">Custom Data</a>.</p>
 <h3 id="passing-namespaces">Passing namespaces</h3>
 <p>By default, Trivy evaluates checks defined in <code>builtin.*</code>.
 If you want to evaluate custom checks in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
 This can be repeated for specifying multiple packages.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --config-check ./policy --namespaces main --namespaces user ./configs
+<div class="highlight"><pre><span></span><code>trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 </code></pre></div>
 <h3 id="private-terraform-registries">Private terraform registries</h3>
 <p>Trivy can download terraform code from private registries.

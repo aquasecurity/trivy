@@ -4241,23 +4241,23 @@ You're not viewing the latest version.
 </table>
 <p>Trivy can scan Terraform Plan files (snapshots) or their JSON representations. To create a Terraform Plan and scan it, run the following command:
 <div class="highlight"><pre><span></span><code>terraform plan --out tfplan
-trivy conf tfplan
+trivy config tfplan
 </code></pre></div></p>
 <p>To scan a Terraform Plan representation in JSON format, run the following command:
 <div class="highlight"><pre><span></span><code>terraform show -json tfplan &gt; tfplan.json
-trivy conf tfplan.json
+trivy config tfplan.json
 </code></pre></div></p>
 <h2 id="misconfiguration">Misconfiguration</h2>
 <p>Trivy recursively searches directories and scans all found Terraform files.
 It also evaluates variables, imports, and other elements within Terraform files to detect misconfigurations.</p>
 <h3 id="value-overrides">Value Overrides</h3>
 <p>You can provide <code>tf-vars</code> files to Trivy to override default values specified in the Terraform HCL code.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --tf-vars dev.terraform.tfvars ./infrastructure/tf
+<div class="highlight"><pre><span></span><code>trivy config --tf-vars dev.terraform.tfvars ./infrastructure/tf
 </code></pre></div>
 <h3 id="exclude-downloaded-terraform-modules">Exclude Downloaded Terraform Modules</h3>
 <p>By default, downloaded modules are also scanned.
 If you don't want to scan them, you can use the <code>--tf-exclude-downloaded-modules</code> flag.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --tf-exclude-downloaded-modules ./configs
+<div class="highlight"><pre><span></span><code>trivy config --tf-exclude-downloaded-modules ./configs
 </code></pre></div>
 <h2 id="secret">Secret</h2>
 <p>The secret scan is performed on plain text files, with no special treatment for Terraform.</p>

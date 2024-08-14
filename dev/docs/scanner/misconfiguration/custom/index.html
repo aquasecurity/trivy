@@ -4310,7 +4310,7 @@ You're not viewing the latest version.
 <h2 id="overview">Overview</h2>
 <p>You can write custom checks in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
 Once you finish writing custom checks, you can pass the check files or the directory where those checks are stored with --config-check` option.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --config-check /path/to/policy.rego --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
+<div class="highlight"><pre><span></span><code>trivy config --config-check /path/to/policy.rego --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 </code></pre></div>
 <p>As for <code>--namespaces</code> option, the detail is described as below.</p>
 <h3 id="file-formats">File formats</h3>
@@ -4429,7 +4429,7 @@ If you add a new custom policy, it must be defined under a new package like <cod
 </div>
 <p>By default, only <code>builtin.*</code> packages will be evaluated.
 If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be <code>user</code> as in this example. It could be anything user-defined.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
+<div class="highlight"><pre><span></span><code>trivy config --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 </code></pre></div>
 <p>In this case, <code>user.*</code> will be evaluated.
 Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>

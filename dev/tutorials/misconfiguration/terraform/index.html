@@ -4288,7 +4288,7 @@ In this case, the folder only containes Terraform configuration files. However, 
 </code></pre></div>
 <h3 id="passing-tftfvars-files-into-trivy-config-scans">Passing tf.tfvars files into <code>trivy config</code> scans</h3>
 <p>You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided <a href="https://aquasecurity.github.io/trivy/latest/docs/coverage/iac/terraform/#value-overrides">in the documentation.</a> </p>
-<div class="highlight"><pre><span></span><code>trivy conf --tf-vars terraform.tfvars ./
+<div class="highlight"><pre><span></span><code>trivy config --tf-vars terraform.tfvars ./
 </code></pre></div>
 <h3 id="custom-checks">Custom Checks</h3>
 <p>We have lots of examples in the <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego checks into terraform misconfiguration scans. </p>

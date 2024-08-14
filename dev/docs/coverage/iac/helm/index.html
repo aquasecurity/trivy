@@ -4213,7 +4213,7 @@ See <a href="../../../scanner/misconfiguration/check/builtin/">here</a> for more
 When override values are passed to the Helm scanner, the values will be used during the Manifest rendering process and will become part of the scanned artifact.</p>
 <h4 id="setting-inline-value-overrides">Setting inline value overrides</h4>
 <p>Overrides can be set inline on the command line</p>
-<div class="highlight"><pre><span></span><code>trivy conf --helm-set securityContext.runAsUser<span class="o">=</span><span class="m">0</span> ./charts/mySql
+<div class="highlight"><pre><span></span><code>trivy config --helm-set securityContext.runAsUser<span class="o">=</span><span class="m">0</span> ./charts/mySql
 </code></pre></div>
 <h4 id="setting-value-file-overrides">Setting value file overrides</h4>
 <p>Overrides can be in a file that has the key=value set.</p>
@@ -4222,7 +4222,7 @@ When override values are passed to the Helm scanner, the values will be used dur
 <span class="nt">securityContext</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>trivy conf --helm-values overrides.yaml ./charts/mySql
+<div class="highlight"><pre><span></span><code>trivy config --helm-values overrides.yaml ./charts/mySql
 </code></pre></div>
 <h4 id="setting-value-as-explicit-string">Setting value as explicit string</h4>
 <p>the <code>--helm-set-string</code> is the same as <code>--helm-set</code> but explicitly retains the value as a string</p>
@@ -4230,7 +4230,7 @@ When override values are passed to the Helm scanner, the values will be used dur
 </code></pre></div>
 <h4 id="setting-specific-values-from-files">Setting specific values from files</h4>
 <p>Specific override values can come from specific files</p>
-<div class="highlight"><pre><span></span><code>trivy conf --helm-set-file <span class="nv">environment</span><span class="o">=</span>dev.values.yaml ./charts/mySql
+<div class="highlight"><pre><span></span><code>trivy config --helm-set-file <span class="nv">environment</span><span class="o">=</span>dev.values.yaml ./charts/mySql
 </code></pre></div>
 <h2 id="secret">Secret</h2>
 <p>The secret scan is performed on plain text files, with no special treatment for Helm.

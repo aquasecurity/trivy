@@ -4156,7 +4156,7 @@ You're not viewing the latest version.
 It evaluates properties, functions, and other elements within CloudFormation files to detect misconfigurations.</p>
 <h3 id="value-overrides">Value Overrides</h3>
 <p>You can provide <code>cf-params</code> with path to <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html">CloudFormation Parameters</a> file to Trivy to scan your CloudFormation code with parameters.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --cf-params params.json ./infrastructure/cf
+<div class="highlight"><pre><span></span><code>trivy config --cf-params params.json ./infrastructure/cf
 </code></pre></div>
 <p>You can check a <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/cloudformation/deploy.html#supported-json-syntax">CloudFormation Parameters Example</a></p>
 <h2 id="secret">Secret</h2>
