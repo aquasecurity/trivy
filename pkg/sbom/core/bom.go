@@ -128,6 +128,10 @@ type Component struct {
 	// SPDX: package.licenseConcluded, package.licenseDeclared
 	Licenses []string
 
+	// ConcludedLicenses is a list of concluded licenses that apply to the component
+	// SPDX: package.licenseConcluded
+	ConcludedLicenses []ftypes.License
+
 	// PkgIdentifier has PURL and BOMRef for the component
 	// PURL:
 	//   CycloneDX: component.purl

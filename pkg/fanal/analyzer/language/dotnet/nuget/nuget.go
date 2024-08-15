@@ -2,7 +2,6 @@ package nuget
 
 import (
 	"context"
-	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -43,26 +42,41 @@ type nugetLibraryAnalyzer struct {
 	logger        *log.Logger
 }
 
-func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	return &nugetLibraryAnalyzer{
+func newNugetLibraryAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	logger := log.WithPrefix("nuget")
+	analyzer := &nugetLibraryAnalyzer{
 		lockParser:    lock.NewParser(),
 		configParser:  config.NewParser(),
-		licenseParser: newNuspecParser(),
-		logger:        log.WithPrefix("nuget"),
-	}, nil
+		licenseParser: newNuspecParser(logger),
+		logger:        logger,
+	}
+
+	if opt.LicenseScannerOption.Enabled && opt.LicenseScannerOption.Full {
+		analyzer.licenseParser.licenseConfig = types.LicenseScanConfig{
+			EnableDeepLicenseScan:     true,
+			ClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
+			LicenseTextCacheDir:       opt.LicenseScannerOption.LicenseTextCacheDir,
+			LicenseScanWorkers:        opt.LicenseScannerOption.LicenseScanWorkers,
+		}
+		analyzer.licenseParser.logger.Debug("Deep license scanning enabled for Nuget Library Analyzer")
+	}
+
+	return analyzer, nil
 }
 
 func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
-	foundLicenses := make(map[string][]string)
-	if a.licenseParser.packagesDir == "" {
-		a.logger.Debug("The nuget packages directory couldn't be found. License search disabled")
-	}
+	foundLicenses := make(map[string][]types.License)
 
-	// We saved only config and lock files in the FS,
+	var looseLicenses []types.LicenseFile
+
+	// We save only config and lock files in the filtered FS,
 	// so we need to parse all saved files
+	// Note: If deep license scan is enabled, we'll save every file in the FS,
+	// so explicit check is required here
 	required := func(path string, d fs.DirEntry) bool {
-		return true
+		fileName := filepath.Base(path)
+		return slices.Contains(requiredFiles, fileName)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
@@ -84,21 +98,56 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			return nil
 		}
 
+		var licenses []types.License
+		var ok bool
+
+		// Fill library licenses
 		for i, lib := range app.Packages {
-			license, ok := foundLicenses[lib.ID]
+			licenses, ok = foundLicenses[lib.ID]
 			if !ok {
-				license, err = a.licenseParser.findLicense(lib.Name, lib.Version)
-				if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				licenses, err = a.licenseParser.findLicense(lib.Name, lib.Version)
+				if err != nil {
 					return xerrors.Errorf("license find error: %w", err)
 				}
-				foundLicenses[lib.ID] = license
+
+				foundLicenses[lib.ID] = licenses
 			}
 
-			app.Packages[i].Licenses = license
+			for _, license := range licenses {
+				// Declared license would be going to Licenses field as before
+				// Concluded licenses would be going to ConcludedLicenses field
+				if license.IsDeclared {
+					app.Packages[i].Licenses = append(app.Packages[i].Licenses, license.Name)
+				} else {
+					app.Packages[i].ConcludedLicenses = append(app.Packages[i].ConcludedLicenses, license)
+				}
+			}
 		}
 
 		sort.Sort(app.Packages)
 		apps = append(apps, *app)
+
+		// Find loose licenses as well if deep license scanning is enabled
+		if a.licenseParser.licenseConfig.EnableDeepLicenseScan {
+			// Fill loose licenses found in the FS base path (i.e in "." dir of the FS)
+			rootPathLicenses, err := a.licenseParser.findLicensesAtRootPath(input.FS)
+			if err != nil {
+				return xerrors.Errorf("license find error: %w", err)
+			}
+
+			a.logger.Info("Number of root path licenses found: ", log.Any("Count", len(rootPathLicenses)))
+
+			for _, license := range rootPathLicenses {
+				looseLicense := types.LicenseFile{
+					Type:     license.Type,
+					FilePath: license.FilePath,
+					Findings: license.Findings,
+				}
+
+				looseLicenses = append(looseLicenses, looseLicense)
+			}
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -107,10 +156,17 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 
 	return &analyzer.AnalysisResult{
 		Applications: apps,
+		Licenses:     looseLicenses,
 	}, nil
 }
 
 func (a *nugetLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	// Note: this is the main step where the file system is filtered and passed to above PostAnalyze API
+	// Only files which pass this Required check would be added to the filtered file system
+	if a.licenseParser.licenseConfig.EnableDeepLicenseScan {
+		return true
+	}
+
 	fileName := filepath.Base(filePath)
 	return slices.Contains(requiredFiles, fileName)
 }

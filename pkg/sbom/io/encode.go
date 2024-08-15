@@ -380,10 +380,11 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 			UID:  pkg.Identifier.UID,
 			PURL: pkg.Identifier.PURL,
 		},
-		Supplier:   pkg.Maintainer,
-		Licenses:   pkg.Licenses,
-		Files:      files,
-		Properties: filterProperties(properties),
+		Supplier:          pkg.Maintainer,
+		Licenses:          pkg.Licenses,
+		ConcludedLicenses: pkg.ConcludedLicenses,
+		Files:             files,
+		Properties:        filterProperties(properties),
 	}
 }
 

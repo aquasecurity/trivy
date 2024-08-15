@@ -22,6 +22,18 @@ var (
 		Default:    0.9,
 		Usage:      "specify license classifier's confidence level",
 	}
+	LicenseTextCacheDir = Flag[string]{
+		Name:       "license-text-cacheDir",
+		ConfigName: "license.cacheDir",
+		Default:    "",
+		Usage:      "specify the cache dir to persist license texts found in license scanning",
+	}
+	LicenseScanWorkers = Flag[int]{
+		Name:       "license-scan-workers",
+		ConfigName: "license.scanWorkers",
+		Default:    5,
+		Usage:      "specify the number of parallel workers needed for license scanning",
+	}
 
 	// LicenseForbidden is an option only in a config file
 	LicenseForbidden = Flag[[]string]{
@@ -65,6 +77,8 @@ type LicenseFlagGroup struct {
 	LicenseFull            *Flag[bool]
 	IgnoredLicenses        *Flag[[]string]
 	LicenseConfidenceLevel *Flag[float64]
+	LicenseTextCacheDir    *Flag[string]
+	LicenseScanWorkers     *Flag[int]
 
 	// License Categories
 	LicenseForbidden    *Flag[[]string] // mapped to CRITICAL
@@ -81,6 +95,8 @@ type LicenseOptions struct {
 	LicenseConfidenceLevel float64
 	LicenseRiskThreshold   int
 	LicenseCategories      map[types.LicenseCategory][]string
+	LicenseTextCacheDir    string
+	LicenseScanWorkers     int
 }
 
 func NewLicenseFlagGroup() *LicenseFlagGroup {
@@ -94,6 +110,8 @@ func NewLicenseFlagGroup() *LicenseFlagGroup {
 		LicenseNotice:          LicenseNotice.Clone(),
 		LicensePermissive:      LicensePermissive.Clone(),
 		LicenseUnencumbered:    LicenseUnencumbered.Clone(),
+		LicenseTextCacheDir:    LicenseTextCacheDir.Clone(),
+		LicenseScanWorkers:     LicenseScanWorkers.Clone(),
 	}
 }
 
@@ -112,6 +130,8 @@ func (f *LicenseFlagGroup) Flags() []Flagger {
 		f.LicensePermissive,
 		f.LicenseUnencumbered,
 		f.LicenseConfidenceLevel,
+		f.LicenseTextCacheDir,
+		f.LicenseScanWorkers,
 	}
 }
 
@@ -133,5 +153,7 @@ func (f *LicenseFlagGroup) ToOptions() (LicenseOptions, error) {
 		IgnoredLicenses:        f.IgnoredLicenses.Value(),
 		LicenseConfidenceLevel: f.LicenseConfidenceLevel.Value(),
 		LicenseCategories:      licenseCategories,
+		LicenseTextCacheDir:    f.LicenseTextCacheDir.Value(),
+		LicenseScanWorkers:     f.LicenseScanWorkers.Value(),
 	}, nil
 }

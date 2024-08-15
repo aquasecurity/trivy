@@ -72,6 +72,9 @@ const (
 	FormatSPDXJSON   Format = "spdx-json"
 	FormatGitHub     Format = "github"
 	FormatCosignVuln Format = "cosign-vuln"
+
+	LicenseTargetOSPkg       string = "OS Packages"
+	LicenseTargetLicenseFile string = "Loose File License(s)"
 )
 
 var (

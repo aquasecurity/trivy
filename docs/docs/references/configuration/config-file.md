@@ -216,6 +216,9 @@ kubernetes:
 
 ```yaml
 license:
+  # Same as '--license-text-cacheDir'
+  cacheDir: ""
+
   # Same as '--license-confidence-level'
   confidenceLevel: 0.9
 
@@ -368,6 +371,9 @@ license:
    - OSL-3.0
    - QPL-1.0
    - Sleepycat
+
+  # Same as '--license-scan-workers'
+  scanWorkers: 5
 
   unencumbered:
    - CC0-1.0

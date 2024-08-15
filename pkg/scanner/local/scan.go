@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -249,58 +250,116 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 	return results
 }
 
+// Func gets the licenses for os-pkgs, lang-pkgs, license-file and wrap around types.Result
+// If full license scanning is disabled -- it adds os-pkgs & lang-pkgs (declared) licenses
+// If full license scanning is enabled -- it adds os-pkgs & lang-pkgs (declared + concluded) + loose file licenses
 func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions) types.Results {
-	if !options.Scanners.Enabled(types.LicenseScanner) {
-		return nil
-	}
-
 	var results types.Results
 	scanner := licensing.NewScanner(options.LicenseCategories)
 
 	// License - OS packages
 	var osPkgLicenses []types.DetectedLicense
-	for _, pkg := range target.Packages {
+	var osPkgTarget = fmt.Sprintf("%s (%s %s)", target.Name, target.OS.Family, target.OS.Name)
+	for i := range target.Packages {
+		pkg := &target.Packages[i]
+		pkg.Licenses = utils.FilterNGetLicenses(pkg.Licenses)
+
 		for _, license := range pkg.Licenses {
 			category, severity := scanner.Scan(license)
 			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
-				Severity:   severity,
-				Category:   category,
-				PkgName:    pkg.Name,
-				Name:       license,
-				Confidence: 1.0,
+				Severity:         severity,
+				Category:         category,
+				Name:             license,
+				IsDeclared:       true,
+				IsSPDXClassified: utils.ValidateLicense(license),
+				PkgName:          pkg.Name,
+				PkgFilePath:      pkg.FilePath,
+				PkgType:          target.OS.Family,
+				PkgVersion:       pkg.Version,
+				PkgClass:         types.ClassOSPkg,
+				PkgTarget:        osPkgTarget,
+				IsPkgIndirect:    pkg.Indirect,
+				PkgEpoch:         pkg.Epoch,
+				PkgRelease:       pkg.Release,
+				PkgID:            pkg.ID,
 			})
 		}
 	}
 	results = append(results, types.Result{
-		Target:   "OS Packages",
+		Target:   types.LicenseTargetOSPkg,
 		Class:    types.ClassLicense,
 		Licenses: osPkgLicenses,
 	})
 
 	// License - language-specific packages
 	for _, app := range target.Applications {
-		var langLicenses []types.DetectedLicense
-		for _, lib := range app.Packages {
-			for _, license := range lib.Licenses {
-				category, severity := scanner.Scan(license)
-				langLicenses = append(langLicenses, types.DetectedLicense{
-					Severity: severity,
-					Category: category,
-					PkgName:  lib.Name,
-					Name:     license,
-					// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
-					// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
-					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
-					Confidence: 1.0,
-				})
-			}
-		}
-
 		targetName := app.FilePath
 		if t, ok := langpkg.PkgTargets[app.Type]; ok && targetName == "" {
 			// When the file path is empty, we will overwrite it with the pre-defined value.
 			targetName = t
 		}
+
+		var langLicenses []types.DetectedLicense
+		for i := range app.Packages {
+			lib := &app.Packages[i]
+			lib.Licenses = utils.FilterNGetLicenses(lib.Licenses)
+
+			// Declared licenses are stored in the Licenses array
+			for _, license := range lib.Licenses {
+				category, severity := scanner.Scan(license)
+				langLicenses = append(langLicenses, types.DetectedLicense{
+					Severity: severity,
+					Category: category,
+					Name:     license,
+					// Lock files use app.FilePath - https://github.com/deepfactor-io/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
+					// Applications use lib.FilePath - https://github.com/deepfactor-io/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
+					FilePath:         lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
+					Confidence:       1.0,
+					IsDeclared:       true,
+					IsSPDXClassified: utils.ValidateLicense(license),
+					PkgName:          lib.Name,
+					PkgFilePath:      lib.FilePath,
+					PkgVersion:       lib.Version,
+					PkgClass:         types.ClassLangPkg,
+					PkgType:          app.Type,
+					PkgTarget:        targetName,
+					IsPkgIndirect:    lib.Indirect,
+					PkgEpoch:         lib.Epoch,
+					PkgRelease:       lib.Release,
+					PkgID:            lib.ID,
+				})
+			}
+
+			// Concluded licenses are stored in ConcludedLicenses array
+			for _, license := range lib.ConcludedLicenses {
+				if len(license.Name) == 0 {
+					continue
+				}
+
+				category, severity := scanner.Scan(license.Name)
+				langLicenses = append(langLicenses, types.DetectedLicense{
+					Severity:            severity,
+					Category:            category,
+					Name:                license.Name,
+					IsDeclared:          license.IsDeclared,
+					IsSPDXClassified:    utils.ValidateLicense(license.Name),
+					FilePath:            license.FilePath,
+					LicenseTextChecksum: license.LicenseTextChecksum,
+					CopyrightText:       license.CopyrightText,
+					PkgName:             lib.Name,
+					PkgFilePath:         lib.FilePath,
+					PkgVersion:          lib.Version,
+					PkgClass:            types.ClassLangPkg,
+					PkgType:             app.Type,
+					PkgTarget:           targetName,
+					IsPkgIndirect:       lib.Indirect,
+					PkgEpoch:            lib.Epoch,
+					PkgRelease:          lib.Release,
+					PkgID:               lib.ID,
+				})
+			}
+		}
+
 		results = append(results, types.Result{
 			Target:   targetName,
 			Class:    types.ClassLicense,
@@ -308,24 +367,35 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 		})
 	}
 
+	if !options.Scanners.Enabled(types.LicenseScanner) || !options.LicenseFull {
+		return results
+	}
+
 	// License - file header or license file
 	var fileLicenses []types.DetectedLicense
 	for _, license := range target.Licenses {
 		for _, finding := range license.Findings {
+			if len(finding.Name) == 0 {
+				continue
+			}
+
 			category, severity := scanner.Scan(finding.Name)
 			fileLicenses = append(fileLicenses, types.DetectedLicense{
-				Severity:   severity,
-				Category:   category,
-				FilePath:   license.FilePath,
-				Name:       finding.Name,
-				Confidence: finding.Confidence,
-				Link:       finding.Link,
+				Severity:            severity,
+				Category:            category,
+				FilePath:            license.FilePath,
+				Name:                finding.Name,
+				IsSPDXClassified:    utils.ValidateLicense(finding.Name),
+				Confidence:          finding.Confidence,
+				Link:                finding.Link,
+				LicenseTextChecksum: finding.LicenseTextChecksum,
+				CopyrightText:       finding.CopyRightText,
 			})
 
 		}
 	}
 	results = append(results, types.Result{
-		Target:   "Loose File License(s)",
+		Target:   types.LicenseTargetLicenseFile,
 		Class:    types.ClassLicenseFile,
 		Licenses: fileLicenses,
 	})

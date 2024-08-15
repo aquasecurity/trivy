@@ -292,7 +292,7 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 		return spdx.Package{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
 	}
 
-	var elementType, purpose, license, sourceInfo string
+	var elementType, purpose, declaredLicenses, concludedLicenses, sourceInfo string
 	var supplier *spdx.Supplier
 	switch c.Type {
 	case core.TypeOS:
@@ -304,7 +304,11 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 	case core.TypeLibrary:
 		elementType = ElementPackage
 		purpose = PackagePurposeLibrary
-		license = m.spdxLicense(c)
+		declaredLicenses = m.spdxLicense(c)
+		concludedLicenses = m.spdxConcludedLicense(c)
+		if concludedLicenses == noneField {
+			concludedLicenses = declaredLicenses
+		}
 
 		if c.SrcName != "" {
 			sourceInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, c.SrcName, c.SrcVersion)
@@ -348,10 +352,10 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 		PackageChecksums:          m.spdxChecksums(digests),
 
 		// The Declared License is what the authors of a project believe govern the package
-		PackageLicenseConcluded: license,
+		PackageLicenseDeclared: declaredLicenses,
 
 		// The Concluded License field is the license the SPDX file creator believes governs the package
-		PackageLicenseDeclared: license,
+		PackageLicenseConcluded: concludedLicenses,
 	}, nil
 }
 
@@ -381,6 +385,22 @@ func (m *Marshaler) spdxLicense(c *core.Component) string {
 		return noneField
 	}
 	return NormalizeLicense(c.Licenses)
+}
+
+func (m *Marshaler) spdxConcludedLicense(c *core.Component) string {
+	if len(c.ConcludedLicenses) == 0 {
+		return noneField
+	}
+
+	var concludedLicenses []string
+	for _, license := range c.ConcludedLicenses {
+		concludedLicenses = append(concludedLicenses, license.Name)
+	}
+
+	// filter out duplicates
+	concludedLicenses = lo.Uniq(concludedLicenses)
+
+	return NormalizeLicense(concludedLicenses)
 }
 
 func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {

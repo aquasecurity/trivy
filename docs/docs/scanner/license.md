@@ -19,14 +19,33 @@ License are classified using the [Google License Classification][google-license-
 By default, Trivy scans licenses for packages installed by `apk`, `apt-get`, `dnf`, `npm`, `pip`, `gem`, etc.
 Check out [the coverage document][coverage] for details.
 
-To enable extended license scanning, you can use `--license-full`.
-In addition to package licenses, Trivy scans source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
+Declared Licenses
+
+By default, the trivy scan gives us only the declared licenses along with the licenses found in `LICENSE` documents.
+Declared licenses are stated by the component (e.g. package or file) author, generally in a manifest file placed within the source of the dependency, such as LICENSE, package.json etc.
+
+Concluded Licenses
+
+Concluded licenses are determined by the SBOM document creator by scanning the files present in the source code. Concluded licenses may have more entries than those in declared license. Compliance teams generally want to comply with the full list of concluded licenses and not just declared licenses.
+
+Deep License Scanning
+
+- To find the concluded licenses, you have to enable deep license scanning. you have to use `--license-full` flag.
+In addition to package manifest licenses, Trivy scans source code files (code headers / comments within source code), Markdown documents, text files and `LICENSE` documents and any every file to identify licenses used within the image or filesystem.
+- Since deep license scanning is a slow process, `--license-scan-workers` flag can be passed to increase the number of threads used for the processing. (default 5 threads)
+- If `--license-text-cacheDir` flag is specified, it also extracts the license text found within the source code files and persists those texts in the directory specified by this flag. For each license text, a unique checksum is created and the license text is stored as `<license-text-checksum>.txt`
+- It also extracts the copyright text from the above license text as part of above process.
+
+Limitations
+
+- Generally the concluded licenses found should be greater than or equal to the declared licenses. But there can be scenarios where the google license classifier cannot identify a license text in a file. So in these cases the number of concluded licenses can be lesser than declared licenses.
+- The google license classifier internally compares the given license text with the full license text that it has to identify it as a known license. If partial license text is given as part of the source code (header / code comments), it fails to classify the partial license text. So only full license text can be taken into consideration.
 
 By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifier.
 To configure the confidence level, you can use `--license-confidence-level`. This enables us to classify licenses that might be matched with a lower confidence level by the classifer. 
 
 !!! note
-    The full license scanning is expensive. It takes a while.
+    The deep license scanning is expensive. It takes a while.
 
 |   License scanning    | Image | Rootfs | Filesystem | Repository | SBOM |
 |:---------------------:|:-----:|:------:|:----------:|:----------:|:----:|

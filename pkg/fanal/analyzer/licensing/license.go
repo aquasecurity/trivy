@@ -95,7 +95,7 @@ func (a *licenseFileAnalyzer) Analyze(ctx context.Context, input analyzer.Analys
 	log.DebugContext(ctx, "License scanning", log.FilePath(input.FilePath))
 
 	// need files to be text based, readable files
-	readable, err := isHumanReadable(input.Content, input.Info.Size())
+	readable, err := IsHumanReadable(input.Content, input.Info.Size())
 	if err != nil || !readable {
 		return nil, nil
 	}
@@ -131,7 +131,7 @@ func (a *licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return slices.Contains(acceptedFileNames, baseName)
 }
 
-func isHumanReadable(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
+func IsHumanReadable(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 	headSize := int(math.Min(float64(fileSize), 300))
 	head := make([]byte, headSize)
 	if _, err := content.Read(head); err != nil {

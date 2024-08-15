@@ -56,8 +56,20 @@ type SecretScannerOption struct {
 
 type LicenseScannerOption struct {
 	// Use license classifier to get better results though the classification is expensive.
-	Full                      bool
+	Full bool
+
+	// License scanner internally uses google license classifier
+	// Confidence level can be set via this field
 	ClassifierConfidenceLevel float64
+
+	// Flag indicates whether license scanner is enabled or not
+	Enabled bool
+
+	// Cache dir where extracted license text files are created
+	LicenseTextCacheDir string
+
+	// Num of parallel workers needed for deep license scanning
+	LicenseScanWorkers int
 }
 
 ////////////////

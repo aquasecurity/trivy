@@ -117,10 +117,21 @@ func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component,
 		PackageURL: m.PackageURL(component.PkgIdentifier.PURL),
 		Supplier:   m.Supplier(component.Supplier),
 		Hashes:     m.Hashes(component.Files),
-		Licenses:   m.Licenses(component.Licenses),
 		Properties: m.Properties(component.Properties),
 	}
 	m.componentIDs[component.ID()] = cdxComponent.BOMRef
+
+	var componentLicenses = component.Licenses
+	// check if concluded licenses are found in the component
+	if len(component.ConcludedLicenses) > 0 {
+		for _, license := range component.ConcludedLicenses {
+			componentLicenses = append(componentLicenses, license.Name)
+		}
+	}
+
+	// filter out duplicates
+	componentLicenses = lo.Uniq(componentLicenses)
+	cdxComponent.Licenses = m.Licenses(componentLicenses)
 
 	return cdxComponent, nil
 }

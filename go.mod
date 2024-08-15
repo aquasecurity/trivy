@@ -135,6 +135,8 @@ require (
 	sigs.k8s.io/yaml v1.4.0
 )
 
+require github.com/github/go-spdx/v2 v2.3.1
+
 require (
 	cloud.google.com/go v0.112.1 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
