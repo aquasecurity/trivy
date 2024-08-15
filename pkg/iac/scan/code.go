@@ -2,7 +2,6 @@ package scan
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -13,6 +12,44 @@ import (
 
 type Code struct {
 	Lines []Line
+}
+
+func (c *Code) truncateLines(maxLines int) {
+	previouslyTruncated := maxLines-1 > 0 && c.Lines[maxLines-2].Truncated
+	if maxLines-1 > 0 && c.Lines[maxLines-1].LastCause {
+		c.Lines[maxLines-2].LastCause = true
+	}
+	c.Lines[maxLines-1] = Line{
+		Truncated: true,
+		Number:    c.Lines[maxLines-1].Number,
+	}
+	if previouslyTruncated {
+		c.Lines = c.Lines[:maxLines-1]
+	} else {
+		c.Lines = c.Lines[:maxLines]
+	}
+}
+
+func (c *Code) markFirstAndLastCauses() {
+	var isFirst bool
+	var isLast bool
+
+	for i, line := range c.Lines {
+		if line.IsCause && !isFirst {
+			c.Lines[i].FirstCause = true
+			isFirst = true
+		}
+
+		if isFirst && !line.IsCause && i > 0 {
+			c.Lines[i-1].LastCause = true
+			isLast = true
+			break
+		}
+	}
+
+	if !isLast && len(c.Lines) > 0 {
+		c.Lines[len(c.Lines)-1].LastCause = true
+	}
 }
 
 type Line struct {
@@ -96,199 +133,187 @@ func OptionCodeWithHighlighted(include bool) CodeOption {
 	}
 }
 
-func validateRange(r iacTypes.Range) error {
-	if r.GetStartLine() < 0 || r.GetStartLine() > r.GetEndLine() || r.GetEndLine() < 0 {
-		return fmt.Errorf("invalid range: %s", r.String())
-	}
-	return nil
-}
-
-// nolint
 func (r *Result) GetCode(opts ...CodeOption) (*Code, error) {
-
 	settings := defaultCodeSettings
 	for _, opt := range opts {
 		opt(&settings)
 	}
 
-	srcFS := r.Metadata().Range().GetFS()
-	if srcFS == nil {
+	fsys := r.Metadata().Range().GetFS()
+	if fsys == nil {
 		return nil, fmt.Errorf("code unavailable: result was not mapped to a known filesystem")
 	}
 
-	innerRange := r.Range()
-	outerRange := innerRange
-	metadata := r.Metadata()
-	for {
-		if parent := metadata.Parent(); parent != nil &&
-			parent.Range().GetFilename() == metadata.Range().GetFilename() &&
-			parent.Range().GetStartLine() > 0 {
-			outerRange = parent.Range()
-			metadata = *parent
-			continue
-		}
-		break
-	}
-
-	if err := validateRange(innerRange); err != nil {
-		return nil, err
-	}
-	if err := validateRange(outerRange); err != nil {
+	innerRange := r.metadata.Range()
+	if err := innerRange.Validate(); err != nil {
 		return nil, err
 	}
 
-	slashed := filepath.ToSlash(r.fsPath)
-	slashed = strings.TrimPrefix(slashed, "/")
+	if innerRange.GetStartLine() == 0 {
+		return nil, fmt.Errorf("inner range has invalid start line: %s", innerRange.String())
+	}
 
-	content, err := fs.ReadFile(srcFS, slashed)
+	outerRange := r.getOuterRange()
+	if err := outerRange.Validate(); err != nil {
+		return nil, err
+	}
+
+	filePath := strings.TrimPrefix(filepath.ToSlash(r.fsPath), "/")
+	rawLines, err := readLinesFromFile(fsys, filePath, outerRange.GetStartLine(), outerRange.GetEndLine())
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file from result filesystem (%#v): %w", srcFS, err)
+		return nil, err
 	}
 
-	hasAnnotation := r.Annotation() != ""
-
-	code := Code{
-		Lines: nil,
+	if outerRange.GetEndLine()-outerRange.GetStartLine() > len(rawLines) {
+		return nil, fmt.Errorf("invalid outer range: %s", outerRange.String())
 	}
 
-	var rawLines []string
-	bs := bufio.NewScanner(bytes.NewReader(content))
-	for bs.Scan() {
-		rawLines = append(rawLines, bs.Text())
-	}
-	if bs.Err() != nil {
-		return nil, fmt.Errorf("failed to scan file : %w", err)
-	}
+	highlightedLines := r.getHighlightedLines(outerRange, innerRange, rawLines, settings)
 
-	var highlightedLines []string
-	if settings.includeHighlighted {
-		highlightedLines = highlight(iacTypes.CreateFSKey(innerRange.GetFS()), innerRange.GetLocalFilename(), content, settings.theme)
-		if len(highlightedLines) < len(rawLines) {
-			highlightedLines = rawLines
-		}
-	} else {
-		highlightedLines = make([]string, len(rawLines))
-	}
-
-	if outerRange.GetEndLine()-1 >= len(rawLines) || innerRange.GetStartLine() == 0 {
-		return nil, fmt.Errorf("invalid line number")
-	}
+	var code Code
 
 	shrink := settings.allowTruncation && outerRange.LineCount() > (innerRange.LineCount()+10)
 
 	if shrink {
-
-		if outerRange.GetStartLine() < innerRange.GetStartLine() {
-			code.Lines = append(
-				code.Lines,
-				Line{
-					Content:     rawLines[outerRange.GetStartLine()-1],
-					Highlighted: highlightedLines[outerRange.GetStartLine()-1],
-					Number:      outerRange.GetStartLine(),
-				},
-			)
-			if outerRange.GetStartLine()+1 < innerRange.GetStartLine() {
-				code.Lines = append(
-					code.Lines,
-					Line{
-						Truncated: true,
-						Number:    outerRange.GetStartLine() + 1,
-					},
-				)
-			}
-		}
-
-		for lineNo := innerRange.GetStartLine(); lineNo <= innerRange.GetEndLine(); lineNo++ {
-
-			if lineNo-1 >= len(rawLines) || lineNo-1 >= len(highlightedLines) {
-				break
-			}
-
-			line := Line{
-				Number:      lineNo,
-				Content:     strings.TrimSuffix(rawLines[lineNo-1], "\r"),
-				Highlighted: strings.TrimSuffix(highlightedLines[lineNo-1], "\r"),
-				IsCause:     true,
-			}
-
-			if hasAnnotation && lineNo == innerRange.GetStartLine() {
-				line.Annotation = r.Annotation()
-			}
-
-			code.Lines = append(code.Lines, line)
-		}
-
-		if outerRange.GetEndLine() > innerRange.GetEndLine() {
-			if outerRange.GetEndLine() > innerRange.GetEndLine()+1 {
-				code.Lines = append(
-					code.Lines,
-					Line{
-						Truncated: true,
-						Number:    outerRange.GetEndLine() - 1,
-					},
-				)
-			}
-			code.Lines = append(
-				code.Lines,
-				Line{
-					Content:     rawLines[outerRange.GetEndLine()-1],
-					Highlighted: highlightedLines[outerRange.GetEndLine()-1],
-					Number:      outerRange.GetEndLine(),
-				},
-			)
-
-		}
-
+		code.Lines = r.getTruncatedLines(outerRange, innerRange, rawLines, highlightedLines)
 	} else {
-		for lineNo := outerRange.GetStartLine(); lineNo <= outerRange.GetEndLine(); lineNo++ {
-
-			line := Line{
-				Number:      lineNo,
-				Content:     strings.TrimSuffix(rawLines[lineNo-1], "\r"),
-				Highlighted: strings.TrimSuffix(highlightedLines[lineNo-1], "\r"),
-				IsCause:     lineNo >= innerRange.GetStartLine() && lineNo <= innerRange.GetEndLine(),
-			}
-
-			if hasAnnotation && lineNo == innerRange.GetStartLine() {
-				line.Annotation = r.Annotation()
-			}
-
-			code.Lines = append(code.Lines, line)
-		}
+		code.Lines = r.getAllLines(outerRange, innerRange, rawLines, highlightedLines)
 	}
 
 	if settings.allowTruncation && len(code.Lines) > settings.maxLines && settings.maxLines > 0 {
-		previouslyTruncated := settings.maxLines-1 > 0 && code.Lines[settings.maxLines-2].Truncated
-		if settings.maxLines-1 > 0 && code.Lines[settings.maxLines-1].LastCause {
-			code.Lines[settings.maxLines-2].LastCause = true
-		}
-		code.Lines[settings.maxLines-1] = Line{
-			Truncated: true,
-			Number:    code.Lines[settings.maxLines-1].Number,
-		}
-		if previouslyTruncated {
-			code.Lines = code.Lines[:settings.maxLines-1]
-		} else {
-			code.Lines = code.Lines[:settings.maxLines]
-		}
+		code.truncateLines(settings.maxLines)
 	}
 
-	var first, last bool
-	for i, line := range code.Lines {
-		if line.IsCause && !first {
-			code.Lines[i].FirstCause = true
-			first = true
-			continue
-		}
-		if first && !line.IsCause && i > 0 {
-			code.Lines[i-1].LastCause = true
-			last = true
-			break
-		}
-	}
-	if !last && len(code.Lines) > 0 {
-		code.Lines[len(code.Lines)-1].LastCause = true
-	}
+	code.markFirstAndLastCauses()
 
 	return &code, nil
+}
+
+func (r *Result) getHighlightedLines(outerRange, innerRange iacTypes.Range, rawLines []string, settings codeSettings) []string {
+
+	highlightedLines := make([]string, len(rawLines))
+	if !settings.includeHighlighted {
+		return highlightedLines
+	}
+
+	content := strings.Join(rawLines, "\n")
+	fsKey := iacTypes.CreateFSKey(innerRange.GetFS())
+	highlightedLines = highlight(fsKey, innerRange.GetLocalFilename(),
+		outerRange.GetStartLine(), outerRange.GetEndLine(), content, settings.theme)
+
+	if len(highlightedLines) < len(rawLines) {
+		return rawLines
+	}
+
+	return highlightedLines
+}
+
+func (r *Result) getOuterRange() iacTypes.Range {
+	outer := r.Metadata().Range()
+	for parent := r.Metadata().Parent(); parent != nil &&
+		parent.Range().GetFilename() == outer.GetFilename() &&
+		parent.Range().GetStartLine() > 0; parent = parent.Parent() {
+		outer = parent.Range()
+	}
+	return outer
+}
+
+func (r *Result) getTruncatedLines(outerRange, innerRange iacTypes.Range, rawLines, highlightedLines []string) []Line {
+	var lines []Line
+
+	if outerRange.GetStartLine() < innerRange.GetStartLine() {
+		lines = append(lines, Line{
+			Content:     rawLines[0],
+			Highlighted: highlightedLines[0],
+			Number:      outerRange.GetStartLine(),
+		})
+		if outerRange.GetStartLine()+1 < innerRange.GetStartLine() {
+			lines = append(lines, Line{
+				Truncated: true,
+				Number:    outerRange.GetStartLine() + 1,
+			})
+		}
+	}
+
+	for lineNo := innerRange.GetStartLine() - outerRange.GetStartLine(); lineNo <= innerRange.GetEndLine()-outerRange.GetStartLine(); lineNo++ {
+		if lineNo >= len(rawLines) || lineNo >= len(highlightedLines) {
+			break
+		}
+
+		line := Line{
+			Number:      lineNo + outerRange.GetStartLine(),
+			Content:     strings.TrimSuffix(rawLines[lineNo], "\r"),
+			Highlighted: strings.TrimSuffix(highlightedLines[lineNo], "\r"),
+			IsCause:     true,
+		}
+
+		if r.Annotation() != "" && lineNo == innerRange.GetStartLine()-outerRange.GetStartLine()-1 {
+			line.Annotation = r.Annotation()
+		}
+
+		lines = append(lines, line)
+	}
+
+	if outerRange.GetEndLine() > innerRange.GetEndLine() {
+		if outerRange.GetEndLine() > innerRange.GetEndLine()+1 {
+			lines = append(lines, Line{
+				Truncated: true,
+				Number:    outerRange.GetEndLine() - 1,
+			})
+		}
+		lines = append(lines, Line{
+			Content:     rawLines[outerRange.GetEndLine()-outerRange.GetStartLine()],
+			Highlighted: highlightedLines[outerRange.GetEndLine()-outerRange.GetStartLine()],
+			Number:      outerRange.GetEndLine(),
+		})
+	}
+
+	return lines
+}
+
+func (r *Result) getAllLines(outerRange, innerRange iacTypes.Range, rawLines, highlightedLines []string) []Line {
+	lines := make([]Line, 0, outerRange.GetEndLine()-outerRange.GetStartLine()+1)
+
+	for lineNo := 0; lineNo <= outerRange.GetEndLine()-outerRange.GetStartLine(); lineNo++ {
+		line := Line{
+			Number:      lineNo + outerRange.GetStartLine(),
+			Content:     strings.TrimSuffix(rawLines[lineNo], "\r"),
+			Highlighted: strings.TrimSuffix(highlightedLines[lineNo], "\r"),
+			IsCause: lineNo >= innerRange.GetStartLine()-outerRange.GetStartLine() &&
+				lineNo <= innerRange.GetEndLine()-outerRange.GetStartLine(),
+		}
+
+		if r.Annotation() != "" && lineNo == innerRange.GetStartLine()-outerRange.GetStartLine()-1 {
+			line.Annotation = r.Annotation()
+		}
+
+		lines = append(lines, line)
+	}
+
+	return lines
+}
+
+func readLinesFromFile(fsys fs.FS, path string, from, to int) ([]string, error) {
+	slashedPath := strings.TrimPrefix(filepath.ToSlash(path), "/")
+
+	file, err := fsys.Open(slashedPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file from result filesystem: %w", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	rawLines := make([]string, 0, to-from+1)
+
+	for lineNum := 0; scanner.Scan() && lineNum < to; lineNum++ {
+		if lineNum >= from-1 {
+			rawLines = append(rawLines, scanner.Text())
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("failed to scan file: %w", err)
+	}
+
+	return rawLines, nil
 }
