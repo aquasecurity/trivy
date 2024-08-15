@@ -59,7 +59,7 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 				Metadata:      resource.Properties.GetMetadata(),
 				EnableLogging: types.BoolDefault(false, resource.Properties.GetMetadata()),
 			},
-			MinimumTLSVersion: resource.Properties.GetMapValue("minimumTlsVersion").AsStringValue("TLS1_0", resource.Properties.GetMetadata()),
+			MinimumTLSVersion: resource.Properties.GetMapValue("minimumTlsVersion").AsStringValue("", resource.Properties.GetMetadata()),
 			Queues:            queues,
 		}
 		accounts = append(accounts, account)
