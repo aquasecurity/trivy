@@ -2,7 +2,9 @@ package npm
 
 import (
 	"context"
+	"encoding/json"
 	"os"
+	"slices"
 	"sort"
 	"testing"
 
@@ -285,6 +287,288 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			a := npmLibraryAnalyzer{}
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestDeepLicenseScanning(t *testing.T) {
+	tests := []struct {
+		name string
+		dir  string
+		want *analyzer.AnalysisResult
+	}{
+		{
+			name: "deep-license-scan",
+			dir:  "testdata/deep-license-scan",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Npm,
+						FilePath: "package-lock.json",
+						Packages: types.Packages{
+							{
+								ID:      "babel-runtime@6.26.0",
+								Name:    "babel-runtime",
+								Version: "6.26.0",
+								Licenses: []string{
+									"MIT",
+								},
+								ConcludedLicenses: []types.License{
+									{
+										Name:                "Apache-2.0",
+										Type:                "header",
+										IsDeclared:          false,
+										FilePath:            "node_modules/babel-runtime/node_modules/core-js/test2.go",
+										LicenseTextChecksum: "bdc80008ee57ce3815ac3d8be33e4bad3508d5729dd8cbbbe6c799245ee77edd",
+										CopyrightText:       "",
+									},
+									{
+										Name:                "BSD-3-Clause",
+										Type:                "license-file",
+										IsDeclared:          false,
+										FilePath:            "node_modules/babel-runtime/LICENSE",
+										LicenseTextChecksum: "385bce4f8bf50fb890c351674d4eac08fae03de787f2b37332f6184245706df6",
+										CopyrightText:       "",
+									},
+								},
+
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn: []string{
+									"core-js@2.6.12",
+									"regenerator-runtime@0.11.1",
+								},
+								Locations: []types.Location{
+									{
+										StartLine: 11,
+										EndLine:   19,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.26.0.tgz",
+									},
+								},
+							},
+							{
+								ID:           "core-js@2.6.12",
+								Name:         "core-js",
+								Version:      "2.6.12",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 20,
+										EndLine:   26,
+									},
+									{
+										StartLine: 59,
+										EndLine:   63,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/core-js/-/core-js-2.6.12.tgz",
+									},
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz",
+									},
+								},
+							},
+							{
+								ID:      "jiti@1.21.0",
+								Name:    "jiti",
+								Version: "1.21.0",
+								Licenses: []string{
+									"MIT",
+								},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn: []string{
+									"ninja@6.26.0",
+								},
+								Locations: []types.Location{
+									{
+										StartLine: 32,
+										EndLine:   39,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.26.0.tgz",
+									},
+								},
+							},
+							{
+								ID:           "jujutsu@1.20.20",
+								Name:         "jujutsu",
+								Version:      "1.20.20",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn: []string{
+									"regenerator-runtime@0.11.1",
+								},
+								Locations: []types.Location{
+									{
+										StartLine: 45,
+										EndLine:   53,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.26.0.tgz",
+									},
+								},
+							},
+							{
+								ID:      "ninja@6.26.0",
+								Name:    "ninja",
+								Version: "6.26.0",
+								Licenses: []string{
+									"MIT",
+								},
+								ConcludedLicenses: []types.License{
+									{
+										Name:                "GPL-2.0",
+										Type:                "header",
+										IsDeclared:          false,
+										FilePath:            "node_modules/jiti/node_modules/ninja/LICENSE",
+										LicenseTextChecksum: "1d1291699fa1a23d6414a3a3994dcf8db6bacf6c5ab6624a7231b1543e6dfe27",
+										CopyrightText:       "",
+									},
+								},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 40,
+										EndLine:   44,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.26.0.tgz",
+									},
+								},
+							},
+							{
+								ID:      "regenerator-runtime@0.11.1",
+								Name:    "regenerator-runtime",
+								Version: "0.11.1",
+								Licenses: []string{
+									"MIT",
+									"MIT",
+								},
+								ConcludedLicenses: []types.License{
+									{
+										Name:                "BSD-3-Clause",
+										Type:                "license-file",
+										IsDeclared:          false,
+										FilePath:            "node_modules/babel-runtime/node_modules/regenerator-runtime/LICENSE",
+										LicenseTextChecksum: "385bce4f8bf50fb890c351674d4eac08fae03de787f2b37332f6184245706df6",
+										CopyrightText:       "",
+									},
+									{
+										Name:                "Apache-2.0",
+										Type:                "header",
+										IsDeclared:          false,
+										FilePath:            "node_modules/babel-runtime/node_modules/regenerator-runtime/test1.go",
+										LicenseTextChecksum: "3ecd2b1a881c13670817e5db77bcfeaa3b76e318ca96037301d6488ff5cd71d6",
+										CopyrightText:       "",
+									},
+									{
+										Name:                "BSD-3-Clause",
+										Type:                "license-file",
+										IsDeclared:          false,
+										FilePath:            "node_modules/babel-runtime/node_modules/regenerator-runtime/.git/LICENSE",
+										LicenseTextChecksum: "0497daad1a4b665867ffbc3c7e23a4d3bc9f40b8f0f18647c991353176606784",
+										CopyrightText:       "",
+									},
+								},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 27,
+										EndLine:   31,
+									},
+									{
+										StartLine: 54,
+										EndLine:   58,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := newNpmLibraryAnalyzer(analyzer.AnalyzerOptions{
+				LicenseScannerOption: analyzer.LicenseScannerOption{
+					Enabled:                   true,
+					Full:                      true,
+					LicenseScanWorkers:        5,
+					ClassifierConfidenceLevel: 0.75,
+				},
+			})
+			require.NoError(t, err)
+
+			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+				FS: os.DirFS(tt.dir),
+			})
+			require.NoError(t, err)
+
+			if len(got.Applications) > 0 {
+				sort.Sort(got.Applications[0].Packages)
+			}
+
+			// sort the licenses
+			for _, app := range got.Applications {
+				packages := app.Packages
+				for _, pkg := range packages {
+					slices.Sort(pkg.Licenses)
+					sort.SliceStable(pkg.ConcludedLicenses, func(i, j int) bool {
+						return pkg.ConcludedLicenses[i].Name <= pkg.ConcludedLicenses[j].Name &&
+							pkg.ConcludedLicenses[i].FilePath < pkg.ConcludedLicenses[j].FilePath
+					})
+				}
+			}
+
+			for _, app := range tt.want.Applications {
+				packages := app.Packages
+				for _, pkg := range packages {
+					slices.Sort(pkg.Licenses)
+					sort.SliceStable(pkg.ConcludedLicenses, func(i, j int) bool {
+						return pkg.ConcludedLicenses[i].Name <= pkg.ConcludedLicenses[j].Name &&
+							pkg.ConcludedLicenses[i].FilePath < pkg.ConcludedLicenses[j].FilePath
+					})
+				}
+			}
+
+			// compared the serialized jsons
+			serializedGot, err := json.Marshal(got.Applications)
+			require.NoError(t, err)
+
+			serializedWant, err := json.Marshal(tt.want.Applications)
+			require.NoError(t, err)
+
+			assert.Equal(t, string(serializedWant), string(serializedGot))
 		})
 	}
 }

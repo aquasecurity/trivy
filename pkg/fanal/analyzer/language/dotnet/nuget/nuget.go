@@ -135,8 +135,6 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 				return xerrors.Errorf("license find error: %w", err)
 			}
 
-			a.logger.Info("Number of root path licenses found: ", log.Any("Count", len(rootPathLicenses)))
-
 			for _, license := range rootPathLicenses {
 				looseLicense := types.LicenseFile{
 					Type:     license.Type,
