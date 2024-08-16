@@ -396,6 +396,8 @@ You can also pass schemas using the `config-file-schemas` flag. Trivy will use t
 $ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
 ```
 
+If the schema is specified in the check metadata and is in the directory specified in the `--config-check` argument, it will be automatically loaded as specified [here](./custom/schema.md#custom-checks-with-custom-schemas), and will only be used for type checking in Rego.
+
 ### Passing custom data
 You can pass directories including your custom data through `--data` option.
 This can be repeated for specifying multiple directories.
@@ -416,12 +418,12 @@ This can be repeated for specifying multiple packages.
 trivy conf --config-check ./policy --namespaces main --namespaces user ./configs
 ```
 
-### Private terraform registries
-Trivy can download terraform code from private registries.
+### Private Terraform registries
+Trivy can download Terraform code from private registries.
 To pass credentials you must use the `TF_TOKEN_` environment variables.
 You cannot use a `.terraformrc` or `terraform.rc` file, these are not supported by trivy yet.
 
-From the terraform [docs](https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials):
+From the Terraform [docs](https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials):
 
 > Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
 > For example, the value of a variable named `TF_TOKEN_app_terraform_io` will be used as a bearer authorization token when the CLI makes service requests to the hostname `app.terraform.io`.
