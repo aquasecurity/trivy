@@ -25,13 +25,36 @@ const (
 )
 
 type Parser struct {
-	logger *log.Logger
+	logger        *log.Logger
+	useMinVersion bool
 }
 
-func NewParser() *Parser {
+func NewParser(useMinVersion bool) *Parser {
 	return &Parser{
-		logger: log.WithPrefix("pip"),
+		logger:        log.WithPrefix("pip"),
+		useMinVersion: useMinVersion,
 	}
+}
+
+/*
+~= 2.2
+>= 2.2, == 2.*
+
+~= 1.4.5
+>= 1.4.5, == 1.4.*
+*/
+
+func splitLine(line string) []string {
+	result := strings.Split(line, "~=")
+	if len(result) == 2 {
+		return result
+	}
+	result = strings.Split(line, ">=")
+	if len(result) == 2 {
+		return result
+	}
+
+	return strings.Split(line, "==")
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -53,7 +76,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
 		line = rStripByKey(line, hashMarker)
-		s := strings.Split(line, "==")
+		var s []string
+
+		if p.useMinVersion {
+			s = splitLine(line)
+		} else {
+			s = strings.Split(line, "==")
+		}
+
 		if len(s) != 2 {
 			continue
 		}
