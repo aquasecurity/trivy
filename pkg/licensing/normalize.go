@@ -191,6 +191,12 @@ func SplitLicenses(str string) []string {
 	if str == "" {
 		return nil
 	}
+	// don't split a long license text
+	if !isLicenseName(str) {
+		return []string{
+			str,
+		}
+	}
 	var licenses []string
 	for _, maybeLic := range licenseSplitRegexp.Split(str, -1) {
 		lower := strings.ToLower(maybeLic)
@@ -215,4 +221,16 @@ func SplitLicenses(str string) []string {
 		licenses = append(licenses, maybeLic)
 	}
 	return licenses
+}
+func isLicenseName(license string) bool {
+	// Check text length
+	if len(license) < 100 {
+		return true
+	}
+
+	// Count newlines
+	if strings.Count(license, "\n") > 3 {
+		return false
+	}
+	return true
 }
