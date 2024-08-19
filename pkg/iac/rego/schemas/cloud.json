@@ -5207,10 +5207,12 @@
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
         },
         "end": {
-          "type": "integer"
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
         },
         "start": {
-          "type": "integer"
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
         }
       }
     },
