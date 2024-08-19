@@ -29,14 +29,14 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20240718084044-d23a6ca8ba04
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20240707095038-0300bc49b68b
-	github.com/aws/aws-sdk-go-v2 v1.30.3
-	github.com/aws/aws-sdk-go-v2/config v1.27.27
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.27
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.173.0
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.31.0
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.58.3
-	github.com/aws/aws-sdk-go-v2/service/sts v1.30.3 // indirect
-	github.com/aws/smithy-go v1.20.3
+	github.com/aws/aws-sdk-go-v2 v1.30.4
+	github.com/aws/aws-sdk-go-v2/config v1.27.28
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.28
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.175.1
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.32.1
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.59.0
+	github.com/aws/aws-sdk-go-v2/service/sts v1.30.4 // indirect
+	github.com/aws/smithy-go v1.20.4
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
 	github.com/bmatcuk/doublestar/v4 v4.6.1
 	github.com/cenkalti/backoff/v4 v4.3.0
@@ -171,15 +171,15 @@ require (
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aws/aws-sdk-go v1.54.6 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.11 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.15 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.15 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.16 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.16 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ebs v1.21.7 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.17 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.22.4 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.26.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.18 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.22.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.26.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
