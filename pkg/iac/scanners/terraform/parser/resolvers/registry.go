@@ -60,9 +60,9 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 
 		token, err = getPrivateRegistryTokenFromEnvVars(hostname)
 		if err == nil {
-			opt.DebugLogger.Debug("Found a token for the registry", log.String("hostname", hostname))
+			opt.Logger.Debug("Found a token for the registry", log.String("hostname", hostname))
 		} else {
-			opt.DebugLogger.Error(
+			opt.Logger.Error(
 				"Failed to find a token for the registry",
 				log.String("hostname", hostname), log.Err(err))
 		}
@@ -72,7 +72,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 
 	if opt.Version != "" {
 		versionUrl := fmt.Sprintf("https://%s/v1/modules/%s/versions", hostname, moduleName)
-		opt.DebugLogger.Debug("Requesting module versions from registry using",
+		opt.Logger.Debug("Requesting module versions from registry using",
 			log.String("url", versionUrl))
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionUrl, nil)
 		if err != nil {
@@ -98,7 +98,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		if err != nil {
 			return nil, "", "", true, err
 		}
-		opt.DebugLogger.Debug("Found module version",
+		opt.Logger.Debug("Found module version",
 			log.String("version", opt.Version), log.String("constraint", inputVersion))
 	}
 
@@ -109,7 +109,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		url = fmt.Sprintf("https://%s/v1/modules/%s/%s/download", hostname, moduleName, opt.Version)
 	}
 
-	opt.DebugLogger.Debug("Requesting module source from registry", log.String("url", url))
+	opt.Logger.Debug("Requesting module source from registry", log.String("url", url))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -150,7 +150,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		return nil, "", "", true, fmt.Errorf("no source was found for the registry at %s", hostname)
 	}
 
-	opt.DebugLogger.Debug("Module resolved via registry to new source",
+	opt.Logger.Debug("Module resolved via registry to new source",
 		log.String("source", opt.Source), log.String("name", moduleName))
 
 	filesystem, prefix, downloadPath, _, err = Remote.Resolve(ctx, target, opt)

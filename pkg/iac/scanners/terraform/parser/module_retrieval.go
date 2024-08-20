@@ -21,13 +21,13 @@ var defaultResolvers = []ModuleResolver{
 }
 
 func resolveModule(ctx context.Context, current fs.FS, opt resolvers.Options) (filesystem fs.FS, sourcePrefix, downloadPath string, err error) {
-	opt.DebugLogger.Debug("Resolving module",
+	opt.Logger.Debug("Resolving module",
 		log.String("name", opt.Name), log.String("source", opt.Source))
 	for _, resolver := range defaultResolvers {
 		if filesystem, prefix, path, applies, err := resolver.Resolve(ctx, current, opt); err != nil {
 			return nil, "", "", err
 		} else if applies {
-			opt.DebugLogger.Debug("Module resolved", log.FilePath(path))
+			opt.Logger.Debug("Module resolved", log.FilePath(path))
 			return filesystem, prefix, path, nil
 		}
 	}

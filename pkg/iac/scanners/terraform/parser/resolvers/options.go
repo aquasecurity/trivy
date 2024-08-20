@@ -8,7 +8,7 @@ import (
 
 type Options struct {
 	Source, OriginalSource, Version, OriginalVersion, WorkingDir, Name, ModulePath string
-	DebugLogger                                                                    *log.Logger
+	Logger                                                                         *log.Logger
 	AllowDownloads                                                                 bool
 	SkipCache                                                                      bool
 	RelativePath                                                                   string

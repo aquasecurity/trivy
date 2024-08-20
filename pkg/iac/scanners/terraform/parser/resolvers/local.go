@@ -19,14 +19,14 @@ func (r *localResolver) Resolve(_ context.Context, target fs.FS, opt Options) (f
 	}
 	joined := path.Clean(path.Join(opt.ModulePath, opt.Source))
 	if _, err := fs.Stat(target, filepath.ToSlash(joined)); err == nil {
-		opt.DebugLogger.Debug("Module resolved locally",
+		opt.Logger.Debug("Module resolved locally",
 			log.String("name", opt.Name), log.FilePath(joined),
 		)
 		return target, "", joined, true, nil
 	}
 
 	clean := path.Clean(opt.Source)
-	opt.DebugLogger.Debug("Module resolved locally",
+	opt.Logger.Debug("Module resolved locally",
 		log.String("name", opt.Name), log.FilePath(clean),
 	)
 	return target, "", clean, true, nil

@@ -24,7 +24,7 @@ var Remote = &remoteResolver{
 func (r *remoteResolver) incrementCount(o Options) {
 
 	atomic.CompareAndSwapInt32(&r.count, r.count, r.count+1)
-	o.DebugLogger.Debug("Incrementing the download counter", log.Int("count", int(r.count)))
+	o.Logger.Debug("Incrementing the download counter", log.Int("count", int(r.count)))
 }
 
 func (r *remoteResolver) GetDownloadCount() int {
@@ -42,7 +42,7 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 
 	src, subdir := splitPackageSubdirRaw(opt.OriginalSource)
 	key := cacheKey(src, opt.OriginalVersion)
-	opt.DebugLogger.Debug("Caching module", log.String("key", key))
+	opt.Logger.Debug("Caching module", log.String("key", key))
 
 	baseCacheDir, err := locateCacheDir(opt.CacheDir)
 	if err != nil {
@@ -54,7 +54,7 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 	}
 
 	r.incrementCount(opt)
-	opt.DebugLogger.Debug("Successfully resolve module via remote download",
+	opt.Logger.Debug("Successfully resolve module via remote download",
 		log.String("name", opt.Name),
 		log.String("source", opt.Source),
 	)
@@ -72,7 +72,7 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 	// Overwrite the file getter so that a file will be copied
 	getter.Getters["file"] = &getter.FileGetter{Copy: true}
 
-	opt.DebugLogger.Debug("Downloading module", log.String("source", opt.Source))
+	opt.Logger.Debug("Downloading module", log.String("source", opt.Source))
 
 	// Build the client
 	client := &getter.Client{

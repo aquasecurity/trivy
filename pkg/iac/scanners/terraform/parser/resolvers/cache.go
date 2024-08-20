@@ -44,21 +44,21 @@ func locateCacheDir(cacheDir string) (string, error) {
 
 func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
 	if opt.SkipCache {
-		opt.DebugLogger.Debug("Module caching is disabled")
+		opt.Logger.Debug("Module caching is disabled")
 		return nil, "", "", false, nil
 	}
 	cacheFS, err := locateCacheFS(opt.CacheDir)
 	if err != nil {
-		opt.DebugLogger.Debug("No cache filesystem is available on this machine.", log.Err(err))
+		opt.Logger.Debug("No cache filesystem is available on this machine.", log.Err(err))
 		return nil, "", "", false, nil
 	}
 
 	src, subdir := splitPackageSubdirRaw(opt.Source)
 	key := cacheKey(src, opt.Version)
 
-	opt.DebugLogger.Debug("Trying to resolve module via cache", log.String("key", key))
+	opt.Logger.Debug("Trying to resolve module via cache", log.String("key", key))
 	if info, err := fs.Stat(cacheFS, filepath.ToSlash(key)); err == nil && info.IsDir() {
-		opt.DebugLogger.Debug("Module resolved from cache", log.String("key", key))
+		opt.Logger.Debug("Module resolved from cache", log.String("key", key))
 		cacheDir, err := locateCacheDir(opt.CacheDir)
 		if err != nil {
 			return nil, "", "", true, err
