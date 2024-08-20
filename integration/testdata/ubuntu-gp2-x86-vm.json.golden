@@ -33,7 +33,7 @@
             "PURL": "pkg:deb/ubuntu/bash@5.1-6ubuntu1?arch=amd64\u0026distro=ubuntu-22.04"
           },
           "InstalledVersion": "5.1-6ubuntu1",
-          "Status": "affected",
+          "Status": "will_not_fix",
           "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3715",
