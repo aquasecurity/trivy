@@ -62,7 +62,7 @@ func (t *FileContext) overrideParameters(params map[string]any) {
 	}
 }
 
-func (t *FileContext) missingParameters() []string {
+func (t *FileContext) missingParameterValues() []string {
 	var missing []string
 	for key := range t.Parameters {
 		if t.Parameters[key].inner.Default == nil {

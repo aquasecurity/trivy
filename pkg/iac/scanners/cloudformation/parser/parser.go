@@ -142,8 +142,8 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 
 	fctx.overrideParameters(p.overridedParameters)
 
-	if params := fctx.missingParameters(); len(params) > 0 {
-		p.logger.Warn("Missing parameters", log.FilePath(path), log.String("parameters", strings.Join(params, ", ")))
+	if params := fctx.missingParameterValues(); len(params) > 0 {
+		p.logger.Warn("Missing parameter values", log.FilePath(path), log.String("parameters", strings.Join(params, ", ")))
 	}
 
 	fctx.lines = lines

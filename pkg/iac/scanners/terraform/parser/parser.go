@@ -198,15 +198,11 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		}
 		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
 
-		for _, varBlock := range blocks.OfType("variable") {
-			if varBlock.GetAttribute("default") == nil {
-				if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
-					p.logger.Warn(
-						"Variable was not found in the environment or variable files. Evaluating may not work correctly.",
-						log.String("variable", varBlock.TypeLabel()),
-					)
-				}
-			}
+		if missingVars := missingVariableValues(blocks, inputVars); len(missingVars) > 0 {
+			p.logger.Warn(
+				"Variable values was not found in the environment or variable files. Evaluating may not work correctly.",
+				log.String("variables", strings.Join(missingVars, ", ")),
+			)
 		}
 	}
 
@@ -243,6 +239,19 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		p.allowDownloads,
 		p.skipCachedModules,
 	), nil
+}
+
+func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []string {
+	var missing []string
+	for _, varBlock := range blocks.OfType("variable") {
+		if varBlock.GetAttribute("default") == nil {
+			if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
+				missing = append(missing, varBlock.TypeLabel())
+			}
+		}
+	}
+
+	return missing
 }
 
 func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {

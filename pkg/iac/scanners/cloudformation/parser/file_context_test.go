@@ -61,7 +61,7 @@ func TestFileContext_OverrideParameters(t *testing.T) {
 	}
 }
 
-func TestFileContext_MissingParameters(t *testing.T) {
+func TestFileContext_MissingParameterValues(t *testing.T) {
 
 	tests := []struct {
 		name     string
@@ -97,7 +97,7 @@ func TestFileContext_MissingParameters(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.ctx.missingParameters()
+			got := tt.ctx.missingParameterValues()
 			slices.Sort(got)
 			assert.Equal(t, tt.expected, got)
 		})
