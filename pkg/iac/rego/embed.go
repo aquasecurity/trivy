@@ -33,7 +33,7 @@ func init() {
 func RegisterRegoRules(modules map[string]*ast.Module) {
 	ctx := context.TODO()
 
-	schemaSet, _, _ := BuildSchemaSetFromPolicies(modules, nil, nil)
+	schemaSet, _, _ := BuildSchemaSetFromPolicies(modules, nil, nil, make(map[string][]byte))
 
 	compiler := ast.NewCompiler().
 		WithSchemas(schemaSet).

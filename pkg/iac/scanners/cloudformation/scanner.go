@@ -63,7 +63,8 @@ type Scanner struct {
 	spec                  string
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) addParserOption(opt parser.Option) {
 	s.parserOptions = append(s.parserOptions, opt)

@@ -386,6 +386,9 @@ misconfiguration:
     # Same as '--cf-params'
     params: []
 
+  # Same as '--config-file-schemas'
+  config-file-schemas: []
+
   helm:
     # Same as '--helm-api-versions'
     api-versions: []

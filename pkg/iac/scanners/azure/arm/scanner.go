@@ -38,7 +38,8 @@ type Scanner struct {
 	spec                  string
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool)  {}
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec

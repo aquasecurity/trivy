@@ -34,9 +34,9 @@ var globalCache = &cache{
 	data: make(map[string][]string),
 }
 
-func highlight(fsKey, filename string, input []byte, theme string) []string {
+func highlight(fsKey, filename string, startLine, endLine int, input, theme string) []string {
 
-	key := fmt.Sprintf("%s|%s", fsKey, filename)
+	key := fmt.Sprintf("%s|%s|%d-%d", fsKey, filename, startLine, endLine)
 	if lines, ok := globalCache.Get(key); ok {
 		return lines
 	}
@@ -56,15 +56,13 @@ func highlight(fsKey, filename string, input []byte, theme string) []string {
 		formatter = formatters.Fallback
 	}
 
-	// replace windows line endings
-	input = bytes.ReplaceAll(input, []byte{0x0d}, []byte{})
-	iterator, err := lexer.Tokenise(nil, string(input))
+	iterator, err := lexer.Tokenise(nil, input)
 	if err != nil {
 		return nil
 	}
 
-	buffer := bytes.NewBuffer([]byte{})
-	if err := formatter.Format(buffer, style, iterator); err != nil {
+	var buffer bytes.Buffer
+	if err := formatter.Format(&buffer, style, iterator); err != nil {
 		return nil
 	}
 

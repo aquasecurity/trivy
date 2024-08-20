@@ -42,7 +42,8 @@ type Scanner struct {
 	mu                    sync.Mutex
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec

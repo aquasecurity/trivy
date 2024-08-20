@@ -65,6 +65,7 @@ type Scanner struct {
 
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
+	customSchemas  map[string][]byte
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
@@ -138,6 +139,10 @@ func (s *Scanner) SetRegoErrorLimit(limit int) {
 	s.regoErrorLimit = limit
 }
 
+func (s *Scanner) SetCustomSchemas(v map[string][]byte) {
+	s.customSchemas = v
+}
+
 type DynamicMetadata struct {
 	Warning   bool
 	Filepath  string
@@ -158,6 +163,7 @@ func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 		ruleNamespaces: make(map[string]struct{}),
 		runtimeValues:  addRuntimeValues(),
 		logger:         log.WithPrefix("rego"),
+		customSchemas:  make(map[string][]byte),
 	}
 
 	maps.Copy(s.ruleNamespaces, builtinNamespaces)

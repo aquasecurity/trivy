@@ -21,7 +21,7 @@ It evaluates properties, functions, and other elements within CloudFormation fil
 You can provide `cf-params` with path to [CloudFormation Parameters] file to Trivy to scan your CloudFormation code with parameters.
 
 ```bash
-trivy conf --cf-params params.json ./infrastructure/cf
+trivy config --cf-params params.json ./infrastructure/cf
 ```
 
 You can check a [CloudFormation Parameters Example]
