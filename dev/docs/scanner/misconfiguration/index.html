@@ -1268,6 +1268,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#scan-arbitrary-json-and-yaml-configurations" class="md-nav__link">
+    Scan arbitrary JSON and YAML configurations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#passing-custom-data" class="md-nav__link">
     Passing custom data
   </a>
@@ -1283,7 +1290,7 @@ You're not viewing the latest version.
         
           <li class="md-nav__item">
   <a href="#private-terraform-registries" class="md-nav__link">
-    Private terraform registries
+    Private Terraform registries
   </a>
   
 </li>
@@ -4194,6 +4201,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#scan-arbitrary-json-and-yaml-configurations" class="md-nav__link">
+    Scan arbitrary JSON and YAML configurations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#passing-custom-data" class="md-nav__link">
     Passing custom data
   </a>
@@ -4209,7 +4223,7 @@ You're not viewing the latest version.
         
           <li class="md-nav__item">
   <a href="#private-terraform-registries" class="md-nav__link">
-    Private terraform registries
+    Private Terraform registries
   </a>
   
 </li>
@@ -4370,28 +4384,28 @@ $ trivy config --severity HIGH,CRITICAL ./iac
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>2022-06-06T11:01:21.142+0100    INFO    Detected config files: 8
+<div class="highlight"><pre><span></span><code><span class="m">2022</span>-06-06T11:01:21.142+0100    INFO    Detected config files: <span class="m">8</span>
 
-Dockerfile (dockerfile)
+Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 
-Tests: 21 (SUCCESSES: 20, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+Tests: <span class="m">21</span> <span class="o">(</span>SUCCESSES: <span class="m">20</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">1</span> <span class="o">(</span>MEDIUM: <span class="m">0</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-HIGH: Specify at least 1 USER command in Dockerfile with non-root user as argument
+HIGH: Specify at least <span class="m">1</span> USER <span class="nb">command</span> <span class="k">in</span> Dockerfile with non-root user as argument
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-Running containers with &#39;root&#39; user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a &#39;USER&#39; statement to the Dockerfile.
+Running containers with <span class="s1">&#39;root&#39;</span> user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be <span class="k">done</span> by adding a <span class="s1">&#39;USER&#39;</span> statement to the Dockerfile.
 
 See https://avd.aquasec.com/misconfig/ds002
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
 
-deployment.yaml (kubernetes)
+deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
 
-Tests: 20 (SUCCESSES: 15, FAILURES: 5, EXCEPTIONS: 0)
-Failures: 5 (MEDIUM: 4, HIGH: 1, CRITICAL: 0)
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">15</span>, FAILURES: <span class="m">5</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">5</span> <span class="o">(</span>MEDIUM: <span class="m">4</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-MEDIUM: Container &#39;hello-kubernetes&#39; of Deployment &#39;hello-kubernetes&#39; should set &#39;securityContext.allowPrivilegeEscalation&#39; to false
+MEDIUM: Container <span class="s1">&#39;hello-kubernetes&#39;</span> of Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.allowPrivilegeEscalation&#39;</span> to <span class="nb">false</span>
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
 
@@ -4399,14 +4413,14 @@ See https://avd.aquasec.com/misconfig/ksv001
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:16-19
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  16 ┌       - name: hello-kubernetes
-  17 │         image: hello-kubernetes:1.5
-  18 │         ports:
-  19 └         - containerPort: 8080
+  <span class="m">16</span> ┌       - name: hello-kubernetes
+  <span class="m">17</span> │         image: hello-kubernetes:1.5
+  <span class="m">18</span> │         ports:
+  <span class="m">19</span> └         - containerPort: <span class="m">8080</span>
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-HIGH: Deployment &#39;hello-kubernetes&#39; should not specify &#39;/var/run/docker.socker&#39; in &#39;spec.template.volumes.hostPath.path&#39;
+HIGH: Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should not specify <span class="s1">&#39;/var/run/docker.socker&#39;</span> <span class="k">in</span> <span class="s1">&#39;spec.template.volumes.hostPath.path&#39;</span>
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 Mounting docker.sock from the host can give the container full root access to the host.
 
@@ -4414,35 +4428,35 @@ See https://avd.aquasec.com/misconfig/ksv006
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:6-29
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   6 ┌   replicas: 3
-   7 │   selector:
-   8 │     matchLabels:
-   9 │       app: hello-kubernetes
-  10 │   template:
-  11 │     metadata:
-  12 │       labels:
-  13 │         app: hello-kubernetes
-  14 └     spec:
+   <span class="m">6</span> ┌   replicas: <span class="m">3</span>
+   <span class="m">7</span> │   selector:
+   <span class="m">8</span> │     matchLabels:
+   <span class="m">9</span> │       app: hello-kubernetes
+  <span class="m">10</span> │   template:
+  <span class="m">11</span> │     metadata:
+  <span class="m">12</span> │       labels:
+  <span class="m">13</span> │         app: hello-kubernetes
+  <span class="m">14</span> └     spec:
   ..   
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-MEDIUM: Container &#39;hello-kubernetes&#39; of Deployment &#39;hello-kubernetes&#39; should set &#39;securityContext.runAsNonRoot&#39; to true
+MEDIUM: Container <span class="s1">&#39;hello-kubernetes&#39;</span> of Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.runAsNonRoot&#39;</span> to <span class="nb">true</span>
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-&#39;runAsNonRoot&#39; forces the running image to run as a non-root user to ensure least privileges.
+<span class="s1">&#39;runAsNonRoot&#39;</span> forces the running image to run as a non-root user to ensure least privileges.
 
 See https://avd.aquasec.com/misconfig/ksv012
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:16-19
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  16 ┌       - name: hello-kubernetes
-  17 │         image: hello-kubernetes:1.5
-  18 │         ports:
-  19 └         - containerPort: 8080
+  <span class="m">16</span> ┌       - name: hello-kubernetes
+  <span class="m">17</span> │         image: hello-kubernetes:1.5
+  <span class="m">18</span> │         ports:
+  <span class="m">19</span> └         - containerPort: <span class="m">8080</span>
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-MEDIUM: Deployment &#39;hello-kubernetes&#39; should not set &#39;spec.template.volumes.hostPath&#39;
+MEDIUM: Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should not <span class="nb">set</span> <span class="s1">&#39;spec.template.volumes.hostPath&#39;</span>
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 HostPath volumes must be forbidden.
 
@@ -4450,47 +4464,47 @@ See https://avd.aquasec.com/misconfig/ksv023
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:6-29
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   6 ┌   replicas: 3
-   7 │   selector:
-   8 │     matchLabels:
-   9 │       app: hello-kubernetes
-  10 │   template:
-  11 │     metadata:
-  12 │       labels:
-  13 │         app: hello-kubernetes
-  14 └     spec:
+   <span class="m">6</span> ┌   replicas: <span class="m">3</span>
+   <span class="m">7</span> │   selector:
+   <span class="m">8</span> │     matchLabels:
+   <span class="m">9</span> │       app: hello-kubernetes
+  <span class="m">10</span> │   template:
+  <span class="m">11</span> │     metadata:
+  <span class="m">12</span> │       labels:
+  <span class="m">13</span> │         app: hello-kubernetes
+  <span class="m">14</span> └     spec:
   ..   
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-MEDIUM: Deployment &#39;hello-kubernetes&#39; should set &#39;securityContext.sysctl&#39; to the allowed values
+MEDIUM: Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.sysctl&#39;</span> to the allowed values
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed &#39;safe&#39; subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node.
+Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except <span class="k">for</span> an allowed <span class="s1">&#39;safe&#39;</span> subset. A sysctl is considered safe <span class="k">if</span> it is namespaced <span class="k">in</span> the container or the Pod, and it is isolated from other Pods or processes on the same Node.
 
 See https://avd.aquasec.com/misconfig/ksv026
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  deployment.yaml:6-29
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   6 ┌   replicas: 3
-   7 │   selector:
-   8 │     matchLabels:
-   9 │       app: hello-kubernetes
-  10 │   template:
-  11 │     metadata:
-  12 │       labels:
-  13 │         app: hello-kubernetes
-  14 └     spec:
+   <span class="m">6</span> ┌   replicas: <span class="m">3</span>
+   <span class="m">7</span> │   selector:
+   <span class="m">8</span> │     matchLabels:
+   <span class="m">9</span> │       app: hello-kubernetes
+  <span class="m">10</span> │   template:
+  <span class="m">11</span> │     metadata:
+  <span class="m">12</span> │       labels:
+  <span class="m">13</span> │         app: hello-kubernetes
+  <span class="m">14</span> └     spec:
   ..   
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
 
-mysql-8.8.26.tar:templates/primary/statefulset.yaml (helm)
+mysql-8.8.26.tar:templates/primary/statefulset.yaml <span class="o">(</span>helm<span class="o">)</span>
 
-Tests: 20 (SUCCESSES: 18, FAILURES: 2, EXCEPTIONS: 0)
-Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">18</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="m">2</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-MEDIUM: Container &#39;mysql&#39; of StatefulSet &#39;mysql&#39; should set &#39;securityContext.allowPrivilegeEscalation&#39; to false
+MEDIUM: Container <span class="s1">&#39;mysql&#39;</span> of StatefulSet <span class="s1">&#39;mysql&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.allowPrivilegeEscalation&#39;</span> to <span class="nb">false</span>
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
 
@@ -4498,36 +4512,36 @@ See https://avd.aquasec.com/misconfig/ksv001
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  mysql-8.8.26.tar:templates/primary/statefulset.yaml:56-130
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  56 ┌         - name: mysql
-  57 │           image: docker.io/bitnami/mysql:8.0.28-debian-10-r23
-  58 │           imagePullPolicy: &quot;IfNotPresent&quot;
-  59 │           securityContext:
-  60 │             runAsUser: 1001
-  61 │           env:
-  62 │             - name: BITNAMI_DEBUG
-  63 │               value: &quot;false&quot;
-  64 └             - name: MYSQL_ROOT_PASSWORD
+  <span class="m">56</span> ┌         - name: mysql
+  <span class="m">57</span> │           image: docker.io/bitnami/mysql:8.0.28-debian-10-r23
+  <span class="m">58</span> │           imagePullPolicy: <span class="s2">&quot;IfNotPresent&quot;</span>
+  <span class="m">59</span> │           securityContext:
+  <span class="m">60</span> │             runAsUser: <span class="m">1001</span>
+  <span class="m">61</span> │           env:
+  <span class="m">62</span> │             - name: BITNAMI_DEBUG
+  <span class="m">63</span> │               value: <span class="s2">&quot;false&quot;</span>
+  <span class="m">64</span> └             - name: MYSQL_ROOT_PASSWORD
   ..   
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 
-MEDIUM: Container &#39;mysql&#39; of StatefulSet &#39;mysql&#39; should set &#39;securityContext.runAsNonRoot&#39; to true
+MEDIUM: Container <span class="s1">&#39;mysql&#39;</span> of StatefulSet <span class="s1">&#39;mysql&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.runAsNonRoot&#39;</span> to <span class="nb">true</span>
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-&#39;runAsNonRoot&#39; forces the running image to run as a non-root user to ensure least privileges.
+<span class="s1">&#39;runAsNonRoot&#39;</span> forces the running image to run as a non-root user to ensure least privileges.
 
 See https://avd.aquasec.com/misconfig/ksv012
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  mysql-8.8.26.tar:templates/primary/statefulset.yaml:56-130
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  56 ┌         - name: mysql
-  57 │           image: docker.io/bitnami/mysql:8.0.28-debian-10-r23
-  58 │           imagePullPolicy: &quot;IfNotPresent&quot;
-  59 │           securityContext:
-  60 │             runAsUser: 1001
-  61 │           env:
-  62 │             - name: BITNAMI_DEBUG
-  63 │               value: &quot;false&quot;
-  64 └             - name: MYSQL_ROOT_PASSWORD
+  <span class="m">56</span> ┌         - name: mysql
+  <span class="m">57</span> │           image: docker.io/bitnami/mysql:8.0.28-debian-10-r23
+  <span class="m">58</span> │           imagePullPolicy: <span class="s2">&quot;IfNotPresent&quot;</span>
+  <span class="m">59</span> │           securityContext:
+  <span class="m">60</span> │             runAsUser: <span class="m">1001</span>
+  <span class="m">61</span> │           env:
+  <span class="m">62</span> │             - name: BITNAMI_DEBUG
+  <span class="m">63</span> │               value: <span class="s2">&quot;false&quot;</span>
+  <span class="m">64</span> └             - name: MYSQL_ROOT_PASSWORD
   ..   
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
@@ -4591,6 +4605,56 @@ This can be repeated for specifying multiple files or directories.</p>
 <p>You can load checks bundle as OCI Image from a Container Registry using the <code>--checks-bundle-repository</code> flag.</p>
 <div class="highlight"><pre><span></span><code>trivy config --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
 </code></pre></div>
+<h3 id="scan-arbitrary-json-and-yaml-configurations">Scan arbitrary JSON and YAML configurations</h3>
+<p>By default, scanning JSON and YAML configurations is disabled, since Trivy does not contain built-in checks for these configurations. To enable it, pass the <code>json</code> or <code>yaml</code> to <code>--misconfig-scanners</code>. See <a href="#enabling-a-subset-of-misconfiguration-scanners">Enabling a subset of misconfiguration scanners</a> for more information. Trivy will pass each file as is to the checks input.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+</div>
+<div class="highlight"><pre><span></span><code>$ cat iac/serverless.yaml
+service: serverless-rest-api-with-pynamodb
+
+frameworkVersion: <span class="s2">&quot;&gt;=2.24.0&quot;</span>
+
+plugins:
+  - serverless-python-requirements
+...
+
+$ cat serverless.rego
+<span class="c1"># METADATA</span>
+<span class="c1"># title: Serverless Framework service name not starting with &quot;aws-&quot;</span>
+<span class="c1"># description: Ensure that Serverless Framework service names start with &quot;aws-&quot;</span>
+<span class="c1"># schemas:</span>
+<span class="c1">#   - input: schema[&quot;serverless-schema&quot;]</span>
+<span class="c1"># custom:</span>
+<span class="c1">#   id: SF001</span>
+<span class="c1">#   severity: LOW</span>
+package user.serverless001
+
+deny<span class="o">[</span>res<span class="o">]</span> <span class="o">{</span>
+    not startswith<span class="o">(</span>input.service, <span class="s2">&quot;aws-&quot;</span><span class="o">)</span>
+    res :<span class="o">=</span> result.new<span class="o">(</span>
+        sprintf<span class="o">(</span><span class="s2">&quot;Service name %q is not allowed&quot;</span>, <span class="o">[</span>input.service<span class="o">])</span>,
+        input.service
+    <span class="o">)</span>
+<span class="o">}</span>
+
+$ trivy config --misconfig-scanners<span class="o">=</span>json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
+serverless.yaml <span class="o">(</span>yaml<span class="o">)</span>
+
+Tests: <span class="m">4</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+LOW: Service name <span class="s2">&quot;serverless-rest-api-with-pynamodb&quot;</span> is not allowed
+═════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure that Serverless Framework service names start with <span class="s2">&quot;aws-&quot;</span>
+</code></pre></div>
+<p>You can also pass schemas using the <code>config-file-schemas</code> flag. Trivy will use these schemas for file filtering and type checking in Rego checks. If the file does not match any of the passed schemas, it will be ignored.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+</div>
+<div class="highlight"><pre><span></span><code>$ trivy config --misconfig-scanners<span class="o">=</span>json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
+</code></pre></div>
+<p>If the schema is specified in the check metadata and is in the directory specified in the <code>--config-check</code> argument, it will be automatically loaded as specified <a href="custom/schema/#custom-checks-with-custom-schemas">here</a>, and will only be used for type checking in Rego.</p>
 <h3 id="passing-custom-data">Passing custom data</h3>
 <p>You can pass directories including your custom data through <code>--data</code> option.
 This can be repeated for specifying multiple directories.</p>
@@ -4604,11 +4668,11 @@ If you want to evaluate custom checks in other packages, you have to specify pac
 This can be repeated for specifying multiple packages.</p>
 <div class="highlight"><pre><span></span><code>trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 </code></pre></div>
-<h3 id="private-terraform-registries">Private terraform registries</h3>
-<p>Trivy can download terraform code from private registries.
+<h3 id="private-terraform-registries">Private Terraform registries</h3>
+<p>Trivy can download Terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
 You cannot use a <code>.terraformrc</code> or <code>terraform.rc</code> file, these are not supported by trivy yet.</p>
-<p>From the terraform <a href="https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials">docs</a>:</p>
+<p>From the Terraform <a href="https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials">docs</a>:</p>
 <blockquote>
 <p>Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
 For example, the value of a variable named <code>TF_TOKEN_app_terraform_io</code> will be used as a bearer authorization token when the CLI makes service requests to the hostname <code>app.terraform.io</code>.</p>
