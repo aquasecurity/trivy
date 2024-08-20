@@ -36,14 +36,6 @@ func NewParser(useMinVersion bool) *Parser {
 	}
 }
 
-/*
-~= 2.2
->= 2.2, == 2.*
-
-~= 1.4.5
->= 1.4.5, == 1.4.*
-*/
-
 func splitLine(line string) []string {
 	result := strings.Split(line, "~=")
 	if len(result) == 2 {
