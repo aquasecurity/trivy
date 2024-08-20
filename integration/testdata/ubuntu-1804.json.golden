@@ -80,7 +80,7 @@
             "UID": "da318bd19a304cc0"
           },
           "InstalledVersion": "4.4.18-2ubuntu1.2",
-          "Status": "affected",
+          "Status": "will_not_fix",
           "Layer": {
             "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
@@ -143,27 +143,22 @@
             "UID": "87f56d9cd92819fc"
           },
           "InstalledVersion": "8.28-1ubuntu1",
-          "FixedVersion": "",
-          "Status": "affected",
+          "Status": "will_not_fix",
           "Layer": {
-            "Digest": "",
+            "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
           },
-          "SeveritySource": "",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-2781",
           "DataSource": {
             "ID": "ubuntu",
             "Name": "Ubuntu CVE Tracker",
             "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
           },
-          "Title": "",
           "Description": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal’s input buffer.",
           "Severity": "UNKNOWN",
           "CVSS": {
             "nvd": {
-              "V2Vector": "",
               "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N",
-              "V2Score": 0,
               "V3Score": 6.5
             }
           },
