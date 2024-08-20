@@ -32,7 +32,8 @@ type Scanner struct {
 	loadEmbeddedPolicies  bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetRegoOnly(bool) {}
 

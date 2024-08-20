@@ -107,7 +107,7 @@ $ trivy config --severity HIGH,CRITICAL ./iac
 <details>
 <summary>Result</summary>
 
-```
+```bash
 2022-06-06T11:01:21.142+0100	INFO	Detected config files: 8
 
 Dockerfile (dockerfile)
@@ -343,6 +343,61 @@ You can load checks bundle as OCI Image from a Container Registry using the `--c
 trivy config --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
 ```
 
+
+### Scan arbitrary JSON and YAML configurations
+By default, scanning JSON and YAML configurations is disabled, since Trivy does not contain built-in checks for these configurations. To enable it, pass the `json` or `yaml` to `--misconfig-scanners`. See [Enabling a subset of misconfiguration scanners](#enabling-a-subset-of-misconfiguration-scanners) for more information. Trivy will pass each file as is to the checks input.
+
+
+!!! example
+```bash
+$ cat iac/serverless.yaml
+service: serverless-rest-api-with-pynamodb
+
+frameworkVersion: ">=2.24.0"
+
+plugins:
+  - serverless-python-requirements
+...
+
+$ cat serverless.rego
+# METADATA
+# title: Serverless Framework service name not starting with "aws-"
+# description: Ensure that Serverless Framework service names start with "aws-"
+# schemas:
+#   - input: schema["serverless-schema"]
+# custom:
+#   id: SF001
+#   severity: LOW
+package user.serverless001
+
+deny[res] {
+    not startswith(input.service, "aws-")
+    res := result.new(
+        sprintf("Service name %q is not allowed", [input.service]),
+        input.service
+    )
+}
+
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
+serverless.yaml (yaml)
+
+Tests: 4 (SUCCESSES: 3, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+LOW: Service name "serverless-rest-api-with-pynamodb" is not allowed
+═════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure that Serverless Framework service names start with "aws-"
+```
+
+You can also pass schemas using the `config-file-schemas` flag. Trivy will use these schemas for file filtering and type checking in Rego checks. If the file does not match any of the passed schemas, it will be ignored.
+
+!!! example
+```bash
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
+```
+
+If the schema is specified in the check metadata and is in the directory specified in the `--config-check` argument, it will be automatically loaded as specified [here](./custom/schema.md#custom-checks-with-custom-schemas), and will only be used for type checking in Rego.
+
 ### Passing custom data
 You can pass directories including your custom data through `--data` option.
 This can be repeated for specifying multiple directories.
@@ -363,12 +418,12 @@ This can be repeated for specifying multiple packages.
 trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 ```
 
-### Private terraform registries
-Trivy can download terraform code from private registries.
+### Private Terraform registries
+Trivy can download Terraform code from private registries.
 To pass credentials you must use the `TF_TOKEN_` environment variables.
 You cannot use a `.terraformrc` or `terraform.rc` file, these are not supported by trivy yet.
 
-From the terraform [docs](https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials):
+From the Terraform [docs](https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials):
 
 > Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
 > For example, the value of a variable named `TF_TOKEN_app_terraform_io` will be used as a bearer authorization token when the CLI makes service requests to the hostname `app.terraform.io`.
