@@ -3,6 +3,28 @@ package pip
 import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
+	requirementsCompatibleVersions = []ftypes.Package{
+		{
+			Name:    "keyring",
+			Version: "4.1.1",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 1,
+					EndLine:   1,
+				},
+			},
+		},
+		{
+			Name:    "Mopidy-Dirble",
+			Version: "1.1",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 2,
+					EndLine:   2,
+				},
+			},
+		},
+	}
 	requirementsFlask = []ftypes.Package{
 		{
 			Name:    "click",

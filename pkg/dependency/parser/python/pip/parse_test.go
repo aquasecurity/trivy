@@ -67,6 +67,12 @@ func TestParse(t *testing.T) {
 			filePath: "testdata/requirements_with_templating_engine.txt",
 			want:     nil,
 		},
+		{
+			name:          "compatible versions",
+			filePath:      "testdata/requirements_compatible.txt",
+			useMinVersion: true,
+			want:          requirementsCompatibleVersions,
+		},
 	}
 
 	for _, tt := range tests {
