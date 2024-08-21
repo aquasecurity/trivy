@@ -61,12 +61,12 @@ func TestSBOM(t *testing.T) {
 		{
 			name: "scan SBOM into SBOM",
 			args: args{
-				input:        "testdata/fixtures/sbom/pywin32-cyclonedx.json",
+				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
 				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
 			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-			golden:   "testdata/pywin32-cyclonedx.cdx.json.golden",
+			golden:   "testdata/fluentd-multiple-lockfiles-short.cdx.json.golden",
 		},
 		{
 			name: "minikube KBOM",
