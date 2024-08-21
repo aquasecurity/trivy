@@ -57,8 +57,8 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		a.logger.Warn("Unable to find python `site-packages` directory. License detection is skipped.", log.Err(err))
 	}
 
-	// We only saved the `requirements.txt` files
 	required := func(_ string, _ fs.DirEntry) bool {
+		// Parse all required files: `conan.lock` (from a.Required func) + input.FilePatterns
 		return true
 	}
 
