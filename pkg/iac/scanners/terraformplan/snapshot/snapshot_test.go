@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/zclconf/go-cty/cty"
 )
 
 func TestReadSnapshot(t *testing.T) {
@@ -107,4 +108,19 @@ func TestIsPlanSnapshot(t *testing.T) {
 		got := IsPlanSnapshot(&b)
 		assert.False(t, got)
 	})
+}
+
+func TestPlanWithVariables(t *testing.T) {
+	f, err := os.Open(filepath.Join("testdata", "with-var", "tfplan"))
+	require.NoError(t, err)
+	defer f.Close()
+
+	snapshot, err := parseSnapshot(f)
+	require.NoError(t, err)
+	require.NotNil(t, snapshot)
+
+	expectedVars := map[string]cty.Value{
+		"bucket_name": cty.StringVal("test-bucket"),
+	}
+	assert.Equal(t, expectedVars, snapshot.inputVariables)
 }
