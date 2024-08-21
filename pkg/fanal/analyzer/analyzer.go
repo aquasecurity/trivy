@@ -142,8 +142,9 @@ type AnalysisInput struct {
 }
 
 type PostAnalysisInput struct {
-	FS      fs.FS
-	Options AnalysisOptions
+	FS           fs.FS
+	Options      AnalysisOptions
+	FilePatterns []string
 }
 
 type AnalysisOptions struct {
@@ -455,13 +456,23 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 }
 
 // RequiredPostAnalyzers returns a list of analyzer types that require the given file.
-func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo) []Type {
+func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo, requiredByFilePatterns map[Type][]string) []Type {
 	if info.IsDir() {
 		return nil
 	}
 	var postAnalyzerTypes []Type
 	for _, a := range ag.postAnalyzers {
-		if ag.filePatternMatch(a.Type(), filePath) || a.Required(filePath, info) {
+		if ag.filePatternMatch(a.Type(), filePath) {
+			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
+
+			// Save filePaths for files required by filePatterns to use in PostAnalyze
+			filePaths := []string{filePath}
+			if saved, ok := requiredByFilePatterns[a.Type()]; ok {
+				filePaths = append(filePaths, saved...)
+			}
+			requiredByFilePatterns[a.Type()] = filePaths
+		}
+		if a.Required(filePath, info) {
 			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
 		}
 	}
@@ -472,7 +483,8 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // and passes it to the respective post-analyzer.
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
-func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult, opts AnalysisOptions) error {
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult,
+	opts AnalysisOptions, requiredByFilePatterns map[Type][]string) error {
 	for _, a := range ag.postAnalyzers {
 		fsys, ok := compositeFS.Get(a.Type())
 		if !ok {
@@ -503,8 +515,9 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 		}
 
 		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
-			FS:      filteredFS,
-			Options: opts,
+			FS:           filteredFS,
+			Options:      opts,
+			FilePatterns: requiredByFilePatterns[a.Type()],
 		})
 		if err != nil {
 			return xerrors.Errorf("post analysis error: %w", err)
