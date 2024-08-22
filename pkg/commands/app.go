@@ -65,12 +65,6 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 // NewApp is the factory method to return Trivy CLI
 func NewApp() *cobra.Command {
 	cobra.EnableTraverseRunHooks = true // To execute persistent pre-run hooks from all parents.
-
-	// Initialize the logger for `flag` and `app` packages.
-	// To display logs from these packages in Trivy format.
-	// We will set the `debug` and `disable` format after parsing the `--debug` and `--quiet` flags.
-	log.InitLogger(false, false)
-
 	globalFlags := flag.NewGlobalFlagGroup()
 	rootCmd := NewRootCommand(globalFlags)
 	rootCmd.AddGroup(
@@ -134,7 +128,7 @@ func loadPluginCommands() []*cobra.Command {
 	var commands []*cobra.Command
 	plugins, err := plugin.NewManager().LoadAll(ctx)
 	if err != nil {
-		log.DebugContext(ctx, "No plugins loaded")
+		log.DeferredLogger.Debug("No plugins loaded")
 		return nil
 	}
 	for _, p := range plugins {
@@ -166,13 +160,13 @@ func initConfig(configFile string, pathChanged bool) error {
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			if !pathChanged {
-				log.Debugf("Default config file %q not found, using built in values", log.FilePath(configFile))
+				log.DeferredLogger.Debug(fmt.Sprintf("Default config file %q not found, using built in values", log.FilePath(configFile)))
 				return nil
 			}
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
-	log.Info("Loaded", log.FilePath(configFile))
+	log.DeferredLogger.Info("Loaded", log.FilePath(configFile))
 	return nil
 }
 
@@ -222,6 +216,8 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 			// Initialize logger
 			log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
+			// Print log messages waiting for logger initialization
+			log.DeferredLogger.PrintLogs()
 
 			return nil
 		},
