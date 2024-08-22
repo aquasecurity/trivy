@@ -96,10 +96,11 @@ func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 }
 
 func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
-	var printalbe []byte
-	current := make([]byte, 1)
+	const minLength = 4 // Minimum length of strings to extract
+	var result []byte
+	var currentPrintableLine []byte
 
-	wasReadable := false
+	current := make([]byte, 1) // buffer for 1 byte reading
 
 	for {
 		_, err := content.Read(current)
@@ -109,16 +110,20 @@ func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
 			return nil, err
 		}
 		if unicode.IsPrint(rune(current[0])) {
-			if !wasReadable {
-				printalbe = append(printalbe, byte(' '))
-				wasReadable = true
-			}
-			printalbe = append(printalbe, current[0])
-		} else {
-			wasReadable = false
+			currentPrintableLine = append(currentPrintableLine, current[0])
+			continue
 		}
-
+		if len(currentPrintableLine) > minLength {
+			// add a space between printable lines to separate them
+			currentPrintableLine = append(currentPrintableLine, ' ')
+			result = append(result, currentPrintableLine...)
+		}
+		currentPrintableLine = nil
 	}
-
-	return printalbe, nil
+	if len(currentPrintableLine) > minLength {
+		// add a space between printable lines to separate them
+		currentPrintableLine = append(currentPrintableLine, ' ')
+		result = append(result, currentPrintableLine...)
+	}
+	return result, nil
 }
