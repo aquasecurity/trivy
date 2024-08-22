@@ -36,6 +36,7 @@ type Parser struct {
 	moduleBlock       *terraform.Block
 	files             []sourceFile
 	tfvarsPaths       []string
+	tfvars            map[string]cty.Value
 	stopOnHCLError    bool
 	workspaceName     string
 	underlying        *hclparse.Parser
@@ -60,6 +61,7 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 		moduleSource:   moduleSource,
 		configsFS:      moduleFS,
 		logger:         log.WithPrefix("terraform parser").With("module", "root"),
+		tfvars:         make(map[string]cty.Value),
 	}
 
 	for _, option := range opts {
@@ -187,11 +189,16 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		log.Int("blocks", len(blocks)), log.Int("ignores", len(ignores)))
 
 	var inputVars map[string]cty.Value
-	if p.moduleBlock != nil {
+
+	switch {
+	case p.moduleBlock != nil:
 		inputVars = p.moduleBlock.Values().AsValueMap()
 		p.logger.Debug("Added input variables from module definition",
 			log.Int("count", len(inputVars)))
-	} else {
+	case len(p.tfvars) > 0:
+		inputVars = p.tfvars
+		p.logger.Debug("Added input variables from tfvars.", log.Int("count", len(inputVars)))
+	default:
 		inputVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
 		if err != nil {
 			return nil, err

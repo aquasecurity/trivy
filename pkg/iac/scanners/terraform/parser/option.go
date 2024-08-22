@@ -2,6 +2,8 @@ package parser
 
 import (
 	"io/fs"
+
+	"github.com/zclconf/go-cty/cty"
 )
 
 type Option func(p *Parser)
@@ -15,6 +17,12 @@ func OptionWithTFVarsPaths(paths ...string) Option {
 func OptionStopOnHCLError(stop bool) Option {
 	return func(p *Parser) {
 		p.stopOnHCLError = stop
+	}
+}
+
+func OptionsWithTfVars(vars map[string]cty.Value) Option {
+	return func(p *Parser) {
+		p.tfvars = vars
 	}
 }
 
