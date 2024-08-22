@@ -65,6 +65,12 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 // NewApp is the factory method to return Trivy CLI
 func NewApp() *cobra.Command {
 	cobra.EnableTraverseRunHooks = true // To execute persistent pre-run hooks from all parents.
+
+	// Initialize the logger for `flag` and `app` packages.
+	// To display logs from these packages in Trivy format.
+	// We will set the `debug` and `disable` format after parsing the `--debug` and `--quiet` flags.
+	log.InitLogger(false, false)
+
 	globalFlags := flag.NewGlobalFlagGroup()
 	rootCmd := NewRootCommand(globalFlags)
 	rootCmd.AddGroup(
