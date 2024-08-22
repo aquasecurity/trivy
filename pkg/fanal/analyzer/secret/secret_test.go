@@ -102,21 +102,7 @@ func TestSecretAnalyzer(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     " o e\xabfx \xe3 @ s d Z e e d S ) \xda]*********************************************************************************************N) \xda secret1\xda print\xa9",
-		Code: types.Code{
-			Lines: []types.Line{
-				{
-					Number:      1,
-					Content:     " o e\xabfx \xe3 @ s d Z e e d S ) \xda]*********************************************************************************************N) \xda secret1\xda print\xa9",
-					IsCause:     true,
-					Annotation:  "",
-					Truncated:   false,
-					Highlighted: " o e\xabfx \xe3 @ s d Z e e d S ) \xda]*********************************************************************************************N) \xda secret1\xda print\xa9",
-					FirstCause:  true,
-					LastCause:   true,
-				},
-			},
-		},
+		Match:     "Binary file \"/testdata/secret.cpython-310.pyc\" matches a rule \"GitHub Fine-grained personal access tokens\"",
 	}
 
 	tests := []struct {

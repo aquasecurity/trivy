@@ -366,6 +366,7 @@ func NewScanner(config *Config) Scanner {
 type ScanArgs struct {
 	FilePath string
 	Content  []byte
+	Binary   bool
 }
 
 type Match struct {
@@ -435,8 +436,22 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 		}
 	}
 
-	for _, match := range matched {
-		findings = append(findings, toFinding(match.Rule, match.Location, censored))
+	if args.Binary {
+		for _, match := range matched {
+			findings = append(findings, types.SecretFinding{
+				RuleID:    match.Rule.ID,
+				Category:  match.Rule.Category,
+				Severity:  lo.Ternary(match.Rule.Severity == "", "UNKNOWN", match.Rule.Severity),
+				Title:     match.Rule.Title,
+				Match:     fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title),
+				StartLine: 1,
+				EndLine:   1,
+			})
+		}
+	} else {
+		for _, match := range matched {
+			findings = append(findings, toFinding(match.Rule, match.Location, censored))
+		}
 	}
 
 	if len(findings) == 0 {
