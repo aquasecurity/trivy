@@ -182,7 +182,7 @@ func Test_newServeMux(t *testing.T) {
 			require.NoError(t, err)
 			defer func() { _ = c.Close() }()
 
-			ts := httptest.NewServer(newServeMux(context.Background(), c, dbUpdateWg, requestWg, tt.args.token,
+			ts := httptest.NewServer(NewServeMux(context.Background(), c, dbUpdateWg, requestWg, tt.args.token,
 				tt.args.tokenHeader, ""),
 			)
 			defer ts.Close()
@@ -214,7 +214,7 @@ func Test_VersionEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = c.Close() }()
 
-	ts := httptest.NewServer(newServeMux(context.Background(), c, dbUpdateWg, requestWg, "", "",
+	ts := httptest.NewServer(NewServeMux(context.Background(), c, dbUpdateWg, requestWg, "", "",
 		"testdata/testcache"),
 	)
 	defer ts.Close()

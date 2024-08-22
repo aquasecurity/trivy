@@ -67,13 +67,13 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 		}
 	}()
 
-	mux := newServeMux(ctx, serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.dbDir)
+	mux := NewServeMux(ctx, serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.dbDir)
 	log.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
 
-func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
+func NewServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 	token, tokenHeader, cacheDir string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
