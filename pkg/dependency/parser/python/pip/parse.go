@@ -73,7 +73,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		if len(s) != 2 {
 			continue
 		}
-		if p.useMinVersion && strings.Index(s[1], ".*") > -1 {
+		if p.useMinVersion {
 			s[1] = strings.Replace(s[1], "*", "0", 1)
 		}
 
