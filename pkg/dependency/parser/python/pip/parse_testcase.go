@@ -24,6 +24,16 @@ var (
 				},
 			},
 		},
+		{
+			Name:    "python-gitlab",
+			Version: "2.0.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 3,
+					EndLine:   3,
+				},
+			},
+		},
 	}
 	requirementsFlask = []ftypes.Package{
 		{

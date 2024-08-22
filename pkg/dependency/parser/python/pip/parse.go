@@ -73,6 +73,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		if len(s) != 2 {
 			continue
 		}
+		if p.useMinVersion && strings.Index(s[1], "*") > -1 {
+			s[1] = strings.Replace(s[1], "*", "0", 1)
+		}
 
 		if !isValidName(s[0]) || !isValidVersion(s[1]) {
 			p.logger.Debug("Invalid package name/version in requirements.txt.", log.String("line", text))
