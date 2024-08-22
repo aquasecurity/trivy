@@ -35,18 +35,18 @@ func NewParser(useMinVersion bool) *Parser {
 		useMinVersion: useMinVersion,
 	}
 }
-
-func splitLine(line string) []string {
-	result := strings.Split(line, "~=")
-	if len(result) == 2 {
-		return result
+func (p *Parser) splitLine(line string) []string {
+	separators := []string{"~=", ">=", "=="}
+	// Without useMinVersion check only `==`
+	if !p.useMinVersion {
+		separators = []string{"=="}
 	}
-	result = strings.Split(line, ">=")
-	if len(result) == 2 {
-		return result
+	for _, sep := range separators {
+		if result := strings.Split(line, sep); len(result) == 2 {
+			return result
+		}
 	}
-
-	return strings.Split(line, "==")
+	return nil
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -68,14 +68,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
 		line = rStripByKey(line, hashMarker)
-		var s []string
 
-		if p.useMinVersion {
-			s = splitLine(line)
-		} else {
-			s = strings.Split(line, "==")
-		}
-
+		s := p.splitLine(line)
 		if len(s) != 2 {
 			continue
 		}
