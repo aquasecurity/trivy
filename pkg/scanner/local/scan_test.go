@@ -584,8 +584,9 @@ func TestScanner_Scan(t *testing.T) {
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
 						OS: ftypes.OS{
-							Family: "fedora",
-							Name:   "27",
+							Family:      "fedora",
+							Name:        "27",
+							Unsupported: true,
 						},
 						Applications: []ftypes.Application{
 							{
@@ -631,8 +632,9 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			wantOS: ftypes.OS{
-				Family: "fedora",
-				Name:   "27",
+				Family:      "fedora",
+				Name:        "27",
+				Unsupported: true,
 			},
 		},
 		{
