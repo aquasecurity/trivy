@@ -8,10 +8,11 @@ option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
 import "google/protobuf/struct.proto";
 
 message OS {
-  string family   = 1;
-  string name     = 2;
-  bool   eosl     = 3;
-  bool   extended = 4;
+  string family      = 1;
+  string name        = 2;
+  bool   eosl        = 3;
+  bool   extended    = 4;
+  bool   unsupported = 5;
 }
 
 message Repository {
