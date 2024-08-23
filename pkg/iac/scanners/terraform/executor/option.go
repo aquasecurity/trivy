@@ -37,3 +37,9 @@ func OptionWithRegoOnly(regoOnly bool) Option {
 		e.regoOnly = regoOnly
 	}
 }
+
+func OptionWithIncludeDeprecatedChecks(b bool) Option {
+	return func(e *Executor) {
+		e.includeDeprecatedChecks = b
+	}
+}

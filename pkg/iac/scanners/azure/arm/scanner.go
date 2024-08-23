@@ -25,20 +25,24 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu                    sync.Mutex
-	scannerOptions        []options.ScannerOption
-	logger                *log.Logger
-	frameworks            []framework.Framework
-	regoOnly              bool
-	loadEmbeddedPolicies  bool
-	loadEmbeddedLibraries bool
-	policyDirs            []string
-	policyReaders         []io.Reader
-	regoScanner           *rego.Scanner
-	spec                  string
+	mu                      sync.Mutex
+	scannerOptions          []options.ScannerOption
+	logger                  *log.Logger
+	frameworks              []framework.Framework
+	regoOnly                bool
+	loadEmbeddedPolicies    bool
+	loadEmbeddedLibraries   bool
+	policyDirs              []string
+	policyReaders           []io.Reader
+	regoScanner             *rego.Scanner
+	spec                    string
+	includeDeprecatedChecks bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool)  {}
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
+	s.includeDeprecatedChecks = b
+}
+
 func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetSpec(spec string) {
@@ -150,9 +154,11 @@ func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deploymen
 				return nil, ctx.Err()
 			default:
 			}
-			if rule.GetRule().RegoPackage != "" {
-				continue
+
+			if !s.includeDeprecatedChecks && rule.Deprecated {
+				continue // skip deprecated checks
 			}
+
 			ruleResults := rule.Evaluate(deploymentState)
 			if len(ruleResults) > 0 {
 				results = append(results, ruleResults...)

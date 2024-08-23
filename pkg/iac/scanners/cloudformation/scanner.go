@@ -48,22 +48,26 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu                    sync.Mutex
-	logger                *log.Logger
-	policyDirs            []string
-	policyReaders         []io.Reader
-	parser                *parser.Parser
-	regoScanner           *rego.Scanner
-	regoOnly              bool
-	loadEmbeddedPolicies  bool
-	loadEmbeddedLibraries bool
-	options               []options.ScannerOption
-	parserOptions         []parser.Option
-	frameworks            []framework.Framework
-	spec                  string
+	mu                      sync.Mutex
+	logger                  *log.Logger
+	policyDirs              []string
+	policyReaders           []io.Reader
+	parser                  *parser.Parser
+	regoScanner             *rego.Scanner
+	regoOnly                bool
+	loadEmbeddedPolicies    bool
+	loadEmbeddedLibraries   bool
+	options                 []options.ScannerOption
+	parserOptions           []parser.Option
+	frameworks              []framework.Framework
+	spec                    string
+	includeDeprecatedChecks bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool) {
+	s.includeDeprecatedChecks = true
+}
+
 func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) addParserOption(opt parser.Option) {
@@ -211,9 +215,11 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 				return nil, ctx.Err()
 			default:
 			}
-			if rule.GetRule().RegoPackage != "" {
-				continue
+
+			if !s.includeDeprecatedChecks && rule.Deprecated {
+				continue // skip deprecated checks
 			}
+
 			evalResult := rule.Evaluate(state)
 			if len(evalResult) > 0 {
 				for _, scanResult := range evalResult {
