@@ -97,6 +97,13 @@ func TestSplitLicenses(t *testing.T) {
 				"Historical Permission Notice and Disclaimer (HPND)",
 			},
 		},
+		{
+			name:    "License text",
+			license: "* Permission to use this software in any way is granted without",
+			licenses: []string{
+				"text://* Permission to use this software in any way is granted without",
+			},
+		},
 	}
 
 	for _, tt := range tests {
