@@ -998,10 +998,8 @@ deny {
 		},
 	}
 
-	var buf bytes.Buffer
 	scanner := NewScanner(
 		types.SourceYAML,
-		options.ScannerWithDebug(&buf),
 	)
 	require.NoError(
 		t,
@@ -1009,8 +1007,6 @@ deny {
 	)
 	_, err := scanner.ScanInput(context.TODO(), Input{})
 	require.NoError(t, err)
-	assert.Contains(t, buf.String(),
-		`Error occurred while applying rule "deny" from check "checks/bad.rego"`)
 }
 
 func Test_RegoScanning_WithDeprecatedCheck(t *testing.T) {

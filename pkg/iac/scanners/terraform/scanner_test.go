@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"strconv"
@@ -11,30 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
-
-var alwaysFailRule = scan.Rule{
-	Provider:  providers.AWSProvider,
-	Service:   "service",
-	ShortCode: "abc",
-	Severity:  severity.High,
-	CustomChecks: scan.CustomChecks{
-		Terraform: &scan.TerraformCustomCheck{
-			RequiredTypes:  []string{},
-			RequiredLabels: []string{},
-			Check: func(resourceBlock *terraform.Block, _ *terraform.Module) (results scan.Results) {
-				results.Add("oh no", resourceBlock)
-				return
-			},
-		},
-	},
-}
 
 const emptyBucketRule = `
 # METADATA
@@ -55,33 +33,6 @@ deny[res] {
   res := result.new("The name of the bucket must not be empty", bucket)
 }
 `
-
-func scanWithOptions(t *testing.T, code string, opt ...options.ScannerOption) scan.Results {
-
-	fs := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": code,
-	})
-
-	scanner := New(opt...)
-	results, err := scanner.ScanFS(context.TODO(), fs, "project")
-	require.NoError(t, err)
-	return results
-}
-
-func Test_OptionWithDebugWriter(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	buffer := bytes.NewBuffer([]byte{})
-
-	scannerOpts := []options.ScannerOption{
-		options.ScannerWithDebug(buffer),
-	}
-	_ = scanWithOptions(t, `
-resource "something" "else" {}
-`, scannerOpts...)
-	require.Positive(t, buffer.Len())
-}
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
 
@@ -119,9 +70,7 @@ deny[cause] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
@@ -167,10 +116,6 @@ deny[cause] {
 			Annotation: "",
 		},
 	}, actualCode.Lines)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 
 }
 
@@ -278,7 +223,6 @@ cause := bucket.name
 				}
 			}
 			assert.Equal(t, test.wantFailure, found)
-
 		})
 	}
 
@@ -320,9 +264,7 @@ deny[cause] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 	)
@@ -332,10 +274,6 @@ deny[cause] {
 
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_OptionWithRegoOnly_CodeHighlighting(t *testing.T) {
@@ -374,9 +312,7 @@ deny[res] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(true),
@@ -388,10 +324,6 @@ deny[res] {
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_IAMPolicyRego(t *testing.T) {
@@ -448,20 +380,11 @@ deny[res] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
-		options.ScannerWithTrace(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(true),
 	)
-
-	defer func() {
-		if t.Failed() {
-			fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-		}
-	}()
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -541,9 +464,7 @@ deny[res] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(true),
@@ -556,9 +477,6 @@ deny[res] {
 	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
 
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_S3_Linking(t *testing.T) {
@@ -603,10 +521,7 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 		"code/main.tf": code,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
-	scanner := New(
-		options.ScannerWithDebug(debugLog),
-	)
+	scanner := New()
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -621,10 +536,6 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 		assert.NotEqual(t, "AVD-AWS-0089", result.Rule().AVDID)
 		// versioning
 		assert.NotEqual(t, "AVD-AWS-0090", result.Rule().AVDID)
-	}
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
 	}
 }
 
@@ -673,10 +584,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 		"code/main.tf": code,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
-	scanner := New(
-		options.ScannerWithDebug(debugLog),
-	)
+	scanner := New()
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -686,9 +594,6 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().AVDID)
 	}
 
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 // PoC for replacing Go with Rego: AVD-AWS-0001
@@ -732,9 +637,7 @@ deny[res] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
@@ -788,11 +691,6 @@ deny[res] {
 			Annotation: "",
 		},
 	}, actualCode.Lines)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
-
 }
 
 func Test_OptionWithConfigsFileSystem(t *testing.T) {
@@ -814,9 +712,7 @@ bucket_name = "test"
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
@@ -832,10 +728,6 @@ bucket_name = "test"
 
 	assert.Len(t, results, 1)
 	assert.Len(t, results.GetPassed(), 1)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_OptionWithConfigsFileSystem_ConfigInCode(t *testing.T) {
@@ -854,9 +746,7 @@ bucket_name = "test"
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
@@ -872,10 +762,6 @@ bucket_name = "test"
 
 	assert.Len(t, results, 1)
 	assert.Len(t, results.GetPassed(), 1)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_DoNotScanNonRootModules(t *testing.T) {
@@ -953,9 +839,7 @@ deny[res] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithEmbeddedPolicies(false),
@@ -970,10 +854,6 @@ deny[res] {
 	assert.Len(t, results.GetPassed(), 2)
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "AVD-AWS-0002", results.GetFailed()[0].Rule().AVDID)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_RoleRefToOutput(t *testing.T) {
@@ -1029,9 +909,7 @@ deny[res] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
@@ -1100,9 +978,7 @@ deny[res] {
 }`,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
@@ -1121,10 +997,6 @@ deny[res] {
 
 	require.Len(t, results.GetPassed(), 1)
 	assert.Equal(t, "AVD-AWS-0002", results.GetPassed()[0].Rule().AVDID)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func TestScanModuleWithCount(t *testing.T) {
@@ -1170,9 +1042,7 @@ deny[res] {
 `,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),

@@ -566,12 +566,10 @@ COPY --from=dep /binary /`
 			fs := testutil.CreateFS(t, regoMap)
 
 			var traceBuf bytes.Buffer
-			var debugBuf bytes.Buffer
 
 			scanner := NewScanner(
 				options.ScannerWithPolicyDirs("rules"),
 				options.ScannerWithTrace(&traceBuf),
-				options.ScannerWithDebug(&debugBuf),
 				options.ScannerWithRegoErrorLimits(0),
 			)
 

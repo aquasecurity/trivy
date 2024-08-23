@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation"
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -18,12 +17,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func WithParameters(params map[string]any) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithParameters(params))
+			s.addParserOption(parser.WithParameters(params))
 		}
 	}
 }
@@ -31,7 +31,7 @@ func WithParameters(params map[string]any) options.ScannerOption {
 func WithParameterFiles(files ...string) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithParameterFiles(files...))
+			s.addParserOption(parser.WithParameterFiles(files...))
 		}
 	}
 }
@@ -39,7 +39,7 @@ func WithParameterFiles(files ...string) options.ScannerOption {
 func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithConfigsFS(fsys))
+			s.addParserOption(parser.WithConfigsFS(fsys))
 		}
 	}
 }
@@ -49,7 +49,7 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
 	mu                    sync.Mutex
-	debug                 debug.Logger
+	logger                *log.Logger
 	policyDirs            []string
 	policyReaders         []io.Reader
 	parser                *parser.Parser
@@ -58,7 +58,7 @@ type Scanner struct {
 	loadEmbeddedPolicies  bool
 	loadEmbeddedLibraries bool
 	options               []options.ScannerOption
-	parserOptions         []options.ParserOption
+	parserOptions         []parser.Option
 	frameworks            []framework.Framework
 	spec                  string
 }
@@ -66,7 +66,7 @@ type Scanner struct {
 func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
 func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
-func (s *Scanner) addParserOptions(opt options.ParserOption) {
+func (s *Scanner) addParserOption(opt parser.Option) {
 	s.parserOptions = append(s.parserOptions, opt)
 }
 
@@ -98,11 +98,6 @@ func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
 }
 
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "cloudformation", "scanner")
-	s.parserOptions = append(s.parserOptions, options.ParserWithDebug(writer))
-}
-
 func (s *Scanner) SetPolicyDirs(dirs ...string) {
 	s.policyDirs = dirs
 }
@@ -125,6 +120,7 @@ func (s *Scanner) SetPolicyNamespaces(_ ...string)   {}
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("cloudformation scanner"),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -140,7 +136,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 		return s.regoScanner, nil
 	}
 	regoScanner := rego.NewScanner(types.SourceCloud, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return nil, err
 	}
@@ -221,7 +216,6 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 			}
 			evalResult := rule.Evaluate(state)
 			if len(evalResult) > 0 {
-				s.debug.Log("Found %d results for %s", len(evalResult), rule.GetRule().AVDID)
 				for _, scanResult := range evalResult {
 
 					ref := scanResult.Metadata().Reference()
@@ -250,7 +244,10 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 	results.Ignore(cfCtx.Ignores, nil)
 
 	for _, ignored := range results.GetIgnored() {
-		s.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
+		s.logger.Info("Ignore finding",
+			log.String("rule", ignored.Rule().LongID()),
+			log.String("range", ignored.Range().String()),
+		)
 	}
 
 	return results, nil

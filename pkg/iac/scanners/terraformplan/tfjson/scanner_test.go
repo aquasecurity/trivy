@@ -1,9 +1,7 @@
 package tfjson
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"os"
 	"testing"
 
@@ -130,8 +128,7 @@ deny[cause] {
 				"/rules/test.rego":       tc.inputRego,
 			})
 
-			debugLog := bytes.NewBuffer([]byte{})
-			so := append(tc.options, options.ScannerWithDebug(debugLog), options.ScannerWithPolicyFilesystem(fs))
+			so := append(tc.options, options.ScannerWithPolicyFilesystem(fs))
 			scanner := New(so...)
 
 			results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -142,9 +139,6 @@ deny[cause] {
 			failure := results.GetFailed()[0]
 
 			assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
-			if t.Failed() {
-				fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-			}
 		})
 	}
 }
