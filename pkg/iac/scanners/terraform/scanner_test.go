@@ -10,8 +10,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers"
+	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/severity"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const emptyBucketRule = `
@@ -1064,4 +1069,51 @@ deny[res] {
 
 	occurrences := failed[0].Occurrences()
 	assert.Equal(t, "code/example/main.tf", occurrences[0].Filename)
+}
+
+func TestSkipDeprecatedGoChecks(t *testing.T) {
+
+	check := scan.Rule{
+		Provider:  providers.AWSProvider,
+		Service:   "service",
+		ShortCode: "abc",
+		Severity:  severity.High,
+		Check: func(s *state.State) (results scan.Results) {
+			results.Add("Deny", types.NewTestMetadata())
+			return
+		},
+	}
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.tf": `resource "foo" "bar" {}`,
+	})
+
+	scanner := New(
+		options.ScannerWithPolicyFilesystem(fsys),
+		options.ScannerWithEmbeddedLibraries(false),
+		options.ScannerWithEmbeddedPolicies(false),
+		ScannerWithAllDirectories(true),
+	)
+
+	t.Run("deprecated", func(t *testing.T) {
+		check.Deprecated = true
+		reg := rules.Register(check)
+		defer rules.Deregister(reg)
+
+		results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+		require.NoError(t, err)
+
+		require.Empty(t, results)
+	})
+
+	t.Run("not deprecated", func(t *testing.T) {
+		check.Deprecated = false
+		reg := rules.Register(check)
+		defer rules.Deregister(reg)
+
+		results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+		require.NoError(t, err)
+
+		require.Len(t, results, 1)
+	})
 }

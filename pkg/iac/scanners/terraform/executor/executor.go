@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"sort"
 
+	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/terraform"
@@ -15,17 +16,19 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	ruleTypes "github.com/aquasecurity/trivy/pkg/iac/types/rules"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Executor scans HCL blocks by running all registered rules against them
 type Executor struct {
-	workspaceName  string
-	logger         *log.Logger
-	resultsFilters []func(scan.Results) scan.Results
-	regoScanner    *rego.Scanner
-	regoOnly       bool
-	frameworks     []framework.Framework
+	workspaceName           string
+	logger                  *log.Logger
+	resultsFilters          []func(scan.Results) scan.Results
+	regoScanner             *rego.Scanner
+	regoOnly                bool
+	includeDeprecatedChecks bool
+	frameworks              []framework.Framework
 }
 
 // New creates a new Executor
@@ -53,8 +56,14 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 
 	e.logger.Debug("Using max routines", log.Int("count", threads))
 
-	registeredRules := rules.GetRegistered(e.frameworks...)
-	e.logger.Debug("Initialized rule(s).", log.Int("count", len(registeredRules)))
+	registeredRules := lo.Filter(rules.GetRegistered(e.frameworks...), func(r ruleTypes.RegisteredRule, _ int) bool {
+		if !e.includeDeprecatedChecks && r.Deprecated {
+			return false // skip deprecated checks
+		}
+
+		return true
+	})
+	e.logger.Debug("Initialized Go check(s).", log.Int("count", len(registeredRules)))
 
 	pool := NewPool(threads, registeredRules, modules, infra, e.regoScanner, e.regoOnly)
 
