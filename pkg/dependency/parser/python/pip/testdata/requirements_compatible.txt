@@ -1,0 +1,5 @@
+keyring >= 4.1.1            # Minimum version 4.1.1
+Mopidy-Dirble ~= 1.1        # Compatible release. Same as >= 1.1, == 1.*
+python-gitlab==2.0.*
+django==5.*.*               # this dep should be skipped
+django==4.*.1
