@@ -3598,6 +3598,13 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#package-options" class="md-nav__link">
+    Package options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#registry-options" class="md-nav__link">
     Registry options
   </a>
@@ -4230,6 +4237,13 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#package-options" class="md-nav__link">
+    Package options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#registry-options" class="md-nav__link">
     Registry options
   </a>
@@ -4696,6 +4710,23 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--enable-modules&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">enable-modules</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
+</code></pre></div>
+<h2 id="package-options">Package options</h2>
+<div class="highlight"><pre><span></span><code><span class="nt">pkg</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--include-dev-deps&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">include-dev-deps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--pkg-relationships&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">relationships</span><span class="p">:</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unknown</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">root</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">direct</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indirect</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--pkg-types&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">os</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">library</span><span class="w"></span>
 </code></pre></div>
 <h2 id="registry-options">Registry options</h2>
 <div class="highlight"><pre><span></span><code><span class="nt">registry</span><span class="p">:</span><span class="w"></span>
