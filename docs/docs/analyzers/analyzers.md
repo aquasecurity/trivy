@@ -1,6 +1,6 @@
 
 ## Analyzers
-Use the following types of analyzers for the [--max-file-size] flags
+Use the following types of analyzers for the [--max-file-size] and [--file-pattern] flags
 ```
 fedora
 apk

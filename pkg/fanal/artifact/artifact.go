@@ -18,7 +18,7 @@ type Option struct {
 	DisabledAnalyzers []analyzer.Type
 	DisabledHandlers  []types.HandlerType
 	FilePatterns      []string
-	MaxFileSize       []string
+	MaxFileSize       map[analyzer.Type]int64
 	Parallel          int
 	NoProgress        bool
 	Insecure          bool

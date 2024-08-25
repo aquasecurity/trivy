@@ -31,7 +31,7 @@ func main() {
 
 	buf := bytes.NewBuffer([]byte(`
 ## Analyzers
-Use the following types of analyzers for the [--max-file-size] flags`))
+Use the following types of analyzers for the [--max-file-size] and [--file-pattern] flags`))
 	buf.WriteString("\n```\n")
 	for _, t := range analyzer.AllAnalyzerTypes() {
 		buf.WriteString(string(t) + "\n")

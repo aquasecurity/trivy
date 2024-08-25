@@ -2,8 +2,12 @@ package flag
 
 import (
 	"runtime"
+	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/docker/go-units"
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -138,7 +142,7 @@ type ScanOptions struct {
 	OfflineScan       bool
 	Scanners          types.Scanners
 	FilePatterns      []string
-	MaxFileSize       []string
+	MaxFileSize       map[analyzer.Type]int64
 	Parallel          int
 	SBOMSources       []string
 	RekorURL          string
@@ -152,6 +156,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:       OfflineScanFlag.Clone(),
 		Scanners:          ScannersFlag.Clone(),
 		FilePatterns:      FilePatternsFlag.Clone(),
+		MaxFileSize:       MaxFileSizeFlag.Clone(),
 		Parallel:          ParallelFlag.Clone(),
 		SBOMSources:       SBOMSourcesFlag.Clone(),
 		RekorURL:          RekorURLFlag.Clone(),
@@ -180,6 +185,8 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 	}
 }
 
+const separator = ":"
+
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if err := parseFlags(f); err != nil {
 		return ScanOptions{}, err
@@ -196,6 +203,22 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		parallel = runtime.NumCPU()
 	}
 
+	maxFileSize := make(map[analyzer.Type]int64)
+	for _, f := range f.MaxFileSize.Value() {
+		// e.g. "jar:5mb secret:5kb"
+		s := strings.SplitN(f, separator, 2)
+		if len(s) != 2 {
+			return ScanOptions{}, xerrors.Errorf("invalid max file size (%s) expected format: \"analyzerType:maxFileSize\" e.g. \"jar:5mb secret:5kb\"", f)
+		}
+
+		analyzerType := analyzer.Type(s[0])
+		fileSize, err := units.FromHumanSize(s[1])
+		if err != nil {
+			return ScanOptions{}, xerrors.Errorf("invalid file size (%s):%w", s[1], err)
+		}
+		maxFileSize[analyzerType] = fileSize
+	}
+
 	return ScanOptions{
 		Target:            target,
 		SkipDirs:          f.SkipDirs.Value(),
@@ -203,7 +226,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:       f.OfflineScan.Value(),
 		Scanners:          xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
 		FilePatterns:      f.FilePatterns.Value(),
-		MaxFileSize:       f.MaxFileSize.Value(),
+		MaxFileSize:       maxFileSize,
 		Parallel:          parallel,
 		SBOMSources:       f.SBOMSources.Value(),
 		RekorURL:          f.RekorURL.Value(),

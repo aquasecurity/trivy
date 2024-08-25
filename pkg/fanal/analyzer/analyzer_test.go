@@ -295,6 +295,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 		testFilePath      string
 		disabledAnalyzers []analyzer.Type
 		filePatterns      []string
+		maxFileSize       map[analyzer.Type]int64
 	}
 	tests := []struct {
 		name    string
@@ -314,6 +315,17 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 					Name:   "3.11.6",
 				},
 			},
+		},
+		{
+			name: "happy path with max file size os analyzer",
+			args: args{
+				filePath:     "/etc/alpine-release",
+				testFilePath: "testdata/etc/alpine-release",
+				maxFileSize: map[analyzer.Type]int64{
+					analyzer.TypeAlpine: 1,
+				},
+			},
+			want: &analyzer.AnalysisResult{},
 		},
 		{
 			name: "happy path with disabled os analyzer",
@@ -514,11 +526,18 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var wg sync.WaitGroup
+			var maxFileSize map[analyzer.Type]int64
 			limit := semaphore.NewWeighted(3)
 
 			got := new(analyzer.AnalysisResult)
+			if tt.args.maxFileSize != nil {
+				maxFileSize = tt.args.maxFileSize
+			} else {
+				maxFileSize = map[analyzer.Type]int64{}
+			}
 			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
 				FilePatterns:      tt.args.filePatterns,
+				MaxFileSize:       maxFileSize,
 				DisabledAnalyzers: tt.args.disabledAnalyzers,
 			})
 			if err != nil && tt.wantErr != "" {

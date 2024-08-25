@@ -3,6 +3,7 @@ package types
 import (
 	"slices"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -120,6 +121,6 @@ type ScanOptions struct {
 	ScanRemovedPackages bool
 	LicenseCategories   map[types.LicenseCategory][]string
 	FilePatterns        []string
-	MaxFileSize         []string
+	MaxFileSize         map[analyzer.Type]int64
 	IncludeDevDeps      bool
 }

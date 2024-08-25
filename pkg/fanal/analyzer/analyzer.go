@@ -11,7 +11,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/docker/go-units"
 	"github.com/samber/lo"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -44,7 +43,7 @@ type AnalyzerOptions struct {
 	Group                Group
 	Parallel             int
 	FilePatterns         []string
-	MaxFileSize          []string
+	MaxFileSize          map[Type]int64
 	DisabledAnalyzers    []Type
 	DetectionPriority    types.DetectionPriority
 	MisconfScannerOption misconf.ScannerOption
@@ -332,23 +331,10 @@ func NewAnalyzerGroup(opts AnalyzerOptions) (AnalyzerGroup, error) {
 	group := AnalyzerGroup{
 		logger:            log.WithPrefix("analyzer"),
 		filePatterns:      make(map[Type][]*regexp.Regexp),
-		fileSizes:         make(map[Type]int64),
+		fileSizes:         opts.MaxFileSize,
 		detectionPriority: opts.DetectionPriority,
 	}
-	for _, f := range opts.MaxFileSize {
-		// e.g. "jar:5mb secret:5kb"
-		s := strings.SplitN(f, separator, 2)
-		if len(s) != 2 {
-			return group, xerrors.Errorf("invalid max file size (%s) expected format: \"analyzerType:maxFileSize\" e.g. \"jar:5mb secret:5kb\"", f)
-		}
 
-		analyzerType := Type(s[0])
-		maxFileSize, err := units.FromHumanSize(s[1])
-		if err != nil {
-			return group, xerrors.Errorf("invalid file size (%s): %w", s[1], err)
-		}
-		group.fileSizes[analyzerType] = maxFileSize
-	}
 	for _, p := range opts.FilePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
@@ -428,14 +414,12 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 
 	// filepath extracted from tar file doesn't have the prefix "/"
 	cleanPath := strings.TrimLeft(filePath, "/")
-
 	for _, a := range ag.analyzers {
 		// Skip disabled analyzers
 		if slices.Contains(disabled, a.Type()) {
 			continue
 		}
-
-		if ag.fileSizeMatch(a.Type(), info) {
+		if !ag.fileSizeMatch(a.Type(), info) {
 			continue
 		}
 
@@ -485,6 +469,9 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 	}
 	var postAnalyzerTypes []Type
 	for _, a := range ag.postAnalyzers {
+		if !ag.fileSizeMatch(a.Type(), info) {
+			continue
+		}
 		if ag.filePatternMatch(a.Type(), filePath) || a.Required(filePath, info) {
 			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
 		}
@@ -553,11 +540,9 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 }
 
 func (ag AnalyzerGroup) fileSizeMatch(analyzerType Type, fileInfo os.FileInfo) bool {
-	if _, ok := ag.fileSizes[analyzerType]; !ok {
+	maxSize, ok := ag.fileSizes[analyzerType]
+	if !ok {
 		return true
 	}
-	if fileInfo.Size() > ag.fileSizes[analyzerType] {
-		return false
-	}
-	return true
+	return fileInfo.Size() <= maxSize
 }
