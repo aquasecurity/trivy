@@ -431,13 +431,14 @@ func ConvertFromRPCDetectedLicenses(rpcLicenses []*common.DetectedLicense) []typ
 	for _, l := range rpcLicenses {
 		severity := dbTypes.Severity(l.Severity)
 		licenses = append(licenses, types.DetectedLicense{
-			Severity:   severity.String(),
-			Category:   ConvertFromRPCLicenseCategory(l.Category),
-			PkgName:    l.PkgName,
-			FilePath:   l.FilePath,
-			Name:       l.Name,
-			Confidence: float64(l.Confidence),
-			Link:       l.Link,
+			Severity:    severity.String(),
+			Category:    ConvertFromRPCLicenseCategory(l.Category),
+			PkgName:     l.PkgName,
+			FilePath:    l.FilePath,
+			Name:        l.Name,
+			LicenseText: l.LicenseText,
+			Confidence:  float64(l.Confidence),
+			Link:        l.Link,
 		})
 	}
 	return licenses
@@ -978,13 +979,14 @@ func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLi
 			log.Warn("Severity conversion error", log.Err(err))
 		}
 		rpcLicenses = append(rpcLicenses, &common.DetectedLicense{
-			Severity:   common.Severity(severity),
-			Category:   ConvertToRPCLicenseCategory(l.Category),
-			PkgName:    l.PkgName,
-			FilePath:   l.FilePath,
-			Name:       l.Name,
-			Confidence: float32(l.Confidence),
-			Link:       l.Link,
+			Severity:    common.Severity(severity),
+			Category:    ConvertToRPCLicenseCategory(l.Category),
+			PkgName:     l.PkgName,
+			FilePath:    l.FilePath,
+			Name:        l.Name,
+			LicenseText: l.LicenseText,
+			Confidence:  float32(l.Confidence),
+			Link:        l.Link,
 		})
 	}
 

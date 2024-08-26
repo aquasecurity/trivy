@@ -219,13 +219,14 @@ message Secret {
 }
 
 message DetectedLicense {
-  Severity             severity   = 1;
-  LicenseCategory.Enum category   = 2;
-  string               pkg_name   = 3;
-  string               file_path  = 4;
-  string               name       = 5;
-  float                confidence = 6;
-  string               link       = 7;
+  Severity             severity     = 1;
+  LicenseCategory.Enum category     = 2;
+  string               pkg_name     = 3;
+  string               file_path    = 4;
+  string               name         = 5;
+  float                confidence   = 6;
+  string               link         = 7;
+  string               license_text = 8;
 }
 
 message LicenseFile {
