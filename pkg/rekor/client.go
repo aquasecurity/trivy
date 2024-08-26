@@ -2,11 +2,10 @@ package rekor
 
 import (
 	"context"
-	"net/url"
+	"fmt"
 	"slices"
 
-	httptransport "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
+	pkgclient "github.com/sigstore/rekor/pkg/client"
 	"github.com/sigstore/rekor/pkg/generated/client"
 	eclient "github.com/sigstore/rekor/pkg/generated/client/entries"
 	"github.com/sigstore/rekor/pkg/generated/client/index"
@@ -14,6 +13,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 const (
@@ -64,15 +64,10 @@ type Client struct {
 }
 
 func NewClient(rekorURL string) (*Client, error) {
-	u, err := url.Parse(rekorURL)
+	c, err := pkgclient.GetRekorClient(rekorURL, pkgclient.WithUserAgent(fmt.Sprintf("trivy/%s", app.Version())))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse url: %w", err)
+		return nil, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
-
-	c := client.New(
-		httptransport.New(u.Host, client.DefaultBasePath, []string{u.Scheme}),
-		strfmt.Default,
-	)
 	return &Client{Rekor: c}, nil
 }
 
