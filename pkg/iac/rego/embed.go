@@ -54,12 +54,12 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 	for _, module := range modules {
 		metadata, err := retriever.RetrieveMetadata(ctx, module)
 		if err != nil {
-			log.Warn("Failed to retrieve metadata", log.String("avdid", metadata.AVDID), log.Err(err))
+			log.DeferredLogger.Warn("Failed to retrieve metadata", log.String("avdid", metadata.AVDID), log.Err(err))
 			continue
 		}
 
 		if metadata.AVDID == "" {
-			log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
+			log.DeferredLogger.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
 			continue
 		}
 
@@ -73,7 +73,7 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 	for _, check := range rules.GetRegistered() {
 		if !check.Deprecated && check.CanCheck() {
 			if _, exists := regoCheckIDs[check.AVDID]; exists {
-				log.Warn("Ignore duplicate Go check", log.String("avdid", check.AVDID))
+				log.DeferredLogger.Warn("Ignore duplicate Go check", log.String("avdid", check.AVDID))
 				rules.Deregister(check)
 			}
 		}
