@@ -262,12 +262,13 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	for _, pkg := range target.Packages {
 		for _, license := range pkg.Licenses {
 			if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+				licenseText := strings.TrimPrefix(license, licensing.LicenseTextPrefix)
 				osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
 					Severity:    dbTypes.SeverityUnknown.String(),
 					Category:    ftypes.CategoryUnknown,
 					PkgName:     pkg.Name,
-					Name:        licensing.CustomLicensePrefix,
-					LicenseText: strings.TrimPrefix(license, licensing.LicenseTextPrefix),
+					Name:        licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText),
+					LicenseText: licenseText,
 					Confidence:  1.0,
 				})
 				continue
@@ -295,12 +296,13 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
 				if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+					licenseText := strings.TrimPrefix(license, licensing.LicenseTextPrefix)
 					langLicenses = append(langLicenses, types.DetectedLicense{
 						Severity:    dbTypes.SeverityUnknown.String(),
 						Category:    ftypes.CategoryUnknown,
 						PkgName:     lib.Name,
-						Name:        licensing.CustomLicensePrefix,
-						LicenseText: strings.TrimPrefix(license, licensing.LicenseTextPrefix),
+						Name:        licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText),
+						LicenseText: licenseText,
 						FilePath:    lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
 						Confidence:  1.0,
 					})

@@ -209,6 +209,15 @@ func isLicenseText(str string) bool {
 	return false
 }
 
+func TrimLicenseText(text string) string {
+	s := strings.Split(text, " ")
+	n := len(s)
+	if n > 3 {
+		n = 3
+	}
+	return strings.Join(s[:n], " ") + "..."
+}
+
 func Normalize(name string) string {
 	name = strings.TrimSpace(name)
 	if l, ok := mapping[strings.ToUpper(name)]; ok {
