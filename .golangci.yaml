@@ -65,6 +65,10 @@ linters-settings:
               - github.com/aquasecurity/go-version
             reason: "`aquasecurity/go-version` is designed for our use-cases"
   gosec:
+    config:
+      # Maximum allowed permissions mode for os.MkdirAll
+      # Default: 0750
+      G301: "0754"
     excludes:
       - G101
       - G114
