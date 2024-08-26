@@ -6,7 +6,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/samber/lo"
 )
@@ -82,19 +81,4 @@ func Fatal(msg string, args ...any) {
 	}
 	slog.Default().Log(context.Background(), LevelFatal, msg, args...)
 	os.Exit(1)
-}
-
-// WriteLogger is a wrapper around Logger to implement io.Writer
-type WriteLogger struct {
-	logger *Logger
-}
-
-// NewWriteLogger creates a new WriteLogger
-func NewWriteLogger(logger *Logger) *WriteLogger {
-	return &WriteLogger{logger: logger}
-}
-
-func (l *WriteLogger) Write(p []byte) (n int, err error) {
-	l.logger.Debug(strings.TrimSpace(string(p)))
-	return len(p), nil
 }

@@ -640,7 +640,6 @@ func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) 
 	}
 
 	return misconf.ScannerOption{
-		Debug:                    opts.Debug,
 		Trace:                    opts.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
 		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),

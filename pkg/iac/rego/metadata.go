@@ -54,6 +54,9 @@ func NewStaticMetadata(pkgPath string, inputOpt InputOptions) *StaticMetadata {
 }
 
 func (sm *StaticMetadata) Update(meta map[string]any) error {
+	if sm.Frameworks == nil {
+		sm.Frameworks = make(map[framework.Framework][]string)
+	}
 
 	upd := func(field *string, key string) {
 		if raw, ok := meta[key]; ok {

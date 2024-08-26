@@ -23,7 +23,7 @@ type ResourceInner struct {
 	Properties map[string]*Property `json:"Properties" yaml:"Properties"`
 }
 
-func (r *Resource) ConfigureResource(id string, target fs.FS, filepath string, ctx *FileContext) {
+func (r *Resource) configureResource(id string, target fs.FS, filepath string, ctx *FileContext) {
 	r.setId(id)
 	r.setFile(target, filepath)
 	r.setContext(ctx)
