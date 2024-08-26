@@ -777,6 +777,31 @@ func TestConvertFromRPCLicenses(t *testing.T) {
 			},
 		},
 		{
+			name: "long license text without name",
+			rpcLicenses: []*common.DetectedLicense{
+				{
+					Severity:    common.Severity_UNKNOWN,
+					Category:    common.LicenseCategory_UNKNOWN,
+					PkgName:     "python3.9-minimal",
+					FilePath:    "some-path",
+					LicenseText: "text://* Permission to use this software in any way is granted without",
+					Confidence:  1,
+					Link:        "https://some-link",
+				},
+			},
+			want: []types.DetectedLicense{
+				{
+					Severity:    "UNKNOWN",
+					Category:    "unknown",
+					PkgName:     "python3.9-minimal",
+					FilePath:    "some-path",
+					Confidence:  1,
+					Link:        "https://some-link",
+					LicenseText: "text://* Permission to use this software in any way is granted without",
+				},
+			},
+		},
+		{
 			name:        "no licenses",
 			rpcLicenses: nil,
 			want:        nil,
@@ -819,6 +844,31 @@ func TestConvertToRPCLicenses(t *testing.T) {
 					Name:       "GPL-2.0",
 					Confidence: 1,
 					Link:       "https://some-link",
+				},
+			},
+		},
+		{
+			name: "long license text without name",
+			licenses: []types.DetectedLicense{
+				{
+					Severity:    "UNKNOWN",
+					Category:    "unknown",
+					PkgName:     "python3.9-minimal",
+					FilePath:    "some-path",
+					Confidence:  1,
+					Link:        "https://some-link",
+					LicenseText: "text://* Permission to use this software in any way is granted without",
+				},
+			},
+			want: []*common.DetectedLicense{
+				{
+					Severity:    common.Severity_UNKNOWN,
+					Category:    common.LicenseCategory_UNKNOWN,
+					PkgName:     "python3.9-minimal",
+					FilePath:    "some-path",
+					LicenseText: "text://* Permission to use this software in any way is granted without",
+					Confidence:  1,
+					Link:        "https://some-link",
 				},
 			},
 		},
