@@ -11,7 +11,6 @@ import (
 
 	"github.com/liamg/memoryfs"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -21,6 +20,7 @@ import (
 	kparser "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -29,9 +29,9 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 type Scanner struct {
 	policyDirs            []string
 	dataDirs              []string
-	debug                 debug.Logger
+	logger                *log.Logger
 	options               []options.ScannerOption
-	parserOptions         []options.ParserOption
+	parserOptions         []parser.Option
 	policyReaders         []io.Reader
 	loadEmbeddedLibraries bool
 	loadEmbeddedPolicies  bool
@@ -42,7 +42,8 @@ type Scanner struct {
 	mu                    sync.Mutex
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec
@@ -59,6 +60,7 @@ func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("helm scanner"),
 	}
 
 	for _, option := range opts {
@@ -67,7 +69,7 @@ func New(opts ...options.ScannerOption) *Scanner {
 	return s
 }
 
-func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
+func (s *Scanner) addParserOptions(opts ...parser.Option) {
 	s.parserOptions = append(s.parserOptions, opts...)
 }
 
@@ -85,11 +87,6 @@ func (s *Scanner) Name() string {
 
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "helm", "scanner")
-	s.parserOptions = append(s.parserOptions, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -179,13 +176,16 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 
 	chartFiles, err := helmParser.RenderedChartFiles()
 	if err != nil { // not valid helm, maybe some other yaml etc., abort
-		s.debug.Log("Failed to render Chart files: %s", err)
+		s.logger.Error(
+			"Failed to render Chart files",
+			log.FilePath(path), log.Err(err),
+		)
 		return nil, nil
 	}
 
 	for _, file := range chartFiles {
 		file := file
-		s.debug.Log("Processing rendered chart file: %s", file.TemplateFilePath)
+		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
 
 		manifests, err := kparser.New().Parse(strings.NewReader(file.ManifestContent), file.TemplateFilePath)
 		if err != nil {
@@ -228,7 +228,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 		return nil
 	}
 	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return err
 	}

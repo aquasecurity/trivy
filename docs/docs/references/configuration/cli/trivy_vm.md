@@ -25,6 +25,7 @@ trivy vm [flags] VM_IMAGE
       --cache-ttl duration                cache TTL when using redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --compliance string                 compliance report to generate
+      --config-file-schemas strings       specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages

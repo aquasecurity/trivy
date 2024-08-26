@@ -214,7 +214,11 @@ func (r *AnalysisResult) Sort() {
 
 	// Misconfigurations
 	sort.Slice(r.Misconfigurations, func(i, j int) bool {
-		return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
+		if r.Misconfigurations[i].FileType != r.Misconfigurations[j].FileType {
+			return r.Misconfigurations[i].FileType < r.Misconfigurations[j].FileType
+		} else {
+			return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
+		}
 	})
 
 	// Secrets

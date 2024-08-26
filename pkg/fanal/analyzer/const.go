@@ -124,6 +124,8 @@ const (
 	TypeTerraform             Type = Type(detection.FileTypeTerraform)
 	TypeTerraformPlanJSON     Type = Type(detection.FileTypeTerraformPlanJSON)
 	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
+	TypeYAML                  Type = Type(detection.FileTypeYAML)
+	TypeJSON                  Type = Type(detection.FileTypeJSON)
 
 	// ========
 	// License
@@ -245,5 +247,7 @@ var (
 		TypeTerraform,
 		TypeTerraformPlanJSON,
 		TypeTerraformPlanSnapshot,
+		TypeYAML,
+		TypeJSON,
 	}
 )

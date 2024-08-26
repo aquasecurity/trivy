@@ -1,7 +1,9 @@
 package parser
 
 import (
+	"bytes"
 	"context"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
@@ -13,8 +15,8 @@ import (
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func Test_BasicParsing(t *testing.T) {
@@ -172,7 +174,7 @@ output "mod_result" {
 `,
 	})
 
-	parser := New(fs, "", OptionStopOnHCLError(true), options.ParserWithDebug(os.Stderr))
+	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "code"))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
@@ -1746,6 +1748,33 @@ func TestTFVarsFileDoesNotExist(t *testing.T) {
 	assert.ErrorContains(t, err, "file does not exist")
 }
 
+func Test_OptionsWithTfVars(t *testing.T) {
+	fs := testutil.CreateFS(t, map[string]string{
+		"main.tf": `resource "test" "this" {
+  foo = var.foo
+}
+variable "foo" {}
+`})
+
+	parser := New(fs, "", OptionsWithTfVars(
+		map[string]cty.Value{
+			"foo": cty.StringVal("bar"),
+		},
+	))
+
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+	assert.Len(t, modules, 1)
+
+	rootModule := modules[0]
+
+	blocks := rootModule.GetResourcesByType("test")
+	assert.Len(t, blocks, 1)
+	assert.Equal(t, "bar", blocks[0].GetAttribute("foo").Value().AsString())
+}
+
 func TestDynamicWithIterator(t *testing.T) {
 	fsys := fstest.MapFS{
 		"main.tf": &fstest.MapFile{
@@ -1819,4 +1848,39 @@ resource "something" "blah" {
 	require.NotNil(t, r2)
 	assert.True(t, r2.IsResolvable())
 	assert.Equal(t, "us-east-2", r2.Value().AsString())
+}
+
+func TestLogAboutMissingVariableValues(t *testing.T) {
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
+
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(`
+variable "foo" {}
+
+variable "bar" {
+  default = "bar"
+}
+
+variable "baz" {}
+`),
+		},
+		"main.tfvars": &fstest.MapFile{
+			Data: []byte(`baz = "baz"`),
+		},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithTFVarsPaths("main.tfvars"),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	_, err := parser.Load(context.TODO())
+	require.NoError(t, err)
+
+	assert.Contains(t, buf.String(), "Variable values was not found in the environment or variable files.")
+	assert.Contains(t, buf.String(), "variables=\"foo\"")
 }

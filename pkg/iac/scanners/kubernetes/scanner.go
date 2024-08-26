@@ -10,7 +10,6 @@ import (
 
 	"github.com/liamg/memoryfs"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -18,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -25,9 +25,8 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
 	mu                    sync.Mutex
-	debug                 debug.Logger
+	logger                *log.Logger
 	options               []options.ScannerOption
-	parserOpts            []options.ParserOption
 	policyDirs            []string
 	policyReaders         []io.Reader
 	regoScanner           *rego.Scanner
@@ -38,7 +37,8 @@ type Scanner struct {
 	loadEmbeddedLibraries bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec
@@ -60,11 +60,6 @@ func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
 
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "kubernetes", "scanner")
-	s.parserOpts = append(s.parserOpts, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -93,11 +88,12 @@ func (s *Scanner) SetRegoErrorLimit(_ int) {}
 func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("k8s scanner"),
+		parser:  parser.New(),
 	}
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.parser = parser.New(s.parserOpts...)
 	return s
 }
 
@@ -112,7 +108,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 		return s.regoScanner, nil
 	}
 	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return nil, err
 	}
@@ -162,7 +157,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 		return nil, err
 	}
 
-	s.debug.Log("Scanning %d files...", len(inputs))
+	s.logger.Debug("Scanning files", log.Int("count", len(inputs)))
 	results, err := regoScanner.ScanInput(ctx, inputs...)
 	if err != nil {
 		return nil, err

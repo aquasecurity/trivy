@@ -8,7 +8,6 @@ import (
 )
 
 type ConfigurableScanner interface {
-	SetDebugWriter(io.Writer)
 	SetTraceWriter(io.Writer)
 	SetPerResultTracingEnabled(bool)
 	SetPolicyDirs(...string)
@@ -24,6 +23,7 @@ type ConfigurableScanner interface {
 	SetRegoErrorLimit(limit int)
 	SetUseEmbeddedLibraries(bool)
 	SetIncludeDeprecatedChecks(bool)
+	SetCustomSchemas(map[string][]byte)
 }
 
 type ScannerOption func(s ConfigurableScanner)
@@ -43,13 +43,6 @@ func ScannerWithSpec(spec string) ScannerOption {
 func ScannerWithPolicyReader(readers ...io.Reader) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetPolicyReaders(readers)
-	}
-}
-
-// ScannerWithDebug specifies an io.Writer for debug logs - if not set, they are discarded
-func ScannerWithDebug(w io.Writer) ScannerOption {
-	return func(s ConfigurableScanner) {
-		s.SetDebugWriter(w)
 	}
 }
 
@@ -124,5 +117,11 @@ func ScannerWithRegoOnly(regoOnly bool) ScannerOption {
 func ScannerWithRegoErrorLimits(limit int) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetRegoErrorLimit(limit)
+	}
+}
+
+func ScannerWithCustomSchemas(schemas map[string][]byte) ScannerOption {
+	return func(s ConfigurableScanner) {
+		s.SetCustomSchemas(schemas)
 	}
 }

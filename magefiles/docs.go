@@ -69,6 +69,7 @@ func generateConfigDocs(filename string) error {
 		flag.NewLicenseFlagGroup(),
 		flag.NewMisconfFlagGroup(),
 		flag.NewModuleFlagGroup(),
+		flag.NewPackageFlagGroup(),
 		flag.NewRegistryFlagGroup(),
 		flag.NewRegoFlagGroup(),
 		flag.NewReportFlagGroup(),
@@ -105,7 +106,7 @@ func writeFlags(group flag.FlagGroup, w *os.File) {
 
 	var lastParts []string
 	for _, flg := range flags {
-		if flg.GetConfigName() == "" {
+		if flg.GetConfigName() == "" || flg.Hidden() {
 			continue
 		}
 		// We need to split the config name on `.` to make the indentations needed in yaml.

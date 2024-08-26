@@ -5,7 +5,7 @@ You can write custom checks in [Rego][rego].
 Once you finish writing custom checks, you can pass the check files or the directory where those checks are stored with --config-check` option.
 
 ``` bash
-trivy conf --config-check /path/to/policy.rego --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
+trivy config --config-check /path/to/policy.rego --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 ```
 
 As for `--namespaces` option, the detail is described as below.
@@ -93,7 +93,7 @@ By default, only `builtin.*` packages will be evaluated.
 If you define custom packages, you have to specify the package prefix via `--namespaces` option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be `user` as in this example. It could be anything user-defined.
 
 ``` bash
-trivy conf --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
+trivy config --config-check /path/to/custom_checks --namespaces user /path/to/config_dir
 ```
 
 In this case, `user.*` will be evaluated.

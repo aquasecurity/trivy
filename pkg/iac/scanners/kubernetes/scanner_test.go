@@ -486,7 +486,6 @@ deny[msg] {
 func Test_FileScanWithMetadata(t *testing.T) {
 
 	results, err := NewScanner(
-		options.ScannerWithDebug(os.Stdout),
 		options.ScannerWithTrace(os.Stdout),
 		options.ScannerWithPolicyReader(strings.NewReader(`package defsec
 
@@ -526,7 +525,6 @@ spec:
 func Test_FileScanExampleWithResultFunction(t *testing.T) {
 
 	results, err := NewScanner(
-		options.ScannerWithDebug(os.Stdout),
 		options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true),
 		options.ScannerWithPolicyReader(strings.NewReader(`package defsec
 

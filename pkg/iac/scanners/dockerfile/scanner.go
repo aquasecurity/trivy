@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -14,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -21,20 +21,20 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
 	mu                    sync.Mutex
-	debug                 debug.Logger
+	logger                *log.Logger
 	policyDirs            []string
 	policyReaders         []io.Reader
 	parser                *parser.Parser
 	regoScanner           *rego.Scanner
 	options               []options.ScannerOption
-	parserOpts            []options.ParserOption
 	frameworks            []framework.Framework
 	spec                  string
 	loadEmbeddedLibraries bool
 	loadEmbeddedPolicies  bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec
@@ -61,11 +61,6 @@ func (s *Scanner) Name() string {
 
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
 	s.policyReaders = readers
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "dockerfile", "scanner")
-	s.parserOpts = append(s.parserOpts, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetTraceWriter(_ io.Writer) {
@@ -103,6 +98,7 @@ func (s *Scanner) SetRegoErrorLimit(_ int) {
 func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("dockerfile scanner"),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -143,7 +139,7 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 	if err != nil {
 		return nil, err
 	}
-	s.debug.Log("Scanning %s...", path)
+	s.logger.Debug("Scanning", log.FilePath(path))
 	return s.scanRego(ctx, fsys, rego.Input{
 		Path:     path,
 		Contents: dockerfile.ToRego(),
@@ -158,7 +154,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	}
 
 	regoScanner := rego.NewScanner(types.SourceDockerfile, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return nil, err
 	}

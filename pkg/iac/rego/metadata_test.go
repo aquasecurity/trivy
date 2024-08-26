@@ -97,6 +97,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			References:     []string{"r", "r1_n", "r2_n"},
 			CloudFormation: &scan.EngineMetadata{},
 			Terraform:      &scan.EngineMetadata{},
+			Frameworks:     make(map[framework.Framework][]string),
 		}
 
 		assert.Equal(t, expected, sm)
@@ -114,6 +115,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			References:     []string{"r", "r1_n", "r2_n"},
 			CloudFormation: &scan.EngineMetadata{},
 			Terraform:      &scan.EngineMetadata{},
+			Frameworks:     make(map[framework.Framework][]string),
 		}
 
 		assert.Equal(t, expected, sm)
@@ -131,9 +133,18 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			Deprecated:     true,
 			CloudFormation: &scan.EngineMetadata{},
 			Terraform:      &scan.EngineMetadata{},
+			Frameworks:     make(map[framework.Framework][]string),
 		}
 
 		assert.Equal(t, expected, sm)
+	})
+
+	t.Run("frameworks is not initialized", func(t *testing.T) {
+		sm := StaticMetadata{}
+		err := sm.Update(map[string]any{
+			"frameworks": map[string]any{"all": []any{"a", "b", "c"}},
+		})
+		require.NoError(t, err)
 	})
 }
 

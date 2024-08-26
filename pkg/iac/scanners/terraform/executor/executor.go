@@ -5,10 +5,10 @@ import (
 	"runtime"
 	"sort"
 
+	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -16,22 +16,26 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	ruleTypes "github.com/aquasecurity/trivy/pkg/iac/types/rules"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Executor scans HCL blocks by running all registered rules against them
 type Executor struct {
-	workspaceName  string
-	debug          debug.Logger
-	resultsFilters []func(scan.Results) scan.Results
-	regoScanner    *rego.Scanner
-	regoOnly       bool
-	frameworks     []framework.Framework
+	workspaceName           string
+	logger                  *log.Logger
+	resultsFilters          []func(scan.Results) scan.Results
+	regoScanner             *rego.Scanner
+	regoOnly                bool
+	includeDeprecatedChecks bool
+	frameworks              []framework.Framework
 }
 
 // New creates a new Executor
 func New(options ...Option) *Executor {
 	s := &Executor{
 		regoOnly: false,
+		logger:   log.WithPrefix("terraform executor"),
 	}
 	for _, option := range options {
 		option(s)
@@ -41,31 +45,36 @@ func New(options ...Option) *Executor {
 
 func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 
-	e.debug.Log("Adapting modules...")
+	e.logger.Debug("Adapting modules...")
 	infra := adapter.Adapt(modules)
-	e.debug.Log("Adapted %d module(s) into defsec state data.", len(modules))
+	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))
 
 	threads := runtime.NumCPU()
 	if threads > 1 {
 		threads--
 	}
 
-	e.debug.Log("Using max routines of %d", threads)
+	e.logger.Debug("Using max routines", log.Int("count", threads))
 
-	registeredRules := rules.GetRegistered(e.frameworks...)
-	e.debug.Log("Initialized %d rule(s).", len(registeredRules))
+	registeredRules := lo.Filter(rules.GetRegistered(e.frameworks...), func(r ruleTypes.RegisteredRule, _ int) bool {
+		if !e.includeDeprecatedChecks && r.Deprecated {
+			return false // skip deprecated checks
+		}
+
+		return true
+	})
+	e.logger.Debug("Initialized Go check(s).", log.Int("count", len(registeredRules)))
 
 	pool := NewPool(threads, registeredRules, modules, infra, e.regoScanner, e.regoOnly)
-	e.debug.Log("Created pool with %d worker(s) to apply rules.", threads)
 
 	results, err := pool.Run()
 	if err != nil {
 		return nil, err
 	}
 
-	e.debug.Log("Finished applying rules.")
+	e.logger.Debug("Finished applying rules.")
 
-	e.debug.Log("Applying ignores...")
+	e.logger.Debug("Applying ignores...")
 	var ignores ignore.Rules
 	for _, module := range modules {
 		ignores = append(ignores, module.Ignores()...)
@@ -79,7 +88,10 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 	results.Ignore(ignores, ignorers)
 
 	for _, ignored := range results.GetIgnored() {
-		e.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
+		e.logger.Info("Ignore finding",
+			log.String("rule", ignored.Rule().LongID()),
+			log.String("range", ignored.Range().String()),
+		)
 	}
 
 	results = e.filterResults(results)
@@ -91,11 +103,12 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 func (e *Executor) filterResults(results scan.Results) scan.Results {
 	if len(e.resultsFilters) > 0 && len(results) > 0 {
 		before := len(results.GetIgnored())
-		e.debug.Log("Applying %d results filters to %d results...", len(results), before)
+		e.logger.Debug("Applying results filters...")
 		for _, filter := range e.resultsFilters {
 			results = filter(results)
 		}
-		e.debug.Log("Filtered out %d results.", len(results.GetIgnored())-before)
+		e.logger.Debug("Applied results filters.",
+			log.Int("count", len(results.GetIgnored())-before))
 	}
 
 	return results

@@ -33,9 +33,6 @@ cache:
   # Same as '--cache-backend'
   backend: "fs"
 
-  # Same as '--clear-cache'
-  clear: false
-
   redis:
     # Same as '--redis-ca'
     ca: ""
@@ -112,9 +109,6 @@ db:
   # Same as '--skip-java-db-update'
   java-skip-update: false
 
-  # Same as '--light'
-  light: false
-
   # Same as '--no-progress'
   no-progress: false
 
@@ -123,9 +117,6 @@ db:
 
   # Same as '--skip-db-update'
   skip-update: false
-
-# Same as '--reset'
-reset: false
 
 ```
 ## Image options
@@ -386,6 +377,9 @@ misconfiguration:
     # Same as '--cf-params'
     params: []
 
+  # Same as '--config-file-schemas'
+  config-file-schemas: []
+
   helm:
     # Same as '--helm-api-versions'
     api-versions: []
@@ -407,9 +401,6 @@ misconfiguration:
 
   # Same as '--include-non-failures'
   include-non-failures: false
-
-  # Same as '--reset-checks-bundle'
-  reset-checks-bundle: false
 
   # Same as '--misconfig-scanners'
   scanners:
@@ -439,6 +430,26 @@ module:
 
   # Same as '--enable-modules'
   enable-modules: []
+
+```
+## Package options
+
+```yaml
+pkg:
+  # Same as '--include-dev-deps'
+  include-dev-deps: false
+
+  # Same as '--pkg-relationships'
+  relationships:
+   - unknown
+   - root
+   - direct
+   - indirect
+
+  # Same as '--pkg-types'
+  types:
+   - os
+   - library
 
 ```
 ## Registry options
@@ -576,9 +587,6 @@ scan:
 
   # Same as '--skip-files'
   skip-files: []
-
-  # Same as '--slow'
-  slow: false
 
 ```
 ## Secret options

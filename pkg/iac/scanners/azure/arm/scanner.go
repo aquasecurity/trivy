@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm"
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -19,27 +18,32 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu                    sync.Mutex
-	scannerOptions        []options.ScannerOption
-	parserOptions         []options.ParserOption
-	debug                 debug.Logger
-	frameworks            []framework.Framework
-	regoOnly              bool
-	loadEmbeddedPolicies  bool
-	loadEmbeddedLibraries bool
-	policyDirs            []string
-	policyReaders         []io.Reader
-	regoScanner           *rego.Scanner
-	spec                  string
+	mu                      sync.Mutex
+	scannerOptions          []options.ScannerOption
+	logger                  *log.Logger
+	frameworks              []framework.Framework
+	regoOnly                bool
+	loadEmbeddedPolicies    bool
+	loadEmbeddedLibraries   bool
+	policyDirs              []string
+	policyReaders           []io.Reader
+	regoScanner             *rego.Scanner
+	spec                    string
+	includeDeprecatedChecks bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
+	s.includeDeprecatedChecks = b
+}
+
+func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec
@@ -52,6 +56,7 @@ func (s *Scanner) SetRegoOnly(regoOnly bool) {
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
 		scannerOptions: opts,
+		logger:         log.WithPrefix("azure-arm"),
 	}
 	for _, opt := range opts {
 		opt(scanner)
@@ -61,11 +66,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 
 func (s *Scanner) Name() string {
 	return "Azure ARM"
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "azure", "arm")
-	s.parserOptions = append(s.parserOptions, options.ParserWithDebug(writer))
 }
 
 func (s *Scanner) SetPolicyDirs(dirs ...string) {
@@ -108,7 +108,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 		return nil
 	}
 	regoScanner := rego.NewScanner(types.SourceCloud, s.scannerOptions...)
-	regoScanner.SetParentDebugLogger(s.debug)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return err
 	}
@@ -117,7 +116,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
-	p := parser.New(fsys, s.parserOptions...)
+	p := parser.New(fsys)
 	deployments, err := p.ParseFS(ctx, dir)
 	if err != nil {
 		return nil, err
@@ -155,11 +154,12 @@ func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deploymen
 				return nil, ctx.Err()
 			default:
 			}
-			if rule.GetRule().RegoPackage != "" {
-				continue
+
+			if !s.includeDeprecatedChecks && rule.Deprecated {
+				continue // skip deprecated checks
 			}
+
 			ruleResults := rule.Evaluate(deploymentState)
-			s.debug.Log("Found %d results for %s", len(ruleResults), rule.GetRule().AVDID)
 			if len(ruleResults) > 0 {
 				results = append(results, ruleResults...)
 			}

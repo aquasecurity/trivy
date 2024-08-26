@@ -101,7 +101,7 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 </details>
 
 ```bash
-trivy conf --severity HIGH,CRITICAL examples/misconf/mixed
+trivy config --severity HIGH,CRITICAL examples/misconf/mixed
 ```
 
 <details>
