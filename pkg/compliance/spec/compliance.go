@@ -93,6 +93,7 @@ func GetComplianceSpec(specNameOrPath, cacheDir string) (ComplianceSpec, error) 
 		if err != nil {
 			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
 		}
+		log.Debug("Compliance spec loaded from specified path", log.String("path", specNameOrPath))
 	} else {
 		_, err := os.Stat(filepath.Join(checksDir(cacheDir), "metadata.json"))
 		if err != nil { // cache corrupt or bundle does not exist, load embedded version
