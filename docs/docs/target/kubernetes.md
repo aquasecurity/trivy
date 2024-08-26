@@ -28,7 +28,7 @@ Kubernetes resource definition is scanned for:
 
 
 !!! warning "Important Notice"
-     To successfully scan a Kubernetes cluster, the program must be executed under a role that has read permissions at the cluster scope.
+     To successfully scan a Kubernetes cluster, `trivy kubernetes` subcommand must be executed under a role that has read permissions at the cluster scope.
 
      Trivy must be able to access information about all cluster resources, including pods, deployments etc.
 
