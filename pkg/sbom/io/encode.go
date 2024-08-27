@@ -73,13 +73,6 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 			Value: r.Metadata.ImageID,
 		})
 
-		if r.Metadata.OS != nil && r.Metadata.OS.Supported {
-			props = append(props, core.Property{
-				Name:  core.PropertySupportedOS,
-				Value: "true",
-			})
-		}
-
 		// Save image labels as properties with `Labels:` prefix.
 		// e.g. `LABEL vendor="aquasecurity"` => `Labels:vendor` -> `aquasecurity`
 		for label, value := range r.Metadata.ImageConfig.Config.Labels {
@@ -284,6 +277,12 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 		if osFound != nil {
 			component.Name = string(osFound.Family)
 			component.Version = osFound.Name
+			if osFound.Supported {
+				component.Properties = append(component.Properties, core.Property{
+					Name:  core.PropertySupportedOS,
+					Value: "true",
+				})
+			}
 		}
 		component.Type = core.TypeOS
 	case types.ClassLangPkg:

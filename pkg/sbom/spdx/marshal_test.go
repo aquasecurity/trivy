@@ -39,9 +39,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: ftypes.CentOS,
-						Name:   "8.3.2011",
-						Eosl:   true,
+						Family:    ftypes.CentOS,
+						Name:      "8.3.2011",
+						Eosl:      true,
+						Supported: true,
 					},
 					ImageID:     "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
 					RepoTags:    []string{"rails:latest"},
@@ -313,6 +314,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
 						PackageAttributionTexts: []string{
 							"Class: os-pkgs",
+							"SupportedOS: true",
 							"Type: centos",
 						},
 					},

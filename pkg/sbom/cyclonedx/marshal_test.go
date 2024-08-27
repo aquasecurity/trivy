@@ -95,9 +95,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: ftypes.CentOS,
-						Name:   "8.3.2011",
-						Eosl:   true,
+						Family:    ftypes.CentOS,
+						Name:      "8.3.2011",
+						Eosl:      true,
+						Supported: true,
 					},
 					ImageID:     "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
 					RepoTags:    []string{"rails:latest"},
@@ -339,6 +340,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:Class",
 								Value: "os-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:SupportedOS",
+								Value: "true",
 							},
 							{
 								Name:  "aquasecurity:trivy:Type",
