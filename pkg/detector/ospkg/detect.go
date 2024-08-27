@@ -93,3 +93,8 @@ func newDriver(osFamily ftypes.OSType) (Driver, error) {
 	log.Warn("Unsupported os", log.String("family", string(osFamily)))
 	return nil, ErrUnsupportedOS
 }
+
+func DriverFound(osType ftypes.OSType) bool {
+	_, ok := drivers[osType]
+	return ok
+}

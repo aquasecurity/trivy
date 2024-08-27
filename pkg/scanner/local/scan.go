@@ -112,12 +112,12 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	excludePackages(&target, options)
 
 	// Add packages if needed and scan packages for vulnerabilities
-	vulnResults, eosl, unsupportedOS, err := s.scanVulnerabilities(ctx, target, options)
+	vulnResults, eosl, err := s.scanVulnerabilities(ctx, target, options)
 	if err != nil {
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 	}
 	target.OS.Eosl = eosl
-	target.OS.Unsupported = unsupportedOS
+	target.OS.Supported = ospkgDetector.DriverFound(target.OS.Family)
 	results = append(results, vulnResults...)
 
 	// Store misconfigurations
@@ -152,21 +152,21 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 }
 
 func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
-	types.Results, bool, bool, error) {
+	types.Results, bool, error) {
 	if !options.Scanners.AnyEnabled(types.SBOMScanner, types.VulnerabilityScanner) {
-		return nil, false, false, nil
+		return nil, false, nil
 	}
 
-	var eosl, unsupportedOS bool
+	var eosl bool
 	var results types.Results
 
 	if slices.Contains(options.PkgTypes, types.PkgTypeOS) {
 		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
 		switch {
 		case errors.Is(err, ospkgDetector.ErrUnsupportedOS):
-			unsupportedOS = true
+		// do nothing
 		case err != nil:
-			return nil, false, false, xerrors.Errorf("unable to scan OS packages: %w", err)
+			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
 		case vuln.Target != "":
 			results = append(results, vuln)
 			eosl = detectedEOSL
@@ -176,12 +176,12 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	if slices.Contains(options.PkgTypes, types.PkgTypeLibrary) {
 		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
-			return nil, false, false, xerrors.Errorf("failed to scan application libraries: %w", err)
+			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
 		results = append(results, vulns...)
 	}
 
-	return results, eosl, unsupportedOS, nil
+	return results, eosl, nil
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
