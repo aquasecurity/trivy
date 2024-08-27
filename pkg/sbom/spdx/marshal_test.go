@@ -217,8 +217,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncontroller",
 						PackageVersion:          "7.0.1",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageAttributionTexts: []string{
 							"PkgType: bundler",
 						},
@@ -238,8 +238,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageAttributionTexts: []string{
 							"PkgType: bundler",
 						},
@@ -259,8 +259,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageAttributionTexts: []string{
 							"PkgType: bundler",
 						},
@@ -536,8 +536,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -561,8 +561,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -750,8 +750,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncable",
 						PackageVersion:          "6.1.4.1",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -771,8 +771,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "com.example:example",
 						PackageVersion:          "1.0.0",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -889,8 +889,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "org.apache.logging.log4j:log4j-core",
 						PackageVersion:          "2.17.0",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -1229,8 +1229,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-b1c3b9e2363f5ff7"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "./private_repos/cnrm.googlesource.com/cnrm/",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
 						PackageSupplier:         &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						PackageSourceInfo:       "package found in: /usr/local/bin/test",
@@ -1243,8 +1243,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "golang.org/x/crypto",
 						PackageVersion:          "v0.0.1",
-						PackageLicenseConcluded: "NONE",
-						PackageLicenseDeclared:  "NONE",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
