@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "alma",
-      "Name": "8.5"
+      "Name": "8.5",
+      "Supported": true
     },
     "ImageID": "sha256:4ca63ce1d8a90da2ed4f2d5e93e8e9db2f32d0fabf0718a2edebbe0e70826622",
     "DiffIDs": [

@@ -7,7 +7,8 @@
     "OS": {
       "Family": "centos",
       "Name": "6.10",
-      "EOSL": true
+      "EOSL": true,
+      "Supported": true
     },
     "ImageID": "sha256:5bf9684f472089d6d5cb636041d3d6dc748dbde39f1aefc374bbd367bd2aabbf",
     "DiffIDs": [

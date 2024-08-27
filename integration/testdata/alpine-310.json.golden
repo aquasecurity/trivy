@@ -7,7 +7,8 @@
     "OS": {
       "Family": "alpine",
       "Name": "3.10.2",
-      "EOSL": true
+      "EOSL": true,
+      "Supported": true
     },
     "ImageID": "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
     "DiffIDs": [

@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "debian",
-      "Name": "10.2"
+      "Name": "10.2",
+      "Supported": true
     },
     "ImageConfig": {
       "architecture": "",

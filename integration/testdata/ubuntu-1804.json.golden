@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "ubuntu",
-      "Name": "18.04"
+      "Name": "18.04",
+      "Supported": true
     },
     "ImageID": "sha256:a2a15febcdf362f6115e801d37b5e60d6faaeedcb9896155e5fe9d754025be12",
     "DiffIDs": [

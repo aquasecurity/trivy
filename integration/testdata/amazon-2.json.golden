@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "amazon",
-      "Name": "2 (Karoo)"
+      "Name": "2 (Karoo)",
+      "Supported": true
     },
     "ImageID": "sha256:b94321659aca6a89cb7650a5b864bc8ec4bf62c620b8f1a01530c2e90a88c391",
     "DiffIDs": [

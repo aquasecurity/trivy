@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "photon",
-      "Name": "3.0"
+      "Name": "3.0",
+      "Supported": true
     },
     "ImageID": "sha256:5ccb5186b75cd13ff0d028f5b5b2bdf7ef7ca2b3d56eb2c6eb6c136077a6991a",
     "DiffIDs": [

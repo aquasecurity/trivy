@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "amazon",
-      "Name": "AMI release 2018.03"
+      "Name": "AMI release 2018.03",
+      "Supported": true
     },
     "ImageID": "sha256:961c4ee06269351d858969ea0426878675ed708d3a140246eabbc0bfc352bffa",
     "DiffIDs": [

@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "oracle",
-      "Name": "8.0"
+      "Name": "8.0",
+      "Supported": true
     },
     "ImageID": "sha256:8988c7081e1f7b6c2928cbc4832b8a05968bb589d45d444ca1e3027c68f97f56",
     "DiffIDs": [

@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "alpine",
-      "Name": "3.16"
+      "Name": "3.16",
+      "Supported": true
     },
     "ImageID": "sha256:22848737c0d272ad5d7c7369d8ca830a62929e63e38edcb22085139a6ae0688d",
     "DiffIDs": [

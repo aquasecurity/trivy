@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "centos",
-      "Name": "7.6.1810"
+      "Name": "7.6.1810",
+      "Supported": true
     },
     "ImageID": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
     "DiffIDs": [

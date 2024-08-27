@@ -7,7 +7,8 @@
     "OS": {
       "Family": "opensuse.leap",
       "Name": "15.1",
-      "EOSL": true
+      "EOSL": true,
+      "Supported": true
     },
     "ImageID": "sha256:fef5ad254f6378f08071cfa2daaf05a1ce9857141c944b67a40742e63e65cecc",
     "DiffIDs": [

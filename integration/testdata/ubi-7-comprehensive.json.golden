@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "redhat",
-      "Name": "7.7"
+      "Name": "7.7",
+      "Supported": true
     },
     "ImageID": "sha256:6fecccc91c83e11ae4fede6793e9410841221d4779520c2b9e9fb7f7b3830264",
     "DiffIDs": [

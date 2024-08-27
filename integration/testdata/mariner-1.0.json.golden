@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "cbl-mariner",
-      "Name": "1.0"
+      "Name": "1.0",
+      "Supported": true
     },
     "ImageID": "sha256:8cdcbf18341ed8afa5322e7b0077f8ef3f46896882c921df5f97c51b369f6767",
     "DiffIDs": [
