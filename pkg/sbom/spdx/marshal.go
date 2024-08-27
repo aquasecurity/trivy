@@ -33,6 +33,7 @@ const (
 	CreatorOrganization    = "aquasecurity"
 	CreatorTool            = "trivy"
 	noneField              = "NONE"
+	noAssertionField       = "NOASSERTION"
 )
 
 const (
@@ -378,7 +379,7 @@ func (m *Marshaler) spdxAttributionTexts(c *core.Component) []string {
 
 func (m *Marshaler) spdxLicense(c *core.Component) string {
 	if len(c.Licenses) == 0 {
-		return noneField
+		return noAssertionField
 	}
 	return NormalizeLicense(c.Licenses)
 }
