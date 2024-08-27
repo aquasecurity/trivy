@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "amazon",
-      "Name": "2 (Karoo)"
+      "Name": "2 (Karoo)",
+      "Supported": true
     },
     "ImageConfig": {
       "architecture": "",

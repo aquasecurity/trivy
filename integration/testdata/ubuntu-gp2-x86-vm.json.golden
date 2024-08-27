@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "ubuntu",
-      "Name": "22.04"
+      "Name": "22.04",
+      "Supported": true
     },
     "ImageConfig": {
       "architecture": "",
