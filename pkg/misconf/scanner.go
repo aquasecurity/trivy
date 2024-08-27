@@ -24,14 +24,13 @@ import (
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	cfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	dfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/generic"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
-	jsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/json"
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	tfprawscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
 	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
-	yamlscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/yaml"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 
@@ -114,9 +113,9 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 	case detection.FileTypeTerraformPlanSnapshot:
 		scanner = tfprawscanner.New(opts...)
 	case detection.FileTypeYAML:
-		scanner = yamlscanner.NewScanner(opts...)
+		scanner = generic.NewYamlScanner(opts...)
 	case detection.FileTypeJSON:
-		scanner = jsonscanner.NewScanner(opts...)
+		scanner = generic.NewJsonScanner(opts...)
 	default:
 		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
