@@ -74,8 +74,8 @@ Resources:
 								Privileged: types.BoolTest(true),
 								Environment: []ecs.EnvVar{
 									{
-										Name:  "entryPoint",
-										Value: "sh, -c",
+										Name:  types.StringTest("entryPoint"),
+										Value: types.StringTest("sh, -c"),
 									},
 								},
 							},
