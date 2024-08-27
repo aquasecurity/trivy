@@ -15,6 +15,16 @@
     {{- end }}
     </testsuite>
 
+{{- if .Licenses }}
+    {{- $licenses := len .Licenses }}
+    <testsuite tests="{{ $licenses }}" failures="{{ $licenses }}" name="{{ .Target }}" time="0">{{ range .Licenses }}
+        <testcase classname="{{ .PkgName }}" name="[{{ .Severity }}] {{ .Name }}">
+            <failure/>
+        </testcase>
+    {{- end }}
+    </testsuite>
+{{- end }}
+
 {{- if .MisconfSummary }}
     <testsuite tests="{{ add .MisconfSummary.Successes .MisconfSummary.Failures }}" failures="{{ .MisconfSummary.Failures }}" name="{{  .Target }}" errors="0" skipped="{{ .MisconfSummary.Exceptions }}" time="">
 {{- else }}
