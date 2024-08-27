@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -260,7 +261,7 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 
-	cs, err := spec.GetComplianceSpec(compliance)
+	cs, err := spec.GetComplianceSpec(compliance, cache.DefaultDir())
 	if err != nil {
 		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
 	}
