@@ -52,10 +52,6 @@
         {
           "name": "aquasecurity:trivy:SchemaVersion",
           "value": "2"
-        },
-        {
-          "name": "aquasecurity:trivy:SupportedOS",
-          "value": "true"
         }
       ]
     }
@@ -70,6 +66,10 @@
         {
           "name": "aquasecurity:trivy:Class",
           "value": "os-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:SupportedOS",
+          "value": "true"
         },
         {
           "name": "aquasecurity:trivy:Type",
