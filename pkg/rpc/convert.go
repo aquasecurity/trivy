@@ -693,11 +693,11 @@ func ConvertFromRPCOS(rpcOS *common.OS) ftypes.OS {
 		return ftypes.OS{}
 	}
 	return ftypes.OS{
-		Family:      ftypes.OSType(rpcOS.Family),
-		Name:        rpcOS.Name,
-		Eosl:        rpcOS.Eosl,
-		Unsupported: rpcOS.Unsupported,
-		Extended:    rpcOS.Extended,
+		Family:    ftypes.OSType(rpcOS.Family),
+		Name:      rpcOS.Name,
+		Eosl:      rpcOS.Eosl,
+		Supported: rpcOS.Supported,
+		Extended:  rpcOS.Extended,
 	}
 }
 
@@ -814,11 +814,11 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 // ConvertToRPCOS returns common.OS
 func ConvertToRPCOS(fos ftypes.OS) *common.OS {
 	return &common.OS{
-		Family:      string(fos.Family),
-		Name:        fos.Name,
-		Eosl:        fos.Eosl,
-		Unsupported: fos.Unsupported,
-		Extended:    fos.Extended,
+		Family:    string(fos.Family),
+		Name:      fos.Name,
+		Eosl:      fos.Eosl,
+		Supported: fos.Supported,
+		Extended:  fos.Extended,
 	}
 }
 

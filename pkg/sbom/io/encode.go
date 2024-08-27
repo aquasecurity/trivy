@@ -73,9 +73,9 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 			Value: r.Metadata.ImageID,
 		})
 
-		if r.Metadata.OS == nil || r.Metadata.OS.Unsupported {
+		if r.Metadata.OS != nil && r.Metadata.OS.Supported {
 			props = append(props, core.Property{
-				Name:  core.PropertyUnsupportedOS,
+				Name:  core.PropertySupportedOS,
 				Value: "true",
 			})
 		}

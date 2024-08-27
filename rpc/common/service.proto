@@ -12,7 +12,7 @@ message OS {
   string name        = 2;
   bool   eosl        = 3;
   bool   extended    = 4;
-  bool   unsupported = 5;
+  bool   supported = 5;
 }
 
 message Repository {

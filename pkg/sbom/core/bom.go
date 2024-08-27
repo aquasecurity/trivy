@@ -23,7 +23,7 @@ const (
 	PropertySchemaVersion = "SchemaVersion"
 	PropertyType          = "Type"
 	PropertyClass         = "Class"
-	PropertyUnsupportedOS = "UnsupportedOS"
+	PropertySupportedOS   = "SupportedOS"
 
 	// Image properties
 	PropertySize         = "Size"
