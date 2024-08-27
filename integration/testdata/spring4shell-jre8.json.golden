@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "debian",
-      "Name": "11.3"
+      "Name": "11.3",
+      "Supported": true
     },
     "ImageID": "sha256:b88bc3d2f0b5aacf1d36efa498f427d923b01c854dac090acf5368c55ac04fda",
     "DiffIDs": [

@@ -6,7 +6,8 @@
   "Metadata": {
     "OS": {
       "Family": "debian",
-      "Name": "11.3"
+      "Name": "11.3",
+      "Supported": true
     },
     "ImageID": "sha256:ed8f0747d483b60657982f0ef1ba74482aed08795cf0eb774b00bc53022a8351",
     "DiffIDs": [
@@ -256,15 +257,6 @@
       "Class": "custom",
       "CustomResources": [
         {
-          "Type": "spring4shell/java-major-version",
-          "FilePath": "/usr/local/openjdk-11/release",
-          "Layer": {
-            "Digest": "sha256:e94fd7d3bf7a9b78b61be8303cd35eb9da3f8d121cf572a3b8878cbf11e84818",
-            "DiffID": "sha256:64272e9218cd019d57b84ac283aa35036cbd8c1dcface8c69f756088a0a13c45"
-          },
-          "Data": "11.0.14.1"
-        },
-        {
           "Type": "spring4shell/tomcat-version",
           "FilePath": "/usr/local/tomcat/RELEASE-NOTES",
           "Layer": {
@@ -272,6 +264,15 @@
             "DiffID": "sha256:0b201a611e5455d637c719d70eb5dd76fd4154bc4a5cf597d67ed2fb6647cc42"
           },
           "Data": "8.5.77"
+        },
+        {
+          "Type": "spring4shell/java-major-version",
+          "FilePath": "/usr/local/openjdk-11/release",
+          "Layer": {
+            "Digest": "sha256:e94fd7d3bf7a9b78b61be8303cd35eb9da3f8d121cf572a3b8878cbf11e84818",
+            "DiffID": "sha256:64272e9218cd019d57b84ac283aa35036cbd8c1dcface8c69f756088a0a13c45"
+          },
+          "Data": "11.0.14.1"
         }
       ]
     }
