@@ -6,8 +6,6 @@ import (
 	"io"
 	"io/fs"
 
-	"github.com/bmatcuk/doublestar/v4"
-
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
@@ -16,11 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
-
-var tfPlanExts = []string{
-	"**/*tfplan.json",
-	"**/*tf.json",
-}
 
 type Scanner struct {
 	parser                  *parser.Parser
@@ -93,25 +86,32 @@ func (s *Scanner) Name() string {
 	return "Terraform Plan JSON"
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.Results, error) {
-	var filesFound []string
-
-	for _, ext := range tfPlanExts {
-		files, err := doublestar.Glob(inputFS, ext, doublestar.WithFilesOnly())
-		if err != nil {
-			return nil, fmt.Errorf("unable to scan for terraform plan files: %w", err)
-		}
-		filesFound = append(filesFound, files...)
-	}
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
 
 	var results scan.Results
-	for _, f := range filesFound {
-		res, err := s.ScanFile(f, inputFS)
+
+	walkFn := func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return nil, err
+			return err
 		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		res, err := s.ScanFile(path, fsys)
+		if err != nil {
+			return fmt.Errorf("failed to scan %s: %w", path, err)
+		}
+
 		results = append(results, res...)
+		return nil
 	}
+
+	if err := fs.WalkDir(fsys, dir, walkFn); err != nil {
+		return nil, err
+	}
+
 	return results, nil
 }
 
@@ -148,7 +148,7 @@ func (s *Scanner) Scan(reader io.Reader) (scan.Results, error) {
 
 	planFS, err := planFile.ToFS()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to convert plan to FS: %w", err)
 	}
 
 	scanner := terraformScanner.New(s.options...)
