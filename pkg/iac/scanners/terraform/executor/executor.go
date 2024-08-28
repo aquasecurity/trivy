@@ -135,26 +135,23 @@ func ignoreByParams(params map[string]string, modules terraform.Modules, m *type
 	if block == nil {
 		return true
 	}
-	for key, val := range params {
-		attr, _ := block.GetNestedAttribute(key)
-		if attr.IsNil() || !attr.Value().IsKnown() {
-			return false
-		}
-		switch attr.Type() {
+	for key, param := range params {
+		val := block.GetValueByPath(key)
+		switch val.Type() {
 		case cty.String:
-			if !attr.Equals(val) {
+			if val.AsString() != param {
 				return false
 			}
 		case cty.Number:
-			bf := attr.Value().AsBigFloat()
+			bf := val.AsBigFloat()
 			f64, _ := bf.Float64()
 			comparableInt := fmt.Sprintf("%d", int(f64))
 			comparableFloat := fmt.Sprintf("%f", f64)
-			if val != comparableInt && val != comparableFloat {
+			if param != comparableInt && param != comparableFloat {
 				return false
 			}
 		case cty.Bool:
-			if fmt.Sprintf("%t", attr.IsTrue()) != val {
+			if fmt.Sprintf("%t", val.True()) != param {
 				return false
 			}
 		default:
