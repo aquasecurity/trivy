@@ -4751,7 +4751,7 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]</span>
 <span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]</span>
 </code></pre></div>
-<p>You can also ignore a resource on multiple attributes:
+<p>You can also ignore a resource on multiple attributes in the same rule:
 <div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nb">rules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nb">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -4778,11 +4778,7 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 <span class="w">  </span><span class="na">source_security_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
-<p>Checks can also be ignored by nested attributes, but certain restrictions apply:</p>
-<ul>
-<li>You cannot access an individual block using indexes, for example when working with dynamic blocks.</li>
-<li>Special variables like <a href="https://developer.hashicorp.com/terraform/language/meta-arguments/for_each#the-each-object">each</a> and <a href="https://developer.hashicorp.com/terraform/language/meta-arguments/count#the-count-object">count</a> cannot be accessed.</li>
-</ul>
+<p>Checks can also be ignored by nested attributes:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:*[logging_config.prefix=myprefix]</span>
 <span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_cloudfront_distribution&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nb">logging_config</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
