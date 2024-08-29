@@ -25,7 +25,6 @@ func TestSBOM(t *testing.T) {
 		name     string
 		args     args
 		golden   string
-		fakeUUID string
 		override OverrideFunc
 	}{
 		{
@@ -65,8 +64,7 @@ func TestSBOM(t *testing.T) {
 				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
-			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-			golden:   "testdata/fluentd-multiple-lockfiles-short.cdx.json.golden",
+			golden: "testdata/fluentd-multiple-lockfiles-short.cdx.json.golden",
 		},
 		{
 			name: "minikube KBOM",
@@ -176,7 +174,6 @@ func TestSBOM(t *testing.T) {
 			// Run "trivy sbom"
 			runTest(t, osArgs, tt.golden, outputFile, types.Format(tt.args.format), runOptions{
 				override: overrideFuncs(overrideSBOMReport, overrideUID, tt.override),
-				fakeUUID: tt.fakeUUID,
 			})
 		})
 	}

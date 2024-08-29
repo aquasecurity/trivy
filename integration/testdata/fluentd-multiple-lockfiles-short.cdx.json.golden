@@ -59,7 +59,7 @@
   },
   "components": [
     {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000006",
+      "bom-ref": "353f2470-9c8b-4647-9d0d-96d893838dc8",
       "type": "operating-system",
       "name": "debian",
       "version": "10.2",
