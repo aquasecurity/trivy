@@ -49,11 +49,13 @@ func NewStaticMetadata(pkgPath string, inputOpt InputOptions) *StaticMetadata {
 		Description:  fmt.Sprintf("Rego module: %s", pkgPath),
 		Package:      pkgPath,
 		InputOptions: inputOpt,
-		Frameworks:   make(map[framework.Framework][]string),
+		Frameworks: map[framework.Framework][]string{
+			framework.Default: {},
+		},
 	}
 }
 
-func (sm *StaticMetadata) Update(meta map[string]any) error {
+func (sm *StaticMetadata) update(meta map[string]any) error {
 	if sm.Frameworks == nil {
 		sm.Frameworks = make(map[framework.Framework][]string)
 	}
@@ -125,21 +127,31 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 }
 
 func (sm *StaticMetadata) updateFrameworks(meta map[string]any) error {
-	if raw, ok := meta["frameworks"]; ok {
-		frameworks, ok := raw.(map[string]any)
+	raw, ok := meta["frameworks"]
+	if !ok {
+		return nil
+	}
+
+	frameworks, ok := raw.(map[string]any)
+	if !ok {
+		return fmt.Errorf("frameworks metadata is not an object, got %T", raw)
+	}
+
+	if len(frameworks) > 0 {
+		sm.Frameworks = make(map[framework.Framework][]string)
+	}
+
+	for fw, rawIDs := range frameworks {
+		ids, ok := rawIDs.([]any)
 		if !ok {
-			return fmt.Errorf("frameworks metadata is not an object, got %T", raw)
+			return fmt.Errorf("framework ids is not an array, got %T", rawIDs)
 		}
-		for fw, rawIDs := range frameworks {
-			ids, ok := rawIDs.([]any)
-			if !ok {
-				return fmt.Errorf("framework ids is not an array, got %T", rawIDs)
-			}
-			fr := framework.Framework(fw)
-			for _, id := range ids {
-				if str, ok := id.(string); ok {
-					sm.Frameworks[fr] = append(sm.Frameworks[fr], str)
-				}
+		fr := framework.Framework(fw)
+		for _, id := range ids {
+			if str, ok := id.(string); ok {
+				sm.Frameworks[fr] = append(sm.Frameworks[fr], str)
+			} else {
+				sm.Frameworks[fr] = []string{}
 			}
 		}
 	}
@@ -166,7 +178,7 @@ func (sm *StaticMetadata) FromAnnotations(annotations *ast.Annotations) error {
 		sm.References = append(sm.References, resource.Ref.String())
 	}
 	if custom := annotations.Custom; custom != nil {
-		if err := sm.Update(custom); err != nil {
+		if err := sm.update(custom); err != nil {
 			return err
 		}
 	}
@@ -329,7 +341,7 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 		return nil, fmt.Errorf("failed to parse metadata: not an object")
 	}
 
-	if err := metadata.Update(meta); err != nil {
+	if err := metadata.update(meta); err != nil {
 		return nil, err
 	}
 
@@ -435,4 +447,18 @@ func metadataFromRegoModule(module *ast.Module) (*StaticMetadata, error) {
 		}
 	}
 	return meta, nil
+}
+
+func (m *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
+	if len(frameworks) == 0 {
+		frameworks = []framework.Framework{framework.Default}
+	}
+
+	for _, fr := range frameworks {
+		if _, exists := m.Frameworks[fr]; exists {
+			return true
+		}
+	}
+
+	return false
 }
