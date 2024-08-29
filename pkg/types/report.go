@@ -120,8 +120,8 @@ type Result struct {
 
 	// ModifiedFindings holds a list of findings that have been modified from their original state.
 	// This can include vulnerabilities that have been marked as ignored, not affected, or have had
-	// their severity adjusted. It is currently available only in the table format.
-	ModifiedFindings []ModifiedFinding `json:"-"`
+	// their severity adjusted. It's still in an experimental stage and may change in the future.
+	ModifiedFindings []ModifiedFinding `json:"ExperimentalModifiedFindings,omitempty"`
 }
 
 func (r *Result) IsEmpty() bool {
