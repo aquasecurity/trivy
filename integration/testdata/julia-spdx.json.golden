@@ -31,8 +31,8 @@
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NONE",
-      "licenseDeclared": "NONE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -54,8 +54,8 @@
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NONE",
-      "licenseDeclared": "NONE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -77,8 +77,8 @@
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NONE",
-      "licenseDeclared": "NONE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
