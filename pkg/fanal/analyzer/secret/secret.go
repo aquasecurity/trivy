@@ -66,7 +66,7 @@ func init() {
 	analyzer.RegisterAnalyzer(NewSecretAnalyzer(secret.Scanner{}, ""))
 }
 
-func isAllowedBinary(filename string) bool {
+func allowedBinary(filename string) bool {
 	return slices.Contains(allowedBinaries, filepath.Ext(filename))
 }
 
@@ -103,7 +103,7 @@ func (a *SecretAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Do not scan binaries
 	binary, err := utils.IsBinary(input.Content, input.Info.Size())
-	if err != nil || (binary && !isAllowedBinary(input.FilePath)) {
+	if err != nil || (binary && !allowedBinary(input.FilePath)) {
 		return nil, nil
 	}
 
