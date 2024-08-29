@@ -4509,7 +4509,7 @@ It displays "fixed" vulnerabilities only.</p>
 <p>To show the suppressed results, use the <code>--show-suppressed</code> flag.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This flag is currently available only in the table format.</p>
+<p>It's exported as <code>ExperimentalModifiedFindings</code> in the JSON output.</p>
 </div>
 <div class="highlight"><pre><span></span><code>$ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
 ...
