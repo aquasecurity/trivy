@@ -435,23 +435,14 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 			censored = censorLocation(loc, censored)
 		}
 	}
-
-	if args.Binary {
-		for _, match := range matched {
-			findings = append(findings, types.SecretFinding{
-				RuleID:    match.Rule.ID,
-				Category:  match.Rule.Category,
-				Severity:  lo.Ternary(match.Rule.Severity == "", "UNKNOWN", match.Rule.Severity),
-				Title:     match.Rule.Title,
-				Match:     fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title),
-				StartLine: 1,
-				EndLine:   1,
-			})
+	for _, match := range matched {
+		finding := toFinding(match.Rule, match.Location, censored)
+		// Rewrite unreadable fields for binary files
+		if args.Binary {
+			finding.Match = fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title)
+			finding.Code = types.Code{}
 		}
-	} else {
-		for _, match := range matched {
-			findings = append(findings, toFinding(match.Rule, match.Location, censored))
-		}
+		findings = append(findings, finding)
 	}
 
 	if len(findings) == 0 {
