@@ -58,8 +58,10 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 			continue
 		}
 
-		if !metadata.Library && metadata.AVDID == "" {
-			log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
+		if metadata.AVDID == "" {
+			if !metadata.Library {
+				log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
+			}
 			continue
 		}
 
