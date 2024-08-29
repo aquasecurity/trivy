@@ -3,7 +3,10 @@ package s3
 import (
 	"testing"
 
+	"github.com/liamg/iamgo"
+
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -57,6 +60,19 @@ Resources:
         Status: Enabled
       WebsiteConfiguration:
         IndexDocument: index.html
+  SampleBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref Bucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - 'arn:aws:s3:::testbucket/*'
+            Principal: '*'
 `,
 			expected: s3.S3{
 				Buckets: []s3.Bucket{
@@ -91,6 +107,23 @@ Resources:
 							Enabled: types.BoolTest(true),
 						},
 						Website: &s3.Website{},
+						BucketPolicies: []iam.Policy{
+							{
+								Document: iam.Document{
+									Parsed: iamgo.NewPolicyBuilder().
+										WithStatement(
+											iamgo.NewStatementBuilder().
+												WithActions([]string{"s3:GetObject"}).
+												WithAllPrincipals(true).
+												WithEffect("Allow").
+												WithResources([]string{"arn:aws:s3:::testbucket/*"}).
+												Build(),
+										).
+										WithVersion("2012-10-17T00:00:00Z").
+										Build(),
+								},
+							},
+						},
 					},
 				},
 			},

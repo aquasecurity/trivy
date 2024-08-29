@@ -160,28 +160,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
 		},
-		{
-			name: "happy path for OS packages",
-			fields: fields{
-				pkgTypes: "os",
-			},
-			want: flag.ReportOptions{
-				PkgTypes: []string{
-					types.PkgTypeOS,
-				},
-			},
-		},
-		{
-			name: "happy path for library packages",
-			fields: fields{
-				pkgTypes: "library",
-			},
-			want: flag.ReportOptions{
-				PkgTypes: []string{
-					types.PkgTypeLibrary,
-				},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -206,7 +184,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
 			setValue(flag.SeverityFlag.ConfigName, tt.fields.severities)
 			setValue(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
-			setValue(flag.PkgTypesFlag.ConfigName, tt.fields.pkgTypes)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
@@ -222,7 +199,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				OutputPluginArg: flag.OutputPluginArgFlag.Clone(),
 				Severity:        flag.SeverityFlag.Clone(),
 				Compliance:      flag.ComplianceFlag.Clone(),
-				PkgTypes:        flag.PkgTypesFlag.Clone(),
 			}
 
 			got, err := f.ToOptions()

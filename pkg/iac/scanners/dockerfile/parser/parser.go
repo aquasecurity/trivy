@@ -11,34 +11,19 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var _ options.ConfigurableParser = (*Parser)(nil)
-
 type Parser struct {
-	debug        debug.Logger
-	skipRequired bool
-}
-
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "dockerfile", "parser")
-}
-
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
+	logger *log.Logger
 }
 
 // New creates a new Dockerfile parser
-func New(opts ...options.ParserOption) *Parser {
-	p := &Parser{}
-	for _, option := range opts {
-		option(p)
+func New() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("dockerfile parser"),
 	}
-	return p
 }
 
 func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]*dockerfile.Dockerfile, error) {
@@ -56,12 +41,10 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 		if entry.IsDir() {
 			return nil
 		}
-		if !p.Required(path) {
-			return nil
-		}
+
 		df, err := p.ParseFile(ctx, target, path)
 		if err != nil {
-			// TODO add debug for parse errors
+			p.logger.Error("Failed to parse Dockerfile", log.FilePath(path), log.Err(err))
 			return nil
 		}
 		files[path] = df
@@ -80,13 +63,6 @@ func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (*dockerf
 	}
 	defer func() { _ = f.Close() }()
 	return p.parse(path, f)
-}
-
-func (p *Parser) Required(path string) bool {
-	if p.skipRequired {
-		return true
-	}
-	return detection.IsType(path, nil, detection.FileTypeDockerfile)
 }
 
 func (p *Parser) parse(path string, r io.Reader) (*dockerfile.Dockerfile, error) {

@@ -7,7 +7,7 @@ This will output a large trace from Open Policy Agent like the following:
     Only failed checks show traces. If you want to debug a passed check, you need to make it fail on purpose.
 
 ```shell
-$ trivy conf --trace configs/
+$ trivy config --trace configs/
 2022-05-16T13:47:58.853+0100	INFO	Detected config files: 1
 
 Dockerfile (dockerfile)

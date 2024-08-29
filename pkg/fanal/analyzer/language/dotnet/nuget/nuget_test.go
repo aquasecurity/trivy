@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
+func Test_nugetLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name string
 		dir  string

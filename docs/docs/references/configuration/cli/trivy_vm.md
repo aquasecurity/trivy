@@ -25,9 +25,14 @@ trivy vm [flags] VM_IMAGE
       --cache-ttl duration                cache TTL when using redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --compliance string                 compliance report to generate
+      --config-file-schemas strings       specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --detection-priority string         specify the detection priority:
+                                            - "precise": Prioritizes precise by minimizing false positives.
+                                            - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
+                                           (precise,comprehensive) (default "precise")
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
       --enable-modules strings            [EXPERIMENTAL] module names to enable
@@ -56,7 +61,8 @@ trivy vm [flags] VM_IMAGE
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
-      --pkg-types strings                 comma-separated list of package types (os,library) (default [os,library])
+      --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
+      --pkg-types strings                 list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -72,11 +78,12 @@ trivy vm [flags] VM_IMAGE
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
+      --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
-      --vex string                        [EXPERIMENTAL] file path to VEX
+      --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 
 ### Options inherited from parent commands

@@ -83,7 +83,7 @@ func Test_adaptDistribution(t *testing.T) {
 				},
 				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
 					Metadata:             iacTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: iacTypes.String("allow-all", iacTypes.NewTestMetadata()),
+					ViewerProtocolPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 
 				ViewerCertificate: cloudfront.ViewerCertificate{

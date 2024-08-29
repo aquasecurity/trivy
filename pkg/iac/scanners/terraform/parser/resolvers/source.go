@@ -2,7 +2,7 @@ package resolvers
 
 import "strings"
 
-func removeSubdirFromSource(src string) string {
+func splitPackageSubdirRaw(src string) (string, string) {
 	stop := len(src)
 	if idx := strings.Index(src, "?"); idx > -1 {
 		stop = idx
@@ -18,7 +18,7 @@ func removeSubdirFromSource(src string) string {
 	// First see if we even have an explicit subdir
 	idx := strings.Index(src[offset:stop], "//")
 	if idx == -1 {
-		return src
+		return src, "."
 	}
 
 	idx += offset
@@ -29,8 +29,9 @@ func removeSubdirFromSource(src string) string {
 	// URL.
 	if idx = strings.Index(subdir, "?"); idx > -1 {
 		query := subdir[idx:]
+		subdir = subdir[:idx]
 		src += query
 	}
 
-	return src
+	return src, subdir
 }

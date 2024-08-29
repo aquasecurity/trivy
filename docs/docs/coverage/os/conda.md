@@ -8,6 +8,9 @@ Trivy supports the following scanners for Conda packages.
 | Vulnerability |     -     |
 |    License    |     ✓     |
 
+| Package manager | File            | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
+|-----------------|-----------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|:----------------------------------------:|
+| Conda           | environment.yml |            -            |     Include      |                  -                   |    ✓     |                    -                     |
 
 
 ## `<package>.json`
@@ -41,3 +44,5 @@ To correctly define licenses, make sure your `environment.yml`[^1] contains `pre
 [environment.yml]: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#sharing-an-environment
 [env-version-range]: https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html#examples-of-package-specs
 [prefix]: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#specifying-a-location-for-an-environment
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[detection-priority]: ../../scanner/vulnerability.md#detection-priority

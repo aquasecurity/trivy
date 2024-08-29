@@ -27,12 +27,12 @@ type SecurityGroupRule struct {
 
 type PortRange struct {
 	Metadata iacTypes.Metadata
-	Start    int
-	End      int
+	Start    iacTypes.IntValue
+	End      iacTypes.IntValue
 }
 
 func (r PortRange) Includes(port int) bool {
-	return port >= r.Start && port <= r.End
+	return port >= r.Start.Value() && port <= r.End.Value()
 }
 
 type NetworkWatcherFlowLog struct {

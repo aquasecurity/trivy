@@ -30,3 +30,9 @@ Trivy-Streamlit is a Streamlit application that allows you to quickly parse the 
 This project is a web application that allows to load a Trivy report in json format and displays the vulnerabilities of a single target in an interactive data table.
 
 👉 Get it at: <https://github.com/dbsystel/trivy-vulnerability-explorer>
+
+## plopsec.com (Community)
+
+This project is a web application designed to help you visualize Trivy image scan reports. It enriches the data with additional exploitability metrics from EPSS, Metasploit, and Exploit-DB, updated daily.
+
+👉 Get it at: <https://plopsec.com> | <https://github.com/pl0psec/plopsec.com>

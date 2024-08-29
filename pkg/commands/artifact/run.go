@@ -40,7 +40,6 @@ const (
 	TargetFilesystem     TargetKind = "fs"
 	TargetRootfs         TargetKind = "rootfs"
 	TargetRepository     TargetKind = "repo"
-	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
 )
@@ -117,6 +116,11 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOptio
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
 		return nil, xerrors.Errorf("DB error: %w", err)
+	}
+
+	// Update the VEX repositories if needed
+	if err := operation.DownloadVEXRepositories(ctx, cliOptions); err != nil {
+		return nil, xerrors.Errorf("VEX repositories download error: %w", err)
 	}
 
 	// Initialize WASM modules
@@ -340,6 +344,15 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		}
 	}()
 
+	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
+		log.WarnContext(ctx,
+			fmt.Sprintf(
+				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
+				doc.URL("/docs/references/modes/client-server", ""),
+			),
+		)
+	}
+
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
 		return viper.SafeWriteConfigAs("trivy-default.yaml")
@@ -354,32 +367,23 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	}
 	defer r.Close(ctx)
 
-	var report types.Report
-	switch targetKind {
-	case TargetContainerImage, TargetImageArchive:
-		if report, err = r.ScanImage(ctx, opts); err != nil {
-			return xerrors.Errorf("image scan error: %w", err)
-		}
-	case TargetFilesystem:
-		if report, err = r.ScanFilesystem(ctx, opts); err != nil {
-			return xerrors.Errorf("filesystem scan error: %w", err)
-		}
-	case TargetRootfs:
-		if report, err = r.ScanRootfs(ctx, opts); err != nil {
-			return xerrors.Errorf("rootfs scan error: %w", err)
-		}
-	case TargetRepository:
-		if report, err = r.ScanRepository(ctx, opts); err != nil {
-			return xerrors.Errorf("repository scan error: %w", err)
-		}
-	case TargetSBOM:
-		if report, err = r.ScanSBOM(ctx, opts); err != nil {
-			return xerrors.Errorf("sbom scan error: %w", err)
-		}
-	case TargetVM:
-		if report, err = r.ScanVM(ctx, opts); err != nil {
-			return xerrors.Errorf("vm scan error: %w", err)
-		}
+	scans := map[TargetKind]func(context.Context, flag.Options) (types.Report, error){
+		TargetContainerImage: r.ScanImage,
+		TargetFilesystem:     r.ScanFilesystem,
+		TargetRootfs:         r.ScanRootfs,
+		TargetRepository:     r.ScanRepository,
+		TargetSBOM:           r.ScanSBOM,
+		TargetVM:             r.ScanVM,
+	}
+
+	scanFunction, exists := scans[targetKind]
+	if !exists {
+		return xerrors.Errorf("unknown target kind: %s", targetKind)
+	}
+
+	report, err := scanFunction(ctx, opts)
+	if err != nil {
+		return xerrors.Errorf("%s scan error: %w", targetKind, err)
 	}
 
 	report, err = r.Filter(ctx, opts, report)
@@ -474,6 +478,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 
 	scanOptions := types.ScanOptions{
 		PkgTypes:            opts.PkgTypes,
+		PkgRelationships:    opts.PkgRelationships,
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
@@ -483,68 +488,46 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	}
 
 	if len(opts.ImageConfigScanners) != 0 {
-		log.Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))
+		log.WithPrefix(log.PrefixContainerImage).Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))
+	}
+
+	if opts.Scanners.Enabled(types.SBOMScanner) {
+		logger := log.WithPrefix(log.PrefixPackage)
+		logger.Debug("Package types", log.Any("types", scanOptions.PkgTypes))
+		logger.Debug("Package relationships", log.Any("relationships", scanOptions.PkgRelationships))
 	}
 
 	if opts.Scanners.Enabled(types.VulnerabilityScanner) {
-		log.Info("Vulnerability scanning is enabled")
-		log.Debug("Package types", log.Any("types", scanOptions.PkgTypes))
+		log.WithPrefix(log.PrefixVulnerability).Info("Vulnerability scanning is enabled")
 	}
 
-	// ScannerOption is filled only when config scanning is enabled.
+	// Misconfig ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
-		log.Info("Misconfiguration scanning is enabled")
-
-		var downloadedPolicyPaths []string
-		var disableEmbedded bool
-
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+		var err error
+		configScannerOptions, err = initMisconfScannerOption(opts)
 		if err != nil {
-			if !opts.SkipCheckUpdate {
-				log.Error("Falling back to embedded checks", log.Err(err))
-			}
-		} else {
-			log.Debug("Policies successfully loaded from disk")
-			disableEmbedded = true
-		}
-		configScannerOptions = misconf.ScannerOption{
-			Debug:                    opts.Debug,
-			Trace:                    opts.Trace,
-			Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
-			PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
-			DataPaths:                opts.DataPaths,
-			HelmValues:               opts.HelmValues,
-			HelmValueFiles:           opts.HelmValueFiles,
-			HelmFileValues:           opts.HelmFileValues,
-			HelmStringValues:         opts.HelmStringValues,
-			HelmAPIVersions:          opts.HelmAPIVersions,
-			HelmKubeVersion:          opts.HelmKubeVersion,
-			TerraformTFVars:          opts.TerraformTFVars,
-			CloudFormationParamVars:  opts.CloudFormationParamVars,
-			K8sVersion:               opts.K8sVersion,
-			DisableEmbeddedPolicies:  disableEmbedded,
-			DisableEmbeddedLibraries: disableEmbedded,
-			IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
-			TfExcludeDownloaded:      opts.TfExcludeDownloaded,
+			return ScannerConfig{}, types.ScanOptions{}, err
 		}
 	}
 
 	// Do not load config file for secret scanning
 	if opts.Scanners.Enabled(types.SecretScanner) {
-		log.Info("Secret scanning is enabled")
-		log.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
+		logger := log.WithPrefix(log.PrefixSecret)
+		logger.Info("Secret scanning is enabled")
+		logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
 		// e.g. https://aquasecurity.github.io/trivy/latest/docs/scanner/secret/#recommendation
-		log.Infof("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation"))
+		logger.Info(fmt.Sprintf("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
 	}
 
 	if opts.Scanners.Enabled(types.LicenseScanner) {
+		logger := log.WithPrefix(log.PrefixLicense)
 		if opts.LicenseFull {
-			log.Info("Full license scanning is enabled")
+			logger.Info("Full license scanning is enabled")
 		} else {
-			log.Info("License scanning is enabled")
+			logger.Info("License scanning is enabled")
 		}
 	}
 
@@ -554,17 +537,18 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		fileChecksum = true
 	}
 
+	// Disable the post handler for filtering system file when detection priority is comprehensive.
+	disabledHandlers := lo.Ternary(opts.DetectionPriority == ftypes.PriorityComprehensive,
+		[]ftypes.HandlerType{ftypes.SystemFileFilteringPostHandler}, nil)
+
 	return ScannerConfig{
 		Target:             target,
 		CacheOptions:       opts.CacheOpts(),
 		RemoteCacheOptions: opts.RemoteCacheOpts(),
-		ServerOption: client.ScannerOption{
-			RemoteURL:     opts.ServerAddr,
-			CustomHeaders: opts.CustomHeaders,
-			Insecure:      opts.Insecure,
-		},
+		ServerOption:       opts.ClientScannerOpts(),
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
+			DisabledHandlers:  disabledHandlers,
 			FilePatterns:      opts.FilePatterns,
 			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
@@ -578,6 +562,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 			AWSRegion:         opts.Region,
 			AWSEndpoint:       opts.Endpoint,
 			FileChecksum:      fileChecksum,
+			DetectionPriority: opts.DetectionPriority,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{
@@ -630,4 +615,49 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner 
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
+}
+
+func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) {
+	logger := log.WithPrefix(log.PrefixMisconfiguration)
+	logger.Info("Misconfiguration scanning is enabled")
+
+	var downloadedPolicyPaths []string
+	var disableEmbedded bool
+
+	downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	if err != nil {
+		if !opts.SkipCheckUpdate {
+			logger.Error("Falling back to embedded checks", log.Err(err))
+		}
+	} else {
+		logger.Debug("Checks successfully loaded from disk")
+		disableEmbedded = true
+	}
+
+	configSchemas, err := misconf.LoadConfigSchemas(opts.ConfigFileSchemas)
+	if err != nil {
+		return misconf.ScannerOption{}, xerrors.Errorf("load schemas error: %w", err)
+	}
+
+	return misconf.ScannerOption{
+		Trace:                    opts.Trace,
+		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
+		PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
+		DataPaths:                opts.DataPaths,
+		HelmValues:               opts.HelmValues,
+		HelmValueFiles:           opts.HelmValueFiles,
+		HelmFileValues:           opts.HelmFileValues,
+		HelmStringValues:         opts.HelmStringValues,
+		HelmAPIVersions:          opts.HelmAPIVersions,
+		HelmKubeVersion:          opts.HelmKubeVersion,
+		TerraformTFVars:          opts.TerraformTFVars,
+		CloudFormationParamVars:  opts.CloudFormationParamVars,
+		K8sVersion:               opts.K8sVersion,
+		DisableEmbeddedPolicies:  disableEmbedded,
+		DisableEmbeddedLibraries: disableEmbedded,
+		IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
+		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
+		FilePatterns:             opts.FilePatterns,
+		ConfigFileSchemas:        configSchemas,
+	}, nil
 }

@@ -27,31 +27,39 @@ var (
 		ConfigName: "clean.checks-bundle",
 		Usage:      "remove checks bundle",
 	}
+	CleanVEXRepo = Flag[bool]{
+		Name:       "vex-repo",
+		ConfigName: "clean.vex-repo",
+		Usage:      "remove VEX repositories",
+	}
 )
 
 type CleanFlagGroup struct {
 	CleanAll             *Flag[bool]
+	CleanScanCache       *Flag[bool]
 	CleanVulnerabilityDB *Flag[bool]
 	CleanJavaDB          *Flag[bool]
 	CleanChecksBundle    *Flag[bool]
-	CleanScanCache       *Flag[bool]
+	CleanVEXRepositories *Flag[bool]
 }
 
 type CleanOptions struct {
 	CleanAll             bool
+	CleanScanCache       bool
 	CleanVulnerabilityDB bool
 	CleanJavaDB          bool
 	CleanChecksBundle    bool
-	CleanScanCache       bool
+	CleanVEXRepositories bool
 }
 
 func NewCleanFlagGroup() *CleanFlagGroup {
 	return &CleanFlagGroup{
 		CleanAll:             CleanAll.Clone(),
+		CleanScanCache:       CleanScanCache.Clone(),
 		CleanVulnerabilityDB: CleanVulnerabilityDB.Clone(),
 		CleanJavaDB:          CleanJavaDB.Clone(),
 		CleanChecksBundle:    CleanChecksBundle.Clone(),
-		CleanScanCache:       CleanScanCache.Clone(),
+		CleanVEXRepositories: CleanVEXRepo.Clone(),
 	}
 }
 
@@ -62,10 +70,11 @@ func (fg *CleanFlagGroup) Name() string {
 func (fg *CleanFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		fg.CleanAll,
+		fg.CleanScanCache,
 		fg.CleanVulnerabilityDB,
 		fg.CleanJavaDB,
 		fg.CleanChecksBundle,
-		fg.CleanScanCache,
+		fg.CleanVEXRepositories,
 	}
 }
 
@@ -80,5 +89,6 @@ func (fg *CleanFlagGroup) ToOptions() (CleanOptions, error) {
 		CleanJavaDB:          fg.CleanJavaDB.Value(),
 		CleanChecksBundle:    fg.CleanChecksBundle.Value(),
 		CleanScanCache:       fg.CleanScanCache.Value(),
+		CleanVEXRepositories: fg.CleanVEXRepositories.Value(),
 	}, nil
 }

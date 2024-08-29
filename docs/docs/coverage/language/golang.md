@@ -16,10 +16,10 @@ The following scanners are supported.
 
 The table below provides an outline of the features Trivy offers.
 
-| Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] | Stdlib |
-|----------|:-----------:|:-----------------|:------------------------------------:|:------:|
-| Modules  |      ✅      | Include          |                ✅[^2]                 | ✅[^6]  |
-| Binaries |      ✅      | Exclude          |                  -                   | ✅[^4]  |
+| Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] | Stdlib | [Detection Priority][detection-priority] |
+|----------|:-----------:|:-----------------|:------------------------------------:|:------:|:----------------------------------------:|
+| Modules  |      ✅      | Include          |                ✅[^2]                 | ✅[^6]  |                    -                     |
+| Binaries |      ✅      | Exclude          |                  -                   | ✅[^4]  |                Not needed                |
 
 !!! note
     Trivy scans only dependencies of the Go project.
@@ -112,3 +112,4 @@ empty if it cannot do so[^5]. For the second case, the version of such packages 
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [toolchain]: https://go.dev/doc/toolchain
+[detection-priority]: ../../scanner/vulnerability.md#detection-priority

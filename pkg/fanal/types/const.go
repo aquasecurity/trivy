@@ -24,6 +24,7 @@ const (
 	Alma               OSType = "alma"
 	Alpine             OSType = "alpine"
 	Amazon             OSType = "amazon"
+	Azure              OSType = "azurelinux"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
 	Chainguard         OSType = "chainguard"
@@ -96,6 +97,7 @@ var AggregatingTypes = []LangType{
 // Config files
 const (
 	JSON                  ConfigType = "json"
+	YAML                  ConfigType = "yaml"
 	Dockerfile            ConfigType = "dockerfile"
 	Terraform             ConfigType = "terraform"
 	TerraformPlanJSON     ConfigType = "terraformplan"

@@ -101,13 +101,13 @@ For example, the following example holds IaC files for Terraform, CloudFormation
 ``` bash
 $ ls iac/
 Dockerfile  deployment.yaml  main.tf mysql-8.8.26.tar
-$ trivy conf --severity HIGH,CRITICAL ./iac
+$ trivy config --severity HIGH,CRITICAL ./iac
 ```
 
 <details>
 <summary>Result</summary>
 
-```
+```bash
 2022-06-06T11:01:21.142+0100	INFO	Detected config files: 8
 
 Dockerfile (dockerfile)
@@ -315,6 +315,9 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
+### External connectivity
+Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the [Advanced Network Scenarios document](../../advanced/air-gap.md).
+
 ### Enabling a subset of misconfiguration scanners
 It's possible to only enable certain misconfiguration scanners if you prefer.
 You can do so by passing the `--misconfig-scanners` option.
@@ -326,19 +329,74 @@ trivy config --misconfig-scanners=terraform,dockerfile .
 
 Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
 
-### Passing custom checks
-You can pass policy files or directories including your custom checks through `--policy` option.
+### Loading custom checks
+You can load check files or directories including your custom checks using the `--config-check` flag.
 This can be repeated for specifying multiple files or directories.
 
 ```bash
-cd examplex/misconf/
-trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
+trivy config --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
 ```
 
-For more details, see [Custom Checks](./custom/index.md).
+You can load checks bundle as OCI Image from a Container Registry using the `--checks-bundle-repository` flag.
 
-!!! tip
-You also need to specify `--namespaces` option.
+```bash
+trivy config --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+```
+
+
+### Scan arbitrary JSON and YAML configurations
+By default, scanning JSON and YAML configurations is disabled, since Trivy does not contain built-in checks for these configurations. To enable it, pass the `json` or `yaml` to `--misconfig-scanners`. See [Enabling a subset of misconfiguration scanners](#enabling-a-subset-of-misconfiguration-scanners) for more information. Trivy will pass each file as is to the checks input.
+
+
+!!! example
+```bash
+$ cat iac/serverless.yaml
+service: serverless-rest-api-with-pynamodb
+
+frameworkVersion: ">=2.24.0"
+
+plugins:
+  - serverless-python-requirements
+...
+
+$ cat serverless.rego
+# METADATA
+# title: Serverless Framework service name not starting with "aws-"
+# description: Ensure that Serverless Framework service names start with "aws-"
+# schemas:
+#   - input: schema["serverless-schema"]
+# custom:
+#   id: SF001
+#   severity: LOW
+package user.serverless001
+
+deny[res] {
+    not startswith(input.service, "aws-")
+    res := result.new(
+        sprintf("Service name %q is not allowed", [input.service]),
+        input.service
+    )
+}
+
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
+serverless.yaml (yaml)
+
+Tests: 4 (SUCCESSES: 3, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+LOW: Service name "serverless-rest-api-with-pynamodb" is not allowed
+═════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure that Serverless Framework service names start with "aws-"
+```
+
+You can also pass schemas using the `config-file-schemas` flag. Trivy will use these schemas for file filtering and type checking in Rego checks. If the file does not match any of the passed schemas, it will be ignored.
+
+!!! example
+```bash
+$ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
+```
+
+If the schema is specified in the check metadata and is in the directory specified in the `--config-check` argument, it will be automatically loaded as specified [here](./custom/schema.md#custom-checks-with-custom-schemas), and will only be used for type checking in Rego.
 
 ### Passing custom data
 You can pass directories including your custom data through `--data` option.
@@ -346,7 +404,7 @@ This can be repeated for specifying multiple directories.
 
 ```bash
 cd examples/misconf/custom-data
-trivy conf --policy ./policy --data ./data --namespaces user ./configs
+trivy config --config-check ./my-check --data ./data --namespaces user ./configs
 ```
 
 For more details, see [Custom Data](./custom/data.md).
@@ -357,15 +415,15 @@ If you want to evaluate custom checks in other packages, you have to specify pac
 This can be repeated for specifying multiple packages.
 
 ``` bash
-trivy conf --policy ./policy --namespaces main --namespaces user ./configs
+trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
 ```
 
-### Private terraform registries
-Trivy can download terraform code from private registries.
+### Private Terraform registries
+Trivy can download Terraform code from private registries.
 To pass credentials you must use the `TF_TOKEN_` environment variables.
 You cannot use a `.terraformrc` or `terraform.rc` file, these are not supported by trivy yet.
 
-From the terraform [docs](https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials):
+From the Terraform [docs](https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials):
 
 > Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
 > For example, the value of a variable named `TF_TOKEN_app_terraform_io` will be used as a bearer authorization token when the CLI makes service requests to the hostname `app.terraform.io`.
@@ -476,7 +534,7 @@ If you want to ignore multiple resources on different attributes, you can specif
 #trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]
 ```
 
-You can also ignore a resource on multiple attributes:
+You can also ignore a resource on multiple attributes in the same rule:
 ```tf
 locals {
   rules = {
@@ -505,10 +563,7 @@ resource "aws_security_group_rule" "example" {
 }
 ```
 
-Checks can also be ignored by nested attributes, but certain restrictions apply:
-
-- You cannot access an individual block using indexes, for example when working with dynamic blocks.
-- Special variables like [each](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each#the-each-object) and [count](https://developer.hashicorp.com/terraform/language/meta-arguments/count#the-count-object) cannot be accessed.
+Checks can also be ignored by nested attributes:
 
 ```tf
 #trivy:ignore:*[logging_config.prefix=myprefix]
