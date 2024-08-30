@@ -175,7 +175,9 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, fsMap map[string]fs.
 	var modules terraform.Modules
 	for _, sm := range submodules {
 		modules = append(modules, sm.modules...)
-		fsMap = lo.Assign(fsMap, sm.fsMap)
+		for k, v := range sm.fsMap {
+			fsMap[k] = v
+		}
 	}
 
 	e.logger.Debug("Finished processing submodule(s).", log.Int("count", len(modules)))
