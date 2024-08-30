@@ -128,14 +128,17 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 		return nil, xerrors.Errorf("failed to unmarshal component type: %w", err)
 	}
 
+	identifier := ftypes.PkgIdentifier{
+		BOMRef: c.BOMRef,
+	}
+
 	// Parse PURL
-	var purl *packageurl.PackageURL
 	if c.PackageURL != "" {
-		purl = &packageurl.PackageURL{}
-		*purl, err = packageurl.FromString(c.PackageURL)
+		purl, err := packageurl.FromString(c.PackageURL)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse PURL: %w", err)
 		}
+		identifier.PURL = &purl
 	}
 
 	component := &core.Component{
@@ -149,12 +152,9 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 				Digests: b.unmarshalHashes(c.Hashes),
 			},
 		},
-		PkgIdentifier: ftypes.PkgIdentifier{
-			PURL:   purl,
-			BOMRef: c.BOMRef,
-		},
-		Supplier:   b.unmarshalSupplier(c.Supplier),
-		Properties: b.unmarshalProperties(c.Properties),
+		PkgIdentifier: identifier,
+		Supplier:      b.unmarshalSupplier(c.Supplier),
+		Properties:    b.unmarshalProperties(c.Properties),
 	}
 
 	return component, nil
