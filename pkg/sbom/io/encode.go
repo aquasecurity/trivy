@@ -290,9 +290,8 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 
 	// try to look for BOM-ref for this component
 	for _, c := range e.components {
-		if c.Name == component.Name {
-			component.PkgIdentifier =
-				c.PkgIdentifier
+		if c.Name == component.Name && c.Type == component.Type {
+			component.PkgIdentifier = c.PkgIdentifier
 			break
 		}
 	}
