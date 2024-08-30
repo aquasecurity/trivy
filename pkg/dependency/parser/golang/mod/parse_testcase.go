@@ -1,6 +1,10 @@
 package mod
 
-import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+import (
+	"slices"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+)
 
 var (
 	// execute go mod tidy in normal folder
@@ -77,6 +81,10 @@ var (
 			Relationship: ftypes.RelationshipIndirect,
 		},
 	}
+
+	GoModNormalWithoutStdlib = slices.DeleteFunc(slices.Clone(GoModNormal), func(f ftypes.Package) bool {
+		return f.Name == "stdlib"
+	})
 
 	// execute go mod tidy in replaced folder
 	GoModReplaced = []ftypes.Package{

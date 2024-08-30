@@ -14,16 +14,24 @@ import (
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		name    string
-		file    string
-		replace bool
-		want    []ftypes.Package
+		name          string
+		file          string
+		replace       bool
+		useMinVersion bool
+		want          []ftypes.Package
 	}{
+		{
+			name:          "normal with stdlib",
+			file:          "testdata/normal/go.mod",
+			replace:       true,
+			useMinVersion: true,
+			want:          GoModNormal,
+		},
 		{
 			name:    "normal",
 			file:    "testdata/normal/go.mod",
 			replace: true,
-			want:    GoModNormal,
+			want:    GoModNormalWithoutStdlib,
 		},
 		{
 			name:    "without go version",
@@ -86,7 +94,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, _, err := NewParser(tt.replace).Parse(f)
+			got, _, err := NewParser(tt.replace, tt.useMinVersion).Parse(f)
 			require.NoError(t, err)
 
 			sort.Sort(ftypes.Packages(got))
@@ -108,6 +116,15 @@ func TestToolchainVersion(t *testing.T) {
 			modFile: modfile.File{
 				Toolchain: &modfile.Toolchain{
 					Name: "1.21.1",
+				},
+			},
+			want: "1.21.1",
+		},
+		{
+			name: "version from toolchain line with suffix",
+			modFile: modfile.File{
+				Toolchain: &modfile.Toolchain{
+					Name: "1.21.1-custom",
 				},
 			},
 			want: "1.21.1",
@@ -165,15 +182,6 @@ func TestToolchainVersion(t *testing.T) {
 				},
 			},
 			want: "1.21.2",
-		},
-		{
-			name: "'1.21.3-with.dot.in.suffix' from go line",
-			modFile: modfile.File{
-				Go: &modfile.Go{
-					Version: "1.21.3-with.dot.in.suffix",
-				},
-			},
-			want: "1.21.3-with.dot.in.suffix",
 		},
 	}
 
