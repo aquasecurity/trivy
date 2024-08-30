@@ -29,12 +29,14 @@ var (
 )
 
 type Parser struct {
-	replace bool // 'replace' represents if the 'replace' directive should be taken into account.
+	replace       bool // 'replace' represents if the 'replace' directive should be taken into account.
+	useMinVersion bool
 }
 
-func NewParser(replace bool) *Parser {
+func NewParser(replace, useMinVersion bool) *Parser {
 	return &Parser{
-		replace: replace,
+		replace:       replace,
+		useMinVersion: useMinVersion,
 	}
 }
 
@@ -83,8 +85,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		skipIndirect = lessThan(modFileParsed.Go.Version, 1, 17)
 	}
 
-	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`
-	if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); toolchainVer != "" {
+	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`.
+	// Show `stdlib` only with `useMinVersion` flag.
+	if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); p.useMinVersion && toolchainVer != "" {
 		pkgs["stdlib"] = ftypes.Package{
 			ID:           packageID("stdlib", toolchainVer),
 			Name:         "stdlib",
@@ -190,8 +193,11 @@ func lessThan(ver string, majorVer, minorVer int) bool {
 // cf. https://go.dev/doc/toolchain
 func toolchainVersion(toolchain *modfile.Toolchain, goVer *modfile.Go) string {
 	if toolchain != nil && toolchain.Name != "" {
-		// `go1.22.5` => `1.22.5`
-		return strings.TrimPrefix(toolchain.Name, "go")
+		// cf. https://go.dev/doc/toolchain#name
+		// `dropping the initial go and discarding off any suffix beginning with -`
+		// e.g. `go1.22.5-custom` => `1.22.5`
+		name, _, _ := strings.Cut(toolchain.Name, "-")
+		return strings.TrimPrefix(name, "go")
 	}
 
 	if goVer != nil {
@@ -201,18 +207,22 @@ func toolchainVersion(toolchain *modfile.Toolchain, goVer *modfile.Go) string {
 }
 
 // toolchainVersionFromGoLine detects Go version from `go` line if `toolchain` line is omitted
+// `go` line supports the following formats:
+// cf. https://go.dev/doc/toolchain#version
+//   - `1.N.P`. e.g. `1.22.0`
+//   - `1.N`. e.g. `1.22`
+//   - `1.NrcR`. e.g. `1.22rc1`
+//   - `1.NbetaR`. e.g. `1.18beta1` - only for 1.20 or early
 func toolchainVersionFromGoLine(ver string) string {
 	var majorMinorVer string
 
-	// `1.N.P` or `1.N.P-suffix` version
-	// e.g. `1.22.0` or `1.22.0-suffix.with.dot`.
-	if ss := strings.Split(ver, "."); len(ss) > 2 {
+	if ss := strings.Split(ver, "."); len(ss) > 2 { // `1.N.P`
 		majorMinorVer = strings.Join(ss[:2], ".")
-	} else if v, _, rcFound := strings.Cut(ver, "rc"); rcFound { // `1.NrcR` version.  e.g. `1.22rc1`
+	} else if v, _, rcFound := strings.Cut(ver, "rc"); rcFound { // `1.NrcR`
 		majorMinorVer = v
-	} else { // `1.N` version. e.g. `1.22`
+	} else { // `1.N`
 		majorMinorVer = ver
-		// Add patch `0` to get version format
+		// Add `.0` suffix to avoid user confusing
 		ver = v + ".0"
 	}
 
