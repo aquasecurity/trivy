@@ -206,13 +206,13 @@ func toolchainVersion(toolchain *modfile.Toolchain, goVer *modfile.Go) string {
 	return ""
 }
 
-// toolchainVersionFromGoLine detects Go version from `go` line if `toolchain` line is omitted
+// toolchainVersionFromGoLine detects Go version from `go` line if `toolchain` line is omitted.
 // `go` line supports the following formats:
 // cf. https://go.dev/doc/toolchain#version
 //   - `1.N.P`. e.g. `1.22.0`
 //   - `1.N`. e.g. `1.22`
 //   - `1.NrcR`. e.g. `1.22rc1`
-//   - `1.NbetaR`. e.g. `1.18beta1` - only for 1.20 or early
+//   - `1.NbetaR`. e.g. `1.18beta1` - only for Go 1.20 or earlier
 func toolchainVersionFromGoLine(ver string) string {
 	var majorMinorVer string
 
@@ -222,7 +222,8 @@ func toolchainVersionFromGoLine(ver string) string {
 		majorMinorVer = v
 	} else { // `1.N`
 		majorMinorVer = ver
-		// Add `.0` suffix to avoid user confusing
+		// Add `.0` suffix to avoid user confusing.
+		// See https://github.com/aquasecurity/trivy/pull/7163#discussion_r1682424315
 		ver = v + ".0"
 	}
 
