@@ -69,6 +69,12 @@ The vulnerability database will be downloaded anyway.
 !!! Warning
     Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
 
+### scopes
+Trivy supports `runtime`, `compile`, `test` and `import` (for `dependencyManagement`) [dependency scopes][dependency-scopes].
+Dependencies without scope are also detected.
+
+!!! Note
+    To detect dependencies with `test` scope, you need to use `--include-dev-deps` flag.
 
 ### maven-invoker-plugin
 Typically, the integration tests directory (`**/[src|target]/it/*/pom.xml`) of [maven-invoker-plugin][maven-invoker-plugin] doesn't contain actual `pom.xml` files and should be skipped to avoid noise.
@@ -120,3 +126,4 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [maven-pom-repos]: https://maven.apache.org/settings.html#repositories
 [sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority
+[dependency-scopes]: https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
