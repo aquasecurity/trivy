@@ -129,9 +129,10 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 	}
 
 	// Parse PURL
-	var purl packageurl.PackageURL
+	var purl *packageurl.PackageURL
 	if c.PackageURL != "" {
-		purl, err = packageurl.FromString(c.PackageURL)
+		purl = &packageurl.PackageURL{}
+		*purl, err = packageurl.FromString(c.PackageURL)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse PURL: %w", err)
 		}
@@ -149,7 +150,7 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 			},
 		},
 		PkgIdentifier: ftypes.PkgIdentifier{
-			PURL:   &purl,
+			PURL:   purl,
 			BOMRef: c.BOMRef,
 		},
 		Supplier:   b.unmarshalSupplier(c.Supplier),

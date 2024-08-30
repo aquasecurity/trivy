@@ -20,7 +20,6 @@
       "bom-ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
       "type": "container",
       "name": "integration/testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
-      "purl": "pkg:/",
       "properties": [
         {
           "name": "aquasecurity:trivy:DiffID",
@@ -155,7 +154,7 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000006",
+      "ref": "353f2470-9c8b-4647-9d0d-96d893838dc8",
       "dependsOn": [
         "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
         "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2"
@@ -164,7 +163,7 @@
     {
       "ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
       "dependsOn": [
-        "3ff14136-e09f-4df9-80ea-000000000006",
+        "353f2470-9c8b-4647-9d0d-96d893838dc8",
         "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec"
       ]
     },

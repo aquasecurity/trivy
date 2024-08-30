@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -19,8 +20,9 @@ import (
 )
 
 type Encoder struct {
-	bom  *core.BOM
-	opts core.Options
+	bom        *core.BOM
+	opts       core.Options
+	components map[uuid.UUID]*core.Component
 }
 
 func NewEncoder(opts core.Options) *Encoder {
@@ -28,6 +30,9 @@ func NewEncoder(opts core.Options) *Encoder {
 }
 
 func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
+	if report.BOM != nil {
+		e.components = report.BOM.Components()
+	}
 	// Metadata component
 	root, err := e.rootComponent(report)
 	if err != nil {
@@ -281,6 +286,15 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 		component.Type = core.TypeOS
 	case types.ClassLangPkg:
 		component.Type = core.TypeApplication
+	}
+
+	// try to look for BOM-ref for this component
+	for _, c := range e.components {
+		if c.Name == component.Name {
+			component.PkgIdentifier =
+				c.PkgIdentifier
+			break
+		}
 	}
 
 	e.bom.AddRelationship(root, component, core.RelationshipContains)
