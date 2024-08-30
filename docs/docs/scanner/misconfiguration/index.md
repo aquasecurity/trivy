@@ -534,7 +534,7 @@ If you want to ignore multiple resources on different attributes, you can specif
 #trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]
 ```
 
-You can also ignore a resource on multiple attributes:
+You can also ignore a resource on multiple attributes in the same rule:
 ```tf
 locals {
   rules = {
@@ -563,10 +563,7 @@ resource "aws_security_group_rule" "example" {
 }
 ```
 
-Checks can also be ignored by nested attributes, but certain restrictions apply:
-
-- You cannot access an individual block using indexes, for example when working with dynamic blocks.
-- Special variables like [each](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each#the-each-object) and [count](https://developer.hashicorp.com/terraform/language/meta-arguments/count#the-count-object) cannot be accessed.
+Checks can also be ignored by nested attributes:
 
 ```tf
 #trivy:ignore:*[logging_config.prefix=myprefix]

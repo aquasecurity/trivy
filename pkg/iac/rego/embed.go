@@ -54,12 +54,14 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 	for _, module := range modules {
 		metadata, err := retriever.RetrieveMetadata(ctx, module)
 		if err != nil {
-			log.Warn("Failed to retrieve metadata", log.String("avdid", metadata.AVDID), log.Err(err))
+			log.Warn("Failed to retrieve metadata", log.String("package", module.Package.String()), log.Err(err))
 			continue
 		}
 
 		if metadata.AVDID == "" {
-			log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
+			if !metadata.Library {
+				log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
+			}
 			continue
 		}
 

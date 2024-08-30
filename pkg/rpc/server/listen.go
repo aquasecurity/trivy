@@ -72,13 +72,13 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 		}
 	}()
 
-	mux := s.newServeMux(ctx, serverCache, dbUpdateWg, requestWg)
+	mux := s.NewServeMux(ctx, serverCache, dbUpdateWg, requestWg)
 	log.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
 
-func (s Server) newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup) *http.ServeMux {
+func (s Server) NewServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
