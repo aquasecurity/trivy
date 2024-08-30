@@ -27,12 +27,9 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			Provider:           "pr",
 			Service:            "srvc",
 			Library:            false,
-			Frameworks: map[framework.Framework][]string{
-				framework.Default: {"dd"},
-			},
 		}
 
-		require.NoError(t, sm.Update(
+		require.NoError(t, sm.update(
 			map[string]any{
 				"id":                  "i_n",
 				"avd_id":              "a_n",
@@ -68,8 +65,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			Service:            "srvc_n",
 			Library:            true,
 			Frameworks: map[framework.Framework][]string{
-				framework.Default: {"dd"},
-				framework.ALL:     {"aa"},
+				framework.ALL: {"aa"},
 			},
 			CloudFormation: &scan.EngineMetadata{},
 			Terraform:      &scan.EngineMetadata{},
@@ -82,7 +78,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		sm := StaticMetadata{
 			References: []string{"r"},
 		}
-		require.NoError(t, sm.Update(map[string]any{
+		require.NoError(t, sm.update(map[string]any{
 			"related_resources": []map[string]any{
 				{
 					"ref": "r1_n",
@@ -107,7 +103,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		sm := StaticMetadata{
 			References: []string{"r"},
 		}
-		require.NoError(t, sm.Update(map[string]any{
+		require.NoError(t, sm.update(map[string]any{
 			"related_resources": []string{"r1_n", "r2_n"},
 		}))
 
@@ -125,7 +121,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		sm := StaticMetadata{
 			Deprecated: false,
 		}
-		require.NoError(t, sm.Update(map[string]any{
+		require.NoError(t, sm.update(map[string]any{
 			"deprecated": true,
 		}))
 
@@ -141,7 +137,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 
 	t.Run("frameworks is not initialized", func(t *testing.T) {
 		sm := StaticMetadata{}
-		err := sm.Update(map[string]any{
+		err := sm.update(map[string]any{
 			"frameworks": map[string]any{"all": []any{"a", "b", "c"}},
 		})
 		require.NoError(t, err)

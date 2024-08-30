@@ -119,7 +119,9 @@ deny[res] {
 		CloudFormation: &scan.EngineMetadata{},
 		CustomChecks:   scan.CustomChecks{Terraform: (*scan.TerraformCustomCheck)(nil)},
 		RegoPackage:    "data.builtin.kubernetes.KSV011",
-		Frameworks:     make(map[framework.Framework][]string),
+		Frameworks: map[framework.Framework][]string{
+			framework.Default: {},
+		},
 	}, results.GetFailed()[0].Rule())
 
 	failure := results.GetFailed()[0]
@@ -279,7 +281,9 @@ deny[res] {
 		CloudFormation: &scan.EngineMetadata{},
 		CustomChecks:   scan.CustomChecks{Terraform: (*scan.TerraformCustomCheck)(nil)},
 		RegoPackage:    "data.builtin.kubernetes.KSV011",
-		Frameworks:     make(map[framework.Framework][]string),
+		Frameworks: map[framework.Framework][]string{
+			framework.Default: {},
+		},
 	}, results.GetFailed()[0].Rule())
 
 	failure := results.GetFailed()[0]

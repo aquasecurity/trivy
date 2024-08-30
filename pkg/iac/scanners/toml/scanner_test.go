@@ -76,7 +76,9 @@ deny[res] {
 		CustomChecks: scan.CustomChecks{
 			Terraform: (*scan.TerraformCustomCheck)(nil)},
 		RegoPackage: "data.builtin.toml.lol",
-		Frameworks:  make(map[framework.Framework][]string),
+		Frameworks: map[framework.Framework][]string{
+			framework.Default: {},
+		},
 	},
 		results.GetFailed()[0].Rule(),
 	)

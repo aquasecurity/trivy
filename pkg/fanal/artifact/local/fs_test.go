@@ -299,15 +299,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/misconfig/terraform/single-failure",
 			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
-					Namespaces:               []string{"user"},
-					PolicyPaths:              []string{"./testdata/misconfig/terraform/rego"},
-					DisableEmbeddedPolicies:  true,
-					DisableEmbeddedLibraries: true,
-				},
-			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
@@ -351,15 +342,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			name: "multiple failures",
 			fields: fields{
 				dir: "./testdata/misconfig/terraform/multiple-failures",
-			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
-					Namespaces:               []string{"user"},
-					PolicyPaths:              []string{"./testdata/misconfig/terraform/rego"},
-					DisableEmbeddedPolicies:  true,
-					DisableEmbeddedLibraries: true,
-				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -437,13 +419,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/misconfig/terraform/no-results",
 			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
-				},
-			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
@@ -466,15 +441,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			name: "passed",
 			fields: fields{
 				dir: "./testdata/misconfig/terraform/passed",
-			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
-					Namespaces:               []string{"user"},
-					PolicyPaths:              []string{"./testdata/misconfig/terraform/rego"},
-					DisableEmbeddedPolicies:  true,
-					DisableEmbeddedLibraries: true,
-				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -515,15 +481,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			name: "multiple failures busted relative paths",
 			fields: fields{
 				dir: "./testdata/misconfig/terraform/busted-relative-paths/child/main.tf",
-			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
-					Namespaces:               []string{"user"},
-					PolicyPaths:              []string{"./testdata/misconfig/terraform/rego"},
-					DisableEmbeddedPolicies:  true,
-					DisableEmbeddedLibraries: true,
-				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -584,12 +541,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					Namespaces:              []string{"user"},
-					PolicyPaths:             []string{"./testdata/misconfig/terraform/rego"},
-					TerraformTFVars:         []string{"./testdata/misconfig/terraform/tfvar-outside/main.tfvars"},
-					TfExcludeDownloaded:     true,
-					DisableEmbeddedPolicies: true,
+					TerraformTFVars: []string{"./testdata/misconfig/terraform/tfvar-outside/main.tfvars"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -631,14 +583,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			name: "relative paths",
 			fields: fields{
 				dir: "./testdata/misconfig/terraform/relative-paths/child",
-			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					Namespaces:              []string{"user"},
-					PolicyPaths:             []string{"./testdata/misconfig/terraform/rego"},
-					DisableEmbeddedPolicies: true,
-				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -726,6 +670,8 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				types.SystemFileFilteringPostHandler,
 			}
 			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
+			tt.artifactOpt.MisconfScannerOption.Namespaces = []string{"user"}
+			tt.artifactOpt.MisconfScannerOption.PolicyPaths = []string{"./testdata/misconfig/terraform/rego"}
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -972,9 +918,8 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 					types.SystemFileFilteringPostHandler,
 				},
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					DisableEmbeddedPolicies: true,
-
+					RegoOnly:                 true,
+					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: false,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{tmpDir},
@@ -983,7 +928,6 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 					SkipFiles: []string{"*.tf"},
 				},
 			}
-
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), opt)
 			require.NoError(t, err)
 
@@ -1015,7 +959,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/single-failure/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1077,7 +1020,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/multiple-failures/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1161,7 +1103,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/no-results/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1194,7 +1135,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/params/code/rego"},
 					CloudFormationParamVars:  []string{"./testdata/misconfig/cloudformation/params/cfparams.json"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1251,7 +1191,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/passed/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1339,7 +1278,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/dockerfile/single-failure/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1397,7 +1335,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/dockerfile/multiple-failures/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1485,7 +1422,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/dockerfile/passed/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1543,6 +1479,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -1574,7 +1511,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/kubernetes/single-failure/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1637,7 +1573,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/kubernetes/multiple-failures/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1753,7 +1688,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/kubernetes/passed/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -1811,6 +1745,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -2068,6 +2003,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -2099,7 +2035,6 @@ func TestMixedConfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/mixed/rego"},
-					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},
 			},
@@ -2184,6 +2119,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -2217,10 +2153,9 @@ func TestJSONConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					Namespaces:              []string{"user"},
-					PolicyPaths:             []string{"./testdata/misconfig/json/passed/checks"},
-					DisableEmbeddedPolicies: true,
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/json/passed/checks"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -2291,10 +2226,9 @@ func TestJSONConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					Namespaces:              []string{"user"},
-					PolicyPaths:             []string{"./testdata/misconfig/json/with-schema/checks"},
-					DisableEmbeddedPolicies: true,
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/json/with-schema/checks"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -2342,6 +2276,7 @@ func TestJSONConfigScan(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			if len(tt.fields.schemas) > 0 {
 				schemas, err := misconf.LoadConfigSchemas(tt.fields.schemas)
 				require.NoError(t, err)
@@ -2381,10 +2316,9 @@ func TestYAMLConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					Namespaces:              []string{"user"},
-					PolicyPaths:             []string{"./testdata/misconfig/yaml/passed/checks"},
-					DisableEmbeddedPolicies: true,
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/yaml/passed/checks"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -2455,10 +2389,9 @@ func TestYAMLConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					Namespaces:              []string{"user"},
-					PolicyPaths:             []string{"./testdata/misconfig/yaml/with-schema/checks"},
-					DisableEmbeddedPolicies: true,
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/yaml/with-schema/checks"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -2506,6 +2439,7 @@ func TestYAMLConfigScan(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			if len(tt.fields.schemas) > 0 {
 				schemas, err := misconf.LoadConfigSchemas(tt.fields.schemas)
 				require.NoError(t, err)

@@ -290,6 +290,11 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 		if err != nil {
 			return err
 		}
+
+		if !meta.hasAnyFramework(s.frameworks) {
+			continue
+		}
+
 		if len(meta.InputOptions.Selectors) == 0 {
 			s.logger.Warn(
 				"Module has no input selectors - it will be loaded for all inputs!",
