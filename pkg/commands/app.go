@@ -128,7 +128,7 @@ func loadPluginCommands() []*cobra.Command {
 	var commands []*cobra.Command
 	plugins, err := plugin.NewManager().LoadAll(ctx)
 	if err != nil {
-		log.Debug("No plugins loaded")
+		log.DebugContext(ctx, "No plugins loaded")
 		return nil
 	}
 	for _, p := range plugins {
@@ -160,7 +160,7 @@ func initConfig(configFile string, pathChanged bool) error {
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			if !pathChanged {
-				log.Debug(fmt.Sprintf("Default config file %q not found, using built in values", log.FilePath(configFile)))
+				log.Debugf("Default config file %q not found, using built in values", log.FilePath(configFile))
 				return nil
 			}
 		}
