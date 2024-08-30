@@ -18,7 +18,7 @@ The table below provides an outline of the features Trivy offers.
 
 | Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] | Stdlib | [Detection Priority][detection-priority] |
 |----------|:-----------:|:-----------------|:------------------------------------:|:------:|:----------------------------------------:|
-| Modules  |      ✅      | Include          |                ✅[^2]                 | ✅[^6]  |                    -                     |
+| Modules  |      ✅      | Include          |                ✅[^2]                 | ✅[^6]  |               [✅](#stdlib)               |
 | Binaries |      ✅      | Exclude          |                  -                   | ✅[^4]  |                Not needed                |
 
 !!! note
@@ -66,6 +66,8 @@ such as `go mod download`, `go mod tidy`, etc.
 Trivy traverses `$GOPATH/pkg/mod` and collects those extra information.
 
 #### stdlib
+If [--detection-priority comprehensive][detection-priority] is passed, Trivy determines the minimum version of `Go` and saves it as a `stdlib` dependency.
+
 By default, `Go` selects the higher version from of `toolchan` or local version of `Go`. 
 See [toolchain] for more details.
 
