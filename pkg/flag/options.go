@@ -119,10 +119,10 @@ func (f *Flag[T]) Parse() error {
 	}
 
 	if f.Deprecated != "" && f.isSet() {
-		log.DeferredLogger.Warn(fmt.Sprintf(`"--%s" is deprecated. %s`, f.Name, f.Deprecated))
+		log.Warn(fmt.Sprintf(`"--%s" is deprecated. %s`, f.Name, f.Deprecated))
 	}
 	if f.Removed != "" && f.isSet() {
-		log.DeferredLogger.Error(fmt.Sprintf(`"--%s" was removed. %s`, f.Name, f.Removed))
+		log.Error(fmt.Sprintf(`"--%s" was removed. %s`, f.Name, f.Removed))
 		return xerrors.Errorf(`removed flag ("--%s")`, f.Name)
 	}
 
@@ -140,7 +140,7 @@ func (f *Flag[T]) parse() any {
 		}
 		v = viper.Get(alias.ConfigName)
 		if v != nil {
-			log.DeferredLogger.Warn(fmt.Sprintf("'%s' in config file is deprecated. Use '%s' instead.", alias.ConfigName, f.ConfigName))
+			log.Warn(fmt.Sprintf("'%s' in config file is deprecated. Use '%s' instead.", alias.ConfigName, f.ConfigName))
 			return v
 		}
 	}
@@ -307,7 +307,7 @@ func (f *Flag[T]) BindEnv() error {
 		}
 		if alias.Deprecated {
 			if _, ok := os.LookupEnv(envAlias); ok {
-				log.DeferredLogger.Warn(fmt.Sprintf("'%s' is deprecated. Use '%s' instead.", envAlias, envName))
+				log.Warn(fmt.Sprintf("'%s' is deprecated. Use '%s' instead.", envAlias, envName))
 			}
 		}
 	}
@@ -848,7 +848,7 @@ func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.Normaliz
 			if alias.deprecated {
 				// NormalizeFunc is called several times
 				alias.once.Do(func() {
-					log.DeferredLogger.Warn(fmt.Sprintf("'--%s' is deprecated. Use '--%s' instead.", name, alias.formalName))
+					log.Warn(fmt.Sprintf("'--%s' is deprecated. Use '--%s' instead.", name, alias.formalName))
 				})
 			}
 			name = alias.formalName
