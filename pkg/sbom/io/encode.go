@@ -262,6 +262,16 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	}
 }
 
+// existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
+func (e *Encoder) existedPkgIdentifier(name string, componentType core.ComponentType) ftypes.PkgIdentifier {
+	for _, c := range e.components {
+		if c.Name == name && c.Type == componentType {
+			return c.PkgIdentifier
+		}
+	}
+	return ftypes.PkgIdentifier{}
+}
+
 func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
@@ -284,16 +294,10 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 			component.Version = osFound.Name
 		}
 		component.Type = core.TypeOS
+		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	case types.ClassLangPkg:
 		component.Type = core.TypeApplication
-	}
-
-	// try to look for BOM-ref for this component
-	for _, c := range e.components {
-		if c.Name == component.Name && c.Type == component.Type {
-			component.PkgIdentifier = c.PkgIdentifier
-			break
-		}
+		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	}
 
 	e.bom.AddRelationship(root, component, core.RelationshipContains)
