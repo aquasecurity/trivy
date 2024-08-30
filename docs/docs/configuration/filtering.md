@@ -238,7 +238,7 @@ You can filter the results by
 To show the suppressed results, use the `--show-suppressed` flag.
 
 !!! note
-    This flag is currently available only in the table format.
+    It's exported as `ExperimentalModifiedFindings` in the JSON output.
 
 ```bash
 $ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11

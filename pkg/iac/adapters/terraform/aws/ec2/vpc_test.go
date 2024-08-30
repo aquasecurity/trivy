@@ -102,6 +102,9 @@ func Test_AdaptVPC(t *testing.T) {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(80),
+								ToPort:   iacTypes.IntTest(80),
+								Protocol: iacTypes.StringTest("tcp"),
 							},
 							{
 								Metadata: iacTypes.NewTestMetadata(),
@@ -111,6 +114,9 @@ func Test_AdaptVPC(t *testing.T) {
 									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(22),
+								ToPort:   iacTypes.IntTest(22),
+								Protocol: iacTypes.StringTest("tcp"),
 							},
 						},
 
@@ -121,6 +127,8 @@ func Test_AdaptVPC(t *testing.T) {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 					},
@@ -137,6 +145,8 @@ func Test_AdaptVPC(t *testing.T) {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.String("10.0.0.0/16", iacTypes.NewTestMetadata()),
 								},
+								FromPort: iacTypes.IntTest(22),
+								ToPort:   iacTypes.IntTest(22),
 							},
 						},
 						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
@@ -169,6 +179,8 @@ func Test_AdaptVPC(t *testing.T) {
 							{
 								Metadata:    iacTypes.NewTestMetadata(),
 								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
+								FromPort:    iacTypes.IntTest(-1),
+								ToPort:      iacTypes.IntTest(-1),
 							},
 						},
 
@@ -176,6 +188,8 @@ func Test_AdaptVPC(t *testing.T) {
 							{
 								Metadata:    iacTypes.NewTestMetadata(),
 								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
+								FromPort:    iacTypes.IntTest(-1),
+								ToPort:      iacTypes.IntTest(-1),
 							},
 						},
 					},
@@ -188,7 +202,9 @@ func Test_AdaptVPC(t *testing.T) {
 								Metadata: iacTypes.NewTestMetadata(),
 								Type:     iacTypes.String("ingress", iacTypes.NewTestMetadata()),
 								Action:   iacTypes.String("", iacTypes.NewTestMetadata()),
-								Protocol: iacTypes.String("-1", iacTypes.NewTestMetadata()),
+								Protocol: iacTypes.String("", iacTypes.NewTestMetadata()),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
@@ -252,6 +268,9 @@ resource "aws_vpc_security_group_ingress_rule" "test" {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.StringTest("0.0.0.0/0"),
 								},
+								Protocol: iacTypes.StringTest("tcp"),
+								FromPort: iacTypes.IntTest(22),
+								ToPort:   iacTypes.IntTest(22),
 							},
 						},
 						EgressRules: []ec2.SecurityGroupRule{
@@ -259,6 +278,9 @@ resource "aws_vpc_security_group_ingress_rule" "test" {
 								CIDRs: []iacTypes.StringValue{
 									iacTypes.StringTest("0.0.0.0/0"),
 								},
+								Protocol: iacTypes.StringTest("-1"),
+								FromPort: iacTypes.IntTest(-1),
+								ToPort:   iacTypes.IntTest(-1),
 							},
 						},
 					},

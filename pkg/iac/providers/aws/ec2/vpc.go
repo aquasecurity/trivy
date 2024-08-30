@@ -23,6 +23,9 @@ type SecurityGroupRule struct {
 	Metadata    iacTypes.Metadata
 	Description iacTypes.StringValue
 	CIDRs       []iacTypes.StringValue
+	Protocol    iacTypes.StringValue
+	FromPort    iacTypes.IntValue
+	ToPort      iacTypes.IntValue
 }
 
 type VPC struct {
@@ -49,4 +52,6 @@ type NetworkACLRule struct {
 	Action   iacTypes.StringValue
 	Protocol iacTypes.StringValue
 	CIDRs    []iacTypes.StringValue
+	FromPort iacTypes.IntValue
+	ToPort   iacTypes.IntValue
 }
