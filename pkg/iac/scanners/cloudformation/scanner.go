@@ -64,8 +64,8 @@ type Scanner struct {
 	includeDeprecatedChecks bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {
-	s.includeDeprecatedChecks = true
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
+	s.includeDeprecatedChecks = b
 }
 
 func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
