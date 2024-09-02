@@ -24,7 +24,7 @@ func TestNormalize(t *testing.T) {
 		normalizedKey string
 	}{
 		{
-			[]string{
+			licenses: []string{
 				"  the apache license  ",
 				"  the\tapache  \r\nlicense  \r\n ",
 				" apache ",
@@ -100,28 +100,28 @@ func TestNormalize(t *testing.T) {
 				"the apache license",
 				"the apache license",
 			},
-			"Apache-2.0",
-			"Apache-2.0",
+			normalized:    "Apache-2.0",
+			normalizedKey: "Apache-2.0",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"Apache+",
 			},
-			"Apache-2.0+",
-			"Apache-2.0",
+			normalized:    "Apache-2.0+",
+			normalizedKey: "Apache-2.0",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) V1.1",
 				"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) VERSION 1.1",
 				"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), VERSION 1.1",
 				"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE 1.1 (CDDL-1.1)",
 			},
-			"CDDL-1.1",
-			"CDDL-1.1",
+			normalized:    "CDDL-1.1",
+			normalizedKey: "CDDL-1.1",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"ECLIPSE PUBLIC LICENSE (EPL) 1.0",
 				"ECLIPSE PUBLIC LICENSE (EPL), VERSION 1.0",
 				"ECLIPSE PUBLIC LICENSE - V 1.0",
@@ -135,50 +135,50 @@ func TestNormalize(t *testing.T) {
 				"ECLIPSE PUBLIC LICENSE, VERSION 1.0",
 				"ECLIPSE PUBLIC",
 			},
-			"EPL-1.0",
-			"EPL-1.0",
+			normalized:    "EPL-1.0",
+			normalizedKey: "EPL-1.0",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"EUROPEAN UNION PUBLIC LICENSE (EUPL V.1.1)",
 				"EUROPEAN UNION PUBLIC LICENSE 1.1 (EUPL 1.1)",
 				"EUROPEAN UNION PUBLIC LICENSE 1.1",
 				"EUROPEAN UNION PUBLIC LICENSE, VERSION 1.1",
 			},
-			"EUPL-1.1",
-			"EUPL-1.1",
+			normalized:    "EUPL-1.1",
+			normalizedKey: "EUPL-1.1",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"GPL-or-later",
 				"GPL+",
 				"GPL-2.0-only+",
 			},
-			"GPL-2.0-or-later",
-			"GPL-2.0",
+			normalized:    "GPL-2.0-or-later",
+			normalizedKey: "GPL-2.0",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"GPL (≥ 3)",
 				"GPL3+",
 				"GPL3-or-later",
 				"GPL3 or later licence",
 			},
-			"GPL-3.0-or-later",
-			"GPL-3.0",
+			normalized:    "GPL-3.0-or-later",
+			normalizedKey: "GPL-3.0",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"GNU GENERAL PUBLIC LICENSE 3",
 				"GNU GENERAL PUBLIC LICENSE (GPL) V. 3",
 				"GNU GENERAL PUBLIC LICENSE VERSION 3 (GPL V3)",
 			},
-			"GPL-3.0-only",
-			"GPL-3.0",
+			normalized:    "GPL-3.0-only",
+			normalizedKey: "GPL-3.0",
 		},
 
 		{
-			[]string{
+			licenses: []string{
 				"LGPL LICENSE-3",
 				"GNU LESSER GENERAL PUBLIC LICENSE V3",
 				"GNU LESSER GENERAL PUBLIC LICENSE V3.0",
@@ -189,34 +189,34 @@ func TestNormalize(t *testing.T) {
 				"GNU GENERAL LESSER PUBLIC LICENSE (LGPL) VERSION 3.0",
 				"GNU LESSER GENERAL PUBLIC LICENSE (LGPL), VERSION 3",
 			},
-			"LGPL-3.0-only",
-			"LGPL-3.0",
+			normalized:    "LGPL-3.0-only",
+			normalizedKey: "LGPL-3.0",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"The Unlicense",
 				"Unlicense",
 				"Unlicensed",
 				"UNLICENSE",
 				"UNLICENSED",
 			},
-			"Unlicense",
-			"Unlicense",
+			normalized:    "Unlicense",
+			normalizedKey: "Unlicense",
 		},
 		{
-			[]string{
+			licenses: []string{
 				"MIT License",
 				"http://json.codeplex.com/license",
 			},
-			"MIT",
-			"MIT",
+			normalized:    "MIT",
+			normalizedKey: "MIT",
 		},
 		{
-			[]string{
+			licenses: []string{
 				" The unmapped license ",
 			},
-			" The unmapped license ",
-			" The unmapped license ",
+			normalized:    " The unmapped license ",
+			normalizedKey: " The unmapped license ",
 		},
 	}
 	for _, tt := range tests {
