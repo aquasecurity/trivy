@@ -38,7 +38,7 @@ func TestRegistry_CheckOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := azure.Registry{}
-			err := r.CheckOptions(tt.domain, types.RegistryOptions{})
+			_, err := r.CheckOptions(tt.domain, types.RegistryOptions{})
 			if tt.wantErr != "" {
 				assert.EqualError(t, err, tt.wantErr)
 			} else {

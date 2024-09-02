@@ -9,12 +9,16 @@ import (
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/store"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-type Registry struct {
+type GoogleRegistryClient struct {
 	Store  store.GCRCredStore
 	domain string
+}
+
+type Registry struct {
 }
 
 // Google container registry
@@ -24,18 +28,18 @@ const gcrURLSuffix = ".gcr.io"
 // Google artifact registry
 const garURLSuffix = "-docker.pkg.dev"
 
-func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) error {
+func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {
 	if domain != gcrURLDomain && !strings.HasSuffix(domain, gcrURLSuffix) && !strings.HasSuffix(domain, garURLSuffix) {
-		return xerrors.Errorf("Google registry: %w", types.InvalidURLPattern)
+		return nil, xerrors.Errorf("Google registry: %w", types.InvalidURLPattern)
 	}
-	g.domain = domain
+	client := GoogleRegistryClient{domain: domain}
 	if option.GCPCredPath != "" {
-		g.Store = store.NewGCRCredStore(option.GCPCredPath)
+		client.Store = store.NewGCRCredStore(option.GCPCredPath)
 	}
-	return nil
+	return &client, nil
 }
 
-func (g *Registry) GetCredential(_ context.Context) (username, password string, err error) {
+func (g *GoogleRegistryClient) GetCredential(_ context.Context) (username, password string, err error) {
 	var credStore store.GCRCredStore
 	if g.Store == nil {
 		credStore, err = store.DefaultGCRCredStore()
