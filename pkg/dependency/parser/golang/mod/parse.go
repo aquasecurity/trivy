@@ -87,16 +87,15 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`.
 	// Show `stdlib` only with `useMinVersion` flag.
-	if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); p.useMinVersion && toolchainVer != "" {
-		pkgs["stdlib"] = ftypes.Package{
-			ID:           packageID("stdlib", toolchainVer),
-			Name:         "stdlib",
-			Version:      toolchainVer,
-			Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+	if p.useMinVersion {
+		if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); toolchainVer != "" {
+			pkgs["stdlib"] = ftypes.Package{
+				ID:           packageID("stdlib", toolchainVer),
+				Name:         "stdlib",
+				Version:      toolchainVer,
+				Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+			}
 		}
-	}
-	if toolchain := modFileParsed.Toolchain; toolchain != nil {
-
 	}
 
 	// Main module
