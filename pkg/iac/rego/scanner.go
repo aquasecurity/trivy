@@ -152,6 +152,8 @@ type DynamicMetadata struct {
 }
 
 func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
+	LoadAndRegister()
+
 	schema, ok := schemas.SchemaMap[source]
 	if !ok {
 		schema = schemas.Anything
