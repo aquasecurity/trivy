@@ -33,11 +33,18 @@ func New(h slog.Handler) *Logger {
 	return slog.New(h)
 }
 
-// InitLogger initialize the logger variable
+// InitLogger initializes the logger variable and flushes the buffered logs if needed.
 func InitLogger(debug, disable bool) {
 	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
 	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
-	slog.SetDefault(New(NewHandler(out, &Options{Level: level})))
+	h := NewHandler(out, &Options{Level: level})
+
+	// Flush the buffered logs if needed.
+	if d, ok := slog.Default().Handler().(*DeferredHandler); ok {
+		d.Flush(h)
+	}
+
+	slog.SetDefault(New(h))
 }
 
 var (
