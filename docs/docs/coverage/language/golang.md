@@ -18,7 +18,7 @@ The table below provides an outline of the features Trivy offers.
 
 | Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] | Stdlib | [Detection Priority][detection-priority] |
 |----------|:-----------:|:-----------------|:------------------------------------:|:------:|:----------------------------------------:|
-| Modules  |      ✅      | Include          |                ✅[^2]                 |   -    |                    -                     |
+| Modules  |      ✅      | Include          |                ✅[^2]                 | ✅[^6]  |               [✅](#stdlib)               |
 | Binaries |      ✅      | Exclude          |                  -                   | ✅[^4]  |                Not needed                |
 
 !!! note
@@ -65,6 +65,23 @@ To identify licenses and dependency relationships, you need to download modules 
 such as `go mod download`, `go mod tidy`, etc.
 Trivy traverses `$GOPATH/pkg/mod` and collects those extra information.
 
+#### stdlib
+If [--detection-priority comprehensive][detection-priority] is passed, Trivy determines the minimum version of `Go` and saves it as a `stdlib` dependency.
+
+By default, `Go` selects the higher version from of `toolchan` or local version of `Go`. 
+See [toolchain] for more details.
+
+To obtain reproducible scan results Trivy doesn't check the local version of `Go`.
+Trivy shows the minimum required version for the `go.mod` file, obtained from `toolchain` line (or from the `go` line, if `toolchain` line is omitted).
+
+!!! note
+    Trivy detects `stdlib` only for `Go` 1.21 or higher.
+
+    The version from the `go` line (for `Go` 1.20 or early) is not a minimum required version.
+    For details, see [this](https://go.googlesource.com/proposal/+/master/design/57001-gotoolchain.md).
+    
+    
+
 ### Go binaries
 Trivy scans binaries built by Go, which include [module information](https://tip.golang.org/doc/go1.18#go-version).
 If there is a Go binary in your container image, Trivy automatically finds and scans it.
@@ -93,6 +110,8 @@ empty if it cannot do so[^5]. For the second case, the version of such packages 
 [^3]: See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477
 [^4]: Identify the Go version used to compile the binary and detect its vulnerabilities
 [^5]: See https://github.com/golang/go/issues/63432#issuecomment-1751610604
+[^6]: Only available if `toolchain` directive exists
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[toolchain]: https://go.dev/doc/toolchain
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority
