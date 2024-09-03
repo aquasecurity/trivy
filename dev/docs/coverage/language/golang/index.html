@@ -1929,6 +1929,19 @@ You're not viewing the latest version.
     Go Modules
   </a>
   
+    <nav class="md-nav" aria-label="Go Modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdlib" class="md-nav__link">
+    stdlib
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -4107,6 +4120,19 @@ You're not viewing the latest version.
     Go Modules
   </a>
   
+    <nav class="md-nav" aria-label="Go Modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdlib" class="md-nav__link">
+    stdlib
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -4201,8 +4227,8 @@ Trivy uses Go Vulnerability Database for standard packages, such as <code>net/ht
 <td align="center">✅</td>
 <td align="left">Include</td>
 <td align="center">✅<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
-<td align="center">-</td>
-<td align="center">-</td>
+<td align="center">✅<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup></td>
+<td align="center"><a href="#stdlib">✅</a></td>
 </tr>
 <tr>
 <td>Binaries</td>
@@ -4267,6 +4293,18 @@ require (
 <p>To identify licenses and dependency relationships, you need to download modules to local cache beforehand,
 such as <code>go mod download</code>, <code>go mod tidy</code>, etc.
 Trivy traverses <code>$GOPATH/pkg/mod</code> and collects those extra information.</p>
+<h4 id="stdlib">stdlib</h4>
+<p>If <a href="../../../scanner/vulnerability/#detection-priority">--detection-priority comprehensive</a> is passed, Trivy determines the minimum version of <code>Go</code> and saves it as a <code>stdlib</code> dependency.</p>
+<p>By default, <code>Go</code> selects the higher version from of <code>toolchan</code> or local version of <code>Go</code>. 
+See <a href="https://go.dev/doc/toolchain">toolchain</a> for more details.</p>
+<p>To obtain reproducible scan results Trivy doesn't check the local version of <code>Go</code>.
+Trivy shows the minimum required version for the <code>go.mod</code> file, obtained from <code>toolchain</code> line (or from the <code>go</code> line, if <code>toolchain</code> line is omitted).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Trivy detects <code>stdlib</code> only for <code>Go</code> 1.21 or higher.</p>
+<p>The version from the <code>go</code> line (for <code>Go</code> 1.20 or early) is not a minimum required version.
+For details, see <a href="https://go.googlesource.com/proposal/+/master/design/57001-gotoolchain.md">this</a>.</p>
+</div>
 <h3 id="go-binaries">Go binaries</h3>
 <p>Trivy scans binaries built by Go, which include <a href="https://tip.golang.org/doc/go1.18#go-version">module information</a>.
 If there is a Go binary in your container image, Trivy automatically finds and scans it.</p>
@@ -4303,6 +4341,9 @@ empty if it cannot do so<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5
 </li>
 <li id="fn:5">
 <p>See https://github.com/golang/go/issues/63432#issuecomment-1751610604&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:6">
+<p>Only available if <code>toolchain</code> directive exists&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
