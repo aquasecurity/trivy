@@ -125,11 +125,6 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "egg zip doesn't contain required files",
-			dir:  "testdata/no-req-files",
-			want: &analyzer.AnalysisResult{},
-		},
-		{
 			name: "license file in dist.info",
 			dir:  "testdata/license-file-dist",
 			want: &analyzer.AnalysisResult{
