@@ -329,6 +329,7 @@ func toSarifErrorLevel(severity string) string {
 }
 
 func toSarifRank(cvssScore *float64) float64 {
+	// The cvssScore can reach a maximum of 10, and the corresponding rank in SARIF is 100.
 	return *cvssScore * 10.0
 }
 
