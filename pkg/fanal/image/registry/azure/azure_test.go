@@ -21,6 +21,10 @@ func TestRegistry_CheckOptions(t *testing.T) {
 			domain: "test.azurecr.io",
 		},
 		{
+			name:   "china happy path",
+			domain: "test.azurecr.cn",
+		},
+		{
 			name:    "invalidURL",
 			domain:  "not-azurecr.io",
 			wantErr: "Azure registry: invalid url pattern",
@@ -34,7 +38,7 @@ func TestRegistry_CheckOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := azure.Registry{}
-			err := r.CheckOptions(tt.domain, types.RegistryOptions{})
+			_, err := r.CheckOptions(tt.domain, types.RegistryOptions{})
 			if tt.wantErr != "" {
 				assert.EqualError(t, err, tt.wantErr)
 			} else {

@@ -1,9 +1,6 @@
 package parser
 
-import "github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-
 type ConfigurableHelmParser interface {
-	options.ConfigurableParser
 	SetValuesFile(...string)
 	SetValues(...string)
 	SetFileValues(...string)
@@ -12,50 +9,40 @@ type ConfigurableHelmParser interface {
 	SetKubeVersion(string)
 }
 
-func OptionWithValuesFile(paths ...string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if helmParser, ok := p.(ConfigurableHelmParser); ok {
-			helmParser.SetValuesFile(paths...)
-		}
+type Option func(p *Parser)
+
+func OptionWithValuesFile(paths ...string) Option {
+	return func(p *Parser) {
+		p.valuesFiles = paths
 	}
 }
 
-func OptionWithValues(values ...string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if helmParser, ok := p.(ConfigurableHelmParser); ok {
-			helmParser.SetValues(values...)
-		}
+func OptionWithValues(values ...string) Option {
+	return func(p *Parser) {
+		p.values = values
 	}
 }
 
-func OptionWithFileValues(values ...string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if helmParser, ok := p.(ConfigurableHelmParser); ok {
-			helmParser.SetValues(values...)
-		}
+func OptionWithFileValues(values ...string) Option {
+	return func(p *Parser) {
+		p.fileValues = values
 	}
 }
 
-func OptionWithStringValues(values ...string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if helmParser, ok := p.(ConfigurableHelmParser); ok {
-			helmParser.SetValues(values...)
-		}
+func OptionWithStringValues(values ...string) Option {
+	return func(p *Parser) {
+		p.stringValues = values
 	}
 }
 
-func OptionWithAPIVersions(values ...string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if helmParser, ok := p.(ConfigurableHelmParser); ok {
-			helmParser.SetAPIVersions(values...)
-		}
+func OptionWithAPIVersions(values ...string) Option {
+	return func(p *Parser) {
+		p.apiVersions = values
 	}
 }
 
-func OptionWithKubeVersion(value string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if helmParser, ok := p.(ConfigurableHelmParser); ok {
-			helmParser.SetKubeVersion(value)
-		}
+func OptionWithKubeVersion(value string) Option {
+	return func(p *Parser) {
+		p.kubeVersion = value
 	}
 }

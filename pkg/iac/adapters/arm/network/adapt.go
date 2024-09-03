@@ -27,11 +27,11 @@ func adaptSecurityGroups(deployment azure.Deployment) (sgs []network.SecurityGro
 func adaptSecurityGroup(resource azure.Resource, deployment azure.Deployment) network.SecurityGroup {
 	return network.SecurityGroup{
 		Metadata: resource.Metadata,
-		Rules:    adaptSecurityGroupRules(resource, deployment),
+		Rules:    adaptSecurityGroupRules(deployment),
 	}
 }
 
-func adaptSecurityGroupRules(resource azure.Resource, deployment azure.Deployment) (rules []network.SecurityGroupRule) {
+func adaptSecurityGroupRules(deployment azure.Deployment) (rules []network.SecurityGroupRule) {
 	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups/securityRules") {
 		rules = append(rules, adaptSecurityGroupRule(resource))
 	}
@@ -120,7 +120,7 @@ func expandRange(r string, m iacTypes.Metadata) network.PortRange {
 
 	return network.PortRange{
 		Metadata: m,
-		Start:    start,
-		End:      end,
+		Start:    iacTypes.Int(start, m),
+		End:      iacTypes.Int(end, m),
 	}
 }

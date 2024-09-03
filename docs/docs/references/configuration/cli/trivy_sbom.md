@@ -25,6 +25,10 @@ trivy sbom [flags] SBOM_PATH
       --compliance string           compliance report to generate
       --custom-headers strings      custom headers in client mode
       --db-repository string        OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
+      --detection-priority string   specify the detection priority:
+                                      - "precise": Prioritizes precise by minimizing false positives.
+                                      - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
+                                     (precise,comprehensive) (default "precise")
       --download-db-only            download/update vulnerability database but don't run a scan
       --download-java-db-only       download/update Java index database but don't run a scan
       --exit-code int               specify exit code when any security issues are found
@@ -43,7 +47,8 @@ trivy sbom [flags] SBOM_PATH
       --offline-scan                do not issue API requests to identify dependencies
   -o, --output string               output file name
       --output-plugin-arg string    [EXPERIMENTAL] output plugin arguments
-      --pkg-types strings           comma-separated list of package types (os,library) (default [os,library])
+      --pkg-relationships strings   list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
+      --pkg-types strings           list of package types (os,library) (default [os,library])
       --redis-ca string             redis ca file location, if using redis as cache backend
       --redis-cert string           redis certificate file location, if using redis as cache backend
       --redis-key string            redis key file location, if using redis as cache backend
@@ -58,10 +63,11 @@ trivy sbom [flags] SBOM_PATH
       --skip-dirs strings           specify the directories or glob patterns to skip
       --skip-files strings          specify the files or glob patterns to skip
       --skip-java-db-update         skip updating Java index database
+      --skip-vex-repo-update        [EXPERIMENTAL] Skip VEX Repository update
   -t, --template string             output template
       --token string                for authentication in client/server mode
       --token-header string         specify a header name for token in client/server mode (default "Trivy-Token")
-      --vex string                  [EXPERIMENTAL] file path to VEX
+      --vex strings                 [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 
 ### Options inherited from parent commands

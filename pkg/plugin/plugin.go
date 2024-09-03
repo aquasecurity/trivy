@@ -155,7 +155,7 @@ func (p *Plugin) install(ctx context.Context, dst, pwd string, opts Options) err
 	p.Installed.Platform = lo.FromPtr(platform.Selector)
 
 	log.DebugContext(ctx, "Downloading the execution file...", log.String("uri", platform.URI))
-	if err = downloader.Download(ctx, platform.URI, dst, pwd, opts.Insecure); err != nil {
+	if _, err = downloader.Download(ctx, platform.URI, dst, pwd, downloader.Options{Insecure: opts.Insecure}); err != nil {
 		return xerrors.Errorf("unable to download the execution file (%s): %w", platform.URI, err)
 	}
 	return nil
@@ -165,5 +165,5 @@ func (p *Plugin) Dir() string {
 	if p.dir != "" {
 		return p.dir
 	}
-	return filepath.Join(fsutils.HomeDir(), pluginsRelativeDir, p.Name)
+	return filepath.Join(fsutils.TrivyHomeDir(), pluginsDir, p.Name)
 }

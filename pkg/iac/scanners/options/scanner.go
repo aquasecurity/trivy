@@ -8,13 +8,11 @@ import (
 )
 
 type ConfigurableScanner interface {
-	SetDebugWriter(io.Writer)
 	SetTraceWriter(io.Writer)
 	SetPerResultTracingEnabled(bool)
 	SetPolicyDirs(...string)
 	SetDataDirs(...string)
 	SetPolicyNamespaces(...string)
-	SetSkipRequiredCheck(bool)
 	SetPolicyReaders([]io.Reader)
 	SetPolicyFilesystem(fs.FS)
 	SetDataFilesystem(fs.FS)
@@ -25,6 +23,7 @@ type ConfigurableScanner interface {
 	SetRegoErrorLimit(limit int)
 	SetUseEmbeddedLibraries(bool)
 	SetIncludeDeprecatedChecks(bool)
+	SetCustomSchemas(map[string][]byte)
 }
 
 type ScannerOption func(s ConfigurableScanner)
@@ -44,13 +43,6 @@ func ScannerWithSpec(spec string) ScannerOption {
 func ScannerWithPolicyReader(readers ...io.Reader) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetPolicyReaders(readers)
-	}
-}
-
-// ScannerWithDebug specifies an io.Writer for debug logs - if not set, they are discarded
-func ScannerWithDebug(w io.Writer) ScannerOption {
-	return func(s ConfigurableScanner) {
-		s.SetDebugWriter(w)
 	}
 }
 
@@ -104,12 +96,6 @@ func ScannerWithPolicyNamespaces(namespaces ...string) ScannerOption {
 	}
 }
 
-func ScannerWithSkipRequiredCheck(skip bool) ScannerOption {
-	return func(s ConfigurableScanner) {
-		s.SetSkipRequiredCheck(skip)
-	}
-}
-
 func ScannerWithPolicyFilesystem(f fs.FS) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetPolicyFilesystem(f)
@@ -131,5 +117,11 @@ func ScannerWithRegoOnly(regoOnly bool) ScannerOption {
 func ScannerWithRegoErrorLimits(limit int) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetRegoErrorLimit(limit)
+	}
+}
+
+func ScannerWithCustomSchemas(schemas map[string][]byte) ScannerOption {
+	return func(s ConfigurableScanner) {
+		s.SetCustomSchemas(schemas)
 	}
 }

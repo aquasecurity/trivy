@@ -15,8 +15,8 @@ pkg/cloud/                           @simar7 @nikpivkin
 pkg/iac/                             @simar7 @nikpivkin
 
 # Helm chart
-helm/trivy/ @chen-keinan
+helm/trivy/ @afdesk
 
 # Kubernetes scanning
-pkg/k8s/                         @chen-keinan
-docs/docs/target/kubernetes.md   @chen-keinan
+pkg/k8s/                         @afdesk
+docs/docs/target/kubernetes.md   @afdesk

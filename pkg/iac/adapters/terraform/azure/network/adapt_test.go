@@ -65,15 +65,15 @@ func Test_Adapt(t *testing.T) {
 								SourcePorts: []network.PortRange{
 									{
 										Metadata: iacTypes.NewTestMetadata(),
-										Start:    0,
-										End:      65535,
+										Start:    iacTypes.IntTest(0),
+										End:      iacTypes.IntTest(65535),
 									},
 								},
 								DestinationPorts: []network.PortRange{
 									{
 										Metadata: iacTypes.NewTestMetadata(),
-										Start:    3389,
-										End:      3389,
+										Start:    iacTypes.IntTest(3389),
+										End:      iacTypes.IntTest(3389),
 									},
 								},
 								Protocol: iacTypes.String("TCP", iacTypes.NewTestMetadata()),

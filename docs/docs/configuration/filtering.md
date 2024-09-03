@@ -101,7 +101,7 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 </details>
 
 ```bash
-trivy conf --severity HIGH,CRITICAL examples/misconf/mixed
+trivy config --severity HIGH,CRITICAL examples/misconf/mixed
 ```
 
 <details>
@@ -238,7 +238,7 @@ You can filter the results by
 To show the suppressed results, use the `--show-suppressed` flag.
 
 !!! note
-    This flag is currently available only in the table format.
+    It's exported as `ExperimentalModifiedFindings` in the JSON output.
 
 ```bash
 $ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
@@ -493,7 +493,7 @@ You can find more example checks [here](https://github.com/aquasecurity/trivy/tr
 |      Secret      |           |
 |     License      |           |
 
-Please refer to the [VEX documentation](../supply-chain/vex.md) for the details.
+Please refer to the [VEX documentation](../supply-chain/vex/index.md) for the details.
 
 
 [^1]: license name is used as id for `.trivyignore.yaml` files.

@@ -33,6 +33,7 @@ const (
 	CreatorOrganization    = "aquasecurity"
 	CreatorTool            = "trivy"
 	noneField              = "NONE"
+	noAssertionField       = "NOASSERTION"
 )
 
 const (
@@ -147,6 +148,15 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		if err != nil {
 			return nil, xerrors.Errorf("spdx package error: %w", err)
 		}
+
+		// Add advisories for package
+		// cf. https://spdx.github.io/spdx-spec/v2.3/how-to-use/#k1-including-security-information-in-a-spdx-document
+		if vulns, ok := bom.Vulnerabilities()[c.ID()]; ok {
+			for _, v := range vulns {
+				spdxPackage.PackageExternalReferences = append(spdxPackage.PackageExternalReferences, m.advisoryExternalReference(v.PrimaryURL))
+			}
+		}
+
 		packages = append(packages, &spdxPackage)
 		packageIDs[c.ID()] = spdxPackage.PackageSPDXIdentifier
 
@@ -184,6 +194,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 			relationShips = append(relationShips, m.spdxRelationShip(refA, refB, m.spdxRelationshipType(rel.Type)))
 		}
 	}
+
 	sortPackages(packages)
 	sortRelationships(relationShips)
 	sortFiles(files)
@@ -265,6 +276,14 @@ func (m *Marshaler) purlExternalReference(packageURL string) *spdx.PackageExtern
 		Category: CategoryPackageManager,
 		RefType:  RefTypePurl,
 		Locator:  packageURL,
+	}
+}
+
+func (m *Marshaler) advisoryExternalReference(primaryURL string) *spdx.PackageExternalReference {
+	return &spdx.PackageExternalReference{
+		Category: common.CategorySecurity,
+		RefType:  common.TypeSecurityAdvisory,
+		Locator:  primaryURL,
 	}
 }
 
@@ -360,7 +379,7 @@ func (m *Marshaler) spdxAttributionTexts(c *core.Component) []string {
 
 func (m *Marshaler) spdxLicense(c *core.Component) string {
 	if len(c.Licenses) == 0 {
-		return noneField
+		return noAssertionField
 	}
 	return NormalizeLicense(c.Licenses)
 }

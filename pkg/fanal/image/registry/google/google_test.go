@@ -14,7 +14,7 @@ func TestCheckOptions(t *testing.T) {
 	var tests = map[string]struct {
 		domain  string
 		opt     types.RegistryOptions
-		gcr     *Registry
+		grc     *GoogleRegistryClient
 		wantErr error
 	}{
 		"InvalidURL": {
@@ -27,12 +27,12 @@ func TestCheckOptions(t *testing.T) {
 		},
 		"NoOption": {
 			domain: "gcr.io",
-			gcr:    &Registry{domain: "gcr.io"},
+			grc:    &GoogleRegistryClient{domain: "gcr.io"},
 		},
 		"CredOption": {
 			domain: "gcr.io",
 			opt:    types.RegistryOptions{GCPCredPath: "/path/to/file.json"},
-			gcr: &Registry{
+			grc: &GoogleRegistryClient{
 				domain: "gcr.io",
 				Store:  store.NewGCRCredStore("/path/to/file.json"),
 			},
@@ -41,7 +41,7 @@ func TestCheckOptions(t *testing.T) {
 
 	for testname, v := range tests {
 		g := &Registry{}
-		err := g.CheckOptions(v.domain, v.opt)
+		grc, err := g.CheckOptions(v.domain, v.opt)
 		if v.wantErr != nil {
 			if err == nil {
 				t.Errorf("%s : expected error but no error", testname)
@@ -52,8 +52,8 @@ func TestCheckOptions(t *testing.T) {
 			}
 			continue
 		}
-		if !reflect.DeepEqual(v.gcr, g) {
-			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.gcr, g)
+		if !reflect.DeepEqual(v.grc, grc) {
+			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.grc, grc)
 		}
 	}
 }

@@ -3,7 +3,7 @@ package k8s
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 const (
@@ -22,7 +22,7 @@ type kubernetesConfigAnalyzer struct {
 }
 
 func newKubernetesConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewKubernetesScanner, opts)
+	a, err := config.NewAnalyzer(analyzerType, version, detection.FileTypeKubernetes, opts)
 	if err != nil {
 		return nil, err
 	}

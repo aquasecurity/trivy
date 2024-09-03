@@ -30,6 +30,10 @@ var (
 	}
 )
 
+var protoFiles = []string{
+	"pkg/iac/scanners/terraformplan/snapshot/planproto/planfile.proto",
+}
+
 func init() {
 	slog.SetDefault(log.New(log.NewHandler(os.Stderr, nil))) // stdout is suppressed in mage
 }
@@ -154,11 +158,11 @@ func Mock(dir string) error {
 func Protoc() error {
 	// It is called in the protoc container
 	if _, ok := os.LookupEnv("TRIVY_PROTOC_CONTAINER"); ok {
-		protoFiles, err := findProtoFiles()
+		rpcProtoFiles, err := findRPCProtoFiles()
 		if err != nil {
 			return err
 		}
-		for _, file := range protoFiles {
+		for _, file := range rpcProtoFiles {
 			// Check if the generated Go file is up-to-date
 			dst := strings.TrimSuffix(file, ".proto") + ".pb.go"
 			if updated, err := target.Path(dst, file); err != nil {
@@ -170,6 +174,13 @@ func Protoc() error {
 			// Generate
 			if err = sh.RunV("protoc", "--twirp_out", ".", "--twirp_opt", "paths=source_relative",
 				"--go_out", ".", "--go_opt", "paths=source_relative", file); err != nil {
+				return err
+			}
+		}
+
+		for _, file := range protoFiles {
+			if err := sh.RunV("protoc", ".", "paths=source_relative", "--go_out", ".", "--go_opt",
+				"paths=source_relative", file); err != nil {
 				return err
 			}
 		}
@@ -331,11 +342,13 @@ func Fmt() error {
 	}
 
 	// Format proto files
-	protoFiles, err := findProtoFiles()
+	rpcProtoFiles, err := findRPCProtoFiles()
 	if err != nil {
 		return err
 	}
-	for _, file := range protoFiles {
+
+	allProtoFiles := append(protoFiles, rpcProtoFiles...)
+	for _, file := range allProtoFiles {
 		if err = sh.Run("clang-format", "-i", file); err != nil {
 			return err
 		}
@@ -422,7 +435,7 @@ func (Docs) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_docs", "./magefiles")
 }
 
-func findProtoFiles() ([]string, error) {
+func findRPCProtoFiles() ([]string, error) {
 	var files []string
 	err := filepath.WalkDir("rpc", func(path string, d fs.DirEntry, err error) error {
 		switch {
@@ -468,4 +481,9 @@ type CloudActions mg.Namespace
 // Generate generates the list of possible cloud actions with AWS
 func (CloudActions) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
+}
+
+// VEX generates a VEX document for Trivy
+func VEX(_ context.Context, dir string) error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_vex", "./magefiles/vex.go", "--dir", dir)
 }

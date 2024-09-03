@@ -19,12 +19,14 @@ const (
 
 // Parser is a parser for pubspec.lock
 type Parser struct {
-	logger *log.Logger
+	logger        *log.Logger
+	useMinVersion bool
 }
 
-func NewParser() *Parser {
+func NewParser(useMinVersion bool) *Parser {
 	return &Parser{
-		logger: log.WithPrefix("pub"),
+		logger:        log.WithPrefix("pub"),
+		useMinVersion: useMinVersion,
 	}
 }
 
@@ -50,7 +52,7 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency
 	var pkgs []ftypes.Package
 	for name, dep := range l.Packages {
 		version := dep.Version
-		if version == "0.0.0" && dep.Source == "sdk" {
+		if version == "0.0.0" && dep.Source == "sdk" && p.useMinVersion {
 			version = p.findSDKVersion(l, name, dep)
 		}
 
@@ -71,27 +73,27 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency
 	return pkgs, nil, nil
 }
 
-// findSDKVersion detects the first version of the SDK constraint specified in the Description.
+// findSDKVersion detects the minimum version of the SDK constraint specified in the Description.
 // If the constraint is not found, it returns the original version.
 func (p Parser) findSDKVersion(l *lock, name string, dep Dep) string {
 	// Some dependencies use one of the SDK versions.
 	// In this case dep.Version == `0.0.0`.
 	// We can't get versions for these dependencies.
-	// Therefore, we use the first version of the SDK constraint specified in the Description.
+	// Therefore, we use the minimum version of the SDK constraint specified in the Description.
 	// See https://github.com/aquasecurity/trivy/issues/6017
 	constraint, ok := l.Sdks[string(dep.Description)]
 	if !ok {
 		return dep.Version
 	}
 
-	v, err := firstVersionOfConstrain(constraint)
+	v, err := minVersionOfConstrain(constraint)
 	if err != nil {
 		p.logger.Warn("Unable to get sdk version from constraint", log.Err(err))
 		return dep.Version
 	} else if v == "" {
 		return dep.Version
 	}
-	p.logger.Info("Using the first version of the constraint from the sdk source", log.String("dep", name),
+	p.logger.Info("Using the minimum version of the constraint from the sdk source", log.String("dep", name),
 		log.String("constraint", constraint))
 	return v
 }
@@ -106,8 +108,8 @@ func (p Parser) relationship(dep string) ftypes.Relationship {
 	return ftypes.RelationshipUnknown
 }
 
-// firstVersionOfConstrain returns the first acceptable version for constraint
-func firstVersionOfConstrain(constraint string) (string, error) {
+// minVersionOfConstrain returns the minimum acceptable version for constraint
+func minVersionOfConstrain(constraint string) (string, error) {
 	css, err := goversion.NewConstraints(constraint)
 	if err != nil {
 		return "", xerrors.Errorf("unable to parse constraints: %w", err)
@@ -119,7 +121,7 @@ func firstVersionOfConstrain(constraint string) (string, error) {
 	if len(constraints) == 0 || len(constraints[0]) == 0 {
 		return "", nil
 	}
-	// We only need to get the first version from the range
+	// We only need to get the minimum version from the range
 	if constraints[0][0].Operator() != ">=" && constraints[0][0].Operator() != "^" {
 		return "", nil
 	}

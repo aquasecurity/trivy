@@ -136,8 +136,8 @@ func (a *adapter) adaptSource(ruleBlock *terraform.Block, rule *network.Security
 		f := sourcePortRangeAttr.AsNumber()
 		rule.SourcePorts = append(rule.SourcePorts, network.PortRange{
 			Metadata: sourcePortRangeAttr.GetMetadata(),
-			Start:    int(f),
-			End:      int(f),
+			Start:    iacTypes.Int(int(f), sourcePortRangeAttr.GetMetadata()),
+			End:      iacTypes.Int(int(f), sourcePortRangeAttr.GetMetadata()),
 		})
 	}
 }
@@ -160,8 +160,8 @@ func (a *adapter) adaptDestination(ruleBlock *terraform.Block, rule *network.Sec
 		f := destPortRangeAttr.AsNumber()
 		rule.DestinationPorts = append(rule.DestinationPorts, network.PortRange{
 			Metadata: destPortRangeAttr.GetMetadata(),
-			Start:    int(f),
-			End:      int(f),
+			Start:    iacTypes.Int(int(f), destPortRangeAttr.GetMetadata()),
+			End:      iacTypes.Int(int(f), destPortRangeAttr.GetMetadata()),
 		})
 	}
 }
@@ -189,8 +189,8 @@ func expandRange(r string, m iacTypes.Metadata) network.PortRange {
 
 	return network.PortRange{
 		Metadata: m,
-		Start:    start,
-		End:      end,
+		Start:    iacTypes.Int(start, m),
+		End:      iacTypes.Int(end, m),
 	}
 }
 

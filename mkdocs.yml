@@ -75,7 +75,7 @@ nav:
               - AlmaLinux: docs/coverage/os/alma.md
               - Alpine Linux: docs/coverage/os/alpine.md
               - Amazon Linux: docs/coverage/os/amazon.md
-              - CBL-Mariner: docs/coverage/os/cbl-mariner.md
+              - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
               - Conda: docs/coverage/os/conda.md
@@ -124,10 +124,14 @@ nav:
       - Supply Chain:
           - SBOM: docs/supply-chain/sbom.md
           - Attestation:
-                - SBOM: docs/supply-chain/attestation/sbom.md
-                - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
-                - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
-          - VEX: docs/supply-chain/vex.md
+              - SBOM: docs/supply-chain/attestation/sbom.md
+              - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
+              - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
+          - VEX:
+              - Overview: docs/supply-chain/vex/index.md
+              - VEX Repository: docs/supply-chain/vex/repo.md
+              - Local VEX Files: docs/supply-chain/vex/file.md
+              - VEX Attestation: docs/supply-chain/vex/oci.md
       - Compliance:
           - Built-in Compliance:  docs/compliance/compliance.md
           - Custom Compliance: docs/compliance/contrib-compliance.md
@@ -137,7 +141,7 @@ nav:
           - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Air-Gapped Environment: docs/advanced/air-gap.md
+          - Advanced Network Scenarios: docs/advanced/air-gap.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
@@ -177,6 +181,12 @@ nav:
                   - SBOM: docs/references/configuration/cli/trivy_sbom.md
                   - Server: docs/references/configuration/cli/trivy_server.md
                   - Version: docs/references/configuration/cli/trivy_version.md
+                  - VEX:
+                      - VEX: docs/references/configuration/cli/trivy_vex.md
+                      - VEX Download: docs/references/configuration/cli/trivy_vex_repo_download.md
+                      - VEX Init: docs/references/configuration/cli/trivy_vex_repo_init.md
+                      - VEX List: docs/references/configuration/cli/trivy_vex_repo_list.md
+                      - VEX Repo: docs/references/configuration/cli/trivy_vex_repo.md
                   - VM: docs/references/configuration/cli/trivy_vm.md
               - Config file: docs/references/configuration/config-file.md
           - Modes:

@@ -1,7 +1,6 @@
 package snapshot
 
 import (
-	"bytes"
 	"context"
 	"os"
 	"path"
@@ -98,15 +97,17 @@ func Test_ScanFS(t *testing.T) {
 			dir:         "with-remote-module",
 			expectedIDs: []string{"ID001"},
 		},
+		{
+			dir:         "with-var",
+			expectedIDs: []string{"ID001"},
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.dir, func(t *testing.T) {
 			fs := os.DirFS("testdata")
 
-			debugLog := bytes.NewBuffer([]byte{})
 			scanner := New(
-				options.ScannerWithDebug(debugLog),
 				options.ScannerWithPolicyDirs(path.Join(tc.dir, "checks")),
 				options.ScannerWithPolicyFilesystem(fs),
 				options.ScannerWithRegoOnly(true),
@@ -133,5 +134,4 @@ func Test_ScanFS(t *testing.T) {
 			assert.Equal(t, tc.expectedIDs, ids)
 		})
 	}
-
 }

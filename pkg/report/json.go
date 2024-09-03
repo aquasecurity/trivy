@@ -14,8 +14,9 @@ import (
 
 // JSONWriter implements result Writer
 type JSONWriter struct {
-	Output      io.Writer
-	ListAllPkgs bool
+	Output         io.Writer
+	ListAllPkgs    bool
+	ShowSuppressed bool
 }
 
 // Write writes the results in JSON format
@@ -24,6 +25,12 @@ func (jw JSONWriter) Write(_ context.Context, report types.Report) error {
 		// Delete packages
 		for i := range report.Results {
 			report.Results[i].Packages = nil
+		}
+	}
+	if !jw.ShowSuppressed {
+		// Delete suppressed findings
+		for i := range report.Results {
+			report.Results[i].ModifiedFindings = nil
 		}
 	}
 	report.Results = lo.Filter(report.Results, func(r types.Result, _ int) bool {

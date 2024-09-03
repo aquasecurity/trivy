@@ -419,3 +419,24 @@ func TestJsonWithNumbers(t *testing.T) {
 	assert.Equal(t, 1, res[0].GetProperty("SomeIntProp").AsIntValue().Value())
 	assert.Equal(t, 0, res[0].GetProperty("SomeFloatProp").AsIntValue().Value())
 }
+
+func TestParameterIsNull(t *testing.T) {
+	src := `---
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  Email:
+    Type: String
+
+Conditions:
+  SubscribeEmail: !Not [!Equals [ !Ref Email, ""]]
+`
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.yaml": src,
+	})
+
+	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+}

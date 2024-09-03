@@ -1,15 +1,18 @@
+# METADATA
+# title: Test policy
+# description: This is a test policy.
+# related_resources:
+# - "https://trivy.dev/"
+# custom:
+#   id: TEST001
+#   avd_id: AVD-TEST-0001
+#   severity: LOW
+#   short_code: no-buckets
+#   recommended_actions: Have a cup of tea.
+#   input:
+#     selector:
+#     - type: kubernetes
 package user.something
-
-__rego_metadata__ := {
-	"id": "TEST001",
-	"avd_id": "AVD-TEST-0001",
-	"title": "Test policy",
-	"short_code": "no-buckets",
-	"severity": "LOW",
-	"description": "This is a test policy.",
-	"recommended_actions": "Have a cup of tea.",
-	"url": "https://trivy.dev/",
-}
 
 # taken from defsec rego lib to mimic behaviour
 result(msg, cause) = result {
