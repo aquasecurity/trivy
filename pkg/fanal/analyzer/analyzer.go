@@ -142,9 +142,9 @@ type AnalysisInput struct {
 }
 
 type PostAnalysisInput struct {
-	FS           fs.FS
-	Options      AnalysisOptions
-	FilePatterns []string
+	FS                           fs.FS
+	Options                      AnalysisOptions
+	FilePathsMatchedFromPatterns []string // List of filePaths got from --file-patterns flag
 }
 
 type AnalysisOptions struct {
@@ -515,9 +515,9 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 		}
 
 		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
-			FS:           filteredFS,
-			Options:      opts,
-			FilePatterns: requiredByFilePatterns[a.Type()],
+			FS:                           filteredFS,
+			Options:                      opts,
+			FilePathsMatchedFromPatterns: requiredByFilePatterns[a.Type()],
 		})
 		if err != nil {
 			return xerrors.Errorf("post analysis error: %w", err)

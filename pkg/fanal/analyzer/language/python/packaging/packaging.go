@@ -66,7 +66,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == "METADATA" || isEggFile(path) || slices.Contains(input.FilePatterns, path)
+		return filepath.Base(path) == "METADATA" || isEggFile(path) || slices.Contains(input.FilePathsMatchedFromPatterns, path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {

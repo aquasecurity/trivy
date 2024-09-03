@@ -46,7 +46,7 @@ func (a pnpmAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.PnpmLock || slices.Contains(input.FilePatterns, path)
+		return filepath.Base(path) == types.PnpmLock || slices.Contains(input.FilePathsMatchedFromPatterns, path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {

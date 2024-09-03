@@ -45,7 +45,7 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.PoetryLock || slices.Contains(input.FilePatterns, path)
+		return filepath.Base(path) == types.PoetryLock || slices.Contains(input.FilePathsMatchedFromPatterns, path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {

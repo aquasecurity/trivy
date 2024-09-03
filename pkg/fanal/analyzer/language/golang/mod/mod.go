@@ -68,7 +68,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Base(path) == types.GoMod || slices.Contains(input.FilePatterns, path)
+		return filepath.Base(path) == types.GoMod || slices.Contains(input.FilePathsMatchedFromPatterns, path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, _ io.Reader) error {
