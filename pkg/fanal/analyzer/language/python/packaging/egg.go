@@ -147,15 +147,15 @@ func (a eggAnalyzer) fillLicensesFromFile(r xio.ReadSeekerAt, size int64, app *t
 			required := func(filePath string) bool {
 				return path.Base(filePath) == path.Base(strings.TrimPrefix(license, "file://"))
 			}
-			lr, err := a.findFileInZip(r, size, required)
+			f, err := a.findFileInZip(r, size, required)
 			if err != nil {
 				a.logger.Debug("unable to find license file in `*.egg` file", log.Err(err))
 				continue
-			} else if lr == nil { // zip doesn't contain license file
+			} else if f == nil { // zip doesn't contain license file
 				continue
 			}
 
-			l, err := licensing.Classify("", lr, a.licenseClassifierConfidenceLevel)
+			l, err := licensing.Classify("", f, a.licenseClassifierConfidenceLevel)
 			if err != nil {
 				return xerrors.Errorf("license classify error: %w", err)
 			} else if l == nil {
