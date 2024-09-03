@@ -67,6 +67,28 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "egg zip with license file",
+			dir:  "testdata/egg-zip-with-license-file",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.PythonPkg,
+						FilePath: "sample_package.egg",
+						Packages: types.Packages{
+							{
+								Name:    "sample_package",
+								Version: "0.1",
+								Licenses: []string{
+									"MIT",
+								},
+								FilePath: "sample_package.egg",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "egg zip doesn't contain required files",
 			dir:  "testdata/no-req-files",
 			want: &analyzer.AnalysisResult{},
