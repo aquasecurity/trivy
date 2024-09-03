@@ -104,14 +104,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "CVE-2020-0001",
-										Name:             lo.ToPtr("OsPackageVulnerability"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("foobar")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("baz")},
-										DefaultConfiguration: &sarif.ReportingConfiguration{
-											Level: "error",
-										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/nvd/cve-2020-0001"),
+										ID:                   "CVE-2020-0001",
+										Name:                 lo.ToPtr("OsPackageVulnerability"),
+										ShortDescription:     &sarif.MultiformatMessageString{Text: lo.ToPtr("foobar")},
+										FullDescription:      &sarif.MultiformatMessageString{Text: lo.ToPtr("baz")},
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error").WithRank(75.0),
+										HelpURI:              lo.ToPtr("https://avd.aquasec.com/nvd/cve-2020-0001"),
 										Properties: map[string]any{
 											"tags": []any{
 												"vulnerability",
@@ -230,14 +228,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "KSV001",
-										Name:             lo.ToPtr("Misconfiguration"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag &#39;:latest&#39; used")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
-										DefaultConfiguration: &sarif.ReportingConfiguration{
-											Level: "error",
-										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/ksv001"),
+										ID:                   "KSV001",
+										Name:                 lo.ToPtr("Misconfiguration"),
+										ShortDescription:     &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag &#39;:latest&#39; used")},
+										FullDescription:      &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error").WithRank(80.0),
+										HelpURI:              lo.ToPtr("https://avd.aquasec.com/appshield/ksv001"),
 										Properties: map[string]any{
 											"tags": []any{
 												"misconfiguration",
@@ -253,14 +249,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 										},
 									},
 									{
-										ID:               "KSV002",
-										Name:             lo.ToPtr("Misconfiguration"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("SYS_ADMIN capability added")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
-										DefaultConfiguration: &sarif.ReportingConfiguration{
-											Level: "error",
-										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/appshield/ksv002"),
+										ID:                   "KSV002",
+										Name:                 lo.ToPtr("Misconfiguration"),
+										ShortDescription:     &sarif.MultiformatMessageString{Text: lo.ToPtr("SYS_ADMIN capability added")},
+										FullDescription:      &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error").WithRank(95.0),
+										HelpURI:              lo.ToPtr("https://avd.aquasec.com/appshield/ksv002"),
 										Properties: map[string]any{
 											"tags": []any{
 												"misconfiguration",
@@ -370,14 +364,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "aws-secret-access-key",
-										Name:             lo.ToPtr("Secret"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("AWS Secret Access Key")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
-										DefaultConfiguration: &sarif.ReportingConfiguration{
-											Level: "error",
-										},
-										HelpURI: lo.ToPtr("https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go"),
+										ID:                   "aws-secret-access-key",
+										Name:                 lo.ToPtr("Secret"),
+										ShortDescription:     &sarif.MultiformatMessageString{Text: lo.ToPtr("AWS Secret Access Key")},
+										FullDescription:      &sarif.MultiformatMessageString{Text: lo.ToPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error").WithRank(95.0),
+										HelpURI:              lo.ToPtr("https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go"),
 										Properties: map[string]any{
 											"tags": []any{
 												"secret",
@@ -468,7 +460,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 										Name:                 lo.ToPtr("License"),
 										ShortDescription:     sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
 										FullDescription:      sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
-										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error"),
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error").WithRank(80.0),
 										Help: sarif.NewMultiformatMessageString("License GPL-3.0\nClassification: restricted\nPkgName: alpine-base\nPath: ").
 											WithMarkdown("**License GPL-3.0**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|alpine-base|restricted||"),
 										Properties: map[string]any{
@@ -603,14 +595,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "AVD-GCP-0007",
-										Name:             lo.ToPtr("Misconfiguration"),
-										ShortDescription: sarif.NewMultiformatMessageString("Service accounts should not have roles assigned with excessive privileges"),
-										FullDescription:  sarif.NewMultiformatMessageString("Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
-										DefaultConfiguration: &sarif.ReportingConfiguration{
-											Level: "error",
-										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/misconfig/avd-gcp-0007"),
+										ID:                   "AVD-GCP-0007",
+										Name:                 lo.ToPtr("Misconfiguration"),
+										ShortDescription:     sarif.NewMultiformatMessageString("Service accounts should not have roles assigned with excessive privileges"),
+										FullDescription:      sarif.NewMultiformatMessageString("Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error").WithRank(80.0),
+										HelpURI:              lo.ToPtr("https://avd.aquasec.com/misconfig/avd-gcp-0007"),
 										Help: &sarif.MultiformatMessageString{
 											Text:     lo.ToPtr("Misconfiguration AVD-GCP-0007\nType: Terraform Security Check\nSeverity: HIGH\nCheck: Service accounts should not have roles assigned with excessive privileges\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)\nService accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),
 											Markdown: lo.ToPtr("**Misconfiguration AVD-GCP-0007**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Terraform Security Check|HIGH|Service accounts should not have roles assigned with excessive privileges|Service account is granted a privileged role.|[AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)|\n\nService accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account."),

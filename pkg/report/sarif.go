@@ -66,7 +66,7 @@ type sarifData struct {
 	artifactLocation string
 	locationMessage  string
 	message          string
-	cvssScore        string
+	cvssScore        float64
 	locations        []location
 }
 
@@ -85,9 +85,11 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			Text:     &data.helpText,
 			Markdown: &data.helpMarkdown,
 		}).
-		WithDefaultConfiguration(&sarif.ReportingConfiguration{
-			Level: toSarifErrorLevel(data.severity),
-		}).
+		WithDefaultConfiguration(
+			sarif.NewReportingConfiguration().
+				WithLevel(toSarifErrorLevel(data.severity)).
+				WithRank(toSarifRank(&data.cvssScore)),
+		).
 		WithProperties(sarif.Properties{
 			"tags": []string{
 				data.title,
@@ -95,7 +97,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 				data.severity,
 			},
 			"precision":         "very-high",
-			"security-severity": data.cvssScore,
+			"security-severity": fmt.Sprintf("%.1f", data.cvssScore),
 		})
 	if data.url != "" {
 		r.WithHelpURI(data.url)
@@ -326,6 +328,10 @@ func toSarifErrorLevel(severity string) string {
 	}
 }
 
+func toSarifRank(cvssScore *float64) float64 {
+	return *cvssScore * 10.0
+}
+
 func ToPathUri(input string, resultClass types.ResultClass) string {
 	// we only need to convert OS input
 	// e.g. image names, digests, etc...
@@ -369,27 +375,27 @@ func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Pa
 	return locs
 }
 
-func getCVSSScore(vuln types.DetectedVulnerability) string {
+func getCVSSScore(vuln types.DetectedVulnerability) float64 {
 	// Take the vendor score
 	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
-		return fmt.Sprintf("%.1f", cvss.V3Score)
+		return cvss.V3Score
 	}
 
 	// Converts severity to score
 	return severityToScore(vuln.Severity)
 }
 
-func severityToScore(severity string) string {
+func severityToScore(severity string) float64 {
 	switch severity {
 	case "CRITICAL":
-		return "9.5"
+		return 9.5
 	case "HIGH":
-		return "8.0"
+		return 8.0
 	case "MEDIUM":
-		return "5.5"
+		return 5.5
 	case "LOW":
-		return "2.0"
+		return 2.0
 	default:
-		return "0.0"
+		return 0.0
 	}
 }
