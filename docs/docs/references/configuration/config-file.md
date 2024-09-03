@@ -477,7 +477,7 @@ rego:
   data: []
 
   # Same as '--include-deprecated-checks'
-  include-deprecated-checks: false
+  include-deprecated-checks: true
 
   # Same as '--check-namespaces'
   namespaces: []
