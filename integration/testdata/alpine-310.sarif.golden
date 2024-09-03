@@ -20,7 +20,7 @@
               },
               "defaultConfiguration": {
                 "level": "warning",
-                "rank": 53.0
+                "rank": 53
               },
               "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
               "help": {
@@ -48,7 +48,7 @@
               },
               "defaultConfiguration": {
                 "level": "warning",
-                "rank": 53.0
+                "rank": 53
               },
               "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
               "help": {
