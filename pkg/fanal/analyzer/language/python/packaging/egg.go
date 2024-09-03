@@ -7,8 +7,10 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -17,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -31,16 +34,18 @@ const (
 	eggExt             = ".egg"
 )
 
-func newEggAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newEggAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &eggAnalyzer{
-		logger:    log.WithPrefix("python"),
-		pkgParser: packaging.NewParser(),
+		logger:                           log.WithPrefix("python"),
+		pkgParser:                        packaging.NewParser(),
+		licenseClassifierConfidenceLevel: opts.LicenseScannerOption.ClassifierConfidenceLevel,
 	}, nil
 }
 
 type eggAnalyzer struct {
-	logger    *log.Logger
-	pkgParser language.Parser
+	logger                           *log.Logger
+	pkgParser                        language.Parser
+	licenseClassifierConfidenceLevel float64
 }
 
 // PostAnalyze analyzes egg archive files
@@ -62,7 +67,7 @@ func (a eggAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 		if err != nil {
 			return xerrors.Errorf("egg file error: %w", err)
 		}
-		pkginfoInZip, err := a.analyzeEggZip(rsa, info.Size())
+		pkginfoInZip, err := a.findFileInZip(rsa, info.Size(), isEggFile)
 		if err != nil {
 			return xerrors.Errorf("egg analysis error: %w", err)
 		}
@@ -79,6 +84,10 @@ func (a eggAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 			return nil
 		}
 
+		if err = a.fillLicensesFromFile(rsa, info.Size(), app); err != nil {
+			a.logger.Warn("Unable to fill licenses", log.FilePath(path), log.Err(err))
+		}
+
 		apps = append(apps, *app)
 		return nil
 	})
@@ -91,14 +100,18 @@ func (a eggAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 	}, nil
 }
 
-func (a eggAnalyzer) analyzeEggZip(r xio.ReadSeekerAt, size int64) (xio.ReadSeekerAt, error) {
+func (a eggAnalyzer) findFileInZip(r xio.ReadSeekerAt, size int64, required func(filePath string) bool) (xio.ReadSeekerAt, error) {
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return nil, xerrors.Errorf("file seek error: %w", err)
+	}
+
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
 		return nil, xerrors.Errorf("zip reader error: %w", err)
 	}
 
 	found, ok := lo.Find(zr.File, func(f *zip.File) bool {
-		return isEggFile(f.Name)
+		return required(f.Name)
 	})
 	if !ok {
 		return nil, nil
@@ -120,6 +133,44 @@ func (a eggAnalyzer) open(file *zip.File) (xio.ReadSeekerAt, error) {
 	}
 
 	return bytes.NewReader(b), nil
+}
+
+func (a eggAnalyzer) fillLicensesFromFile(r xio.ReadSeekerAt, size int64, app *types.Application) error {
+	for i, pkg := range app.Packages {
+		var licenses []string
+		for _, license := range pkg.Licenses {
+			if !strings.HasPrefix(license, "file://") {
+				licenses = append(licenses, license)
+				continue
+			}
+
+			required := func(filePath string) bool {
+				return path.Base(filePath) == path.Base(strings.TrimPrefix(license, "file://"))
+			}
+			lr, err := a.findFileInZip(r, size, required)
+			if err != nil {
+				a.logger.Debug("unable to find license file in `*.egg` file", log.Err(err))
+				continue
+			} else if lr == nil { // zip doesn't contain license file
+				continue
+			}
+
+			l, err := licensing.Classify("", lr, a.licenseClassifierConfidenceLevel)
+			if err != nil {
+				return xerrors.Errorf("license classify error: %w", err)
+			} else if l == nil {
+				continue
+			}
+
+			// License found
+			foundLicenses := lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
+				return finding.Name
+			})
+			licenses = append(licenses, foundLicenses...)
+		}
+		app.Packages[i].Licenses = licenses
+	}
+	return nil
 }
 
 func (a eggAnalyzer) Required(filePath string, _ os.FileInfo) bool {
