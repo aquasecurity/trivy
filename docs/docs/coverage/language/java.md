@@ -15,7 +15,7 @@ The following table provides an outline of the features Trivy offers.
 | Artifact         |    Internet access    |  Dev dependencies  | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
 |------------------|:---------------------:|:------------------:|:------------------------------------:|:--------:|:----------------------------------------:|
 | JAR/WAR/PAR/EAR  |     Trivy Java DB     |      Include       |                  -                   |    -     |                Not needed                |
-| pom.xml          | Maven repository [^1] | [Include](#scopes) |                  ✓                   |  ✓[^7]   |                    -                     |
+| pom.xml          | Maven repository [^1] | [Exclude](#scopes) |                  ✓                   |  ✓[^7]   |                    -                     |
 | *gradle.lockfile |           -           |      Exclude       |                  ✓                   |    ✓     |                Not needed                |
 | *.sbt.lock       |           -           |      Exclude       |                  -                   |    ✓     |                Not needed                |
 
@@ -73,8 +73,7 @@ The vulnerability database will be downloaded anyway.
 Trivy supports `runtime`, `compile`, `test` and `import` (for `dependencyManagement`) [dependency scopes][dependency-scopes].
 Dependencies without scope are also detected.
 
-!!! Note
-    To detect dependencies with `test` scope, you need to use `--include-dev-deps` flag.
+By default, Trivy doesn't report dependencies with `test` scope. Use the `--include-dev-deps` flag to include them.
 
 ### maven-invoker-plugin
 Typically, the integration tests directory (`**/[src|target]/it/*/pom.xml`) of [maven-invoker-plugin][maven-invoker-plugin] doesn't contain actual `pom.xml` files and should be skipped to avoid noise.
