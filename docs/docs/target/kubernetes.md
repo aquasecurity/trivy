@@ -28,9 +28,50 @@ Kubernetes resource definition is scanned for:
 
 
 !!! warning "Important Notice"
-     To successfully scan a Kubernetes cluster, `trivy kubernetes` subcommand must be executed under a role that has read permissions at the cluster scope.
+     To successfully scan a Kubernetes cluster, `trivy kubernetes` subcommand must be executed under a role that has some specific permissions.
 
-     Trivy must be able to access information about all cluster resources, including pods, deployments etc.
+     Without `node collecor` (with flag `--disable-node-collector`) the role must have `list` verb for all resources ("*") inside next API groups: core (""), "apps", "batch","networking.k8s.io", "rbac.authorization.k8s.io":
+     ```yaml
+     - apiGroups: [""]
+       resources: ["*"]
+       verbs: ["list"]
+     - apiGroups: ["apps", "batch", "networking.k8s.io", "rbac.authorization.k8s.io"]
+       resources: ["*"]
+       verbs: ["list"]
+     ```
+
+     If `node collector` is enabled (by default), the cluster role must have more permissions than:
+     ```yaml
+      - apiGroups: [""]
+        resources: ["*"]
+        verbs: ["list"]
+
+      - apiGroups: ["apps", "networking.k8s.io", "rbac.authorization.k8s.io"]
+        resources: ["*"]
+        verbs: ["list"]
+
+      - apiGroups: [""]
+        resources: ["nodes/proxy", "pods/log"]
+        verbs: ["get"]
+
+      - apiGroups: [""]
+        resources: ["events"]
+        verbs: ["watch"]  
+
+      - apiGroups: ["batch"]
+        resources: ["jobs", "cronjobs"]
+        verbs: ["list", "get"]
+
+      - apiGroups: ["batch"]
+        resources: ["jobs"]
+        verbs: ["create","delete", "watch"]
+
+      - apiGroups: [""]
+        resources: ["namespaces"]
+        verbs: ["create"]
+     ```
+
+     Trivy must be able to access information about cluster resources, including pods, deployments etc.
 
      Flags `include/exclude` kinds and namespaces are used only for the result filter.
 
