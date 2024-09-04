@@ -390,13 +390,13 @@ func toDetectedLicense(scanner licensing.Scanner, license, pkgName, filePath str
 	}
 
 	return types.DetectedLicense{
-		Severity:    severity,
-		Category:    category,
-		PkgName:     pkgName,
-		FilePath:    filePath,
-		Name:        license,
-		LicenseText: licenseText,
-		Confidence:  1.0,
+		Severity:   severity,
+		Category:   category,
+		PkgName:    pkgName,
+		FilePath:   filePath,
+		Name:       license,
+		Text:       licenseText,
+		Confidence: 1.0,
 	}
 }
 
