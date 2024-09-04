@@ -436,7 +436,7 @@ func ConvertFromRPCDetectedLicenses(rpcLicenses []*common.DetectedLicense) []typ
 			PkgName:    l.PkgName,
 			FilePath:   l.FilePath,
 			Name:       l.Name,
-			Text:       l.LicenseText,
+			Text:       l.Text,
 			Confidence: float64(l.Confidence),
 			Link:       l.Link,
 		})
@@ -979,14 +979,14 @@ func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLi
 			log.Warn("Severity conversion error", log.Err(err))
 		}
 		rpcLicenses = append(rpcLicenses, &common.DetectedLicense{
-			Severity:    common.Severity(severity),
-			Category:    ConvertToRPCLicenseCategory(l.Category),
-			PkgName:     l.PkgName,
-			FilePath:    l.FilePath,
-			Name:        l.Name,
-			LicenseText: l.Text,
-			Confidence:  float32(l.Confidence),
-			Link:        l.Link,
+			Severity:   common.Severity(severity),
+			Category:   ConvertToRPCLicenseCategory(l.Category),
+			PkgName:    l.PkgName,
+			FilePath:   l.FilePath,
+			Name:       l.Name,
+			Text:       l.Text,
+			Confidence: float32(l.Confidence),
+			Link:       l.Link,
 		})
 	}
 
