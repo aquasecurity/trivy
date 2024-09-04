@@ -106,8 +106,11 @@ func (f *IgnoreFindings) Match(id string, results *FindingsResults) *IgnoreFindi
 			continue
 		}
 
-		log.Debug("Ignored", log.String("id", id), log.String("target", results.TargetPath),
-			log.String("startLine-endLine", fmt.Sprintf("%d-%d", results.StartLine, results.EndLine)))
+		log.Debug("Ignored", log.String("id", id), log.String("target", results.TargetPath))
+
+		if finding.StartLine > 0 || finding.EndLine > 0 {
+			log.Debug("Ignored lines", log.String("start_line:end_line", fmt.Sprintf("%d:%d", results.StartLine, results.EndLine)))
+		}
 
 		return &finding
 	}
