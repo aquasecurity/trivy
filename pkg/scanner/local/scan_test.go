@@ -64,6 +64,16 @@ var (
 		},
 		Licenses: []string{"MIT"},
 	}
+	python39min = ftypes.Package{
+		Name:     "python3.9-minimal",
+		Version:  "3.9.1",
+		FilePath: "/usr/lib/python/site-packages/python3.9-minimal/METADATA",
+		Layer: ftypes.Layer{
+			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+		},
+		Licenses: []string{"text://Redistribution and use in source and binary forms, with or without"},
+	}
+
 	laravelPkg = ftypes.Package{
 		Name:         "laravel/framework",
 		Version:      "6.0.0",
@@ -239,6 +249,7 @@ func TestScanner_Scan(t *testing.T) {
 								FilePath: "",
 								Packages: []ftypes.Package{
 									urllib3Pkg,
+									python39min,
 								},
 							},
 						},
@@ -284,6 +295,15 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:    urllib3Pkg.Name,
 							FilePath:   "/usr/lib/python/site-packages/urllib3-3.2.1/METADATA",
 							Name:       "MIT",
+							Confidence: 1,
+						},
+						{
+							Severity:   "UNKNOWN",
+							Category:   "unknown",
+							PkgName:    python39min.Name,
+							FilePath:   "/usr/lib/python/site-packages/python3.9-minimal/METADATA",
+							Name:       "CUSTOM License: Redistribution and use...",
+							Text:       "Redistribution and use in source and binary forms, with or without",
 							Confidence: 1,
 						},
 					},
