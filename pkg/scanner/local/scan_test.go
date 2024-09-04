@@ -73,6 +73,15 @@ var (
 		},
 		Licenses: []string{"text://Redistribution and use in source and binary forms, with or without"},
 	}
+	menuinstPkg = ftypes.Package{
+		Name:     "menuinst",
+		Version:  "2.0.2",
+		FilePath: "opt/conda/lib/python3.11/site-packages/menuinst-2.0.2.dist-info/METADATA",
+		Layer: ftypes.Layer{
+			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+		},
+		Licenses: []string{"text://(c) 2016 Continuum Analytics, Inc. / http://continuum.io All Rights Reserved"},
+	}
 
 	laravelPkg = ftypes.Package{
 		Name:         "laravel/framework",
@@ -235,6 +244,7 @@ func TestScanner_Scan(t *testing.T) {
 						},
 						Packages: []ftypes.Package{
 							muslPkg,
+							python39min,
 						},
 						Applications: []ftypes.Application{
 							{
@@ -249,7 +259,7 @@ func TestScanner_Scan(t *testing.T) {
 								FilePath: "",
 								Packages: []ftypes.Package{
 									urllib3Pkg,
-									python39min,
+									menuinstPkg,
 								},
 							},
 						},
@@ -266,6 +276,14 @@ func TestScanner_Scan(t *testing.T) {
 							Category:   "unknown",
 							PkgName:    muslPkg.Name,
 							Name:       "MIT",
+							Confidence: 1,
+						},
+						{
+							Severity:   "UNKNOWN",
+							Category:   "unknown",
+							PkgName:    python39min.Name,
+							Name:       "CUSTOM License: Redistribution and use...",
+							Text:       "Redistribution and use in source and binary forms, with or without",
 							Confidence: 1,
 						},
 					},
@@ -300,10 +318,10 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							Severity:   "UNKNOWN",
 							Category:   "unknown",
-							PkgName:    python39min.Name,
-							FilePath:   "/usr/lib/python/site-packages/python3.9-minimal/METADATA",
-							Name:       "CUSTOM License: Redistribution and use...",
-							Text:       "Redistribution and use in source and binary forms, with or without",
+							PkgName:    menuinstPkg.Name,
+							FilePath:   "opt/conda/lib/python3.11/site-packages/menuinst-2.0.2.dist-info/METADATA",
+							Name:       "CUSTOM License: (c) 2016 Continuum...",
+							Text:       "(c) 2016 Continuum Analytics, Inc. / http://continuum.io All Rights Reserved",
 							Confidence: 1,
 						},
 					},
