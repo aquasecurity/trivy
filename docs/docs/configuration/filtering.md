@@ -184,7 +184,7 @@ Some statuses are supported in limited distributions.
 |:----------:|:-----:|:--------:|:-------------------:|:------------:|:------------:|:-----------:|
 |   Debian   |   ✓   |    ✓     |                     |              |      ✓       |      ✓      |
 |    RHEL    |   ✓   |    ✓     |          ✓          |      ✓       |      ✓       |      ✓      |
-|   Ubuntu   |   ✓   |          |                     |      ✓       |      ✓       |             |
+|   Ubuntu   |   ✓   |          |                     |              |      ✓       |             |
 | Other OSes |   ✓   |    ✓     |                     |              |              |             |
 
 

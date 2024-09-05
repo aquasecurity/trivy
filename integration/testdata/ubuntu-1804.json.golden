@@ -80,7 +80,7 @@
             "UID": "da318bd19a304cc0"
           },
           "InstalledVersion": "4.4.18-2ubuntu1.2",
-          "Status": "will_not_fix",
+          "Status": "fix_deferred",
           "Layer": {
             "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
@@ -143,7 +143,7 @@
             "UID": "87f56d9cd92819fc"
           },
           "InstalledVersion": "8.28-1ubuntu1",
-          "Status": "will_not_fix",
+          "Status": "fix_deferred",
           "Layer": {
             "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
