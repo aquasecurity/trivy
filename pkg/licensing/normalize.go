@@ -159,6 +159,12 @@ var mapping = map[string]string{
 	"PUBLIC DOMAIN": Unlicense,
 }
 
+const (
+	LicenseTextPrefix   = "text://"
+	LicenseFilePrefix   = "file://"
+	CustomLicensePrefix = "CUSTOM License"
+)
+
 // pythonLicenseExceptions contains licenses that we cannot separate correctly using our logic.
 // first word after separator (or/and) => license name
 var pythonLicenseExceptions = map[string]string{
@@ -179,6 +185,39 @@ var pythonLicenseExceptions = map[string]string{
 
 var licenseSplitRegexp = regexp.MustCompile("(,?[_ ]+(?:or|and)[_ ]+)|(,[ ]*)")
 
+// Typical keywords for license texts
+var licenseTextKeywords = []string{
+	"http://",
+	"https://",
+	"(c)",
+	"as-is",
+	";",
+	"hereby",
+	"permission to use",
+	"permission is",
+	"use in source",
+	"use, copy, modify",
+	"using",
+}
+
+func isLicenseText(str string) bool {
+	for _, keyword := range licenseTextKeywords {
+		if strings.Contains(str, keyword) {
+			return true
+		}
+	}
+	return false
+}
+
+func TrimLicenseText(text string) string {
+	s := strings.Split(text, " ")
+	n := len(s)
+	if n > 3 {
+		n = 3
+	}
+	return strings.Join(s[:n], " ") + "..."
+}
+
 func Normalize(name string) string {
 	name = strings.TrimSpace(name)
 	if l, ok := mapping[strings.ToUpper(name)]; ok {
@@ -191,6 +230,12 @@ func SplitLicenses(str string) []string {
 	if str == "" {
 		return nil
 	}
+	if isLicenseText(strings.ToLower(str)) {
+		return []string{
+			LicenseTextPrefix + str,
+		}
+	}
+
 	var licenses []string
 	for _, maybeLic := range licenseSplitRegexp.Split(str, -1) {
 		lower := strings.ToLower(maybeLic)
