@@ -85,9 +85,9 @@
     <h1>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ now }}</h1>
     <table>
     {{- range . }}
-      <tr class="group-header"><th colspan="6">{{ .Type | toString | escapeXML }}</th></tr>
+      <tr class="group-header"><th colspan="8">{{ .Type | toString | escapeXML }}</th></tr>
       {{- if (eq (len .Vulnerabilities) 0) }}
-      <tr><th colspan="6">No Vulnerabilities found</th></tr>
+      <tr><th colspan="8">No Vulnerabilities found</th></tr>
       {{- else }}
       <tr class="sub-header">
         <th>Package</th>
@@ -96,6 +96,8 @@
         <th>Installed Version</th>
         <th>Fixed Version</th>
         <th>Links</th>
+        <th>PkgPath</th>
+        <th>Layer DiffID</th>
       </tr>
         {{- range .Vulnerabilities }}
       <tr class="severity-{{ escapeXML .Vulnerability.Severity }}">
@@ -109,6 +111,8 @@
           <a href={{ escapeXML . | printf "%q" }}>{{ escapeXML . }}</a>
           {{- end }}
         </td>
+        <td>{{ escapeXML .PkgPath }}</td>
+        <td>{{ escapeXML .Layer.DiffID }}</td>
       </tr>
         {{- end }}
       {{- end }}

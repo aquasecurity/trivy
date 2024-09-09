@@ -83,7 +83,7 @@
   <body>
     <h1>testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2) - Trivy Report - 2021-08-25 12:20:30.000000005 +0000 UTC</h1>
     <table>
-      <tr class="group-header"><th colspan="6">alpine</th></tr>
+      <tr class="group-header"><th colspan="8">alpine</th></tr>
       <tr class="sub-header">
         <th>Package</th>
         <th>Vulnerability ID</th>
@@ -91,6 +91,8 @@
         <th>Installed Version</th>
         <th>Fixed Version</th>
         <th>Links</th>
+        <th>PkgPath</th>
+        <th>Layer DiffID</th>
       </tr>
       <tr class="severity-MEDIUM">
         <td class="pkg-name">libcrypto1.1</td>
@@ -120,6 +122,8 @@
           <a href="https://www.oracle.com/security-alerts/cpuoct2020.html">https://www.oracle.com/security-alerts/cpuoct2020.html</a>
           <a href="https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html">https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html</a>
         </td>
+        <td></td>
+        <td>sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0</td>
       </tr>
       <tr class="severity-MEDIUM">
         <td class="pkg-name">libcrypto1.1</td>
@@ -159,6 +163,8 @@
           <a href="https://www.tenable.com/security/tns-2020-11">https://www.tenable.com/security/tns-2020-11</a>
           <a href="https://www.tenable.com/security/tns-2021-10">https://www.tenable.com/security/tns-2021-10</a>
         </td>
+        <td></td>
+        <td>sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0</td>
       </tr>
       <tr class="severity-MEDIUM">
         <td class="pkg-name">libssl1.1</td>
@@ -188,6 +194,8 @@
           <a href="https://www.oracle.com/security-alerts/cpuoct2020.html">https://www.oracle.com/security-alerts/cpuoct2020.html</a>
           <a href="https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html">https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html</a>
         </td>
+        <td></td>
+        <td>sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0</td>
       </tr>
       <tr class="severity-MEDIUM">
         <td class="pkg-name">libssl1.1</td>
@@ -227,6 +235,8 @@
           <a href="https://www.tenable.com/security/tns-2020-11">https://www.tenable.com/security/tns-2020-11</a>
           <a href="https://www.tenable.com/security/tns-2021-10">https://www.tenable.com/security/tns-2021-10</a>
         </td>
+        <td></td>
+        <td>sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0</td>
       </tr>
       <tr><th colspan="6">No Misconfigurations found</th></tr>
     </table>
