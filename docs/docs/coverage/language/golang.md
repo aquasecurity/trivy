@@ -22,9 +22,9 @@ The table below provides an outline of the features Trivy offers.
 | Binaries |      ✅      | Exclude          |                  -                   | ✅[^4]  |                Not needed                |
 
 !!! note
-    When scanning Go projects, Trivy scans only dependencies of the project, and will not detect vulnerabilities of application itself. 
+    When scanning Go projects (go.mod), Trivy scans only dependencies of the project, and does not detect vulnerabilities of application itself. 
     For example, when scanning the Docker binary, Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find 
-    vulnerabilities of Docker itself. Similarly, when scanning the code of Kubernetes, Kubernetes vulnerabilities will not be found.
+    vulnerabilities of Docker itself.
 
 ### Go Modules
 Depending on Go versions, the required files are different.
@@ -66,8 +66,8 @@ such as `go mod download`, `go mod tidy`, etc.
 Trivy traverses `$GOPATH/pkg/mod` and collects those extra information.
 
 #### Standard Library
-Detecting the version of Go used in the project can be tricky. The go.mod file include hints that allows Trivy to guess the version from source code but it eventually depends on the Go tool version in the build environment. Since this strategy is not fully deterministic and accurate, it is enabled only in [--detection-priority comprehensive][detection-priority] mode. 
-When enabled, Trivy detects stdlib version as the minimum between the `go` directive in the go.mod file and the [toolchain] directive[^6].
+Detecting the version of Go used in the project can be tricky. The go.mod file include hints that allows Trivy to guess the Go version but it eventually depends on the Go tool version in the build environment. Since this strategy is not fully deterministic and accurate, it is enabled only in [--detection-priority comprehensive][detection-priority] mode. 
+When enabled, Trivy detects stdlib version as the minimum between the `go` and the [toolchain][^6] directives in the `go.mod` file.
 To obtain reproducible scan results Trivy doesn't check the locally installed version of `Go`.
 
 !!! note
@@ -88,10 +88,7 @@ $ trivy rootfs ./your_binary
     It doesn't work with UPX-compressed binaries.
 
 #### Empty versions
-Dependencies replaced with local ones (for example using `replace` directive) appear as `(devel)` and therefore are not detected by Trivy.
-
 Go binaries installed using the `go install` command contains correct (semver) version for the main module and therefor are detected by Trivy. In other cases, Go uses the `(devel)` version[^3]. In this case, Trivy will attempt to parse any `-ldflags` as it's a common practice to pass versions this way. If unsuccessful, the version will be empty[^5].
-
 
 [^1]: It doesn't require the Internet access.
 [^2]: Need to download modules to local cache beforehand
