@@ -71,7 +71,7 @@ func compat(r *types.Report) {
 			if pkg, ok := pkgs[vuln.PkgID+vuln.PkgPath]; !ok {
 				continue
 			} else {
-				r.Results[i].Vulnerabilities[j].PkgIdentifier = pkg.Identifier
+				r.Results[i].Vulnerabilities[j].PkgIdentifier = &pkg.Identifier
 			}
 		}
 	}

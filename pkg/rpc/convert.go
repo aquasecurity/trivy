@@ -310,7 +310,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			PkgPath:            vuln.PkgPath,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
-			PkgIdentifier:      ConvertToRPCPkgIdentifier(vuln.PkgIdentifier),
+			PkgIdentifier:      ConvertToRPCPkgIdentifier(*vuln.PkgIdentifier),
 			Status:             int32(vuln.Status),
 			Title:              vuln.Title,
 			Description:        vuln.Description,
@@ -587,6 +587,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 		if vuln.PublishedDate != nil {
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
+		pkdIdentifier := ConvertFromRPCPkgIdentifier(vuln.PkgIdentifier)
 
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
@@ -596,7 +597,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			PkgPath:          vuln.PkgPath,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
-			PkgIdentifier:    ConvertFromRPCPkgIdentifier(vuln.PkgIdentifier),
+			PkgIdentifier:    &pkdIdentifier,
 			Status:           dbTypes.Status(vuln.Status),
 			Vulnerability: dbTypes.Vulnerability{
 				Title:            vuln.Title,
