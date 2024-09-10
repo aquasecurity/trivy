@@ -78,7 +78,7 @@ type PkgIdentifier struct {
 }
 
 // MarshalJSON customizes the JSON encoding of PkgIdentifier.
-func (id *PkgIdentifier) MarshalJSON() ([]byte, error) {
+func (id PkgIdentifier) MarshalJSON() ([]byte, error) {
 	var p string
 	if id.PURL != nil {
 		p = id.PURL.String()
@@ -90,7 +90,7 @@ func (id *PkgIdentifier) MarshalJSON() ([]byte, error) {
 		*Alias
 	}{
 		PURL:  p,
-		Alias: (*Alias)(id),
+		Alias: (*Alias)(&id),
 	})
 }
 
