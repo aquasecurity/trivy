@@ -52,47 +52,6 @@ func NewModifiedFinding(f finding, status FindingStatus, statement, source strin
 	}
 }
 
-// MarshalJSON correctly marshals ModifiedFinding.Finding given the type and `MarshalJSON` functions of struct fields
-func (m *ModifiedFinding) MarshalJSON() ([]byte, error) {
-	var raw struct {
-		Type      FindingType     `json:"Type"`
-		Status    FindingStatus   `json:"Status"`
-		Statement string          `json:"Statement"`
-		Source    string          `json:"Source"`
-		Finding   json.RawMessage `json:"Finding"`
-	}
-	raw.Type = m.Type
-	raw.Status = m.Status
-	raw.Statement = m.Statement
-	raw.Source = m.Source
-
-	// Define a `Finding` type and marshal as a struct of that type.
-	// This is necessary to run the `MarshalJSON` functions on the struct fields.
-	var err error
-	switch val := m.Finding.(type) {
-	case DetectedVulnerability:
-		if raw.Finding, err = json.Marshal(&val); err != nil {
-			return nil, xerrors.Errorf("unable to marshal `DetectedVulnerability` Findings: %w", err)
-		}
-	case DetectedMisconfiguration:
-		if raw.Finding, err = json.Marshal(&val); err != nil {
-			return nil, xerrors.Errorf("unable to marshal `DetectedMisconfiguration` Findings: %w", err)
-		}
-	case DetectedSecret:
-		if raw.Finding, err = json.Marshal(&val); err != nil {
-			return nil, xerrors.Errorf("unable to marshal `DetectedSecret` Findings: %w", err)
-		}
-	case DetectedLicense:
-		if raw.Finding, err = json.Marshal(&val); err != nil {
-			return nil, xerrors.Errorf("unable to marshal `DetectedLicense` Findings: %w", err)
-		}
-	default:
-		return nil, xerrors.Errorf("invalid Finding type: %T", val)
-	}
-
-	return json.Marshal(&raw)
-}
-
 // UnmarshalJSON unmarshals ModifiedFinding given the type and `UnmarshalJSON` functions of struct fields
 func (m *ModifiedFinding) UnmarshalJSON(data []byte) error {
 	raw := struct {
