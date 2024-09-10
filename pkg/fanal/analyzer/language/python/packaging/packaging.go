@@ -122,11 +122,11 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application
 			// Parser adds `file://` prefix to filepath from `License-File` field
 			// We need to read this file to find licenses
 			// Otherwise, this is the name of the license
-			if !strings.HasPrefix(lic, "file://") {
+			if !strings.HasPrefix(lic, licensing.LicenseFilePrefix) {
 				licenses = append(licenses, lic)
 				continue
 			}
-			licenseFilePath := path.Base(strings.TrimPrefix(lic, "file://"))
+			licenseFilePath := path.Base(strings.TrimPrefix(lic, licensing.LicenseFilePrefix))
 
 			findings, err := classifyLicense(app.FilePath, licenseFilePath, a.licenseClassifierConfidenceLevel, fsys)
 			if err != nil {

@@ -56,9 +56,9 @@ type gomodAnalyzer struct {
 
 func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gomodAnalyzer{
-		modParser:                        mod.NewParser(true), // Only the root module should replace
+		modParser:                        mod.NewParser(true, opt.DetectionPriority == types.PriorityComprehensive), // Only the root module should replace
 		sumParser:                        sum.NewParser(),
-		leafModParser:                    mod.NewParser(false),
+		leafModParser:                    mod.NewParser(false, false), // Don't detect stdlib for non-root go.mod files
 		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
 		logger:                           log.WithPrefix("golang"),
 	}, nil

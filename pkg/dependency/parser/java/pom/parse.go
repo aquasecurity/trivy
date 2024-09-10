@@ -214,6 +214,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 				Licenses:     result.artifact.Licenses,
 				Relationship: art.Relationship,
 				Locations:    art.Locations,
+				Test:         art.Test,
 			}
 
 			// save only dependency names
@@ -234,6 +235,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			Licenses:     art.Licenses,
 			Relationship: art.Relationship,
 			Locations:    art.Locations,
+			Dev:          art.Test,
 		}
 		pkgs = append(pkgs, pkg)
 
@@ -400,7 +402,7 @@ func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string
 		// Resolve dependencies
 		d = d.Resolve(props, depManagement, rootDepManagement)
 
-		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime") || d.Optional {
+		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime" && d.Scope != "test") || d.Optional {
 			continue
 		}
 
@@ -712,8 +714,11 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+	if err != nil {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return "", nil
+	} else if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
 	}
 	defer resp.Body.Close()
@@ -743,8 +748,11 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+	if err != nil {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return nil, nil
+	} else if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
 	}
 	defer resp.Body.Close()
