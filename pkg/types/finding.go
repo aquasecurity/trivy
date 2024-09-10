@@ -54,46 +54,41 @@ func NewModifiedFinding(f finding, status FindingStatus, statement, source strin
 
 // UnmarshalJSON unmarshals ModifiedFinding given the type and `UnmarshalJSON` functions of struct fields
 func (m *ModifiedFinding) UnmarshalJSON(data []byte) error {
-	raw := struct {
-		Type      FindingType     `json:"Type"`
-		Status    FindingStatus   `json:"Status"`
-		Statement string          `json:"Statement"`
-		Source    string          `json:"Source"`
-		Finding   json.RawMessage `json:"Finding"`
-	}{}
-
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+	type Alias ModifiedFinding
+	aux := &struct {
+		Finding json.RawMessage `json:"Finding"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
 	}
 
-	m.Type = raw.Type
-	m.Status = raw.Status
-	m.Statement = raw.Statement
-	m.Source = raw.Source
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
 
 	// Select struct by m.Type to avoid errors with Unmarshal
 	switch m.Type {
 	case FindingTypeVulnerability:
 		rawFinding := DetectedVulnerability{}
-		if err := json.Unmarshal(raw.Finding, &rawFinding); err != nil {
+		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
 			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
 		}
 		m.Finding = rawFinding
 	case FindingTypeMisconfiguration:
 		rawFinding := DetectedMisconfiguration{}
-		if err := json.Unmarshal(raw.Finding, &rawFinding); err != nil {
+		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
 			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
 		}
 		m.Finding = rawFinding
 	case FindingTypeSecret:
 		rawFinding := DetectedSecret{}
-		if err := json.Unmarshal(raw.Finding, &rawFinding); err != nil {
+		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
 			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
 		}
 		m.Finding = rawFinding
 	case FindingTypeLicense:
 		rawFinding := DetectedLicense{}
-		if err := json.Unmarshal(raw.Finding, &rawFinding); err != nil {
+		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
 			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
 		}
 		m.Finding = rawFinding
