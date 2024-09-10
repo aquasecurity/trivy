@@ -26,7 +26,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v0.13.1-0.20240830230553-53ddbbade784
-	github.com/aquasecurity/trivy-db v0.0.0-20240718084044-d23a6ca8ba04
+	github.com/aquasecurity/trivy-db v0.0.0-20240910092429-57306597d2cd
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20240707095038-0300bc49b68b
 	github.com/aws/aws-sdk-go-v2 v1.30.5
@@ -384,7 +384,7 @@ require (
 	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/telemetry v0.0.0-20240522233618-39ace7a40ae7 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	golang.org/x/tools v0.23.0 // indirect
+	golang.org/x/tools v0.24.0 // indirect
 	google.golang.org/api v0.172.0 // indirect
 	google.golang.org/genproto v0.0.0-20240311173647-c811ad7063a7 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240701130421-f6361c86f094 // indirect
