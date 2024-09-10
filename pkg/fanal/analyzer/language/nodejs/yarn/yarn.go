@@ -45,15 +45,17 @@ type yarnAnalyzer struct {
 	logger            *log.Logger
 	packageJsonParser *packagejson.Parser
 	comparer          npm.Comparer
+	includeDevDeps    bool
 	license           *license.License
 }
 
-func newYarnAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newYarnAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &yarnAnalyzer{
 		logger:            log.WithPrefix("yarn"),
 		packageJsonParser: packagejson.NewParser(),
 		comparer:          npm.Comparer{},
-		license:           license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
+		includeDevDeps:    opts.IncludeDevDeps,
+		license:           license.NewLicense(opts.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 
@@ -183,9 +185,12 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	}
 
 	// Walk dev dependencies
-	devPkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDevDeps, patterns, true)
-	if err != nil {
-		return xerrors.Errorf("unable to walk dependencies: %w", err)
+	var devPkgs = make(map[string]types.Package)
+	if a.includeDevDeps {
+		devPkgs, err = a.walkDependencies(app.Packages, pkgIDs, directDevDeps, patterns, true)
+		if err != nil {
+			return xerrors.Errorf("unable to walk dependencies: %w", err)
+		}
 	}
 
 	// Merge prod and dev dependencies.

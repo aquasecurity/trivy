@@ -14,13 +14,15 @@ import (
 
 func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name string
-		dir  string
-		want *analyzer.AnalysisResult
+		name           string
+		dir            string
+		includeDevDeps bool
+		want           *analyzer.AnalysisResult
 	}{
 		{
-			name: "happy path",
-			dir:  "testdata/happy",
+			name:           "happy path",
+			dir:            "testdata/happy",
+			includeDevDeps: false,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -37,24 +39,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										StartLine: 5,
 										EndLine:   8,
 									},
-								},
-							},
-							{
-								ID:           "prop-types@15.7.2",
-								Name:         "prop-types",
-								Version:      "15.7.2",
-								Dev:          true,
-								Relationship: types.RelationshipDirect,
-								Locations: []types.Location{
-									{
-										StartLine: 27,
-										EndLine:   34,
-									},
-								},
-								DependsOn: []string{
-									"loose-envify@1.4.0",
-									"object-assign@4.1.1",
-									"react-is@16.13.1",
 								},
 							},
 							{
@@ -112,20 +96,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 22,
 										EndLine:   25,
-									},
-								},
-							},
-							{
-								ID:           "react-is@16.13.1",
-								Name:         "react-is",
-								Version:      "16.13.1",
-								Dev:          true,
-								Indirect:     true,
-								Relationship: types.RelationshipIndirect,
-								Locations: []types.Location{
-									{
-										StartLine: 36,
-										EndLine:   39,
 									},
 								},
 							},
@@ -355,8 +325,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "package uses `latest` version",
-			dir:  "testdata/latest-version",
+			name:           "package uses `latest` version",
+			dir:            "testdata/latest-version",
+			includeDevDeps: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -410,8 +381,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with alias rewrite",
-			dir:  "testdata/alias",
+			name:           "happy path with alias rewrite",
+			dir:            "testdata/alias",
+			includeDevDeps: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -528,8 +500,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "monorepo",
-			dir:  "testdata/monorepo",
+			name:           "monorepo",
+			dir:            "testdata/monorepo",
+			includeDevDeps: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -819,7 +792,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newYarnAnalyzer(analyzer.AnalyzerOptions{})
+			a, err := newYarnAnalyzer(analyzer.AnalyzerOptions{IncludeDevDeps: tt.includeDevDeps})
 			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
