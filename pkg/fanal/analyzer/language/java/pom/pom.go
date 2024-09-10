@@ -21,10 +21,18 @@ func init() {
 const version = 1
 
 // pomAnalyzer analyzes pom.xml
-type pomAnalyzer struct{}
+type pomAnalyzer struct {
+	includeDevDeps bool
+}
 
-func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := filepath.Join(input.Dir, input.FilePath)
+
+	// Skip integration test dir if `--include-dev-deps` flag is not present.
+	if isIntegrationTestDir(filePath) && !a.includeDevDeps {
+		return nil, nil
+	}
+
 	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline))
 	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
@@ -43,16 +51,21 @@ func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*
 	return res, nil
 }
 
-func (a pomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a *pomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return filepath.Base(filePath) == types.MavenPom
 }
 
-func (a pomAnalyzer) Type() analyzer.Type {
+func (a *pomAnalyzer) Type() analyzer.Type {
 	return analyzer.TypePom
 }
 
-func (a pomAnalyzer) Version() int {
+func (a *pomAnalyzer) Version() int {
 	return version
+}
+
+func (a *pomAnalyzer) Init(opts analyzer.AnalyzerOptions) error {
+	a.includeDevDeps = opts.IncludeDevDeps
+	return nil
 }
 
 // isIntegrationTestDir checks that pom file is in directory with integration tests of `maven-invoker-plugin`

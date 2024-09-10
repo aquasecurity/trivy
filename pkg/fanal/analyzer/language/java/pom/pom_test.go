@@ -14,11 +14,12 @@ import (
 
 func Test_pomAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputDir  string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name           string
+		inputDir       string
+		inputFile      string
+		includeDevDeps bool
+		want           *analyzer.AnalysisResult
+		wantErr        string
 	}{
 		{
 			name:      "happy path",
@@ -94,8 +95,9 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path for maven-invoker-plugin integration tests",
-			inputFile: "testdata/mark-as-dev/src/it/example/pom.xml",
+			name:           "happy path for maven-invoker-plugin integration tests",
+			inputFile:      "testdata/mark-as-dev/src/it/example/pom.xml",
+			includeDevDeps: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -130,6 +132,12 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name:           "happy path for maven-invoker-plugin integration tests without `--include-dev-deps` flag",
+			inputFile:      "testdata/mark-as-dev/src/it/example/pom.xml",
+			includeDevDeps: false,
+			want:           nil,
 		},
 		{
 			name:      "unsupported requirement",
@@ -170,7 +178,9 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			a := pomAnalyzer{}
+			a := pomAnalyzer{
+				includeDevDeps: tt.includeDevDeps,
+			}
 			got, err := a.Analyze(nil, analyzer.AnalysisInput{
 				Dir:      tt.inputDir,
 				FilePath: tt.inputFile,
