@@ -12,46 +12,67 @@ import (
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		name     string
-		file     string // Test input file
-		want     []ftypes.Package
-		wantDeps []ftypes.Dependency
+		name           string
+		file           string // Test input file
+		includeDevDeps bool
+		want           []ftypes.Package
+		wantDeps       []ftypes.Dependency
 	}{
 		{
-			name:     "lock version v1",
-			file:     "testdata/package-lock_v1.json",
-			want:     npmV1Pkgs,
-			wantDeps: npmDeps,
+			name:           "lock version v1",
+			file:           "testdata/package-lock_v1.json",
+			includeDevDeps: true,
+			want:           npmV1Pkgs,
+			wantDeps:       npmDeps,
 		},
 		{
-			name:     "lock version v2",
-			file:     "testdata/package-lock_v2.json",
-			want:     npmV2Pkgs,
-			wantDeps: npmDeps,
+			name:           "lock version v2",
+			file:           "testdata/package-lock_v2.json",
+			includeDevDeps: true,
+			want:           npmV2Pkgs,
+			wantDeps:       npmDeps,
 		},
 		{
-			name:     "lock version v3",
-			file:     "testdata/package-lock_v3.json",
-			want:     npmV2Pkgs,
-			wantDeps: npmDeps,
+			name:           "lock version v3",
+			file:           "testdata/package-lock_v3.json",
+			includeDevDeps: true,
+			want:           npmV2Pkgs,
+			wantDeps:       npmDeps,
 		},
 		{
-			name:     "lock version v3 with workspace",
-			file:     "testdata/package-lock_v3_with_workspace.json",
-			want:     npmV3WithWorkspacePkgs,
-			wantDeps: npmV3WithWorkspaceDeps,
+			name:           "lock version v3. Exclude Dev deps",
+			file:           "testdata/package-lock_v3.json",
+			includeDevDeps: false,
+			want:           npmV2PkgsExcludeDev,
+			wantDeps:       npmV2DepsExcludeDev,
 		},
 		{
-			name:     "lock file v3 contains same dev and non-dev dependencies",
-			file:     "testdata/package-lock_v3_with-same-dev-and-non-dev.json",
-			want:     npmV3WithSameDevAndNonDevPkgs,
-			wantDeps: npmV3WithSameDevAndNonDevDeps,
+			name:           "lock version v3 with workspace",
+			file:           "testdata/package-lock_v3_with_workspace.json",
+			includeDevDeps: true,
+			want:           npmV3WithWorkspacePkgs,
+			wantDeps:       npmV3WithWorkspaceDeps,
 		},
 		{
-			name:     "lock version v3 with workspace and without direct deps field",
-			file:     "testdata/package-lock_v3_without_root_deps_field.json",
-			want:     npmV3WithoutRootDepsField,
-			wantDeps: npmV3WithoutRootDepsFieldDeps,
+			name:           "lock file v3 contains same dev and non-dev dependencies",
+			file:           "testdata/package-lock_v3_with-same-dev-and-non-dev.json",
+			includeDevDeps: true,
+			want:           npmV3WithSameDevAndNonDevPkgs,
+			wantDeps:       npmV3WithSameDevAndNonDevDeps,
+		},
+		{
+			name:           "lock file v3 contains same dev and non-dev dependencies. Exclude Dev deps",
+			file:           "testdata/package-lock_v3_with-same-dev-and-non-dev.json",
+			includeDevDeps: false,
+			want:           npmV3WithSameDevAndNonDevPkgsExcludeDev,
+			wantDeps:       nil,
+		},
+		{
+			name:           "lock version v3 with workspace and without direct deps field",
+			file:           "testdata/package-lock_v3_without_root_deps_field.json",
+			includeDevDeps: true,
+			want:           npmV3WithoutRootDepsField,
+			wantDeps:       npmV3WithoutRootDepsFieldDeps,
 		},
 		{
 			name:     "lock version v3 with broken link",
@@ -66,7 +87,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, deps, err := NewParser().Parse(f)
+			got, deps, err := NewParser(tt.includeDevDeps).Parse(f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)

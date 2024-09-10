@@ -36,10 +36,10 @@ type npmLibraryAnalyzer struct {
 	packageParser *packagejson.Parser
 }
 
-func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newNpmLibraryAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &npmLibraryAnalyzer{
 		logger:        log.WithPrefix("npm"),
-		lockParser:    npm.NewParser(),
+		lockParser:    npm.NewParser(opts.IncludeDevDeps),
 		packageParser: packagejson.NewParser(),
 	}, nil
 }

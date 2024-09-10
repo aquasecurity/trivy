@@ -52,12 +52,14 @@ type Package struct {
 }
 
 type Parser struct {
-	logger *log.Logger
+	logger         *log.Logger
+	includeDevDeps bool
 }
 
-func NewParser() *Parser {
+func NewParser(includeDevDeps bool) *Parser {
 	return &Parser{
-		logger: log.WithPrefix("npm"),
+		logger:         log.WithPrefix("npm"),
+		includeDevDeps: includeDevDeps,
 	}
 }
 
@@ -105,6 +107,11 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 
 	for pkgPath, pkg := range packages {
 		if !strings.HasPrefix(pkgPath, "node_modules") {
+			continue
+		}
+
+		// Skip `Dev` dependencies if `--include-dev-deps` flag is not present
+		if pkg.Dev && !p.includeDevDeps {
 			continue
 		}
 
