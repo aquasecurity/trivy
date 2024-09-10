@@ -714,8 +714,11 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+	if err != nil {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return "", nil
+	} else if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
 	}
 	defer resp.Body.Close()
@@ -745,8 +748,11 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+	if err != nil {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return nil, nil
+	} else if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
 	}
 	defer resp.Body.Close()
