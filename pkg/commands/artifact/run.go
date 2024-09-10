@@ -563,6 +563,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 			AWSEndpoint:       opts.Endpoint,
 			FileChecksum:      fileChecksum,
 			DetectionPriority: opts.DetectionPriority,
+			IncludeDevDeps:    opts.IncludeDevDeps,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{
