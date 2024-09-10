@@ -53,14 +53,15 @@ $ trivy image --download-db-only
 ```
 $ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
 ```
-    
 !!!note
     Trivy automatically adds the `trivy-db` schema version as a tag if the tag is not used:
 
     `trivy-db-registry:latest` => `trivy-db-registry:latest`, but `trivy-db-registry` => `trivy-db-registry:2`.
 
 !!!note
-    Trivy expects the OCI Artifact to have the media type `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip`
+    Trivy expects the OCI Artifacts to have a Specific media type:
+    - Vulnerability DB `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` 
+    - Java DB `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip`
 
 ## Java Index Database
 The same options are also available for the Java index DB, which is used for scanning Java applications.
