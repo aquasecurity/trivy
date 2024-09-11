@@ -417,7 +417,9 @@ func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string
 			continue
 		}
 
-		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime" && d.Scope != "test") || d.Optional {
+		// There are 6 scopes - https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
+		// Trivy supports empty, `compile`, `runtime`, `test`, `import` scopes
+		if d.Scope == "provided" || d.Scope == "system" || d.Optional {
 			continue
 		}
 
