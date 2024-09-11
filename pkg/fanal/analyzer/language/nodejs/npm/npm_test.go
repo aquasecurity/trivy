@@ -232,7 +232,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newNpmLibraryAnalyzer(analyzer.AnalyzerOptions{})
+			a, err := newNpmLibraryAnalyzer(analyzer.AnalyzerOptions{
+				IncludeDevDeps: true,
+			})
 			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
