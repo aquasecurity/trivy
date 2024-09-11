@@ -53,15 +53,44 @@ $ trivy image --download-db-only
 ```
 $ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
 ```
+
+The media type of the OCI layer must be `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip`.
+You can reference the OCI manifest of [trivy-db].
+
+<details>
+<summary>Manifest</summary>
+
+```shell
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "config": {
+    "mediaType": "application/vnd.aquasec.trivy.config.v1+json",
+    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "size": 2
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip",
+      "digest": "sha256:29ad6505b8957c7cd4c367e7c705c641a9020d2be256812c5f4cc2fc099f4f02",
+      "size": 55474933,
+      "annotations": {
+        "org.opencontainers.image.title": "db.tar.gz"
+      }
+    }
+  ],
+  "annotations": {
+    "org.opencontainers.image.created": "2024-09-11T06:14:51Z"
+  }
+}
+```
+</details>
+
 !!!note
     Trivy automatically adds the `trivy-db` schema version as a tag if the tag is not used:
 
     `trivy-db-registry:latest` => `trivy-db-registry:latest`, but `trivy-db-registry` => `trivy-db-registry:2`.
 
-!!!note
-    Trivy expects the OCI Artifacts to have a Specific media type:
-    - Vulnerability DB `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` 
-    - Java DB `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip`
 
 ## Java Index Database
 The same options are also available for the Java index DB, which is used for scanning Java applications.
@@ -76,6 +105,9 @@ Downloading the Java index DB from an external OCI registry can be done by using
 $ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
 ```
 
+The media type of the OCI layer must be `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip`.
+You can reference the OCI manifest of [trivy-java-db].
+
 !!!note
     Trivy automatically adds the `trivy-java-db` schema version as a tag if the tag is not used:
 
@@ -89,3 +121,6 @@ $ trivy clean --vuln-db --java-db
 2024-06-24T11:42:31+06:00       INFO    Removing vulnerability database...
 2024-06-24T11:42:31+06:00       INFO    Removing Java database...
 ```
+
+[trivy-db]: https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db
+[trivy-java-db]: https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
