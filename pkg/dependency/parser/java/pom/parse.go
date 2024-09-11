@@ -161,7 +161,16 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 
 		// For soft requirements, skip dependency resolution that has already been resolved.
 		if uniqueArt, ok := uniqArtifacts[art.Name()]; ok {
+			// Check that both artifact and saved artifact has `test` scope.
+			// Otherwise, it is non-test dependency
+			art.Test = uniqueArt.Test && art.Test
 			if !uniqueArt.Version.shouldOverride(art.Version) {
+				// If saved artifact is `test`, but new artifact is `non-test`,
+				// then mark saved artifact as `non-test`.
+				if !art.Test && uniqueArt.Test {
+					uniqueArt.Test = art.Test
+					uniqArtifacts[art.Name()] = uniqueArt
+				}
 				continue
 			}
 			// mark artifact as Direct, if saved artifact is Direct
