@@ -6,11 +6,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -155,6 +157,33 @@ func TestReportWriter_Template(t *testing.T) {
 			},
 			template: `{{ $high := 0 }}{{ $critical := 0 }}{{ range . }}{{ range .Vulnerabilities}}{{ if eq .Severity "HIGH" }}{{ $high = add $high 1 }}{{ end }}{{ if eq .Severity "CRITICAL" }}{{ $critical = add $critical 1 }}{{ end }}{{ end }}Critical: {{ $critical }}, High: {{ $high }}{{ end }}`,
 			expected: `Critical: 2, High: 1`,
+		},
+		{
+			name: "custom JSON marshaler",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Status:          dbTypes.StatusAffected,
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeNPM,
+							Name:    "foobar",
+							Version: "1.2.3",
+						},
+					},
+				},
+			},
+			template: `{{ range . }}{{ range .Vulnerabilities}}{{ toPrettyJson . }}{{ end }}{{ end }}`,
+			expected: `{
+  "VulnerabilityID": "CVE-2019-0000",
+  "PkgName": "foo",
+  "PkgIdentifier": {
+    "PURL": "pkg:npm/foobar@1.2.3"
+  },
+  "Status": "affected",
+  "Layer": {}
+}`,
 		},
 		{
 			name:          "happy path: env var parsing",
