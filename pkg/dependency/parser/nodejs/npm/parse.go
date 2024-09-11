@@ -297,6 +297,11 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 	var pkgs []ftypes.Package
 	var deps []ftypes.Dependency
 	for pkgName, dep := range dependencies {
+		// Skip `Dev` dependencies if `--include-dev-deps` flag is not present
+		if dep.Dev && !p.includeDevDeps {
+			continue
+		}
+
 		pkg := ftypes.Package{
 			ID:           packageID(pkgName, dep.Version),
 			Name:         pkgName,

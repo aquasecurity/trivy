@@ -26,6 +26,13 @@ func TestParse(t *testing.T) {
 			wantDeps:       npmDeps,
 		},
 		{
+			name:           "lock version v1. Exclude Dev deps",
+			file:           "testdata/package-lock_v1.json",
+			includeDevDeps: false,
+			want:           npmV1PkgsExcludeDev,
+			wantDeps:       npmDepsExcludeDev,
+		},
+		{
 			name:           "lock version v2",
 			file:           "testdata/package-lock_v2.json",
 			includeDevDeps: true,
