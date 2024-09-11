@@ -11,9 +11,11 @@ import (
 
 func TestConvert(t *testing.T) {
 	type args struct {
-		input    string
-		format   string
-		scanners string
+		input          string
+		format         string
+		scanners       string
+		showSuppressed bool
+		listAllPkgs    bool
 	}
 	tests := []struct {
 		name     string
@@ -37,6 +39,16 @@ func TestConvert(t *testing.T) {
 			},
 			golden: "testdata/npm-cyclonedx.json.golden",
 		},
+		{
+			name: "npm with suppressed vulnerability",
+			args: args{
+				input:          "testdata/fixtures/convert/npm-with-suppressed.json.golden",
+				format:         "json",
+				showSuppressed: true,
+				listAllPkgs:    true,
+			},
+			golden: "testdata/fixtures/convert/npm-with-suppressed.json.golden",
+		},
 	}
 
 	for _, tt := range tests {
@@ -48,6 +60,14 @@ func TestConvert(t *testing.T) {
 				"-q",
 				"--format",
 				tt.args.format,
+			}
+
+			if tt.args.showSuppressed {
+				osArgs = append(osArgs, "--show-suppressed")
+			}
+
+			if tt.args.listAllPkgs {
+				osArgs = append(osArgs, "--list-all-pkgs")
 			}
 
 			// Set up the output file
