@@ -33,7 +33,7 @@ func (a *pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 		return nil, nil
 	}
 
-	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline))
+	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline), pom.WithIncludeTestScopes(a.includeDevDeps))
 	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
