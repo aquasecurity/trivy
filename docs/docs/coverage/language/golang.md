@@ -22,9 +22,8 @@ The table below provides an outline of the features Trivy offers.
 | Binaries |      ✅      | Exclude          |                  -                   | ✅[^4]  |                Not needed                |
 
 !!! note
-    When scanning Go projects (go.mod), Trivy scans only dependencies of the project, and does not detect vulnerabilities of application itself. 
-    For example, when scanning the Docker binary, Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find 
-    vulnerabilities of Docker itself.
+    When scanning Go projects (go.mod or binaries built with Go), Trivy scans only dependencies of the project, and does not detect vulnerabilities of application itself. 
+    For example, when scanning the Docker project (Docker's source code with go.mod or the Docker binary), Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find vulnerabilities of Docker itself. Moreover, when scanning the Trivy project, which happens to use Docker, Docker's vulnerabilities might be detected as dependencies of Trivy.
 
 ### Go Modules
 Depending on Go versions, the required files are different.
