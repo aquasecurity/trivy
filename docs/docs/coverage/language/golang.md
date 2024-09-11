@@ -65,7 +65,7 @@ such as `go mod download`, `go mod tidy`, etc.
 Trivy traverses `$GOPATH/pkg/mod` and collects those extra information.
 
 #### Standard Library
-Detecting the version of Go used in the project can be tricky. The go.mod file include hints that allows Trivy to guess the Go version but it eventually depends on the Go tool version in the build environment. Since this strategy is not fully deterministic and accurate, it is enabled only in [--detection-priority comprehensive][detection-priority] mode. 
+Detecting the version of Go used in the project can be tricky. The go.mod file include hints that allows Trivy to guess the Go version but it eventually depends on the Go tool version in the build environment. Since this strategy is not fully deterministic and accurate, it is enabled only in [--detection-priority comprehensive][detection-priority] mode.
 When enabled, Trivy detects stdlib version as the minimum between the `go` and the [toolchain][^6] directives in the `go.mod` file.
 To obtain reproducible scan results Trivy doesn't check the locally installed version of `Go`.
 
@@ -73,7 +73,12 @@ To obtain reproducible scan results Trivy doesn't check the locally installed ve
     Trivy detects `stdlib` only for `Go` 1.21 or higher.
 
     The version from the `go` line (for `Go` 1.20 or early) is not a minimum required version.
-    For details, see [this](https://go.googlesource.com/proposal/+/master/design/57001-gotoolchain.md).    
+    For details, see [this](https://go.googlesource.com/proposal/+/master/design/57001-gotoolchain.md).
+
+Trivy does not know if or how you use stdlib functions, therefore it is possible that stdlib vulnerabilities are not applicable to your use case. There are a few ways to mitigate this:
+1. set `--detection-priority precise` to disable stdlib detection.
+2. Analyze vulnerability reachability using a tool such as [govulncheck](https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck). This will ensure that reported vulnerabilities are applicable to your project.
+3. Suppress non-applicable vulnerabilities using either [ignore file](../../configuration/ignore.md) for self-use or [VEX Hub](../../supply-chain/vex/repo.md) for public use.
 
 ### Go binaries
 Trivy scans Go binaries when it encounters them during scans such as container images or file systems. 
