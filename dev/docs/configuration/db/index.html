@@ -4214,16 +4214,40 @@ This is useful to initialize workers in Continuous Integration systems.</p>
 <p><code>Trivy</code> could also download the vulnerability database from an external OCI registry by using <code>--db-repository</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
 </code></pre></div>
+<p>The media type of the OCI layer must be <code>application/vnd.aquasec.trivy.db.layer.v1.tar+gzip</code>.
+You can reference the OCI manifest of <a href="https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db">trivy-db</a>.</p>
+<details>
+<summary>Manifest</summary>
+
+<div class="highlight"><pre><span></span><code><span class="o">{</span>
+  <span class="s2">&quot;schemaVersion&quot;</span>: <span class="m">2</span>,
+  <span class="s2">&quot;mediaType&quot;</span>: <span class="s2">&quot;application/vnd.oci.image.manifest.v1+json&quot;</span>,
+  <span class="s2">&quot;config&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;mediaType&quot;</span>: <span class="s2">&quot;application/vnd.aquasec.trivy.config.v1+json&quot;</span>,
+    <span class="s2">&quot;digest&quot;</span>: <span class="s2">&quot;sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a&quot;</span>,
+    <span class="s2">&quot;size&quot;</span>: <span class="m">2</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;layers&quot;</span>: <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">&quot;mediaType&quot;</span>: <span class="s2">&quot;application/vnd.aquasec.trivy.db.layer.v1.tar+gzip&quot;</span>,
+      <span class="s2">&quot;digest&quot;</span>: <span class="s2">&quot;sha256:29ad6505b8957c7cd4c367e7c705c641a9020d2be256812c5f4cc2fc099f4f02&quot;</span>,
+      <span class="s2">&quot;size&quot;</span>: <span class="m">55474933</span>,
+      <span class="s2">&quot;annotations&quot;</span>: <span class="o">{</span>
+        <span class="s2">&quot;org.opencontainers.image.title&quot;</span>: <span class="s2">&quot;db.tar.gz&quot;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">&quot;annotations&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;org.opencontainers.image.created&quot;</span>: <span class="s2">&quot;2024-09-11T06:14:51Z&quot;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+</details>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Trivy automatically adds the <code>trivy-db</code> schema version as a tag if the tag is not used:</p>
 <p><code>trivy-db-registry:latest</code> =&gt; <code>trivy-db-registry:latest</code>, but <code>trivy-db-registry</code> =&gt; <code>trivy-db-registry:2</code>.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Trivy expects the OCI Artifacts to have a Specific media type:
-- Vulnerability DB <code>application/vnd.aquasec.trivy.db.layer.v1.tar+gzip</code> 
-- Java DB <code>application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip</code></p>
 </div>
 <h2 id="java-index-database">Java Index Database</h2>
 <p>The same options are also available for the Java index DB, which is used for scanning Java applications.
@@ -4235,6 +4259,8 @@ Skipping an update can be done by using the <code>--skip-java-db-update</code> o
 <p>Downloading the Java index DB from an external OCI registry can be done by using the <code>--java-db-repository</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
 </code></pre></div>
+<p>The media type of the OCI layer must be <code>application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip</code>.
+You can reference the OCI manifest of <a href="https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db">trivy-java-db</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Trivy automatically adds the <code>trivy-java-db</code> schema version as a tag if the tag is not used:</p>
