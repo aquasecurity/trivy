@@ -303,7 +303,7 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		Exclusions:   exclusions,
 		Locations:    locations,
 		Relationship: ftypes.RelationshipIndirect, // default
-		Test:         d.Scope == "test",
+		Test:         d.Scope == "test" || opts.testScope,
 	}
 }
 
