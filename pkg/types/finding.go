@@ -67,34 +67,28 @@ func (m *ModifiedFinding) UnmarshalJSON(data []byte) error {
 	}
 
 	// Select struct by m.Type to avoid errors with Unmarshal
+	var err error
 	switch m.Type {
 	case FindingTypeVulnerability:
-		rawFinding := DetectedVulnerability{}
-		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
-			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
-		}
-		m.Finding = rawFinding
+		m.Finding, err = unmarshalFinding[DetectedVulnerability](aux.Finding)
 	case FindingTypeMisconfiguration:
-		rawFinding := DetectedMisconfiguration{}
-		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
-			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
-		}
-		m.Finding = rawFinding
+		m.Finding, err = unmarshalFinding[DetectedMisconfiguration](aux.Finding)
 	case FindingTypeSecret:
-		rawFinding := DetectedSecret{}
-		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
-			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
-		}
-		m.Finding = rawFinding
+		m.Finding, err = unmarshalFinding[DetectedSecret](aux.Finding)
 	case FindingTypeLicense:
-		rawFinding := DetectedLicense{}
-		if err := json.Unmarshal(aux.Finding, &rawFinding); err != nil {
-			return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
-		}
-		m.Finding = rawFinding
+		m.Finding, err = unmarshalFinding[DetectedLicense](aux.Finding)
 	default:
 		return xerrors.Errorf("invalid Finding type: %s", m.Type)
 	}
 
+	if err != nil {
+		return xerrors.Errorf("unable to unmarshal %q type: %w", m.Type, err)
+	}
 	return nil
+}
+
+func unmarshalFinding[T finding](data []byte) (T, error) {
+	var f T
+	err := json.Unmarshal(data, &f)
+	return f, err
 }
