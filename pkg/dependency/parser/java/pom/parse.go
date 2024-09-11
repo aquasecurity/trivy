@@ -303,6 +303,7 @@ func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 	result, err := p.analyze(pomContent, analysisOptions{
 		exclusions:    art.Exclusions,
 		depManagement: rootDepManagement,
+		testScope:     art.Test,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
@@ -325,6 +326,7 @@ type analysisOptions struct {
 	exclusions    map[string]struct{}
 	depManagement []pomDependency // from the root POM
 	lineNumber    bool            // Save line numbers
+	testScope     bool
 }
 
 func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
