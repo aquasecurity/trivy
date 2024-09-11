@@ -1527,6 +1527,12 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// [INFO] --- dependency:3.7.0:tree (default-cli) @ test-example ---
+		// [INFO] com.example:test-example:jar:1.0.0
+		// [INFO] +- org.example:example-nested:jar:3.3.3:compile
+		// [INFO] |  \- org.example:example-dependency:jar:1.2.3:compile
+		// [INFO] \- org.example:example-dependency2:jar:2.3.4:test
+		// [INFO]    \- org.example:example-api:jar:1.7.30:compile
 		{
 			name:      "include dependencies with test scope",
 			inputFile: filepath.Join("testdata", "test-scope", "pom.xml"),
@@ -1538,40 +1544,69 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
-
 				{
-					ID:           "org.example:example-dependency:1.2.3",
-					Name:         "org.example:example-dependency",
-					Version:      "1.2.3",
+					ID:           "org.example:example-dependency2:2.3.4",
+					Name:         "org.example:example-dependency2",
+					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
 					Dev:          true,
 					Locations: ftypes.Locations{
 						{
-							StartLine: 13,
-							EndLine:   18,
+							StartLine: 18,
+							EndLine:   23,
 						},
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "org.example:example-nested:3.3.3",
+					Name:         "org.example:example-nested",
+					Version:      "3.3.3",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 13,
+							EndLine:   17,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api:1.7.30",
 					Name:         "org.example:example-api",
-					Version:      "2.0.0",
+					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
-					Dev:          true,
+				},
+				{
+					ID:           "org.example:example-dependency:1.2.3",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.3",
+					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
 					ID: "com.example:test-example:1.0.0",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
+						"org.example:example-dependency2:2.3.4",
+						"org.example:example-nested:3.3.3",
+					},
+				},
+				{
+					ID: "org.example:example-dependency2:2.3.4",
+					DependsOn: []string{
+						"org.example:example-api:1.7.30",
 					},
 				},
 				{
 					ID: "org.example:example-dependency:1.2.3",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"org.example:example-api:1.7.30",
+					},
+				},
+				{
+					ID: "org.example:example-nested:3.3.3",
+					DependsOn: []string{
+						"org.example:example-dependency:1.2.3",
 					},
 				},
 			},
