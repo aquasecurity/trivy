@@ -547,7 +547,7 @@ func NormalizeLicense(licenses []string) string {
 
 		return fmt.Sprintf("(%s)", license)
 	}), " AND ")
-	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
+	s, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
 	if err != nil {
 		// Not fail on the invalid license
 		log.Warn("Unable to marshal SPDX licenses", log.String("license", license))

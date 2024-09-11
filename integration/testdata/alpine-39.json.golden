@@ -418,7 +418,7 @@
           "PkgName": "musl-utils",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
-            "UID": "8c341199f4077fc8"
+            "UID": "a35dd6cab4aabdf1"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",

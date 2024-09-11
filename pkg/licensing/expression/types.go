@@ -3,29 +3,7 @@ package expression
 import (
 	"fmt"
 	"slices"
-
-	"github.com/aquasecurity/trivy/pkg/licensing"
 )
-
-var versioned = []string{
-	licensing.AGPL10,
-	licensing.AGPL30,
-	licensing.GFDL11WithInvariants,
-	licensing.GFDL11NoInvariants,
-	licensing.GFDL11,
-	licensing.GFDL12WithInvariants,
-	licensing.GFDL12NoInvariants,
-	licensing.GFDL12,
-	licensing.GFDL13WithInvariants,
-	licensing.GFDL13NoInvariants,
-	licensing.GFDL13,
-	licensing.GPL10,
-	licensing.GPL20,
-	licensing.GPL30,
-	licensing.LGPL20,
-	licensing.LGPL21,
-	licensing.LGPL30,
-}
 
 type Expression interface {
 	String() string
@@ -37,24 +15,24 @@ type Token struct {
 }
 
 type SimpleExpr struct {
-	license string
-	hasPlus bool
+	License string
+	HasPlus bool
 }
 
 func (s SimpleExpr) String() string {
-	if slices.Contains(versioned, s.license) {
-		if s.hasPlus {
+	if slices.Contains(GnuLicenses, s.License) {
+		if s.HasPlus {
 			// e.g. AGPL-1.0-or-later
-			return s.license + "-or-later"
+			return s.License + "-or-later"
 		}
 		// e.g. GPL-1.0-only
-		return s.license + "-only"
+		return s.License + "-only"
 	}
 
-	if s.hasPlus {
-		return s.license + "+"
+	if s.HasPlus {
+		return s.License + "+"
 	}
-	return s.license
+	return s.License
 }
 
 type CompoundExpr struct {
