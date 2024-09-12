@@ -1,4 +1,4 @@
-package licensing
+package expression
 
 // Canonical names of the licenses.
 // ported from https://github.com/google/licenseclassifier/blob/7c62d6fe8d3aa2f39c4affb58c9781d9dc951a2d/license_type.go#L24-L177
@@ -164,6 +164,28 @@ const (
 	ZPL20                       = "ZPL-2.0"
 	ZPL21                       = "ZPL-2.1"
 )
+
+// GNU licenses always use either the suffix “-only“ or the suffix “-or-later“
+// https://spdx.dev/learn/handling-license-info/
+var GnuLicenses = []string{
+	AGPL10,
+	AGPL30,
+	GFDL11WithInvariants,
+	GFDL11NoInvariants,
+	GFDL11,
+	GFDL12WithInvariants,
+	GFDL12NoInvariants,
+	GFDL12,
+	GFDL13WithInvariants,
+	GFDL13NoInvariants,
+	GFDL13,
+	GPL10,
+	GPL20,
+	GPL30,
+	LGPL20,
+	LGPL21,
+	LGPL30,
+}
 
 var (
 	// ForbiddenLicenses - Licenses that are forbidden to be used.

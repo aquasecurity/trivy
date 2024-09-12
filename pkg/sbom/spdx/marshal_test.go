@@ -11,6 +11,7 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
+	"github.com/spdx/tools-golang/spdxlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -1329,6 +1330,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			spdxDoc, err := marshaler.MarshalReport(ctx, tc.inputReport)
 			require.NoError(t, err)
 
+			assert.NoError(t, spdxlib.ValidateDocument(spdxDoc))
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
 		})
 	}
@@ -1361,7 +1363,7 @@ func Test_GetLicense(t *testing.T) {
 				"GPLv2+",
 				"LGPL 2.0 or GNU LESSER",
 			},
-			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-3.0-only)",
+			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-2.1-only)",
 		},
 		{
 			name: "happy path with AND operator",
@@ -1369,7 +1371,7 @@ func Test_GetLicense(t *testing.T) {
 				"GPLv2+",
 				"LGPL 2.0 and GNU LESSER",
 			},
-			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-3.0-only",
+			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only",
 		},
 		{
 			name: "happy path with WITH operator",
