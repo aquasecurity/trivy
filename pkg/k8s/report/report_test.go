@@ -1,6 +1,7 @@
 package report
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -112,6 +113,104 @@ var (
 					},
 					{
 						VulnerabilityID: "CVE-2022-7777",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
+
+	image1WithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image1",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+				},
+			},
+		},
+	}
+
+	image2WithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image2",
+				RepoTags: []string{
+					"alpine:3.17.3",
+				},
+				RepoDigests: []string{
+					"alpine@sha256:124c7d2707904eea7431fffe91522a01e5a861a624ee31d03372cc1d138a3126",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-2222",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
+
+	multiImagePodWithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image1",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+			{
+				ImageID: "image2",
+				RepoTags: []string{
+					"alpine:3.17.3",
+				},
+				RepoDigests: []string{
+					"alpine@sha256:124c7d2707904eea7431fffe91522a01e5a861a624ee31d03372cc1d138a3126",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+				},
+			},
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-2222",
 						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
 					},
 				},
@@ -387,6 +486,45 @@ func TestReport_consolidate(t *testing.T) {
 				}
 
 				assert.Equal(t, expected, f)
+			}
+		})
+	}
+}
+
+func TestReport_consolidateMultiImagePod(t *testing.T) {
+	tests := []struct {
+		name             string
+		report           Report
+		expectedFindings map[string]Resource
+	}{
+		{
+			name: "report with multi image pod containing vulnerabilities",
+			report: Report{
+				Resources: []Resource{
+					image1WithVulns,
+					image2WithVulns,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/pod/multi-image-pod": multiImagePodWithVulns,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			consolidateReport := tt.report.consolidate()
+			for _, f := range consolidateReport.Findings {
+				key := f.fullname()
+
+				expected, found := tt.expectedFindings[key]
+				if !found {
+					t.Errorf("key not found: %s", key)
+				}
+
+				assert.True(t, reflect.DeepEqual(expected.Metadata, f.Metadata))
+
+				assert.True(t, reflect.DeepEqual(expected.Results, f.Results))
 			}
 		})
 	}
