@@ -16,20 +16,18 @@ import (
 
 func TestPom_Parse(t *testing.T) {
 	tests := []struct {
-		name              string
-		inputFile         string
-		local             bool
-		offline           bool
-		includeTestScopes bool
-		want              []ftypes.Package
-		wantDeps          []ftypes.Dependency
-		wantErr           string
+		name      string
+		inputFile string
+		local     bool
+		offline   bool
+		want      []ftypes.Package
+		wantDeps  []ftypes.Dependency
+		wantErr   string
 	}{
 		{
-			name:              "local repository",
-			inputFile:         filepath.Join("testdata", "happy", "pom.xml"),
-			local:             true,
-			includeTestScopes: true,
+			name:      "local repository",
+			inputFile: filepath.Join("testdata", "happy", "pom.xml"),
+			local:     true,
 			want: []ftypes.Package{
 				{
 					ID:           "com.example:happy:1.0.0",
@@ -125,6 +123,19 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
+				{
+					ID:           "org.example:example-test:2.0.0",
+					Name:         "org.example:example-test",
+					Version:      "2.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Dev:          true,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 49,
+							EndLine:   54,
+						},
+					},
+				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -132,6 +143,7 @@ func TestPom_Parse(t *testing.T) {
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
 						"org.example:example-runtime:1.0.0",
+						"org.example:example-test:2.0.0",
 					},
 				},
 			},
@@ -1515,56 +1527,6 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
-		{
-			name:              "include dependencies with test scope",
-			inputFile:         filepath.Join("testdata", "test-scope", "pom.xml"),
-			local:             true,
-			includeTestScopes: true,
-			want: []ftypes.Package{
-				{
-					ID:           "com.example:test-example:1.0.0",
-					Name:         "com.example:test-example",
-					Version:      "1.0.0",
-					Relationship: ftypes.RelationshipRoot,
-				},
-
-				{
-					ID:           "org.example:example-dependency:1.2.3",
-					Name:         "org.example:example-dependency",
-					Version:      "1.2.3",
-					Relationship: ftypes.RelationshipDirect,
-					Dev:          true,
-					Locations: ftypes.Locations{
-						{
-							StartLine: 13,
-							EndLine:   18,
-						},
-					},
-				},
-				{
-					ID:           "org.example:example-api:2.0.0",
-					Name:         "org.example:example-api",
-					Version:      "2.0.0",
-					Licenses:     []string{"The Apache Software License, Version 2.0"},
-					Relationship: ftypes.RelationshipIndirect,
-					Dev:          true,
-				},
-			},
-			wantDeps: []ftypes.Dependency{
-				{
-					ID: "com.example:test-example:1.0.0",
-					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
-					},
-				},
-				{
-					ID: "org.example:example-dependency:1.2.3",
-					DependsOn: []string{
-						"org.example:example-api:2.0.0",
-					},
-				},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1583,13 +1545,7 @@ func TestPom_Parse(t *testing.T) {
 				remoteRepos = []string{ts.URL}
 			}
 
-			p := pom.NewParser(
-				tt.inputFile,
-				pom.WithReleaseRemoteRepos(remoteRepos),
-				pom.WithSnapshotRemoteRepos(remoteRepos),
-				pom.WithOffline(tt.offline),
-				pom.WithIncludeTestScopes(tt.includeTestScopes),
-			)
+			p := pom.NewParser(tt.inputFile, pom.WithReleaseRemoteRepos(remoteRepos), pom.WithSnapshotRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
 
 			gotPkgs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {

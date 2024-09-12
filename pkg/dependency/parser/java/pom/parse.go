@@ -31,7 +31,6 @@ const (
 
 type options struct {
 	offline             bool
-	includeTestScopes   bool
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
 }
@@ -41,11 +40,6 @@ type option func(*options)
 func WithOffline(offline bool) option {
 	return func(opts *options) {
 		opts.offline = offline
-	}
-}
-func WithIncludeTestScopes(includeTestScopes bool) option {
-	return func(opts *options) {
-		opts.includeTestScopes = includeTestScopes
 	}
 }
 
@@ -69,7 +63,6 @@ type Parser struct {
 	releaseRemoteRepos  []string
 	snapshotRemoteRepos []string
 	offline             bool
-	includeTestScopes   bool
 	servers             []Server
 }
 
@@ -98,7 +91,6 @@ func NewParser(filePath string, opts ...option) *Parser {
 		releaseRemoteRepos:  o.releaseRemoteRepos,
 		snapshotRemoteRepos: o.snapshotRemoteRepos,
 		offline:             o.offline,
-		includeTestScopes:   o.includeTestScopes,
 		servers:             s.Servers,
 	}
 }
@@ -311,7 +303,6 @@ func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 	result, err := p.analyze(pomContent, analysisOptions{
 		exclusions:    art.Exclusions,
 		depManagement: rootDepManagement,
-		testScope:     art.Test,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
@@ -334,7 +325,6 @@ type analysisOptions struct {
 	exclusions    map[string]struct{}
 	depManagement []pomDependency // from the root POM
 	lineNumber    bool            // Save line numbers
-	testScope     bool
 }
 
 func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -412,14 +402,7 @@ func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string
 		// Resolve dependencies
 		d = d.Resolve(props, depManagement, rootDepManagement)
 
-		// Save dependencies with `test` scope only when `--include-dev-deps` flag is present
-		if d.Scope == "test" && !p.includeTestScopes {
-			continue
-		}
-
-		// There are 6 scopes - https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
-		// Trivy supports empty, `compile`, `runtime`, `test`, `import` scopes
-		if d.Scope == "provided" || d.Scope == "system" || d.Optional {
+		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime" && d.Scope != "test") || d.Optional {
 			continue
 		}
 
