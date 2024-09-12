@@ -27,7 +27,6 @@ type artifact struct {
 
 	Module       bool
 	Relationship ftypes.Relationship
-	Test         bool
 
 	Locations ftypes.Locations
 }
