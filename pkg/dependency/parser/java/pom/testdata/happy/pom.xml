@@ -46,11 +46,5 @@
             <version>999</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>example-test</artifactId>
-            <version>2.0.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>

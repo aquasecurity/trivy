@@ -61,19 +61,6 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
-				{
-					ID:           "org.example:example-test:2.0.0",
-					Name:         "org.example:example-test",
-					Version:      "2.0.0",
-					Relationship: ftypes.RelationshipDirect,
-					Dev:          true,
-					Locations: ftypes.Locations{
-						{
-							StartLine: 49,
-							EndLine:   54,
-						},
-					},
-				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -81,7 +68,6 @@ func TestPom_Parse(t *testing.T) {
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
 						"org.example:example-runtime:1.0.0",
-						"org.example:example-test:2.0.0",
 					},
 				},
 			},
@@ -123,19 +109,6 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
-				{
-					ID:           "org.example:example-test:2.0.0",
-					Name:         "org.example:example-test",
-					Version:      "2.0.0",
-					Relationship: ftypes.RelationshipDirect,
-					Dev:          true,
-					Locations: ftypes.Locations{
-						{
-							StartLine: 49,
-							EndLine:   54,
-						},
-					},
-				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -143,7 +116,6 @@ func TestPom_Parse(t *testing.T) {
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
 						"org.example:example-runtime:1.0.0",
-						"org.example:example-test:2.0.0",
 					},
 				},
 			},
