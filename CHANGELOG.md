@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.55.1](https://github.com/aquasecurity/trivy/compare/v0.55.0...v0.55.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **report:** change a receiver of MarshalJSON [backport: release/v0.55] ([#7490](https://github.com/aquasecurity/trivy/issues/7490)) ([6fa91bf](https://github.com/aquasecurity/trivy/commit/6fa91bf5cc97043ed0690e1749db502a3287134a))
+* **report:** fix error with unmarshal of `ExperimentalModifiedFindings` [backport: release/v0.55] ([#7492](https://github.com/aquasecurity/trivy/issues/7492)) ([6ae7cd5](https://github.com/aquasecurity/trivy/commit/6ae7cd5fd3ef820037de36fa197aad4453a50c25))
+
+
+### Reverts
+
+* **java:** stop supporting of `test` scope for `pom.xml` files [backport: release/v0.55] ([#7489](https://github.com/aquasecurity/trivy/issues/7489)) ([c20d9e2](https://github.com/aquasecurity/trivy/commit/c20d9e25640aa57ca7d73e99ce09760174411669))
+
 ## [0.55.0](https://github.com/aquasecurity/trivy/compare/v0.54.0...v0.55.0) (2024-09-03)
 
 
