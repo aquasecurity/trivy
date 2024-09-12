@@ -147,7 +147,7 @@
           "PkgPath": "usr/lib/python2.7/site-packages/setuptools-0.9.8-py2.7.egg-info/PKG-INFO",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/setuptools@0.9.8",
-            "UID": "3f4c89bf681c1d7a"
+            "UID": "13d32ebdc7bda1b4"
           },
           "InstalledVersion": "0.9.8",
           "FixedVersion": "65.5.1",
