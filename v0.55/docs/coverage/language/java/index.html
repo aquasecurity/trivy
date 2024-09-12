@@ -1946,13 +1946,6 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#scopes" class="md-nav__link">
-    scopes
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#maven-invoker-plugin" class="md-nav__link">
     maven-invoker-plugin
   </a>
@@ -4138,13 +4131,6 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#scopes" class="md-nav__link">
-    scopes
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#maven-invoker-plugin" class="md-nav__link">
     maven-invoker-plugin
   </a>
@@ -4271,7 +4257,7 @@ You're not viewing the latest version.
 <tr>
 <td>pom.xml</td>
 <td align="center">Maven repository <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
-<td align="center"><a href="#scopes">Exclude</a></td>
+<td align="center">Exclude</td>
 <td align="center">✓</td>
 <td align="center">✓<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup></td>
 <td align="center">-</td>
@@ -4345,10 +4331,6 @@ The vulnerability database will be downloaded anyway.</p>
 <p class="admonition-title">Warning</p>
 <p>Trivy may skip some dependencies (that were not found on your local machine) when the <code>--offline-scan</code> flag is passed.</p>
 </div>
-<h3 id="scopes">scopes</h3>
-<p>Trivy supports <code>runtime</code>, <code>compile</code>, <code>test</code> and <code>import</code> (for <code>dependencyManagement</code>) <a href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope">dependency scopes</a>.
-Dependencies without scope are also detected.</p>
-<p>By default, Trivy doesn't report dependencies with <code>test</code> scope. Use the <code>--include-dev-deps</code> flag to include them.</p>
 <h3 id="maven-invoker-plugin">maven-invoker-plugin</h3>
 <p>Typically, the integration tests directory (<code>**/[src|target]/it/*/pom.xml</code>) of <a href="https://maven.apache.org/plugins/maven-invoker-plugin/usage.html">maven-invoker-plugin</a> doesn't contain actual <code>pom.xml</code> files and should be skipped to avoid noise.</p>
 <p>Trivy marks dependencies from these files as the development dependencies and skip them by default.
