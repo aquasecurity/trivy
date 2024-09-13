@@ -129,6 +129,23 @@ func TestFilter(t *testing.T) {
 			Message:  "something bad",
 			Severity: dbTypes.SeverityHigh.String(),
 			Status:   types.MisconfStatusFailure,
+			CauseMetadata: ftypes.CauseMetadata{
+				Resource:  "foo-resource-1",
+				Provider:  "bar-provider-1",
+				Service:   "baz-service-1",
+				StartLine: 123,
+				EndLine:   456,
+				Occurrences: []ftypes.Occurrence{
+					{
+						Resource: "foo-resource-occurance-1",
+						Filename: "bar-filename-occurance-1",
+						Location: ftypes.Location{
+							StartLine: 666,
+							EndLine:   888,
+						},
+					},
+				},
+			},
 		}
 		misconf2 = types.DetectedMisconfiguration{
 			Type:     "Kubernetes Security Check",
@@ -147,6 +164,23 @@ func TestFilter(t *testing.T) {
 			Message:  "something bad",
 			Severity: dbTypes.SeverityLow.String(),
 			Status:   types.MisconfStatusFailure,
+			CauseMetadata: ftypes.CauseMetadata{
+				Resource:  "foo-resource-3",
+				Provider:  "bar-provider-3",
+				Service:   "baz-service-3",
+				StartLine: 123,
+				EndLine:   456,
+				Occurrences: []ftypes.Occurrence{
+					{
+						Resource: "foo-resource-occurance-3",
+						Filename: "../modules/bar-filename-occurance-3",
+						Location: ftypes.Location{
+							StartLine: 666,
+							EndLine:   888,
+						},
+					},
+				},
+			},
 		}
 		secret1 = types.DetectedSecret{
 			RuleID:    "generic-wanted-rule",
@@ -194,6 +228,8 @@ func TestFilter(t *testing.T) {
 		ignoreFile     string
 		policyFile     string
 		vexPath        string
+		skipFiles      []string
+		skipDirs       []string
 	}
 	tests := []struct {
 		name string
@@ -1002,6 +1038,94 @@ func TestFilter(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "skip dirs arg for misconfigurations",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Misconfigurations: []types.DetectedMisconfiguration{
+								misconf1,
+								misconf2,
+								misconf3, //ignored by skip dirs arg
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
+				skipDirs: []string{"../modules"},
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						MisconfSummary: &types.MisconfSummary{
+							Successes:  1,
+							Failures:   1,
+							Exceptions: 1,
+						},
+						Misconfigurations: []types.DetectedMisconfiguration{
+							misconf1,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeMisconfiguration,
+								Status:    types.FindingStatusIgnored,
+								Statement: "skipped due to substring match: [../modules]",
+								Source:    "trivy cli args",
+								Finding:   misconf3,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "skip files arg for misconfigurations",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Misconfigurations: []types.DetectedMisconfiguration{
+								misconf1,
+								misconf2,
+								misconf3, //ignored by skip files arg
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
+				skipFiles: []string{"../**/bar-filename-occurance-3"},
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						MisconfSummary: &types.MisconfSummary{
+							Successes:  1,
+							Failures:   1,
+							Exceptions: 1,
+						},
+						Misconfigurations: []types.DetectedMisconfiguration{
+							misconf1,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeMisconfiguration,
+								Status:    types.FindingStatusIgnored,
+								Statement: "skipped due to glob match: [../**/bar-filename-occurance-3]",
+								Source:    "trivy cli args",
+								Finding:   misconf3,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1022,6 +1146,8 @@ func TestFilter(t *testing.T) {
 				IgnoreStatuses: tt.args.ignoreStatuses,
 				IgnoreFile:     tt.args.ignoreFile,
 				PolicyFile:     tt.args.policyFile,
+				SkipDirs:       tt.args.skipDirs,
+				SkipFiles:      tt.args.skipFiles,
 			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, tt.args.report)

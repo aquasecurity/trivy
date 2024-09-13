@@ -7,7 +7,10 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -31,6 +34,8 @@ type FilterOptions struct {
 	IgnoreLicenses     []string
 	CacheDir           string
 	VEXSources         []vex.Source
+	SkipDirs           []string
+	SkipFiles          []string
 }
 
 // Filter filters out the report
@@ -65,7 +70,7 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	})
 
 	filterVulnerabilities(result, severities, opt.IgnoreStatuses, ignoreConf)
-	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
+	filterMisconfigurations(result, severities, opt.IncludeNonFailures, opt.SkipFiles, opt.SkipDirs, ignoreConf)
 	filterSecrets(result, severities, ignoreConf)
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
 
@@ -117,12 +122,60 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 	}
 }
 
-func filterMisconfigurations(result *types.Result, severities []string, includeNonFailures bool,
+func checkGlobMatch(misconf types.DetectedMisconfiguration, result *types.Result, filename string, skips []string) bool {
+	if walker.SkipPath(filepath.ToSlash(filepath.Clean(filename)), walker.CleanSkipPaths(skips)) {
+		log.Debug("skipping path based on glob match", log.String("file", filename))
+		result.MisconfSummary.Exceptions++
+		result.ModifiedFindings = append(result.ModifiedFindings,
+			types.NewModifiedFinding(misconf, types.FindingStatusIgnored, fmt.Sprintf("skipped due to glob match: %s", skips), "trivy cli args"))
+		return true
+	}
+	return false
+}
+
+func checkSubstrMatch(misconf types.DetectedMisconfiguration, result *types.Result, filename string, skips []string) bool {
+	for _, skipDir := range skips {
+		if strings.Contains(filepath.ToSlash(filepath.Clean(filename)), skipDir) {
+			log.Debug("skipping path based on substring match", log.String("file", filename))
+			result.MisconfSummary.Exceptions++
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, fmt.Sprintf("skipped due to substring match: %s", skips), "trivy cli args"))
+			return true
+		}
+	}
+	return false
+}
+
+func checkPathMatch(misconf types.DetectedMisconfiguration, result *types.Result, skips []string) bool {
+	for _, o := range misconf.CauseMetadata.Occurrences {
+		if checkGlobMatch(misconf, result, o.Filename, skips) {
+			return true
+		}
+
+		if checkSubstrMatch(misconf, result, o.Filename, skips) {
+			return true
+		}
+	}
+	return false
+}
+
+func filterMisconfigurations(result *types.Result, severities []string, includeNonFailures bool, skipFiles, skipDirs []string,
 	ignoreConfig IgnoreConfig) {
 	var filtered []types.DetectedMisconfiguration
 	result.MisconfSummary = new(types.MisconfSummary)
 
 	for _, misconf := range result.Misconfigurations {
+
+		// Filter by skip dirs
+		if checkPathMatch(misconf, result, skipDirs) {
+			continue
+		}
+
+		// Filter by skip files
+		if checkPathMatch(misconf, result, skipFiles) {
+			continue
+		}
+
 		// Filter by severity
 		if !slices.Contains(severities, misconf.Severity) {
 			continue
@@ -142,6 +195,7 @@ func filterMisconfigurations(result *types.Result, severities []string, includeN
 		if misconf.Status != types.MisconfStatusFailure && !includeNonFailures {
 			continue
 		}
+
 		filtered = append(filtered, misconf)
 	}
 

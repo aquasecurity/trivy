@@ -470,6 +470,8 @@ func (o *Options) FilterOpts() result.FilterOptions {
 		IgnoreLicenses:     o.IgnoredLicenses,
 		CacheDir:           o.CacheDir,
 		VEXSources:         o.VEXSources,
+		SkipDirs:           o.SkipDirs,
+		SkipFiles:          o.SkipFiles,
 	}
 }
 
