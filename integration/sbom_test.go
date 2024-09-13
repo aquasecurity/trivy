@@ -59,14 +59,14 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/fluentd-multiple-lockfiles.json.golden",
 		},
 		{
-			name: "scan SBOM into SBOM",
+			name: "scan CycloneDX into CycloneDX",
 			args: args{
 				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
 				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
 			fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-			golden:   "testdata/fluentd-multiple-lockfiles-short.cdx.json.golden",
+			golden:   "testdata/fluentd-multiple-lockfiles-reused.cdx.json.golden",
 		},
 		{
 			name: "minikube KBOM",

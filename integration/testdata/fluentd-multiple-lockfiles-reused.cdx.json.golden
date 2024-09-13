@@ -2,7 +2,7 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000010",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000006",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
@@ -81,20 +81,20 @@
       "purl": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
       "properties": [
         {
-          "name": "aquasecurity:trivy:PkgID",
-          "value": "bash@5.0-4"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "debian"
-        },
-        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "bash"
         },
         {
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "5.0-4"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
         }
       ]
     },
@@ -106,25 +106,25 @@
       "purl": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
       "properties": [
         {
-          "name": "aquasecurity:trivy:PkgID",
-          "value": "libidn2-0@2.0.5-1"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "debian"
-        },
-        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libidn2"
         },
         {
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.0.5-1"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
         }
       ]
     },
     {
-      "bom-ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+      "bom-ref": "179eaea5-d48e-4dd3-a53d-c87c3f6e9e5b",
       "type": "library",
       "name": "activesupport",
       "version": "6.0.2.1",
@@ -142,11 +142,15 @@
           "value": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec"
         },
         {
-          "name": "aquasecurity:trivy:PkgID",
-          "value": "activesupport@6.0.2.1"
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
         },
         {
-          "name": "aquasecurity:trivy:PkgType",
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
           "value": "gemspec"
         }
       ]
@@ -163,21 +167,9 @@
     {
       "ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
       "dependsOn": [
-        "353f2470-9c8b-4647-9d0d-96d893838dc8",
-        "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec"
+        "179eaea5-d48e-4dd3-a53d-c87c3f6e9e5b",
+        "353f2470-9c8b-4647-9d0d-96d893838dc8"
       ]
-    },
-    {
-      "ref": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
-      "dependsOn": []
     }
   ],
   "vulnerabilities": [
@@ -512,7 +504,7 @@
       "updated": "2020-10-17T12:15:00+00:00",
       "affects": [
         {
-          "ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+          "ref": "179eaea5-d48e-4dd3-a53d-c87c3f6e9e5b",
           "versions": [
             {
               "version": "6.0.2.1",

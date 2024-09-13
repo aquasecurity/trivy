@@ -331,10 +331,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: &types.Report{
 					ArtifactType: artifact.TypeCycloneDX,
-					BOM: &core.BOM{
-						SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
-						Version:      1,
-					},
+					BOM:          cdxBOM("urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79"),
 					Results: []types.Result{
 						springResult(types.Result{
 							Vulnerabilities: []types.DetectedVulnerability{vuln1},
@@ -352,10 +349,6 @@ func TestFilter(t *testing.T) {
 			},
 			want: &types.Report{
 				ArtifactType: artifact.TypeCycloneDX,
-				BOM: &core.BOM{
-					SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
-					Version:      1,
-				},
 				Results: []types.Result{
 					springResult(types.Result{
 						Vulnerabilities:  []types.DetectedVulnerability{},
@@ -369,10 +362,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: &types.Report{
 					ArtifactType: artifact.TypeCycloneDX,
-					BOM: &core.BOM{
-						SerialNumber: "urn:uuid:wrong",
-						Version:      1,
-					},
+					BOM:          cdxBOM("urn:uuid:wrong"),
 					Results: []types.Result{
 						springResult(types.Result{
 							Vulnerabilities: []types.DetectedVulnerability{vuln1},
@@ -390,10 +380,6 @@ func TestFilter(t *testing.T) {
 			},
 			want: &types.Report{
 				ArtifactType: artifact.TypeCycloneDX,
-				BOM: &core.BOM{
-					SerialNumber: "urn:uuid:wrong",
-					Version:      1,
-				},
 				Results: []types.Result{
 					springResult(types.Result{
 						Vulnerabilities: []types.DetectedVulnerability{vuln1},
@@ -573,6 +559,7 @@ repositories:
 				return
 			}
 			require.NoError(t, err)
+			tt.args.report.BOM = nil // Ignore BOM for comparison
 			assert.Equal(t, tt.want, tt.args.report)
 		})
 	}
@@ -690,6 +677,21 @@ func goMultiPathResult(result types.Result) types.Result {
 		goTransitive,
 	}
 	return result
+}
+
+func cdxBOM(serialNumber string) *core.BOM {
+	bom := core.NewBOM(core.Options{GenerateBOMRef: true})
+	bom.SerialNumber = serialNumber
+	bom.Version = 1
+	c := &core.Component{
+		Type:          core.TypeLibrary,
+		Root:          true,
+		Name:          springPackage.Name,
+		Version:       springPackage.Version,
+		PkgIdentifier: springPackage.Identifier,
+	}
+	bom.AddComponent(c)
+	return bom
 }
 
 func modifiedFinding(vuln types.DetectedVulnerability, statement, source string) types.ModifiedFinding {

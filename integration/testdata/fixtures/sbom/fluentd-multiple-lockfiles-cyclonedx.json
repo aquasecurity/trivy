@@ -120,7 +120,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+      "bom-ref": "179eaea5-d48e-4dd3-a53d-c87c3f6e9e5b",
       "type": "library",
       "name": "activesupport",
       "version": "6.0.2.1",
@@ -163,8 +163,8 @@
     {
       "ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
       "dependsOn": [
-        "353f2470-9c8b-4647-9d0d-96d893838dc8",
-        "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec"
+        "179eaea5-d48e-4dd3-a53d-c87c3f6e9e5b",
+        "353f2470-9c8b-4647-9d0d-96d893838dc8"
       ]
     }
   ]
