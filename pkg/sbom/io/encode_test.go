@@ -744,7 +744,7 @@ func TestEncoder_Encode(t *testing.T) {
 			wantComponents: map[uuid.UUID]*core.Component{
 				uuid.MustParse(id1): &libComponent,
 			},
-			wantRels: map[uuid.UUID][]core.Relationship{},
+			wantRels: make(map[uuid.UUID][]core.Relationship),
 			wantVulns: map[uuid.UUID][]core.Vulnerability{
 				uuid.MustParse(id1): {
 					{
