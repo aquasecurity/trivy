@@ -137,8 +137,8 @@ func TestFilter(t *testing.T) {
 				EndLine:   456,
 				Occurrences: []ftypes.Occurrence{
 					{
-						Resource: "foo-resource-occurance-1",
-						Filename: "bar-filename-occurance-1",
+						Resource: "foo-resource-occurrence-1",
+						Filename: "bar-filename-occurrence-1",
 						Location: ftypes.Location{
 							StartLine: 666,
 							EndLine:   888,
@@ -172,8 +172,8 @@ func TestFilter(t *testing.T) {
 				EndLine:   456,
 				Occurrences: []ftypes.Occurrence{
 					{
-						Resource: "foo-resource-occurance-3",
-						Filename: "../modules/bar-filename-occurance-3",
+						Resource: "foo-resource-occurrence-3",
+						Filename: "../modules/bar-filename-occurrence-3",
 						Location: ftypes.Location{
 							StartLine: 666,
 							EndLine:   888,
@@ -1100,7 +1100,7 @@ func TestFilter(t *testing.T) {
 					dbTypes.SeverityLow,
 					dbTypes.SeverityHigh,
 				},
-				skipFiles: []string{"../**/bar-filename-occurance-3"},
+				skipFiles: []string{"../**/bar-filename-occurrence-3"},
 			},
 			want: types.Report{
 				Results: types.Results{
@@ -1117,7 +1117,7 @@ func TestFilter(t *testing.T) {
 							{
 								Type:      types.FindingTypeMisconfiguration,
 								Status:    types.FindingStatusIgnored,
-								Statement: "skipped due to glob match: [../**/bar-filename-occurance-3]",
+								Statement: "skipped due to glob match: [../**/bar-filename-occurrence-3]",
 								Source:    "trivy cli args",
 								Finding:   misconf3,
 							},
