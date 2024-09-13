@@ -20,9 +20,8 @@ import (
 )
 
 type Encoder struct {
-	bom        *core.BOM
-	opts       core.Options
-	components map[uuid.UUID]*core.Component
+	bom  *core.BOM
+	opts core.Options
 }
 
 func NewEncoder(opts core.Options) *Encoder {
@@ -31,7 +30,7 @@ func NewEncoder(opts core.Options) *Encoder {
 
 func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	if report.BOM != nil {
-		e.components = report.BOM.Components()
+		return e.reuseBOM(report)
 	}
 	// Metadata component
 	root, err := e.rootComponent(report)
@@ -262,16 +261,6 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	}
 }
 
-// existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
-func (e *Encoder) existedPkgIdentifier(name string, componentType core.ComponentType) ftypes.PkgIdentifier {
-	for _, c := range e.components {
-		if c.Name == name && c.Type == componentType {
-			return c.PkgIdentifier
-		}
-	}
-	return ftypes.PkgIdentifier{}
-}
-
 func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
@@ -294,10 +283,8 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 			component.Version = osFound.Name
 		}
 		component.Type = core.TypeOS
-		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	case types.ClassLangPkg:
 		component.Type = core.TypeApplication
-		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	}
 
 	e.bom.AddRelationship(root, component, core.RelationshipContains)
@@ -444,6 +431,26 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	default:
 		return true
 	}
+}
+
+func (e *Encoder) reuseBOM(report types.Report) (*core.BOM, error) {
+	report.BOM.ClearVulnerabilities()
+
+	// Group components by BOM-Ref
+	components := lo.MapKeys(report.BOM.Components(), func(value *core.Component, _ uuid.UUID) string {
+		return value.PkgIdentifier.BOMRef
+	})
+
+	for _, result := range report.Results {
+		for _, vuln := range result.Vulnerabilities {
+			c, ok := components[vuln.PkgIdentifier.BOMRef]
+			if !ok || c == nil {
+				continue
+			}
+			report.BOM.AddVulnerability(c, e.vulnerability(vuln))
+		}
+	}
+	return report.BOM, nil
 }
 
 func filterProperties(props []core.Property) []core.Property {
