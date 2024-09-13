@@ -1499,6 +1499,30 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:      "dependency without version",
+			inputFile: filepath.Join("testdata", "dep-without-version", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:dep-without-version:1.0.0",
+					Name:         "com.example:dep-without-version",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-api",
+					Name:         "org.example:example-api",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 19,
+							EndLine:   22,
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
