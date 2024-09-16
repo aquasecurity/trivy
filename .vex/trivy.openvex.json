@@ -456,6 +456,35 @@
     },
     {
       "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3105",
+        "name": "GO-2024-3105",
+        "description": "Stack exhaustion in all Parse functions in go/parser",
+        "aliases": [
+          "CVE-2024-34155"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/stdlib",
+              "identifiers": {
+                "purl": "pkg:golang/stdlib"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
         "@id": "https://pkg.go.dev/vuln/GO-2024-3106",
         "name": "GO-2024-3106",
         "description": "Stack exhaustion in Decoder.Decode in encoding/gob",
