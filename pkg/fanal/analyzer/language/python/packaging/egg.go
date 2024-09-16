@@ -8,10 +8,10 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -23,12 +23,6 @@ func init() {
 	analyzer.RegisterAnalyzer(&eggAnalyzer{})
 }
 
-func (a *eggAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
-	a.logger = log.WithPrefix("python")
-	a.licenseClassifierConfidenceLevel = opt.LicenseScannerOption.ClassifierConfidenceLevel
-	return nil
-}
-
 const (
 	eggAnalyzerVersion = 1
 	eggExt             = ".egg"
@@ -37,6 +31,12 @@ const (
 type eggAnalyzer struct {
 	logger                           *log.Logger
 	licenseClassifierConfidenceLevel float64
+}
+
+func (a *eggAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
+	a.logger = log.WithPrefix("python")
+	a.licenseClassifierConfidenceLevel = opt.LicenseScannerOption.ClassifierConfidenceLevel
+	return nil
 }
 
 // Analyze analyzes egg archive files
