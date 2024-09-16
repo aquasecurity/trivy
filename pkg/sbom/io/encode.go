@@ -219,7 +219,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 
 		// Add vulnerabilities
 		if vv := vulns[pkg.Identifier.UID]; vv != nil {
-			e.bom.AddVulnerabilities(c, vv)
+			e.bom.SetVulnerabilities(c, vv)
 		}
 
 		// Handle a root package
