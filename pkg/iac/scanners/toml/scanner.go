@@ -136,7 +136,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
-	regoScanner := rego.NewScanner(types.SourceTOML, s.options...)
+	regoScanner := rego.NewScanner(s.options...)
 	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
 		return nil, err
 	}
@@ -149,7 +149,7 @@ func (s *Scanner) scanRego(ctx context.Context, srcFS fs.FS, inputs ...rego.Inpu
 	if err != nil {
 		return nil, err
 	}
-	results, err := regoScanner.ScanInput(ctx, inputs...)
+	results, err := regoScanner.ScanInput(ctx, types.SourceTOML, inputs...)
 	if err != nil {
 		return nil, err
 	}
