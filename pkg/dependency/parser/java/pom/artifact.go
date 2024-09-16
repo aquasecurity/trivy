@@ -42,7 +42,7 @@ func newArtifact(groupID, artifactID, version string, licenses []string, props m
 }
 
 func (a artifact) IsEmpty() bool {
-	return a.GroupID == "" || a.ArtifactID == "" || a.Version.String() == ""
+	return a.GroupID == "" || a.ArtifactID == ""
 }
 
 func (a artifact) Equal(o artifact) bool {
