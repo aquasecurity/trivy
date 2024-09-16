@@ -15,27 +15,27 @@ import (
 func Test_eggAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name            string
-		dir             string
+		inputFile       string
 		includeChecksum bool
 		want            *analyzer.AnalysisResult
 		wantErr         string
 	}{
 		{
-			name: "egg zip",
-			dir:  "testdata/egg-zip",
+			name:      "egg zip",
+			inputFile: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "kitchen-1.2.6-py2.7.egg",
+						FilePath: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 						Packages: types.Packages{
 							{
 								Name:    "kitchen",
 								Version: "1.2.6",
 								Licenses: []string{
-									"GNU Library or Lesser General Public License (LGPL)",
+									"LGPL-2.1-only",
 								},
-								FilePath: "kitchen-1.2.6-py2.7.egg",
+								FilePath: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 							},
 						},
 					},
@@ -44,21 +44,21 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:            "egg zip with checksum",
-			dir:             "testdata/egg-zip",
+			inputFile:       "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "kitchen-1.2.6-py2.7.egg",
+						FilePath: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 						Packages: types.Packages{
 							{
 								Name:    "kitchen",
 								Version: "1.2.6",
 								Licenses: []string{
-									"GNU Library or Lesser General Public License (LGPL)",
+									"LGPL-2.1-only",
 								},
-								FilePath: "kitchen-1.2.6-py2.7.egg",
+								FilePath: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 								Digest:   "sha1:4e13b6e379966771e896ee43cf8e240bf6083dca",
 							},
 						},
@@ -67,13 +67,13 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "egg zip with license file",
-			dir:  "testdata/egg-zip-with-license-file",
+			name:      "egg zip with license file",
+			inputFile: "testdata/egg-zip-with-license-file/sample_package.egg",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "sample_package.egg",
+						FilePath: "testdata/egg-zip-with-license-file/sample_package.egg",
 						Packages: types.Packages{
 							{
 								Name:    "sample_package",
@@ -81,7 +81,7 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{
 									"MIT",
 								},
-								FilePath: "sample_package.egg",
+								FilePath: "testdata/egg-zip-with-license-file/sample_package.egg",
 							},
 						},
 					},
@@ -89,28 +89,29 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "egg zip doesn't contain required files",
-			dir:  "testdata/no-req-files",
-			want: &analyzer.AnalysisResult{},
+			name:      "egg zip doesn't contain required files",
+			inputFile: "testdata/no-req-files/no-required-files.egg",
+			want:      nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			a, err := newEggAnalyzer(analyzer.AnalyzerOptions{})
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
-				FS: os.DirFS(tt.dir),
+			defer f.Close()
+			fileInfo, err := os.Lstat(tt.inputFile)
+			require.NoError(t, err)
+
+			a := &eggAnalyzer{}
+			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+				Content:  f,
+				FilePath: tt.inputFile,
+				Info:     fileInfo,
 				Options: analyzer.AnalysisOptions{
 					FileChecksum: tt.includeChecksum,
 				},
 			})
 
-			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
