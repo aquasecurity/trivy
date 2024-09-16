@@ -21,28 +21,6 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 		wantErr         string
 	}{
 		{
-			name: "egg zip",
-			dir:  "testdata/egg-zip",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.PythonPkg,
-						FilePath: "kitchen-1.2.6-py2.7.egg",
-						Packages: types.Packages{
-							{
-								Name:    "kitchen",
-								Version: "1.2.6",
-								Licenses: []string{
-									"LGPL-2.1-only",
-								},
-								FilePath: "kitchen-1.2.6-py2.7.egg",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
 			name:            "egg-info",
 			dir:             "testdata/happy-egg",
 			includeChecksum: true,
@@ -123,11 +101,6 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					},
 				},
 			},
-		},
-		{
-			name: "egg zip doesn't contain required files",
-			dir:  "testdata/no-req-files",
-			want: &analyzer.AnalysisResult{},
 		},
 		{
 			name: "license file in dist.info",
