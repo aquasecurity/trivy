@@ -75,11 +75,10 @@ const (
 	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg    Type = "python-pkg"
-	TypePythonPkgEgg Type = "python-egg"
-	TypePip          Type = "pip"
-	TypePipenv       Type = "pipenv"
-	TypePoetry       Type = "poetry"
+	TypePythonPkg Type = "python-pkg"
+	TypePip       Type = "pip"
+	TypePipenv    Type = "pipenv"
+	TypePoetry    Type = "poetry"
 
 	// Go
 	TypeGoBinary Type = "gobinary"

@@ -1,6 +1,8 @@
 package packaging
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"errors"
 	"io"
@@ -8,7 +10,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -28,7 +29,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypePythonPkg, newPackagingAnalyzer)
 }
 
-const version = 2
+const version = 1
 
 func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &packagingAnalyzer{
@@ -42,7 +43,7 @@ var (
 	eggFiles = []string{
 		// .egg format
 		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
-		// ".egg" is zip format. We check it in `eggAnalyzer`.
+		".egg", // zip format
 		"EGG-INFO/PKG-INFO",
 
 		// .egg-info format: .egg-info can be a file or directory
@@ -64,13 +65,31 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == "METADATA" || isEggFile(path) || slices.Contains(input.FilePathsMatchedFromPatterns, path)
+		return filepath.Base(path) == "METADATA" || isEggFile(path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		rsa, ok := r.(xio.ReadSeekerAt)
 		if !ok {
 			return xerrors.New("invalid reader")
+		}
+
+		// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
+		if strings.HasSuffix(path, ".egg") {
+			info, err := d.Info()
+			if err != nil {
+				return xerrors.Errorf("egg file error: %w", err)
+			}
+			pkginfoInZip, err := a.analyzeEggZip(rsa, info.Size())
+			if err != nil {
+				return xerrors.Errorf("egg analysis error: %w", err)
+			}
+
+			// Egg archive may not contain required files, then we will get nil. Skip this archives
+			if pkginfoInZip == nil {
+				return nil
+			}
+			rsa = pkginfoInZip
 		}
 
 		app, err := a.parse(path, rsa, input.Options.FileChecksum)
@@ -80,7 +99,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 			return nil
 		}
 
-		if err = a.fillAdditionalData(input.FS, app); err != nil {
+		if err := a.fillAdditionalData(input.FS, app); err != nil {
 			a.logger.Warn("Unable to collect additional info", log.Err(err))
 		}
 
@@ -151,6 +170,37 @@ func classifyLicense(dir, licPath string, classifierConfidenceLevel float64, fsy
 
 func (a packagingAnalyzer) parse(filePath string, r xio.ReadSeekerAt, checksum bool) (*types.Application, error) {
 	return language.ParsePackage(types.PythonPkg, filePath, r, a.pkgParser, checksum)
+}
+
+func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (xio.ReadSeekerAt, error) {
+	zr, err := zip.NewReader(r, size)
+	if err != nil {
+		return nil, xerrors.Errorf("zip reader error: %w", err)
+	}
+
+	found, ok := lo.Find(zr.File, func(f *zip.File) bool {
+		return isEggFile(f.Name)
+	})
+	if !ok {
+		return nil, nil
+	}
+	return a.open(found)
+}
+
+// open reads the file content in the zip archive to make it seekable.
+func (a packagingAnalyzer) open(file *zip.File) (xio.ReadSeekerAt, error) {
+	f, err := file.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	b, err := io.ReadAll(f)
+	if err != nil {
+		return nil, xerrors.Errorf("file %s open error: %w", file.Name, err)
+	}
+
+	return bytes.NewReader(b), nil
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
