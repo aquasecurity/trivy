@@ -481,7 +481,7 @@
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path",
-      "impact_statement": "Govulncheck incorrectly marks this vulnerability as affected. The vulnerable code isn't called. See https://github.com/golang/go/issues/69446"
+      "impact_statement": "Govulncheck incorrectly marks this vulnerability as affected. The vulnerable code isn't called. See https://github.com/aquasecurity/trivy/issues/7478"
     }
   ]
 }
