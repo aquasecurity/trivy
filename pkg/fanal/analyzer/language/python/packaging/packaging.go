@@ -66,20 +66,32 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		return filepath.Base(path) == "METADATA" || isEggFile(path)
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		rsa, ok := r.(xio.ReadSeekerAt)
 		if !ok {
 			return xerrors.New("invalid reader")
 		}
 
-		app, err := a.parse(path, rsa, input.Options.FileChecksum)
+		app, err := a.parse(filePath, rsa, input.Options.FileChecksum)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
 
-		if err = a.fillAdditionalData(input.FS, app); err != nil {
+		opener := func(licPath string) (io.ReadCloser, error) {
+			// Note that fs.FS is always slashed regardless of the platform,
+			// and path.Join should be used rather than filepath.Join.
+			f, err := input.FS.Open(path.Join(path.Dir(filePath), licPath))
+			if errors.Is(err, fs.ErrNotExist) {
+				return nil, nil
+			} else if err != nil {
+				return nil, xerrors.Errorf("file open error: %w", err)
+			}
+			return f, nil
+		}
+
+		if err = fillAdditionalData(opener, app, a.licenseClassifierConfidenceLevel); err != nil {
 			a.logger.Warn("Unable to collect additional info", log.Err(err))
 		}
 
@@ -95,7 +107,9 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	}, nil
 }
 
-func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application) error {
+type fileOpener func(filePath string) (io.ReadCloser, error)
+
+func fillAdditionalData(opener fileOpener, app *types.Application, licenseClassifierConfidenceLevel float64) error {
 	for i, pkg := range app.Packages {
 		var licenses []string
 		for _, lic := range pkg.Licenses {
@@ -106,19 +120,12 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application
 				licenses = append(licenses, lic)
 				continue
 			}
-			licenseFilePath := path.Base(strings.TrimPrefix(lic, licensing.LicenseFilePrefix))
+			licensePath := path.Base(strings.TrimPrefix(lic, licensing.LicenseFilePrefix))
 
-			findings, err := classifyLicense(app.FilePath, licenseFilePath, a.licenseClassifierConfidenceLevel, fsys)
+			foundLicenses, err := classifyLicenses(opener, licensePath, licenseClassifierConfidenceLevel)
 			if err != nil {
-				return err
-			} else if len(findings) == 0 {
-				continue
+				return xerrors.Errorf("unable to classify licenses: %w", err)
 			}
-
-			// License found
-			foundLicenses := lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
-				return finding.Name
-			})
 			licenses = append(licenses, foundLicenses...)
 		}
 		app.Packages[i].Licenses = licenses
@@ -127,25 +134,26 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application
 	return nil
 }
 
-func classifyLicense(dir, licPath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
-	// Note that fs.FS is always slashed regardless of the platform,
-	// and path.Join should be used rather than filepath.Join.
-	f, err := fsys.Open(path.Join(path.Dir(dir), licPath))
-	if errors.Is(err, fs.ErrNotExist) {
+func classifyLicenses(opener fileOpener, licPath string, licenseClassifierConfidenceLevel float64) ([]string, error) {
+	f, err := opener(licPath)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to open license file: %w", err)
+	} else if f == nil { // File doesn't exist
 		return nil, nil
-	} else if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
-	l, err := licensing.Classify(licPath, f, classifierConfidenceLevel)
+	l, err := licensing.Classify("", f, licenseClassifierConfidenceLevel)
 	if err != nil {
 		return nil, xerrors.Errorf("license classify error: %w", err)
-	} else if l == nil {
+	} else if l == nil { // No licenses found
 		return nil, nil
 	}
 
-	return l.Findings, nil
+	// License found
+	return lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
+		return finding.Name
+	}), nil
 }
 
 func (a packagingAnalyzer) parse(filePath string, r xio.ReadSeekerAt, checksum bool) (*types.Application, error) {

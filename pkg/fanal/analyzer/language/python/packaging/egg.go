@@ -2,13 +2,11 @@ package packaging
 
 import (
 	"archive/zip"
-	"bytes"
 	"context"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/samber/lo"
@@ -17,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -47,7 +44,7 @@ func (a *eggAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 	// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
 	pkginfoInZip, err := findFileInZip(input.Content, input.Info.Size(), isEggFile)
 	if err != nil {
-		return nil, xerrors.Errorf("egg analysis error: %w", err)
+		return nil, xerrors.Errorf("unable to open `.egg` archive: %w", err)
 	}
 
 	// Egg archive may not contain required files, then we will get nil. Skip this archives
@@ -55,15 +52,35 @@ func (a *eggAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 		return nil, nil
 	}
 
-	app, err := language.ParsePackage(types.PythonPkg, input.FilePath, pkginfoInZip, packaging.NewParser(), input.Options.FileChecksum)
+	rsa, err := xio.NewReadSeekerAt(pkginfoInZip)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to convert PKG-INFO reader: %w", err)
+	}
+
+	app, err := language.ParsePackage(types.PythonPkg, input.FilePath, rsa, packaging.NewParser(), input.Options.FileChecksum)
 	if err != nil {
 		return nil, xerrors.Errorf("parse error: %w", err)
 	} else if app == nil {
 		return nil, nil
 	}
 
-	if err = a.fillLicensesFromFile(input.Content, input.Info.Size(), app); err != nil {
-		a.logger.Warn("Unable to fill licenses", log.FilePath(input.FilePath), log.Err(err))
+	opener := func(licPath string) (io.ReadCloser, error) {
+		required := func(filePath string) bool {
+			return path.Base(filePath) == licPath
+		}
+
+		f, err := findFileInZip(input.Content, input.Info.Size(), required)
+		if err != nil {
+			return nil, xerrors.Errorf("unable to find license file in `*.egg` file: %w", err)
+		} else if f == nil { // zip doesn't contain license file
+			return nil, nil
+		}
+
+		return f, nil
+	}
+
+	if err = fillAdditionalData(opener, app, a.licenseClassifierConfidenceLevel); err != nil {
+		a.logger.Warn("Unable to collect additional info", log.Err(err))
 	}
 
 	return &analyzer.AnalysisResult{
@@ -71,12 +88,12 @@ func (a *eggAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 	}, nil
 }
 
-func findFileInZip(r xio.ReadSeekerAt, size int64, required func(filePath string) bool) (xio.ReadSeekerAt, error) {
+func findFileInZip(r xio.ReadSeekerAt, zipSize int64, required func(filePath string) bool) (io.ReadCloser, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return nil, xerrors.Errorf("file seek error: %w", err)
 	}
 
-	zr, err := zip.NewReader(r, size)
+	zr, err := zip.NewReader(r, zipSize)
 	if err != nil {
 		return nil, xerrors.Errorf("zip reader error: %w", err)
 	}
@@ -87,61 +104,13 @@ func findFileInZip(r xio.ReadSeekerAt, size int64, required func(filePath string
 	if !ok {
 		return nil, nil
 	}
-	return openFile(found)
-}
 
-// openFile reads the file content in the zip archive to make it seekable.
-func openFile(file *zip.File) (xio.ReadSeekerAt, error) {
-	f, err := file.Open()
+	f, err := found.Open()
 	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	b, err := io.ReadAll(f)
-	if err != nil {
-		return nil, xerrors.Errorf("file %s open error: %w", file.Name, err)
+		return nil, xerrors.Errorf("unable to open file in zip: %w", err)
 	}
 
-	return bytes.NewReader(b), nil
-}
-
-func (a *eggAnalyzer) fillLicensesFromFile(r xio.ReadSeekerAt, size int64, app *types.Application) error {
-	for i, pkg := range app.Packages {
-		var licenses []string
-		for _, license := range pkg.Licenses {
-			if !strings.HasPrefix(license, licensing.LicenseFilePrefix) {
-				licenses = append(licenses, license)
-				continue
-			}
-
-			required := func(filePath string) bool {
-				return path.Base(filePath) == path.Base(strings.TrimPrefix(license, licensing.LicenseFilePrefix))
-			}
-			f, err := findFileInZip(r, size, required)
-			if err != nil {
-				a.logger.Debug("unable to find license file in `*.egg` file", log.Err(err))
-				continue
-			} else if f == nil { // zip doesn't contain license file
-				continue
-			}
-
-			l, err := licensing.Classify("", f, a.licenseClassifierConfidenceLevel)
-			if err != nil {
-				return xerrors.Errorf("license classify error: %w", err)
-			} else if l == nil {
-				continue
-			}
-
-			// License found
-			foundLicenses := lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
-				return finding.Name
-			})
-			licenses = append(licenses, foundLicenses...)
-		}
-		app.Packages[i].Licenses = licenses
-	}
-	return nil
+	return f, nil
 }
 
 func (a *eggAnalyzer) Required(filePath string, _ os.FileInfo) bool {
