@@ -38,14 +38,16 @@ var pythonExecNames = []string{
 }
 
 type pipLibraryAnalyzer struct {
-	logger         *log.Logger
-	metadataParser packaging.Parser
+	logger            *log.Logger
+	metadataParser    packaging.Parser
+	detectionPriority types.DetectionPriority
 }
 
-func newPipLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newPipLibraryAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return pipLibraryAnalyzer{
-		logger:         log.WithPrefix("pip"),
-		metadataParser: *packaging.NewParser(),
+		logger:            log.WithPrefix("pip"),
+		metadataParser:    *packaging.NewParser(),
+		detectionPriority: opts.DetectionPriority,
 	}, nil
 }
 
@@ -62,8 +64,10 @@ func (a pipLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		return true
 	}
 
+	useMinVersion := a.detectionPriority == types.PriorityComprehensive
+
 	if err = fsutils.WalkDir(input.FS, ".", required, func(pathPath string, d fs.DirEntry, r io.Reader) error {
-		app, err := language.Parse(types.Pip, pathPath, r, pip.NewParser())
+		app, err := language.Parse(types.Pip, pathPath, r, pip.NewParser(useMinVersion))
 		if err != nil {
 			return xerrors.Errorf("unable to parse requirements.txt: %w", err)
 		}

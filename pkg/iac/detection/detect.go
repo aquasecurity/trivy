@@ -88,12 +88,17 @@ func init() {
 
 			contents := make(map[string]any)
 			err := json.NewDecoder(r).Decode(&contents)
-			if err == nil {
-				if _, ok := contents["terraform_version"]; ok {
-					_, stillOk := contents["format_version"]
-					return stillOk
+			if err != nil {
+				return false
+			}
+
+			for _, k := range []string{"terraform_version", "format_version"} {
+				if _, ok := contents[k]; !ok {
+					return false
 				}
 			}
+
+			return true
 		}
 		return false
 	}
@@ -150,8 +155,7 @@ func init() {
 			return false
 		}
 
-		return (sniff.Parameters != nil && len(sniff.Parameters) > 0) ||
-			(sniff.Resources != nil && len(sniff.Resources) > 0)
+		return len(sniff.Parameters) > 0 || len(sniff.Resources) > 0
 	}
 
 	matchers[FileTypeDockerfile] = func(name string, _ io.ReadSeeker) bool {

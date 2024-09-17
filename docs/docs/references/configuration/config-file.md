@@ -432,6 +432,26 @@ module:
   enable-modules: []
 
 ```
+## Package options
+
+```yaml
+pkg:
+  # Same as '--include-dev-deps'
+  include-dev-deps: false
+
+  # Same as '--pkg-relationships'
+  relationships:
+   - unknown
+   - root
+   - direct
+   - indirect
+
+  # Same as '--pkg-types'
+  types:
+   - os
+   - library
+
+```
 ## Registry options
 
 ```yaml
@@ -457,7 +477,7 @@ rego:
   data: []
 
   # Same as '--include-deprecated-checks'
-  include-deprecated-checks: false
+  include-deprecated-checks: true
 
   # Same as '--check-namespaces'
   namespaces: []

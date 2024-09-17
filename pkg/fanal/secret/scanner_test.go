@@ -742,6 +742,42 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingJWT := types.SecretFinding{
+		RuleID:    "jwt-token",
+		Category:  "JWT",
+		Title:     "JWT token",
+		Severity:  "MEDIUM",
+		StartLine: 3,
+		EndLine:   3,
+		Match:     "jwt: ***********************************************************************************************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "asd",
+					Highlighted: "asd",
+				},
+				{
+					Number:      2,
+					Content:     "aaaa",
+					Highlighted: "aaaa",
+				},
+				{
+					Number:      3,
+					Content:     "jwt: ***********************************************************************************************************************************************************",
+					Highlighted: "jwt: ***********************************************************************************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      4,
+					Content:     "asda",
+					Highlighted: "asda",
+				},
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -820,6 +856,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "hugging-face-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingHuggingFace},
+			},
+		},
+		{
+			name:          "find JWT token",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "jwt-secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "jwt-secret.txt"),
+				Findings: []types.SecretFinding{wantFindingJWT},
 			},
 		},
 		{

@@ -1,9 +1,6 @@
 package executor
 
 import (
-	"io"
-
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -23,12 +20,6 @@ func OptionWithResultsFilter(f func(scan.Results) scan.Results) Option {
 	}
 }
 
-func OptionWithDebugWriter(w io.Writer) Option {
-	return func(s *Executor) {
-		s.debug = debug.New(w, "terraform", "executor")
-	}
-}
-
 func OptionWithWorkspaceName(workspaceName string) Option {
 	return func(s *Executor) {
 		s.workspaceName = workspaceName
@@ -44,5 +35,11 @@ func OptionWithRegoScanner(s *rego.Scanner) Option {
 func OptionWithRegoOnly(regoOnly bool) Option {
 	return func(e *Executor) {
 		e.regoOnly = regoOnly
+	}
+}
+
+func OptionWithIncludeDeprecatedChecks(b bool) Option {
+	return func(e *Executor) {
+		e.includeDeprecatedChecks = b
 	}
 }

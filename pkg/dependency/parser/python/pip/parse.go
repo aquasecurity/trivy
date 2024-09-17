@@ -25,13 +25,28 @@ const (
 )
 
 type Parser struct {
-	logger *log.Logger
+	logger        *log.Logger
+	useMinVersion bool
 }
 
-func NewParser() *Parser {
+func NewParser(useMinVersion bool) *Parser {
 	return &Parser{
-		logger: log.WithPrefix("pip"),
+		logger:        log.WithPrefix("pip"),
+		useMinVersion: useMinVersion,
 	}
+}
+func (p *Parser) splitLine(line string) []string {
+	separators := []string{"~=", ">=", "=="}
+	// Without useMinVersion check only `==`
+	if !p.useMinVersion {
+		separators = []string{"=="}
+	}
+	for _, sep := range separators {
+		if result := strings.Split(line, sep); len(result) == 2 {
+			return result
+		}
+	}
+	return nil
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -53,9 +68,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
 		line = rStripByKey(line, hashMarker)
-		s := strings.Split(line, "==")
+
+		s := p.splitLine(line)
 		if len(s) != 2 {
 			continue
+		}
+		if p.useMinVersion && strings.HasSuffix(s[1], ".*") {
+			s[1] = strings.TrimSuffix(s[1], "*") + "0"
 		}
 
 		if !isValidName(s[0]) || !isValidVersion(s[1]) {

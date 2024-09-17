@@ -69,6 +69,7 @@ func generateConfigDocs(filename string) error {
 		flag.NewLicenseFlagGroup(),
 		flag.NewMisconfFlagGroup(),
 		flag.NewModuleFlagGroup(),
+		flag.NewPackageFlagGroup(),
 		flag.NewRegistryFlagGroup(),
 		flag.NewRegoFlagGroup(),
 		flag.NewReportFlagGroup(),

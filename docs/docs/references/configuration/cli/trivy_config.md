@@ -31,7 +31,7 @@ trivy config [flags] DIR
   -h, --help                              help for config
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
-      --include-deprecated-checks         include deprecated checks
+      --include-deprecated-checks         include deprecated checks (default true)
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])

@@ -14,7 +14,7 @@ type ConfigurableTerraformScanner interface {
 	options.ConfigurableScanner
 	SetForceAllDirs(bool)
 	AddExecutorOptions(options ...executor.Option)
-	AddParserOptions(options ...options.ParserOption)
+	AddParserOptions(options ...parser.Option)
 }
 
 func ScannerWithTFVarsPaths(paths ...string) options.ScannerOption {

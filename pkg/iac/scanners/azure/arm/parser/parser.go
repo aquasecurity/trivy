@@ -6,36 +6,28 @@ import (
 	"io"
 	"io/fs"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Parser struct {
 	targetFS fs.FS
-	debug    debug.Logger
+	logger   *log.Logger
 }
 
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "azure", "arm")
-}
-
-func New(targetFS fs.FS, opts ...options.ParserOption) *Parser {
-	p := &Parser{
+func New(targetFS fs.FS) *Parser {
+	return &Parser{
 		targetFS: targetFS,
+		logger:   log.WithPrefix("arm parser"),
 	}
-	for _, opt := range opts {
-		opt(p)
-	}
-	return p
 }
 
-func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure2.Deployment, error) {
+func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure.Deployment, error) {
 
-	var deployments []azure2.Deployment
+	var deployments []azure.Deployment
 
 	if err := fs.WalkDir(p.targetFS, dir, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
@@ -69,7 +61,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure2.Deployment, 
 	return deployments, nil
 }
 
-func (p *Parser) parseFile(r io.Reader, filename string) (*azure2.Deployment, error) {
+func (p *Parser) parseFile(r io.Reader, filename string) (*azure.Deployment, error) {
 	var template Template
 	data, err := io.ReadAll(r)
 	if err != nil {
@@ -86,11 +78,11 @@ func (p *Parser) parseFile(r io.Reader, filename string) (*azure2.Deployment, er
 	return p.convertTemplate(template), nil
 }
 
-func (p *Parser) convertTemplate(template Template) *azure2.Deployment {
+func (p *Parser) convertTemplate(template Template) *azure.Deployment {
 
-	deployment := azure2.Deployment{
+	deployment := azure.Deployment{
 		Metadata:    template.Metadata,
-		TargetScope: azure2.ScopeResourceGroup, // TODO: override from --resource-group?
+		TargetScope: azure.ScopeResourceGroup, // TODO: override from --resource-group?
 		Parameters:  nil,
 		Variables:   nil,
 		Resources:   nil,
@@ -103,8 +95,8 @@ func (p *Parser) convertTemplate(template Template) *azure2.Deployment {
 
 	// TODO: the references passed here should probably not be the name - maybe params.NAME.DefaultValue?
 	for name, param := range template.Parameters {
-		deployment.Parameters = append(deployment.Parameters, azure2.Parameter{
-			Variable: azure2.Variable{
+		deployment.Parameters = append(deployment.Parameters, azure.Parameter{
+			Variable: azure.Variable{
 				Name:  name,
 				Value: param.DefaultValue,
 			},
@@ -114,14 +106,14 @@ func (p *Parser) convertTemplate(template Template) *azure2.Deployment {
 	}
 
 	for name, variable := range template.Variables {
-		deployment.Variables = append(deployment.Variables, azure2.Variable{
+		deployment.Variables = append(deployment.Variables, azure.Variable{
 			Name:  name,
 			Value: variable,
 		})
 	}
 
 	for name, output := range template.Outputs {
-		deployment.Outputs = append(deployment.Outputs, azure2.Output{
+		deployment.Outputs = append(deployment.Outputs, azure.Output{
 			Name:  name,
 			Value: output,
 		})
@@ -134,15 +126,15 @@ func (p *Parser) convertTemplate(template Template) *azure2.Deployment {
 	return &deployment
 }
 
-func (p *Parser) convertResource(input Resource) azure2.Resource {
+func (p *Parser) convertResource(input Resource) azure.Resource {
 
-	var children []azure2.Resource
+	var children []azure.Resource
 
 	for _, child := range input.Resources {
 		children = append(children, p.convertResource(child))
 	}
 
-	resource := azure2.Resource{
+	resource := azure.Resource{
 		Metadata:   input.Metadata,
 		APIVersion: input.APIVersion,
 		Type:       input.Type,

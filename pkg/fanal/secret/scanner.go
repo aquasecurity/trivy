@@ -504,8 +504,8 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	}
 
 	if lineEnd-lineStart > 100 {
-		lineStart = lo.Ternary(start-30 < 0, 0, start-30)
-		lineEnd = lo.Ternary(end+20 > len(content), len(content), end+20)
+		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
+		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
 	matchLine := string(content[lineStart:lineEnd])
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)

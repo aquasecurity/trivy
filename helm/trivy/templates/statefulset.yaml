@@ -17,7 +17,9 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1	
+      kind: PersistentVolumeClaim
+      metadata:
         name: data
       spec:
         resources:

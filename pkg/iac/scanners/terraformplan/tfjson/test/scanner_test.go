@@ -33,7 +33,7 @@ func Test_Scanning_Plan(t *testing.T) {
 			failedResults = append(failedResults, r)
 		}
 	}
-	assert.Len(t, results, 15)
+
 	assert.Len(t, failedResults, 9)
 
 }

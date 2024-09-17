@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_helm_parser_with_options_with_values_file(t *testing.T) {
@@ -34,7 +33,7 @@ func Test_helm_parser_with_options_with_values_file(t *testing.T) {
 
 			t.Logf("Running test: %s", test.testName)
 
-			var opts []options.ParserOption
+			var opts []parser.Option
 
 			if test.valuesFile != "" {
 				opts = append(opts, parser.OptionWithValuesFile(test.valuesFile))
@@ -84,7 +83,7 @@ func Test_helm_parser_with_options_with_set_value(t *testing.T) {
 
 			t.Logf("Running test: %s", test.testName)
 
-			var opts []options.ParserOption
+			var opts []parser.Option
 
 			if test.valuesFile != "" {
 				opts = append(opts, parser.OptionWithValuesFile(test.valuesFile))
@@ -138,7 +137,7 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 
 			t.Logf("Running test: %s", test.testName)
 
-			var opts []options.ParserOption
+			var opts []parser.Option
 
 			if len(test.apiVersions) > 0 {
 				opts = append(opts, parser.OptionWithAPIVersions(test.apiVersions...))
@@ -195,7 +194,7 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 
 			t.Logf("Running test: %s", test.testName)
 
-			var opts []options.ParserOption
+			var opts []parser.Option
 
 			opts = append(opts, parser.OptionWithKubeVersion(test.kubeVersion))
 

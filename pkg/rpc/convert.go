@@ -436,6 +436,7 @@ func ConvertFromRPCDetectedLicenses(rpcLicenses []*common.DetectedLicense) []typ
 			PkgName:    l.PkgName,
 			FilePath:   l.FilePath,
 			Name:       l.Name,
+			Text:       l.Text,
 			Confidence: float64(l.Confidence),
 			Link:       l.Link,
 		})
@@ -983,6 +984,7 @@ func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLi
 			PkgName:    l.PkgName,
 			FilePath:   l.FilePath,
 			Name:       l.Name,
+			Text:       l.Text,
 			Confidence: float32(l.Confidence),
 			Link:       l.Link,
 		})

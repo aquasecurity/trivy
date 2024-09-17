@@ -13,7 +13,6 @@ import (
 
 func Test_OS_FS(t *testing.T) {
 	s := New(
-		options.ScannerWithDebug(os.Stderr),
 		options.ScannerWithEmbeddedPolicies(true),
 		options.ScannerWithEmbeddedLibraries(true),
 	)

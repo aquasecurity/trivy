@@ -10,6 +10,8 @@ import (
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/bundle"
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var builtinNamespaces = map[string]struct{}{
@@ -61,14 +63,14 @@ func (s *Scanner) loadEmbedded() error {
 		return fmt.Errorf("failed to load embedded rego libraries: %w", err)
 	}
 	s.embeddedLibs = loaded
-	s.debug.Log("Loaded %d embedded libraries.", len(loaded))
+	s.logger.Debug("Embedded libraries are loaded", log.Int("count", len(loaded)))
 
 	loaded, err = LoadEmbeddedPolicies()
 	if err != nil {
-		return fmt.Errorf("failed to load embedded rego policies: %w", err)
+		return fmt.Errorf("failed to load embedded rego checks: %w", err)
 	}
 	s.embeddedChecks = loaded
-	s.debug.Log("Loaded %d embedded policies.", len(loaded))
+	s.logger.Debug("Embedded checks are loaded", log.Int("count", len(loaded)))
 
 	return nil
 }
@@ -80,7 +82,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	}
 
 	if s.policyFS != nil {
-		s.debug.Log("Overriding filesystem for checks!")
+		s.logger.Debug("Overriding filesystem for checks")
 		srcFS = s.policyFS
 	}
 
@@ -105,7 +107,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		for name, policy := range loaded {
 			s.policies[name] = policy
 		}
-		s.debug.Log("Loaded %d checks from disk.", len(loaded))
+		s.logger.Debug("Checks from disk are loaded", log.Int("count", len(loaded)))
 	}
 
 	if len(readers) > 0 {
@@ -116,7 +118,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		for name, policy := range loaded {
 			s.policies[name] = policy
 		}
-		s.debug.Log("Loaded %d checks from reader(s).", len(loaded))
+		s.logger.Debug("Checks from readers are loaded", log.Int("count", len(loaded)))
 	}
 
 	// gather namespaces
@@ -132,7 +134,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 
 	dataFS := srcFS
 	if s.dataFS != nil {
-		s.debug.Log("Overriding filesystem for data!")
+		s.logger.Debug("Overriding filesystem for data")
 		dataFS = s.dataFS
 	}
 	store, err := initStore(dataFS, s.dataDirs, namespaces)
@@ -168,15 +170,19 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 			continue
 		}
 
-		s.debug.Log("Error occurred while parsing: %s, %s. Trying to fallback to embedded check.", loc, e.Error())
+		s.logger.Error(
+			"Error occurred while parsing. Trying to fallback to embedded check",
+			log.FilePath(loc),
+			log.Err(e),
+		)
 
 		embedded := s.findMatchedEmbeddedCheck(badPolicy)
 		if embedded == nil {
-			s.debug.Log("Failed to find embedded check: %s", loc)
+			s.logger.Error("Failed to find embedded check, skipping", log.FilePath(loc))
 			continue
 		}
 
-		s.debug.Log("Found embedded check: %s", embedded.Package.Location.File)
+		s.logger.Debug("Found embedded check", log.FilePath(embedded.Package.Location.File))
 		delete(s.policies, loc) // remove bad check
 		s.policies[embedded.Package.Location.File] = embedded
 		delete(s.embeddedChecks, embedded.Package.Location.File) // avoid infinite loop if embedded check contains ref error
@@ -214,7 +220,7 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 
 func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 	if len(compiler.Errors) > s.regoErrorLimit {
-		s.debug.Log("Error(s) occurred while loading checks")
+		s.logger.Error("Error(s) occurred while loading checks")
 		return compiler.Errors
 	}
 
@@ -222,7 +228,10 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 		if e.Location == nil {
 			continue
 		}
-		s.debug.Log("Error occurred while parsing: %s, %s", e.Location.File, e.Error())
+		s.logger.Error(
+			"Error occurred while parsing",
+			log.FilePath(e.Location.File), log.Err(e),
+		)
 		delete(s.policies, e.Location.File)
 	}
 	return nil
@@ -281,8 +290,17 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 		if err != nil {
 			return err
 		}
+
+		if !meta.hasAnyFramework(s.frameworks) {
+			continue
+		}
+
 		if len(meta.InputOptions.Selectors) == 0 {
-			s.debug.Log("WARNING: Module %s has no input selectors - it will be loaded for all inputs!", name)
+			s.logger.Warn(
+				"Module has no input selectors - it will be loaded for all inputs!",
+				log.FilePath(module.Package.Location.File),
+				log.String("module", name),
+			)
 			filtered[name] = module
 			continue
 		}
