@@ -9,7 +9,7 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
       - '.release-please-manifest.json'
-      - './helm/trivy/Chart.yaml'
+      - 'helm/trivy/Chart.yaml'
   pull_request:
     paths:
       - '**.md'
@@ -17,7 +17,7 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
       - '.release-please-manifest.json'
-      - './helm/trivy/Chart.yaml'
+      - 'helm/trivy/Chart.yaml'
 jobs:
   test:
     name: Test
