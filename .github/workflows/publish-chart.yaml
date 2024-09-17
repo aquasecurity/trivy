@@ -65,6 +65,10 @@ jobs:
         run: echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Create a PR
         run: ./misc/helm-chart/create-pr.sh ${{ env.TAG }}
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows the created PR to trigger tests and other workflows
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
   
   publish-chart:
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
