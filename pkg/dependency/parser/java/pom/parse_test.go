@@ -809,6 +809,17 @@ func TestPom_Parse(t *testing.T) {
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
+				{
+					ID:           "org.example:example-api",
+					Name:         "org.example:example-api",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 28,
+							EndLine:   32,
+						},
+					},
+				},
 			},
 		},
 		{
