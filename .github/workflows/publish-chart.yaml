@@ -8,9 +8,7 @@ on:
       - main
     paths:
       - 'helm/trivy/**'
-  push:
-    tags:
-      - "v*"
+
 env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
@@ -49,7 +47,7 @@ jobs:
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
 
   publish-chart:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     needs:
       - test-chart
     runs-on: ubuntu-20.04
