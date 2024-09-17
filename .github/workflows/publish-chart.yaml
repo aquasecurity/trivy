@@ -19,6 +19,7 @@ env:
   KIND_IMAGE: "kindest/node:v1.23.6@sha256:b1fa224cc6c7ff32455e0b1fd9cbfd3d3bc87ecaa8fcb06961ed1afb3db0f9ae"
 jobs:
   test-chart:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -50,8 +51,6 @@ jobs:
 
   update-chart-version:
     if: github.event_name == 'push'
-    needs:
-      - test-chart
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
