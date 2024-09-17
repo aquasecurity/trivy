@@ -8,7 +8,9 @@ on:
       - main
     paths:
       - 'helm/trivy/**'
-
+  push:
+    tags:
+      - "v*"
 env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
@@ -45,7 +47,22 @@ jobs:
         run: |
           sed -i -e '136s,false,'true',g' ./helm/trivy/values.yaml
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
-
+  update-chart-version:
+    if: github.event_name == 'push'
+    needs:
+      - test-chart
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 0
+      - name: Update version in file
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "appVersion: $TAG"
+          sed -i "s/appVersion: [0-9]\+\.[0-9]\+\.[0-9]\+/appVersion: $TAG/" helm/trivy/Chart.yaml
+  
   publish-chart:
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     needs:
