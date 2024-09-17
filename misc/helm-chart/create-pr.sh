@@ -4,6 +4,11 @@ set -e
 
 VERSION=$1
 
+# Update version in file
+echo "Update Chart.yaml with Trivy $VERSION"
+sed -i "s/version: [0-9]\+\.[0-9]\+\.[0-9]\+/version: $VERSION/" ./helm/trivy/Chart.yaml
+sed -i "s/appVersion: [0-9]\+\.[0-9]\+\.[0-9]\+/appVersion: $VERSION/" ./helm/trivy/Chart.yaml
+
 echo "Create PR for update Trivy $VERSION in the Helm Chart"
 
 # Create a new branch
