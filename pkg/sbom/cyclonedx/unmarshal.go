@@ -166,7 +166,10 @@ func (b *BOM) unmarshalType(t cdx.ComponentType) (core.ComponentType, error) {
 		ctype = core.TypeContainerImage
 	case cdx.ComponentTypeApplication:
 		ctype = core.TypeApplication
-	case cdx.ComponentTypeLibrary:
+	// There are not many differences between a `library` and a `framework` components, and sometimes it is difficult to choose the right type.
+	// That is why some users choose `framework` type.
+	// So we should parse and scan `framework` components as libraries.
+	case cdx.ComponentTypeLibrary, cdx.ComponentTypeFramework:
 		ctype = core.TypeLibrary
 	case cdx.ComponentTypeOS:
 		ctype = core.TypeOS
