@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.55.2](https://github.com/aquasecurity/trivy/compare/v0.55.1...v0.55.2) (2024-09-17)
+
+
+### Bug Fixes
+
+* **java:** use `dependencyManagement` from root/child pom's for dependencies from parents [backport: release/v0.55] ([#7521](https://github.com/aquasecurity/trivy/issues/7521)) ([14a058f](https://github.com/aquasecurity/trivy/commit/14a058f608be403a53019775c8308f4f5718afd7))
+
 ## [0.55.1](https://github.com/aquasecurity/trivy/compare/v0.55.0...v0.55.1) (2024-09-12)
 
 
