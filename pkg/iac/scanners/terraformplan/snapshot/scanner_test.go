@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
@@ -19,12 +20,12 @@ import (
 
 func initScanner(opts ...options.ScannerOption) *Scanner {
 	defaultOpts := []options.ScannerOption{
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithPolicyNamespaces("user"),
-		options.ScannerWithPolicyDirs("."),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyDirs("."),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithRegoErrorLimits(0),
+		rego.WithRegoErrorLimits(0),
 		tfscanner.ScannerWithSkipCachedModules(true),
 	}
 
@@ -59,7 +60,7 @@ func TestScanner_Scan(t *testing.T) {
 
 			policyFS := os.DirFS(filepath.Join("testdata", tt.dir, "checks"))
 
-			s := initScanner(options.ScannerWithPolicyFilesystem(policyFS))
+			s := initScanner(rego.WithPolicyFilesystem(policyFS))
 			result, err := s.Scan(context.TODO(), f)
 			require.NoError(t, err)
 
@@ -108,13 +109,13 @@ func Test_ScanFS(t *testing.T) {
 			fs := os.DirFS("testdata")
 
 			scanner := New(
-				options.ScannerWithPolicyDirs(path.Join(tc.dir, "checks")),
-				options.ScannerWithPolicyFilesystem(fs),
+				rego.WithPolicyDirs(path.Join(tc.dir, "checks")),
+				rego.WithPolicyFilesystem(fs),
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
-				options.ScannerWithEmbeddedLibraries(false),
-				options.ScannerWithEmbeddedPolicies(false),
-				options.ScannerWithRegoErrorLimits(0),
+				rego.WithPolicyNamespaces("user"),
+				rego.WithEmbeddedLibraries(false),
+				rego.WithEmbeddedPolicies(false),
+				rego.WithRegoErrorLimits(0),
 				tfscanner.ScannerWithSkipCachedModules(true),
 			)
 
