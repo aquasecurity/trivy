@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/open-policy-agent/opa/ast"
 
@@ -14,8 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func init() {
-
+var LoadAndRegister = sync.OnceFunc(func() {
 	modules, err := LoadEmbeddedPolicies()
 	if err != nil {
 		// we should panic as the policies were not embedded properly
@@ -30,7 +30,7 @@ func init() {
 	}
 
 	RegisterRegoRules(modules)
-}
+})
 
 func RegisterRegoRules(modules map[string]*ast.Module) {
 	ctx := context.TODO()
