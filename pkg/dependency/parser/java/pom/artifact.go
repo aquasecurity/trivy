@@ -6,7 +6,9 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 	"github.com/samber/lo"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -14,7 +16,12 @@ import (
 )
 
 var (
-	varRegexp = regexp.MustCompile(`\${(\S+?)}`)
+	varRegexp        = regexp.MustCompile(`\${(\S+?)}`)
+	emptyVersionWarn = sync.OnceFunc(func() {
+		log.WithPrefix("pom").Warn("Dependency version is empty. Child dependencies will not be found.",
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/coverage/language/java/#empty-dependency-version
+			log.String("details", doc.URL("/docs/coverage/language/java/", "empty-dependency-version")))
+	})
 )
 
 type artifact struct {
@@ -42,7 +49,13 @@ func newArtifact(groupID, artifactID, version string, licenses []string, props m
 }
 
 func (a artifact) IsEmpty() bool {
-	return a.GroupID == "" || a.ArtifactID == ""
+	if a.GroupID == "" || a.ArtifactID == "" {
+		return true
+	}
+	if a.Version.String() == "" {
+		emptyVersionWarn()
+	}
+	return false
 }
 
 func (a artifact) Equal(o artifact) bool {

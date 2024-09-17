@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -1537,6 +1538,7 @@ func TestPom_Parse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			log.InitLogger(true, false)
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 			defer f.Close()
