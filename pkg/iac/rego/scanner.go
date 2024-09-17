@@ -152,6 +152,8 @@ type DynamicMetadata struct {
 }
 
 func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
+	LoadAndRegister()
+
 	schema, ok := schemas.SchemaMap[source]
 	if !ok {
 		schema = schemas.Anything
@@ -240,7 +242,7 @@ func GetInputsContents(inputs []Input) []any {
 
 func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results, error) {
 
-	s.logger.Debug("Scannning inputs", "count", len(inputs))
+	s.logger.Debug("Scanning inputs", "count", len(inputs))
 
 	var results scan.Results
 
