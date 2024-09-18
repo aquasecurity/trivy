@@ -340,9 +340,15 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	// For better understanding see the following tests:
 	// - `dependency from parent uses version from child pom depManagement`
 	// - `dependency from parent uses version from root pom depManagement`
+	// - `dependency from parent uses version from scanned pom depManagement`
 	//
 	// depManagements from root pom has higher priority than depManagements from current pom.
-	depManagementForParent := lo.UniqBy(append(opts.depManagement, pom.content.DependencyManagement.Dependencies.Dependency...),
+
+	var resolvedPomDepManagent []pomDependency
+	for _, dep := range pom.content.DependencyManagement.Dependencies.Dependency {
+		resolvedPomDepManagent = append(resolvedPomDepManagent, dep.Resolve(pom.content.Properties, nil, nil))
+	}
+	depManagementForParent := lo.UniqBy(append(opts.depManagement, resolvedPomDepManagent...),
 		func(dep pomDependency) string {
 			return dep.Name()
 		})
