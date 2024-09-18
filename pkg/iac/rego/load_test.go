@@ -17,7 +17,6 @@ import (
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -32,7 +31,6 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		var debugBuf bytes.Buffer
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
-			types.SourceDockerfile,
 			options.ScannerWithRegoErrorLimits(0),
 		)
 
@@ -45,7 +43,6 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		var debugBuf bytes.Buffer
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
-			types.SourceDockerfile,
 			options.ScannerWithRegoErrorLimits(1),
 		)
 
@@ -64,7 +61,7 @@ package mypackage
 deny {
     input.evil == "foo bar"
 }`
-		scanner := rego.NewScanner(types.SourceJSON)
+		scanner := rego.NewScanner()
 
 		err := scanner.LoadPolicies(false, false, fstest.MapFS{}, []string{"."}, []io.Reader{strings.NewReader(check)})
 		assert.ErrorContains(t, err, "could not find schema \"fooschema\"")
@@ -79,7 +76,7 @@ package mypackage
 deny {
     input.evil == "foo bar"
 }`
-		scanner := rego.NewScanner(types.SourceJSON)
+		scanner := rego.NewScanner()
 
 		fsys := fstest.MapFS{
 			"schemas/fooschema.json": &fstest.MapFile{
@@ -97,7 +94,7 @@ deny {
 deny {
     input.evil == "foo bar"
 }`
-		scanner := rego.NewScanner(types.SourceJSON)
+		scanner := rego.NewScanner()
 		err := scanner.LoadPolicies(false, false, fstest.MapFS{}, []string{"."}, []io.Reader{strings.NewReader(check)})
 		require.NoError(t, err)
 	})
@@ -183,7 +180,6 @@ deny {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			scanner := rego.NewScanner(
-				types.SourceDockerfile,
 				options.ScannerWithRegoErrorLimits(0),
 				options.ScannerWithEmbeddedPolicies(false),
 			)
@@ -243,7 +239,6 @@ deny {
 	}
 
 	scanner := rego.NewScanner(
-		types.SourceDockerfile,
 		options.ScannerWithEmbeddedPolicies(false),
 	)
 	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)

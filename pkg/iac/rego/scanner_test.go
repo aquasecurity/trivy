@@ -44,13 +44,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -79,13 +79,13 @@ deny {
 
 	srcFS := os.DirFS(tmp)
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"/policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -114,13 +114,13 @@ warn {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -146,13 +146,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": false,
@@ -189,13 +189,13 @@ exception[ns] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -237,13 +237,13 @@ exception[ns] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -274,13 +274,13 @@ exception[rules] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -310,13 +310,13 @@ exception[rules] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -344,13 +344,13 @@ deny_evil {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -375,13 +375,13 @@ deny[msg] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -413,13 +413,13 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -455,13 +455,13 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -509,13 +509,13 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -558,13 +558,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -592,13 +592,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -623,13 +623,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -658,13 +658,13 @@ deny {
 
 	traceBuffer := bytes.NewBuffer([]byte{})
 
-	scanner := NewScanner(types.SourceJSON, options.ScannerWithTrace(traceBuffer))
+	scanner := NewScanner(options.ScannerWithTrace(traceBuffer))
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -692,13 +692,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON, options.ScannerWithPerResultTracing(true))
+	scanner := NewScanner(options.ScannerWithPerResultTracing(true))
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -730,13 +730,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"text": "dynamic",
@@ -763,13 +763,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"text": "test",
@@ -810,13 +810,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"text": "test",
@@ -839,7 +839,7 @@ func Test_RegoScanning_WithInvalidInputSchema(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # schemas:
-# - input: schema["input"]
+# - input: schema["dockerfile"]
 package defsec.test
 
 deny {
@@ -848,7 +848,7 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceDockerfile)
+	scanner := NewScanner()
 	scanner.SetRegoErrorLimit(0) // override to not allow any errors
 	assert.ErrorContains(
 		t,
@@ -862,7 +862,7 @@ func Test_RegoScanning_WithValidInputSchema(t *testing.T) {
 	srcFS := CreateFS(t, map[string]string{
 		"policies/test.rego": `# METADATA
 # schemas:
-# - input: schema["input"]
+# - input: schema["dockerfile"]
 package defsec.test
 
 deny {
@@ -871,7 +871,7 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceDockerfile)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
@@ -890,7 +890,7 @@ deny {
 }
 `,
 	})
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	scanner.SetRegoErrorLimit(0) // override to not allow any errors
 	assert.ErrorContains(
 		t,
@@ -922,7 +922,7 @@ deny {
 		"data/junk.txt": "this file should be ignored",
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	scanner.SetDataFilesystem(dataFS)
 	scanner.SetDataDirs(".")
 
@@ -931,7 +931,7 @@ deny {
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{})
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{})
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -962,7 +962,7 @@ deny {
 		"data/junk.txt": "this file should be ignored",
 	})
 
-	scanner := NewScanner(types.SourceJSON)
+	scanner := NewScanner()
 	scanner.SetDataFilesystem(dataFS)
 	scanner.SetDataDirs("X://")
 
@@ -971,7 +971,7 @@ deny {
 		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{})
+	results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{})
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -998,14 +998,12 @@ deny {
 		},
 	}
 
-	scanner := NewScanner(
-		types.SourceYAML,
-	)
+	scanner := NewScanner()
 	require.NoError(
 		t,
 		scanner.LoadPolicies(false, false, fsys, []string{"checks"}, nil),
 	)
-	_, err := scanner.ScanInput(context.TODO(), Input{})
+	_, err := scanner.ScanInput(context.TODO(), types.SourceYAML, Input{})
 	require.NoError(t, err)
 }
 
@@ -1066,13 +1064,13 @@ deny {
 				"policies/test.rego": tc.policy,
 			})
 
-			scanner := NewScanner(types.SourceJSON)
+			scanner := NewScanner()
 			require.NoError(
 				t,
 				scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
 			)
 
-			results, err := scanner.ScanInput(context.TODO(), Input{
+			results, err := scanner.ScanInput(context.TODO(), types.SourceJSON, Input{
 				Path: "/evil.lol",
 				Contents: map[string]any{
 					"text": "test",
@@ -1134,7 +1132,6 @@ deny {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			scanner := NewScanner(
-				types.SourceYAML,
 				options.ScannerWithCustomSchemas(map[string][]byte{
 					"test": []byte(schema),
 				}),
@@ -1143,7 +1140,7 @@ deny {
 			err := scanner.LoadPolicies(false, false, nil, nil, []io.Reader{strings.NewReader(tc.check)})
 			require.NoError(t, err)
 
-			results, err := scanner.ScanInput(context.TODO(), Input{
+			results, err := scanner.ScanInput(context.TODO(), types.SourceYAML, Input{
 				Path:     "test.yaml",
 				Contents: map[string]any{"service": "test"},
 			})
