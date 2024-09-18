@@ -4,6 +4,11 @@ name: Publish Helm chart
 on:
   workflow_dispatch:
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
     branches:
       - main
     paths:
