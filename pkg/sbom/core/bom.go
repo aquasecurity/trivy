@@ -269,10 +269,6 @@ func (b *BOM) AddRelationship(parent, child *Component, relationshipType Relatio
 	}
 }
 
-func (b *BOM) AddVulnerability(c *Component, vuln Vulnerability) {
-	b.vulnerabilities[c.id] = append(b.vulnerabilities[c.id], vuln)
-}
-
 func (b *BOM) AddVulnerabilities(c *Component, vulns []Vulnerability) {
 	if c.id == uuid.Nil {
 		b.AddComponent(c)
@@ -281,10 +277,6 @@ func (b *BOM) AddVulnerabilities(c *Component, vulns []Vulnerability) {
 		return
 	}
 	b.vulnerabilities[c.id] = vulns
-}
-
-func (b *BOM) ClearVulnerabilities() {
-	b.vulnerabilities = make(map[uuid.UUID][]Vulnerability)
 }
 
 func (b *BOM) Root() *Component {
