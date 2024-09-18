@@ -12,7 +12,7 @@ sed -i "s/appVersion: [0-9]\+\.[0-9]\+\.[0-9]\+/appVersion: $VERSION/" ./helm/tr
 echo "Create PR for update Trivy $VERSION in the Helm Chart"
 
 # Create a new branch
-NEW_BRANCH="ci/bump-trivy-to-$VERSION"
+NEW_BRANCH="ci/helm-chart/bump-trivy-to-$VERSION"
 
 echo "Creating new branch: $NEW_BRANCH"
 git switch -c "$NEW_BRANCH"
