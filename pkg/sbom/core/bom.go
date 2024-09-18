@@ -273,7 +273,7 @@ func (b *BOM) AddVulnerability(c *Component, vuln Vulnerability) {
 	b.vulnerabilities[c.id] = append(b.vulnerabilities[c.id], vuln)
 }
 
-func (b *BOM) SetVulnerabilities(c *Component, vulns []Vulnerability) {
+func (b *BOM) AddVulnerabilities(c *Component, vulns []Vulnerability) {
 	if c.id == uuid.Nil {
 		b.AddComponent(c)
 	}
