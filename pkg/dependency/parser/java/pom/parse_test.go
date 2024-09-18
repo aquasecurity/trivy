@@ -1595,6 +1595,43 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		// [INFO] com.example:child-depManagement-in-parent:jar:1.0.0
+		// [INFO] +- org.example:example-api:jar:1.0.1:compile
+		// [INFO] \- org.example:example-api2:jar:1.0.2:runtime
+		{
+			name:      "dependency from parent uses version from child(scanned) pom depManagement",
+			inputFile: filepath.Join("testdata", "use-child-dep-management-in-parent", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:child-depManagement-in-parent:1.0.0",
+					Name:         "com.example:child-depManagement-in-parent",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-api:1.0.1",
+					Name:         "org.example:example-api",
+					Version:      "1.0.1",
+					Relationship: ftypes.RelationshipDirect, // TODO change this!!!
+				},
+				{
+					ID:           "org.example:example-api2:1.0.2",
+					Name:         "org.example:example-api2",
+					Version:      "1.0.2",
+					Relationship: ftypes.RelationshipDirect, // TODO change this!!!
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:child-depManagement-in-parent:1.0.0",
+					DependsOn: []string{
+						"org.example:example-api2:1.0.2",
+						"org.example:example-api:1.0.1",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
