@@ -5,7 +5,6 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -704,22 +703,22 @@ func TestEncoder_Encode(t *testing.T) {
 				BOM: newTestBOM(t),
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
-				uuid.MustParse(id1): &appComponent,
-				uuid.MustParse(id2): &libComponent,
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): appComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): libComponent,
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
-				uuid.MustParse(id1): {
+				uuid.MustParse("2ff14136-e09f-4df9-80ea-000000000001"): {
 					{
-						Dependency: uuid.MustParse(id2),
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"),
 						Type:       core.RelationshipContains,
 					},
 				},
-				uuid.MustParse(id2): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): nil,
 			},
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
-			name: "fill vulnerabilities in SBOM being scanned",
+			name: "SBOM file without root component",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
@@ -729,12 +728,21 @@ func TestEncoder_Encode(t *testing.T) {
 						Target: "Java",
 						Type:   ftypes.Jar,
 						Class:  types.ClassLangPkg,
-						Vulnerabilities: []types.DetectedVulnerability{
+						Packages: []ftypes.Package{
 							{
-								VulnerabilityID:  "CVE-2021-44228",
-								PkgName:          libComponent.Name,
-								InstalledVersion: libComponent.Version,
-								PkgIdentifier:    libComponent.PkgIdentifier,
+								ID:      "org.apache.logging.log4j:log4j-core:2.23.1",
+								Name:    "org.apache.logging.log4j:log4j-core",
+								Version: "2.23.1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "6C0AE96901617503",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.logging.log4j",
+										Name:      "log4j-core",
+										Version:   "2.23.1",
+									},
+								},
+								FilePath: "log4j-core-2.23.1.jar",
 							},
 						},
 					},
@@ -742,18 +750,19 @@ func TestEncoder_Encode(t *testing.T) {
 				BOM: newTestBOM2(t),
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
-				uuid.MustParse(id1): &libComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): fsComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponent,
 			},
-			wantRels: map[uuid.UUID][]core.Relationship{},
-			wantVulns: map[uuid.UUID][]core.Vulnerability{
-				uuid.MustParse(id1): {
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
 					{
-						ID:               "CVE-2021-44228",
-						PkgName:          libComponent.Name,
-						InstalledVersion: libComponent.Version,
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
 					},
 				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): nil,
 			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
 			name: "json file created from SBOM file (BOM is empty)",
@@ -787,8 +796,8 @@ func TestEncoder_Encode(t *testing.T) {
 				},
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): &fsComponent,
-				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): &libComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): fsComponent,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): libComponent,
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
@@ -838,9 +847,7 @@ func TestEncoder_Encode(t *testing.T) {
 
 			require.Len(t, got.Components(), len(tt.wantComponents))
 			for id, want := range tt.wantComponents {
-				gotComponent, ok := got.Components()[id]
-				require.True(t, ok, id)
-				assert.EqualExportedValues(t, *want, *gotComponent, id)
+				assert.EqualExportedValues(t, *want, *got.Components()[id], id)
 			}
 
 			assert.Equal(t, tt.wantRels, got.Relationships())
@@ -849,18 +856,13 @@ func TestEncoder_Encode(t *testing.T) {
 	}
 }
 
-const (
-	id1 = "2ff14136-e09f-4df9-80ea-000000000001"
-	id2 = "2ff14136-e09f-4df9-80ea-000000000002"
-)
-
 var (
-	appComponent = core.Component{
+	appComponent = &core.Component{
 		Root: true,
 		Type: core.TypeApplication,
 		Name: "log4j-core-2.23.1.jar",
 	}
-	fsComponent = core.Component{
+	fsComponent = &core.Component{
 		Root: true,
 		Type: core.TypeFilesystem,
 		Name: "report.cdx.json",
@@ -874,7 +876,7 @@ var (
 			},
 		},
 	}
-	libComponent = core.Component{
+	libComponent = &core.Component{
 		Type:    core.TypeLibrary,
 		Name:    "log4j-core",
 		Group:   "org.apache.logging.log4j",
@@ -913,27 +915,15 @@ var (
 
 func newTestBOM(t *testing.T) *core.BOM {
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
-
-	// Copy components
-	app := lo.ToPtr(appComponent)
-	lib := lo.ToPtr(libComponent)
-
 	bom := core.NewBOM(core.Options{})
-	bom.AddComponent(app)
-	bom.AddComponent(lib)
-	bom.AddRelationship(app, lib, core.RelationshipContains)
-	bom.AddRelationship(lib, nil, core.RelationshipDependsOn)
+	bom.AddComponent(appComponent)
 	return bom
 }
 
 // BOM without root component
 func newTestBOM2(t *testing.T) *core.BOM {
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
-
-	// Copy components
-	lib := lo.ToPtr(libComponent)
-
 	bom := core.NewBOM(core.Options{})
-	bom.AddComponent(lib)
+	bom.AddComponent(libComponent)
 	return bom
 }

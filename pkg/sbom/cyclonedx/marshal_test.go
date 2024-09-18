@@ -65,6 +65,21 @@ var (
 )
 
 func TestMarshaler_MarshalReport(t *testing.T) {
+	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
+	testSBOM.AddComponent(&core.Component{
+		Root: true,
+		Type: core.TypeApplication,
+		Name: "jackson-databind-2.13.4.1.jar",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
+		},
+		Properties: []core.Property{
+			{
+				Name:  "SchemaVersion",
+				Value: "2",
+			},
+		},
+	})
 
 	tests := []struct {
 		name        string
@@ -1460,18 +1475,61 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
-							vuln1,
+							{
+								VulnerabilityID: "CVE-2022-42003",
+								PkgName:         "com.fasterxml.jackson.core:jackson-databind",
+								PkgPath:         "jackson-databind-2.13.4.1.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+									UID:    "9A5066570222D04C",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.fasterxml.jackson.core",
+										Name:      "jackson-databind",
+										Version:   "2.13.4.1",
+									},
+								},
+								InstalledVersion: "2.13.4.1",
+								FixedVersion:     "2.12.7.1, 2.13.4.2",
+								Status:           dtypes.StatusFixed,
+								SeveritySource:   "ghsa",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-42003",
+								DataSource: &dtypes.DataSource{
+									ID:   vulnerability.GHSA,
+									Name: "GitHub Security Advisory Maven",
+									URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "jackson-databind: deep wrapper array nesting wrt UNWRAP_SINGLE_VALUE_ARRAYS",
+									Description: "In FasterXML jackson-databind before versions 2.13.4.1 and 2.12.17.1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled.",
+									Severity:    dtypes.SeverityHigh.String(),
+									VendorSeverity: dtypes.VendorSeverity{
+										vulnerability.GHSA: dtypes.SeverityHigh,
+									},
+									CVSS: dtypes.VendorCVSS{
+										vulnerability.GHSA: dtypes.CVSS{
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+											V3Score:  7.5,
+										},
+									},
+									References: []string{
+										"https://access.redhat.com/security/cve/CVE-2022-42003",
+									},
+									PublishedDate:    lo.ToPtr(time.Date(2022, 10, 02, 05, 15, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2022, 12, 20, 10, 15, 0, 0, time.UTC)),
+								},
+							},
 						},
 					},
 				},
-				BOM: testSBOM(),
+				BOM: testSBOM,
 			},
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_6,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -2051,100 +2109,4 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-var (
-	vuln1 = types.DetectedVulnerability{
-		VulnerabilityID: "CVE-2022-42003",
-		PkgName:         "com.fasterxml.jackson.core:jackson-databind",
-		PkgPath:         "jackson-databind-2.13.4.1.jar",
-		PkgIdentifier: ftypes.PkgIdentifier{
-			BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
-			UID:    "9A5066570222D04C",
-			PURL: &packageurl.PackageURL{
-				Type:      packageurl.TypeMaven,
-				Namespace: "com.fasterxml.jackson.core",
-				Name:      "jackson-databind",
-				Version:   "2.13.4.1",
-			},
-		},
-		InstalledVersion: "2.13.4.1",
-		FixedVersion:     "2.12.7.1, 2.13.4.2",
-		Status:           dtypes.StatusFixed,
-		SeveritySource:   "ghsa",
-		PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-42003",
-		DataSource: &dtypes.DataSource{
-			ID:   vulnerability.GHSA,
-			Name: "GitHub Security Advisory Maven",
-			URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
-		},
-		Vulnerability: dtypes.Vulnerability{
-			Title:       "jackson-databind: deep wrapper array nesting wrt UNWRAP_SINGLE_VALUE_ARRAYS",
-			Description: "In FasterXML jackson-databind before versions 2.13.4.1 and 2.12.17.1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled.",
-			Severity:    dtypes.SeverityHigh.String(),
-			VendorSeverity: dtypes.VendorSeverity{
-				vulnerability.GHSA: dtypes.SeverityHigh,
-			},
-			CVSS: dtypes.VendorCVSS{
-				vulnerability.GHSA: dtypes.CVSS{
-					V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-					V3Score:  7.5,
-				},
-			},
-			References: []string{
-				"https://access.redhat.com/security/cve/CVE-2022-42003",
-			},
-			PublishedDate:    lo.ToPtr(time.Date(2022, 10, 02, 05, 15, 0, 0, time.UTC)),
-			LastModifiedDate: lo.ToPtr(time.Date(2022, 12, 20, 10, 15, 0, 0, time.UTC)),
-		},
-	}
-)
-
-func testSBOM() *core.BOM {
-	bom := core.NewBOM(core.Options{GenerateBOMRef: true})
-	appComponent := &core.Component{
-		Root: true,
-		Type: core.TypeApplication,
-		Name: "jackson-databind-2.13.4.1.jar",
-		PkgIdentifier: ftypes.PkgIdentifier{
-			BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
-		},
-		Properties: []core.Property{
-			{
-				Name:  "SchemaVersion",
-				Value: "2",
-			},
-		},
-	}
-	libComponent := &core.Component{
-		Type:    core.TypeLibrary,
-		Name:    "jackson-databind",
-		Group:   "com.fasterxml.jackson.core",
-		Version: "2.13.4.1",
-		PkgIdentifier: ftypes.PkgIdentifier{
-			BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
-			UID:    "9A5066570222D04C",
-			PURL: &packageurl.PackageURL{
-				Type:      packageurl.TypeMaven,
-				Namespace: "com.fasterxml.jackson.core",
-				Name:      "jackson-databind",
-				Version:   "2.13.4.1",
-			},
-		},
-		Properties: []core.Property{
-			{
-				Name:  "FilePath",
-				Value: "jackson-databind-2.13.4.1.jar",
-			},
-			{
-				Name:  "PkgType",
-				Value: "jar",
-			},
-		},
-	}
-	bom.AddComponent(appComponent)
-	bom.AddComponent(libComponent)
-	bom.AddRelationship(appComponent, libComponent, core.RelationshipContains)
-	bom.AddRelationship(libComponent, nil, core.RelationshipDependsOn)
-	return bom
 }
