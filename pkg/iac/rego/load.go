@@ -295,6 +295,10 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 			continue
 		}
 
+		if _, disabled := s.disabledCheckIDs[meta.ID]; disabled {
+			continue
+		}
+
 		if len(meta.InputOptions.Selectors) == 0 {
 			s.logger.Warn(
 				"Module has no input selectors - it will be loaded for all inputs!",

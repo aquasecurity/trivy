@@ -1153,3 +1153,62 @@ deny {
 		})
 	}
 }
+
+func Test_RegoScanner_WithDisabledCheckIDs(t *testing.T) {
+
+	check := `# METADATA
+# custom:
+#   id: TEST-001
+#   avd_id: AVD-TEST-001
+#   severity: LOW
+#   provider: aws
+#   service: s3
+#   short_code: test
+package user.test
+
+deny {
+  true
+}
+`
+
+	tests := []struct {
+		name           string
+		disabledChecks []string
+		expected       bool
+	}{
+		{
+			name:     "no disabled checks",
+			expected: true,
+		},
+		{
+			name:           "disable check by ID",
+			disabledChecks: []string{"TEST-001"},
+		},
+		{
+			name:           "disabling a non-existent check",
+			disabledChecks: []string{"FOO"},
+			expected:       true,
+		},
+		{
+			name:           "one of the identifiers does not exist",
+			disabledChecks: []string{"FOO", "TEST-001"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			scanner := rego.NewScanner(
+				types.SourceYAML,
+				rego.WithPolicyNamespaces("user"),
+				rego.WithPolicyReader(strings.NewReader(check)),
+				rego.WithDisabledCheckIDs(tt.disabledChecks...),
+			)
+
+			require.NoError(t, scanner.LoadPolicies(nil))
+			results, err := scanner.ScanInput(context.TODO(), rego.Input{})
+			require.NoError(t, err)
+
+			require.Equal(t, tt.expected, len(results.GetFailed()) > 0)
+		})
+	}
+}

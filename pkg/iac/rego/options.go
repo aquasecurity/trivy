@@ -106,3 +106,14 @@ func WithCustomSchemas(schemas map[string][]byte) options.ScannerOption {
 		}
 	}
 }
+
+// WithDisabledCheckIDs disables checks by their ID (ID field in metadata)
+func WithDisabledCheckIDs(ids ...string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			for _, id := range ids {
+				ss.disabledCheckIDs[id] = struct{}{}
+			}
+		}
+	}
+}

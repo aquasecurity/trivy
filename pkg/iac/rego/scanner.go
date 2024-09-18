@@ -69,6 +69,8 @@ type Scanner struct {
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
 	customSchemas  map[string][]byte
+
+	disabledCheckIDs map[string]struct{}
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
@@ -109,12 +111,13 @@ func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 	}
 
 	s := &Scanner{
-		regoErrorLimit: ast.CompileErrorLimitDefault,
-		sourceType:     source,
-		ruleNamespaces: make(map[string]struct{}),
-		runtimeValues:  addRuntimeValues(),
-		logger:         log.WithPrefix("rego"),
-		customSchemas:  make(map[string][]byte),
+		regoErrorLimit:   ast.CompileErrorLimitDefault,
+		sourceType:       source,
+		ruleNamespaces:   make(map[string]struct{}),
+		runtimeValues:    addRuntimeValues(),
+		logger:           log.WithPrefix("rego"),
+		customSchemas:    make(map[string][]byte),
+		disabledCheckIDs: make(map[string]struct{}),
 	}
 
 	maps.Copy(s.ruleNamespaces, builtinNamespaces)
