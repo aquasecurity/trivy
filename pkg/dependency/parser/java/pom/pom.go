@@ -239,10 +239,10 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 	// If this dependency is managed in the root POM,
 	// we need to overwrite fields according to the managed dependency.
 	if managed, found := findDep(d.Name(), rootDepManagement); found { // dependencyManagement from the root POM
-		if managed.Version != "" {
-			dep.Version = evaluateVariable(managed.Version, props, nil)
-		}
-		if managed.Scope != "" {
+		// We always need to use version from root POM
+		dep.Version = evaluateVariable(managed.Version, props, nil)
+
+		if managed.Scope == "" {
 			dep.Scope = evaluateVariable(managed.Scope, props, nil)
 		}
 		if managed.Optional {
