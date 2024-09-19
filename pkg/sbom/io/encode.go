@@ -1,11 +1,11 @@
 package io
 
 import (
+	"cmp"
 	"fmt"
 	"slices"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -20,9 +20,11 @@ import (
 )
 
 type Encoder struct {
-	bom        *core.BOM
-	opts       core.Options
-	components map[uuid.UUID]*core.Component
+	bom  *core.BOM
+	opts core.Options
+
+	// Hold the original SBOM when we scan SBOM file.
+	original *core.BOM
 }
 
 func NewEncoder(opts core.Options) *Encoder {
@@ -30,9 +32,8 @@ func NewEncoder(opts core.Options) *Encoder {
 }
 
 func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
-	if report.BOM != nil {
-		e.components = report.BOM.Components()
-	}
+	e.original = cmp.Or(report.BOM, core.NewBOM(core.Options{})) // Set an empty BOM to avoid panic if the original BOM is nil
+
 	// Metadata component
 	root, err := e.rootComponent(report)
 	if err != nil {
@@ -104,8 +105,8 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	case artifact.TypeCycloneDX, artifact.TypeSPDX:
 		// When we scan SBOM file
 		// If SBOM file doesn't contain root component - use filesystem
-		if r.BOM != nil && r.BOM.Root() != nil {
-			return r.BOM.Root(), nil
+		if rt := e.original.Root(); rt != nil {
+			return rt, nil
 		}
 		// When we scan a `json` file (meaning a file in `json` format) which was created from the SBOM file.
 		// e.g. for use in `convert` mode.
@@ -262,17 +263,11 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	}
 }
 
-// existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
-func (e *Encoder) existedPkgIdentifier(name string, componentType core.ComponentType) ftypes.PkgIdentifier {
-	for _, c := range e.components {
-		if c.Name == name && c.Type == componentType {
-			return c.PkgIdentifier
-		}
-	}
-	return ftypes.PkgIdentifier{}
-}
-
 func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
+	if c := e.original.Component(r.ComponentID); c != nil {
+		return c // Return the original component if it exists
+	}
+
 	component := &core.Component{
 		Name: r.Target,
 		Properties: []core.Property{
@@ -294,17 +289,19 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 			component.Version = osFound.Name
 		}
 		component.Type = core.TypeOS
-		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	case types.ClassLangPkg:
 		component.Type = core.TypeApplication
-		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	}
 
 	e.bom.AddRelationship(root, component, core.RelationshipContains)
 	return component
 }
 
-func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Component {
+func (e *Encoder) component(result types.Result, pkg ftypes.Package) *core.Component {
+	if c := e.original.Component(pkg.ComponentID); c != nil {
+		return c // Return the original component if it exists
+	}
+
 	name := pkg.Name
 	version := utils.FormatVersion(pkg)
 	var group string

@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 type Relationship int
@@ -213,6 +214,10 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+
+	// ComponentID is used for internal representation of the SBOM component.
+	// It is not exported to the JSON output.
+	ComponentID uuid.UUID `json:"-"`
 }
 
 func (pkg *Package) Empty() bool {

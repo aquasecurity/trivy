@@ -37,9 +37,10 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 	}
 
 	result := types.Result{
-		Target: fmt.Sprintf("%s (%s %s)", target.Name, target.OS.Family, target.OS.Name),
-		Class:  types.ClassOSPkg,
-		Type:   target.OS.Family,
+		Target:      fmt.Sprintf("%s (%s %s)", target.Name, target.OS.Family, target.OS.Name),
+		Class:       types.ClassOSPkg,
+		Type:        target.OS.Family,
+		ComponentID: target.OS.ComponentID,
 	}
 
 	sort.Sort(target.Packages)

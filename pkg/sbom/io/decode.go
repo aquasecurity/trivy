@@ -124,8 +124,9 @@ func (m *Decoder) decodeComponents(ctx context.Context, sbom *types.SBOM) error 
 			}
 			m.osID = id
 			sbom.Metadata.OS = &ftypes.OS{
-				Family: ftypes.OSType(c.Name),
-				Name:   c.Version,
+				Family:      ftypes.OSType(c.Name),
+				Name:        c.Version,
+				ComponentID: id,
 			}
 			continue
 		case core.TypeApplication:
@@ -169,7 +170,9 @@ func (m *Decoder) buildDependencyGraph() {
 }
 
 func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
-	var app ftypes.Application
+	app := ftypes.Application{
+		ComponentID: c.ID(),
+	}
 	for _, prop := range c.Properties {
 		if prop.Name == core.PropertyType {
 			app.Type = ftypes.LangType(prop.Value)
@@ -229,6 +232,7 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
 	pkg.Licenses = c.Licenses
+	pkg.ComponentID = c.ID()
 
 	for _, f := range c.Files {
 		if f.Path != "" && pkg.FilePath == "" {

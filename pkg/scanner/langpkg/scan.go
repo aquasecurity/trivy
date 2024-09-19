@@ -49,9 +49,10 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 
 		ctx = log.WithContextPrefix(ctx, string(app.Type))
 		result := types.Result{
-			Target: targetName(app.Type, app.FilePath),
-			Class:  types.ClassLangPkg,
-			Type:   app.Type,
+			Target:      targetName(app.Type, app.FilePath),
+			Class:       types.ClassLangPkg,
+			Type:        app.Type,
+			ComponentID: app.ComponentID,
 		}
 
 		sort.Sort(app.Packages)
