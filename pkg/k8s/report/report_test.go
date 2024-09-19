@@ -1,7 +1,6 @@
 package report
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -472,31 +471,6 @@ func TestReport_consolidate(t *testing.T) {
 				"default/cronjob/hello": cronjobHelloWithVulns,
 			},
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			consolidateReport := tt.report.consolidate()
-			for _, f := range consolidateReport.Findings {
-				key := f.fullname()
-
-				expected, found := tt.expectedFindings[key]
-				if !found {
-					t.Errorf("key not found: %s", key)
-				}
-
-				assert.Equal(t, expected, f)
-			}
-		})
-	}
-}
-
-func TestReport_consolidateMultiImagePod(t *testing.T) {
-	tests := []struct {
-		name             string
-		report           Report
-		expectedFindings map[string]Resource
-	}{
 		{
 			name: "report with multi image pod containing vulnerabilities",
 			report: Report{
@@ -522,9 +496,7 @@ func TestReport_consolidateMultiImagePod(t *testing.T) {
 					t.Errorf("key not found: %s", key)
 				}
 
-				assert.True(t, reflect.DeepEqual(expected.Metadata, f.Metadata))
-
-				assert.True(t, reflect.DeepEqual(expected.Results, f.Results))
+				assert.Equal(t, expected, f)
 			}
 		})
 	}
