@@ -3,7 +3,6 @@ package arm
 import (
 	"context"
 	"fmt"
-	"io"
 	"io/fs"
 	"sync"
 
@@ -30,23 +29,12 @@ type Scanner struct {
 	logger                  *log.Logger
 	frameworks              []framework.Framework
 	regoOnly                bool
-	loadEmbeddedPolicies    bool
-	loadEmbeddedLibraries   bool
-	policyDirs              []string
-	policyReaders           []io.Reader
 	regoScanner             *rego.Scanner
-	spec                    string
 	includeDeprecatedChecks bool
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
 	s.includeDeprecatedChecks = b
-}
-
-func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
-
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
 }
 
 func (s *Scanner) SetRegoOnly(regoOnly bool) {
@@ -68,38 +56,9 @@ func (s *Scanner) Name() string {
 	return "Azure ARM"
 }
 
-func (s *Scanner) SetPolicyDirs(dirs ...string) {
-	s.policyDirs = dirs
-}
-
-func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
-	s.policyReaders = readers
-}
-
-func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-func (s *Scanner) SetDataFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	s.loadEmbeddedPolicies = b
-}
-
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	s.loadEmbeddedLibraries = b
-}
-
 func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 	s.frameworks = frameworks
 }
-
-func (s *Scanner) SetTraceWriter(io.Writer)        {}
-func (s *Scanner) SetPerResultTracingEnabled(bool) {}
-func (s *Scanner) SetDataDirs(...string)           {}
-func (s *Scanner) SetPolicyNamespaces(...string)   {}
-func (s *Scanner) SetRegoErrorLimit(_ int)         {}
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 	s.mu.Lock()
@@ -108,7 +67,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 		return nil
 	}
 	regoScanner := rego.NewScanner(types.SourceCloud, s.scannerOptions...)
-	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
+	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return err
 	}
 	s.regoScanner = regoScanner

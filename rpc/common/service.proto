@@ -226,6 +226,7 @@ message DetectedLicense {
   string               name       = 5;
   float                confidence = 6;
   string               link       = 7;
+  string               text       = 8;
 }
 
 message LicenseFile {

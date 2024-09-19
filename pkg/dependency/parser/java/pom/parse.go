@@ -214,7 +214,6 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 				Licenses:     result.artifact.Licenses,
 				Relationship: art.Relationship,
 				Locations:    art.Locations,
-				Test:         art.Test,
 			}
 
 			// save only dependency names
@@ -235,7 +234,6 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			Licenses:     art.Licenses,
 			Relationship: art.Relationship,
 			Locations:    art.Locations,
-			Dev:          art.Test,
 		}
 		pkgs = append(pkgs, pkg)
 
@@ -337,8 +335,20 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
 	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
 
+	// We need to forward dependencyManagements from current and root pom to Parent,
+	// to use them for dependencies in parent.
+	// For better understanding see the following tests:
+	// - `dependency from parent uses version from child pom depManagement`
+	// - `dependency from parent uses version from root pom depManagement`
+	//
+	// depManagements from root pom has higher priority than depManagements from current pom.
+	depManagementForParent := lo.UniqBy(append(opts.depManagement, pom.content.DependencyManagement.Dependencies.Dependency...),
+		func(dep pomDependency) string {
+			return dep.Name()
+		})
+
 	// Parent
-	parent, err := p.parseParent(pom.filePath, pom.content.Parent)
+	parent, err := p.parseParent(pom.filePath, pom.content.Parent, depManagementForParent)
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("parent error: %w", err)
 	}
@@ -402,7 +412,7 @@ func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string
 		// Resolve dependencies
 		d = d.Resolve(props, depManagement, rootDepManagement)
 
-		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime" && d.Scope != "test") || d.Optional {
+		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime") || d.Optional {
 			continue
 		}
 
@@ -479,7 +489,7 @@ func excludeDep(exclusions map[string]struct{}, art artifact) bool {
 	return false
 }
 
-func (p *Parser) parseParent(currentPath string, parent pomParent) (analysisResult, error) {
+func (p *Parser) parseParent(currentPath string, parent pomParent, rootDepManagement []pomDependency) (analysisResult, error) {
 	// Pass nil properties so that variables in <parent> are not evaluated.
 	target := newArtifact(parent.GroupId, parent.ArtifactId, parent.Version, nil, nil)
 	// if version is property (e.g. ${revision}) - we still need to parse this pom
@@ -501,7 +511,9 @@ func (p *Parser) parseParent(currentPath string, parent pomParent) (analysisResu
 		logger.Debug("Parent POM not found", log.Err(err))
 	}
 
-	result, err := p.analyze(parentPOM, analysisOptions{})
+	result, err := p.analyze(parentPOM, analysisOptions{
+		depManagement: rootDepManagement,
+	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
 	}
@@ -714,8 +726,11 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(repo string, paths []string) 
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+	if err != nil {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return "", nil
+	} else if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
 	}
 	defer resp.Body.Close()
@@ -745,8 +760,11 @@ func (p *Parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()))
+	if err != nil {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Err(err))
+		return nil, nil
+	} else if resp.StatusCode != http.StatusOK {
+		p.logger.Debug("Failed to fetch", log.String("url", req.URL.String()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
 	}
 	defer resp.Body.Close()

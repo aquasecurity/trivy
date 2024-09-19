@@ -261,14 +261,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	var osPkgLicenses []types.DetectedLicense
 	for _, pkg := range target.Packages {
 		for _, license := range pkg.Licenses {
-			category, severity := scanner.Scan(license)
-			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
-				Severity:   severity,
-				Category:   category,
-				PkgName:    pkg.Name,
-				Name:       license,
-				Confidence: 1.0,
-			})
+			osPkgLicenses = append(osPkgLicenses, toDetectedLicense(scanner, license, pkg.Name, ""))
 		}
 	}
 	results = append(results, types.Result{
@@ -282,17 +275,11 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
-				category, severity := scanner.Scan(license)
-				langLicenses = append(langLicenses, types.DetectedLicense{
-					Severity: severity,
-					Category: category,
-					PkgName:  lib.Name,
-					Name:     license,
-					// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
-					// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
-					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
-					Confidence: 1.0,
-				})
+				// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
+				// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
+				filePath := lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath)
+
+				langLicenses = append(langLicenses, toDetectedLicense(scanner, license, lib.Name, filePath))
 			}
 		}
 
@@ -387,6 +374,29 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 			Code:        res.Code,
 			Occurrences: res.Occurrences,
 		},
+	}
+}
+
+func toDetectedLicense(scanner licensing.Scanner, license, pkgName, filePath string) types.DetectedLicense {
+	var category ftypes.LicenseCategory
+	var severity, licenseText string
+	if strings.HasPrefix(license, licensing.LicenseTextPrefix) { // License text
+		licenseText = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
+		category = ftypes.CategoryUnknown
+		severity = dbTypes.SeverityUnknown.String()
+		license = licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText)
+	} else { // License name
+		category, severity = scanner.Scan(license)
+	}
+
+	return types.DetectedLicense{
+		Severity:   severity,
+		Category:   category,
+		PkgName:    pkgName,
+		FilePath:   filePath,
+		Name:       license,
+		Text:       licenseText,
+		Confidence: 1.0,
 	}
 }
 

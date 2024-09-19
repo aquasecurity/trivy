@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_helm_scanner_with_archive(t *testing.T) {
@@ -40,7 +40,7 @@ func Test_helm_scanner_with_archive(t *testing.T) {
 	for _, test := range tests {
 		t.Logf("Running test: %s", test.testName)
 
-		helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+		helmScanner := helm.New(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true))
 
 		testTemp := t.TempDir()
 		testFileName := filepath.Join(testTemp, test.archiveName)
@@ -96,7 +96,7 @@ func Test_helm_scanner_with_missing_name_can_recover(t *testing.T) {
 	for _, test := range tests {
 		t.Logf("Running test: %s", test.testName)
 
-		helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+		helmScanner := helm.New(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true))
 
 		testTemp := t.TempDir()
 		testFileName := filepath.Join(testTemp, test.archiveName)
@@ -128,7 +128,7 @@ func Test_helm_scanner_with_dir(t *testing.T) {
 
 		t.Logf("Running test: %s", test.testName)
 
-		helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+		helmScanner := helm.New(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true))
 
 		testFs := os.DirFS(filepath.Join("testdata", test.chartName))
 		results, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
@@ -209,9 +209,9 @@ deny[res] {
 		t.Run(test.testName, func(t *testing.T) {
 			t.Logf("Running test: %s", test.testName)
 
-			helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true),
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithPolicyNamespaces("user"))
+			helmScanner := helm.New(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true),
+				rego.WithPolicyDirs("rules"),
+				rego.WithPolicyNamespaces("user"))
 
 			testTemp := t.TempDir()
 			testFileName := filepath.Join(testTemp, test.archiveName)
@@ -274,7 +274,7 @@ func copyArchive(src, dst string) error {
 }
 
 func Test_helm_chart_with_templated_name(t *testing.T) {
-	helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+	helmScanner := helm.New(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true))
 	testFs := os.DirFS(filepath.Join("testdata", "templated-name"))
 	_, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
 	require.NoError(t, err)
@@ -302,10 +302,10 @@ deny[res] {
 }
 `
 	helmScanner := helm.New(
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithPolicyNamespaces("user"),
-		options.ScannerWithPolicyReader(strings.NewReader(policy)),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyReader(strings.NewReader(policy)),
 	)
 
 	results, err := helmScanner.ScanFS(context.TODO(), os.DirFS("testdata/simmilar-templates"), ".")
@@ -348,10 +348,10 @@ deny[res] {
 `
 
 	scanner := helm.New(
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithPolicyNamespaces("user"),
-		options.ScannerWithPolicyReader(strings.NewReader(check)),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyReader(strings.NewReader(check)),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), os.DirFS("testdata/with-subchart"), ".")

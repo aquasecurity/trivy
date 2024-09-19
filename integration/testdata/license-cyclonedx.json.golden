@@ -47,8 +47,8 @@
           "Link": ""
         },
         {
-          "Severity": "UNKNOWN",
-          "Category": "unknown",
+          "Severity": "LOW",
+          "Category": "notice",
           "PkgName": "org.slf4j:slf4j-api",
           "FilePath": "",
           "Name": "MIT License",

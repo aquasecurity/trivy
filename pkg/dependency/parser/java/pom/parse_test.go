@@ -61,19 +61,6 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
-				{
-					ID:           "org.example:example-test:2.0.0",
-					Name:         "org.example:example-test",
-					Version:      "2.0.0",
-					Relationship: ftypes.RelationshipDirect,
-					Dev:          true,
-					Locations: ftypes.Locations{
-						{
-							StartLine: 49,
-							EndLine:   54,
-						},
-					},
-				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -81,7 +68,6 @@ func TestPom_Parse(t *testing.T) {
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
 						"org.example:example-runtime:1.0.0",
-						"org.example:example-test:2.0.0",
 					},
 				},
 			},
@@ -123,19 +109,6 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
-				{
-					ID:           "org.example:example-test:2.0.0",
-					Name:         "org.example:example-test",
-					Version:      "2.0.0",
-					Relationship: ftypes.RelationshipDirect,
-					Dev:          true,
-					Locations: ftypes.Locations{
-						{
-							StartLine: 49,
-							EndLine:   54,
-						},
-					},
-				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
@@ -143,7 +116,6 @@ func TestPom_Parse(t *testing.T) {
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
 						"org.example:example-runtime:1.0.0",
-						"org.example:example-test:2.0.0",
 					},
 				},
 			},
@@ -1524,6 +1496,102 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+				},
+			},
+		},
+		// [INFO] com.example:root-depManagement-in-parent:jar:1.0.0
+		// [INFO] \- org.example:example-dependency:jar:2.0.0:compile
+		// [INFO]    \- org.example:example-api:jar:1.0.1:compile
+		{
+			name:      "dependency from parent uses version from root pom depManagement",
+			inputFile: filepath.Join("testdata", "use-root-dep-management-in-parent", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:root-depManagement-in-parent:1.0.0",
+					Name:         "com.example:root-depManagement-in-parent",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-dependency:2.0.0",
+					Name:         "org.example:example-dependency",
+					Version:      "2.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 25,
+							EndLine:   29,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api:1.0.1",
+					Name:         "org.example:example-api",
+					Version:      "1.0.1",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:root-depManagement-in-parent:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api:1.0.1",
+					},
+				},
+			},
+		},
+		// [INFO] com.example:root-depManagement-in-parent:jar:1.0.0
+		// [INFO] \- org.example:example-dependency:jar:2.0.0:compile
+		// [INFO]    \- org.example:example-api:jar:2.0.1:compile
+		{
+			name:      "dependency from parent uses version from child pom depManagement",
+			inputFile: filepath.Join("testdata", "use-dep-management-from-child-in-parent", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:root-depManagement-in-parent:1.0.0",
+					Name:         "com.example:root-depManagement-in-parent",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-dependency:2.0.0",
+					Name:         "org.example:example-dependency",
+					Version:      "2.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 15,
+							EndLine:   19,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api:2.0.1",
+					Name:         "org.example:example-api",
+					Version:      "2.0.1",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:root-depManagement-in-parent:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api:2.0.1",
+					},
 				},
 			},
 		},

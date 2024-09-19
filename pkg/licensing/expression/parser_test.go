@@ -20,7 +20,7 @@ func TestParse(t *testing.T) {
 			name:  "single license",
 			input: "Public Domain",
 			want: SimpleExpr{
-				license: "Public Domain",
+				License: "Public Domain",
 			},
 			wantStr: "Public Domain",
 		},
@@ -28,7 +28,7 @@ func TestParse(t *testing.T) {
 			name:  "tag:value license",
 			input: "DocumentRef-spdx-tool-1.2:LicenseRef-MIT-Style-2",
 			want: SimpleExpr{
-				license: "DocumentRef-spdx-tool-1.2:LicenseRef-MIT-Style-2",
+				License: "DocumentRef-spdx-tool-1.2:LicenseRef-MIT-Style-2",
 			},
 			wantStr: "DocumentRef-spdx-tool-1.2:LicenseRef-MIT-Style-2",
 		},
@@ -36,8 +36,8 @@ func TestParse(t *testing.T) {
 			name:  "symbols",
 			input: "Public ._-+",
 			want: SimpleExpr{
-				license: "Public ._-",
-				hasPlus: true,
+				License: "Public ._-",
+				HasPlus: true,
 			},
 			wantStr: "Public ._-+",
 		},
@@ -47,7 +47,7 @@ func TestParse(t *testing.T) {
 			want: CompoundExpr{
 				left: CompoundExpr{
 					left: SimpleExpr{
-						license: "Public Domain",
+						License: "Public Domain",
 					},
 					conjunction: Token{
 						token:   AND,
@@ -55,15 +55,15 @@ func TestParse(t *testing.T) {
 					},
 					right: CompoundExpr{
 						left: SimpleExpr{
-							license: "GPLv2",
-							hasPlus: true,
+							License: "GPLv2",
+							HasPlus: true,
 						},
 						conjunction: Token{
 							token:   OR,
 							literal: "or",
 						},
 						right: SimpleExpr{
-							license: "AFL",
+							License: "AFL",
 						},
 					},
 				},
@@ -73,15 +73,15 @@ func TestParse(t *testing.T) {
 				},
 				right: CompoundExpr{
 					left: SimpleExpr{
-						license: "LGPLv2",
-						hasPlus: true,
+						License: "LGPLv2",
+						HasPlus: true,
 					},
 					conjunction: Token{
 						token:   WITH,
 						literal: "with",
 					},
 					right: SimpleExpr{
-						license: "distribution exceptions",
+						License: "distribution exceptions",
 					},
 				},
 			},
@@ -92,7 +92,7 @@ func TestParse(t *testing.T) {
 			input: "Public Domain AND ( GPLv2+ or AFL AND ( CC0 or LGPL1.0) )",
 			want: CompoundExpr{
 				left: SimpleExpr{
-					license: "Public Domain",
+					License: "Public Domain",
 				},
 				conjunction: Token{
 					token:   AND,
@@ -100,8 +100,8 @@ func TestParse(t *testing.T) {
 				},
 				right: CompoundExpr{
 					left: SimpleExpr{
-						license: "GPLv2",
-						hasPlus: true,
+						License: "GPLv2",
+						HasPlus: true,
 					},
 					conjunction: Token{
 						token:   OR,
@@ -109,7 +109,7 @@ func TestParse(t *testing.T) {
 					},
 					right: CompoundExpr{
 						left: SimpleExpr{
-							license: "AFL",
+							License: "AFL",
 						},
 						conjunction: Token{
 							token:   AND,
@@ -117,14 +117,14 @@ func TestParse(t *testing.T) {
 						},
 						right: CompoundExpr{
 							left: SimpleExpr{
-								license: "CC0",
+								License: "CC0",
 							},
 							conjunction: Token{
 								token:   OR,
 								literal: "or",
 							},
 							right: SimpleExpr{
-								license: "LGPL1.0",
+								License: "LGPL1.0",
 							},
 						},
 					},
