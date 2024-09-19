@@ -3,13 +3,16 @@ package redhatbase
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -72,6 +75,44 @@ func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 				Family: types.Fedora,
 				Name:   result[2],
 			}, nil
+		case "red hat enterprise linux coreos":
+			// https://access.redhat.com/articles/6907891
+			rhelVersion := "8.2"
+
+			var major, minor, rel int
+
+			split := strings.SplitN(result[2], ".", 4)
+			major, _ = strconv.Atoi(split[0])
+			if len(split) > 1 {
+				minor, _ = strconv.Atoi(split[1])
+			}
+			if len(split) > 2 {
+				rel, _ = strconv.Atoi(split[2])
+			}
+
+			coreosVersion, err := semver.Parse(fmt.Sprintf("%d.%d.%d", major, minor, rel))
+			if err == nil {
+				if coreos4_16, _ := semver.Parse("4.16.0"); coreosVersion.GreaterThanOrEqual(coreos4_16) {
+					rhelVersion = "9.4"
+				} else if coreos4_13, _ := semver.Parse("4.13.0"); coreosVersion.GreaterThanOrEqual(coreos4_13) {
+					rhelVersion = "9.2"
+				} else if coreos4_11, _ := semver.Parse("4.11.0"); coreosVersion.GreaterThanOrEqual(coreos4_11) {
+					rhelVersion = "8.6"
+				} else if coreos4_7_24, _ := semver.Parse("4.7.24"); coreosVersion.GreaterThanOrEqual(coreos4_7_24) {
+					rhelVersion = "8.4"
+				} else if coreos4_7_0, _ := semver.Parse("4.7.0"); coreosVersion.GreaterThanOrEqual(coreos4_7_0) {
+					rhelVersion = "8.3"
+				} else {
+					rhelVersion = "8.2"
+				}
+
+				return types.OS{
+					Family: types.RedHat,
+					Name:   rhelVersion,
+				}, nil
+			}
+
+			fallthrough
 		default:
 			return types.OS{
 				Family: types.RedHat,
