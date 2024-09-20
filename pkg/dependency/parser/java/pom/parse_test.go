@@ -1761,7 +1761,7 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:inherit-scopes-for-child-deps-and-parents:0.0.1",
+					ID: "com.example:inherit-scopes-from-child-deps-and-their-parents:0.0.1",
 					DependsOn: []string{
 						"org.example:example-nested-scope-compile:1.0.0",
 						"org.example:example-nested-scope-empty:1.0.0",
@@ -1840,7 +1840,7 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:inherit-scopes-for-child-deps-and-parents:0.0.1",
+					ID: "com.example:inherit-scopes-in-children-from-root:0.0.1",
 					DependsOn: []string{
 						"org.example:example-nested-scope-compile:1.0.0",
 						"org.example:example-nested-scope-empty:1.0.0",
@@ -1908,7 +1908,7 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:inherit-scopes-for-child-deps-and-parents:0.0.1",
+					ID: "com.example:inherit-scopes-in-parents-from-root:0.1.0",
 					DependsOn: []string{
 						"org.example:example-nested-scope-compile:1.0.0",
 						"org.example:example-nested-scope-empty:1.0.0",
