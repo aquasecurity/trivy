@@ -1726,16 +1726,16 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
-		// [INFO] com.example:inherit-scopes-in-child-deps:jar:1.0.0
+		// [INFO] com.example:inherit-scopes-from-child-deps-and-their-parents:jar:0.0.1
 		// [INFO] +- org.example:example-nested-scope-runtime:jar:1.0.0:runtime
-		// [INFO] |  \- org.example:example-scope-runtime:jar:2.0.0:compile
-		// [INFO] |     \- org.example:example-api-runtime:jar:3.0.0:test
+		// [INFO] |  \- org.example:example-scope-runtime:jar:2.0.0:runtime
+		// [INFO] |     \- org.example:example-api-runtime:jar:3.0.0:runtime
 		// [INFO] +- org.example:example-nested-scope-compile:jar:1.0.0:compile
-		// [INFO] |  \- org.example:example-scope-compile:jar:2.0.0:runtime
-		// [INFO] |     \- org.example:example-api-compile:jar:3.0.0:test
+		// [INFO] |  \- org.example:example-scope-compile:jar:2.0.0:compile
+		// [INFO] |     \- org.example:example-api-compile:jar:3.0.0:compile
 		// [INFO] \- org.example:example-nested-scope-empty:jar:1.0.0:compile
-		// [INFO]    \- org.example:example-scope-empty:jar:2.0.0:runtime
-		// [INFO]       \- org.example:example-api-empty:jar:3.0.0:test
+		// [INFO]    \- org.example:example-scope-empty:jar:2.0.0:compile
+		// [INFO]       \- org.example:example-api-empty:jar:3.0.0:compile
 		//
 		// `example-nested-*" dependencies and their parents contain `dependencyManagement` with changed scopes
 		{
@@ -1806,7 +1806,7 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
-		// [INFO] com.example:inherit-scopes-in-children-from-root:jar:0.0.1
+		// [INFO] com.example:inherit-scopes-in-parents-from-root:jar:0.1.0
 		// [INFO] +- org.example:example-nested-scope-runtime:jar:1.0.0:runtime
 		// [INFO] |  \- org.example:example-scope-runtime:jar:2.0.0:compile
 		// [INFO] |     \- org.example:example-api-runtime:jar:3.0.0:runtime
