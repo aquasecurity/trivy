@@ -1707,13 +1707,13 @@ func TestPom_Parse(t *testing.T) {
 					ID:           "org.example:example-api:1.0.1",
 					Name:         "org.example:example-api",
 					Version:      "1.0.1",
-					Relationship: ftypes.RelationshipDirect, // TODO change this!!!
+					Relationship: ftypes.RelationshipDirect,
 				},
 				{
 					ID:           "org.example:example-api2:1.0.2",
 					Name:         "org.example:example-api2",
 					Version:      "1.0.2",
-					Relationship: ftypes.RelationshipDirect, // TODO change this!!!
+					Relationship: ftypes.RelationshipDirect,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
