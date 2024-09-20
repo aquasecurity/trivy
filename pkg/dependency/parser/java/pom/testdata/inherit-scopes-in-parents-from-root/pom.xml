@@ -13,4 +13,27 @@
         <relativePath>./parent</relativePath>
     </parent>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-nested-scope-runtime</artifactId>
+                <version>1.0.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-nested-scope-compile</artifactId>
+                <version>1.0.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-nested-scope-empty</artifactId>
+                <version>1.0.0</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>
