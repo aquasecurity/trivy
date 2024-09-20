@@ -1873,7 +1873,8 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
-		// [INFO] com.example:inherit-scopes-in-parents-of-children-from-root:jar:0.1.0
+		// [INFO] --- dependency:3.7.0:tree (default-cli) @ inherit-scopes-in-parents-from-root ---
+		// [INFO] com.example:inherit-scopes-in-parents-from-root:jar:0.1.0
 		// [INFO] +- org.example:example-nested-scope-runtime:jar:1.0.0:runtime
 		// [INFO] |  \- org.example:example-scope-runtime:jar:2.0.0:compile
 		// [INFO] |     \- org.example:example-api-runtime:jar:3.0.0:runtime
@@ -1887,13 +1888,13 @@ func TestPom_Parse(t *testing.T) {
 		// `example-nested-*" dependencies and their parents contain `dependencyManagement` with changed scopes
 		// scopes from `dependencyManagement` of root pom are used in parent dependencies
 		{
-			name:      "inherit scopes in children from root pom",
-			inputFile: filepath.Join("testdata", "inherit-scopes-in-parents-of-children-from-root", "pom.xml"),
+			name:      "inherit scopes in parent from root pom",
+			inputFile: filepath.Join("testdata", "inherit-scopes-in-parents-from-root", "pom.xml"),
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:inherit-scopes-in-parents-of-children-from-root:0.1.0",
-					Name:         "com.example:inherit-scopes-in-parents-of-children-from-root",
+					ID:           "com.example:inherit-scopes-in-parents-from-root:0.1.0",
+					Name:         "com.example:inherit-scopes-in-parents-from-root",
 					Version:      "0.1.0",
 					Relationship: ftypes.RelationshipRoot,
 				},

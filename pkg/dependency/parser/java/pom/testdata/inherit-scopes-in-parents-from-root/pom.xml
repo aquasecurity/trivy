@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>inherit-scopes-in-parents-of-children-from-root</artifactId>
+    <artifactId>inherit-scopes-in-parents-from-root</artifactId>
     <version>0.1.0</version>
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>inherit-scopes-in-parents-of-children-from-root-parent</artifactId>
+        <artifactId>inherit-scopes-in-parents-from-root-parent</artifactId>
         <version>0.0.1</version>
         <relativePath>./parent</relativePath>
     </parent>
