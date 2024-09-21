@@ -9,7 +9,6 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const defaultSizeThreshold = int64(100) << 20 // 200MB
@@ -44,7 +43,6 @@ func SkipPath(path string, skipPaths []string) bool {
 		if err != nil {
 			return false // return early if bad pattern
 		} else if match {
-			log.Debug("Skipping path", log.String("path", path))
 			return true
 		}
 	}

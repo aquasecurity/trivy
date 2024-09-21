@@ -76,6 +76,8 @@ type ScannerOption struct {
 	ConfigFileSchemas []*ConfigFileSchema
 
 	DisabledCheckIDs []string
+	SkipFiles        []string
+	SkipDirs         []string
 }
 
 func (o *ScannerOption) Sort() {
@@ -297,6 +299,8 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]opt
 	opts = append(opts,
 		terraform.ScannerWithAllDirectories(true),
 		terraform.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded),
+		terraform.ScannerWithSkipFiles(scannerOption.SkipFiles),
+		terraform.ScannerWithSkipDirs(scannerOption.SkipDirs),
 	)
 
 	return opts, nil

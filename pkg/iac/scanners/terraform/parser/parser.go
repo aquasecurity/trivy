@@ -11,8 +11,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclparse"
+	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
@@ -47,6 +49,7 @@ type Parser struct {
 	skipCachedModules bool
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
+	skipPaths         []string
 }
 
 // New creates a new Parser
@@ -62,6 +65,7 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 		configsFS:      moduleFS,
 		logger:         log.WithPrefix("terraform parser").With("module", "root"),
 		tfvars:         make(map[string]cty.Value),
+		skipPaths:      []string{},
 	}
 
 	for _, option := range opts {
@@ -78,6 +82,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.moduleName = moduleName
 	mp.logger = log.WithPrefix("terraform parser").With("module", moduleName)
 	mp.projectRoot = p.projectRoot
+	mp.skipPaths = p.skipPaths
 	p.children = append(p.children, mp)
 	for _, option := range p.options {
 		option(mp)
@@ -153,6 +158,10 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	for _, info := range fileInfos {
 		realPath := path.Join(dir, info.Name())
 		if info.IsDir() {
+			continue
+		}
+		if SkipPath(realPath, CleanSkipPaths(p.skipPaths)) {
+			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", p.skipPaths))
 			continue
 		}
 		paths = append(paths, realPath)
@@ -357,4 +366,26 @@ func (s *paramParser) Parse(str string) bool {
 
 func (s *paramParser) Param() any {
 	return s.params
+}
+
+func CleanSkipPaths(skipPaths []string) []string {
+	return lo.Map(skipPaths, func(skipPath string, index int) string {
+		skipPath = filepath.ToSlash(filepath.Clean(skipPath))
+		return strings.TrimLeft(skipPath, "/")
+	})
+}
+
+func SkipPath(path string, skipPaths []string) bool {
+	path = strings.TrimLeft(path, "/")
+
+	// skip files
+	for _, pattern := range skipPaths {
+		match, err := doublestar.Match(pattern, path)
+		if err != nil {
+			return false // return early if bad pattern
+		} else if match {
+			return true
+		}
+	}
+	return false
 }
