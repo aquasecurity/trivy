@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	"net/url"
 	"os"
 
@@ -189,8 +190,8 @@ func newURL(rawurl string) (*url.URL, error) {
 
 // Helper function to check for a GitHub/GitLab token from env vars in order to
 // make authenticated requests to access private repos
-func gitAuth() *http.BasicAuth {
-	var auth *http.BasicAuth
+func gitAuth() transport.AuthMethod {
+	var auth transport.AuthMethod
 
 	// The username can be anything for HTTPS Git operations
 	gitUsername := "fanal-aquasecurity-scan"
@@ -205,7 +206,7 @@ func gitAuth() *http.BasicAuth {
 		return auth
 	}
 
-	// Otherwise we check if a GitLab token was provided
+	// Then we check if a GitLab token was provided
 	gitlabToken := os.Getenv("GITLAB_TOKEN")
 	if gitlabToken != "" {
 		auth = &http.BasicAuth{
@@ -215,8 +216,16 @@ func gitAuth() *http.BasicAuth {
 		return auth
 	}
 
+	// Otherwise we check if a Git bearer auth token was provided
+	bearerToken := os.Getenv("GIT_BEARER_TOKEN")
+	if bearerToken != "" {
+		auth = &http.TokenAuth{
+			Token: bearerToken,
+		}
+		return auth
+	}
+
 	// If no token was provided, we simply return a nil,
 	// which will make the request to be unauthenticated
 	return nil
-
 }
