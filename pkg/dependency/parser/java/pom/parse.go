@@ -292,6 +292,14 @@ func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 		return *result, nil
 	}
 
+	// We can't resolve a dependency without a version.
+	// So let's just keep this dependency.
+	if art.Version.String() == "" {
+		return analysisResult{
+			artifact: art,
+		}, nil
+	}
+
 	p.logger.Debug("Resolving...", log.String("group_id", art.GroupID),
 		log.String("artifact_id", art.ArtifactID), log.String("version", art.Version.String()))
 	pomContent, err := p.tryRepository(art.GroupID, art.ArtifactID, art.Version.String())
