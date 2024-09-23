@@ -54,6 +54,10 @@ func (a artifact) IsEmpty() bool {
 	}
 	if a.Version.String() == "" {
 		emptyVersionWarn()
+		log.WithPrefix("pom").Debug("Dependency version cannot be determined.",
+			log.String("GroupID", a.GroupID),
+			log.String("ArtifactID", a.ArtifactID),
+		)
 	}
 	return false
 }
