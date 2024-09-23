@@ -478,3 +478,21 @@ func TestFS_RemoveAll(t *testing.T) {
 		require.ErrorIs(t, err, fs.ErrNotExist)
 	})
 }
+
+func TestFS_WithUnderlyingRoot(t *testing.T) {
+	root := "testdata/subdir"
+	fsys := mapfs.New(mapfs.WithUnderlyingRoot(root))
+	fsys.WriteFile("foo.txt", root+"/foo.txt")
+
+	fi, err := fsys.Stat("..")
+	require.NoError(t, err)
+	assert.True(t, fi.IsDir())
+
+	fi, err = fsys.Stat("../hello.txt")
+	require.NoError(t, err)
+	assert.False(t, fi.IsDir())
+
+	fi, err = fsys.Stat("foo.txt")
+	require.NoError(t, err)
+	assert.False(t, fi.IsDir())
+}
