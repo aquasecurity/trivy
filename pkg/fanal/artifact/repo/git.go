@@ -2,7 +2,7 @@ package repo
 
 import (
 	"context"
-	"github.com/go-git/go-git/v5/plumbing/transport"
+	"log"
 	"net/url"
 	"os"
 
@@ -190,39 +190,32 @@ func newURL(rawurl string) (*url.URL, error) {
 
 // Helper function to check for a GitHub/GitLab token from env vars in order to
 // make authenticated requests to access private repos
-func gitAuth() transport.AuthMethod {
-	var auth transport.AuthMethod
+func gitAuth() *http.BasicAuth {
+	var auth *http.BasicAuth
 
 	// The username can be anything for HTTPS Git operations
 	gitUsername := "fanal-aquasecurity-scan"
 
-	// We first check if a GitHub token was provided
-	githubToken := os.Getenv("GITHUB_TOKEN")
-	if githubToken != "" {
-		auth = &http.BasicAuth{
-			Username: gitUsername,
-			Password: githubToken,
-		}
-		return auth
+	tokenSources := []struct {
+		envVar string
+		name   string
+	}{
+		{"GITHUB_TOKEN", "GitHub"},
+		{"GITLAB_TOKEN", "GitLab"},
+		{"BITBUCKET_TOKEN", "BitBucket"},
 	}
 
-	// Then we check if a GitLab token was provided
-	gitlabToken := os.Getenv("GITLAB_TOKEN")
-	if gitlabToken != "" {
-		auth = &http.BasicAuth{
-			Username: gitUsername,
-			Password: gitlabToken,
+	// Iterate token sources
+	for _, source := range tokenSources {
+		token := os.Getenv(source.envVar)
+		if token != "" {
+			auth = &http.BasicAuth{
+				Username: gitUsername,
+				Password: token,
+			}
+			log.Printf("Found token for authentication %s", source.name)
+			return auth
 		}
-		return auth
-	}
-
-	// Otherwise we check if a Git bearer auth token was provided
-	bearerToken := os.Getenv("GIT_BEARER_TOKEN")
-	if bearerToken != "" {
-		auth = &http.TokenAuth{
-			Token: bearerToken,
-		}
-		return auth
 	}
 
 	// If no token was provided, we simply return a nil,
