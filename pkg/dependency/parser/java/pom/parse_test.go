@@ -1691,7 +1691,8 @@ func TestPom_Parse(t *testing.T) {
 		},
 		// [INFO] com.example:child-depManagement-in-parent:jar:1.0.0
 		// [INFO] +- org.example:example-api:jar:1.0.1:compile
-		// [INFO] \- org.example:example-api2:jar:1.0.2:runtime
+		// [INFO] +- org.example:example-api2:jar:1.0.2:runtime
+		// [INFO] \- org.example:example-api3:jar:4.0.3:compile
 		{
 			name:      "dependency from parent uses version from child(scanned) pom depManagement",
 			inputFile: filepath.Join("testdata", "use-child-dep-management-in-parent", "pom.xml"),
@@ -1715,12 +1716,19 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.2",
 					Relationship: ftypes.RelationshipDirect,
 				},
+				{
+					ID:           "org.example:example-api3:4.0.3",
+					Name:         "org.example:example-api3",
+					Version:      "4.0.3",
+					Relationship: ftypes.RelationshipDirect,
+				},
 			},
 			wantDeps: []ftypes.Dependency{
 				{
 					ID: "com.example:child-depManagement-in-parent:1.0.0",
 					DependsOn: []string{
 						"org.example:example-api2:1.0.2",
+						"org.example:example-api3:4.0.3",
 						"org.example:example-api:1.0.1",
 					},
 				},
@@ -1898,11 +1906,9 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipRoot,
 				},
 				exampleNestedScopeCompile(0, 0),
-				exampleNestedScopeEmpty(0, 0),
 				exampleNestedScopeRuntime(0, 0),
 				exampleApiRuntime,
 				exampleScopeCompile,
-				exampleScopeEmpty,
 				exampleScopeRuntime,
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1910,7 +1916,6 @@ func TestPom_Parse(t *testing.T) {
 					ID: "com.example:inherit-scopes-in-parents-from-root:0.1.0",
 					DependsOn: []string{
 						"org.example:example-nested-scope-compile:1.0.0",
-						"org.example:example-nested-scope-empty:1.0.0",
 						"org.example:example-nested-scope-runtime:1.0.0",
 					},
 				},
@@ -1918,12 +1923,6 @@ func TestPom_Parse(t *testing.T) {
 					ID: "org.example:example-nested-scope-compile:1.0.0",
 					DependsOn: []string{
 						"org.example:example-scope-compile:2.0.0",
-					},
-				},
-				{
-					ID: "org.example:example-nested-scope-empty:1.0.0",
-					DependsOn: []string{
-						"org.example:example-scope-empty:2.0.0",
 					},
 				},
 				{

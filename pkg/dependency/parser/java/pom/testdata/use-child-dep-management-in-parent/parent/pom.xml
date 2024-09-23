@@ -24,5 +24,11 @@
             <groupId>org.example</groupId>
             <artifactId>example-api2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api3</artifactId>
+            <version>4.0.3</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

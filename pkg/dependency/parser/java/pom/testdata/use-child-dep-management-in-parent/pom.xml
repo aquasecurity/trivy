@@ -17,6 +17,7 @@
     <properties>
         <api.version>1.0.1</api.version>
         <api2.version>1.0.2</api2.version>
+        <api3.version>1.0.3</api3.version>
     </properties>
 
     <dependencyManagement>
@@ -31,6 +32,12 @@
                 <groupId>org.example</groupId>
                 <artifactId>example-api2</artifactId>
                 <version>${api2.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-api3</artifactId>
+                <version>${api3.version}</version>
                 <scope>runtime</scope>
             </dependency>
         </dependencies>
