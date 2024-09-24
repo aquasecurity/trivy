@@ -87,11 +87,17 @@ $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
     API rate limit exceeded for xxx.xxx.xxx.xxx.
     ```
 
-Specify GITHUB_TOKEN for authentication
-https://developer.github.com/v3/#rate-limiting
+Specify GITHUB_TOKEN for [authentication](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28)
 
 ```
-$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
+$ GITHUB_TOKEN=XXXXXXXXXX trivy image [YOUR_IMAGE]
+```
+
+or [log in ghcr.io](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
+
+```
+$ docker login ghcr.io
+$ trivy image [YOUR_IMAGE]
 ```
 
 ### Unable to open JAR files
@@ -217,6 +223,11 @@ Please remove the token and try downloading the DB again.
 docker logout ghcr.io
 ```
 
+or
+
+```shell
+unset GITHUB_TOKEN
+```
 
 ## Homebrew
 ### Scope error
