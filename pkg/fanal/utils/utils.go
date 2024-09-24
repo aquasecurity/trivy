@@ -8,8 +8,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	"github.com/bmatcuk/doublestar/v4"
+	"github.com/samber/lo"
 )
 
 var (
@@ -92,4 +96,27 @@ func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func CleanSkipPaths(skipPaths []string) []string {
+	return lo.Map(skipPaths, func(skipPath string, index int) string {
+		skipPath = filepath.ToSlash(filepath.Clean(skipPath))
+		return strings.TrimLeft(skipPath, "/")
+	})
+}
+
+func SkipPath(path string, skipPaths []string) bool {
+	path = strings.TrimLeft(path, "/")
+
+	// skip files
+	for _, pattern := range skipPaths {
+		match, err := doublestar.Match(pattern, path)
+		if err != nil {
+			return false // return early if bad pattern
+		} else if match {
+			log.Debug("Skipping path", log.String("path", path))
+			return true
+		}
+	}
+	return false
 }

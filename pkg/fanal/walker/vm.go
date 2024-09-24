@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/masahiro331/go-disk"
 	diskFs "github.com/masahiro331/go-disk/fs"
 	"github.com/masahiro331/go-disk/gpt"
@@ -131,13 +132,13 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 	pathName := strings.TrimPrefix(filepath.Clean(path), "/")
 	switch {
 	case fi.IsDir():
-		if SkipPath(pathName, w.skipDirs) {
+		if utils.SkipPath(pathName, w.skipDirs) {
 			return filepath.SkipDir
 		}
 		return nil
 	case !fi.Mode().IsRegular():
 		return nil
-	case SkipPath(pathName, w.skipFiles):
+	case utils.SkipPath(pathName, w.skipFiles):
 		return nil
 	case fi.Mode()&0x1000 == 0x1000 ||
 		fi.Mode()&0x2000 == 0x2000 ||

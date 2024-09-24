@@ -64,7 +64,7 @@ func TestSkipFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			for file, want := range tt.wants {
 				file = filepath.ToSlash(filepath.Clean(file))
-				got := walker.SkipPath(file, walker.CleanSkipPaths(tt.skipFiles))
+				got := utils.SkipPath(file, walker.CleanSkipPaths(tt.skipFiles))
 				assert.Equal(t, want, got, fmt.Sprintf("skipFiles: %s, file: %s", tt.skipFiles, file))
 			}
 		})
@@ -138,7 +138,7 @@ func TestSkipDir(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			for dir, want := range tt.wants {
 				dir = filepath.ToSlash(filepath.Clean(dir))
-				got := walker.SkipPath(dir, walker.CleanSkipPaths(tt.skipDirs))
+				got := utils.SkipPath(dir, walker.CleanSkipPaths(tt.skipDirs))
 				assert.Equal(t, want, got, fmt.Sprintf("defaultSkipDirs: %s, dir: %s", tt.skipDirs, dir))
 			}
 		})
