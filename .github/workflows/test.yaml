@@ -84,6 +84,8 @@ jobs:
 
       - name: Run integration tests
         run: mage test:integration
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # for rate limiting
 
   k8s-integration:
     name: K8s Integration Test
@@ -104,6 +106,8 @@ jobs:
 
       - name: Run k8s integration tests
         run: mage test:k8s
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # for rate limiting
 
   module-test:
     name: Module Integration Test
@@ -126,6 +130,8 @@ jobs:
         shell: bash
         run: |
           mage test:module
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # for rate limiting
 
   vm-test:
     name: VM Integration Test
@@ -145,6 +151,8 @@ jobs:
       - name: Run vm integration tests
         run: |
           mage test:vm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # for rate limiting
 
   build-test:
     name: Build Test
