@@ -271,9 +271,6 @@ func (e *evaluator) expandDynamicBlocks(blocks ...*terraform.Block) terraform.Bl
 }
 
 func (e *evaluator) expandDynamicBlock(b *terraform.Block) {
-	for _, sub := range b.AllBlocks() {
-		e.expandDynamicBlock(sub)
-	}
 	for _, sub := range b.AllBlocks().OfType("dynamic") {
 		if sub.IsExpanded() {
 			continue
