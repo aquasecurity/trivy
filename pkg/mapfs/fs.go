@@ -247,5 +247,5 @@ func cleanPath(path string) string {
 }
 
 func (m *FS) isPathAboveRoot(name string) bool {
-	return strings.HasPrefix(name, "..") && m.underlyingRoot != ""
+	return (name == ".." || strings.HasPrefix(name, "../")) && m.underlyingRoot != ""
 }
