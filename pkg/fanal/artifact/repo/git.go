@@ -188,13 +188,16 @@ func newURL(rawurl string) (*url.URL, error) {
 	return u, nil
 }
 
-// Helper function to check for a GitHub/GitLab token from env vars in order to
+// Helper function to check for a GitHub/GitLab/BitBucket token from env vars in order to
 // make authenticated requests to access private repos
 func gitAuth() *http.BasicAuth {
 	var auth *http.BasicAuth
 
 	// The username can be anything for HTTPS Git operations
 	gitUsername := "fanal-aquasecurity-scan"
+	if username := os.Getenv("GIT_USERNAME"); username != "" {
+		gitUsername = username
+	}
 
 	tokenSources := []struct {
 		envVar string

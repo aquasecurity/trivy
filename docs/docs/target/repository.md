@@ -137,9 +137,11 @@ $ trivy repo --tag <tag-name> <repo-name>
 ```
 
 ### Scanning Private Repositories
-In order to scan private repositories, the environment variable `GITHUB_TOKEN`, `GITLAB_TOKEN` or `BITBUCKET_TOKEN` must be set, respectively, with a valid token that has access to the private repository being scanned.
+In order to scan private repositories, the environment variable `GITHUB_TOKEN`, `GITLAB_TOKEN`, `BITBUCKET_TOKEN` must be set, respectively, with a valid token that has access to the private repository being scanned.
 
 The `GITHUB_TOKEN` environment variable will take precedence over `GITLAB_TOKEN` and `BITBUCKET_TOKEN`, so if a private GitLab repository will be scanned, then `GITHUB_TOKEN` must be unset.
+
+If you need to specify the username, set `GIT_USERNAME` value to authenticate with username.
 
 You can find how to generate your GitHub Token in the following [GitHub documentation.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
@@ -154,6 +156,7 @@ $ export GITLAB_TOKEN="your_private_gitlab_token"
 $ trivy repo <your private GitLab repo URL>
 
 # or
+$ export GIT_USERNAME="bitbucket_token_username"
 $ export BITBUCKET_TOKEN="your_private_bitbucket_token"
 $ trivy repo <your private Git repo URL>
 ```
