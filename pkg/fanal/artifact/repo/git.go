@@ -128,7 +128,7 @@ func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
 	cloneOptions := git.CloneOptions{
 		URL:             u.String(),
 		Auth:            gitAuth(),
-		Progress:        os.Stdout,
+		Progress:        os.Stderr,
 		InsecureSkipTLS: artifactOpt.Insecure,
 	}
 
