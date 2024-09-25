@@ -77,7 +77,6 @@ func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 			}, nil
 		case "red hat enterprise linux coreos":
 			// https://access.redhat.com/articles/6907891
-			rhelVersion := "8.2"
 
 			var major, minor, rel int
 
@@ -92,6 +91,7 @@ func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 
 			coreosVersion, err := semver.Parse(fmt.Sprintf("%d.%d.%d", major, minor, rel))
 			if err == nil {
+				var rhelVersion string
 				if coreos4_16, _ := semver.Parse("4.16.0"); coreosVersion.GreaterThanOrEqual(coreos4_16) {
 					rhelVersion = "9.4"
 				} else if coreos4_13, _ := semver.Parse("4.13.0"); coreosVersion.GreaterThanOrEqual(coreos4_13) {
