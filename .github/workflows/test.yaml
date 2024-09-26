@@ -8,6 +8,8 @@ on:
       - 'LICENSE'
       - '.release-please-manifest.json' ## don't run tests for release-please PRs
   merge_group:
+  workflow_dispatch:
+
 env:
   GO_VERSION: '1.22'
 jobs:
@@ -82,6 +84,22 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache@v4
+        id: restore-test-images
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
+
       - name: Run integration tests
         run: mage test:integration
 
@@ -122,6 +140,22 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache@v4
+        id: restore-test-images
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
+
       - name: Run module integration tests
         shell: bash
         run: |
@@ -142,6 +176,23 @@ jobs:
         uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-vm-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test VM images from cache
+        uses: actions/cache@v4
+        id: restore-test-vm-images
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-vm-images-
+
       - name: Run vm integration tests
         run: |
           mage test:vm
