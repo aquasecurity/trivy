@@ -8,6 +8,8 @@ on:
       - 'LICENSE'
       - '.release-please-manifest.json' ## don't run tests for release-please PRs
   merge_group:
+  workflow_dispatch:
+
 env:
   GO_VERSION: '1.22'
 jobs:
