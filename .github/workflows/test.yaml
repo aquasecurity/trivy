@@ -98,10 +98,6 @@ jobs:
           restore-keys:
             cache-test-images-
 
-      - name: Download test images
-        if: steps.restore-test-images.outputs.cache-hit != 'true'
-        run: mage test:fixtureContainerImages
-
       - name: Run integration tests
         run: mage test:integration
 
@@ -158,10 +154,6 @@ jobs:
           restore-keys:
             cache-test-images-
 
-      - name: Download test images
-        if: steps.restore-test-images.outputs.cache-hit != 'true'
-        run: mage test:fixtureContainerImages
-
       - name: Run module integration tests
         shell: bash
         run: |
@@ -198,10 +190,6 @@ jobs:
           key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
           restore-keys:
             cache-test-vm-images-
-
-      - name: Download test VM images
-        if: steps.restore-test-vm-images.outputs.cache-hit != 'true'
-        run: mage test:fixtureVMImages
 
       - name: Run vm integration tests
         run: |
