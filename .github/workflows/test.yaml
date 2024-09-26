@@ -87,7 +87,7 @@ jobs:
         id: restore-test-images
         with:
           path: integration/testdata/fixtures/images
-          key: "2024-09-10" # trivy-test-images last update date
+          key: cache-test-images-2024-09-10 # trivy-test-images last update date
 
       - name: Download test images if cache is missing
         if: steps.restore-test-images.outputs.cache-hit != 'true'
@@ -98,7 +98,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: integration/testdata/fixtures/images
-          key: "2024-09-10" # trivy-test-images last update date
+          key: cache-test-images-2024-09-10 # trivy-test-images last update date
 
       - name: Run integration tests
         run: mage test:integration
@@ -160,6 +160,25 @@ jobs:
         uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Restore test VM images from cache
+        uses: actions/cache@v4
+        id: restore-test-vm-images
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-2023-06-18 # trivy-test-vm-images last update date
+
+      - name: Download test images if cache is missing
+        if: steps.restore-test-vm-images.outputs.cache-hit != 'true'
+        run: mage test:fixtureContainerImages
+
+      - name: Save test images into cache if cache is missing
+        if: steps.restore-test-vm-images.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-2023-06-18 # trivy-test-vm-images last update date
+
       - name: Run vm integration tests
         run: |
           mage test:vm
