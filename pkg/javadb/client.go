@@ -53,7 +53,7 @@ func (u *Updater) Update() error {
 		}
 	}
 
-	if (meta.Version != SchemaVersion || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
+	if (meta.Version != SchemaVersion || !u.isNewDB(meta)) && !u.skip {
 		// Download DB
 		log.Info("Java DB Repository", log.Any("repository", u.repo))
 		log.Info("Downloading the Java DB...")
@@ -83,6 +83,20 @@ func (u *Updater) Update() error {
 	}
 
 	return nil
+}
+
+func (u *Updater) isNewDB(meta db.Metadata) bool {
+	now := time.Now().UTC()
+	if now.Before(meta.NextUpdate) {
+		log.Debug("Java DB update was skipped because the local Java DB is the latest")
+		return true
+	}
+
+	if now.Before(meta.DownloadedAt.Add(time.Hour * 24)) { // 1 day
+		log.Debug("Java DB update was skipped because the local Java DB was downloaded during the last day")
+		return true
+	}
+	return false
 }
 
 func Init(cacheDir string, javaDBRepository name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
