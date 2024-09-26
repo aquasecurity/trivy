@@ -8,7 +8,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/masahiro331/go-disk"
 	diskFs "github.com/masahiro331/go-disk/fs"
 	"github.com/masahiro331/go-disk/gpt"
@@ -18,6 +17,7 @@ import (
 	"github.com/masahiro331/go-xfs-filesystem/xfs"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
