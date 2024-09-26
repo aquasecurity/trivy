@@ -89,11 +89,11 @@ jobs:
           path: integration/testdata/fixtures/images
           key: cache-test-images-2024-09-10 # trivy-test-images last update date
 
-      - name: Download test images if cache is missing
+      - name: Download test images
         if: steps.restore-test-images.outputs.cache-hit != 'true'
         run: mage test:fixtureContainerImages
 
-      - name: Save test images into cache if cache is missing
+      - name: Save test images into cache
         if: steps.restore-test-images.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
@@ -140,6 +140,24 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Restore test images from cache
+        uses: actions/cache@v4
+        id: restore-test-images
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-2024-09-10 # trivy-test-images last update date
+
+      - name: Download test images
+        if: steps.restore-test-images.outputs.cache-hit != 'true'
+        run: mage test:fixtureContainerImages
+
+      - name: Save test images into cache
+        if: steps.restore-test-images.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-2024-09-10 # trivy-test-images last update date
+
       - name: Run module integration tests
         shell: bash
         run: |
@@ -168,11 +186,11 @@ jobs:
           path: integration/testdata/fixtures/vm-images
           key: cache-test-vm-images-2023-06-18 # trivy-test-vm-images last update date
 
-      - name: Download test images if cache is missing
+      - name: Download test VM images
         if: steps.restore-test-vm-images.outputs.cache-hit != 'true'
-        run: mage test:fixtureContainerImages
+        run: mage test:fixtureVMImages
 
-      - name: Save test images into cache if cache is missing
+      - name: Save test VM images into cache
         if: steps.restore-test-vm-images.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
