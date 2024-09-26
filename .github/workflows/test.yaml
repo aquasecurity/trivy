@@ -82,6 +82,24 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Restore test images from cache
+        uses: actions/cache@v4
+        id: restore-test-images
+        with:
+          path: integration/testdata/fixtures/images
+          key: ${{ hashFiles('integration/testdata/fixtures/images/*') }}
+
+      - name: Download test images if cache is missing
+        if: steps.restore-test-images.outputs.cache-hit != 'true'
+        run: mage test:fixtureContainerImages
+
+      - name: Save test images into cache if cache is missing
+        if: steps.restore-test-images.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: ${{ hashFiles('integration/testdata/fixtures/images/*') }}
+
       - name: Run integration tests
         run: mage test:integration
 
