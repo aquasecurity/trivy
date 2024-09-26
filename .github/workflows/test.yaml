@@ -82,23 +82,25 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
       - name: Restore test images from cache
         uses: actions/cache@v4
         id: restore-test-images
         with:
           path: integration/testdata/fixtures/images
-          key: cache-test-images-2024-09-10 # trivy-test-images last update date
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
 
       - name: Download test images
         if: steps.restore-test-images.outputs.cache-hit != 'true'
         run: mage test:fixtureContainerImages
-
-      - name: Save test images into cache
-        if: steps.restore-test-images.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: integration/testdata/fixtures/images
-          key: cache-test-images-2024-09-10 # trivy-test-images last update date
 
       - name: Run integration tests
         run: mage test:integration
@@ -140,23 +142,25 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
       - name: Restore test images from cache
         uses: actions/cache@v4
         id: restore-test-images
         with:
           path: integration/testdata/fixtures/images
-          key: cache-test-images-2024-09-10 # trivy-test-images last update date
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
 
       - name: Download test images
         if: steps.restore-test-images.outputs.cache-hit != 'true'
         run: mage test:fixtureContainerImages
-
-      - name: Save test images into cache
-        if: steps.restore-test-images.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: integration/testdata/fixtures/images
-          key: cache-test-images-2024-09-10 # trivy-test-images last update date
 
       - name: Run module integration tests
         shell: bash
@@ -179,23 +183,25 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-vm-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
       - name: Restore test VM images from cache
         uses: actions/cache@v4
         id: restore-test-vm-images
         with:
           path: integration/testdata/fixtures/vm-images
-          key: cache-test-vm-images-2023-06-18 # trivy-test-vm-images last update date
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-vm-images-
 
       - name: Download test VM images
         if: steps.restore-test-vm-images.outputs.cache-hit != 'true'
         run: mage test:fixtureVMImages
-
-      - name: Save test VM images into cache
-        if: steps.restore-test-vm-images.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: integration/testdata/fixtures/vm-images
-          key: cache-test-vm-images-2023-06-18 # trivy-test-vm-images last update date
 
       - name: Run vm integration tests
         run: |
