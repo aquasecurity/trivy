@@ -295,8 +295,10 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 			continue
 		}
 
-		if _, disabled := s.disabledCheckIDs[meta.ID]; disabled {
-			continue
+		if IsBuiltinNamespace(getModuleNamespace(module)) {
+			if _, disabled := s.disabledCheckIDs[meta.ID]; disabled { // ignore builtin disabled checks
+				continue
+			}
 		}
 
 		if len(meta.InputOptions.Selectors) == 0 {

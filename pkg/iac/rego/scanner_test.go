@@ -10,6 +10,7 @@ import (
 	"testing"
 	"testing/fstest"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1164,7 +1165,7 @@ func Test_RegoScanner_WithDisabledCheckIDs(t *testing.T) {
 #   provider: aws
 #   service: s3
 #   short_code: test
-package user.test
+package builtin.test
 
 deny {
   true
@@ -1174,34 +1175,66 @@ deny {
 	tests := []struct {
 		name           string
 		disabledChecks []string
+		inputCheck     string
 		expected       bool
 	}{
 		{
-			name:     "no disabled checks",
-			expected: true,
+			name:       "no disabled checks",
+			expected:   true,
+			inputCheck: check,
 		},
 		{
 			name:           "disable check by ID",
 			disabledChecks: []string{"TEST-001"},
+			inputCheck:     check,
 		},
 		{
 			name:           "disabling a non-existent check",
 			disabledChecks: []string{"FOO"},
 			expected:       true,
+			inputCheck:     check,
 		},
 		{
 			name:           "one of the identifiers does not exist",
 			disabledChecks: []string{"FOO", "TEST-001"},
+			inputCheck:     check,
+		},
+		{
+			name: "do not disable user checks with builtin IDs",
+			inputCheck: `# METADATA
+# custom:
+#   id: TEST-001
+#   avd_id: AVD-TEST-001
+#   severity: LOW
+#   provider: aws
+#   service: s3
+#   short_code: test
+package user.test
+
+deny {
+  true
+}
+`,
+			disabledChecks: []string{"TEST-001"},
+			expected:       true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+
+			opts := []options.ScannerOption{
+				rego.WithPolicyReader(strings.NewReader(tt.inputCheck)),
+				rego.WithDisabledCheckIDs(tt.disabledChecks...),
+			}
+
+			if tt.inputCheck != "" {
+				opts = append(opts, rego.WithPolicyNamespaces("user"))
+			}
+
 			scanner := rego.NewScanner(
 				types.SourceYAML,
-				rego.WithPolicyNamespaces("user"),
-				rego.WithPolicyReader(strings.NewReader(check)),
-				rego.WithDisabledCheckIDs(tt.disabledChecks...),
+				opts...,
 			)
 
 			require.NoError(t, scanner.LoadPolicies(nil))
