@@ -2,7 +2,6 @@ package json
 
 import (
 	"context"
-	"io"
 	"io/fs"
 	"sync"
 
@@ -20,66 +19,16 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu                    sync.Mutex
-	logger                *log.Logger
-	policyDirs            []string
-	policyReaders         []io.Reader
-	parser                *parser.Parser
-	regoScanner           *rego.Scanner
-	options               []options.ScannerOption
-	frameworks            []framework.Framework
-	spec                  string
-	loadEmbeddedPolicies  bool
-	loadEmbeddedLibraries bool
+	mu          sync.Mutex
+	logger      *log.Logger
+	parser      *parser.Parser
+	regoScanner *rego.Scanner
+	options     []options.ScannerOption
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool)    {}
-func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
-
-func (s *Scanner) SetRegoOnly(bool) {
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
-}
-
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	s.loadEmbeddedPolicies = b
-}
-
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	s.loadEmbeddedLibraries = b
-}
-
-func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
-	s.policyReaders = readers
-}
-
-func (s *Scanner) SetTraceWriter(_ io.Writer) {
-}
-
-func (s *Scanner) SetPerResultTracingEnabled(_ bool) {
-}
-
-func (s *Scanner) SetPolicyDirs(dirs ...string) {
-	s.policyDirs = dirs
-}
-
-func (s *Scanner) SetDataDirs(_ ...string)         {}
-func (s *Scanner) SetPolicyNamespaces(_ ...string) {}
-
-func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-
-func (s *Scanner) SetDataFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-func (s *Scanner) SetRegoErrorLimit(_ int) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)                {}
+func (s *Scanner) SetRegoOnly(bool)                               {}
+func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {}
 
 func NewScanner(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
@@ -143,7 +92,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 		return s.regoScanner, nil
 	}
 	regoScanner := rego.NewScanner(types.SourceJSON, s.options...)
-	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
+	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return nil, err
 	}
 	s.regoScanner = regoScanner

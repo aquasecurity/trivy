@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
@@ -76,8 +77,8 @@ deny[cause] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 	)
 
@@ -213,8 +214,8 @@ cause := bucket.name
 			})
 
 			scanner := New(
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithPolicyNamespaces(test.includedNamespaces...),
+				rego.WithPolicyDirs("rules"),
+				rego.WithPolicyNamespaces(test.includedNamespaces...),
 			)
 
 			results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -270,7 +271,7 @@ deny[cause] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
+		rego.WithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 	)
 
@@ -318,9 +319,9 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
+		rego.WithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(true),
+		rego.WithEmbeddedLibraries(true),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -386,9 +387,9 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
+		rego.WithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(true),
+		rego.WithEmbeddedLibraries(true),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -470,9 +471,9 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
+		rego.WithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(true),
+		rego.WithEmbeddedLibraries(true),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -643,8 +644,8 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 	)
 
@@ -718,11 +719,11 @@ bucket_name = "test"
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
 		ScannerWithTFVarsPaths("main.tfvars"),
 		ScannerWithConfigsFileSystem(configsFS),
@@ -752,11 +753,11 @@ bucket_name = "test"
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
 		ScannerWithTFVarsPaths("main.tfvars"),
 		ScannerWithConfigsFileSystem(fs),
@@ -845,10 +846,10 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(false),
+		rego.WithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
 		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 	)
@@ -915,11 +916,11 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
 	)
 
@@ -984,11 +985,11 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
 	)
 
@@ -1048,13 +1049,13 @@ deny[res] {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithPolicyNamespaces("user"),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithRegoErrorLimits(0),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithRegoErrorLimits(0),
 		ScannerWithAllDirectories(true),
 	)
 
@@ -1089,9 +1090,9 @@ func TestSkipDeprecatedGoChecks(t *testing.T) {
 	})
 
 	scanner := New(
-		options.ScannerWithPolicyFilesystem(fsys),
-		options.ScannerWithEmbeddedLibraries(false),
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithPolicyFilesystem(fsys),
+		rego.WithEmbeddedLibraries(false),
+		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
 	)
 

@@ -1,9 +1,8 @@
-package rego
+package rego_test
 
 import (
 	"bytes"
 	"context"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -15,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -44,13 +43,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -79,13 +78,13 @@ deny {
 
 	srcFS := os.DirFS(tmp)
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"/policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -114,13 +113,13 @@ warn {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -146,13 +145,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": false,
@@ -189,13 +188,13 @@ exception[ns] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -237,13 +236,13 @@ exception[ns] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -274,13 +273,13 @@ exception[rules] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -310,13 +309,13 @@ exception[rules] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -344,13 +343,13 @@ deny_evil {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -375,13 +374,13 @@ deny[msg] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -413,13 +412,13 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -455,13 +454,13 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -509,13 +508,13 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -558,13 +557,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -592,13 +591,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -623,13 +622,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -658,13 +657,14 @@ deny {
 
 	traceBuffer := bytes.NewBuffer([]byte{})
 
-	scanner := NewScanner(types.SourceJSON, options.ScannerWithTrace(traceBuffer))
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithTrace(traceBuffer),
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -692,13 +692,14 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON, options.ScannerWithPerResultTracing(true))
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPerResultTracing(true),
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"evil": true,
@@ -730,13 +731,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"text": "dynamic",
@@ -763,13 +764,13 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"text": "test",
@@ -810,13 +811,14 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithPerResultTracing(true),
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(context.TODO(), Input{
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{
 		Path: "/evil.lol",
 		Contents: map[string]any{
 			"text": "test",
@@ -848,13 +850,11 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceDockerfile)
-	scanner.SetRegoErrorLimit(0) // override to not allow any errors
-	assert.ErrorContains(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
-		"undefined ref: input.evil",
+	scanner := rego.NewScanner(
+		types.SourceDockerfile,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 }
 
 func Test_RegoScanning_WithValidInputSchema(t *testing.T) {
@@ -871,11 +871,11 @@ deny {
 `,
 	})
 
-	scanner := NewScanner(types.SourceDockerfile)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceDockerfile,
+		rego.WithPolicyDirs("policies"),
 	)
+	require.NoError(t, scanner.LoadPolicies(srcFS))
 }
 
 func Test_RegoScanning_WithFilepathToSchema(t *testing.T) {
@@ -890,11 +890,16 @@ deny {
 }
 `,
 	})
-	scanner := NewScanner(types.SourceJSON)
-	scanner.SetRegoErrorLimit(0) // override to not allow any errors
+
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithRegoErrorLimits(0),
+		rego.WithPolicyDirs("policies"),
+	)
+
 	assert.ErrorContains(
 		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+		scanner.LoadPolicies(srcFS),
 		"undefined ref: input.evil",
 	)
 }
@@ -922,16 +927,16 @@ deny {
 		"data/junk.txt": "this file should be ignored",
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	scanner.SetDataFilesystem(dataFS)
-	scanner.SetDataDirs(".")
-
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithDataFilesystem(dataFS),
+		rego.WithDataDirs("."),
+		rego.WithPolicyDirs("policies"),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{})
+	require.NoError(t, scanner.LoadPolicies(srcFS))
+
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{})
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -962,16 +967,16 @@ deny {
 		"data/junk.txt": "this file should be ignored",
 	})
 
-	scanner := NewScanner(types.SourceJSON)
-	scanner.SetDataFilesystem(dataFS)
-	scanner.SetDataDirs("X://")
-
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
+	scanner := rego.NewScanner(
+		types.SourceJSON,
+		rego.WithDataFilesystem(dataFS),
+		rego.WithDataDirs("X://"),
+		rego.WithPolicyDirs("policies"),
 	)
 
-	results, err := scanner.ScanInput(context.TODO(), Input{})
+	require.NoError(t, scanner.LoadPolicies(srcFS))
+
+	results, err := scanner.ScanInput(context.TODO(), rego.Input{})
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -998,14 +1003,12 @@ deny {
 		},
 	}
 
-	scanner := NewScanner(
+	scanner := rego.NewScanner(
 		types.SourceYAML,
+		rego.WithPolicyDirs("checks"),
 	)
-	require.NoError(
-		t,
-		scanner.LoadPolicies(false, false, fsys, []string{"checks"}, nil),
-	)
-	_, err := scanner.ScanInput(context.TODO(), Input{})
+	require.NoError(t, scanner.LoadPolicies(fsys))
+	_, err := scanner.ScanInput(context.TODO(), rego.Input{})
 	require.NoError(t, err)
 }
 
@@ -1066,13 +1069,10 @@ deny {
 				"policies/test.rego": tc.policy,
 			})
 
-			scanner := NewScanner(types.SourceJSON)
-			require.NoError(
-				t,
-				scanner.LoadPolicies(false, false, srcFS, []string{"policies"}, nil),
-			)
+			scanner := rego.NewScanner(types.SourceJSON, rego.WithPolicyDirs("policies"))
+			require.NoError(t, scanner.LoadPolicies(srcFS))
 
-			results, err := scanner.ScanInput(context.TODO(), Input{
+			results, err := scanner.ScanInput(context.TODO(), rego.Input{
 				Path: "/evil.lol",
 				Contents: map[string]any{
 					"text": "test",
@@ -1133,17 +1133,18 @@ deny {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			scanner := NewScanner(
+			scanner := rego.NewScanner(
 				types.SourceYAML,
-				options.ScannerWithCustomSchemas(map[string][]byte{
+				rego.WithCustomSchemas(map[string][]byte{
 					"test": []byte(schema),
 				}),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyNamespaces("user"),
+				rego.WithPolicyReader(strings.NewReader(tc.check)),
 			)
-			err := scanner.LoadPolicies(false, false, nil, nil, []io.Reader{strings.NewReader(tc.check)})
-			require.NoError(t, err)
 
-			results, err := scanner.ScanInput(context.TODO(), Input{
+			require.NoError(t, scanner.LoadPolicies(nil))
+
+			results, err := scanner.ScanInput(context.TODO(), rego.Input{
 				Path:     "test.yaml",
 				Contents: map[string]any{"service": "test"},
 			})
