@@ -5396,6 +5396,10 @@
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.NetworkRule"
           }
         },
+        "publicnetworkaccess": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
         "queueproperties": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.QueueProperties"
