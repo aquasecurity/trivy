@@ -87,7 +87,7 @@ jobs:
         id: restore-test-images
         with:
           path: integration/testdata/fixtures/images
-          key: ${{ hashFiles('integration/testdata/fixtures/images/*') }}
+          key: "2024-09-10" # trivy-test-images last update date
 
       - name: Download test images if cache is missing
         if: steps.restore-test-images.outputs.cache-hit != 'true'
@@ -98,7 +98,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: integration/testdata/fixtures/images
-          key: ${{ hashFiles('integration/testdata/fixtures/images/*') }}
+          key: "2024-09-10" # trivy-test-images last update date
 
       - name: Run integration tests
         run: mage test:integration
