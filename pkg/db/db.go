@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -27,8 +28,13 @@ const (
 )
 
 var (
-	DefaultRepository    = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
-	defaultRepository, _ = name.NewTag(DefaultRepository)
+	// GitHub Container Registry
+	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
+	defaultGHCRRepository = lo.Must(name.NewTag(DefaultGHCRRepository))
+
+	// Amazon Elastic Container Registry
+	DefaultECRRepository = fmt.Sprintf("%s:%d", "public.ecr.aws/aquasecurity/trivy-db", db.SchemaVersion)
+	defaultECRRepository = lo.Must(name.NewTag(DefaultECRRepository))
 
 	Init  = db.Init
 	Close = db.Close
@@ -36,8 +42,8 @@ var (
 )
 
 type options struct {
-	artifact     *oci.Artifact
-	dbRepository name.Reference
+	artifact       *oci.Artifact
+	dbRepositories []name.Reference
 }
 
 // Option is a functional option
@@ -51,9 +57,9 @@ func WithOCIArtifact(art *oci.Artifact) Option {
 }
 
 // WithDBRepository takes a dbRepository
-func WithDBRepository(dbRepository name.Reference) Option {
+func WithDBRepository(dbRepository []name.Reference) Option {
 	return func(opts *options) {
-		opts.dbRepository = dbRepository
+		opts.dbRepositories = dbRepository
 	}
 }
 
@@ -73,7 +79,10 @@ func Dir(cacheDir string) string {
 // NewClient is the factory method for DB client
 func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
-		dbRepository: defaultRepository,
+		dbRepositories: []name.Reference{
+			defaultGHCRRepository,
+			defaultECRRepository,
+		},
 	}
 
 	for _, opt := range opts {
@@ -153,16 +162,11 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 		log.Debug("No metadata file")
 	}
 
-	art, err := c.initOCIArtifact(opt)
-	if err != nil {
+	if err := c.downloadDB(ctx, opt, dst); err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
-	if err = art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
-		return xerrors.Errorf("database download error: %w", err)
-	}
-
-	if err = c.updateDownloadedAt(ctx, dst); err != nil {
+	if err := c.updateDownloadedAt(ctx, dst); err != nil {
 		return xerrors.Errorf("failed to update downloaded_at: %w", err)
 	}
 	return nil
@@ -194,12 +198,12 @@ func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	return nil
 }
 
-func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, error) {
+func (c *Client) initOCIArtifact(repository name.Reference, opt types.RegistryOptions) (*oci.Artifact, error) {
 	if c.artifact != nil {
 		return c.artifact, nil
 	}
 
-	art, err := oci.NewArtifact(c.dbRepository.String(), c.quiet, opt)
+	art, err := oci.NewArtifact(repository.String(), c.quiet, opt)
 	if err != nil {
 		var terr *transport.Error
 		if errors.As(err, &terr) {
@@ -215,6 +219,32 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 		return nil, xerrors.Errorf("OCI artifact error: %w", err)
 	}
 	return art, nil
+}
+
+func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
+	downloadOpt := oci.DownloadOption{MediaType: dbMediaType}
+	if c.artifact != nil {
+		return c.artifact.Download(ctx, dst, downloadOpt)
+	}
+
+	for i, repo := range c.dbRepositories {
+		a, err := c.initOCIArtifact(repo, opt)
+		if err != nil {
+			return err
+		}
+
+		log.Info("Downloading vulnerability DB...", log.String("repo", repo.String()))
+		if err := a.Download(ctx, dst, downloadOpt); err != nil {
+			log.Error("Failed to download DB", log.String("repo", repo.String()), log.Err(err))
+			if i < len(c.dbRepositories)-1 {
+				log.Info("Trying to download DB from other repository...")
+			}
+			continue
+		}
+		return nil
+	}
+
+	return xerrors.New("failed to download vulnerability DB from any source")
 }
 
 func (c *Client) ShowInfo() error {

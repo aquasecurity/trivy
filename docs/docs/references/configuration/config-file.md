@@ -104,7 +104,9 @@ db:
   download-only: false
 
   # Same as '--java-db-repository'
-  java-repository: "ghcr.io/aquasecurity/trivy-java-db:1"
+  java-repository:
+   - ghcr.io/aquasecurity/trivy-java-db:1
+   - public.ecr.aws/aquasecurity/trivy-java-db:1
 
   # Same as '--skip-java-db-update'
   java-skip-update: false
@@ -113,7 +115,9 @@ db:
   no-progress: false
 
   # Same as '--db-repository'
-  repository: "ghcr.io/aquasecurity/trivy-db:2"
+  repository:
+   - ghcr.io/aquasecurity/trivy-db:2
+   - public.ecr.aws/aquasecurity/trivy-db:2
 
   # Same as '--skip-db-update'
   skip-update: false

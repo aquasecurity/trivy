@@ -21,14 +21,14 @@ import (
 var mu sync.Mutex
 
 // DownloadDB downloads the DB
-func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository name.Reference, quiet, skipUpdate bool,
+func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories []name.Reference, quiet, skipUpdate bool,
 	opt ftypes.RegistryOptions) error {
 	mu.Lock()
 	defer mu.Unlock()
 
 	ctx = log.WithContextPrefix(ctx, "db")
 	dbDir := db.Dir(cacheDir)
-	client := db.NewClient(dbDir, quiet, db.WithDBRepository(dbRepository))
+	client := db.NewClient(dbDir, quiet, db.WithDBRepository(dbRepositories))
 	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
@@ -36,7 +36,7 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 
 	if needsUpdate {
 		log.InfoContext(ctx, "Need to update DB")
-		log.InfoContext(ctx, "Downloading DB...", log.String("repository", dbRepository.String()))
+		log.InfoContext(ctx, "Downloading DB...", log.Any("repositories", dbRepositories))
 		if err = client.Download(ctx, dbDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}

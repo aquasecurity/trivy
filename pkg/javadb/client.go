@@ -26,12 +26,17 @@ const (
 	mediaType     = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
 )
 
-var DefaultRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-java-db", SchemaVersion)
+var (
+	// GitHub Container Registry
+	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-java-db", SchemaVersion)
+	// Amazon Elastic Container Registry
+	DefaultECRRepository = fmt.Sprintf("%s:%d", "public.ecr.aws/aquasecurity/trivy-java-db", SchemaVersion)
+)
 
 var updater *Updater
 
 type Updater struct {
-	repo           name.Reference
+	repos          []name.Reference
 	dbDir          string
 	skip           bool
 	quiet          bool
@@ -40,8 +45,7 @@ type Updater struct {
 }
 
 func (u *Updater) Update() error {
-	dbDir := u.dbDir
-	metac := db.NewMetadata(dbDir)
+	metac := db.NewMetadata(u.dbDir)
 
 	meta, err := metac.Get()
 	if err != nil {
@@ -55,16 +59,11 @@ func (u *Updater) Update() error {
 
 	if (meta.Version != SchemaVersion || !u.isNewDB(meta)) && !u.skip {
 		// Download DB
-		log.Info("Java DB Repository", log.Any("repository", u.repo))
-		log.Info("Downloading the Java DB...")
+		log.Info("Java DB Repositories", log.Any("repositories", u.repos))
 
 		// TODO: support remote options
-		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo.String(), u.quiet, u.registryOption); err != nil {
-			return xerrors.Errorf("oci error: %w", err)
-		}
-		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
-			return xerrors.Errorf("DB download error: %w", err)
+		if err := u.downloadDB(); err != nil {
+			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
 
 		// Parse the newly downloaded metadata.json
@@ -99,9 +98,30 @@ func (u *Updater) isNewDB(meta db.Metadata) bool {
 	return false
 }
 
-func Init(cacheDir string, javaDBRepository name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+func (u *Updater) downloadDB() error {
+	for i, repo := range u.repos {
+		a, err := oci.NewArtifact(repo.String(), u.quiet, u.registryOption)
+		if err != nil {
+			return xerrors.Errorf("OCI error: %w", err)
+		}
+
+		log.Info("Downloading the Java DB...", log.String("repository", repo.String()))
+		if err := a.Download(context.Background(), u.dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
+			log.Error("Failed to download DB", log.String("repo", repo.String()), log.Err(err))
+			if i < len(u.repos)-1 {
+				log.Info("Trying to download DB from other repository...")
+			}
+			continue
+		}
+		return nil
+	}
+
+	return xerrors.New("failed to download Java DB from any source")
+}
+
+func Init(cacheDir string, javaDBRepositories []name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
-		repo:           javaDBRepository,
+		repos:          javaDBRepositories,
 		dbDir:          dbDir(cacheDir),
 		skip:           skip,
 		quiet:          quiet,

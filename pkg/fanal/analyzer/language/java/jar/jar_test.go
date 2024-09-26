@@ -132,9 +132,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// init java-trivy-db with skip update
-			repo, err := name.NewTag(javadb.DefaultRepository)
+			repo, err := name.NewTag(javadb.DefaultGHCRRepository)
 			require.NoError(t, err)
-			javadb.Init("testdata", repo, true, false, types.RegistryOptions{Insecure: false})
+			javadb.Init("testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
