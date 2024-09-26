@@ -93,7 +93,7 @@ func (u *Updater) isNewDB(meta db.Metadata) bool {
 	}
 
 	if now.Before(meta.DownloadedAt.Add(time.Hour * 24)) { // 1 day
-		log.Debug("Java DB update was skipped because the local Java DB was downloaded during the last hour")
+		log.Debug("Java DB update was skipped because the local Java DB was downloaded during the last day")
 		return true
 	}
 	return false
