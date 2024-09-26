@@ -10,7 +10,6 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1223,18 +1222,11 @@ deny {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			opts := []options.ScannerOption{
-				rego.WithPolicyReader(strings.NewReader(tt.inputCheck)),
-				rego.WithDisabledCheckIDs(tt.disabledChecks...),
-			}
-
-			if tt.inputCheck != "" {
-				opts = append(opts, rego.WithPolicyNamespaces("user"))
-			}
-
 			scanner := rego.NewScanner(
 				types.SourceYAML,
-				opts...,
+				rego.WithPolicyReader(strings.NewReader(tt.inputCheck)),
+				rego.WithDisabledCheckIDs(tt.disabledChecks...),
+				rego.WithPolicyNamespaces("user"),
 			)
 
 			require.NoError(t, scanner.LoadPolicies(nil))
