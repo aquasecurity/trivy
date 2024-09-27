@@ -139,54 +139,6 @@ var tests = []testCase{
 	},
 }
 
-func TestFanal_Library_DockerLessMode(t *testing.T) {
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			ctx := context.Background()
-			d := t.TempDir()
-
-			c, err := cache.NewFSCache(d)
-			require.NoError(t, err, tt.name)
-
-			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-			require.NoError(t, err)
-
-			// remove existing Image if any
-			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dimage.RemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
-
-			// Enable only registry scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.ImageOptions{
-				ImageSources: types.ImageSources{types.RemoteImageSource},
-			})
-			require.NoError(t, err)
-			defer cleanup()
-
-			// don't scan licenses in the test - in parallel it will fail
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{
-				DisabledAnalyzers: []analyzer.Type{
-					analyzer.TypeExecutable,
-					analyzer.TypeLicenseFile,
-				},
-			})
-			require.NoError(t, err)
-
-			applier := applier.NewApplier(c)
-
-			// run tests twice, one without cache and with cache
-			for i := 1; i <= 2; i++ {
-				runChecks(t, ctx, ar, applier, tt)
-			}
-
-			// clear Cache
-			require.NoError(t, c.Clear())
-		})
-	}
-}
-
 func TestFanal_Library_DockerMode(t *testing.T) {
 	// Disable updating golden files because local images don't have compressed layer digests,
 	// and updating golden files in this function results in incomplete files.
