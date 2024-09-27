@@ -181,7 +181,7 @@ func TestRegistry(t *testing.T) {
 				Password:      authPassword,
 				RegistryToken: true,
 			},
-			golden: "testdata/alpine-310-registry.json.golden",
+			golden: "testdata/alpine-310.json.golden",
 		},
 		{
 			name:      "amazonlinux 2",
