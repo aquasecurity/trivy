@@ -54,13 +54,13 @@ var (
 		Name:       "db-repository",
 		ConfigName: "db.repository",
 		Default:    []string{db.DefaultGHCRRepository, db.DefaultECRRepository},
-		Usage:      "OCI repository(ies) to retrieve trivy-db from",
+		Usage:      "OCI repository(ies) to retrieve trivy-db in order of priority",
 	}
 	JavaDBRepositoryFlag = Flag[[]string]{
 		Name:       "java-db-repository",
 		ConfigName: "db.java-repository",
 		Default:    []string{javadb.DefaultGHCRRepository, javadb.DefaultECRRepository},
-		Usage:      "OCI repository(ies) to retrieve trivy-java-db from",
+		Usage:      "OCI repository(ies) to retrieve trivy-java-db in order of priority",
 	}
 	LightFlag = Flag[bool]{
 		Name:       "light",
