@@ -36,7 +36,6 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories
 
 	if needsUpdate {
 		log.InfoContext(ctx, "Need to update DB")
-		log.InfoContext(ctx, "Downloading DB...", log.Any("repositories", dbRepositories))
 		if err = client.Download(ctx, dbDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}

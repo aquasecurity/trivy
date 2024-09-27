@@ -59,8 +59,6 @@ func (u *Updater) Update() error {
 
 	if (meta.Version != SchemaVersion || !u.isNewDB(meta)) && !u.skip {
 		// Download DB
-		log.Info("Java DB Repositories", log.Any("repositories", u.repos))
-
 		// TODO: support remote options
 		if err := u.downloadDB(); err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
