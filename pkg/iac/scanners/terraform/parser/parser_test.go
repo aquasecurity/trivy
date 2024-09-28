@@ -1440,17 +1440,17 @@ resource "aws_lambda_function" "analyzer" {
 
 	t.Run("arg is list of objects", func(t *testing.T) {
 		modules := parse(t, map[string]string{
-			"main.tf": `locals {
-  cluster_network_policy = [{
-    enabled = true
-  }]
+			"main.tf": `
+variable "cluster_network_policy" {
+  type    = list(object({ enabled = bool }))
+  default = [{ enabled = true }]
 }
 
 resource "google_container_cluster" "primary" {
   name = "test"
 
   dynamic "network_policy" {
-    for_each = local.cluster_network_policy
+    for_each = var.cluster_network_policy
 
     content {
       enabled = network_policy.value.enabled
