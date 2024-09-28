@@ -111,6 +111,8 @@ func (u *Updater) downloadDB() error {
 			}
 			continue
 		}
+
+		log.Info("DB successfully downloaded", log.String("repo", repo.String()))
 		return nil
 	}
 

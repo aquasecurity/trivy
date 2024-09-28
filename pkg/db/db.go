@@ -241,6 +241,8 @@ func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst 
 			}
 			continue
 		}
+
+		log.Info("DB successfully downloaded", log.String("repo", repo.String()))
 		return nil
 	}
 
