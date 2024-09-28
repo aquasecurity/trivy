@@ -1192,4 +1192,28 @@ resource "aws_iam_policy" "bad_configuration" {
 		assert.Empty(t, results)
 	})
 
+	t.Run("non existing value for skip-files option", func(t *testing.T) {
+		scanner := New(
+			options.ScannerWithIncludeDeprecatedChecks(true),
+			ScannerWithSkipFiles([]string{"foo/bar*.tf"}),
+			ScannerWithAllDirectories(true),
+		)
+
+		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		require.NoError(t, err)
+
+		assert.Equal(t, 4, len(results))
+	})
+
+	t.Run("empty skip-files option", func(t *testing.T) {
+		scanner := New(
+			options.ScannerWithIncludeDeprecatedChecks(true),
+			ScannerWithAllDirectories(true),
+		)
+
+		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		require.NoError(t, err)
+
+		assert.Equal(t, 4, len(results))
+	})
 }
