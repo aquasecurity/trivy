@@ -199,6 +199,12 @@ func TestDockerEngine(t *testing.T) {
 			golden:   "testdata/opensuse-tumbleweed.json.golden",
 		},
 		{
+			name:     "sle micro rancher 5.4",
+			imageTag: "ghcr.io/aquasecurity/trivy-test-images:sle-micro-rancher-5.4_ndb",
+			input:    "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+			golden:   "testdata/sl-micro-rancher5.4.json.golden",
+		},
+		{
 			name:     "photon 3.0",
 			imageTag: "ghcr.io/aquasecurity/trivy-test-images:photon-30",
 			input:    "testdata/fixtures/images/photon-30.tar.gz",
