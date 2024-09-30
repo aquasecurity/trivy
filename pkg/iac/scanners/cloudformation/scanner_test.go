@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
@@ -57,7 +58,7 @@ deny[res] {
 `,
 	})
 
-	scanner := New(options.ScannerWithPolicyDirs("rules"), options.ScannerWithRegoOnly(true))
+	scanner := New(rego.WithPolicyDirs("rules"), options.ScannerWithRegoOnly(true))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -215,9 +216,9 @@ Resources:
 
 			scanner := New(
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithEmbeddedPolicies(false),
-				options.ScannerWithPolicyReader(strings.NewReader(bucketNameCheck)),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithEmbeddedPolicies(false),
+				rego.WithPolicyReader(strings.NewReader(bucketNameCheck)),
+				rego.WithPolicyNamespaces("user"),
 			)
 
 			results, err := scanner.ScanFS(context.TODO(), fsys, "code")

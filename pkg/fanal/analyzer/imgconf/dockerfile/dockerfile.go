@@ -16,6 +16,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
+var disabledChecks = []string{
+	"DS016", // See https://github.com/aquasecurity/trivy/issues/7368
+}
+
 const analyzerVersion = 1
 
 func init() {
@@ -27,6 +31,7 @@ type historyAnalyzer struct {
 }
 
 func newHistoryAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
+	opts.MisconfScannerOption.DisabledCheckIDs = append(opts.MisconfScannerOption.DisabledCheckIDs, disabledChecks...)
 	s, err := misconf.NewScanner(detection.FileTypeDockerfile, opts.MisconfScannerOption)
 	if err != nil {
 		return nil, xerrors.Errorf("misconfiguration scanner error: %w", err)

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
-	"io"
 	"log/slog"
 	"strings"
 	"testing"
@@ -16,7 +15,6 @@ import (
 
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -33,10 +31,11 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
 			types.SourceDockerfile,
-			options.ScannerWithRegoErrorLimits(0),
+			rego.WithRegoErrorLimits(0),
+			rego.WithPolicyDirs("."),
 		)
 
-		err := scanner.LoadPolicies(false, false, testEmbedFS, []string{"."}, nil)
+		err := scanner.LoadPolicies(testEmbedFS)
 		require.ErrorContains(t, err, `want (one of): ["Cmd" "EndLine" "Flags" "JSON" "Original" "Path" "Stage" "StartLine" "SubCmd" "Value"]`)
 		assert.Contains(t, debugBuf.String(), "Error(s) occurred while loading checks")
 	})
@@ -46,10 +45,11 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
 			types.SourceDockerfile,
-			options.ScannerWithRegoErrorLimits(1),
+			rego.WithRegoErrorLimits(1),
+			rego.WithPolicyDirs("."),
 		)
 
-		err := scanner.LoadPolicies(false, false, testEmbedFS, []string{"."}, nil)
+		err := scanner.LoadPolicies(testEmbedFS)
 		require.NoError(t, err)
 
 		assert.Contains(t, debugBuf.String(), "Error occurred while parsing\tfile_path=\"testdata/policies/invalid.rego\" err=\"testdata/policies/invalid.rego:7")
@@ -64,9 +64,13 @@ package mypackage
 deny {
     input.evil == "foo bar"
 }`
-		scanner := rego.NewScanner(types.SourceJSON)
+		scanner := rego.NewScanner(
+			types.SourceJSON,
+			rego.WithPolicyDirs("."),
+			rego.WithPolicyReader(strings.NewReader(check)),
+		)
 
-		err := scanner.LoadPolicies(false, false, fstest.MapFS{}, []string{"."}, []io.Reader{strings.NewReader(check)})
+		err := scanner.LoadPolicies(fstest.MapFS{})
 		assert.ErrorContains(t, err, "could not find schema \"fooschema\"")
 	})
 
@@ -79,7 +83,11 @@ package mypackage
 deny {
     input.evil == "foo bar"
 }`
-		scanner := rego.NewScanner(types.SourceJSON)
+		scanner := rego.NewScanner(
+			types.SourceJSON,
+			rego.WithPolicyDirs("."),
+			rego.WithPolicyReader(strings.NewReader(check)),
+		)
 
 		fsys := fstest.MapFS{
 			"schemas/fooschema.json": &fstest.MapFile{
@@ -87,7 +95,7 @@ deny {
 			},
 		}
 
-		err := scanner.LoadPolicies(false, false, fsys, []string{"."}, []io.Reader{strings.NewReader(check)})
+		err := scanner.LoadPolicies(fsys)
 		assert.ErrorContains(t, err, "could not parse schema \"fooschema\"")
 	})
 
@@ -97,8 +105,12 @@ deny {
 deny {
     input.evil == "foo bar"
 }`
-		scanner := rego.NewScanner(types.SourceJSON)
-		err := scanner.LoadPolicies(false, false, fstest.MapFS{}, []string{"."}, []io.Reader{strings.NewReader(check)})
+		scanner := rego.NewScanner(
+			types.SourceJSON,
+			rego.WithPolicyDirs("."),
+			rego.WithPolicyReader(strings.NewReader(check)),
+		)
+		err := scanner.LoadPolicies(fstest.MapFS{})
 		require.NoError(t, err)
 	})
 
@@ -184,8 +196,9 @@ deny {
 		t.Run(tt.name, func(t *testing.T) {
 			scanner := rego.NewScanner(
 				types.SourceDockerfile,
-				options.ScannerWithRegoErrorLimits(0),
-				options.ScannerWithEmbeddedPolicies(false),
+				rego.WithRegoErrorLimits(0),
+				rego.WithEmbeddedPolicies(false),
+				rego.WithPolicyDirs("."),
 			)
 
 			tt.files["schemas/fooschema.json"] = &fstest.MapFile{
@@ -200,9 +213,8 @@ deny {
 					}`),
 			}
 
-			fsys := fstest.MapFS(tt.files)
 			checks.EmbeddedPolicyFileSystem = embeddedChecksFS
-			err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
+			err := scanner.LoadPolicies(fstest.MapFS(tt.files))
 
 			if tt.expectedErr != "" {
 				assert.ErrorContains(t, err, tt.expectedErr)
@@ -244,8 +256,9 @@ deny {
 
 	scanner := rego.NewScanner(
 		types.SourceDockerfile,
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithPolicyDirs("."),
 	)
-	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
+	err := scanner.LoadPolicies(fsys)
 	require.Error(t, err)
 }

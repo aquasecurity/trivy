@@ -1615,9 +1615,17 @@
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
           }
         },
+        "fromport": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        },
         "protocol": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "toport": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
         },
         "type": {
           "type": "object",
@@ -1677,6 +1685,18 @@
         "description": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "fromport": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        },
+        "protocol": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        },
+        "toport": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
         }
       }
     },
@@ -6086,7 +6106,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.PortRange"
           }
         },
         "protocol": {
@@ -6215,6 +6235,23 @@
         "subnetwork": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.SubNetwork"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.compute.PortRange": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "end": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        },
+        "start": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
         }
       }
     },

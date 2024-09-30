@@ -358,16 +358,19 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl
 		return "", packageurl.Qualifiers{}
 	}
 
-	// SLES string has whitespace
 	family := fos.Family
-	if fos.Family == ftypes.SLES {
-		family = "sles"
+	// SLES string has whitespace, also highlevel family is not the same as distro
+	if fos.Family == ftypes.SLES || fos.Family == ftypes.SLEMicro {
+		family = "suse"
+	}
+	if fos.Family == ftypes.OpenSUSETumbleweed || fos.Family == ftypes.OpenSUSELeap {
+		family = "opensuse"
 	}
 
 	qualifiers := packageurl.Qualifiers{
 		{
 			Key:   "distro",
-			Value: fmt.Sprintf("%s-%s", family, fos.Name),
+			Value: fmt.Sprintf("%s-%s", fos.Family, fos.Name),
 		},
 	}
 
@@ -476,7 +479,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
-		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.Photon,
+		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.SLEMicro, ftypes.Photon,
 		ftypes.Azure, ftypes.CBLMariner:
 		return packageurl.TypeRPM
 	case TypeOCI:
