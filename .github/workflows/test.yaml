@@ -92,13 +92,20 @@ jobs:
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test images from cache
-        uses: actions/cache@v4
-        id: restore-test-images
+        uses: actions/cache/restore@v4
         with:
           path: integration/testdata/fixtures/images
           key: cache-test-images-${{ steps.image-digest.outputs.digest }}
           restore-keys:
             cache-test-images-
+
+      ## We need to save test image cache only for main branch
+      - name: Save test images from cache
+        if: github.ref_name == 'main'
+        uses: actions/cache/save@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
 
       - name: Run integration tests
         run: mage test:integration
@@ -148,13 +155,21 @@ jobs:
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test images from cache
-        uses: actions/cache@v4
-        id: restore-test-images
+        uses: actions/cache/restore@v4
         with:
           path: integration/testdata/fixtures/images
           key: cache-test-images-${{ steps.image-digest.outputs.digest }}
           restore-keys:
             cache-test-images-
+
+
+      ## We need to save test image cache only for main branch
+      - name: Save test images from cache
+        if: github.ref_name == 'main'
+        uses: actions/cache/save@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
 
       - name: Run module integration tests
         shell: bash
@@ -185,13 +200,20 @@ jobs:
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test VM images from cache
-        uses: actions/cache@v4
-        id: restore-test-vm-images
+        uses: actions/cache/restore@v4
         with:
           path: integration/testdata/fixtures/vm-images
           key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
           restore-keys:
             cache-test-vm-images-
+
+      ## We need to save test VM image cache only for main branch
+      - name: Save test VM images from cache
+        if: github.ref_name == 'main'
+        uses: actions/cache/save@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
 
       - name: Run vm integration tests
         run: |
