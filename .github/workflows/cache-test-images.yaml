@@ -1,0 +1,80 @@
+name: Cache test images
+on:
+  workflow_dispatch:
+
+env:
+  GO_VERSION: '1.22'
+jobs:
+  test-images:
+    name: Cache test images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v1.25.0
+
+      - name: Download test images
+        if: github.ref == 'refs/heads/main'
+        run: mage test:fixtureContainerImages
+
+      - name: Generate image list digest
+        if: github.ref == 'refs/heads/main'
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      ## We need to save test image cache only for main branch
+      - name: Save test images into cache
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+
+  test-vm-images:
+    name: Cache test VM images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v1.25.0
+
+      - name: Download test VM images
+        if: github.ref == 'refs/heads/main'
+        run: mage test:fixtureVMImages
+
+      - name: Generate image list digest
+        if: github.ref == 'refs/heads/main'
+        id: image-digest
+        run: |
+          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-vm-images)
+          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      ## We need to save test VM image cache only for main branch
+      - name: Save test VM images into cache
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v4
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
