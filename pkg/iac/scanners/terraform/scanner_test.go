@@ -1202,7 +1202,7 @@ resource "aws_iam_policy" "bad_configuration" {
 		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
 		require.NoError(t, err)
 
-		assert.Equal(t, 4, len(results))
+		assert.Len(t, results, 4)
 	})
 
 	t.Run("empty skip-files option", func(t *testing.T) {
@@ -1214,6 +1214,6 @@ resource "aws_iam_policy" "bad_configuration" {
 		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
 		require.NoError(t, err)
 
-		assert.Equal(t, 4, len(results))
+		assert.Len(t, results, 4)
 	})
 }
