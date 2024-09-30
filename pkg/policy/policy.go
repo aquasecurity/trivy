@@ -92,7 +92,7 @@ func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Opti
 func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) {
 	if c.artifact == nil {
 		log.Debug("Loading check bundle", log.String("repository", c.checkBundleRepo))
-		c.artifact = oci.NewArtifact(c.checkBundleRepo, c.quiet, registryOpts)
+		c.artifact = oci.NewArtifact(c.checkBundleRepo, registryOpts)
 	}
 }
 
@@ -101,7 +101,9 @@ func (c *Client) DownloadBuiltinPolicies(ctx context.Context, registryOpts types
 	c.populateOCIArtifact(registryOpts)
 
 	dst := c.contentDir()
-	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{MediaType: policyMediaType}); err != nil {
+	if err := c.artifact.Download(ctx, dst,
+		oci.DownloadOption{MediaType: policyMediaType, Quiet: c.quiet},
+	); err != nil {
 		return xerrors.Errorf("download error: %w", err)
 	}
 

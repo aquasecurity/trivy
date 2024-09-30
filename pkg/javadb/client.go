@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
@@ -97,19 +98,14 @@ func (u *Updater) isNewDB(meta db.Metadata) bool {
 }
 
 func (u *Updater) downloadDB() error {
-	for i, repo := range u.repos {
-		a := oci.NewArtifact(repo.String(), u.quiet, u.registryOption)
-		log.Info("Downloading the Java DB...", log.String("repository", repo.String()))
-		if err := a.Download(context.Background(), u.dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
-			log.Error("Failed to download DB", log.String("repo", repo.String()), log.Err(err))
-			if i < len(u.repos)-1 {
-				log.Info("Trying to download DB from other repository...")
-			}
-			continue
-		}
+	log.Info("Downloading Java DB...")
 
-		log.Info("DB successfully downloaded", log.String("repo", repo.String()))
-		return nil
+	artifacts := lo.Map(u.repos, func(r name.Reference, _ int) *oci.Artifact {
+		return oci.NewArtifact(r.String(), u.registryOption)
+	})
+	downloadOpt := oci.DownloadOption{MediaType: mediaType, Quiet: u.quiet}
+	if err := oci.DownloadArtifact(context.Background(), artifacts, u.dbDir, downloadOpt); err != nil {
+		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
 	return xerrors.New("failed to download Java DB from any source")

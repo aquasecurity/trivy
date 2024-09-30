@@ -2,14 +2,12 @@ package db
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -19,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 const (
@@ -202,53 +199,28 @@ func (c *Client) initOCIArtifact(repository name.Reference, opt types.RegistryOp
 	if c.artifact != nil {
 		return c.artifact
 	}
-	return oci.NewArtifact(repository.String(), c.quiet, opt)
+	return oci.NewArtifact(repository.String(), opt)
 }
 
-func (c *Client) initArtifacts(opt types.RegistryOptions) ([]*oci.Artifact, error) {
+func (c *Client) initArtifacts(opt types.RegistryOptions) []*oci.Artifact {
 	if c.artifact != nil {
-		return []*oci.Artifact{c.artifact}, nil
+		return []*oci.Artifact{c.artifact}
 	}
 
 	artifacts := make([]*oci.Artifact, 0, len(c.dbRepositories))
 	for _, repo := range c.dbRepositories {
 		artifacts = append(artifacts, c.initOCIArtifact(repo, opt))
 	}
-	return artifacts, nil
+	return artifacts
 }
 
 func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
-	arts, err := c.initArtifacts(opt)
-	if err != nil {
-		return err
+	log.Info("Downloading vulnerability DB...")
+	downloadOpt := oci.DownloadOption{MediaType: dbMediaType, Quiet: c.quiet}
+	if err := oci.DownloadArtifact(ctx, c.initArtifacts(opt), dst, downloadOpt); err != nil {
+		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
-
-	for i, art := range arts {
-		log.Info("Downloading vulnerability DB...", log.String("repo", art.Repository()))
-		if err := art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
-			var terr *transport.Error
-			if errors.As(err, &terr) {
-				for _, diagnostic := range terr.Errors {
-					// For better user experience
-					if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-						// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
-						log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
-						break
-					}
-				}
-			}
-			log.Error("Failed to download DB", log.String("repo", art.Repository()), log.Err(err))
-			if i < len(c.dbRepositories)-1 {
-				log.Info("Trying to download DB from other repository...")
-			}
-			continue
-		}
-
-		log.Info("DB successfully downloaded", log.String("repo", art.Repository()))
-		return nil
-	}
-
-	return xerrors.New("failed to download vulnerability DB from any source")
+	return nil
 }
 
 func (c *Client) ShowInfo() error {

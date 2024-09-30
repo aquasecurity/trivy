@@ -81,7 +81,7 @@ func TestArtifact_Download(t *testing.T) {
 			layersReturns: layersReturns{
 				layers: []v1.Layer{txtLayer},
 			},
-			wantErr: "unexpected EOF",
+			wantErr: "failed to download vulnerability DB: failed to download artifact",
 		},
 		{
 			name:      "sad: media type doesn't match",
@@ -116,9 +116,10 @@ func TestArtifact_Download(t *testing.T) {
 				},
 			}, nil)
 
-			artifact := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
+			artifact := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
 			err = artifact.Download(context.Background(), tempDir, oci.DownloadOption{
 				MediaType: tt.mediaType,
+				Quiet:     true,
 			})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
