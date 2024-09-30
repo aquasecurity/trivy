@@ -1946,6 +1946,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#empty-dependency-version" class="md-nav__link">
+    empty dependency version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#maven-invoker-plugin" class="md-nav__link">
     maven-invoker-plugin
   </a>
@@ -4131,6 +4138,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#empty-dependency-version" class="md-nav__link">
+    empty dependency version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#maven-invoker-plugin" class="md-nav__link">
     maven-invoker-plugin
   </a>
@@ -4330,6 +4344,17 @@ The vulnerability database will be downloaded anyway.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Trivy may skip some dependencies (that were not found on your local machine) when the <code>--offline-scan</code> flag is passed.</p>
+</div>
+<h3 id="empty-dependency-version">empty dependency version</h3>
+<p>There are cases when Trivy cannot determine the version of dependencies:</p>
+<ul>
+<li>Unable to determine the version from the parent because the parent is not reachable;</li>
+<li>The dependency uses a <a href="https://maven.apache.org/pom.html#dependency-version-requirement-specification">hard requirement</a> with more than one version.</li>
+</ul>
+<p>In these cases, Trivy uses an empty version for the dependency.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Trivy doesn't detect child dependencies for dependencies without a version.</p>
 </div>
 <h3 id="maven-invoker-plugin">maven-invoker-plugin</h3>
 <p>Typically, the integration tests directory (<code>**/[src|target]/it/*/pom.xml</code>) of <a href="https://maven.apache.org/plugins/maven-invoker-plugin/usage.html">maven-invoker-plugin</a> doesn't contain actual <code>pom.xml</code> files and should be skipped to avoid noise.</p>
