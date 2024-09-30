@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"math"
@@ -9,6 +10,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"unicode"
+
+	"golang.org/x/xerrors"
 
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -98,32 +101,33 @@ func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
 	const minLength = 4 // Minimum length of strings to extract
 	var result []byte
-	var currentPrintableLine []byte
+	currentPrintableLine := new(bytes.Buffer)
 
 	current := make([]byte, 1) // buffer for 1 byte reading
 
 	for {
-		_, err := content.Read(current)
-		if err == io.EOF {
+		if n, err := content.Read(current); err == io.EOF {
 			break
+		} else if n != 1 {
+			continue
 		} else if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to read a byte: %w", err)
 		}
 		if unicode.IsPrint(rune(current[0])) {
-			currentPrintableLine = append(currentPrintableLine, current[0])
+			_ = currentPrintableLine.WriteByte(current[0])
 			continue
 		}
-		if len(currentPrintableLine) > minLength {
-			// add a space between printable lines to separate them
-			currentPrintableLine = append(currentPrintableLine, ' ')
-			result = append(result, currentPrintableLine...)
+		if currentPrintableLine.Len() > minLength {
+			// add a newline between printable lines to separate them
+			_ = currentPrintableLine.WriteByte('\n')
+			result = append(result, currentPrintableLine.Bytes()...)
 		}
-		currentPrintableLine = nil
+		currentPrintableLine.Reset()
 	}
-	if len(currentPrintableLine) > minLength {
-		// add a space between printable lines to separate them
-		currentPrintableLine = append(currentPrintableLine, ' ')
-		result = append(result, currentPrintableLine...)
+	if currentPrintableLine.Len() > minLength {
+		// add a newline between printable lines to separate them
+		_ = currentPrintableLine.WriteByte('\n')
+		result = append(result, currentPrintableLine.Bytes()...)
 	}
 	return result, nil
 }
