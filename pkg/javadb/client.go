@@ -59,11 +59,8 @@ func (u *Updater) Update() error {
 		log.Info("Downloading the Java DB...")
 
 		// TODO: support remote options
-		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo.String(), u.quiet, u.registryOption); err != nil {
-			return xerrors.Errorf("oci error: %w", err)
-		}
-		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
+		art := oci.NewArtifact(u.repo.String(), u.quiet, u.registryOption)
+		if err = art.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
 			return xerrors.Errorf("DB download error: %w", err)
 		}
 
