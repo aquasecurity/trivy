@@ -198,24 +198,11 @@ func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	return nil
 }
 
-func (c *Client) initOCIArtifact(repository name.Reference, opt types.RegistryOptions) (*oci.Artifact, error) {
-	art, err := oci.NewArtifact(repository.String(), c.quiet, opt)
-	// TODO: NewArtifact never returns an error
-	if err != nil {
-		var terr *transport.Error
-		if errors.As(err, &terr) {
-			for _, diagnostic := range terr.Errors {
-				// For better user experience
-				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-					// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
-					log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
-					break
-				}
-			}
-		}
-		return nil, xerrors.Errorf("OCI artifact error: %w", err)
+func (c *Client) initOCIArtifact(repository name.Reference, opt types.RegistryOptions) *oci.Artifact {
+	if c.artifact != nil {
+		return c.artifact
 	}
-	return art, nil
+	return oci.NewArtifact(repository.String(), c.quiet, opt)
 }
 
 func (c *Client) initArtifacts(opt types.RegistryOptions) ([]*oci.Artifact, error) {
@@ -224,13 +211,8 @@ func (c *Client) initArtifacts(opt types.RegistryOptions) ([]*oci.Artifact, erro
 	}
 
 	artifacts := make([]*oci.Artifact, 0, len(c.dbRepositories))
-
 	for _, repo := range c.dbRepositories {
-		a, err := c.initOCIArtifact(repo, opt)
-		if err != nil {
-			return nil, err
-		}
-		artifacts = append(artifacts, a)
+		artifacts = append(artifacts, c.initOCIArtifact(repo, opt))
 	}
 	return artifacts, nil
 }
@@ -244,6 +226,17 @@ func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst 
 	for i, art := range arts {
 		log.Info("Downloading vulnerability DB...", log.String("repo", art.Repository()))
 		if err := art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
+			var terr *transport.Error
+			if errors.As(err, &terr) {
+				for _, diagnostic := range terr.Errors {
+					// For better user experience
+					if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
+						// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
+						log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
+						break
+					}
+				}
+			}
 			log.Error("Failed to download DB", log.String("repo", art.Repository()), log.Err(err))
 			if i < len(c.dbRepositories)-1 {
 				log.Info("Trying to download DB from other repository...")

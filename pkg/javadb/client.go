@@ -98,11 +98,7 @@ func (u *Updater) isNewDB(meta db.Metadata) bool {
 
 func (u *Updater) downloadDB() error {
 	for i, repo := range u.repos {
-		a, err := oci.NewArtifact(repo.String(), u.quiet, u.registryOption)
-		if err != nil {
-			return xerrors.Errorf("OCI error: %w", err)
-		}
-
+		a := oci.NewArtifact(repo.String(), u.quiet, u.registryOption)
 		log.Info("Downloading the Java DB...", log.String("repository", repo.String()))
 		if err := a.Download(context.Background(), u.dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
 			log.Error("Failed to download DB", log.String("repo", repo.String()), log.Err(err))
