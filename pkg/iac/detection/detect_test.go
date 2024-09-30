@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 func Test_Detection(t *testing.T) {
@@ -355,6 +356,70 @@ rules:
 				FileTypeYAML,
 			},
 		},
+		{
+			name: "Azure ARM template with resources",
+			path: "test.json",
+			r: strings.NewReader(`
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "{provide-unique-name}",
+      "location": "eastus",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true
+      }
+    }
+  ]
+}
+`),
+			expected: []FileType{
+				FileTypeJSON,
+				FileTypeAzureARM,
+			},
+		},
+		{
+			name: "Azure ARM template with parameters",
+			path: "test.json",
+			r: strings.NewReader(`
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 24
+    }
+  }
+}
+`),
+			expected: []FileType{
+				FileTypeJSON,
+				FileTypeAzureARM,
+			},
+		},
+		{
+			name: "empty Azure ARM template",
+			path: "test.json",
+			r: strings.NewReader(`
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": []
+}
+`),
+			expected: []FileType{
+				FileTypeJSON,
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -407,5 +472,142 @@ func BenchmarkIsType_BigFile(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = IsType(fmt.Sprintf("./testdata/%s", "big.file"), bytes.NewReader(data), FileTypeAzureARM)
+	}
+}
+
+func Test_IsFileMatchesSchemas(t *testing.T) {
+
+	schema := `{
+  "$id": "https://example.com/test.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "service": { "type": "string" }
+  },
+  "required": ["service"]
+}`
+
+	schema2 := `{
+	"$id": "https://example.com/test.schema.json",
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"type": "object",
+	"properties": {
+	  "provider": { "type": "string" }
+	},
+	"required": ["provider"]
+  }`
+
+	type args struct {
+		schemas     []string
+		fileType    FileType
+		fileName    string
+		fileContent string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		matches bool
+	}{
+		{
+			name: "json file matches",
+			args: args{
+				schemas:  []string{schema},
+				fileType: FileTypeJSON,
+				fileName: "test.json",
+				fileContent: `{
+  "service": "test"
+}`,
+			},
+			matches: true,
+		},
+		{
+			name: "json file dost not matches",
+			args: args{
+				schemas:  []string{schema},
+				fileType: FileTypeJSON,
+				fileName: "test.json",
+				fileContent: `{
+  "somefield": "test",
+}`,
+			},
+			matches: false,
+		},
+		{
+			name: "json file matches, but file type is yaml",
+			args: args{
+				schemas:  []string{schema},
+				fileType: FileTypeYAML,
+				fileName: "test.json",
+				fileContent: `{
+  "service": "test"
+}`,
+			},
+			matches: false,
+		},
+		{
+			name: "broken json file",
+			args: args{
+				schemas:  []string{schema},
+				fileType: FileTypeJSON,
+				fileName: "test.json",
+				fileContent: `{
+  "service": "test",,
+}`,
+			},
+			matches: false,
+		},
+		{
+			name: "yaml file matches",
+			args: args{
+				schemas:     []string{schema},
+				fileType:    FileTypeYAML,
+				fileName:    "test.yml",
+				fileContent: `service: test`,
+			},
+			matches: true,
+		},
+		{
+			name: "yaml file does not matches",
+			args: args{
+				schemas:     []string{schema},
+				fileType:    FileTypeYAML,
+				fileName:    "test.yaml",
+				fileContent: `somefield: test`,
+			},
+			matches: false,
+		},
+		{
+			name: "broken yaml file",
+			args: args{
+				schemas:  []string{schema},
+				fileType: FileTypeYAML,
+				fileName: "test.yaml",
+				fileContent: `text foobar
+number: 2`,
+			},
+			matches: false,
+		},
+		{
+			name: "multiple schemas",
+			args: args{
+				schemas:     []string{schema, schema2},
+				fileType:    FileTypeYAML,
+				fileName:    "test.yaml",
+				fileContent: `provider: test`,
+			},
+			matches: true,
+		},
+	}
+	for _, tt := range tests {
+		schemas := make(map[string]*gojsonschema.Schema)
+		for i, content := range tt.args.schemas {
+			l := gojsonschema.NewStringLoader(content)
+			s, err := gojsonschema.NewSchema(l)
+			require.NoError(t, err)
+			schemas[fmt.Sprintf("schema-%d.json", i)] = s
+		}
+		rs := strings.NewReader(tt.args.fileContent)
+		got := IsFileMatchesSchemas(schemas, tt.args.fileType, tt.args.fileName, rs)
+		assert.Equal(t, tt.matches, got)
 	}
 }

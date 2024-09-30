@@ -32,17 +32,17 @@ license
 simple
     : IDENT
     {
-        $$ = SimpleExpr{license: $1.literal}
+        $$ = SimpleExpr{License: $1.literal}
     }
     | simple IDENT /* e.g. Public Domain */
     {
-        $$ = SimpleExpr{license: $1.String() + " " + $2.literal}
+        $$ = SimpleExpr{License: $1.String() + " " + $2.literal}
     }
 
 plus
     : simple '+'
     {
-        $$ = SimpleExpr{license: $1.String(), hasPlus: true}
+        $$ = SimpleExpr{License: $1.String(), HasPlus: true}
     }
 
 compound

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"net/http"
 
+	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -19,6 +20,7 @@ type RemoteOptions struct {
 	ServerAddr    string
 	CustomHeaders http.Header
 	Insecure      bool
+	PathPrefix    string
 }
 
 // RemoteCache implements remote cache
@@ -39,7 +41,12 @@ func NewRemoteCache(opts RemoteOptions) *RemoteCache {
 			},
 		},
 	}
-	c := rpcCache.NewCacheProtobufClient(opts.ServerAddr, httpClient)
+
+	var twirpOpts []twirp.ClientOption
+	if opts.PathPrefix != "" {
+		twirpOpts = append(twirpOpts, twirp.WithClientPathPrefix(opts.PathPrefix))
+	}
+	c := rpcCache.NewCacheProtobufClient(opts.ServerAddr, httpClient, twirpOpts...)
 	return &RemoteCache{
 		ctx:    ctx,
 		client: c,

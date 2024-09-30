@@ -62,10 +62,7 @@ func NewFakeDB(t *testing.T, dbPath string, opts FakeDBOptions) *oci.Artifact {
 	opt := ftypes.RegistryOptions{
 		Insecure: false,
 	}
-	art, err := oci.NewArtifact("dummy", true, opt, oci.WithImage(img))
-	require.NoError(t, err)
-
-	return art
+	return oci.NewArtifact("dummy", true, opt, oci.WithImage(img))
 }
 
 func ArchiveDir(t *testing.T, dir string) string {

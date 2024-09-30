@@ -6,7 +6,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/samber/lo"
 )
@@ -34,11 +33,18 @@ func New(h slog.Handler) *Logger {
 	return slog.New(h)
 }
 
-// InitLogger initialize the logger variable
+// InitLogger initializes the logger variable and flushes the buffered logs if needed.
 func InitLogger(debug, disable bool) {
 	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
 	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
-	slog.SetDefault(New(NewHandler(out, &Options{Level: level})))
+	h := NewHandler(out, &Options{Level: level})
+
+	// Flush the buffered logs if needed.
+	if d, ok := slog.Default().Handler().(*DeferredHandler); ok {
+		d.Flush(h)
+	}
+
+	slog.SetDefault(New(h))
 }
 
 var (
@@ -82,19 +88,4 @@ func Fatal(msg string, args ...any) {
 	}
 	slog.Default().Log(context.Background(), LevelFatal, msg, args...)
 	os.Exit(1)
-}
-
-// WriteLogger is a wrapper around Logger to implement io.Writer
-type WriteLogger struct {
-	logger *Logger
-}
-
-// NewWriteLogger creates a new WriteLogger
-func NewWriteLogger(logger *Logger) *WriteLogger {
-	return &WriteLogger{logger: logger}
-}
-
-func (l *WriteLogger) Write(p []byte) (n int, err error) {
-	l.logger.Debug(strings.TrimSpace(string(p)))
-	return len(p), nil
 }

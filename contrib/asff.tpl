@@ -108,7 +108,7 @@
                     "Region": "{{ env "AWS_REGION" }}",
                     "Details": {
                         "Other": {
-                            "Message": "{{ .Message }}",
+                            "Message": "{{ escapeString .Message }}",
                             "Filename": "{{ $target }}",
                             "StartLine": "{{ .CauseMetadata.StartLine }}",
                             "EndLine": "{{ .CauseMetadata.EndLine }}"

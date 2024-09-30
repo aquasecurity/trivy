@@ -57,7 +57,7 @@ type Artifact struct {
 }
 
 // NewArtifact returns a new artifact
-func NewArtifact(repo string, quiet bool, registryOpt types.RegistryOptions, opts ...Option) (*Artifact, error) {
+func NewArtifact(repo string, quiet bool, registryOpt types.RegistryOptions, opts ...Option) *Artifact {
 	art := &Artifact{
 		repository:      repo,
 		quiet:           quiet,
@@ -67,7 +67,7 @@ func NewArtifact(repo string, quiet bool, registryOpt types.RegistryOptions, opt
 	for _, o := range opts {
 		o(art)
 	}
-	return art, nil
+	return art
 }
 
 func (a *Artifact) populate(ctx context.Context, opt types.RegistryOptions) error {

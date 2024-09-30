@@ -93,7 +93,7 @@ Note that Rego
 Ensure that you have Trivy installed and run the following command:
 
 ```bash
-trivy fs --scanners misconf --policy ./docker-check.rego --namespaces custom ./Dockerfile
+trivy fs --scanners misconf --config-check ./docker-check.rego --namespaces custom ./Dockerfile
 ```
 
 Please replace:

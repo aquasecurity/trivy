@@ -9,8 +9,8 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_BasicScan(t *testing.T) {
@@ -48,7 +48,7 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(options.ScannerWithPolicyDirs("rules"))
+	scanner := NewScanner(rego.WithPolicyDirs("rules"))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -73,6 +73,8 @@ deny[res] {
 			Terraform: (*scan.TerraformCustomCheck)(nil),
 		},
 		RegoPackage: "data.builtin.json.lol",
-		Frameworks:  make(map[framework.Framework][]string),
+		Frameworks: map[framework.Framework][]string{
+			framework.Default: {},
+		},
 	}, results.GetFailed()[0].Rule())
 }

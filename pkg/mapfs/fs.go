@@ -123,7 +123,7 @@ func (m *FS) CopyFilesUnder(dir string) error {
 
 // Stat returns a FileInfo describing the file.
 func (m *FS) Stat(name string) (fs.FileInfo, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.Stat(filepath.Join(m.underlyingRoot, name))
 	}
 
@@ -145,7 +145,7 @@ func (m *FS) Stat(name string) (fs.FileInfo, error) {
 // ReadDir reads the named directory
 // and returns a list of directory entries sorted by filename.
 func (m *FS) ReadDir(name string) ([]fs.DirEntry, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.ReadDir(filepath.Join(m.underlyingRoot, name))
 	}
 	return m.root.ReadDir(cleanPath(name))
@@ -153,7 +153,7 @@ func (m *FS) ReadDir(name string) ([]fs.DirEntry, error) {
 
 // Open opens the named file for reading.
 func (m *FS) Open(name string) (fs.File, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.Open(filepath.Join(m.underlyingRoot, name))
 	}
 	return m.root.Open(cleanPath(name))
@@ -188,7 +188,7 @@ func (m *FS) MkdirAll(path string, perm fs.FileMode) error {
 // The caller is permitted to modify the returned byte slice.
 // This method should return a copy of the underlying data.
 func (m *FS) ReadFile(name string) ([]byte, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.ReadFile(filepath.Join(m.underlyingRoot, name))
 	}
 
@@ -244,4 +244,8 @@ func cleanPath(path string) string {
 	path = filepath.ToSlash(path)
 	path = strings.TrimLeft(path, "/") // Remove the leading slash
 	return path
+}
+
+func (m *FS) isPathAboveRoot(name string) bool {
+	return (name == ".." || strings.HasPrefix(name, "../")) && m.underlyingRoot != ""
 }

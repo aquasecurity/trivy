@@ -33,7 +33,7 @@ func adaptDistribution(resource *terraform.Block) cloudfront.Distribution {
 		},
 		DefaultCacheBehaviour: cloudfront.CacheBehaviour{
 			Metadata:             resource.GetMetadata(),
-			ViewerProtocolPolicy: types.String("allow-all", resource.GetMetadata()),
+			ViewerProtocolPolicy: types.StringDefault("", resource.GetMetadata()),
 		},
 		OrdererCacheBehaviours: nil,
 		ViewerCertificate: cloudfront.ViewerCertificate{
@@ -53,13 +53,13 @@ func adaptDistribution(resource *terraform.Block) cloudfront.Distribution {
 	if defaultCacheBlock := resource.GetBlock("default_cache_behavior"); defaultCacheBlock.IsNotNil() {
 		distribution.DefaultCacheBehaviour.Metadata = defaultCacheBlock.GetMetadata()
 		viewerProtocolPolicyAttr := defaultCacheBlock.GetAttribute("viewer_protocol_policy")
-		distribution.DefaultCacheBehaviour.ViewerProtocolPolicy = viewerProtocolPolicyAttr.AsStringValueOrDefault("allow-all", defaultCacheBlock)
+		distribution.DefaultCacheBehaviour.ViewerProtocolPolicy = viewerProtocolPolicyAttr.AsStringValueOrDefault("", defaultCacheBlock)
 	}
 
 	orderedCacheBlocks := resource.GetBlocks("ordered_cache_behavior")
 	for _, orderedCacheBlock := range orderedCacheBlocks {
 		viewerProtocolPolicyAttr := orderedCacheBlock.GetAttribute("viewer_protocol_policy")
-		viewerProtocolPolicyVal := viewerProtocolPolicyAttr.AsStringValueOrDefault("allow-all", orderedCacheBlock)
+		viewerProtocolPolicyVal := viewerProtocolPolicyAttr.AsStringValueOrDefault("", orderedCacheBlock)
 		distribution.OrdererCacheBehaviours = append(distribution.OrdererCacheBehaviours, cloudfront.CacheBehaviour{
 			Metadata:             orderedCacheBlock.GetMetadata(),
 			ViewerProtocolPolicy: viewerProtocolPolicyVal,

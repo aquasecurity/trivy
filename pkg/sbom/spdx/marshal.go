@@ -33,6 +33,7 @@ const (
 	CreatorOrganization    = "aquasecurity"
 	CreatorTool            = "trivy"
 	noneField              = "NONE"
+	noAssertionField       = "NOASSERTION"
 )
 
 const (
@@ -378,7 +379,7 @@ func (m *Marshaler) spdxAttributionTexts(c *core.Component) []string {
 
 func (m *Marshaler) spdxLicense(c *core.Component) string {
 	if len(c.Licenses) == 0 {
-		return noneField
+		return noAssertionField
 	}
 	return NormalizeLicense(c.Licenses)
 }
@@ -546,7 +547,7 @@ func NormalizeLicense(licenses []string) string {
 
 		return fmt.Sprintf("(%s)", license)
 	}), " AND ")
-	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
+	s, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
 	if err != nil {
 		// Not fail on the invalid license
 		log.Warn("Unable to marshal SPDX licenses", log.String("license", license))

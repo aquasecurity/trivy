@@ -1,9 +1,7 @@
 package tfjson
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"os"
 	"testing"
 
@@ -11,23 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
-func Test_TerraformScanner(t *testing.T) {
-	t.Parallel()
-
-	testCases := []struct {
-		name      string
-		inputFile string
-		inputRego string
-		options   []options.ScannerOption
-	}{
-		{
-			name:      "old rego metadata",
-			inputFile: "test/testdata/plan.json",
-			inputRego: `
-package defsec.abcdefg
+const defaultCheck = `package defsec.abcdefg
 
 __rego_metadata__ := {
 	"id": "TEST123",
@@ -50,48 +36,40 @@ deny[cause] {
 	bucket := input.aws.s3.buckets[_]
 	bucket.name.value == "tfsec-plan-testing"
 	cause := bucket.name
-}
-`,
+}`
+
+func Test_TerraformScanner(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name      string
+		inputFile string
+		check     string
+		options   []options.ScannerOption
+	}{
+		{
+			name:      "old rego metadata",
+			inputFile: "test/testdata/plan.json",
+			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
+				rego.WithPolicyDirs("rules"),
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithEmbeddedPolicies(false)},
+			},
 		},
 		{
 			name:      "with user namespace",
 			inputFile: "test/testdata/plan.json",
-			inputRego: ` 
-# METADATA
-# title: Bad buckets are bad
-# description: Bad buckets are bad because they are not good.
-# scope: package
-# schemas:
-#   - input: schema["input"]
-# custom:
-#   avd_id: AVD-TEST-0123
-#   severity: CRITICAL
-#   short_code: very-bad-misconfig
-#   recommended_action: "Fix the s3 bucket"
-
-package user.foobar.ABC001
-
-deny[cause] {
-	bucket := input.aws.s3.buckets[_]
-	bucket.name.value == "tfsec-plan-testing"
-	cause := bucket.name
-}
-`,
+			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
+				rego.WithPolicyDirs("rules"),
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithEmbeddedPolicies(false),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 		{
 			name:      "with templated plan json",
 			inputFile: "test/testdata/plan_with_template.json",
-			inputRego: `
+			check: `
 # METADATA
 # title: Bad buckets are bad
 # description: Bad buckets are bad because they are not good.
@@ -113,25 +91,32 @@ deny[cause] {
 }
 `,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
+				rego.WithPolicyDirs("rules"),
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithEmbeddedPolicies(false),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyNamespaces("user"),
+			},
+		},
+		{
+			name:      "plan with arbitrary name",
+			inputFile: "test/testdata/arbitrary_name.json",
+			check:     defaultCheck,
+			options: []options.ScannerOption{
+				rego.WithPolicyDirs("rules"),
+				options.ScannerWithRegoOnly(true),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			b, _ := os.ReadFile(tc.inputFile)
 			fs := testutil.CreateFS(t, map[string]string{
 				"/code/main.tfplan.json": string(b),
-				"/rules/test.rego":       tc.inputRego,
+				"/rules/test.rego":       tc.check,
 			})
 
-			debugLog := bytes.NewBuffer([]byte{})
-			so := append(tc.options, options.ScannerWithDebug(debugLog), options.ScannerWithPolicyFilesystem(fs))
+			so := append(tc.options, rego.WithPolicyFilesystem(fs))
 			scanner := New(so...)
 
 			results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -142,9 +127,6 @@ deny[cause] {
 			failure := results.GetFailed()[0]
 
 			assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
-			if t.Failed() {
-				fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-			}
 		})
 	}
 }

@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 const DS006PolicyWithDockerfileSchema = `# METADATA
@@ -220,7 +219,7 @@ USER root
 		"/rules/rule.rego": DS006LegacyWithOldStyleMetadata,
 	})
 
-	scanner := NewScanner(options.ScannerWithPolicyDirs("rules"))
+	scanner := NewScanner(rego.WithPolicyDirs("rules"))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -252,7 +251,9 @@ USER root
 			CustomChecks: scan.CustomChecks{
 				Terraform: (*scan.TerraformCustomCheck)(nil)},
 			RegoPackage: "data.builtin.dockerfile.DS006",
-			Frameworks:  make(map[framework.Framework][]string),
+			Frameworks: map[framework.Framework][]string{
+				framework.Default: {},
+			},
 		},
 		results.GetFailed()[0].Rule(),
 	)
@@ -553,29 +554,23 @@ res := true
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			regoMap := make(map[string]string)
-			libs, err := rego.LoadEmbeddedLibraries()
-			require.NoError(t, err)
-			for name, library := range libs {
-				regoMap["/rules/"+name] = library.String()
-			}
-			regoMap["/code/Dockerfile"] = `FROM golang:1.7.3 as dep
+			fsysMap := make(map[string]string)
+			fsysMap["/code/Dockerfile"] = `FROM golang:1.7.3 as dep
 COPY --from=dep /binary /`
-			regoMap["/rules/rule.rego"] = tc.inputRegoPolicy
-			regoMap["/rules/schemas/myfancydockerfile.json"] = string(schemas.Dockerfile) // just use the same for testing
-			fs := testutil.CreateFS(t, regoMap)
+			fsysMap["/rules/rule.rego"] = tc.inputRegoPolicy
+			fsysMap["/rules/schemas/myfancydockerfile.json"] = string(schemas.Dockerfile) // just use the same for testing
+			fsys := testutil.CreateFS(t, fsysMap)
 
 			var traceBuf bytes.Buffer
-			var debugBuf bytes.Buffer
 
 			scanner := NewScanner(
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithTrace(&traceBuf),
-				options.ScannerWithDebug(&debugBuf),
-				options.ScannerWithRegoErrorLimits(0),
+				rego.WithPolicyDirs("rules"),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithTrace(&traceBuf),
+				rego.WithRegoErrorLimits(0),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fs, "code")
+			results, err := scanner.ScanFS(context.TODO(), fsys, "code")
 			if tc.expectedError != "" && err != nil {
 				require.Equal(t, tc.expectedError, err.Error(), tc.name)
 			} else {
@@ -607,7 +602,9 @@ COPY --from=dep /binary /`
 						CustomChecks: scan.CustomChecks{
 							Terraform: (*scan.TerraformCustomCheck)(nil)},
 						RegoPackage: "data.builtin.dockerfile.DS006",
-						Frameworks:  make(map[framework.Framework][]string),
+						Frameworks: map[framework.Framework][]string{
+							framework.Default: {},
+						},
 					},
 					results.GetFailed()[0].Rule(),
 				)

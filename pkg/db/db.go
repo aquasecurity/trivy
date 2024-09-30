@@ -153,16 +153,23 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 		log.Debug("No metadata file")
 	}
 
-	art, err := c.initOCIArtifact(opt)
-	if err != nil {
-		return xerrors.Errorf("OCI artifact error: %w", err)
-	}
-
-	if err = art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
+	art := c.initOCIArtifact(opt)
+	if err := art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
+		var terr *transport.Error
+		if errors.As(err, &terr) {
+			for _, diagnostic := range terr.Errors {
+				// For better user experience
+				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
+					// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
+					log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
+					break
+				}
+			}
+		}
 		return xerrors.Errorf("database download error: %w", err)
 	}
 
-	if err = c.updateDownloadedAt(ctx, dst); err != nil {
+	if err := c.updateDownloadedAt(ctx, dst); err != nil {
 		return xerrors.Errorf("failed to update downloaded_at: %w", err)
 	}
 	return nil
@@ -194,27 +201,11 @@ func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	return nil
 }
 
-func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, error) {
+func (c *Client) initOCIArtifact(opt types.RegistryOptions) *oci.Artifact {
 	if c.artifact != nil {
-		return c.artifact, nil
+		return c.artifact
 	}
-
-	art, err := oci.NewArtifact(c.dbRepository.String(), c.quiet, opt)
-	if err != nil {
-		var terr *transport.Error
-		if errors.As(err, &terr) {
-			for _, diagnostic := range terr.Errors {
-				// For better user experience
-				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-					// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
-					log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
-					break
-				}
-			}
-		}
-		return nil, xerrors.Errorf("OCI artifact error: %w", err)
-	}
-	return art, nil
+	return oci.NewArtifact(c.dbRepository.String(), c.quiet, opt)
 }
 
 func (c *Client) ShowInfo() error {

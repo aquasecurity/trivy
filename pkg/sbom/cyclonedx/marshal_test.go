@@ -1462,7 +1462,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "com.fasterxml.jackson.core:jackson-databind",
 								Version: "2.13.4.1",
 								Identifier: ftypes.PkgIdentifier{
-									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 									UID:    "9A5066570222D04C",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
@@ -1480,7 +1480,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								PkgName:         "com.fasterxml.jackson.core:jackson-databind",
 								PkgPath:         "jackson-databind-2.13.4.1.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 									UID:    "9A5066570222D04C",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,

@@ -15,6 +15,9 @@ const (
 )
 
 func TypeFromGoValue(value any) CfType {
+	if value == nil {
+		return Unknown
+	}
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
 		return String

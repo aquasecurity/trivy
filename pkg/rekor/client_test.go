@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -56,6 +57,9 @@ func TestClient_Search(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if !strings.HasPrefix(r.UserAgent(), "trivy/") {
+					t.Fatalf("User-Agent header was not specified")
+				}
 				http.ServeFile(w, r, tt.mockResponseFile)
 				return
 			}))
@@ -148,6 +152,9 @@ func TestClient_GetEntries(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if !strings.HasPrefix(r.UserAgent(), "trivy/") {
+					t.Fatalf("User-Agent header was not specified")
+				}
 				http.ServeFile(w, r, tt.mockResponseFile)
 				return
 			}))

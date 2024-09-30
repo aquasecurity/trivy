@@ -8,6 +8,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type cacheResolver struct{}
@@ -42,27 +44,27 @@ func locateCacheDir(cacheDir string) (string, error) {
 
 func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
 	if opt.SkipCache {
-		opt.Debug("Cache is disabled.")
+		opt.Logger.Debug("Module caching is disabled")
 		return nil, "", "", false, nil
 	}
 	cacheFS, err := locateCacheFS(opt.CacheDir)
 	if err != nil {
-		opt.Debug("No cache filesystem is available on this machine.")
+		opt.Logger.Debug("No cache filesystem is available on this machine.", log.Err(err))
 		return nil, "", "", false, nil
 	}
 
-	src := removeSubdirFromSource(opt.Source)
+	src, subdir := splitPackageSubdirRaw(opt.Source)
 	key := cacheKey(src, opt.Version)
 
-	opt.Debug("Trying to resolve: %s", key)
+	opt.Logger.Debug("Trying to resolve module via cache", log.String("key", key))
 	if info, err := fs.Stat(cacheFS, filepath.ToSlash(key)); err == nil && info.IsDir() {
-		opt.Debug("Module '%s' resolving via cache...", opt.Name)
+		opt.Logger.Debug("Module resolved from cache", log.String("key", key))
 		cacheDir, err := locateCacheDir(opt.CacheDir)
 		if err != nil {
 			return nil, "", "", true, err
 		}
 
-		return os.DirFS(filepath.Join(cacheDir, key)), opt.OriginalSource, ".", true, nil
+		return os.DirFS(filepath.Join(cacheDir, key)), opt.OriginalSource, subdir, true, nil
 	}
 	return nil, "", "", false, nil
 }

@@ -80,7 +80,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	if license == "" && h.Get("License-File") != "" {
-		license = "file://" + h.Get("License-File")
+		license = licensing.LicenseFilePrefix + h.Get("License-File")
 	}
 
 	return []ftypes.Package{

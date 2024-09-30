@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -19,8 +20,9 @@ import (
 )
 
 type Encoder struct {
-	bom  *core.BOM
-	opts core.Options
+	bom        *core.BOM
+	opts       core.Options
+	components map[uuid.UUID]*core.Component
 }
 
 func NewEncoder(opts core.Options) *Encoder {
@@ -28,6 +30,9 @@ func NewEncoder(opts core.Options) *Encoder {
 }
 
 func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
+	if report.BOM != nil {
+		e.components = report.BOM.Components()
+	}
 	// Metadata component
 	root, err := e.rootComponent(report)
 	if err != nil {
@@ -257,6 +262,16 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	}
 }
 
+// existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
+func (e *Encoder) existedPkgIdentifier(name string, componentType core.ComponentType) ftypes.PkgIdentifier {
+	for _, c := range e.components {
+		if c.Name == name && c.Type == componentType {
+			return c.PkgIdentifier
+		}
+	}
+	return ftypes.PkgIdentifier{}
+}
+
 func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
@@ -279,8 +294,10 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 			component.Version = osFound.Name
 		}
 		component.Type = core.TypeOS
+		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	case types.ClassLangPkg:
 		component.Type = core.TypeApplication
+		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	}
 
 	e.bom.AddRelationship(root, component, core.RelationshipContains)
@@ -377,8 +394,9 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		SrcVersion: utils.FormatSrcVersion(pkg),
 		SrcFile:    srcFile,
 		PkgIdentifier: ftypes.PkgIdentifier{
-			UID:  pkg.Identifier.UID,
-			PURL: pkg.Identifier.PURL,
+			UID:    pkg.Identifier.UID,
+			PURL:   pkg.Identifier.PURL,
+			BOMRef: pkg.Identifier.BOMRef,
 		},
 		Supplier:   pkg.Maintainer,
 		Licenses:   pkg.Licenses,

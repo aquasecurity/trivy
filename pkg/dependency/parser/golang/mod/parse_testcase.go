@@ -1,6 +1,10 @@
 package mod
 
-import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+import (
+	"slices"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+)
 
 var (
 	// execute go mod tidy in normal folder
@@ -17,36 +21,70 @@ var (
 			},
 		},
 		{
-			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
-			Name:         "github.com/aquasecurity/go-dep-parser",
-			Version:      "0.0.0-20211224170007-df43bca6b6ff",
+			ID:           "stdlib@v1.22.5",
+			Name:         "stdlib",
+			Version:      "1.22.5",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
+			Name:         "github.com/aquasecurity/go-version",
+			Version:      "0.0.0-20240603093900-cf8a8d29271d",
 			Relationship: ftypes.RelationshipDirect,
 			ExternalReferences: []ftypes.ExternalRef{
 				{
 					Type: ftypes.RefVCS,
-					URL:  "https://github.com/aquasecurity/go-dep-parser",
+					URL:  "https://github.com/aquasecurity/go-version",
 				},
 			},
 		},
 		{
-			ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
-			Name:         "golang.org/x/xerrors",
-			Version:      "0.0.0-20200804184101-5ec99f83aff1",
-			Relationship: ftypes.RelationshipIndirect,
-		},
-		{
-			ID:           "gopkg.in/yaml.v3@v3.0.0-20210107192922-496545a6307b",
-			Name:         "gopkg.in/yaml.v3",
-			Version:      "3.0.0-20210107192922-496545a6307b",
+			ID:           "github.com/davecgh/go-spew@v1.1.2-0.20180830191138-d8f796af33cc",
+			Name:         "github.com/davecgh/go-spew",
+			Version:      "1.1.2-0.20180830191138-d8f796af33cc",
 			Relationship: ftypes.RelationshipIndirect,
 			ExternalReferences: []ftypes.ExternalRef{
 				{
 					Type: ftypes.RefVCS,
-					URL:  "https://github.com/go-yaml/yaml",
+					URL:  "https://github.com/davecgh/go-spew",
 				},
 			},
 		},
+		{
+			ID:           "github.com/pmezard/go-difflib@v1.0.1-0.20181226105442-5d4384ee4fb2",
+			Name:         "github.com/pmezard/go-difflib",
+			Version:      "1.0.1-0.20181226105442-5d4384ee4fb2",
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefVCS,
+					URL:  "https://github.com/pmezard/go-difflib",
+				},
+			},
+		},
+		{
+			ID:           "github.com/stretchr/testify@v1.9.0",
+			Name:         "github.com/stretchr/testify",
+			Version:      "1.9.0",
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefVCS,
+					URL:  "https://github.com/stretchr/testify",
+				},
+			},
+		},
+		{
+			ID:           "golang.org/x/xerrors@v0.0.0-20231012003039-104605ab7028",
+			Name:         "golang.org/x/xerrors",
+			Version:      "0.0.0-20231012003039-104605ab7028",
+			Relationship: ftypes.RelationshipIndirect,
+		},
 	}
+
+	GoModNormalWithoutStdlib = slices.DeleteFunc(slices.Clone(GoModNormal), func(f ftypes.Package) bool {
+		return f.Name == "stdlib"
+	})
 
 	// execute go mod tidy in replaced folder
 	GoModReplaced = []ftypes.Package{

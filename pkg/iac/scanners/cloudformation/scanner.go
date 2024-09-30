@@ -3,13 +3,11 @@ package cloudformation
 import (
 	"context"
 	"fmt"
-	"io"
 	"io/fs"
 	"sort"
 	"sync"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation"
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -18,12 +16,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func WithParameters(params map[string]any) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithParameters(params))
+			s.addParserOption(parser.WithParameters(params))
 		}
 	}
 }
@@ -31,7 +30,7 @@ func WithParameters(params map[string]any) options.ScannerOption {
 func WithParameterFiles(files ...string) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithParameterFiles(files...))
+			s.addParserOption(parser.WithParameterFiles(files...))
 		}
 	}
 }
@@ -39,7 +38,7 @@ func WithParameterFiles(files ...string) options.ScannerOption {
 func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 	return func(cs options.ConfigurableScanner) {
 		if s, ok := cs.(*Scanner); ok {
-			s.addParserOptions(parser.WithConfigsFS(fsys))
+			s.addParserOption(parser.WithConfigsFS(fsys))
 		}
 	}
 }
@@ -47,43 +46,28 @@ func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct { // nolint: gocritic
-	debug                 debug.Logger
-	policyDirs            []string
-	policyReaders         []io.Reader
-	parser                *parser.Parser
-	regoScanner           *rego.Scanner
-	skipRequired          bool
-	regoOnly              bool
-	loadEmbeddedPolicies  bool
-	loadEmbeddedLibraries bool
-	options               []options.ScannerOption
-	parserOptions         []options.ParserOption
-	frameworks            []framework.Framework
-	spec                  string
-	sync.Mutex
+type Scanner struct {
+	mu                      sync.Mutex
+	logger                  *log.Logger
+	parser                  *parser.Parser
+	regoScanner             *rego.Scanner
+	regoOnly                bool
+	options                 []options.ScannerOption
+	parserOptions           []parser.Option
+	frameworks              []framework.Framework
+	includeDeprecatedChecks bool
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(bool) {}
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
+	s.includeDeprecatedChecks = b
+}
 
-func (s *Scanner) addParserOptions(opt options.ParserOption) {
+func (s *Scanner) addParserOption(opt parser.Option) {
 	s.parserOptions = append(s.parserOptions, opt)
 }
 
 func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 	s.frameworks = frameworks
-}
-
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	s.loadEmbeddedPolicies = b
-}
-
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	s.loadEmbeddedLibraries = b
 }
 
 func (s *Scanner) SetRegoOnly(regoOnly bool) {
@@ -94,58 +78,27 @@ func (s *Scanner) Name() string {
 	return "CloudFormation"
 }
 
-func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
-	s.policyReaders = readers
-}
-
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "cloudformation", "scanner")
-}
-
-func (s *Scanner) SetPolicyDirs(dirs ...string) {
-	s.policyDirs = dirs
-}
-
-func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-
-func (s *Scanner) SetDataFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-func (s *Scanner) SetRegoErrorLimit(_ int) {}
-
-func (s *Scanner) SetTraceWriter(_ io.Writer)        {}
-func (s *Scanner) SetPerResultTracingEnabled(_ bool) {}
-func (s *Scanner) SetDataDirs(_ ...string)           {}
-func (s *Scanner) SetPolicyNamespaces(_ ...string)   {}
-
 // New creates a new Scanner
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("cloudformation scanner"),
 	}
 	for _, opt := range opts {
 		opt(s)
 	}
-	s.addParserOptions(options.ParserWithSkipRequiredCheck(s.skipRequired))
 	s.parser = parser.New(s.parserOptions...)
 	return s
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
 	regoScanner := rego.NewScanner(types.SourceCloud, s.options...)
-	regoScanner.SetParentDebugLogger(s.debug)
-	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
+	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return nil, err
 	}
 	s.regoScanner = regoScanner
@@ -220,12 +173,13 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 				return nil, ctx.Err()
 			default:
 			}
-			if rule.GetRule().RegoPackage != "" {
-				continue
+
+			if !s.includeDeprecatedChecks && rule.Deprecated {
+				continue // skip deprecated checks
 			}
+
 			evalResult := rule.Evaluate(state)
 			if len(evalResult) > 0 {
-				s.debug.Log("Found %d results for %s", len(evalResult), rule.GetRule().AVDID)
 				for _, scanResult := range evalResult {
 
 					ref := scanResult.Metadata().Reference()
@@ -254,7 +208,10 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 	results.Ignore(cfCtx.Ignores, nil)
 
 	for _, ignored := range results.GetIgnored() {
-		s.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
+		s.logger.Info("Ignore finding",
+			log.String("rule", ignored.Rule().LongID()),
+			log.String("range", ignored.Range().String()),
+		)
 	}
 
 	return results, nil

@@ -149,6 +149,15 @@ func Test_Adapt(t *testing.T) {
 			 resource "aws_s3_bucket_acl" "example" {
 				bucket = aws_s3_bucket.example.id
 				acl    = "private"
+				access_control_policy {
+					grant {
+						grantee {
+							type = "Group"
+							uri  = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+						}
+						permission = "READ_ACP"
+					}
+				}
 			  }
 
 			  resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
@@ -250,6 +259,51 @@ func Test_Adapt(t *testing.T) {
 							TargetBucket: iacTypes.String("aws_s3_bucket.example", iacTypes.NewTestMetadata()),
 						},
 						ACL: iacTypes.String("private", iacTypes.NewTestMetadata()),
+						Grants: []s3.Grant{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Grantee: s3.Grantee{
+									Type: iacTypes.StringTest("Group"),
+									URI:  iacTypes.StringTest("http://acs.amazonaws.com/groups/s3/LogDelivery"),
+								},
+								Permissions: iacTypes.StringValueList{
+									iacTypes.StringTest("READ_ACP"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "bucket with grants",
+			terraform: `
+resource "aws_s3_bucket" "this" {
+  bucket = "test"
+
+  grant {
+	type = "Group"
+	uri  = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+	permissions = ["FULL_CONTROL"]
+  }
+}
+`,
+			expected: s3.S3{
+				Buckets: []s3.Bucket{
+					{
+						Name: iacTypes.StringTest("test"),
+						ACL:  iacTypes.StringTest("private"),
+						Grants: []s3.Grant{
+							{
+								Grantee: s3.Grantee{
+									Type: iacTypes.StringTest("Group"),
+									URI:  iacTypes.StringTest("http://acs.amazonaws.com/groups/s3/LogDelivery"),
+								},
+								Permissions: iacTypes.StringValueList{
+									iacTypes.StringTest("FULL_CONTROL"),
+								},
+							},
+						},
 					},
 				},
 			},

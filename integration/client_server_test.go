@@ -32,6 +32,7 @@ type csArgs struct {
 	Input             string
 	ClientToken       string
 	ClientTokenHeader string
+	PathPrefix        string
 	ListAllPackages   bool
 	Target            string
 	secretConfig      string
@@ -220,6 +221,13 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/opensuse-tumbleweed.json.golden",
 		},
 		{
+			name: "sle micro rancher 5.4",
+			args: csArgs{
+				Input: "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+			},
+			golden: "testdata/sl-micro-rancher5.4.json.golden",
+		},
+		{
 			name: "photon 3.0",
 			args: csArgs{
 				Input: "testdata/fixtures/images/photon-30.tar.gz",
@@ -287,7 +295,7 @@ func TestClientServer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 
 			if tt.args.secretConfig != "" {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
@@ -407,7 +415,7 @@ func TestClientServerWithFormat(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("AWS_REGION", "test-region")
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 
 			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
 				override: overrideUID,
@@ -435,7 +443,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, "", types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
@@ -443,7 +451,11 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	}
 }
 
-func TestClientServerWithToken(t *testing.T) {
+func TestClientServerWithCustomOptions(t *testing.T) {
+	token := "token"
+	tokenHeader := "Trivy-Token"
+	pathPrefix := "prefix"
+
 	tests := []struct {
 		name    string
 		args    csArgs
@@ -451,11 +463,12 @@ func TestClientServerWithToken(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name: "alpine 3.9 with token",
+			name: "alpine 3.9 with token and prefix",
 			args: csArgs{
 				Input:             "testdata/fixtures/images/alpine-39.tar.gz",
-				ClientToken:       "token",
-				ClientTokenHeader: "Trivy-Token",
+				ClientToken:       token,
+				ClientTokenHeader: tokenHeader,
+				PathPrefix:        pathPrefix,
 			},
 			golden: "testdata/alpine-39.json.golden",
 		},
@@ -464,7 +477,8 @@ func TestClientServerWithToken(t *testing.T) {
 			args: csArgs{
 				Input:             "testdata/fixtures/images/distroless-base.tar.gz",
 				ClientToken:       "invalidtoken",
-				ClientTokenHeader: "Trivy-Token",
+				ClientTokenHeader: tokenHeader,
+				PathPrefix:        pathPrefix,
 			},
 			wantErr: "twirp error unauthenticated: invalid token",
 		},
@@ -472,23 +486,33 @@ func TestClientServerWithToken(t *testing.T) {
 			name: "invalid token header",
 			args: csArgs{
 				Input:             "testdata/fixtures/images/distroless-base.tar.gz",
-				ClientToken:       "token",
+				ClientToken:       token,
 				ClientTokenHeader: "Unknown-Header",
+				PathPrefix:        pathPrefix,
 			},
 			wantErr: "twirp error unauthenticated: invalid token",
 		},
+		{
+			name: "wrong path prefix",
+			args: csArgs{
+				Input:             "testdata/fixtures/images/distroless-base.tar.gz",
+				ClientToken:       token,
+				ClientTokenHeader: tokenHeader,
+				PathPrefix:        "wrong",
+			},
+			wantErr: "HTTP status code 404",
+		},
 	}
 
-	serverToken := "token"
-	serverTokenHeader := "Trivy-Token"
 	addr, cacheDir := setup(t, setupOptions{
-		token:       serverToken,
-		tokenHeader: serverTokenHeader,
+		token:       token,
+		tokenHeader: tokenHeader,
+		pathPrefix:  pathPrefix,
 	})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
 				override: overrideUID,
 				wantErr:  tt.wantErr,
@@ -515,7 +539,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	golden := "testdata/alpine-39.json.golden"
 
 	t.Run("alpine 3.9", func(t *testing.T) {
-		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
+		osArgs := setupClient(t, testArgs, addr, cacheDir)
 
 		// Run Trivy client
 		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{
@@ -527,7 +551,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	require.NoError(t, redisC.Terminate(ctx))
 
 	t.Run("sad path", func(t *testing.T) {
-		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
+		osArgs := setupClient(t, testArgs, addr, cacheDir)
 
 		// Run Trivy client
 		runTest(t, osArgs, "", "", types.FormatJSON, runOptions{
@@ -539,6 +563,7 @@ func TestClientServerWithRedis(t *testing.T) {
 type setupOptions struct {
 	token        string
 	tokenHeader  string
+	pathPrefix   string
 	cacheBackend string
 }
 
@@ -556,7 +581,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 	addr := fmt.Sprintf("localhost:%d", port)
 
 	go func() {
-		osArgs := setupServer(addr, options.token, options.tokenHeader, cacheDir, options.cacheBackend)
+		osArgs := setupServer(addr, options.token, options.tokenHeader, options.pathPrefix, cacheDir, options.cacheBackend)
 
 		// Run Trivy server
 		require.NoError(t, execute(osArgs))
@@ -569,22 +594,20 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 	return addr, cacheDir
 }
 
-func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []string {
+func setupServer(addr, token, tokenHeader, pathPrefix, cacheDir, cacheBackend string) []string {
 	osArgs := []string{
 		"--cache-dir",
 		cacheDir,
 		"server",
-		"--skip-update",
+		"--skip-db-update",
 		"--listen",
 		addr,
 	}
 	if token != "" {
-		osArgs = append(osArgs, []string{
-			"--token",
-			token,
-			"--token-header",
-			tokenHeader,
-		}...)
+		osArgs = append(osArgs, "--token", token, "--token-header", tokenHeader)
+	}
+	if pathPrefix != "" {
+		osArgs = append(osArgs, "--path-prefix", pathPrefix)
 	}
 	if cacheBackend != "" {
 		osArgs = append(osArgs, "--cache-backend", cacheBackend)
@@ -592,14 +615,14 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 	return osArgs
 }
 
-func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) []string {
+func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string {
+	t.Helper()
 	if c.Command == "" {
 		c.Command = "image"
 	}
 	if c.RemoteAddrOption == "" {
 		c.RemoteAddrOption = "--server"
 	}
-	t.Helper()
 	osArgs := []string{
 		"--cache-dir",
 		cacheDir,
@@ -638,6 +661,9 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 	}
 	if c.ClientToken != "" {
 		osArgs = append(osArgs, "--token", c.ClientToken, "--token-header", c.ClientTokenHeader)
+	}
+	if c.PathPrefix != "" {
+		osArgs = append(osArgs, "--path-prefix", c.PathPrefix)
 	}
 	if c.Input != "" {
 		osArgs = append(osArgs, "--input", c.Input)

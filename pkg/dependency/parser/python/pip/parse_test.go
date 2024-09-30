@@ -12,9 +12,10 @@ import (
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		name     string
-		filePath string
-		want     []ftypes.Package
+		name          string
+		filePath      string
+		useMinVersion bool
+		want          []ftypes.Package
 	}{
 		{
 			name:     "happy path",
@@ -66,6 +67,12 @@ func TestParse(t *testing.T) {
 			filePath: "testdata/requirements_with_templating_engine.txt",
 			want:     nil,
 		},
+		{
+			name:          "compatible versions",
+			filePath:      "testdata/requirements_compatible.txt",
+			useMinVersion: true,
+			want:          requirementsCompatibleVersions,
+		},
 	}
 
 	for _, tt := range tests {
@@ -73,7 +80,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.filePath)
 			require.NoError(t, err)
 
-			got, _, err := NewParser().Parse(f)
+			got, _, err := NewParser(tt.useMinVersion).Parse(f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)

@@ -40,6 +40,17 @@ importers:
         specifier: 2.0.0
         version: 2.0.0
 
+  subdir:
+    dependencies:
+      sleep-utils:
+        specifier: 1.0.3
+        version: 1.0.3
+
+    devDependencies:
+      await-sleep:
+        specifier: ^0.0.1
+        version: 0.0.1
+
 packages:
 
   '@babel/helper-string-parser@7.24.1':
@@ -51,6 +62,9 @@ packages:
 
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  await-sleep@0.0.1:
+    resolution: {integrity: sha512-H3X3eAxwGpeNIk/yvFOs8g7500Q1YvzrxjSC9TNgLGtjrMFxPwhDdcT34QNs2iGWpZ+5WKkMJdjDoYs+Sw+TaA==}
 
   debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -117,6 +131,9 @@ packages:
   promise@8.1.0:
     resolution: {integrity: sha512-W04AqnILOL/sPRXziNicCjSNRruLAuIHEOVBazepu0545DDNGYHz7ar9ZgZ1fMU8/MA4mVxp5rkBWRi6OXIy3Q==}
 
+  sleep-utils@1.0.3:
+    resolution: {integrity: sha512-uJW7WDHISE1zJIdvoIewcdmis3pBvJhM30rni2gH7fHhV1NkTWLKw3J6CPRFdg3h+rFChFHzAgbkCKUErd4s8Q==}
+
   statuses@1.4.0:
     resolution: {integrity: sha512-zhSCtt8v2NDrRlPQpCNtw/heZLtfUDqxBM1udqikb/Hbk52LK4nQSwr10u77iopCW5LsyHpuXS0GnEc48mLeew==}
     engines: {node: '>= 0.6'}
@@ -133,6 +150,8 @@ snapshots:
     optional: true
 
   asynckit@0.4.0: {}
+
+  await-sleep@0.0.1: {}
 
   debug@4.3.4(supports-color@8.1.1):
     dependencies:
@@ -185,6 +204,8 @@ snapshots:
   promise@8.1.0:
     optionalDependencies:
       asap: 2.0.6
+
+  sleep-utils@1.0.3: {}
 
   statuses@1.4.0: {}
 

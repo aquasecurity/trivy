@@ -1,10 +1,7 @@
 package terraform
 
 import (
-	"bytes"
 	"context"
-	"fmt"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,7 +11,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
@@ -86,9 +82,7 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	debug := bytes.NewBuffer([]byte{})
-
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true), options.ParserWithDebug(debug))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
@@ -98,9 +92,6 @@ resource "problem" "uhoh" {
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-	if t.Failed() {
-		fmt.Println(debug.String())
-	}
 }
 
 func Test_ProblemInModuleInSiblingDir(t *testing.T) {
@@ -293,7 +284,7 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true), options.ParserWithDebug(os.Stderr))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())

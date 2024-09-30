@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
@@ -39,7 +40,7 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 		"main.tf": source,
 	})
 
-	localScanner := New(append(opts, options.ScannerWithEmbeddedPolicies(false))...)
+	localScanner := New(append(opts, rego.WithEmbeddedPolicies(false))...)
 	results, err := localScanner.ScanFS(context.TODO(), fs, ".")
 	require.NoError(t, err)
 	return results
@@ -51,7 +52,7 @@ func scanJSON(t *testing.T, source string) scan.Results {
 		"main.tf.json": source,
 	})
 
-	s := New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+	s := New(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true))
 	results, err := s.ScanFS(context.TODO(), fs, ".")
 	require.NoError(t, err)
 	return results
