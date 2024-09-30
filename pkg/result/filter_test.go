@@ -1016,15 +1016,30 @@ func TestFilter(t *testing.T) {
 				})
 			}
 
+			ignoreFile := tt.args.ignoreFile
+			if ignoreFile == "" {
+				ignoreFile = result.DefaultIgnoreFile
+			}
 			err := result.Filter(ctx, tt.args.report, result.FilterOptions{
 				Severities:     tt.args.severities,
 				VEXSources:     vexSources,
 				IgnoreStatuses: tt.args.ignoreStatuses,
-				IgnoreFile:     tt.args.ignoreFile,
+				IgnoreFile:     ignoreFile,
 				PolicyFile:     tt.args.policyFile,
 			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, tt.args.report)
 		})
 	}
+
+	t.Run("Error on existent ignore file", func(t *testing.T) {
+		fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+		ctx := clock.With(context.Background(), fakeTime)
+		test := tests[0]
+
+		err := result.Filter(ctx, test.args.report, result.FilterOptions{
+			IgnoreFile: "invalid",
+		})
+		assert.ErrorContains(t, err, "invalid error: invalid does not exist")
+	})
 }
