@@ -199,11 +199,8 @@ func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 }
 
 func (c *Client) initOCIArtifact(repository name.Reference, opt types.RegistryOptions) (*oci.Artifact, error) {
-	if c.artifact != nil {
-		return c.artifact, nil
-	}
-
 	art, err := oci.NewArtifact(repository.String(), c.quiet, opt)
+	// TODO: NewArtifact never returns an error
 	if err != nil {
 		var terr *transport.Error
 		if errors.As(err, &terr) {
@@ -221,28 +218,40 @@ func (c *Client) initOCIArtifact(repository name.Reference, opt types.RegistryOp
 	return art, nil
 }
 
-func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
-	downloadOpt := oci.DownloadOption{MediaType: dbMediaType}
+func (c *Client) initArtifacts(opt types.RegistryOptions) ([]*oci.Artifact, error) {
 	if c.artifact != nil {
-		return c.artifact.Download(ctx, dst, downloadOpt)
+		return []*oci.Artifact{c.artifact}, nil
 	}
 
-	for i, repo := range c.dbRepositories {
+	artifacts := make([]*oci.Artifact, 0, len(c.dbRepositories))
+
+	for _, repo := range c.dbRepositories {
 		a, err := c.initOCIArtifact(repo, opt)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		artifacts = append(artifacts, a)
+	}
+	return artifacts, nil
+}
 
-		log.Info("Downloading vulnerability DB...", log.String("repo", repo.String()))
-		if err := a.Download(ctx, dst, downloadOpt); err != nil {
-			log.Error("Failed to download DB", log.String("repo", repo.String()), log.Err(err))
+func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
+	arts, err := c.initArtifacts(opt)
+	if err != nil {
+		return err
+	}
+
+	for i, art := range arts {
+		log.Info("Downloading vulnerability DB...", log.String("repo", art.Repository()))
+		if err := art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
+			log.Error("Failed to download DB", log.String("repo", art.Repository()), log.Err(err))
 			if i < len(c.dbRepositories)-1 {
 				log.Info("Trying to download DB from other repository...")
 			}
 			continue
 		}
 
-		log.Info("DB successfully downloaded", log.String("repo", repo.String()))
+		log.Info("DB successfully downloaded", log.String("repo", art.Repository()))
 		return nil
 	}
 

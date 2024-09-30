@@ -207,3 +207,7 @@ func (a *Artifact) Digest(ctx context.Context) (string, error) {
 	}
 	return digest.String(), nil
 }
+
+func (a *Artifact) Repository() string {
+	return a.repository
+}
