@@ -12,9 +12,9 @@ import (
 	"strings"
 	"unicode"
 
-	"golang.org/x/xerrors"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -123,6 +123,7 @@ func SkipPath(path string, skipPaths []string) bool {
 		}
 	}
 	return false
+}
 
 func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
 	const minLength = 4 // Minimum length of strings to extract
