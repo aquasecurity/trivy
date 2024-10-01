@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
@@ -55,6 +56,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
