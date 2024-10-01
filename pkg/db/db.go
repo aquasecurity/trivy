@@ -2,14 +2,13 @@ package db
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -18,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 const (
@@ -27,8 +25,9 @@ const (
 )
 
 var (
-	DefaultRepository    = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
-	defaultRepository, _ = name.NewTag(DefaultRepository)
+	// GitHub Container Registry
+	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
+	defaultGHCRRepository = lo.Must(name.NewTag(DefaultGHCRRepository))
 
 	Init  = db.Init
 	Close = db.Close
@@ -36,8 +35,8 @@ var (
 )
 
 type options struct {
-	artifact     *oci.Artifact
-	dbRepository name.Reference
+	artifact       *oci.Artifact
+	dbRepositories []name.Reference
 }
 
 // Option is a functional option
@@ -51,9 +50,9 @@ func WithOCIArtifact(art *oci.Artifact) Option {
 }
 
 // WithDBRepository takes a dbRepository
-func WithDBRepository(dbRepository name.Reference) Option {
+func WithDBRepository(dbRepository []name.Reference) Option {
 	return func(opts *options) {
-		opts.dbRepository = dbRepository
+		opts.dbRepositories = dbRepository
 	}
 }
 
@@ -73,7 +72,9 @@ func Dir(cacheDir string) string {
 // NewClient is the factory method for DB client
 func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
-		dbRepository: defaultRepository,
+		dbRepositories: []name.Reference{
+			defaultGHCRRepository,
+		},
 	}
 
 	for _, opt := range opts {
@@ -153,20 +154,8 @@ func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOpt
 		log.Debug("No metadata file")
 	}
 
-	art := c.initOCIArtifact(opt)
-	if err := art.Download(ctx, dst, oci.DownloadOption{MediaType: dbMediaType}); err != nil {
-		var terr *transport.Error
-		if errors.As(err, &terr) {
-			for _, diagnostic := range terr.Errors {
-				// For better user experience
-				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-					// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
-					log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
-					break
-				}
-			}
-		}
-		return xerrors.Errorf("database download error: %w", err)
+	if err := c.downloadDB(ctx, opt, dst); err != nil {
+		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
 	if err := c.updateDownloadedAt(ctx, dst); err != nil {
@@ -201,11 +190,20 @@ func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	return nil
 }
 
-func (c *Client) initOCIArtifact(opt types.RegistryOptions) *oci.Artifact {
+func (c *Client) initArtifacts(opt types.RegistryOptions) oci.Artifacts {
 	if c.artifact != nil {
-		return c.artifact
+		return oci.Artifacts{c.artifact}
 	}
-	return oci.NewArtifact(c.dbRepository.String(), c.quiet, opt)
+	return oci.NewArtifacts(c.dbRepositories, opt)
+}
+
+func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
+	log.Info("Downloading vulnerability DB...")
+	downloadOpt := oci.DownloadOption{MediaType: dbMediaType, Quiet: c.quiet}
+	if err := c.initArtifacts(opt).Download(ctx, dst, downloadOpt); err != nil {
+		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) ShowInfo() error {

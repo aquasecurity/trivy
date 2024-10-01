@@ -116,7 +116,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			art := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
+			art := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
 			c, err := policy.NewClient(tt.cacheDir, true, "", policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
@@ -255,7 +255,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			art := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
+			art := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
 			c, err := policy.NewClient(tmpDir, true, "", policy.WithOCIArtifact(art), policy.WithClock(tt.clock))
 			require.NoError(t, err)
 
@@ -357,7 +357,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			art := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
+			art := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
 			c, err := policy.NewClient(tempDir, true, "", policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
