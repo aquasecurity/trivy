@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"math"
@@ -9,7 +10,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"unicode"
 
+	"golang.org/x/xerrors"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/samber/lo"
 
@@ -120,4 +123,37 @@ func SkipPath(path string, skipPaths []string) bool {
 		}
 	}
 	return false
+
+func ExtractPrintableBytes(content xio.ReadSeekerAt) ([]byte, error) {
+	const minLength = 4 // Minimum length of strings to extract
+	var result []byte
+	currentPrintableLine := new(bytes.Buffer)
+
+	current := make([]byte, 1) // buffer for 1 byte reading
+
+	for {
+		if n, err := content.Read(current); err == io.EOF {
+			break
+		} else if n != 1 {
+			continue
+		} else if err != nil {
+			return nil, xerrors.Errorf("failed to read a byte: %w", err)
+		}
+		if unicode.IsPrint(rune(current[0])) {
+			_ = currentPrintableLine.WriteByte(current[0])
+			continue
+		}
+		if currentPrintableLine.Len() > minLength {
+			// add a newline between printable lines to separate them
+			_ = currentPrintableLine.WriteByte('\n')
+			result = append(result, currentPrintableLine.Bytes()...)
+		}
+		currentPrintableLine.Reset()
+	}
+	if currentPrintableLine.Len() > minLength {
+		// add a newline between printable lines to separate them
+		_ = currentPrintableLine.WriteByte('\n')
+		result = append(result, currentPrintableLine.Bytes()...)
+	}
+	return result, nil
 }

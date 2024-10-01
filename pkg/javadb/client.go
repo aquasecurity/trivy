@@ -26,12 +26,15 @@ const (
 	mediaType     = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
 )
 
-var DefaultRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-java-db", SchemaVersion)
+var (
+	// GitHub Container Registry
+	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-java-db", SchemaVersion)
+)
 
 var updater *Updater
 
 type Updater struct {
-	repo           name.Reference
+	repos          []name.Reference
 	dbDir          string
 	skip           bool
 	quiet          bool
@@ -40,8 +43,7 @@ type Updater struct {
 }
 
 func (u *Updater) Update() error {
-	dbDir := u.dbDir
-	metac := db.NewMetadata(dbDir)
+	metac := db.NewMetadata(u.dbDir)
 
 	meta, err := metac.Get()
 	if err != nil {
@@ -55,16 +57,9 @@ func (u *Updater) Update() error {
 
 	if (meta.Version != SchemaVersion || !u.isNewDB(meta)) && !u.skip {
 		// Download DB
-		log.Info("Java DB Repository", log.Any("repository", u.repo))
-		log.Info("Downloading the Java DB...")
-
 		// TODO: support remote options
-		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo.String(), u.quiet, u.registryOption); err != nil {
-			return xerrors.Errorf("oci error: %w", err)
-		}
-		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
-			return xerrors.Errorf("DB download error: %w", err)
+		if err := u.downloadDB(); err != nil {
+			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
 
 		// Parse the newly downloaded metadata.json
@@ -99,9 +94,21 @@ func (u *Updater) isNewDB(meta db.Metadata) bool {
 	return false
 }
 
-func Init(cacheDir string, javaDBRepository name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+func (u *Updater) downloadDB() error {
+	log.Info("Downloading Java DB...")
+
+	artifacts := oci.NewArtifacts(u.repos, u.registryOption)
+	downloadOpt := oci.DownloadOption{MediaType: mediaType, Quiet: u.quiet}
+	if err := artifacts.Download(context.Background(), u.dbDir, downloadOpt); err != nil {
+		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
+	}
+
+	return xerrors.New("failed to download Java DB from any source")
+}
+
+func Init(cacheDir string, javaDBRepositories []name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
-		repo:           javaDBRepository,
+		repos:          javaDBRepositories,
 		dbDir:          dbDir(cacheDir),
 		skip:           skip,
 		quiet:          quiet,

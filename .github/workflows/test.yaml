@@ -26,6 +26,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
+
       - name: go mod tidy
         run: |
           go mod tidy
@@ -78,6 +80,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
@@ -92,8 +95,7 @@ jobs:
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test images from cache
-        uses: actions/cache@v4
-        id: restore-test-images
+        uses: actions/cache/restore@v4
         with:
           path: integration/testdata/fixtures/images
           key: cache-test-images-${{ steps.image-digest.outputs.digest }}
@@ -114,6 +116,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
@@ -134,6 +137,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
@@ -148,8 +152,7 @@ jobs:
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test images from cache
-        uses: actions/cache@v4
-        id: restore-test-images
+        uses: actions/cache/restore@v4
         with:
           path: integration/testdata/fixtures/images
           key: cache-test-images-${{ steps.image-digest.outputs.digest }}
@@ -172,6 +175,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
+
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
         with:
@@ -185,8 +190,7 @@ jobs:
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test VM images from cache
-        uses: actions/cache@v4
-        id: restore-test-vm-images
+        uses: actions/cache/restore@v4
         with:
           path: integration/testdata/fixtures/vm-images
           key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
@@ -213,6 +217,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
+        cache: false
 
     - name: Determine GoReleaser ID
       id: goreleaser_id

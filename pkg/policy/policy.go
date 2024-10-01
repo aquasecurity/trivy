@@ -89,26 +89,21 @@ func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Opti
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) error {
+func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) {
 	if c.artifact == nil {
 		log.Debug("Loading check bundle", log.String("repository", c.checkBundleRepo))
-		art, err := oci.NewArtifact(c.checkBundleRepo, c.quiet, registryOpts)
-		if err != nil {
-			return xerrors.Errorf("OCI artifact error: %w", err)
-		}
-		c.artifact = art
+		c.artifact = oci.NewArtifact(c.checkBundleRepo, registryOpts)
 	}
-	return nil
 }
 
 // DownloadBuiltinPolicies download default policies from GitHub Pages
 func (c *Client) DownloadBuiltinPolicies(ctx context.Context, registryOpts types.RegistryOptions) error {
-	if err := c.populateOCIArtifact(registryOpts); err != nil {
-		return xerrors.Errorf("OPA bundle error: %w", err)
-	}
+	c.populateOCIArtifact(registryOpts)
 
 	dst := c.contentDir()
-	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{MediaType: policyMediaType}); err != nil {
+	if err := c.artifact.Download(ctx, dst,
+		oci.DownloadOption{MediaType: policyMediaType, Quiet: c.quiet},
+	); err != nil {
 		return xerrors.Errorf("download error: %w", err)
 	}
 
@@ -165,10 +160,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOpt
 		return false, nil
 	}
 
-	if err = c.populateOCIArtifact(registryOpts); err != nil {
-		return false, xerrors.Errorf("OPA bundle error: %w", err)
-	}
-
+	c.populateOCIArtifact(registryOpts)
 	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
 		return false, xerrors.Errorf("digest error: %w", err)

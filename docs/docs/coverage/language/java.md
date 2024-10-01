@@ -69,6 +69,16 @@ The vulnerability database will be downloaded anyway.
 !!! Warning
     Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
 
+### empty dependency version
+There are cases when Trivy cannot determine the version of dependencies:
+
+- Unable to determine the version from the parent because the parent is not reachable;
+- The dependency uses a [hard requirement][version-requirement] with more than one version.
+
+In these cases, Trivy uses an empty version for the dependency.
+
+!!! Warning
+    Trivy doesn't detect child dependencies for dependencies without a version.
 
 ### maven-invoker-plugin
 Typically, the integration tests directory (`**/[src|target]/it/*/pom.xml`) of [maven-invoker-plugin][maven-invoker-plugin] doesn't contain actual `pom.xml` files and should be skipped to avoid noise.
@@ -120,3 +130,4 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [maven-pom-repos]: https://maven.apache.org/settings.html#repositories
 [sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority
+[version-requirement]: https://maven.apache.org/pom.html#dependency-version-requirement-specification
