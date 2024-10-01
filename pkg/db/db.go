@@ -190,29 +190,17 @@ func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	return nil
 }
 
-func (c *Client) initOCIArtifact(repository name.Reference, opt types.RegistryOptions) *oci.Artifact {
+func (c *Client) initArtifacts(opt types.RegistryOptions) oci.Artifacts {
 	if c.artifact != nil {
-		return c.artifact
+		return oci.Artifacts{c.artifact}
 	}
-	return oci.NewArtifact(repository.String(), opt)
-}
-
-func (c *Client) initArtifacts(opt types.RegistryOptions) []*oci.Artifact {
-	if c.artifact != nil {
-		return []*oci.Artifact{c.artifact}
-	}
-
-	artifacts := make([]*oci.Artifact, 0, len(c.dbRepositories))
-	for _, repo := range c.dbRepositories {
-		artifacts = append(artifacts, c.initOCIArtifact(repo, opt))
-	}
-	return artifacts
+	return oci.NewArtifacts(c.dbRepositories, opt)
 }
 
 func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
 	log.Info("Downloading vulnerability DB...")
 	downloadOpt := oci.DownloadOption{MediaType: dbMediaType, Quiet: c.quiet}
-	if err := oci.DownloadArtifact(ctx, c.initArtifacts(opt), dst, downloadOpt); err != nil {
+	if err := c.initArtifacts(opt).Download(ctx, dst, downloadOpt); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 	return nil

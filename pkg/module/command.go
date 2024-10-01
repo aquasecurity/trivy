@@ -27,7 +27,7 @@ func Install(ctx context.Context, dir, repo string, quiet bool, opt types.Regist
 
 	dst := filepath.Join(dir, ref.Context().Name())
 	log.Debug("Installing the module...", log.String("dst", dst))
-	if err = art.Download(ctx, dst, oci.DownloadOption{MediaType: mediaType, Quiet: true}); err != nil {
+	if err = art.Download(ctx, dst, oci.DownloadOption{MediaType: mediaType, Quiet: quiet}); err != nil {
 		return xerrors.Errorf("module download error: %w", err)
 	}
 

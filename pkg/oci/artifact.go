@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
@@ -211,24 +212,31 @@ func (a *Artifact) Digest(ctx context.Context) (string, error) {
 	return digest.String(), nil
 }
 
-func (a *Artifact) Repository() string {
-	return a.repository
+type Artifacts []*Artifact
+
+// NewArtifacts returns a slice of artifacts.
+func NewArtifacts(repos []name.Reference, opt types.RegistryOptions, opts ...Option) Artifacts {
+	return lo.Map(repos, func(r name.Reference, _ int) *Artifact {
+		return NewArtifact(r.String(), opt, opts...)
+	})
 }
 
-func DownloadArtifact(ctx context.Context, artifacts []*Artifact, dst string, opt DownloadOption) error {
-	for i, art := range artifacts {
-		log.Info("Downloading  artifact...", log.String("repo", art.Repository()))
+// Download downloads artifacts until one of them succeeds.
+// Attempts to download next artifact if the first one fails due to a temporary error.
+func (a Artifacts) Download(ctx context.Context, dst string, opt DownloadOption) error {
+	for i, art := range a {
+		log.Info("Downloading  artifact...", log.String("repo", art.repository))
 		err := art.Download(ctx, dst, opt)
 		if err == nil {
-			log.Info("Artifact successfully downloaded", log.String("repo", art.Repository()))
+			log.Info("Artifact successfully downloaded", log.String("repo", art.repository))
 			return nil
 		}
 
 		if !shouldTryOtherRepo(err) {
-			return xerrors.Errorf("failed to download artifact from %s: %w", art.Repository(), err)
+			return xerrors.Errorf("failed to download artifact from %s: %w", art.repository, err)
 		}
-		log.Error("Failed to download artifact", log.String("repo", art.Repository()), log.Err(err))
-		if i < len(artifacts)-1 {
+		log.Error("Failed to download artifact", log.String("repo", art.repository), log.Err(err))
+		if i < len(a)-1 {
 			log.Info("Trying to download artifact from other repository...")
 		}
 	}
