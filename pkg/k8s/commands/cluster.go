@@ -64,9 +64,10 @@ func nodeCollectorOptions(opts flag.Options) []trivyk8s.NodeCollectorOption {
 		trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 		trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
 		trivyk8s.WithScanJobImageRef(opts.NodeCollectorImageRef),
-		trivyk8s.WithTolerations(opts.Tolerations)}
+		trivyk8s.WithTolerations(opts.Tolerations),
+	}
 
-	contentPath, err := operation.InitBuiltinPolicies(context.Background(),
+	contentPath, err := operation.InitBuiltinChecks(context.Background(),
 		opts.CacheDir,
 		opts.Quiet,
 		opts.SkipCheckUpdate,

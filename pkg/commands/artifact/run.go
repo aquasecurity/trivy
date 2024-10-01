@@ -470,7 +470,7 @@ func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, e
 	return lo.Without(all, included...), nil
 }
 
-func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
+func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
 	target := opts.Target
 	if opts.Input != "" {
 		target = opts.Input
@@ -505,7 +505,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		var err error
-		configScannerOptions, err = initMisconfScannerOption(opts)
+		configScannerOptions, err = initMisconfScannerOption(ctx, opts)
 		if err != nil {
 			return ScannerConfig{}, types.ScanOptions{}, err
 		}
@@ -600,7 +600,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 }
 
 func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	scannerConfig, scanOptions, err := r.initScannerConfig(opts)
+	scannerConfig, scanOptions, err := r.initScannerConfig(ctx, opts)
 	if err != nil {
 		return types.Report{}, err
 	}
@@ -617,14 +617,14 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner 
 	return report, nil
 }
 
-func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) {
+func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.ScannerOption, error) {
 	logger := log.WithPrefix(log.PrefixMisconfiguration)
 	logger.Info("Misconfiguration scanning is enabled")
 
 	var downloadedPolicyPaths []string
 	var disableEmbedded bool
 
-	downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	downloadedPolicyPaths, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
 			logger.Error("Falling back to embedded checks", log.Err(err))
