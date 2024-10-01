@@ -81,7 +81,7 @@ func TestArtifact_Download(t *testing.T) {
 			layersReturns: layersReturns{
 				layers: []v1.Layer{txtLayer},
 			},
-			wantErr: "failed to download vulnerability DB: failed to download artifact",
+			wantErr: "unexpected EOF",
 		},
 		{
 			name:      "sad: media type doesn't match",

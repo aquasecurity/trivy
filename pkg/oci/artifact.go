@@ -224,27 +224,33 @@ func DownloadArtifact(ctx context.Context, artifacts []*Artifact, dst string, op
 			return nil
 		}
 
-		log.Error("Failed to download artifact", log.String("repo", art.Repository()), log.Err(err))
-
-		var terr *transport.Error
-		if errors.As(err, &terr) {
-			for _, diagnostic := range terr.Errors {
-				// For better user experience
-				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
-					// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
-					log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
-					break
-				}
-			}
-
-			// try the following artifact only if a temporary error occurs
-			if terr.Temporary() && i < len(artifacts)-1 {
-				log.Info("Trying to download artifact from other repository...")
-				continue
-			}
+		if !shouldTryOtherRepo(err) {
+			return xerrors.Errorf("failed to download artifact from %s: %w", art.Repository(), err)
 		}
-		return xerrors.Errorf("failed to download artifact from %s", art.Repository())
+		log.Error("Failed to download artifact", log.String("repo", art.Repository()), log.Err(err))
+		if i < len(artifacts)-1 {
+			log.Info("Trying to download artifact from other repository...")
+		}
 	}
 
 	return xerrors.New("failed to download artifact from any source")
+}
+
+func shouldTryOtherRepo(err error) bool {
+	var terr *transport.Error
+	if !errors.As(err, &terr) {
+		return false
+	}
+
+	for _, diagnostic := range terr.Errors {
+		// For better user experience
+		if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
+			log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
+			break
+		}
+	}
+
+	// try the following artifact only if a temporary error occurs
+	return terr.Temporary()
 }
