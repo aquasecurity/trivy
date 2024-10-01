@@ -26,7 +26,7 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories
 	mu.Lock()
 	defer mu.Unlock()
 
-	ctx = log.WithContextPrefix(ctx, "db")
+	ctx = log.WithContextPrefix(ctx, log.PrefixVulnerabilityDB)
 	dbDir := db.Dir(cacheDir)
 	client := db.NewClient(dbDir, quiet, db.WithDBRepository(dbRepositories))
 	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, skipUpdate)

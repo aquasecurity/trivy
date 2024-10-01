@@ -93,22 +93,22 @@ func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) (bool, error) {
 	meta, err := c.metadata.Get()
 	if err != nil {
-		log.Debug("There is no valid metadata file", log.Err(err))
+		log.DebugContext(ctx, "There is no valid metadata file", log.Err(err))
 		if skip {
-			log.Error("The first run cannot skip downloading DB")
+			log.ErrorContext(ctx, "The first run cannot skip downloading DB")
 			return false, xerrors.New("--skip-update cannot be specified on the first run")
 		}
 		meta = metadata.Metadata{Version: db.SchemaVersion}
 	}
 
 	if db.SchemaVersion < meta.Version {
-		log.Error("The Trivy version is old. Update to the latest version.", log.String("version", cliVersion))
+		log.ErrorContext(ctx, "The Trivy version is old. Update to the latest version.", log.String("version", cliVersion))
 		return false, xerrors.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
 			meta.Version, db.SchemaVersion)
 	}
 
 	if skip {
-		log.Debug("Skipping DB update...")
+		log.DebugContext(ctx, "Skipping DB update...")
 		if err = c.validate(meta); err != nil {
 			return false, xerrors.Errorf("validate error: %w", err)
 		}
@@ -116,7 +116,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 	}
 
 	if db.SchemaVersion != meta.Version {
-		log.Debug("The local DB schema version does not match with supported version schema.",
+		log.DebugContext(ctx, "The local DB schema version does not match with supported version schema.",
 			log.Int("local_version", meta.Version), log.Int("supported_version", db.SchemaVersion))
 		return true, nil
 	}
@@ -151,7 +151,7 @@ func (c *Client) isNewDB(ctx context.Context, meta metadata.Metadata) bool {
 func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOptions) error {
 	// Remove the metadata file under the cache directory before downloading DB
 	if err := c.metadata.Delete(); err != nil {
-		log.Debug("No metadata file")
+		log.DebugContext(ctx, "No metadata file")
 	}
 
 	if err := c.downloadDB(ctx, opt, dst); err != nil {
@@ -198,8 +198,11 @@ func (c *Client) initArtifacts(opt types.RegistryOptions) oci.Artifacts {
 }
 
 func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
-	log.Info("Downloading vulnerability DB...")
-	downloadOpt := oci.DownloadOption{MediaType: dbMediaType, Quiet: c.quiet}
+	log.InfoContext(ctx, "Downloading vulnerability DB...")
+	downloadOpt := oci.DownloadOption{
+		MediaType: dbMediaType,
+		Quiet:     c.quiet,
+	}
 	if err := c.initArtifacts(opt).Download(ctx, dst, downloadOpt); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
