@@ -210,6 +210,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
+        cache: false
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
