@@ -23,8 +23,8 @@ const (
 	PrefixMisconfiguration = "misconfig"
 	PrefixSecret           = "secret"
 	PrefixLicense          = "license"
-	PrefixVulnerabilityDB  = "vuln-db"
-	PrefixJavaDB           = "java-db"
+	PrefixVulnerabilityDB  = "vulndb"
+	PrefixJavaDB           = "javadb"
 )
 
 // Logger is an alias of slog.Logger
