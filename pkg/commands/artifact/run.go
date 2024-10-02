@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"slices"
 
 	"github.com/hashicorp/go-multierror"
@@ -455,6 +456,12 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// Skip executable file analysis if Rekor isn't a specified SBOM source.
 	if !slices.Contains(opts.SBOMSources, types.SBOMSourceRekor) {
 		analyzers = append(analyzers, analyzer.TypeExecutable)
+	}
+
+	// Disable RPM archive analyzer unless the environment variable is set
+	// TODO: add '--enable-analyzers' and delete this environment variable
+	if os.Getenv("TRIVY_EXPERIMENTAL_RPM_ARCHIVE") == "" {
+		analyzers = append(analyzers, analyzer.TypeRpmArchive)
 	}
 
 	return analyzers
