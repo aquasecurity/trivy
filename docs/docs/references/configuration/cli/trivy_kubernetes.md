@@ -66,7 +66,7 @@ trivy kubernetes [flags] [CONTEXT]
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
-      --include-deprecated-checks         include deprecated checks (default true)
+      --include-deprecated-checks         include deprecated checks
       --include-kinds strings             indicate the kinds included in scanning (example: node)
       --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'

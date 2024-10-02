@@ -479,7 +479,7 @@ rego:
   data: []
 
   # Same as '--include-deprecated-checks'
-  include-deprecated-checks: true
+  include-deprecated-checks: false
 
   # Same as '--check-namespaces'
   namespaces: []
