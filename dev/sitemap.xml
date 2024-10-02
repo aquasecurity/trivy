@@ -296,22 +296,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/bitnami/</loc>
-         <lastmod>2024-10-02</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/centos/</loc>
          <lastmod>2024-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/chainguard/</loc>
-         <lastmod>2024-10-02</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/conda/</loc>
          <lastmod>2024-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -357,6 +347,21 @@
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/wolfi/</loc>
+         <lastmod>2024-10-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/others/bitnami/</loc>
+         <lastmod>2024-10-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/others/conda/</loc>
+         <lastmod>2024-10-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/others/rpm/</loc>
          <lastmod>2024-10-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
