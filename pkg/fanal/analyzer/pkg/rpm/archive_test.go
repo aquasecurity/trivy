@@ -25,13 +25,13 @@ func Test_rpmArchiveAnalyzer_Analyze(t *testing.T) {
 		{
 			name: "valid",
 			input: analyzer.AnalysisInput{
-				FilePath: "testdata/valid",
+				FilePath: "testdata/valid.rpm",
 				Content:  lo.Must(os.Open("testdata/socat-1.7.3.2-2.el7.x86_64.rpm")), // Must run 'mage rpm:fixtures' before this test
 			},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
-						FilePath: "testdata/valid",
+						FilePath: "testdata/valid.rpm",
 						Packages: types.Packages{
 							{
 								Name:       "socat",
@@ -41,6 +41,7 @@ func Test_rpmArchiveAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "socat",
 								SrcVersion: "1.7.3.2",
 								SrcRelease: "2.el7",
+								FilePath:   "testdata/valid.rpm",
 								Licenses: []string{
 									"GPLv2",
 								},
