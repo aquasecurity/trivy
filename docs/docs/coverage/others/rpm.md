@@ -18,8 +18,12 @@ Trivy analyzes RPM archives matching `*.rpm`.
 This feature is currently disabled by default but can be enabled with an environment variable, `TRIVY_EXPERIMENTAL_RPM_ARCHIVE`.
 
 ```shell
-TRIVY_EXPERIMENTAL_RPM_ARCHIVE=true trivy fs ./rpms -f cyclonedx -o rpms.cdx.json
+TRIVY_EXPERIMENTAL_RPM_ARCHIVE=true trivy fs ./rpms --format cyclonedx --output rpms.cdx.json
 ```
+
+!!! note
+    Currently, it works with `--format cyclonedx`, `--format spdx` or `--format spdx-json`.
+
 
 ## Vulnerability
 Since RPM files don't have OS information, you need to generate SBOM, fill in the OS information manually and then scan the SBOM for vulnerabilities.
