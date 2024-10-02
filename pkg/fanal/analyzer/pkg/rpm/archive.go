@@ -43,7 +43,8 @@ func (a *rpmArchiveAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse rpm header: %w", err)
 	}
-	a.fillPURL(&pkg)
+	pkg.FilePath = input.FilePath
+	pkg.Identifier.PURL = a.generatePURL(&pkg)
 
 	return &analyzer.AnalysisResult{
 		PackageInfos: []types.PackageInfo{
@@ -108,7 +109,7 @@ func (a *rpmArchiveAnalyzer) parseHeader(h *rpmutils.RpmHeader) (types.Package, 
 	}, nil
 }
 
-func (a *rpmArchiveAnalyzer) fillPURL(pkg *types.Package) {
+func (a *rpmArchiveAnalyzer) generatePURL(pkg *types.Package) *packageurl.PackageURL {
 	vendor := strings.ToLower(pkg.Maintainer)
 
 	// TODO: Handle more vendors
@@ -123,8 +124,7 @@ func (a *rpmArchiveAnalyzer) fillPURL(pkg *types.Package) {
 	case strings.Contains(vendor, "suse"):
 		ns = "suse"
 	}
-	pkg.Identifier.PURL = packageurl.NewPackageURL(packageurl.TypeRPM, ns, pkg.Name,
-		utils.FormatVersion(*pkg), nil, "")
+	return packageurl.NewPackageURL(packageurl.TypeRPM, ns, pkg.Name, utils.FormatVersion(*pkg), nil, "")
 }
 
 func (a *rpmArchiveAnalyzer) unexpectedError(err error) error {
