@@ -82,7 +82,6 @@ func InitBuiltinChecks(ctx context.Context, cacheDir string, quiet, skipUpdate b
 	mu.Lock()
 	defer mu.Unlock()
 
-	ctx = log.WithContextPrefix(ctx, log.PrefixChecksBundle)
 	client, err := policy.NewClient(cacheDir, quiet, checkBundleRepository)
 	if err != nil {
 		return nil, xerrors.Errorf("check client error: %w", err)

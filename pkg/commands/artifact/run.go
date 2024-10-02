@@ -618,8 +618,8 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner 
 }
 
 func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.ScannerOption, error) {
-	logger := log.WithPrefix(log.PrefixMisconfiguration)
-	logger.Info("Misconfiguration scanning is enabled")
+	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
+	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
 
 	var downloadedPolicyPaths []string
 	var disableEmbedded bool
@@ -627,10 +627,10 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	downloadedPolicyPaths, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
-			logger.Error("Falling back to embedded checks", log.Err(err))
+			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
 		}
 	} else {
-		logger.Debug("Checks successfully loaded from disk")
+		log.DebugContext(ctx, "Checks successfully loaded from disk")
 		disableEmbedded = true
 	}
 

@@ -81,7 +81,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 		log.Debug("Failed to instantiate policy client", log.Err(err))
 	}
 	if pc != nil && err == nil {
-		ctx := log.WithContextPrefix(context.TODO(), log.PrefixChecksBundle)
+		ctx := log.WithContextPrefix(context.TODO(), log.PrefixMisconfiguration)
 		pbMetaRaw, err := pc.GetMetadata(ctx)
 
 		if err != nil {

@@ -25,7 +25,6 @@ const (
 	PrefixLicense          = "license"
 	PrefixVulnerabilityDB  = "vulndb"
 	PrefixJavaDB           = "javadb"
-	PrefixChecksBundle     = "checks"
 )
 
 // Logger is an alias of slog.Logger
