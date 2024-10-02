@@ -102,7 +102,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 	}
 
 	if db.SchemaVersion < meta.Version {
-		log.ErrorContext(ctx, "The Trivy version is old. Update to the latest version.", log.String("version", cliVersion))
+		log.ErrorContext(ctx, "Trivy version is old. Update to the latest version.", log.String("version", cliVersion))
 		return false, xerrors.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
 			meta.Version, db.SchemaVersion)
 	}
