@@ -84,3 +84,19 @@ func ScannerWithConfigsFileSystem(fsys fs.FS) options.ScannerOption {
 		}
 	}
 }
+
+func ScannerWithSkipFiles(files []string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if tf, ok := s.(ConfigurableTerraformScanner); ok {
+			tf.AddParserOptions(parser.OptionWithSkipFiles(files))
+		}
+	}
+}
+
+func ScannerWithSkipDirs(dirs []string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if tf, ok := s.(ConfigurableTerraformScanner); ok {
+			tf.AddParserOptions(parser.OptionWithSkipDirs(dirs))
+		}
+	}
+}

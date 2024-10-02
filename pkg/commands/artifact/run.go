@@ -659,5 +659,7 @@ func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) 
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		FilePatterns:             opts.FilePatterns,
 		ConfigFileSchemas:        configSchemas,
+		SkipFiles:                opts.SkipFiles,
+		SkipDirs:                 opts.SkipDirs,
 	}, nil
 }
