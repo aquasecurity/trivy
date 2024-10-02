@@ -74,7 +74,7 @@ func (u *Updater) Update() error {
 		if err = metac.Update(meta); err != nil {
 			return xerrors.Errorf("Java DB metadata update error: %w", err)
 		}
-		log.InfoContext(ctx, "The Java DB is cached for 3 days. If you want to update the database more frequently, "+
+		log.InfoContext(ctx, "Java DB is cached for 3 days. If you want to update the database more frequently, "+
 			`"trivy clean --java-db" command clears the DB cache.`)
 	}
 
