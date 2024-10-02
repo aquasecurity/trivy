@@ -152,7 +152,7 @@ func (c *Client) LoadBuiltinChecks() ([]string, error) {
 
 // NeedsUpdate returns if the default check should be updated
 func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOptions) (bool, error) {
-	meta, err := c.GetMetadata()
+	meta, err := c.GetMetadata(ctx)
 	if err != nil {
 		return true, nil
 	}
@@ -213,17 +213,17 @@ func (c *Client) updateMetadata(digest string, now time.Time) error {
 	return nil
 }
 
-func (c *Client) GetMetadata() (*Metadata, error) {
+func (c *Client) GetMetadata(ctx context.Context) (*Metadata, error) {
 	f, err := os.Open(c.metadataPath())
 	if err != nil {
-		log.Debug("Failed to open the check metadata", log.Err(err))
+		log.DebugContext(ctx, "Failed to open the check metadata", log.Err(err))
 		return nil, err
 	}
 	defer f.Close()
 
 	var meta Metadata
 	if err = json.NewDecoder(f).Decode(&meta); err != nil {
-		log.Warn("Check metadata decode error", log.Err(err))
+		log.WarnContext(ctx, "Check metadata decode error", log.Err(err))
 		return nil, err
 	}
 
