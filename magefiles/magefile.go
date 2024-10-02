@@ -19,6 +19,9 @@ import (
 	// Trivy packages should not be imported in Mage (see https://github.com/aquasecurity/trivy/pull/4242),
 	// but this package doesn't have so many dependencies, and Mage is still fast.
 	"github.com/aquasecurity/trivy/pkg/log"
+
+	//mage:import rpm
+	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
 )
 
 var (
@@ -268,7 +271,7 @@ func compileWasmModules(pattern string) error {
 
 // Unit runs unit tests
 func (t Test) Unit() error {
-	mg.Deps(t.GenerateModules)
+	mg.Deps(t.GenerateModules, rpm.Fixtures)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-short", "-coverprofile=coverage.txt", "-covermode=atomic", "./...")
 }
 
