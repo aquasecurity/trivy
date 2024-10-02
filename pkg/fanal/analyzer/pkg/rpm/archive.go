@@ -73,13 +73,9 @@ func (a *rpmArchiveAnalyzer) parseHeader(h *rpmutils.RpmHeader) (types.Package, 
 	if a.unexpectedError(err) != nil {
 		return types.Package{}, xerrors.Errorf("failed to get licenses: %w", err)
 	}
-	sourceRpm, err := h.GetString(rpmutils.SOURCERPM)
-	if a.unexpectedError(err) != nil {
-		return types.Package{}, xerrors.Errorf("failed to get source rpm: %w", err)
-	}
-	srcName, srcVer, srcRel, err := splitFileName(sourceRpm)
+	srcName, srcVer, srcRel, err := a.parseSourceRPM(h)
 	if err != nil {
-		a.logger.Debug("Invalid Source RPM Found", log.String("sourcerpm", sourceRpm))
+		return types.Package{}, xerrors.Errorf("failed to parse source rpm: %w", err)
 	}
 	vendor, err := h.GetString(rpmutils.VENDOR)
 	if a.unexpectedError(err) != nil {
@@ -88,7 +84,8 @@ func (a *rpmArchiveAnalyzer) parseHeader(h *rpmutils.RpmHeader) (types.Package, 
 
 	// TODO: add the const to go-rpmutils
 	// cf. https://github.com/rpm-software-management/rpm/blob/rpm-4.16.0-release/lib/rpmtag.h#L375
-	modularityLabel, err := h.GetString(5096)
+	const modularityLabelTag = 5096
+	modularityLabel, err := h.GetString(modularityLabelTag)
 	if a.unexpectedError(err) != nil {
 		return types.Package{}, xerrors.Errorf("failed to get modularitylabel: %w", err)
 	}
@@ -107,6 +104,21 @@ func (a *rpmArchiveAnalyzer) parseHeader(h *rpmutils.RpmHeader) (types.Package, 
 		Maintainer:      vendor,
 		Modularitylabel: modularityLabel,
 	}, nil
+}
+
+func (a *rpmArchiveAnalyzer) parseSourceRPM(h *rpmutils.RpmHeader) (string, string, string, error) {
+	sourceRpm, err := h.GetString(rpmutils.SOURCERPM)
+	if a.unexpectedError(err) != nil {
+		return "", "", "", xerrors.Errorf("failed to get source rpm: %w", err)
+	} else if sourceRpm == "(none)" || sourceRpm == "" {
+		return "", "", "", nil
+	}
+
+	srcName, srcVer, srcRel, err := splitFileName(sourceRpm)
+	if err != nil {
+		a.logger.Debug("Invalid Source RPM Found", log.String("sourcerpm", sourceRpm))
+	}
+	return srcName, srcVer, srcRel, nil
 }
 
 func (a *rpmArchiveAnalyzer) generatePURL(pkg *types.Package) *packageurl.PackageURL {
