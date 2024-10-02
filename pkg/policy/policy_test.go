@@ -120,7 +120,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			c, err := policy.NewClient(tt.cacheDir, true, "", policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			got, err := c.LoadBuiltinPolicies()
+			got, err := c.LoadBuiltinChecks()
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -361,7 +361,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			c, err := policy.NewClient(tempDir, true, "", policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			err = c.DownloadBuiltinPolicies(context.Background(), ftypes.RegistryOptions{})
+			err = c.DownloadBuiltinChecks(context.Background(), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

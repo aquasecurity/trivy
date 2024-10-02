@@ -43,6 +43,7 @@ type Updater struct {
 }
 
 func (u *Updater) Update() error {
+	ctx := log.WithContextPrefix(context.Background(), log.PrefixJavaDB)
 	metac := db.NewMetadata(u.dbDir)
 
 	meta, err := metac.Get()
@@ -50,15 +51,15 @@ func (u *Updater) Update() error {
 		if !errors.Is(err, os.ErrNotExist) {
 			return xerrors.Errorf("Java DB metadata error: %w", err)
 		} else if u.skip {
-			log.Error("The first run cannot skip downloading Java DB")
+			log.ErrorContext(ctx, "The first run cannot skip downloading Java DB")
 			return xerrors.New("'--skip-java-db-update' cannot be specified on the first run")
 		}
 	}
 
-	if (meta.Version != SchemaVersion || !u.isNewDB(meta)) && !u.skip {
+	if (meta.Version != SchemaVersion || !u.isNewDB(ctx, meta)) && !u.skip {
 		// Download DB
 		// TODO: support remote options
-		if err := u.downloadDB(); err != nil {
+		if err := u.downloadDB(ctx); err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
 
@@ -73,33 +74,36 @@ func (u *Updater) Update() error {
 		if err = metac.Update(meta); err != nil {
 			return xerrors.Errorf("Java DB metadata update error: %w", err)
 		}
-		log.Info("The Java DB is cached for 3 days. If you want to update the database more frequently, " +
+		log.InfoContext(ctx, "Java DB is cached for 3 days. If you want to update the database more frequently, "+
 			`"trivy clean --java-db" command clears the DB cache.`)
 	}
 
 	return nil
 }
 
-func (u *Updater) isNewDB(meta db.Metadata) bool {
+func (u *Updater) isNewDB(ctx context.Context, meta db.Metadata) bool {
 	now := time.Now().UTC()
 	if now.Before(meta.NextUpdate) {
-		log.Debug("Java DB update was skipped because the local Java DB is the latest")
+		log.DebugContext(ctx, "Java DB update was skipped because the local Java DB is the latest")
 		return true
 	}
 
 	if now.Before(meta.DownloadedAt.Add(time.Hour * 24)) { // 1 day
-		log.Debug("Java DB update was skipped because the local Java DB was downloaded during the last day")
+		log.DebugContext(ctx, "Java DB update was skipped because the local Java DB was downloaded during the last day")
 		return true
 	}
 	return false
 }
 
-func (u *Updater) downloadDB() error {
-	log.Info("Downloading Java DB...")
+func (u *Updater) downloadDB(ctx context.Context) error {
+	log.InfoContext(ctx, "Downloading Java DB...")
 
 	artifacts := oci.NewArtifacts(u.repos, u.registryOption)
-	downloadOpt := oci.DownloadOption{MediaType: mediaType, Quiet: u.quiet}
-	if err := artifacts.Download(context.Background(), u.dbDir, downloadOpt); err != nil {
+	downloadOpt := oci.DownloadOption{
+		MediaType: mediaType,
+		Quiet:     u.quiet,
+	}
+	if err := artifacts.Download(ctx, u.dbDir, downloadOpt); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
