@@ -690,6 +690,71 @@ func TestSecretScanner(t *testing.T) {
 		},
 	}
 
+	wantFindingGrafanaQuoted := types.SecretFinding{
+		RuleID:    "grafana-api-token",
+		Category:  secret.CategoryGrafana,
+		Title:     "Grafana API token",
+		Severity:  "MEDIUM",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "GRAFANA_TOKEN=**********************************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GRAFANA_TOKEN=**********************************************************************************************",
+					Highlighted: "GRAFANA_TOKEN=**********************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "GRAFANA_TOKEN=**************************************************************************************",
+					Highlighted: "GRAFANA_TOKEN=**************************************************************************************",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+	}
+
+	wantFindingGrafanaUnquoted := types.SecretFinding{
+		RuleID:    "grafana-api-token",
+		Category:  secret.CategoryGrafana,
+		Title:     "Grafana API token",
+		Severity:  "MEDIUM",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "GRAFANA_TOKEN=********************************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GRAFANA_TOKEN=**************************************************************************************",
+					Highlighted: "GRAFANA_TOKEN=**************************************************************************************",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      2,
+					Content:     "GRAFANA_TOKEN=********************************************************************************************",
+					Highlighted: "GRAFANA_TOKEN=********************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "",
+					Highlighted: "",
+				},
+			},
+		},
+	}
+
 	wantMultiLine := types.SecretFinding{
 		RuleID:    "multi-line-secret",
 		Category:  "general",
@@ -856,6 +921,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "hugging-face-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingHuggingFace},
+			},
+		},
+		{
+			name:          "find grafana secret",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "grafana-env.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "grafana-env.txt"),
+				Findings: []types.SecretFinding{wantFindingGrafanaUnquoted, wantFindingGrafanaQuoted},
 			},
 		},
 		{
