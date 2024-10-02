@@ -3,6 +3,7 @@ package rpm
 import (
 	"context"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/package-url/packageurl-go"
@@ -62,8 +63,8 @@ func Test_rpmArchiveAnalyzer_Analyze(t *testing.T) {
 		{
 			name: "broken",
 			input: analyzer.AnalysisInput{
-				FilePath: "testdata/broken",
-				Content:  lo.Must(os.Open("testdata/broken.rpm")),
+				FilePath: "testdata/broken.rpm",
+				Content:  strings.NewReader(`broken`),
 			},
 			wantErr: require.Error,
 		},
