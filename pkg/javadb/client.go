@@ -104,7 +104,7 @@ func (u *Updater) downloadDB(ctx context.Context) error {
 		Quiet:     u.quiet,
 	}
 	if err := artifacts.Download(ctx, u.dbDir, downloadOpt); err != nil {
-		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
+		return xerrors.Errorf("failed to download Java DB: %w", err)
 	}
 
 	return nil
