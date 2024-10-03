@@ -1,5 +1,50 @@
 # Changelog
 
+## [0.56.0](https://github.com/aquasecurity/trivy/compare/v0.55.0...v0.56.0) (2024-10-03)
+
+
+### Features
+
+* **java:** add empty versions if `pom.xml` dependency versions can't be detected ([#7520](https://github.com/aquasecurity/trivy/issues/7520)) ([b836232](https://github.com/aquasecurity/trivy/commit/b8362321adb2af220830c5de31c29978423d47da))
+* **license:** improve license normalization ([#7131](https://github.com/aquasecurity/trivy/issues/7131)) ([6472e3c](https://github.com/aquasecurity/trivy/commit/6472e3c9da2a8e7ba41598a45c80df8f18e57d4c))
+* **misconf:** add ability to disable checks by ID ([#7536](https://github.com/aquasecurity/trivy/issues/7536)) ([ef0a27d](https://github.com/aquasecurity/trivy/commit/ef0a27d515ff80762bf1959d44a8bde017ae06ec))
+* **misconf:** Register checks only when needed ([#7435](https://github.com/aquasecurity/trivy/issues/7435)) ([f768d3a](https://github.com/aquasecurity/trivy/commit/f768d3a767a99a86b0372f19d9f49a2de35dbe59))
+* **misconf:** Support `--skip-*` for all included modules  ([#7579](https://github.com/aquasecurity/trivy/issues/7579)) ([c0e8da3](https://github.com/aquasecurity/trivy/commit/c0e8da3828e9d3a0b30d1f6568037db8dc827765))
+* **secret:** enhance secret scanning for python binary files ([#7223](https://github.com/aquasecurity/trivy/issues/7223)) ([60725f8](https://github.com/aquasecurity/trivy/commit/60725f879ba014c5c57583db6afc290b78facae8))
+* support multiple DB repositories for vulnerability and Java DB ([#7605](https://github.com/aquasecurity/trivy/issues/7605)) ([3562529](https://github.com/aquasecurity/trivy/commit/3562529ddfb26d301311ed450c192e17011353df))
+* support RPM archives ([#7628](https://github.com/aquasecurity/trivy/issues/7628)) ([69bf7e0](https://github.com/aquasecurity/trivy/commit/69bf7e00ea5ab483692db830fdded26a31f03183))
+* **suse:** added SUSE Linux Enterprise Micro support ([#7294](https://github.com/aquasecurity/trivy/issues/7294)) ([efdb68d](https://github.com/aquasecurity/trivy/commit/efdb68d3b9ddf9dfaf45ea5855b31c43a4366bab))
+
+
+### Bug Fixes
+
+* allow access to '..' in mapfs ([#7575](https://github.com/aquasecurity/trivy/issues/7575)) ([a8fbe46](https://github.com/aquasecurity/trivy/commit/a8fbe46119adbd89f827a75c75b9e97d392f1842))
+* **db:** check `DownloadedAt` for `trivy-java-db` ([#7592](https://github.com/aquasecurity/trivy/issues/7592)) ([13ef3e7](https://github.com/aquasecurity/trivy/commit/13ef3e7d62ba2bcb3a04d7b44f79b1299674b480))
+* **java:** use `dependencyManagement` from root/child pom's for dependencies from parents ([#7497](https://github.com/aquasecurity/trivy/issues/7497)) ([5442949](https://github.com/aquasecurity/trivy/commit/54429497e7d6a87eac236771d4efb8a5a7faaac5))
+* **license:** stop spliting a long license text ([#7336](https://github.com/aquasecurity/trivy/issues/7336)) ([4926da7](https://github.com/aquasecurity/trivy/commit/4926da79de901fba73819d71845ec0355b68ae0f))
+* **misconf:** Disable deprecated checks by default ([#7632](https://github.com/aquasecurity/trivy/issues/7632)) ([82e2adc](https://github.com/aquasecurity/trivy/commit/82e2adc6f8e68d0cc0021031170c2adb60d213ba))
+* **misconf:** disable DS016 check for image history analyzer ([#7540](https://github.com/aquasecurity/trivy/issues/7540)) ([de40df9](https://github.com/aquasecurity/trivy/commit/de40df9408d6d856a3ad384ec9f086edce3aa382))
+* **misconf:** escape all special sequences ([#7558](https://github.com/aquasecurity/trivy/issues/7558)) ([ea0cf03](https://github.com/aquasecurity/trivy/commit/ea0cf0379aff0348fde87356dab37947800fc1b6))
+* **misconf:** Fix logging typo ([#7473](https://github.com/aquasecurity/trivy/issues/7473)) ([56db43c](https://github.com/aquasecurity/trivy/commit/56db43c24f4f6be92891be85faaf9492cad516ac))
+* **misconf:** Fixed scope for China Cloud ([#7560](https://github.com/aquasecurity/trivy/issues/7560)) ([37d549e](https://github.com/aquasecurity/trivy/commit/37d549e5b86a1c5dce6710fbfd2310aec9abe949))
+* **misconf:** not to warn about missing selectors of libraries ([#7638](https://github.com/aquasecurity/trivy/issues/7638)) ([fcaea74](https://github.com/aquasecurity/trivy/commit/fcaea740808d5784c120e5c5d65f5f94e1d931d4))
+* **oracle:** Update EOL date for Oracle 7 ([#7480](https://github.com/aquasecurity/trivy/issues/7480)) ([dd0a64a](https://github.com/aquasecurity/trivy/commit/dd0a64a1cf0cd76e6f81e3ff55fa6ccb95ce3c3d))
+* **report:** change a receiver of MarshalJSON ([#7483](https://github.com/aquasecurity/trivy/issues/7483)) ([927c6e0](https://github.com/aquasecurity/trivy/commit/927c6e0c9d4d4a3f1be00f0f661c1d18325d9440))
+* **report:** fix error with unmarshal of `ExperimentalModifiedFindings` ([#7463](https://github.com/aquasecurity/trivy/issues/7463)) ([7ff9aff](https://github.com/aquasecurity/trivy/commit/7ff9aff2739b2eee4a98175b98914795e4077060))
+* **sbom:** export bom-ref when converting a package to a component ([#7340](https://github.com/aquasecurity/trivy/issues/7340)) ([5dd94eb](https://github.com/aquasecurity/trivy/commit/5dd94ebc1ffe3f1df511dee6381f92a5daefadf2))
+* **sbom:** parse type `framework` as `library` when unmarshalling `CycloneDX` files ([#7527](https://github.com/aquasecurity/trivy/issues/7527)) ([aeb7039](https://github.com/aquasecurity/trivy/commit/aeb7039d7ce090e243d29f0bf16c9e4e24252a01))
+* **secret:** change grafana token regex to find them without unquoted ([#7627](https://github.com/aquasecurity/trivy/issues/7627)) ([3e1fa21](https://github.com/aquasecurity/trivy/commit/3e1fa2100074e840bacdd65947425b08750b7d9a))
+
+
+### Performance Improvements
+
+* **misconf:** use port ranges instead of enumeration ([#7549](https://github.com/aquasecurity/trivy/issues/7549)) ([1f9fc13](https://github.com/aquasecurity/trivy/commit/1f9fc13da4a1e7c76c978e4f8e119bfd61a0480e))
+
+
+### Reverts
+
+* **java:** stop supporting of `test` scope for `pom.xml` files ([#7488](https://github.com/aquasecurity/trivy/issues/7488)) ([b0222fe](https://github.com/aquasecurity/trivy/commit/b0222feeb586ec59904bb321fda8f3f22496d07b))
+
 ## [0.55.0](https://github.com/aquasecurity/trivy/compare/v0.54.0...v0.55.0) (2024-09-03)
 
 
