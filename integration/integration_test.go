@@ -186,7 +186,6 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 			return (*bom.Components)[i].Name < (*bom.Components)[j].Name
 		})
 		for i := range *bom.Components {
-			(*bom.Components)[i].BOMRef = ""
 			sort.Slice(*(*bom.Components)[i].Properties, func(ii, jj int) bool {
 				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})

@@ -17,6 +17,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm"
@@ -73,6 +74,10 @@ type ScannerOption struct {
 
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
+
+	DisabledCheckIDs []string
+	SkipFiles        []string
+	SkipDirs         []string
 }
 
 func (o *ScannerOption) Sort() {
@@ -208,9 +213,10 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 
 func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
 	opts := []options.ScannerOption{
-		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
-		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
+		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
+		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
+		rego.WithDisabledCheckIDs(opt.DisabledCheckIDs...),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -218,7 +224,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		return nil, err
 	}
 	if policyFS != nil {
-		opts = append(opts, options.ScannerWithPolicyFilesystem(policyFS))
+		opts = append(opts, rego.WithPolicyFilesystem(policyFS))
 	}
 
 	dataFS, dataPaths, err := CreateDataFS(opt.DataPaths, opt.K8sVersion)
@@ -231,13 +237,13 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	})
 
 	opts = append(opts,
-		options.ScannerWithDataDirs(dataPaths...),
-		options.ScannerWithDataFilesystem(dataFS),
-		options.ScannerWithCustomSchemas(schemas),
+		rego.WithDataDirs(dataPaths...),
+		rego.WithDataFilesystem(dataFS),
+		rego.WithCustomSchemas(schemas),
 	)
 
 	if opt.Trace {
-		opts = append(opts, options.ScannerWithPerResultTracing(true))
+		opts = append(opts, rego.WithPerResultTracing(true))
 	}
 
 	if opt.RegoOnly {
@@ -245,15 +251,15 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	}
 
 	if len(policyPaths) > 0 {
-		opts = append(opts, options.ScannerWithPolicyDirs(policyPaths...))
+		opts = append(opts, rego.WithPolicyDirs(policyPaths...))
 	}
 
 	if len(opt.DataPaths) > 0 {
-		opts = append(opts, options.ScannerWithDataDirs(opt.DataPaths...))
+		opts = append(opts, rego.WithDataDirs(opt.DataPaths...))
 	}
 
 	if len(opt.Namespaces) > 0 {
-		opts = append(opts, options.ScannerWithPolicyNamespaces(opt.Namespaces...))
+		opts = append(opts, rego.WithPolicyNamespaces(opt.Namespaces...))
 	}
 
 	switch t {
@@ -293,6 +299,8 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]opt
 	opts = append(opts,
 		terraform.ScannerWithAllDirectories(true),
 		terraform.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded),
+		terraform.ScannerWithSkipFiles(scannerOption.SkipFiles),
+		terraform.ScannerWithSkipDirs(scannerOption.SkipDirs),
 	)
 
 	return opts, nil

@@ -104,7 +104,8 @@ db:
   download-only: false
 
   # Same as '--java-db-repository'
-  java-repository: "ghcr.io/aquasecurity/trivy-java-db:1"
+  java-repository:
+   - ghcr.io/aquasecurity/trivy-java-db:1
 
   # Same as '--skip-java-db-update'
   java-skip-update: false
@@ -113,7 +114,8 @@ db:
   no-progress: false
 
   # Same as '--db-repository'
-  repository: "ghcr.io/aquasecurity/trivy-db:2"
+  repository:
+   - ghcr.io/aquasecurity/trivy-db:2
 
   # Same as '--skip-db-update'
   skip-update: false
@@ -371,7 +373,7 @@ license:
 ```yaml
 misconfiguration:
   # Same as '--checks-bundle-repository'
-  checks-bundle-repository: "ghcr.io/aquasecurity/trivy-checks:0"
+  checks-bundle-repository: "ghcr.io/aquasecurity/trivy-checks:1"
 
   cloudformation:
     # Same as '--cf-params'
@@ -477,7 +479,7 @@ rego:
   data: []
 
   # Same as '--include-deprecated-checks'
-  include-deprecated-checks: true
+  include-deprecated-checks: false
 
   # Same as '--check-namespaces'
   namespaces: []

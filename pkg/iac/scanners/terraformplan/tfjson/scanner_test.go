@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -51,7 +52,7 @@ func Test_TerraformScanner(t *testing.T) {
 			inputFile: "test/testdata/plan.json",
 			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
+				rego.WithPolicyDirs("rules"),
 				options.ScannerWithRegoOnly(true),
 			},
 		},
@@ -60,9 +61,9 @@ func Test_TerraformScanner(t *testing.T) {
 			inputFile: "test/testdata/plan.json",
 			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
+				rego.WithPolicyDirs("rules"),
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 		{
@@ -90,9 +91,9 @@ deny[cause] {
 }
 `,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
+				rego.WithPolicyDirs("rules"),
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 		{
@@ -100,9 +101,9 @@ deny[cause] {
 			inputFile: "test/testdata/arbitrary_name.json",
 			check:     defaultCheck,
 			options: []options.ScannerOption{
-				options.ScannerWithPolicyDirs("rules"),
+				rego.WithPolicyDirs("rules"),
 				options.ScannerWithRegoOnly(true),
-				options.ScannerWithPolicyNamespaces("user"),
+				rego.WithPolicyNamespaces("user"),
 			},
 		},
 	}
@@ -115,7 +116,7 @@ deny[cause] {
 				"/rules/test.rego":       tc.check,
 			})
 
-			so := append(tc.options, options.ScannerWithPolicyFilesystem(fs))
+			so := append(tc.options, rego.WithPolicyFilesystem(fs))
 			scanner := New(so...)
 
 			results, err := scanner.ScanFS(context.TODO(), fs, "code")

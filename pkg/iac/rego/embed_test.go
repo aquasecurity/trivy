@@ -15,6 +15,7 @@ import (
 )
 
 func Test_EmbeddedLoading(t *testing.T) {
+	LoadAndRegister()
 
 	frameworkRules := rules.GetRegistered()
 	var found bool

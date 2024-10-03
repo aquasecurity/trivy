@@ -11,7 +11,6 @@ var (
 		Name:       "include-deprecated-checks",
 		ConfigName: "rego.include-deprecated-checks",
 		Usage:      "include deprecated checks",
-		Default:    true,
 	}
 	SkipCheckUpdateFlag = Flag[bool]{
 		Name:       "skip-check-update",

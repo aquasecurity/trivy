@@ -17,31 +17,34 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 		SkipDBUpdate     bool
 		DownloadDBOnly   bool
 		Light            bool
-		DBRepository     string
-		JavaDBRepository string
+		DBRepository     []string
+		JavaDBRepository []string
 	}
 	tests := []struct {
-		name      string
-		fields    fields
-		want      flag.DBOptions
-		wantLogs  []string
-		assertion require.ErrorAssertionFunc
+		name     string
+		fields   fields
+		want     flag.DBOptions
+		wantLogs []string
+		wantErr  string
 	}{
 		{
 			name: "happy",
 			fields: fields{
 				SkipDBUpdate:     true,
 				DownloadDBOnly:   false,
-				DBRepository:     "ghcr.io/aquasecurity/trivy-db",
-				JavaDBRepository: "ghcr.io/aquasecurity/trivy-java-db",
+				DBRepository:     []string{"ghcr.io/aquasecurity/trivy-db"},
+				JavaDBRepository: []string{"ghcr.io/aquasecurity/trivy-java-db"},
 			},
 			want: flag.DBOptions{
-				SkipDBUpdate:     true,
-				DownloadDBOnly:   false,
-				DBRepository:     name.Tag{}, // All fields are unexported
-				JavaDBRepository: name.Tag{}, // All fields are unexported
+				SkipDBUpdate:       true,
+				DownloadDBOnly:     false,
+				DBRepositories:     []name.Reference{name.Tag{}}, // All fields are unexported
+				JavaDBRepositories: []name.Reference{name.Tag{}}, // All fields are unexported
 			},
-			assertion: require.NoError,
+			wantLogs: []string{
+				`Adding schema version to the DB repository for backward compatibility	repository="ghcr.io/aquasecurity/trivy-db:2"`,
+				`Adding schema version to the DB repository for backward compatibility	repository="ghcr.io/aquasecurity/trivy-java-db:1"`,
+			},
 		},
 		{
 			name: "sad",
@@ -49,25 +52,36 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				SkipDBUpdate:   true,
 				DownloadDBOnly: true,
 			},
-			assertion: func(t require.TestingT, err error, msgs ...any) {
-				require.ErrorContains(t, err, "--skip-db-update and --download-db-only options can not be specified both")
-			},
+			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
 		},
 		{
 			name: "invalid repo",
 			fields: fields{
 				SkipDBUpdate:   true,
 				DownloadDBOnly: false,
-				DBRepository:   "foo:bar:baz",
+				DBRepository:   []string{"foo:bar:baz"},
 			},
-			assertion: func(t require.TestingT, err error, msgs ...any) {
-				require.ErrorContains(t, err, "invalid db repository")
+			wantErr: "invalid DB repository",
+		},
+		{
+			name: "multiple repos",
+			fields: fields{
+				SkipDBUpdate:     true,
+				DownloadDBOnly:   false,
+				DBRepository:     []string{"ghcr.io/aquasecurity/trivy-db:2", "gallery.ecr.aws/aquasecurity/trivy-db:2"},
+				JavaDBRepository: []string{"ghcr.io/aquasecurity/trivy-java-db:1", "gallery.ecr.aws/aquasecurity/trivy-java-db:1"},
+			},
+			want: flag.DBOptions{
+				SkipDBUpdate:       true,
+				DownloadDBOnly:     false,
+				DBRepositories:     []name.Reference{name.Tag{}, name.Tag{}}, // All fields are unexported
+				JavaDBRepositories: []name.Reference{name.Tag{}, name.Tag{}}, // All fields are unexported
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			out := newLogger(log.LevelWarn)
+			out := newLogger(log.LevelInfo)
 
 			viper.Set(flag.SkipDBUpdateFlag.ConfigName, tt.fields.SkipDBUpdate)
 			viper.Set(flag.DownloadDBOnlyFlag.ConfigName, tt.fields.DownloadDBOnly)
@@ -76,13 +90,19 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 
 			// Assert options
 			f := &flag.DBFlagGroup{
-				DownloadDBOnly:   flag.DownloadDBOnlyFlag.Clone(),
-				SkipDBUpdate:     flag.SkipDBUpdateFlag.Clone(),
-				DBRepository:     flag.DBRepositoryFlag.Clone(),
-				JavaDBRepository: flag.JavaDBRepositoryFlag.Clone(),
+				DownloadDBOnly:     flag.DownloadDBOnlyFlag.Clone(),
+				SkipDBUpdate:       flag.SkipDBUpdateFlag.Clone(),
+				DBRepositories:     flag.DBRepositoryFlag.Clone(),
+				JavaDBRepositories: flag.JavaDBRepositoryFlag.Clone(),
 			}
 			got, err := f.ToOptions()
-			tt.assertion(t, err)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+
 			assert.EqualExportedValues(t, tt.want, got)
 
 			// Assert log messages
