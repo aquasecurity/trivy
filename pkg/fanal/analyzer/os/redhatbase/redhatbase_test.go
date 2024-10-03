@@ -31,6 +31,18 @@ func Test_redhatOSAnalyzer_Analyze(t *testing.T) {
 			inputFile: "testdata/not_redhatbase/empty",
 			wantErr:   "redhatbase: unable to analyze OS information",
 		},
+		{
+			name:      "happy path coreos",
+			inputFile: "testdata/coreos/redhat-release",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{Family: "redhat", Name: "9.4"},
+			},
+		},
+		{
+			name:      "sad path coreos",
+			inputFile: "testdata/coreos/invalid-redhat-release",
+			wantErr:   "coreos: invalid redhat-release",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
