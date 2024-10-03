@@ -102,8 +102,10 @@ func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 					rhelVersion = "8.4"
 				} else if coreos4_7_0, _ := semver.Parse("4.7.0"); coreosVersion.GreaterThanOrEqual(coreos4_7_0) {
 					rhelVersion = "8.3"
-				} else {
+				} else if coreos4_6_0, _ := semver.Parse("4.6.0"); coreosVersion.GreaterThanOrEqual(coreos4_6_0) {
 					rhelVersion = "8.2"
+				} else {
+					return types.OS{}, xerrors.Errorf("coreos: invalid redhat-release")
 				}
 
 				return types.OS{
