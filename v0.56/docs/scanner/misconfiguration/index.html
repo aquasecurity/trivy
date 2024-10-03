@@ -1,0 +1,4979 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI">
+      
+      
+      
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/v0.56/docs/scanner/misconfiguration/">
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>Overview - Trivy</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#misconfiguration-scanning" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+            <div class="md-banner__inner md-grid md-typeset">
+              
+You're not viewing the latest version.
+<a href="../../../..">
+    <strong>Click here to go to latest.</strong>
+</a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          
+        </aside>
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+      
+  <img src="../../../imgs/logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Trivy
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aquasecurity/trivy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../tutorials/overview/" class="md-tabs__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
+        Docs
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../ecosystem/" class="md-tabs__link">
+        Ecosystem
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../community/principles/" class="md-tabs__link">
+        Contributing
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+      
+  <img src="../../../imgs/logo-white.svg" alt="logo">
+
+    </a>
+    Trivy
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aquasecurity/trivy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/signature-verification/" class="md-nav__link">
+        Signature Verification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          CI/CD
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="CI/CD" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          CI/CD
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/github-actions/" class="md-nav__link">
+        GitHub Actions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/circleci/" class="md-nav__link">
+        CircleCI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/travis-ci/" class="md-nav__link">
+        Travis CI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/gitlab-ci/" class="md-nav__link">
+        GitLab CI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/bitbucket/" class="md-nav__link">
+        Bitbucket Pipelines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/aws-codepipeline/" class="md-nav__link">
+        AWS CodePipeline
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/aws-security-hub/" class="md-nav__link">
+        AWS Security Hub
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/integrations/azure-devops/" class="md-nav__link">
+        Azure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3" type="checkbox" id="__nav_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
+        Cluster Scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/kubernetes/kyverno/" class="md-nav__link">
+        Kyverno
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/kubernetes/gitops/" class="md-nav__link">
+        GitOps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_4">
+          Misconfiguration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Misconfiguration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_4">
+          <span class="md-nav__icon md-icon"></span>
+          Misconfiguration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/misconfiguration/terraform/" class="md-nav__link">
+        Terraform scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/misconfiguration/custom-checks/" class="md-nav__link">
+        Custom Checks with Rego
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5" type="checkbox" id="__nav_2_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_5">
+          Signing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Signing" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_5">
+          <span class="md-nav__icon md-icon"></span>
+          Signing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/signing/vuln-attestation/" class="md-nav__link">
+        Vulnerability Scan Record Attestation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_6" type="checkbox" id="__nav_2_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_6">
+          Shell
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Shell" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_6">
+          <span class="md-nav__icon md-icon"></span>
+          Shell
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/shell/shell-completion/" class="md-nav__link">
+        Completion
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_7" type="checkbox" id="__nav_2_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_7">
+          Additional Resources
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Additional Resources" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_7">
+          <span class="md-nav__icon md-icon"></span>
+          Additional Resources
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/additional-resources/references/" class="md-nav__link">
+        Additional Resources
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/additional-resources/community/" class="md-nav__link">
+        Community References
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/additional-resources/cks/" class="md-nav__link">
+        CKS Reference
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Docs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Docs" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Docs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Target
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Target" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Target
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/container_image/" class="md-nav__link">
+        Container Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/filesystem/" class="md-nav__link">
+        Filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/rootfs/" class="md-nav__link">
+        Rootfs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/repository/" class="md-nav__link">
+        Code Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/vm/" class="md-nav__link">
+        Virtual Machine Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/aws/" class="md-nav__link">
+        AWS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../target/sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Scanner
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Scanner" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Scanner
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vulnerability/" class="md-nav__link">
+        Vulnerability
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2" type="checkbox" id="__nav_3_3_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3_2">
+          Misconfiguration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Misconfiguration" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Misconfiguration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Overview
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    Quick start
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-detection" class="md-nav__link">
+    Type detection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-connectivity" class="md-nav__link">
+    External connectivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-a-subset-of-misconfiguration-scanners" class="md-nav__link">
+    Enabling a subset of misconfiguration scanners
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loading-custom-checks" class="md-nav__link">
+    Loading custom checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-arbitrary-json-and-yaml-configurations" class="md-nav__link">
+    Scan arbitrary JSON and YAML configurations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-custom-data" class="md-nav__link">
+    Passing custom data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-namespaces" class="md-nav__link">
+    Passing namespaces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-terraform-registries" class="md-nav__link">
+    Private Terraform registries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+    Skipping resources by inline comments
+  </a>
+  
+    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expiration-date" class="md-nav__link">
+    Expiration Date
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-by-attributes" class="md-nav__link">
+    Ignoring by attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-module-issues" class="md-nav__link">
+    Ignoring module issues
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#support-for-wildcards" class="md-nav__link">
+    Support for Wildcards
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2_2" type="checkbox" id="__nav_3_3_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3_2_2">
+          Policy
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Policy" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_3_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Policy
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="check/builtin/" class="md-nav__link">
+        Built-in Checks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="check/exceptions/" class="md-nav__link">
+        Exceptions
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2_3" type="checkbox" id="__nav_3_3_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3_2_3">
+          Custom Checks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Custom Checks" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_3_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Custom Checks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/data/" class="md-nav__link">
+        Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/combine/" class="md-nav__link">
+        Combine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/selectors/" class="md-nav__link">
+        Selectors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/schema/" class="md-nav__link">
+        Schemas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/debug/" class="md-nav__link">
+        Debugging Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom/contribute-checks/" class="md-nav__link">
+        Contribute Checks
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secret/" class="md-nav__link">
+        Secret
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        License
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4">
+          Coverage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Coverage" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_4">
+          <span class="md-nav__icon md-icon"></span>
+          Coverage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_2" type="checkbox" id="__nav_3_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_2">
+          OS
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="OS" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          OS
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/alma/" class="md-nav__link">
+        AlmaLinux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/alpine/" class="md-nav__link">
+        Alpine Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/amazon/" class="md-nav__link">
+        Amazon Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/azure/" class="md-nav__link">
+        Azure Linux (CBL-Mariner)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/centos/" class="md-nav__link">
+        CentOS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/chainguard/" class="md-nav__link">
+        Chainguard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/debian/" class="md-nav__link">
+        Debian
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/oracle/" class="md-nav__link">
+        Oracle Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/photon/" class="md-nav__link">
+        Photon OS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/rhel/" class="md-nav__link">
+        Red Hat
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/rocky/" class="md-nav__link">
+        Rocky Linux
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/suse/" class="md-nav__link">
+        SUSE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/ubuntu/" class="md-nav__link">
+        Ubuntu
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/wolfi/" class="md-nav__link">
+        Wolfi
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/os/google-distroless/" class="md-nav__link">
+        Google Distroless (Images)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_3" type="checkbox" id="__nav_3_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_3">
+          Language
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Language" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Language
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/c/" class="md-nav__link">
+        C/C++
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/dart/" class="md-nav__link">
+        Dart
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/dotnet/" class="md-nav__link">
+        .NET
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/elixir/" class="md-nav__link">
+        Elixir
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/golang/" class="md-nav__link">
+        Go
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/java/" class="md-nav__link">
+        Java
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/nodejs/" class="md-nav__link">
+        Node.js
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/php/" class="md-nav__link">
+        PHP
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/python/" class="md-nav__link">
+        Python
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/ruby/" class="md-nav__link">
+        Ruby
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/rust/" class="md-nav__link">
+        Rust
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/swift/" class="md-nav__link">
+        Swift
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/language/julia/" class="md-nav__link">
+        Julia
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_4" type="checkbox" id="__nav_3_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_4">
+          IaC
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IaC" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          IaC
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/azure-arm/" class="md-nav__link">
+        Azure ARM Template
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/cloudformation/" class="md-nav__link">
+        CloudFormation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/docker/" class="md-nav__link">
+        Docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/helm/" class="md-nav__link">
+        Helm
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/iac/terraform/" class="md-nav__link">
+        Terraform
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_5" type="checkbox" id="__nav_3_4_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_5">
+          Others
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Others" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          Others
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/others/bitnami/" class="md-nav__link">
+        Bitnami Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/others/conda/" class="md-nav__link">
+        Conda
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/others/rpm/" class="md-nav__link">
+        RPM Archives
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/filtering/" class="md-nav__link">
+        Filtering
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/skipping/" class="md-nav__link">
+        Skipping Files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/reporting/" class="md-nav__link">
+        Reporting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/cache/" class="md-nav__link">
+        Cache
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/db/" class="md-nav__link">
+        DB
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/others/" class="md-nav__link">
+        Others
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6">
+          Supply Chain
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Supply Chain" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_6">
+          <span class="md-nav__icon md-icon"></span>
+          Supply Chain
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_2" type="checkbox" id="__nav_3_6_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6_2">
+          Attestation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Attestation" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_6_2">
+          <span class="md-nav__icon md-icon"></span>
+          Attestation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/attestation/sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/attestation/vuln/" class="md-nav__link">
+        Cosign Vulnerability Scan Record
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/attestation/rekor/" class="md-nav__link">
+        SBOM Attestation in Rekor
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_3" type="checkbox" id="__nav_3_6_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_6_3">
+          VEX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="VEX" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_6_3">
+          <span class="md-nav__icon md-icon"></span>
+          VEX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/vex/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/vex/repo/" class="md-nav__link">
+        VEX Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/vex/file/" class="md-nav__link">
+        Local VEX Files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supply-chain/vex/oci/" class="md-nav__link">
+        VEX Attestation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7">
+          Compliance
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Compliance" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Compliance
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compliance/compliance/" class="md-nav__link">
+        Built-in Compliance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compliance/contrib-compliance/" class="md-nav__link">
+        Custom Compliance
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8">
+          Plugins
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Plugins" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Plugins
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugin/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugin/user-guide/" class="md-nav__link">
+        User guide
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugin/developer-guide/" class="md-nav__link">
+        Developer guide
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/modules/" class="md-nav__link">
+        Modules
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
+        Advanced Network Scenarios
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3" type="checkbox" id="__nav_3_9_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_3">
+          Container Image
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Container Image" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_9_3">
+          <span class="md-nav__icon md-icon"></span>
+          Container Image
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+        Embed in Dockerfile
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+        Unpacked container image filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3_3" type="checkbox" id="__nav_3_9_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_3_3">
+          Private Docker Registries
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Private Docker Registries" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_9_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Private Docker Registries
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
+        Docker Hub
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
+        AWS ECR (Elastic Container Registry)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
+        GCR (Google Container Registry)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/acr/" class="md-nav__link">
+        ACR (Azure Container Registry)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
+        Self-Hosted
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10">
+          References
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="References" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_10">
+          <span class="md-nav__icon md-icon"></span>
+          References
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1" type="checkbox" id="__nav_3_10_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_10_1">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1" type="checkbox" id="__nav_3_10_1_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1_1">
+          CLI
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="CLI" data-md-level="4">
+        <label class="md-nav__title" for="__nav_3_10_1_1">
+          <span class="md-nav__icon md-icon"></span>
+          CLI
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_clean/" class="md-nav__link">
+        Clean
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_config/" class="md-nav__link">
+        Config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_convert/" class="md-nav__link">
+        Convert
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_filesystem/" class="md-nav__link">
+        Filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_image/" class="md-nav__link">
+        Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_8" type="checkbox" id="__nav_3_10_1_1_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1_1_8">
+          Module
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Module" data-md-level="5">
+        <label class="md-nav__title" for="__nav_3_10_1_1_8">
+          <span class="md-nav__icon md-icon"></span>
+          Module
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_module/" class="md-nav__link">
+        Module
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_module_install/" class="md-nav__link">
+        Module Install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_module_uninstall/" class="md-nav__link">
+        Module Uninstall
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_9" type="checkbox" id="__nav_3_10_1_1_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1_1_9">
+          Plugin
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Plugin" data-md-level="5">
+        <label class="md-nav__title" for="__nav_3_10_1_1_9">
+          <span class="md-nav__icon md-icon"></span>
+          Plugin
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin/" class="md-nav__link">
+        Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_info/" class="md-nav__link">
+        Plugin Info
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_install/" class="md-nav__link">
+        Plugin Install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_list/" class="md-nav__link">
+        Plugin List
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_run/" class="md-nav__link">
+        Plugin Run
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
+        Plugin Uninstall
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_update/" class="md-nav__link">
+        Plugin Update
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_upgrade/" class="md-nav__link">
+        Plugin Upgrade
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_plugin_search/" class="md-nav__link">
+        Plugin Search
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_repository/" class="md-nav__link">
+        Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_rootfs/" class="md-nav__link">
+        Rootfs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_server/" class="md-nav__link">
+        Server
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_version/" class="md-nav__link">
+        Version
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_1_1_15" type="checkbox" id="__nav_3_10_1_1_15" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_1_1_15">
+          VEX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="VEX" data-md-level="5">
+        <label class="md-nav__title" for="__nav_3_10_1_1_15">
+          <span class="md-nav__icon md-icon"></span>
+          VEX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_vex/" class="md-nav__link">
+        VEX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_vex_repo_download/" class="md-nav__link">
+        VEX Download
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_vex_repo_init/" class="md-nav__link">
+        VEX Init
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_vex_repo_list/" class="md-nav__link">
+        VEX List
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_vex_repo/" class="md-nav__link">
+        VEX Repo
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_vm/" class="md-nav__link">
+        VM
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/config-file/" class="md-nav__link">
+        Config file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_2" type="checkbox" id="__nav_3_10_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10_2">
+          Modes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Modes" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_10_2">
+          <span class="md-nav__icon md-icon"></span>
+          Modes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/modes/standalone/" class="md-nav__link">
+        Standalone
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/modes/client-server/" class="md-nav__link">
+        Client/Server
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/troubleshooting/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Ecosystem
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ecosystem" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Ecosystem
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/cicd/" class="md-nav__link">
+        CI/CD
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/ide/" class="md-nav__link">
+        IDE and Dev tools
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/prod/" class="md-nav__link">
+        Production and Clouds
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/reporting/" class="md-nav__link">
+        Reporting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Contributing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contributing" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Contributing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/principles/" class="md-nav__link">
+        Principles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_2" type="checkbox" id="__nav_5_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_2">
+          How to contribute
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="How to contribute" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_2">
+          <span class="md-nav__icon md-icon"></span>
+          How to contribute
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/issue/" class="md-nav__link">
+        Issues
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/discussion/" class="md-nav__link">
+        Discussions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/pr/" class="md-nav__link">
+        Pull Requests
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_3" type="checkbox" id="__nav_5_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3">
+          Contribute Rego Checks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contribute Rego Checks" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_3">
+          <span class="md-nav__icon md-icon"></span>
+          Contribute Rego Checks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/checks/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contribute/checks/service-support/" class="md-nav__link">
+        Add Service Support
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4">
+          Maintainer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Maintainer" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_4">
+          <span class="md-nav__icon md-icon"></span>
+          Maintainer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/release-flow/" class="md-nav__link">
+        Release Flow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/backporting/" class="md-nav__link">
+        Backporting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/help-wanted/" class="md-nav__link">
+        Help Wanted
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/maintainer/triage/" class="md-nav__link">
+        Triage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    Quick start
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-detection" class="md-nav__link">
+    Type detection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-connectivity" class="md-nav__link">
+    External connectivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-a-subset-of-misconfiguration-scanners" class="md-nav__link">
+    Enabling a subset of misconfiguration scanners
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loading-custom-checks" class="md-nav__link">
+    Loading custom checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-arbitrary-json-and-yaml-configurations" class="md-nav__link">
+    Scan arbitrary JSON and YAML configurations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-custom-data" class="md-nav__link">
+    Passing custom data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-namespaces" class="md-nav__link">
+    Passing namespaces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-terraform-registries" class="md-nav__link">
+    Private Terraform registries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+    Skipping resources by inline comments
+  </a>
+  
+    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expiration-date" class="md-nav__link">
+    Expiration Date
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-by-attributes" class="md-nav__link">
+    Ignoring by attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-module-issues" class="md-nav__link">
+    Ignoring module issues
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#support-for-wildcards" class="md-nav__link">
+    Support for Wildcards
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/scanner/misconfiguration/index.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="misconfiguration-scanning">Misconfiguration Scanning</h1>
+<p>Trivy provides built-in checks to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
+In addition to built-in checks, you can write your own custom checks, as you can see <a href="custom/">here</a>.</p>
+<h2 id="quick-start">Quick start</h2>
+<p>Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm Charts and Dockerfile.</p>
+<div class="highlight"><pre><span></span><code>$ trivy config <span class="o">[</span>YOUR_IaC_DIRECTORY<span class="o">]</span>
+</code></pre></div>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>$ ls build/
+Dockerfile
+$ trivy config ./build
+2022-05-16T13:29:29.952+0100    INFO    Detected config files: 1
+
+Dockerfile (dockerfile)
+=======================
+Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+MEDIUM: Specify a tag in the &#39;FROM&#39; statement for image &#39;alpine&#39;
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When using a &#39;FROM&#39; statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.
+
+See https://avd.aquasec.com/misconfig/ds001
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Dockerfile:1
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+1 [ FROM alpine:latest
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</code></pre></div>
+</div>
+<p>You can also enable misconfiguration detection in container image, filesystem and git repository scanning via <code>--scanners misconfig</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners misconfig IMAGE_NAME
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>$ trivy fs --scanners misconfig /path/to/dir
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Misconfiguration detection is not enabled by default in <code>image</code>, <code>fs</code> and <code>repo</code> subcommands.</p>
+</div>
+<p>Unlike the <code>config</code> subcommand, <code>image</code>, <code>fs</code> and <code>repo</code> subcommands can also scan for vulnerabilities and secrets at the same time. 
+You can specify <code>--scanners vuln,misconfig,secret</code> to enable vulnerability and secret detection as well as misconfiguration detection.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>$ ls myapp/
+Dockerfile Pipfile.lock
+$ trivy fs --scanners vuln,misconfig,secret --severity HIGH,CRITICAL myapp/
+<span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Number of language-specific files: <span class="m">1</span>
+<span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Detecting pipenv vulnerabilities...
+<span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Detected config files: <span class="m">1</span>
+
+Pipfile.lock <span class="o">(</span>pipenv<span class="o">)</span>
+<span class="o">=====================</span>
+Total: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+┌──────────┬────────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────────────────────┐
+│ Library  │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                           Title                           │
+├──────────┼────────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────────────────────┤
+│ httplib2 │ CVE-2021-21240 │ HIGH     │ <span class="m">0</span>.12.1            │ <span class="m">0</span>.19.0        │ python-httplib2: Regular expression denial of service via │
+│          │                │          │                   │               │ malicious header                                          │
+│          │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2021-21240                │
+└──────────┴────────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────────────────────┘
+
+Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
+<span class="o">=======================</span>
+Tests: <span class="m">17</span> <span class="o">(</span>SUCCESSES: <span class="m">16</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+HIGH: Last USER <span class="nb">command</span> <span class="k">in</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Running containers with <span class="s1">&#39;root&#39;</span> user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be <span class="k">done</span> by adding a <span class="s1">&#39;USER&#39;</span> statement to the Dockerfile.
+
+See https://avd.aquasec.com/misconfig/ds002
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Dockerfile:3
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<span class="m">3</span> <span class="o">[</span> USER root
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</code></pre></div>
+</div>
+<p>In the above example, Trivy detected vulnerabilities of Python dependencies and misconfigurations in Dockerfile.</p>
+<h2 id="type-detection">Type detection</h2>
+<p>The specified directory can contain mixed types of IaC files.
+Trivy automatically detects config types and applies relevant checks.</p>
+<p>For example, the following example holds IaC files for Terraform, CloudFormation, Kubernetes, Helm Charts, and Dockerfile in the same directory.</p>
+<div class="highlight"><pre><span></span><code>$ ls iac/
+Dockerfile  deployment.yaml  main.tf mysql-8.8.26.tar
+$ trivy config --severity HIGH,CRITICAL ./iac
+</code></pre></div>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code><span class="m">2022</span>-06-06T11:01:21.142+0100    INFO    Detected config files: <span class="m">8</span>
+
+Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
+
+Tests: <span class="m">21</span> <span class="o">(</span>SUCCESSES: <span class="m">20</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">1</span> <span class="o">(</span>MEDIUM: <span class="m">0</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+HIGH: Specify at least <span class="m">1</span> USER <span class="nb">command</span> <span class="k">in</span> Dockerfile with non-root user as argument
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Running containers with <span class="s1">&#39;root&#39;</span> user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be <span class="k">done</span> by adding a <span class="s1">&#39;USER&#39;</span> statement to the Dockerfile.
+
+See https://avd.aquasec.com/misconfig/ds002
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
+
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">15</span>, FAILURES: <span class="m">5</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">5</span> <span class="o">(</span>MEDIUM: <span class="m">4</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+MEDIUM: Container <span class="s1">&#39;hello-kubernetes&#39;</span> of Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.allowPrivilegeEscalation&#39;</span> to <span class="nb">false</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
+
+See https://avd.aquasec.com/misconfig/ksv001
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ deployment.yaml:16-19
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  <span class="m">16</span> ┌       - name: hello-kubernetes
+  <span class="m">17</span> │         image: hello-kubernetes:1.5
+  <span class="m">18</span> │         ports:
+  <span class="m">19</span> └         - containerPort: <span class="m">8080</span>
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+HIGH: Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should not specify <span class="s1">&#39;/var/run/docker.socker&#39;</span> <span class="k">in</span> <span class="s1">&#39;spec.template.volumes.hostPath.path&#39;</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Mounting docker.sock from the host can give the container full root access to the host.
+
+See https://avd.aquasec.com/misconfig/ksv006
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ deployment.yaml:6-29
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   <span class="m">6</span> ┌   replicas: <span class="m">3</span>
+   <span class="m">7</span> │   selector:
+   <span class="m">8</span> │     matchLabels:
+   <span class="m">9</span> │       app: hello-kubernetes
+  <span class="m">10</span> │   template:
+  <span class="m">11</span> │     metadata:
+  <span class="m">12</span> │       labels:
+  <span class="m">13</span> │         app: hello-kubernetes
+  <span class="m">14</span> └     spec:
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+MEDIUM: Container <span class="s1">&#39;hello-kubernetes&#39;</span> of Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.runAsNonRoot&#39;</span> to <span class="nb">true</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+<span class="s1">&#39;runAsNonRoot&#39;</span> forces the running image to run as a non-root user to ensure least privileges.
+
+See https://avd.aquasec.com/misconfig/ksv012
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ deployment.yaml:16-19
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  <span class="m">16</span> ┌       - name: hello-kubernetes
+  <span class="m">17</span> │         image: hello-kubernetes:1.5
+  <span class="m">18</span> │         ports:
+  <span class="m">19</span> └         - containerPort: <span class="m">8080</span>
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+MEDIUM: Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should not <span class="nb">set</span> <span class="s1">&#39;spec.template.volumes.hostPath&#39;</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+HostPath volumes must be forbidden.
+
+See https://avd.aquasec.com/misconfig/ksv023
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ deployment.yaml:6-29
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   <span class="m">6</span> ┌   replicas: <span class="m">3</span>
+   <span class="m">7</span> │   selector:
+   <span class="m">8</span> │     matchLabels:
+   <span class="m">9</span> │       app: hello-kubernetes
+  <span class="m">10</span> │   template:
+  <span class="m">11</span> │     metadata:
+  <span class="m">12</span> │       labels:
+  <span class="m">13</span> │         app: hello-kubernetes
+  <span class="m">14</span> └     spec:
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+MEDIUM: Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.sysctl&#39;</span> to the allowed values
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except <span class="k">for</span> an allowed <span class="s1">&#39;safe&#39;</span> subset. A sysctl is considered safe <span class="k">if</span> it is namespaced <span class="k">in</span> the container or the Pod, and it is isolated from other Pods or processes on the same Node.
+
+See https://avd.aquasec.com/misconfig/ksv026
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ deployment.yaml:6-29
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   <span class="m">6</span> ┌   replicas: <span class="m">3</span>
+   <span class="m">7</span> │   selector:
+   <span class="m">8</span> │     matchLabels:
+   <span class="m">9</span> │       app: hello-kubernetes
+  <span class="m">10</span> │   template:
+  <span class="m">11</span> │     metadata:
+  <span class="m">12</span> │       labels:
+  <span class="m">13</span> │         app: hello-kubernetes
+  <span class="m">14</span> └     spec:
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+mysql-8.8.26.tar:templates/primary/statefulset.yaml <span class="o">(</span>helm<span class="o">)</span>
+
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">18</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="m">2</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+MEDIUM: Container <span class="s1">&#39;mysql&#39;</span> of StatefulSet <span class="s1">&#39;mysql&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.allowPrivilegeEscalation&#39;</span> to <span class="nb">false</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
+
+See https://avd.aquasec.com/misconfig/ksv001
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ mysql-8.8.26.tar:templates/primary/statefulset.yaml:56-130
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  <span class="m">56</span> ┌         - name: mysql
+  <span class="m">57</span> │           image: docker.io/bitnami/mysql:8.0.28-debian-10-r23
+  <span class="m">58</span> │           imagePullPolicy: <span class="s2">&quot;IfNotPresent&quot;</span>
+  <span class="m">59</span> │           securityContext:
+  <span class="m">60</span> │             runAsUser: <span class="m">1001</span>
+  <span class="m">61</span> │           env:
+  <span class="m">62</span> │             - name: BITNAMI_DEBUG
+  <span class="m">63</span> │               value: <span class="s2">&quot;false&quot;</span>
+  <span class="m">64</span> └             - name: MYSQL_ROOT_PASSWORD
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+MEDIUM: Container <span class="s1">&#39;mysql&#39;</span> of StatefulSet <span class="s1">&#39;mysql&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.runAsNonRoot&#39;</span> to <span class="nb">true</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+<span class="s1">&#39;runAsNonRoot&#39;</span> forces the running image to run as a non-root user to ensure least privileges.
+
+See https://avd.aquasec.com/misconfig/ksv012
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ mysql-8.8.26.tar:templates/primary/statefulset.yaml:56-130
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  <span class="m">56</span> ┌         - name: mysql
+  <span class="m">57</span> │           image: docker.io/bitnami/mysql:8.0.28-debian-10-r23
+  <span class="m">58</span> │           imagePullPolicy: <span class="s2">&quot;IfNotPresent&quot;</span>
+  <span class="m">59</span> │           securityContext:
+  <span class="m">60</span> │             runAsUser: <span class="m">1001</span>
+  <span class="m">61</span> │           env:
+  <span class="m">62</span> │             - name: BITNAMI_DEBUG
+  <span class="m">63</span> │               value: <span class="s2">&quot;false&quot;</span>
+  <span class="m">64</span> └             - name: MYSQL_ROOT_PASSWORD
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</code></pre></div>
+
+</details>
+
+<p>You can see the config type next to each file name.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+</div>
+<div class="highlight"><pre><span></span><code>Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
+<span class="o">=======================</span>
+Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">22</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+...
+
+deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
+<span class="o">============================</span>
+Tests: <span class="m">28</span> <span class="o">(</span>SUCCESSES: <span class="m">15</span>, FAILURES: <span class="m">13</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">13</span> <span class="o">(</span>MEDIUM: <span class="m">4</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+...
+
+main.tf <span class="o">(</span>terraform<span class="o">)</span>
+<span class="o">===================</span>
+Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">14</span>, FAILURES: <span class="m">9</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">9</span> <span class="o">(</span>HIGH: <span class="m">6</span>, CRITICAL: <span class="m">1</span><span class="o">)</span>
+
+...
+
+bucket.yaml <span class="o">(</span>cloudformation<span class="o">)</span>
+<span class="o">============================</span>
+Tests: <span class="m">9</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">6</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">6</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">2</span>, HIGH: <span class="m">4</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+...
+
+mysql-8.8.26.tar:templates/primary/statefulset.yaml <span class="o">(</span>helm<span class="o">)</span>
+<span class="o">==========================================================</span>
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">18</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="m">2</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+</code></pre></div>
+<h2 id="configuration">Configuration</h2>
+<p>This section describes misconfiguration-specific configuration.
+Other common options are documented <a href="../../configuration/">here</a>.</p>
+<h3 id="external-connectivity">External connectivity</h3>
+<p>Trivy needs to connect to the internet to download the checks bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the <a href="../../advanced/air-gap/">Advanced Network Scenarios document</a>.</p>
+<h3 id="enabling-a-subset-of-misconfiguration-scanners">Enabling a subset of misconfiguration scanners</h3>
+<p>It's possible to only enable certain misconfiguration scanners if you prefer.
+You can do so by passing the <code>--misconfig-scanners</code> option.
+This flag takes a comma-separated list of configuration scanner types.</p>
+<div class="highlight"><pre><span></span><code>trivy config --misconfig-scanners<span class="o">=</span>terraform,dockerfile .
+</code></pre></div>
+<p>Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.</p>
+<h3 id="loading-custom-checks">Loading custom checks</h3>
+<p>You can load check files or directories including your custom checks using the <code>--config-check</code> flag.
+This can be repeated for specifying multiple files or directories.</p>
+<div class="highlight"><pre><span></span><code>trivy config --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
+</code></pre></div>
+<p>You can load checks bundle as OCI Image from a Container Registry using the <code>--checks-bundle-repository</code> flag.</p>
+<div class="highlight"><pre><span></span><code>trivy config --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+</code></pre></div>
+<h3 id="scan-arbitrary-json-and-yaml-configurations">Scan arbitrary JSON and YAML configurations</h3>
+<p>By default, scanning JSON and YAML configurations is disabled, since Trivy does not contain built-in checks for these configurations. To enable it, pass the <code>json</code> or <code>yaml</code> to <code>--misconfig-scanners</code>. See <a href="#enabling-a-subset-of-misconfiguration-scanners">Enabling a subset of misconfiguration scanners</a> for more information. Trivy will pass each file as is to the checks input.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+</div>
+<div class="highlight"><pre><span></span><code>$ cat iac/serverless.yaml
+service: serverless-rest-api-with-pynamodb
+
+frameworkVersion: <span class="s2">&quot;&gt;=2.24.0&quot;</span>
+
+plugins:
+  - serverless-python-requirements
+...
+
+$ cat serverless.rego
+<span class="c1"># METADATA</span>
+<span class="c1"># title: Serverless Framework service name not starting with &quot;aws-&quot;</span>
+<span class="c1"># description: Ensure that Serverless Framework service names start with &quot;aws-&quot;</span>
+<span class="c1"># schemas:</span>
+<span class="c1">#   - input: schema[&quot;serverless-schema&quot;]</span>
+<span class="c1"># custom:</span>
+<span class="c1">#   id: SF001</span>
+<span class="c1">#   severity: LOW</span>
+package user.serverless001
+
+deny<span class="o">[</span>res<span class="o">]</span> <span class="o">{</span>
+    not startswith<span class="o">(</span>input.service, <span class="s2">&quot;aws-&quot;</span><span class="o">)</span>
+    res :<span class="o">=</span> result.new<span class="o">(</span>
+        sprintf<span class="o">(</span><span class="s2">&quot;Service name %q is not allowed&quot;</span>, <span class="o">[</span>input.service<span class="o">])</span>,
+        input.service
+    <span class="o">)</span>
+<span class="o">}</span>
+
+$ trivy config --misconfig-scanners<span class="o">=</span>json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
+serverless.yaml <span class="o">(</span>yaml<span class="o">)</span>
+
+Tests: <span class="m">4</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+LOW: Service name <span class="s2">&quot;serverless-rest-api-with-pynamodb&quot;</span> is not allowed
+═════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure that Serverless Framework service names start with <span class="s2">&quot;aws-&quot;</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the case above, the custom check specified has a metadata annotation for the input schema <code>input: schema["serverless-schema"]</code>. This allows Trivy to type check the input IaC files provided.</p>
+</div>
+<p>Optionally, you can also pass schemas using the <code>config-file-schemas</code> flag. Trivy will use these schemas for file filtering and type checking in Rego checks.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+</div>
+<div class="highlight"><pre><span></span><code>$ trivy config --misconfig-scanners<span class="o">=</span>json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
+</code></pre></div>
+<p>If the <code>--config-file-schemas</code> flag is specified Trivy ensures that each input IaC config file being scanned is type-checked against the schema. If the input file does not match any of the passed schemas, it will be ignored. </p>
+<p>If the schema is specified in the check metadata and is in the directory specified in the <code>--config-check</code> argument, it will be automatically loaded as specified <a href="custom/schema/#custom-checks-with-custom-schemas">here</a>, and will only be used for type checking in Rego.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a user specifies the <code>--config-file-schemas</code> flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is also possible to specify multiple input schemas with <code>--config-file-schema</code> flag as it can accept a comma seperated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.</p>
+</div>
+<h3 id="passing-custom-data">Passing custom data</h3>
+<p>You can pass directories including your custom data through <code>--data</code> option.
+This can be repeated for specifying multiple directories.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> examples/misconf/custom-data
+trivy config --config-check ./my-check --data ./data --namespaces user ./configs
+</code></pre></div>
+<p>For more details, see <a href="custom/data/">Custom Data</a>.</p>
+<h3 id="passing-namespaces">Passing namespaces</h3>
+<p>By default, Trivy evaluates checks defined in <code>builtin.*</code>.
+If you want to evaluate custom checks in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
+This can be repeated for specifying multiple packages.</p>
+<div class="highlight"><pre><span></span><code>trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
+</code></pre></div>
+<h3 id="private-terraform-registries">Private Terraform registries</h3>
+<p>Trivy can download Terraform code from private registries.
+To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
+You cannot use a <code>.terraformrc</code> or <code>terraform.rc</code> file, these are not supported by trivy yet.</p>
+<p>From the Terraform <a href="https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials">docs</a>:</p>
+<blockquote>
+<p>Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
+For example, the value of a variable named <code>TF_TOKEN_app_terraform_io</code> will be used as a bearer authorization token when the CLI makes service requests to the hostname <code>app.terraform.io</code>.</p>
+<p>You must convert domain names containing non-ASCII characters to their punycode equivalent with an ACE prefix.
+For example, token credentials for <code>例えば.com</code> must be set in a variable called <code>TF_TOKEN_xn--r8j3dr99h_com</code>.</p>
+<p>Hyphens are also valid within host names but usually invalid as variable names and may be encoded as double underscores.
+For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--caf-dma_fr or TF_TOKEN_xn<em><strong>_caf</strong>dma</em>fr.</p>
+</blockquote>
+<p>If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.</p>
+<h3 id="skipping-resources-by-inline-comments">Skipping resources by inline comments</h3>
+<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.</p>
+<p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
+<p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>
+<p>For example, to ignore a misconfiguration ID <code>AVD-GCP-0051</code> in a Terraform HCL file:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
+<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>You can add multiple ignores on the same comment line:
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
+<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p>You can also specify a long ID, which is formed as follows: <code>&lt;provider&gt;-&lt;service&gt;-&lt;short-code&gt;</code>.</p>
+<p>As an example, consider the following check metadata:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># custom:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># id: AVD-AWS-0089</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># avd_id: AVD-AWS-0089</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># provider: aws</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># service: s3</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># severity: LOW</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># short_code: enable-logging</span><span class="w"></span>
+</code></pre></div>
+<p>Long ID would look like the following: <code>aws-s3-enable-logging</code>.</p>
+<p>Example for CloudFromation:
+<div class="highlight"><pre><span></span><code><span class="nt">AWSTemplateFormatVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2010-09-09&quot;</span><span class="w"></span>
+<span class="nt">Resources</span><span class="p">:</span><span class="w"></span>
+<span class="c1">#trivy:ignore:*</span><span class="w"></span>
+<span class="w">  </span><span class="nt">S3Bucket</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;AWS::S3::Bucket&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">Properties</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">BucketName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-bucket</span><span class="w"></span>
+</code></pre></div></p>
+<h4 id="expiration-date">Expiration Date</h4>
+<p>You can specify the expiration date of the ignore rule in <code>yyyy-mm-dd</code> format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p>The <code>aws-s3-enable-logging</code> check will be ignored until <code>2024-03-10</code> until the ignore rule expires.</p>
+<h4 id="ignoring-by-attributes">Ignoring by attributes</h4>
+<p>You can ignore a resource by its attribute value. This is useful when using the <code>for-each</code> meta-argument. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">ports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;3306&quot;, &quot;5432&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="c1"></span>
+
+<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_security_group_rule&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">for_each</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.ports</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="na">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ingress&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">from_port</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">each.key</span><span class="w"></span>
+<span class="w">  </span><span class="na">to_port</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="nv">each.key</span><span class="w"></span>
+<span class="w">  </span><span class="na">protocol</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TCP&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">cidr_blocks</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="na">security_group_id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="w">  </span><span class="na">source_security_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>The <code>aws-ec2-no-public-ingress-sgr</code> check will be ignored only for the <code>aws_security_group_rule</code> resource with port number <code>5432</code>. It is important to note that the ignore rule should not enclose the attribute value in quotes, despite the fact that the port is represented as a string.</p>
+<p>If you want to ignore multiple resources on different attributes, you can specify multiple ignore rules:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]</span>
+<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]</span>
+</code></pre></div>
+<p>You can also ignore a resource on multiple attributes in the same rule:
+<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nb">rules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nb">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="w"></span>
+<span class="w">      </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ingress&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nb">second</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="w"></span>
+<span class="w">      </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;egress&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="c1"></span>
+
+<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=1000,type=egress]</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_security_group_rule&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nb">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">for</span><span class="w"> </span><span class="err">k</span><span class="p">,</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">local.rules</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="na">k</span><span class="w"> </span><span class="o">=</span><span class="err">&gt;</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="na">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.type</span><span class="w"></span>
+<span class="w">  </span><span class="na">from_port</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.port</span><span class="w"></span>
+<span class="w">  </span><span class="na">to_port</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.port</span><span class="w"></span>
+<span class="w">  </span><span class="na">protocol</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TCP&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">cidr_blocks</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="na">security_group_id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="w">  </span><span class="na">source_security_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p>Checks can also be ignored by nested attributes:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:*[logging_config.prefix=myprefix]</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_cloudfront_distribution&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nb">logging_config</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="na">include_cookies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">false</span><span class="w"></span>
+<span class="w">    </span><span class="na">bucket</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;mylogs.s3.amazonaws.com&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="na">prefix</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;myprefix&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<h4 id="ignoring-module-issues">Ignoring module issues</h4>
+<p>Issues in third-party modules cannot be ignored using the method described above, because you may not have access to modify the module source code. In such a situation you can add ignore rules above the module block, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging</span>
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;s3_bucket&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/s3-bucket/aws&quot;</span><span class="w"></span>
+
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my-s3-bucket&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>An example of ignoring checks for a specific bucket in a module:
+<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;test1&quot;, &quot;test2&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="c1"></span>
+
+<span class="c1">#trivy:ignore:*[bucket=test1]</span>
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;s3_bucket&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.bucket</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="na">source</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/s3-bucket/aws&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">bucket</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<h4 id="support-for-wildcards">Support for Wildcards</h4>
+<p>You can use wildcards in the <code>ws</code> (workspace) and <code>ignore</code> sections of the ignore rules.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># trivy:ignore:aws-s3-*:ws:dev-*</span>
+</code></pre></div>
+<p>This example ignores all checks starting with <code>aws-s3-</code> for workspaces matching the pattern <code>dev-*</code>.</p>
+
+              
+            </article>
+            
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../vulnerability/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Vulnerability" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Vulnerability
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="check/builtin/" class="md-footer__link md-footer__link--next" aria-label="Next: Built-in Checks" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Built-in Checks
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/AquaTrivy" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/aquasecurity/trivy" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/aquasecurity/trivy" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M94.12 315.1c0 25.9-21.16 47.06-47.06 47.06S0 341 0 315.1c0-25.9 21.16-47.06 47.06-47.06h47.06v47.06zm23.72 0c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06v117.84c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06V315.1zm47.06-188.98c-25.9 0-47.06-21.16-47.06-47.06S139 32 164.9 32s47.06 21.16 47.06 47.06v47.06H164.9zm0 23.72c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06H47.06C21.16 243.96 0 222.8 0 196.9s21.16-47.06 47.06-47.06H164.9zm188.98 47.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06h-47.06V196.9zm-23.72 0c0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06V79.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06V196.9zM283.1 385.88c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06v-47.06h47.06zm0-23.72c-25.9 0-47.06-21.16-47.06-47.06 0-25.9 21.16-47.06 47.06-47.06h117.84c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06H283.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.footer", "content.action.edit", "content.tabs.link", "content.code.annotate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"default": "latest", "method": "mike", "provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+    
+  </body>
+</html>
