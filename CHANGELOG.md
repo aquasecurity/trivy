@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.56.1](https://github.com/aquasecurity/trivy/compare/v0.56.0...v0.56.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* **db:** fix javadb downloading error handling [backport: release/v0.56] ([#7646](https://github.com/aquasecurity/trivy/issues/7646)) ([5dbdadf](https://github.com/aquasecurity/trivy/commit/5dbdadfe4578288d5c3f2a5b625fff4a3580f8c5))
+
 ## [0.56.0](https://github.com/aquasecurity/trivy/compare/v0.55.0...v0.56.0) (2024-10-03)
 
 
