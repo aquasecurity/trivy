@@ -1367,139 +1367,272 @@ func TestCountMetaArgumentInModule(t *testing.T) {
 }
 
 func TestDynamicBlocks(t *testing.T) {
-	t.Run("arg is list of int", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "aws_security_group" "sg-webserver" {
-  vpc_id = "1111"
-  dynamic "ingress" {
+	tests := []struct {
+		name     string
+		src      string
+		expected []any
+	}{
+		{
+			name: "tuple of int",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
     for_each = [80, 443]
     content {
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      bar = foo.value
     }
   }
-}
-`,
-		})
-		require.Len(t, modules, 1)
-
-		secGroups := modules.GetResourcesByType("aws_security_group")
-		assert.Len(t, secGroups, 1)
-		ingressBlocks := secGroups[0].GetBlocks("ingress")
-		assert.Len(t, ingressBlocks, 2)
-
-		var inboundPorts []int
-		for _, ingress := range ingressBlocks {
-			fromPort := ingress.GetAttribute("from_port").AsIntValueOrDefault(-1, ingress).Value()
-			inboundPorts = append(inboundPorts, fromPort)
-		}
-
-		assert.True(t, compareSets([]int{80, 443}, inboundPorts))
-	})
-
-	t.Run("empty for-each", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "aws_lambda_function" "analyzer" {
-  dynamic "vpc_config" {
+}`,
+			expected: []any{float64(80), float64(443)},
+		},
+		{
+			name: "list of int",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = tolist([80, 443])
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{float64(80), float64(443)},
+		},
+		{
+			name: "set of int",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = toset([80, 443])
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{float64(80), float64(443)},
+		},
+		{
+			name: "list of bool",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = tolist([true])
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{true},
+		},
+		{
+			name: "empty for-each",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
     for_each = []
     content {}
   }
-}
-`,
-		})
-		require.Len(t, modules, 1)
-
-		functions := modules.GetResourcesByType("aws_lambda_function")
-		assert.Len(t, functions, 1)
-		vpcConfigs := functions[0].GetBlocks("vpc_config")
-		assert.Empty(t, vpcConfigs)
-	})
-
-	t.Run("arg is list of bool", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "aws_lambda_function" "analyzer" {
-  dynamic "vpc_config" {
-    for_each = [true]
-    content {}
-  }
-}
-`,
-		})
-		require.Len(t, modules, 1)
-
-		functions := modules.GetResourcesByType("aws_lambda_function")
-		assert.Len(t, functions, 1)
-		vpcConfigs := functions[0].GetBlocks("vpc_config")
-		assert.Len(t, vpcConfigs, 1)
-	})
-
-	t.Run("arg is list of objects", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-variable "cluster_network_policy" {
+}`,
+			expected: []any{},
+		},
+		{
+			name: "tuple of objects",
+			src: `variable "test_var" {
   type    = list(object({ enabled = bool }))
   default = [{ enabled = true }]
 }
 
-resource "google_container_cluster" "primary" {
-  name = "test"
-
-  dynamic "network_policy" {
-    for_each = var.cluster_network_policy
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = var.test_var
 
     content {
-      enabled = network_policy.value.enabled
+      bar = foo.value.enabled
     }
   }
 }`,
-		})
-		require.Len(t, modules, 1)
+			expected: []any{true},
+		},
+		{
+			name: "object key",
+			src: `variable "some_var" {
+  type = map(
+    object({
+      tag = string
+    })
+  )
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-		clusters := modules.GetResourcesByType("google_container_cluster")
-		assert.Len(t, clusters, 1)
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = { for name, values in var.some_var : name => values }
+    content {
+      bar = foo.key
+    }
+  }
+}`,
+			expected: []any{"ssh", "http", "https"},
+		},
+		{
+			name: "object value",
+			src: `variable "some_var" {
+  type = map(
+    object({
+      tag = string
+    })
+  )
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-		networkPolicies := clusters[0].GetBlocks("network_policy")
-		assert.Len(t, networkPolicies, 1)
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = { for name, values in var.some_var : name => values }
+    content {
+      bar = foo.value.tag
+    }
+  }
+}`,
+			expected: []any{"login", "proxy", "proxy"},
+		},
+		{
+			name: "map key",
+			src: `variable "some_var" {
+  type = map
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-		enabled := networkPolicies[0].GetAttribute("enabled")
-		assert.True(t, enabled.Value().True())
-	})
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = var.some_var
+    content {
+      bar = foo.key
+    }
+  }
+}`,
+			expected: []any{"ssh", "http", "https"},
+		},
+		{
+			name: "map key",
+			src: `variable "some_var" {
+  type = map
+  default = {
+    ssh   = { "tag" = "login" }
+    http  = { "tag" = "proxy" }
+    https = { "tag" = "proxy" }
+  }
+}
 
-	t.Run("nested dynamic", func(t *testing.T) {
-		modules := parse(t, map[string]string{
-			"main.tf": `
-resource "test_block" "this" {
-  name     = "name"
-  location = "loc"
-  dynamic "env" {
-	for_each = ["1", "2"]
-	content {
-	  dynamic "value_source" {
-		for_each = [true, true]
-		content {}
-	  }
+resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = var.some_var
+    content {
+      bar = foo.value.tag
+    }
+  }
+}`,
+			expected: []any{"login", "proxy", "proxy"},
+		},
+		{
+			name: "with iterator",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = ["foo", "bar"]
+	iterator = some_iterator
+    content {
+      bar = some_iterator.value
+    }
+  }
+}`,
+			expected: []any{"foo", "bar"},
+		},
+		{
+			name: "iterator and parent block with same name",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = ["foo", "bar"]
+	iterator = foo
+    content {
+      bar = foo.value
+    }
+  }
+}`,
+			expected: []any{"foo", "bar"},
+		},
+		{
+			name: "null value",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = null
+    content {
+      bar = foo.value
 	}
   }
 }`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := parse(t, map[string]string{
+				"main.tf": tt.src,
+			})
+			require.Len(t, modules, 1)
+
+			resource := modules.GetResourcesByType("test_resource")
+			require.Len(t, resource, 1)
+			blocks := resource[0].GetBlocks("foo")
+
+			var vals []any
+			for _, attr := range blocks {
+				vals = append(vals, attr.GetAttribute("bar").GetRawValue())
+			}
+
+			assert.ElementsMatch(t, tt.expected, vals)
 		})
-		require.Len(t, modules, 1)
+	}
+}
 
-		testResources := modules.GetResourcesByType("test_block")
-		assert.Len(t, testResources, 1)
-		envs := testResources[0].GetBlocks("env")
-		assert.Len(t, envs, 2)
-
-		var sources []*terraform.Block
-		for _, env := range envs {
-			sources = append(sources, env.GetBlocks("value_source")...)
-		}
-		assert.Len(t, sources, 4)
+func TestNestedDynamicBlock(t *testing.T) {
+	modules := parse(t, map[string]string{
+		"main.tf": `resource "test_resource" "test" {
+  dynamic "foo" {
+    for_each = ["1", "1"]
+    content {
+      dynamic "bar" {
+        for_each = [true, true]
+        content {
+          baz = foo.value
+          qux = bar.value
+        }
+      }
+    }
+  }
+}`,
 	})
+	require.Len(t, modules, 1)
+
+	testResources := modules.GetResourcesByType("test_resource")
+	assert.Len(t, testResources, 1)
+	blocks := testResources[0].GetBlocks("foo")
+	assert.Len(t, blocks, 2)
+
+	var nested []*terraform.Block
+	for _, block := range blocks {
+		nested = append(nested, block.GetBlocks("bar")...)
+		for _, b := range nested {
+			assert.Equal(t, "1", b.GetAttribute("baz").GetRawValue())
+			assert.Equal(t, true, b.GetAttribute("qux").GetRawValue())
+		}
+	}
+	assert.Len(t, nested, 4)
 }
 
 func parse(t *testing.T, files map[string]string) terraform.Modules {
@@ -1511,21 +1644,6 @@ func parse(t *testing.T, files map[string]string) terraform.Modules {
 	require.NoError(t, err)
 
 	return modules
-}
-
-func compareSets(a, b []int) bool {
-	m := make(map[int]bool)
-	for _, el := range a {
-		m[el] = true
-	}
-
-	for _, el := range b {
-		if !m[el] {
-			return false
-		}
-	}
-
-	return true
 }
 
 func TestModuleRefersToOutputOfAnotherModule(t *testing.T) {
@@ -1773,42 +1891,6 @@ variable "foo" {}
 	blocks := rootModule.GetResourcesByType("test")
 	assert.Len(t, blocks, 1)
 	assert.Equal(t, "bar", blocks[0].GetAttribute("foo").Value().AsString())
-}
-
-func TestDynamicWithIterator(t *testing.T) {
-	fsys := fstest.MapFS{
-		"main.tf": &fstest.MapFile{
-			Data: []byte(`resource "aws_s3_bucket" "this" {
-  dynamic versioning {
-    for_each = [true]
-    iterator = ver
-
-    content {
-      enabled = ver.value
-    }
-  }
-}`),
-		},
-	}
-
-	parser := New(
-		fsys, "",
-		OptionStopOnHCLError(true),
-		OptionWithDownloads(false),
-	)
-	require.NoError(t, parser.ParseFS(context.TODO(), "."))
-
-	modules, _, err := parser.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	assert.Len(t, modules, 1)
-
-	buckets := modules.GetResourcesByType("aws_s3_bucket")
-	assert.Len(t, buckets, 1)
-
-	attr, _ := buckets[0].GetNestedAttribute("versioning.enabled")
-
-	assert.True(t, attr.Value().True())
 }
 
 func Test_AWSRegionNameDefined(t *testing.T) {
