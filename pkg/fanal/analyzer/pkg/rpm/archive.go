@@ -136,7 +136,13 @@ func (a *rpmArchiveAnalyzer) generatePURL(pkg *types.Package) *packageurl.Packag
 	case strings.Contains(vendor, "suse"):
 		ns = "suse"
 	}
-	return packageurl.NewPackageURL(packageurl.TypeRPM, ns, pkg.Name, utils.FormatVersion(*pkg), nil, "")
+	return packageurl.NewPackageURL(packageurl.TypeRPM, ns, pkg.Name, utils.FormatVersion(*pkg),
+		packageurl.Qualifiers{
+			{
+				Key:   "arch",
+				Value: pkg.Arch,
+			},
+		}, "")
 }
 
 func (a *rpmArchiveAnalyzer) unexpectedError(err error) error {
