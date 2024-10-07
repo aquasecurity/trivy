@@ -53,7 +53,7 @@ func Login(_ context.Context, registry string, opts flag.Options) error {
 func Logout(_ context.Context, registry string) error {
 	reg, err := name.NewRegistry(registry)
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to parse registry: %w", err)
 	}
 	serverAddress := reg.Name()
 
