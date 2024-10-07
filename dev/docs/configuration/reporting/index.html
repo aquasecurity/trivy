@@ -4421,7 +4421,7 @@ You're not viewing the latest version.
 <ul>
 <li>Table</li>
 <li>JSON</li>
-<li><a href="https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning">SARIF</a></li>
+<li><a href="https://sarifweb.azurewebsites.net">SARIF</a></li>
 <li>Template</li>
 <li>SBOM</li>
 <li>GitHub dependency snapshot</li>
@@ -4784,10 +4784,12 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </tr>
 </tbody>
 </table>
-<p><a href="https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/managing-results-from-code-scanning">SARIF</a> can be generated with the <code>--format sarif</code> flag.</p>
+<p><a href="https://sarifweb.azurewebsites.net">SARIF</a> (Static Analysis Results Interchange Format) complying with <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html">SARIF 2.1.0 OASIS standard</a> can be generated with the <code>--format sarif</code> flag.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format sarif -o report.sarif  golang:1.12-alpine
 </code></pre></div>
-<p>This SARIF file can be uploaded to GitHub code scanning results, and there is a <a href="https://github.com/aquasecurity/trivy-action">Trivy GitHub Action</a> for automating this process.</p>
+<p>This SARIF file can be uploaded to several platforms, including:
+- <a href="https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning">GitHub code scanning results</a>, and there is a <a href="https://github.com/aquasecurity/trivy-action">Trivy GitHub Action</a> for automating this process;
+- <a href="https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/importing-external-issues/importing-issues-from-sarif-reports/">SonarQube</a>.</p>
 <h3 id="github-dependency-snapshot">GitHub dependency snapshot</h3>
 <p>Trivy supports the following packages.</p>
 <ul>
