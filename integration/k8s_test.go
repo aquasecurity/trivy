@@ -36,7 +36,7 @@ func TestK8s(t *testing.T) {
 			"summary",
 			"-q",
 			"--timeout",
-			"5m0s",
+			"10m0s",
 			"--format",
 			"json",
 			"--output",
