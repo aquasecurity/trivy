@@ -1,6 +1,8 @@
 package flag
 
 import (
+	"io"
+	"os"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -19,6 +21,11 @@ var (
 		ConfigName: "registry.password",
 		Usage:      "password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.",
 	}
+	PasswordStdinFlag = Flag[bool]{
+		Name:       "password-stdin",
+		ConfigName: "registry.password-stdin",
+		Usage:      "password from stdin",
+	}
 	RegistryTokenFlag = Flag[string]{
 		Name:       "registry-token",
 		ConfigName: "registry.token",
@@ -29,6 +36,7 @@ var (
 type RegistryFlagGroup struct {
 	Username      *Flag[[]string]
 	Password      *Flag[[]string]
+	PasswordStdin *Flag[bool]
 	RegistryToken *Flag[string]
 }
 
@@ -41,6 +49,7 @@ func NewRegistryFlagGroup() *RegistryFlagGroup {
 	return &RegistryFlagGroup{
 		Username:      UsernameFlag.Clone(),
 		Password:      PasswordFlag.Clone(),
+		PasswordStdin: PasswordStdinFlag.Clone(),
 		RegistryToken: RegistryTokenFlag.Clone(),
 	}
 }
@@ -53,6 +62,7 @@ func (f *RegistryFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.Username,
 		f.Password,
+		f.PasswordStdin,
 		f.RegistryToken,
 	}
 }
@@ -65,6 +75,14 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	var credentials []types.Credential
 	users := f.Username.Value()
 	passwords := f.Password.Value()
+	if f.PasswordStdin.Value() {
+		contents, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			return RegistryOptions{}, xerrors.Errorf("failed to read from stdin: %w", err)
+		}
+		// "--password-stdin" doesn't support comma-separated passwords
+		passwords = []string{strings.TrimRight(string(contents), "\r\n")}
+	}
 	if len(users) != len(passwords) {
 		return RegistryOptions{}, xerrors.New("the length of usernames and passwords must match")
 	}
