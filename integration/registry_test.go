@@ -117,6 +117,7 @@ type registryOption struct {
 	Username      string
 	Password      string
 	RegistryToken bool
+	AuthLogin     bool
 }
 
 func TestRegistry(t *testing.T) {
@@ -183,6 +184,18 @@ func TestRegistry(t *testing.T) {
 			golden: "testdata/alpine-310.json.golden",
 		},
 		{
+			name:      "authenticate with 'trivy auth login'",
+			imageName: "alpine:3.10",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
+			os:        "alpine 3.10.2",
+			option: registryOption{
+				Username:  authUsername,
+				Password:  authPassword,
+				AuthLogin: true,
+			},
+			golden: "testdata/alpine-310.json.golden",
+		},
+		{
 			name:      "amazonlinux 2",
 			imageName: "amazonlinux:2",
 			imageFile: "testdata/fixtures/images/amazon-2.tar.gz",
@@ -223,6 +236,7 @@ func TestRegistry(t *testing.T) {
 			require.NoError(t, err)
 
 			osArgs, err := scan(t, imageRef, baseDir, tt.option)
+			require.NoError(t, err)
 
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
@@ -259,7 +273,7 @@ func scan(t *testing.T, imageRef name.Reference, baseDir string, opt registryOpt
 		"json",
 		"--image-src",
 		"remote",
-		"--skip-update",
+		"--skip-db-update",
 		imageRef.Name(),
 	}
 
@@ -270,14 +284,29 @@ func setupEnv(t *testing.T, imageRef name.Reference, baseDir string, opt registr
 	t.Setenv("TRIVY_INSECURE", "true")
 
 	if opt.Username != "" && opt.Password != "" {
-		if opt.RegistryToken {
+		switch {
+		case opt.RegistryToken:
 			// Get a registry token in advance
 			token, err := requestRegistryToken(imageRef, baseDir, opt)
 			if err != nil {
 				return err
 			}
 			t.Setenv("TRIVY_REGISTRY_TOKEN", token)
-		} else {
+		case opt.AuthLogin:
+			t.Setenv("DOCKER_CONFIG", t.TempDir())
+			err := execute([]string{
+				"auth",
+				"login",
+				"--username",
+				opt.Username,
+				"--password",
+				opt.Password,
+				imageRef.Context().RegistryStr(),
+			})
+			if err != nil {
+				return err
+			}
+		default:
 			t.Setenv("TRIVY_USERNAME", opt.Username)
 			t.Setenv("TRIVY_PASSWORD", opt.Password)
 		}
