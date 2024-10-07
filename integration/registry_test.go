@@ -164,7 +164,6 @@ func TestRegistry(t *testing.T) {
 			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			os:        "alpine 3.10.2",
 			option: registryOption{
-				AuthURL:  authURL,
 				Username: authUsername,
 				Password: authPassword,
 			},
@@ -189,7 +188,6 @@ func TestRegistry(t *testing.T) {
 			imageFile: "testdata/fixtures/images/amazon-2.tar.gz",
 			os:        "amazon 2 (Karoo)",
 			option: registryOption{
-				AuthURL:  authURL,
 				Username: authUsername,
 				Password: authPassword,
 			},
@@ -201,7 +199,6 @@ func TestRegistry(t *testing.T) {
 			imageFile: "testdata/fixtures/images/debian-buster.tar.gz",
 			os:        "debian 10.1",
 			option: registryOption{
-				AuthURL:  authURL,
 				Username: authUsername,
 				Password: authPassword,
 			},
