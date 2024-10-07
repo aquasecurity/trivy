@@ -1253,7 +1253,9 @@ func NewAuthCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Short:         "Log in to a registry",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		Args:          cobra.ExactArgs(1),
+		Example: `  # Log in to reg.example.com
+  cat ~/my_password.txt | trivy auth login --username foo --password-stdin reg.example.com`,
+		Args: cobra.ExactArgs(1),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := loginFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -1273,7 +1275,9 @@ func NewAuthCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Short:         "Log out of a registry",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		Args:          cobra.ExactArgs(1),
+		Example: `  # Log out of reg.example.com
+  trivy auth logout reg.example.com`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return auth.Logout(cmd.Context(), args[0])
 		},
