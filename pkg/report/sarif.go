@@ -353,7 +353,8 @@ func clearURI(s string) string {
 func toUri(str string) *url.URL {
 	uri, err := url.Parse(str)
 	if err != nil {
-		log.Error("Error while parsing URI", log.Err(err))
+		logger := log.WithPrefix("sarif")
+		logger.Error("Unable to parse URI", log.String("URI", str), log.Err(err))
 	}
 	return uri
 }
