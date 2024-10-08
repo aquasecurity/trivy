@@ -8,13 +8,15 @@ import (
 	"github.com/docker/cli/cli/config/types"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
+	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func Login(_ context.Context, registry string, opts flag.Options) error {
+func Login(ctx context.Context, registry string, opts flag.Options) error {
 	if len(opts.Credentials) == 0 {
 		return xerrors.New("username and password required")
 	} else if len(opts.Credentials) > 1 {
@@ -26,6 +28,15 @@ func Login(_ context.Context, registry string, opts flag.Options) error {
 		return xerrors.Errorf("failed to parse registry: %w", err)
 	}
 	serverAddress := reg.Name()
+
+	// Validate the credential
+	_, err = transport.NewWithContext(ctx, reg, &authn.Basic{
+		Username: opts.Credentials[0].Username,
+		Password: opts.Credentials[0].Password,
+	}, remote.DefaultTransport, []string{transport.PullScope})
+	if err != nil {
+		return xerrors.Errorf("failed to authenticate: %w", err)
+	}
 
 	cf, err := config.Load(os.Getenv("DOCKER_CONFIG"))
 	if err != nil {
