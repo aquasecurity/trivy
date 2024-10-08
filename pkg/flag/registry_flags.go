@@ -76,6 +76,9 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	users := f.Username.Value()
 	passwords := f.Password.Value()
 	if f.PasswordStdin.Value() {
+		if len(passwords) != 0 {
+			return RegistryOptions{}, xerrors.New("'--password' and '--password-stdin' can't be used at the same time")
+		}
 		contents, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return RegistryOptions{}, xerrors.Errorf("failed to read from stdin: %w", err)
