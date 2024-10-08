@@ -259,11 +259,12 @@ $ trivy image --format sarif -o report.sarif  golang:1.12-alpine
 ```
 
 This SARIF file can be uploaded to several platforms, including:
-- [GitHub code scanning results][sarif-github], and there is a [Trivy GitHub Action][action] for automating this process;
-- [SonarQube][sarif-sonar].
+
+- [GitHub code scanning results][sarif-github], and there is a [Trivy GitHub Action][action] for automating this process
+- [SonarQube][sarif-sonar]
 
 ### GitHub dependency snapshot
-Trivy supports the following packages.
+Trivy supports the following packages:
 
 - [OS packages][os_packages]
 - [Language-specific packages][language_packages]
