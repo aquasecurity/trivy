@@ -44,6 +44,7 @@ type AnalyzerOptions struct {
 	Parallel             int
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
+	IncludeDevDeps       bool
 	DetectionPriority    types.DetectionPriority
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  SecretScannerOption
