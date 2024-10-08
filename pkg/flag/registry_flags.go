@@ -84,7 +84,7 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 			return RegistryOptions{}, xerrors.Errorf("failed to read from stdin: %w", err)
 		}
 		// "--password-stdin" doesn't support comma-separated passwords
-		passwords = strings.Split(strings.TrimRight(string(contents), "\r\n"), ",")
+		passwords = []string{strings.TrimRight(string(contents), "\r\n")}
 	}
 	if len(users) != len(passwords) {
 		return RegistryOptions{}, xerrors.New("the number of usernames and passwords must match")
