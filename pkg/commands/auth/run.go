@@ -46,7 +46,7 @@ func Login(_ context.Context, registry string, opts flag.Options) error {
 	if err := cf.Save(); err != nil {
 		return xerrors.Errorf("failed to save docker config: %w", err)
 	}
-	log.Info("Logged in", log.FilePath(cf.Filename))
+	log.Info("Logged in", log.FilePath(cf.Filename), log.String("username", opts.Credentials[0].Username))
 	return nil
 }
 
