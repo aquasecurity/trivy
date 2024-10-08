@@ -24,7 +24,7 @@ var (
 	PasswordStdinFlag = Flag[bool]{
 		Name:       "password-stdin",
 		ConfigName: "registry.password-stdin",
-		Usage:      "password from stdin",
+		Usage:      "password from stdin. Comma-separated passwords are not supported",
 	}
 	RegistryTokenFlag = Flag[string]{
 		Name:       "registry-token",
