@@ -18,7 +18,7 @@ trivy auth login SERVER [flags]
 ```
   -h, --help               help for login
       --password strings   password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --password-stdin     password from stdin
+      --password-stdin     password from stdin. Comma-separated passwords are not supported.
       --username strings   username. Comma-separated usernames allowed.
 ```
 

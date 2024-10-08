@@ -68,7 +68,7 @@ trivy filesystem [flags] PATH
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --password-stdin                    password from stdin
+      --password-stdin                    password from stdin. Comma-separated passwords are not supported.
       --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
       --pkg-types strings                 list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend
