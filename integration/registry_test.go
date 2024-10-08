@@ -301,6 +301,7 @@ func setupEnv(t *testing.T, imageRef name.Reference, baseDir string, opt registr
 				opt.Username,
 				"--password",
 				opt.Password,
+				"--insecure",
 				imageRef.Context().RegistryStr(),
 			})
 			if err != nil {
