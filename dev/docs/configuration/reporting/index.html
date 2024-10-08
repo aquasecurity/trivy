@@ -4787,11 +4787,13 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 <p><a href="https://sarifweb.azurewebsites.net">SARIF</a> (Static Analysis Results Interchange Format) complying with <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html">SARIF 2.1.0 OASIS standard</a> can be generated with the <code>--format sarif</code> flag.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format sarif -o report.sarif  golang:1.12-alpine
 </code></pre></div>
-<p>This SARIF file can be uploaded to several platforms, including:
-- <a href="https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning">GitHub code scanning results</a>, and there is a <a href="https://github.com/aquasecurity/trivy-action">Trivy GitHub Action</a> for automating this process;
-- <a href="https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/importing-external-issues/importing-issues-from-sarif-reports/">SonarQube</a>.</p>
+<p>This SARIF file can be uploaded to several platforms, including:</p>
+<ul>
+<li><a href="https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning">GitHub code scanning results</a>, and there is a <a href="https://github.com/aquasecurity/trivy-action">Trivy GitHub Action</a> for automating this process</li>
+<li><a href="https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/importing-external-issues/importing-issues-from-sarif-reports/">SonarQube</a></li>
+</ul>
 <h3 id="github-dependency-snapshot">GitHub dependency snapshot</h3>
-<p>Trivy supports the following packages.</p>
+<p>Trivy supports the following packages:</p>
 <ul>
 <li><a href="../../scanner/vulnerability/#os-packages">OS packages</a></li>
 <li><a href="../../scanner/vulnerability/#language-specific-packages">Language-specific packages</a></li>
