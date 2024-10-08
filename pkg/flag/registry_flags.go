@@ -24,7 +24,7 @@ var (
 	PasswordStdinFlag = Flag[bool]{
 		Name:       "password-stdin",
 		ConfigName: "registry.password-stdin",
-		Usage:      "password from stdin. Comma-separated passwords are not supported",
+		Usage:      "password from stdin. Comma-separated passwords are not supported.",
 	}
 	RegistryTokenFlag = Flag[string]{
 		Name:       "registry-token",
@@ -84,10 +84,10 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 			return RegistryOptions{}, xerrors.Errorf("failed to read from stdin: %w", err)
 		}
 		// "--password-stdin" doesn't support comma-separated passwords
-		passwords = []string{strings.TrimRight(string(contents), "\r\n")}
+		passwords = strings.Split(strings.TrimRight(string(contents), "\r\n"), ",")
 	}
 	if len(users) != len(passwords) {
-		return RegistryOptions{}, xerrors.New("the length of usernames and passwords must match")
+		return RegistryOptions{}, xerrors.New("the number of usernames and passwords must match")
 	}
 	for i, user := range users {
 		credentials = append(credentials, types.Credential{

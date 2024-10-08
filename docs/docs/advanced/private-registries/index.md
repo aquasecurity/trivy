@@ -52,3 +52,6 @@ In the example above, Trivy attempts to use two pairs of credentials:
 - USERNAME2/PASSWORD2
 
 Please note that the number of usernames and passwords must be the same.
+
+!!! note
+    `--password-stdin` doesn't support comma-separated passwords.
