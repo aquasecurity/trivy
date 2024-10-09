@@ -29,6 +29,10 @@ var (
 	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
 	defaultGHCRRepository = lo.Must(name.NewTag(DefaultGHCRRepository))
 
+	// AWS Container Registry
+	DefaultAWSRepository = fmt.Sprintf("%s:%d", "public.ecr.aws/aquasecurity/trivy-db", db.SchemaVersion)
+	defaultAWSRepository = lo.Must(name.NewTag(DefaultSecondGHCRRepository))
+
 	Init  = db.Init
 	Close = db.Close
 	Path  = db.Path
