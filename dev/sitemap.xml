@@ -396,6 +396,21 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_auth/</loc>
+         <lastmod>2024-10-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_auth_login/</loc>
+         <lastmod>2024-10-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_auth_logout/</loc>
+         <lastmod>2024-10-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_clean/</loc>
          <lastmod>2024-10-09</lastmod>
          <changefreq>daily</changefreq>
