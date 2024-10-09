@@ -184,11 +184,20 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifacts []*artifacts.Art
 	resources := make([]report.Resource, 0, len(artifacts))
 
 	for _, res := range configReport.Results {
-
 		artifact := artifactsByFilename[res.Target]
-		resource, err := s.filter(ctx, configReport, artifact)
+
+		singleReport := types.Report{
+			SchemaVersion: configReport.SchemaVersion,
+			CreatedAt:     configReport.CreatedAt,
+			ArtifactName:  res.Target,
+			ArtifactType:  configReport.ArtifactType,
+			Metadata:      configReport.Metadata,
+			Results:       types.Results{res},
+		}
+
+		resource, err := s.filter(ctx, singleReport, artifact)
 		if err != nil {
-			resource = report.CreateResource(artifact, configReport, err)
+			resource = report.CreateResource(artifact, singleReport, err)
 		}
 		resources = append(resources, resource)
 	}
