@@ -15,6 +15,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/auth"
 	"github.com/aquasecurity/trivy/pkg/commands/clean"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
@@ -99,6 +100,7 @@ func NewApp() *cobra.Command {
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
 		NewCleanCommand(globalFlags),
+		NewAuthCommand(globalFlags),
 		NewVEXCommand(globalFlags),
 	)
 
@@ -1229,6 +1231,62 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	cleanFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, cleanFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewAuthCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:           "auth [flags]",
+		GroupID:       groupUtility,
+		Short:         "Authentication",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+
+	loginFlags := &flag.Flags{
+		GlobalFlagGroup:   globalFlags,
+		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
+	}
+	loginFlags.RegistryFlagGroup.RegistryToken = nil // disable '--registry-token'
+	loginCmd := &cobra.Command{
+		Use:           "login SERVER",
+		Short:         "Log in to a registry",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Example: `  # Log in to reg.example.com
+  cat ~/my_password.txt | trivy auth login --username foo --password-stdin reg.example.com`,
+		Args: cobra.ExactArgs(1),
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := loginFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			loginOpts, err := loginFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return auth.Login(cmd.Context(), args[0], loginOpts)
+		},
+	}
+	logoutCmd := &cobra.Command{
+		Use:           "logout SERVER",
+		Short:         "Log out of a registry",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Example: `  # Log out of reg.example.com
+  trivy auth logout reg.example.com`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return auth.Logout(cmd.Context(), args[0])
+		},
+	}
+	loginFlags.AddFlags(loginCmd)
+	cmd.AddCommand(loginCmd, logoutCmd)
+
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 
 	return cmd
 }

@@ -297,7 +297,7 @@ Trivy supports registries that comply with the following specifications.
 - [Docker Registry HTTP API V2](https://docs.docker.com/registry/spec/api/)
 - [OCI Distribution Specification](https://github.com/opencontainers/distribution-spec)
 
-You can configure credentials with `docker login`.
+You can configure credentials with `trivy auth login`.
 See [here](../advanced/private-registries/index.md) for the detail.
 
 ### Tar Files
