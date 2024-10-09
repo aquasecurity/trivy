@@ -1145,7 +1145,8 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		PackageFlagGroup:       flag.NewPackageFlagGroup(),
-		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RemoteFlagGroup:        flag.NewClientFlags(),       // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(), // for DBs in private registries
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlagGroup,
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),

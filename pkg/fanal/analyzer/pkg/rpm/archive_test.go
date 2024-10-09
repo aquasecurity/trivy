@@ -52,6 +52,12 @@ func Test_rpmArchiveAnalyzer_Analyze(t *testing.T) {
 										Namespace: "redhat",
 										Name:      "socat",
 										Version:   "1.7.3.2-2.el7",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "x86_64",
+											},
+										},
 									},
 								},
 							},
