@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"log"
 	"net/url"
 	"os"
 
@@ -187,36 +188,40 @@ func newURL(rawurl string) (*url.URL, error) {
 	return u, nil
 }
 
-// Helper function to check for a GitHub/GitLab token from env vars in order to
+// Helper function to check for a GitHub/GitLab/BitBucket token from env vars in order to
 // make authenticated requests to access private repos
 func gitAuth() *http.BasicAuth {
 	var auth *http.BasicAuth
 
 	// The username can be anything for HTTPS Git operations
 	gitUsername := "fanal-aquasecurity-scan"
-
-	// We first check if a GitHub token was provided
-	githubToken := os.Getenv("GITHUB_TOKEN")
-	if githubToken != "" {
-		auth = &http.BasicAuth{
-			Username: gitUsername,
-			Password: githubToken,
-		}
-		return auth
+	if username := os.Getenv("GIT_USERNAME"); username != "" {
+		gitUsername = username
 	}
 
-	// Otherwise we check if a GitLab token was provided
-	gitlabToken := os.Getenv("GITLAB_TOKEN")
-	if gitlabToken != "" {
-		auth = &http.BasicAuth{
-			Username: gitUsername,
-			Password: gitlabToken,
+	tokenSources := []struct {
+		envVar string
+		name   string
+	}{
+		{"GITHUB_TOKEN", "GitHub"},
+		{"GITLAB_TOKEN", "GitLab"},
+		{"BITBUCKET_TOKEN", "BitBucket"},
+	}
+
+	// Iterate token sources
+	for _, source := range tokenSources {
+		token := os.Getenv(source.envVar)
+		if token != "" {
+			auth = &http.BasicAuth{
+				Username: gitUsername,
+				Password: token,
+			}
+			log.Printf("Found token for authentication %s", source.name)
+			return auth
 		}
-		return auth
 	}
 
 	// If no token was provided, we simply return a nil,
 	// which will make the request to be unauthenticated
 	return nil
-
 }
