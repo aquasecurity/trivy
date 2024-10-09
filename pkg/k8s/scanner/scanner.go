@@ -52,14 +52,6 @@ func NewScanner(cluster string, runner cmd.Runner, opts flag.Options) *Scanner {
 }
 
 func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact) (report.Report, error) {
-	// disable logs before scanning
-	log.InitLogger(s.opts.Debug, true)
-
-	// enable log, this is done in a defer function,
-	// to enable logs even when the function returns earlier
-	// due to an error
-	defer log.InitLogger(s.opts.Debug, false)
-
 	if s.opts.Format == types.FormatCycloneDX {
 		kbom, err := s.clusterInfoToReportResources(artifactsData)
 		if err != nil {
@@ -82,14 +74,26 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 	var resources []report.Resource
 
-	type scanResult struct {
-		vulns     []report.Resource
-		misconfig report.Resource
+	// scans kubernetes artifacts as a scope of yaml files
+	if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
+		misconfigs, err := s.scanMisconfigs(ctx, resourceArtifacts)
+		if err != nil {
+			return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+		}
+		resources = append(resources, misconfigs...)
 	}
 
-	onItem := func(ctx context.Context, artifact *artifacts.Artifact) (scanResult, error) {
-		scanResults := scanResult{}
-		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) && !s.opts.SkipImages {
+	// scan images from kubernetes cluster in parallel
+	if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) && !s.opts.SkipImages {
+		// disable logs before scanning in parallel
+		log.InitLogger(s.opts.Debug, true)
+
+		// enable log, this is done in a defer function,
+		// to enable logs even when the function returns earlier
+		// due to an error
+		defer log.InitLogger(s.opts.Debug, false)
+
+		onItem := func(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
 			opts := s.opts
 			opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
 			copy(opts.Credentials, s.opts.Credentials)
@@ -106,33 +110,22 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 			}
 			vulns, err := s.scanVulns(ctx, artifact, opts)
 			if err != nil {
-				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+				return nil, xerrors.Errorf("scanning vulnerabilities error: %w", err)
 			}
-			scanResults.vulns = vulns
+			return vulns, nil
 		}
-		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
-			misconfig, err := s.scanMisconfigs(ctx, artifact)
-			if err != nil {
-				return scanResult{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
-			}
-			scanResults.misconfig = misconfig
+
+		onResult := func(result []report.Resource) error {
+			resources = append(resources, result...)
+			return nil
 		}
-		return scanResults, nil
+
+		p := parallel.NewPipeline(s.opts.Parallel, !s.opts.Quiet, resourceArtifacts, onItem, onResult)
+		if err := p.Do(ctx); err != nil {
+			return report.Report{}, err
+		}
 	}
 
-	onResult := func(result scanResult) error {
-		resources = append(resources, result.vulns...)
-		// don't add empty misconfig results to resources slice to avoid an empty resource
-		if result.misconfig.Results != nil {
-			resources = append(resources, result.misconfig)
-		}
-		return nil
-	}
-
-	p := parallel.NewPipeline(s.opts.Parallel, !s.opts.Quiet, resourceArtifacts, onItem, onResult)
-	if err := p.Do(ctx); err != nil {
-		return report.Report{}, err
-	}
 	if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner) {
 		k8sResource, err := s.scanK8sVulns(ctx, k8sCoreArtifacts)
 		if err != nil {
@@ -173,22 +166,34 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 	return resources, nil
 }
 
-func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifact) (report.Resource, error) {
-	configFile, err := createTempFile(artifact)
+func (s *Scanner) scanMisconfigs(ctx context.Context, artifacts []*artifacts.Artifact) ([]report.Resource, error) {
+	folder, artifactsByFilename, err := generateTempFolder(artifacts)
 	if err != nil {
-		return report.Resource{}, xerrors.Errorf("scan error: %w", err)
+		return nil, xerrors.Errorf("failed to generate temp folder: %w", err)
 	}
 
-	s.opts.Target = configFile
+	s.opts.Target = folder
 
 	configReport, err := s.runner.ScanFilesystem(ctx, s.opts)
-	// remove config file after scanning
-	removeFile(configFile)
+	// remove config files after scanning
+	removeFolder(folder)
+
 	if err != nil {
-		return report.CreateResource(artifact, configReport, err), err
+		return nil, xerrors.Errorf("failed to scan filesystem: %w", err)
+	}
+	resources := make([]report.Resource, 0, len(artifacts))
+
+	for _, res := range configReport.Results {
+
+		artifact := artifactsByFilename[res.Target]
+		resource, err := s.filter(ctx, configReport, artifact)
+		if err != nil {
+			resource = report.CreateResource(artifact, configReport, err)
+		}
+		resources = append(resources, resource)
 	}
 
-	return s.filter(ctx, configReport, artifact)
+	return resources, nil
 }
 func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
 	var err error
