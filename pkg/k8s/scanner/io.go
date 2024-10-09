@@ -24,7 +24,7 @@ func generateTempFolder(arts []*artifacts.Artifact) (string, map[string]*artifac
 		return "", nil, xerrors.Errorf("failed to create temp folder: %w", err)
 	}
 
-	m := map[string]*artifacts.Artifact{}
+	m := make(map[string]*artifacts.Artifact)
 	for _, artifact := range arts {
 		filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
 		if runtime.GOOS == "windows" {

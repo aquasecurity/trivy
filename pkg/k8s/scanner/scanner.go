@@ -166,8 +166,8 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 	return resources, nil
 }
 
-func (s *Scanner) scanMisconfigs(ctx context.Context, artifacts []*artifacts.Artifact) ([]report.Resource, error) {
-	folder, artifactsByFilename, err := generateTempFolder(artifacts)
+func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.Artifact) ([]report.Resource, error) {
+	folder, artifactsByFilename, err := generateTempFolder(k8sArtifacts)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to generate temp folder: %w", err)
 	}
@@ -181,7 +181,7 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifacts []*artifacts.Art
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan filesystem: %w", err)
 	}
-	resources := make([]report.Resource, 0, len(artifacts))
+	resources := make([]report.Resource, 0, len(k8sArtifacts))
 
 	for _, res := range configReport.Results {
 		artifact := artifactsByFilename[res.Target]
