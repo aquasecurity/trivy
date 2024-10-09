@@ -6,17 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_AdaptStorageDefaults(t *testing.T) {
 
-	input := azure2.Deployment{
-		Resources: []azure2.Resource{
+	input := azure.Deployment{
+		Resources: []azure.Resource{
 			{
-				Type:       azure2.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
-				Properties: azure2.NewValue(make(map[string]azure2.Value), types.NewTestMetadata()),
+				Type:       azure.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
+				Properties: azure.NewValue(make(map[string]azure.Value), types.NewTestMetadata()),
 			},
 		},
 	}
@@ -28,19 +28,21 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 	account := output.Accounts[0]
 	assert.Equal(t, "", account.MinimumTLSVersion.Value())
 	assert.False(t, account.EnforceHTTPS.Value())
+	assert.True(t, account.PublicNetworkAccess.Value())
 
 }
 
 func Test_AdaptStorage(t *testing.T) {
 
-	input := azure2.Deployment{
-		Resources: []azure2.Resource{
+	input := azure.Deployment{
+		Resources: []azure.Resource{
 			{
-				Type: azure2.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
-				Name: azure2.Value{},
-				Properties: azure2.NewValue(map[string]azure2.Value{
-					"minimumTlsVersion":        azure2.NewValue("TLS1_2", types.NewTestMetadata()),
-					"supportsHttpsTrafficOnly": azure2.NewValue(true, types.NewTestMetadata()),
+				Type: azure.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
+				Name: azure.Value{},
+				Properties: azure.NewValue(map[string]azure.Value{
+					"minimumTlsVersion":        azure.NewValue("TLS1_2", types.NewTestMetadata()),
+					"supportsHttpsTrafficOnly": azure.NewValue(true, types.NewTestMetadata()),
+					"publicNetworkAccess":      azure.NewValue("Disabled", types.NewTestMetadata()),
 				}, types.NewTestMetadata()),
 			},
 		},
@@ -53,5 +55,6 @@ func Test_AdaptStorage(t *testing.T) {
 	account := output.Accounts[0]
 	assert.Equal(t, "TLS1_2", account.MinimumTLSVersion.Value())
 	assert.True(t, account.EnforceHTTPS.Value())
+	assert.False(t, account.PublicNetworkAccess.Value())
 
 }
