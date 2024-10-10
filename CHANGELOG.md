@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.56.2](https://github.com/aquasecurity/trivy/compare/v0.56.1...v0.56.2) (2024-10-10)
+
+
+### Bug Fixes
+
+* **redhat:** include arch in PURL qualifiers [backport: release/v0.56] ([#7702](https://github.com/aquasecurity/trivy/issues/7702)) ([f6700ec](https://github.com/aquasecurity/trivy/commit/f6700ec10e819fb2fc0573782e87d2d31d2c50f1))
+* **sbom:** add options for DBs in private registries [backport: release/v0.56] ([#7691](https://github.com/aquasecurity/trivy/issues/7691)) ([25d2540](https://github.com/aquasecurity/trivy/commit/25d2540f12272603bf27eb67f4b3fba52b1ddab8))
+
 ## [0.56.1](https://github.com/aquasecurity/trivy/compare/v0.56.0...v0.56.1) (2024-10-03)
 
 
