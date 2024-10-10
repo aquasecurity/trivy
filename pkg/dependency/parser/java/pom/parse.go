@@ -307,8 +307,8 @@ func (p *Parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 		p.logger.Debug("Repository error", log.Err(err))
 	}
 	result, err := p.analyze(pomContent, analysisOptions{
-		exclusions:    art.Exclusions,
-		depManagement: rootDepManagement,
+		exclusions:        art.Exclusions,
+		rootDepManagement: rootDepManagement,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
@@ -328,9 +328,11 @@ type analysisResult struct {
 }
 
 type analysisOptions struct {
-	exclusions    map[string]struct{}
-	depManagement []pomDependency // from the root POM
-	lineNumber    bool            // Save line numbers
+	exclusions             map[string]struct{}
+	depManagementForParent []pomDependency // from current and root POMs - used for parents
+	propsForParent         properties      // from current and root POMs - used for parents
+	rootDepManagement      []pomDependency // from the root POM
+	lineNumber             bool            // Save line numbers
 }
 
 func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -343,20 +345,25 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
 	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
 
+	// Merge props from upper POM and current POM to use in parent
+	propsForParent := lo.Assign(opts.propsForParent, pom.content.Properties)
+
 	// We need to forward dependencyManagements from current and root pom to Parent,
 	// to use them for dependencies in parent.
 	// For better understanding see the following tests:
 	// - `dependency from parent uses version from child pom depManagement`
 	// - `dependency from parent uses version from root pom depManagement`
+	// - `dependency from parent uses version from scanned pom depManagement`
 	//
-	// depManagements from root pom has higher priority than depManagements from current pom.
-	depManagementForParent := lo.UniqBy(append(opts.depManagement, pom.content.DependencyManagement.Dependencies.Dependency...),
+	// Merge dependencyManagements from root, upper and current POM and remove duplicates
+	depManagementForParent := append(opts.rootDepManagement, opts.depManagementForParent...)
+	depManagementForParent = lo.UniqBy(append(depManagementForParent, pom.content.DependencyManagement.Dependencies.Dependency...),
 		func(dep pomDependency) string {
 			return dep.Name()
 		})
 
 	// Parent
-	parent, err := p.parseParent(pom.filePath, pom.content.Parent, depManagementForParent)
+	parent, err := p.parseParent(pom.filePath, pom.content.Parent, depManagementForParent, propsForParent)
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("parent error: %w", err)
 	}
@@ -367,10 +374,16 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	// Generate properties
 	props := pom.properties()
 
+	// To analyze parents:
+	// Take props from upper POM
+	props = lo.Assign(props, opts.propsForParent)
+
 	// dependencyManagements have the next priority:
-	// 1. Managed dependencies from this POM
-	// 2. Managed dependencies from parent of this POM
-	depManagement := p.mergeDependencyManagements(pom.content.DependencyManagement.Dependencies.Dependency,
+	// 1. Managed dependencies from upped POM (this case only works for parent analysis)
+	// 2. Managed dependencies from this POM
+	// 3. Managed dependencies from parent of this POM
+	depManagement := p.mergeDependencyManagements(opts.depManagementForParent,
+		pom.content.DependencyManagement.Dependencies.Dependency,
 		parent.dependencyManagement)
 
 	// Merge dependencies. Child dependencies must be preferred than parent dependencies.
@@ -414,7 +427,7 @@ func (p *Parser) parseDependencies(deps []pomDependency, props map[string]string
 	// Resolve dependencyManagement
 	depManagement = p.resolveDepManagement(props, depManagement)
 
-	rootDepManagement := opts.depManagement
+	rootDepManagement := opts.rootDepManagement
 	var dependencies []artifact
 	for _, d := range deps {
 		// Resolve dependencies
@@ -497,7 +510,7 @@ func excludeDep(exclusions map[string]struct{}, art artifact) bool {
 	return false
 }
 
-func (p *Parser) parseParent(currentPath string, parent pomParent, rootDepManagement []pomDependency) (analysisResult, error) {
+func (p *Parser) parseParent(currentPath string, parent pomParent, depManagementForParent []pomDependency, propsForParent properties) (analysisResult, error) {
 	// Pass nil properties so that variables in <parent> are not evaluated.
 	target := newArtifact(parent.GroupId, parent.ArtifactId, parent.Version, nil, nil)
 	// if version is property (e.g. ${revision}) - we still need to parse this pom
@@ -520,7 +533,8 @@ func (p *Parser) parseParent(currentPath string, parent pomParent, rootDepManage
 	}
 
 	result, err := p.analyze(parentPOM, analysisOptions{
-		depManagement: rootDepManagement,
+		depManagementForParent: depManagementForParent,
+		propsForParent:         propsForParent,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)

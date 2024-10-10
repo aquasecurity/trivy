@@ -242,9 +242,11 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		if managed.Version != "" {
 			dep.Version = evaluateVariable(managed.Version, props, nil)
 		}
+
 		if managed.Scope != "" {
 			dep.Scope = evaluateVariable(managed.Scope, props, nil)
 		}
+
 		if managed.Optional {
 			dep.Optional = managed.Optional
 		}
