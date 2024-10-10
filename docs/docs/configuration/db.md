@@ -92,6 +92,21 @@ You can reference the OCI manifest of [trivy-db].
     `trivy-db-registry:latest` => `trivy-db-registry:latest`, but `trivy-db-registry` => `trivy-db-registry:2`.
 
 
+### Rate limits
+
+Trivy hosts its databases on public OCI registries that are subject to their respective rate limits. While we strive to make the databases available to every
+Trivy user, there are certain recommendations that one can make in order to ensure rate limits are not hit.
+
+#### Authenticated use of Registries
+By authenticating with the registries that Trivy hosts its DBs on can significantly increase the limit for users. For Amazon ECR, the details for rate limits can be found [ecr-limits].
+For GitHub GHCR, the rate limits can be found [ghcr-limits]
+
+Please see more info on how to authenticate with ECR [auth-ecr] and GHCR [auth-ghcr].
+
+#### Caching DBs
+Trivy DB and Trivy Java DB are published every 24 hours. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
+Once example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found [trivy-action-cache].
+
 ## Java Index Database
 The same options are also available for the Java index DB, which is used for scanning Java applications.
 Skipping an update can be done by using the `--skip-java-db-update` option, while `--download-java-db-only` can be used to only download the Java index DB.
@@ -124,3 +139,8 @@ $ trivy clean --vuln-db --java-db
 
 [trivy-db]: https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db
 [trivy-java-db]: https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
+[ghcr-limits]: https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28 
+[ecr-limits]: https://docs.aws.amazon.com/AmazonECR/latest/public/public-service-quotas.html
+[auth-ecr]: https://aws.amazon.com/blogs/compute/authenticating-amazon-ecr-repositories-for-docker-cli-with-credential-helper/
+[auth-ghcr]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry
+[trivy-action-cache]: https://github.com/aquasecurity/trivy-action?tab=readme-ov-file#cache
