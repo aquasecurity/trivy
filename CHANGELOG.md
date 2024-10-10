@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.57.0](https://github.com/aquasecurity/trivy/compare/v0.56.0...v0.57.0) (2024-10-10)
+
+
+### Features
+
+* **cli:** add `trivy auth` ([#7664](https://github.com/aquasecurity/trivy/issues/7664)) ([27117f8](https://github.com/aquasecurity/trivy/commit/27117f81d52483c3ceec56fe56ac298e242fbc9a))
+* **cli:** error out when ignore file cannot be found ([#7624](https://github.com/aquasecurity/trivy/issues/7624)) ([cb0b3a9](https://github.com/aquasecurity/trivy/commit/cb0b3a9279b31810ecd686a385e5140e567ce86f))
+
+
+### Bug Fixes
+
+* **cli:** `clean --all` deletes only relevant dirs ([#7704](https://github.com/aquasecurity/trivy/issues/7704)) ([672e886](https://github.com/aquasecurity/trivy/commit/672e886aed152ae0f09a16941706746f3053ca94))
+* **db:** fix javadb downloading error handling ([#7642](https://github.com/aquasecurity/trivy/issues/7642)) ([2c87f0c](https://github.com/aquasecurity/trivy/commit/2c87f0cb794acd77446a273582ba1a45b9f18980))
+* **redhat:** include arch in PURL qualifiers ([#7654](https://github.com/aquasecurity/trivy/issues/7654)) ([a585e95](https://github.com/aquasecurity/trivy/commit/a585e95f3398631d9ad10505c5ff642fde21aef7))
+* **repo:** `git clone` output to Stderr ([#7561](https://github.com/aquasecurity/trivy/issues/7561)) ([fdf203c](https://github.com/aquasecurity/trivy/commit/fdf203cd209aeb40f454bd12d121a54d6ed7a542))
+* **report:** Fix invalid URI in SARIF report ([#7645](https://github.com/aquasecurity/trivy/issues/7645)) ([015bb88](https://github.com/aquasecurity/trivy/commit/015bb885ac414b91201fa9791eead395d878149c))
+* **sbom:** add options for DBs in private registries ([#7660](https://github.com/aquasecurity/trivy/issues/7660)) ([1f2e91b](https://github.com/aquasecurity/trivy/commit/1f2e91b02b3606dd11963002a8cfac7962f3478f))
+
 ## [0.56.0](https://github.com/aquasecurity/trivy/compare/v0.55.0...v0.56.0) (2024-10-03)
 
 
