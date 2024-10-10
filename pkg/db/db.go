@@ -29,6 +29,10 @@ var (
 	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
 	defaultGHCRRepository = lo.Must(name.NewTag(DefaultGHCRRepository))
 
+	// AWS ECR
+	DefaultECRRepository = fmt.Sprintf("%s:%d", "public.ecr.aws/aquasecurity/trivy-db", db.SchemaVersion)
+	defaultECRRepository = lo.Must(name.NewTag(DefaultECRRepository))
+
 	Init  = db.Init
 	Close = db.Close
 	Path  = db.Path
@@ -74,6 +78,7 @@ func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
 		dbRepositories: []name.Reference{
 			defaultGHCRRepository,
+			defaultECRRepository,
 		},
 	}
 
