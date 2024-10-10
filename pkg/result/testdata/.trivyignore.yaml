@@ -25,6 +25,11 @@ misconfigurations:
       - "app/Dockerfile"
   - id: ID300
     paths:
+      - "app/Dockerfile"
+    start_line: 10
+    end_line: 11
+  - id: ID300
+    paths:
       - "docs/Dockerfile"
 secrets:
   - id: generic-unwanted-rule

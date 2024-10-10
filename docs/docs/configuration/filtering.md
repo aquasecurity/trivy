@@ -345,6 +345,8 @@ Available fields:
 | purls      |          | string array        | The list of PURLs to ignore packages. If `purls` is not set, the ignore finding is applied to all packages. This field is currently available only for vulnerabilities. |
 | expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid.                                                              |
 | statement  |          | string              | The reason for ignoring the finding. (This field is not used for filtering.)                                                                                            |
+| start_line |          | int                 | The starting line of where the ignore finding is applied.  This field is currently available only for misconfigurations.                                                |
+| end_line   |          | int                 | The ending line of where the ignore finding is applied. This field is currently available only for misconfigurations                                                    |
 
 ```bash
 $ cat .trivyignore.yaml
@@ -367,6 +369,11 @@ misconfigurations:
     paths:
       - "docs/Dockerfile"
     statement: The image needs root privileges
+  - id: AVD-DS-0003
+    paths:
+      - "docs/Dockerfile"
+    start_line: 20
+    end_line: 25
 
 secrets:
   - id: aws-access-key-id
