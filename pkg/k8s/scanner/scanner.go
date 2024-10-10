@@ -52,6 +52,14 @@ func NewScanner(cluster string, runner cmd.Runner, opts flag.Options) *Scanner {
 }
 
 func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact) (report.Report, error) {
+	// disable logs before scanning
+	log.InitLogger(s.opts.Debug, true)
+
+	// enable log, this is done in a defer function,
+	// to enable logs even when the function returns earlier
+	// due to an error
+	defer log.InitLogger(s.opts.Debug, false)
+
 	if s.opts.Format == types.FormatCycloneDX {
 		kbom, err := s.clusterInfoToReportResources(artifactsData)
 		if err != nil {
@@ -85,14 +93,6 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 	// scan images from kubernetes cluster in parallel
 	if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) && !s.opts.SkipImages {
-		// disable logs before scanning in parallel
-		log.InitLogger(s.opts.Debug, true)
-
-		// enable log, this is done in a defer function,
-		// to enable logs even when the function returns earlier
-		// due to an error
-		defer log.InitLogger(s.opts.Debug, false)
-
 		onItem := func(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
 			opts := s.opts
 			opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
