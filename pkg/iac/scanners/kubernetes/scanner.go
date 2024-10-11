@@ -15,5 +15,5 @@ func NewScanner(opts ...options.ScannerOption) *generic.GenericScanner {
 }
 
 func parse(ctx context.Context, r io.Reader, path string) (any, error) {
-	return parser.New().Parse(r, path)
+	return parser.Parse(ctx, r, path)
 }
