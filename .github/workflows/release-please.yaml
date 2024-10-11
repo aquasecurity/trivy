@@ -13,9 +13,49 @@ on:
         type: string
 
 jobs:
-  release-please:
+  # This job handles releases using Release Please, accommodating multiple commits
+  # pushed to the main branch simultaneously due to merge queues. It ensures that
+  # release tags are applied specifically to the release commit, not just the latest commit..
+  check-release-commit:
     runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.event.head_commit.message, 'release:') && !github.event.inputs.version }}
+    outputs:
+      is_release: ${{ steps.check_release.outputs.is_release }}
+      release_sha: ${{ steps.check_release.outputs.release_sha }}
+      version: ${{ steps.check_release.outputs.version }}
+      pr_number: ${{ steps.check_release.outputs.pr_number }}
+      release_branch: ${{ steps.check_release.outputs.release_branch }}
+    steps:
+      - name: Check for release commit and extract information
+        id: check_release
+        env:
+          COMMITS: ${{ toJson(github.event.commits) }}
+        run: |
+          release_info=$(echo "$COMMITS" | jq -r '[.[] | select(.message | startswith("release:"))][0] | {message: .message, sha: .id}')
+          message=$(echo "$release_info" | jq -r '.message')
+          sha=$(echo "$release_info" | jq -r '.sha')
+
+          if [ -n "$message" ] && [ -n "$sha" ] && [ "$message" != "null" ] && [ "$sha" != "null" ]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            version=$(echo "$message" | grep -oP '^release: v\K[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+            pr_number=$(echo "$message" | grep -oP '#\K[0-9]+' || echo "")
+            if [ -n "$version" ]; then
+              release_branch="release/v$(echo "$version" | cut -d. -f1,2)"
+              echo "release_sha=$sha" >> $GITHUB_OUTPUT
+              echo "version=$version" >> $GITHUB_OUTPUT
+              echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
+              echo "release_branch=$release_branch" >> $GITHUB_OUTPUT
+            else
+              echo "Error: Could not extract version from commit message"
+              exit 1
+            fi
+          else
+            echo "is_release=false" >> $GITHUB_OUTPUT
+          fi
+
+  release-please:
+    needs: check-release-commit
+    runs-on: ubuntu-latest
+    if: ${{ needs.check-release-commit.outputs.is_release == 'false' && !github.event.inputs.version }}
     steps:
       - name: Release Please
         id: release
@@ -39,21 +79,12 @@ jobs:
             --target-branch=${{ github.ref_name }}
 
   release-tag:
+    needs: check-release-commit
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
+    if: ${{ needs.check-release-commit.outputs.is_release == 'true' }}
     steps:
-      # Since skip-github-release is specified, the outputs of googleapis/release-please-action cannot be used.
-      # Therefore, we need to parse the version ourselves.
-      - name: Extract version and PR number from commit message
-        id: extract_info
-        shell: bash
-        run: |
-          echo "version=$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "pr_number=$( echo "${{ github.event.head_commit.message }}" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "release_branch=release/v$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
-
       - name: Tag release
-        if: ${{ steps.extract_info.outputs.version }}
+        if: ${{ needs.check-release-commit.outputs.version }}
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.ORG_REPO_TOKEN }} # To trigger another workflow
@@ -61,46 +92,46 @@ jobs:
             await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `refs/tags/v${{ steps.extract_info.outputs.version }}`,
-              sha: context.sha
+              ref: `refs/tags/v${{ needs.check-release-commit.outputs.version }}`,
+              sha: '${{ needs.check-release-commit.outputs.release_sha }}'
             });
 
       # When v0.50.0 is released, a release branch "release/v0.50" is created.
       - name: Create release branch for patch versions
-        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
+        if: ${{ endsWith(needs.check-release-commit.outputs.version, '.0') }} # Skip patch versions
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
           script: |
-            const releaseBranch = '${{ steps.extract_info.outputs.release_branch }}';
+            const releaseBranch = '${{ needs.check-release-commit.outputs.release_branch }}';
             await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/heads/${releaseBranch}`,
-              sha: context.sha
+              sha: '${{ needs.check-release-commit.outputs.release_sha }}'
             });
-      
 
       # Add release branch to rulesets to enable merge queue
       - name: Add release branch to rulesets
-        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
+        if: ${{ endsWith(needs.check-release-commit.outputs.version, '.0') }}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          RELEASE_BRANCH: ${{ needs.check-release-commit.outputs.release_branch }}
         shell: bash
         run: |
           RULESET_ID=$(gh api /repos/${{ github.repository }}/rulesets --jq '.[] | select(.name=="release") | .id')
-          gh api /repos/${{ github.repository }}/rulesets/$RULESET_ID | jq '{conditions}' | jq '.conditions.ref_name.include += ["refs/heads/${{ steps.extract_info.outputs.release_branch }}"]' | gh api --method put --input - /repos/${{ github.repository }}/rulesets/$RULESET_ID
+          gh api /repos/${{ github.repository }}/rulesets/$RULESET_ID | jq '{conditions}' | jq ".conditions.ref_name.include += [\"refs/heads/$RELEASE_BRANCH\"]" | gh api --method put --input - /repos/${{ github.repository }}/rulesets/$RULESET_ID
 
       # Since skip-github-release is specified, googleapis/release-please-action doesn't delete the label from PR.
       # This label prevents the subsequent PRs from being created. Therefore, we need to delete it ourselves.
       # cf. https://github.com/googleapis/release-please?tab=readme-ov-file#release-please-bot-does-not-create-a-release-pr-why
       - name: Remove the label from PR
-        if: ${{ steps.extract_info.outputs.pr_number }}
+        if: ${{ needs.check-release-commit.outputs.pr_number }}
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const prNumber = parseInt('${{ steps.extract_info.outputs.pr_number }}', 10);
+            const prNumber = parseInt('${{ needs.check-release-commit.outputs.pr_number }}', 10);
             github.rest.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
