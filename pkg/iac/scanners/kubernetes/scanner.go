@@ -2,13 +2,9 @@ package kubernetes
 
 import (
 	"context"
-	"io"
 	"io/fs"
-	"path/filepath"
 	"sort"
 	"sync"
-
-	"github.com/liamg/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -63,21 +59,6 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	}
 	s.regoScanner = regoScanner
 	return regoScanner, nil
-}
-
-func (s *Scanner) ScanReader(ctx context.Context, filename string, reader io.Reader) (scan.Results, error) {
-	memfs := memoryfs.New()
-	if err := memfs.MkdirAll(filepath.Base(filename), 0o700); err != nil {
-		return nil, err
-	}
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
-	if err := memfs.WriteFile(filename, data, 0o644); err != nil {
-		return nil, err
-	}
-	return s.ScanFS(ctx, memfs, ".")
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {

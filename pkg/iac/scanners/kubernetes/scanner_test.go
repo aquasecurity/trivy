@@ -2,14 +2,16 @@ package kubernetes
 
 import (
 	"context"
+	"io/fs"
 	"os"
 	"strings"
 	"testing"
+	"testing/fstest"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
@@ -17,8 +19,8 @@ import (
 
 func Test_BasicScan_YAML(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
-		"/code/example.yaml": `
+	fsys := buildFS(map[string]string{
+		"code/example.yaml": `
 apiVersion: v1
 kind: Pod
 metadata: 
@@ -29,7 +31,7 @@ spec:
     image: busybox
     name: hello
 `,
-		"/rules/rule.rego": `
+		"checks/rule.rego": `
 package builtin.kubernetes.KSV011
 
 import data.lib.kubernetes
@@ -94,11 +96,11 @@ deny[res] {
 	})
 
 	scanner := NewScanner(
-		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyDirs("checks"),
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(context.TODO(), fsys, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -168,8 +170,8 @@ deny[res] {
 
 func Test_BasicScan_JSON(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
-		"/code/example.json": `
+	fsys := buildFS(map[string]string{
+		"code/example.json": `
 {
   "apiVersion": "v1",
   "kind": "Pod",
@@ -191,7 +193,7 @@ func Test_BasicScan_JSON(t *testing.T) {
   }
 }
 `,
-		"/rules/rule.rego": `
+		"checks/rule.rego": `
 package builtin.kubernetes.KSV011
 
 import data.lib.kubernetes
@@ -256,11 +258,11 @@ deny[res] {
 	})
 
 	scanner := NewScanner(
-		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyDirs("checks"),
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(context.TODO(), fsys, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -330,7 +332,8 @@ deny[res] {
 
 func Test_FileScan(t *testing.T) {
 
-	results, err := NewScanner(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true), rego.WithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
+	fsys := buildFS(map[string]string{
+		"k8s.yaml": `
 apiVersion: v1
 kind: Pod
 metadata: 
@@ -340,7 +343,15 @@ spec:
   - command: ["sh", "-c", "echo 'Hello' && sleep 1h"]
     image: busybox
     name: hello
-`))
+`,
+	})
+
+	scanner := NewScanner(
+		rego.WithEmbeddedPolicies(true),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithEmbeddedLibraries(true),
+	)
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.NotEmpty(t, results.GetFailed())
@@ -348,7 +359,8 @@ spec:
 
 func Test_FileScan_WithSeparator(t *testing.T) {
 
-	results, err := NewScanner(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
+	fsys := buildFS(map[string]string{
+		"k8s.yaml": `
 ---
 ---
 apiVersion: v1
@@ -360,7 +372,14 @@ spec:
   - command: ["sh", "-c", "echo 'Hello' && sleep 1h"]
     image: busybox
     name: hello
-`))
+`,
+	})
+
+	scanner := NewScanner(
+		rego.WithEmbeddedPolicies(true),
+		rego.WithEmbeddedLibraries(true),
+	)
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.NotEmpty(t, results.GetFailed())
@@ -389,11 +408,17 @@ spec:
     image: busybox
     name: hello2
 `
+	fsys := buildFS(map[string]string{
+		"k8s.yaml": file,
+	})
 
-	results, err := NewScanner(
+	scanner := NewScanner(
 		rego.WithEmbeddedPolicies(true),
 		rego.WithEmbeddedLibraries(true),
-		rego.WithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(file))
+		rego.WithEmbeddedLibraries(true),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.Greater(t, len(results.GetFailed()), 1)
@@ -411,12 +436,15 @@ spec:
 
 func Test_FileScanWithPolicyReader(t *testing.T) {
 
-	results, err := NewScanner(rego.WithPolicyReader(strings.NewReader(`package defsec
+	check := `package defsec
 
-deny[msg] {
-  msg = "fail"
-}
-`))).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
+	deny[msg] {
+	  msg = "fail"
+	}
+	`
+
+	fsys := buildFS(map[string]string{
+		"k8s.yaml": `
 apiVersion: v1
 kind: Pod
 metadata: 
@@ -426,7 +454,11 @@ spec:
   - command: ["sh", "-c", "echo 'Hello' && sleep 1h"]
     image: busybox
     name: hello
-`))
+`,
+	})
+
+	scanner := NewScanner(rego.WithPolicyReader(strings.NewReader(check)))
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -434,14 +466,15 @@ spec:
 
 func Test_FileScanJSON(t *testing.T) {
 
-	results, err := NewScanner(rego.WithPolicyReader(strings.NewReader(`package defsec
+	check := `package defsec
 
 deny[msg] {
   input.kind == "Pod"
   msg = "fail"
 }
-`))).ScanReader(context.TODO(), "k8s.json", strings.NewReader(`
-{
+`
+	fsys := buildFS(map[string]string{
+		"k8s.json": `{
   "kind": "Pod",
   "apiVersion": "v1",
   "metadata": {
@@ -481,7 +514,11 @@ deny[msg] {
     ]
   }
 }
-`))
+`,
+	})
+
+	scanner := NewScanner(rego.WithPolicyReader(strings.NewReader(check)))
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -489,9 +526,7 @@ deny[msg] {
 
 func Test_FileScanWithMetadata(t *testing.T) {
 
-	results, err := NewScanner(
-		rego.WithTrace(os.Stdout),
-		rego.WithPolicyReader(strings.NewReader(`package defsec
+	check := `package defsec
 
 deny[msg] {
   input.kind == "Pod"
@@ -502,10 +537,9 @@ deny[msg] {
           "filepath": "chartname/template/serviceAccount.yaml"
         }
 }
-`))).ScanReader(
-		context.TODO(),
-		"k8s.yaml",
-		strings.NewReader(`
+`
+	fsys := buildFS(map[string]string{
+		"k8s.yaml": `
 apiVersion: v1
 kind: Pod
 metadata: 
@@ -515,7 +549,15 @@ spec:
   - command: ["sh", "-c", "echo 'Hello' && sleep 1h"]
     image: busybox
     name: hello
-`))
+`,
+	})
+
+	scanner := NewScanner(
+		rego.WithTrace(os.Stdout),
+		rego.WithPolicyReader(strings.NewReader(check)),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.NotEmpty(t, results.GetFailed())
@@ -528,9 +570,7 @@ spec:
 
 func Test_FileScanExampleWithResultFunction(t *testing.T) {
 
-	results, err := NewScanner(
-		rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true),
-		rego.WithPolicyReader(strings.NewReader(`package defsec
+	check := `package defsec
 
 import data.lib.kubernetes
 
@@ -575,10 +615,9 @@ msg := kubernetes.format(sprintf("Container '%s' of %s '%s' should add 'ALL' to 
 res := result.new(msg, output)
 }
 
-`))).ScanReader(
-		context.TODO(),
-		"k8s.yaml",
-		strings.NewReader(`
+`
+	fsys := buildFS(map[string]string{
+		"k8s.yaml": `
 apiVersion: v1
 kind: Pod
 metadata: 
@@ -592,7 +631,15 @@ spec:
       capabilities:
         drop:
         - nothing
-`))
+`,
+	})
+
+	scanner := NewScanner(
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyReader(strings.NewReader(check)),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
 	require.NoError(t, err)
 
 	require.NotEmpty(t, results.GetFailed())
@@ -604,8 +651,8 @@ spec:
 }
 
 func Test_checkPolicyIsApplicable(t *testing.T) {
-	srcFS := testutil.CreateFS(t, map[string]string{
-		"policies/pod_policy.rego": `# METADATA
+	fsys := buildFS(map[string]string{
+		"checks/pod_policy.rego": `# METADATA
 # title: "Process can elevate its own privileges"
 # description: "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node."
 # scope: package
@@ -654,7 +701,7 @@ deny[res] {
 }
 
 `,
-		"policies/namespace_policy.rego": `# METADATA
+		"checks/namespace_policy.rego": `# METADATA
 # title: "The default namespace should not be used"
 # description: "ensure that default namespace should not be used"
 # scope: package
@@ -707,12 +754,11 @@ spec:
 	})
 
 	scanner := NewScanner(
-		// rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true),
 		rego.WithEmbeddedLibraries(true),
-		rego.WithPolicyDirs("policies/"),
-		rego.WithPolicyFilesystem(srcFS),
+		rego.WithPolicyDirs("checks"),
+		rego.WithPolicyFilesystem(fsys),
 	)
-	results, err := scanner.ScanFS(context.TODO(), srcFS, "test/KSV001")
+	results, err := scanner.ScanFS(context.TODO(), fsys, "test/KSV001")
 	require.NoError(t, err)
 
 	require.NoError(t, err)
@@ -720,4 +766,10 @@ spec:
 
 	failure := results.GetFailed()[0].Rule()
 	assert.Equal(t, "Process can elevate its own privileges", failure.Summary)
+}
+
+func buildFS(files map[string]string) fs.FS {
+	return fstest.MapFS(lo.MapValues(files, func(val string, _ string) *fstest.MapFile {
+		return &fstest.MapFile{Data: []byte(val)}
+	}))
 }
