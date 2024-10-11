@@ -6,6 +6,7 @@ import (
 
 	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
+	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -14,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -236,6 +238,10 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		if err != nil {
 			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
 		}
+	}
+
+	if viper.IsSet(f.IgnoreFile.ConfigName) && !fsutils.FileExists(f.IgnoreFile.Value()) {
+		return ReportOptions{}, xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
 	}
 
 	return ReportOptions{

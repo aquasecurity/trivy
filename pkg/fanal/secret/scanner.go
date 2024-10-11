@@ -366,6 +366,7 @@ func NewScanner(config *Config) Scanner {
 type ScanArgs struct {
 	FilePath string
 	Content  []byte
+	Binary   bool
 }
 
 type Match struct {
@@ -434,9 +435,14 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 			censored = censorLocation(loc, censored)
 		}
 	}
-
 	for _, match := range matched {
-		findings = append(findings, toFinding(match.Rule, match.Location, censored))
+		finding := toFinding(match.Rule, match.Location, censored)
+		// Rewrite unreadable fields for binary files
+		if args.Binary {
+			finding.Match = fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title)
+			finding.Code = types.Code{}
+		}
+		findings = append(findings, finding)
 	}
 
 	if len(findings) == 0 {

@@ -71,6 +71,36 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "SUSE Linux Enterprise Micro",
+			inputFile: "testdata/slemicro",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.3",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 6.0",
+			inputFile: "testdata/slemicro6.0",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "6.0",
+				},
+			},
+		},
+		{
+			name:      "SUSE Linux Enterprise Micro 5.4 for Rancher",
+			inputFile: "testdata/slemicro-rancher",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.SLEMicro,
+					Name:   "5.4",
+				},
+			},
+		},
+		{
 			name:      "Photon OS",
 			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{

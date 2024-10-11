@@ -147,6 +147,17 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								Licenses:     []string{"Apache-2.0"},
 								Relationship: types.RelationshipRoot,
 							},
+							{
+								ID:           "org.example:example-api",
+								Name:         "org.example:example-api",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 21,
+										EndLine:   25,
+									},
+								},
+							},
 						},
 					},
 				},

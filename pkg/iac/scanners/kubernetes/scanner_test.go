@@ -11,8 +11,8 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_BasicScan_YAML(t *testing.T) {
@@ -94,8 +94,8 @@ deny[res] {
 	})
 
 	scanner := NewScanner(
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithEmbeddedLibraries(true),
+		rego.WithPolicyDirs("rules"),
+		rego.WithEmbeddedLibraries(true),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -256,8 +256,8 @@ deny[res] {
 	})
 
 	scanner := NewScanner(
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithEmbeddedLibraries(true),
+		rego.WithPolicyDirs("rules"),
+		rego.WithEmbeddedLibraries(true),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -330,7 +330,7 @@ deny[res] {
 
 func Test_FileScan(t *testing.T) {
 
-	results, err := NewScanner(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true), options.ScannerWithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
+	results, err := NewScanner(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true), rego.WithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
 apiVersion: v1
 kind: Pod
 metadata: 
@@ -348,7 +348,7 @@ spec:
 
 func Test_FileScan_WithSeparator(t *testing.T) {
 
-	results, err := NewScanner(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
+	results, err := NewScanner(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(`
 ---
 ---
 apiVersion: v1
@@ -391,9 +391,9 @@ spec:
 `
 
 	results, err := NewScanner(
-		options.ScannerWithEmbeddedPolicies(true),
-		options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(file))
+		rego.WithEmbeddedPolicies(true),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithEmbeddedLibraries(true)).ScanReader(context.TODO(), "k8s.yaml", strings.NewReader(file))
 	require.NoError(t, err)
 
 	assert.Greater(t, len(results.GetFailed()), 1)
@@ -411,7 +411,7 @@ spec:
 
 func Test_FileScanWithPolicyReader(t *testing.T) {
 
-	results, err := NewScanner(options.ScannerWithPolicyReader(strings.NewReader(`package defsec
+	results, err := NewScanner(rego.WithPolicyReader(strings.NewReader(`package defsec
 
 deny[msg] {
   msg = "fail"
@@ -434,7 +434,7 @@ spec:
 
 func Test_FileScanJSON(t *testing.T) {
 
-	results, err := NewScanner(options.ScannerWithPolicyReader(strings.NewReader(`package defsec
+	results, err := NewScanner(rego.WithPolicyReader(strings.NewReader(`package defsec
 
 deny[msg] {
   input.kind == "Pod"
@@ -490,8 +490,8 @@ deny[msg] {
 func Test_FileScanWithMetadata(t *testing.T) {
 
 	results, err := NewScanner(
-		options.ScannerWithTrace(os.Stdout),
-		options.ScannerWithPolicyReader(strings.NewReader(`package defsec
+		rego.WithTrace(os.Stdout),
+		rego.WithPolicyReader(strings.NewReader(`package defsec
 
 deny[msg] {
   input.kind == "Pod"
@@ -529,8 +529,8 @@ spec:
 func Test_FileScanExampleWithResultFunction(t *testing.T) {
 
 	results, err := NewScanner(
-		options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithPolicyReader(strings.NewReader(`package defsec
+		rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyReader(strings.NewReader(`package defsec
 
 import data.lib.kubernetes
 
@@ -707,10 +707,10 @@ spec:
 	})
 
 	scanner := NewScanner(
-		// options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithPolicyDirs("policies/"),
-		options.ScannerWithPolicyFilesystem(srcFS),
+		// rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyDirs("policies/"),
+		rego.WithPolicyFilesystem(srcFS),
 	)
 	results, err := scanner.ScanFS(context.TODO(), srcFS, "test/KSV001")
 	require.NoError(t, err)

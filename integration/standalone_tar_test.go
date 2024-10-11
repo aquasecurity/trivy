@@ -342,6 +342,14 @@ func TestTar(t *testing.T) {
 			golden: "testdata/opensuse-tumbleweed.json.golden",
 		},
 		{
+			name: "sle micro rancher 5.4",
+			args: args{
+				Format: types.FormatJSON,
+				Input: "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+			},
+			golden: "testdata/sl-micro-rancher5.4.json.golden",
+		},
+		{
 			name: "photon 3.0",
 			args: args{
 				Format: types.FormatJSON,

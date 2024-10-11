@@ -3,7 +3,6 @@ package cloudformation
 import (
 	"context"
 	"fmt"
-	"io"
 	"io/fs"
 	"sort"
 	"sync"
@@ -50,25 +49,18 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 type Scanner struct {
 	mu                      sync.Mutex
 	logger                  *log.Logger
-	policyDirs              []string
-	policyReaders           []io.Reader
 	parser                  *parser.Parser
 	regoScanner             *rego.Scanner
 	regoOnly                bool
-	loadEmbeddedPolicies    bool
-	loadEmbeddedLibraries   bool
 	options                 []options.ScannerOption
 	parserOptions           []parser.Option
 	frameworks              []framework.Framework
-	spec                    string
 	includeDeprecatedChecks bool
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
 	s.includeDeprecatedChecks = b
 }
-
-func (s *Scanner) SetCustomSchemas(map[string][]byte) {}
 
 func (s *Scanner) addParserOption(opt parser.Option) {
 	s.parserOptions = append(s.parserOptions, opt)
@@ -78,18 +70,6 @@ func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 	s.frameworks = frameworks
 }
 
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	s.loadEmbeddedPolicies = b
-}
-
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	s.loadEmbeddedLibraries = b
-}
-
 func (s *Scanner) SetRegoOnly(regoOnly bool) {
 	s.regoOnly = regoOnly
 }
@@ -97,28 +77,6 @@ func (s *Scanner) SetRegoOnly(regoOnly bool) {
 func (s *Scanner) Name() string {
 	return "CloudFormation"
 }
-
-func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
-	s.policyReaders = readers
-}
-
-func (s *Scanner) SetPolicyDirs(dirs ...string) {
-	s.policyDirs = dirs
-}
-
-func (s *Scanner) SetPolicyFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-
-func (s *Scanner) SetDataFilesystem(_ fs.FS) {
-	// handled by rego when option is passed on
-}
-func (s *Scanner) SetRegoErrorLimit(_ int) {}
-
-func (s *Scanner) SetTraceWriter(_ io.Writer)        {}
-func (s *Scanner) SetPerResultTracingEnabled(_ bool) {}
-func (s *Scanner) SetDataDirs(_ ...string)           {}
-func (s *Scanner) SetPolicyNamespaces(_ ...string)   {}
 
 // New creates a new Scanner
 func New(opts ...options.ScannerOption) *Scanner {
@@ -133,18 +91,18 @@ func New(opts ...options.ScannerOption) *Scanner {
 	return s
 }
 
-func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
+func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.regoScanner != nil {
-		return s.regoScanner, nil
+		return nil
 	}
 	regoScanner := rego.NewScanner(s.options...)
-	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, srcFS, s.policyDirs, s.policyReaders); err != nil {
-		return nil, err
+	if err := regoScanner.LoadPolicies(srcFS); err != nil {
+		return err
 	}
 	s.regoScanner = regoScanner
-	return regoScanner, nil
+	return nil
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results scan.Results, err error) {
@@ -158,8 +116,7 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results s
 		return nil, nil
 	}
 
-	regoScanner, err := s.initRegoScanner(fsys)
-	if err != nil {
+	if err := s.initRegoScanner(fsys); err != nil {
 		return nil, err
 	}
 
@@ -167,7 +124,7 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results s
 		if cfCtx == nil {
 			continue
 		}
-		fileResults, err := s.scanFileContext(ctx, regoScanner, cfCtx, fsys)
+		fileResults, err := s.scanFileContext(ctx, cfCtx, fsys)
 		if err != nil {
 			return nil, err
 		}
@@ -186,12 +143,11 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 		return nil, err
 	}
 
-	regoScanner, err := s.initRegoScanner(fsys)
-	if err != nil {
+	if err := s.initRegoScanner(fsys); err != nil {
 		return nil, err
 	}
 
-	results, err := s.scanFileContext(ctx, regoScanner, cfCtx, fsys)
+	results, err := s.scanFileContext(ctx, cfCtx, fsys)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +159,7 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 	return results, nil
 }
 
-func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner, cfCtx *parser.FileContext, fsys fs.FS) (results scan.Results, err error) {
+func (s *Scanner) scanFileContext(ctx context.Context, cfCtx *parser.FileContext, fsys fs.FS) (results scan.Results, err error) {
 	state := adapter.Adapt(*cfCtx)
 	if state == nil {
 		return nil, nil
@@ -237,7 +193,7 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 			}
 		}
 	}
-	regoResults, err := regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
+	regoResults, err := s.regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
 		Path:     cfCtx.Metadata().Range().GetFilename(),
 		FS:       fsys,
 		Contents: state.ToRego(),

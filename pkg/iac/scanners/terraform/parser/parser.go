@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
@@ -47,6 +48,7 @@ type Parser struct {
 	skipCachedModules bool
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
+	skipPaths         []string
 }
 
 // New creates a new Parser
@@ -78,6 +80,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.moduleName = moduleName
 	mp.logger = log.WithPrefix("terraform parser").With("module", moduleName)
 	mp.projectRoot = p.projectRoot
+	mp.skipPaths = p.skipPaths
 	p.children = append(p.children, mp)
 	for _, option := range p.options {
 		option(mp)
@@ -153,6 +156,10 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	for _, info := range fileInfos {
 		realPath := path.Join(dir, info.Name())
 		if info.IsDir() {
+			continue
+		}
+		if utils.SkipPath(realPath, utils.CleanSkipPaths(p.skipPaths)) {
+			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", p.skipPaths))
 			continue
 		}
 		paths = append(paths, realPath)

@@ -26,7 +26,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	defer cleanup()
 
 	// download the database file
-	if err = operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository,
+	if err = operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepositories,
 		true, opts.SkipDBUpdate, opts.RegistryOpts()); err != nil {
 		return err
 	}
@@ -50,6 +50,6 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	m.Register()
 
 	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader,
-		opts.PathPrefix, opts.DBRepository, opts.RegistryOpts())
+		opts.PathPrefix, opts.DBRepositories, opts.RegistryOpts())
 	return server.ListenAndServe(ctx, cacheClient, opts.SkipDBUpdate)
 }

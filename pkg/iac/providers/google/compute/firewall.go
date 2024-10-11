@@ -18,7 +18,13 @@ type FirewallRule struct {
 	Enforced iacTypes.BoolValue
 	IsAllow  iacTypes.BoolValue
 	Protocol iacTypes.StringValue
-	Ports    []iacTypes.IntValue
+	Ports    []PortRange
+}
+
+type PortRange struct {
+	Metadata iacTypes.Metadata
+	Start    iacTypes.IntValue
+	End      iacTypes.IntValue
 }
 
 type IngressRule struct {

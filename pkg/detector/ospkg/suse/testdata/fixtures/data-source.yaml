@@ -15,3 +15,8 @@
         ID: "suse-cvrf"
         Name: "SUSE CVRF"
         URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
+    - key: SUSE Linux Enterprise Micro 5.3
+      value:
+        ID: "suse-cvrf"
+        Name: "SUSE CVRF"
+        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"

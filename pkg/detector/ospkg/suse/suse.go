@@ -44,6 +44,18 @@ var (
 		// 6 months after SLES 15 SP7 release
 		// "15.7": time.Date(2031, 7, 31, 23, 59, 59, 0, time.UTC),
 	}
+	slemicroEolDates = map[string]time.Time{
+		// Source: https://www.suse.com/lifecycle/
+		"5.0": time.Date(2022, 3, 31, 23, 59, 59, 0, time.UTC),
+		"5.1": time.Date(2025, 10, 31, 23, 59, 59, 0, time.UTC),
+		"5.2": time.Date(2026, 4, 30, 23, 59, 59, 0, time.UTC),
+		"5.3": time.Date(2026, 10, 30, 23, 59, 59, 0, time.UTC),
+		"5.4": time.Date(2027, 4, 30, 23, 59, 59, 0, time.UTC),
+		"5.5": time.Date(2027, 10, 31, 23, 59, 59, 0, time.UTC),
+		"6.0": time.Date(2028, 6, 30, 23, 59, 59, 0, time.UTC),
+		// 6.1 will be released late 2024
+		// "6.1": time.Date(2028, 11, 30, 23, 59, 59, 0, time.UTC),
+	}
 
 	opensuseEolDates = map[string]time.Time{
 		// Source: https://en.opensuse.org/Lifetime
@@ -66,6 +78,8 @@ type Type int
 const (
 	// SUSEEnterpriseLinux is Linux Enterprise version
 	SUSEEnterpriseLinux Type = iota
+	// SUSE Linux Enterprise Micro is the micro series
+	SUSEEnterpriseLinuxMicro
 	// OpenSUSE for open versions
 	OpenSUSE
 	OpenSUSETumbleweed
@@ -82,6 +96,10 @@ func NewScanner(t Type) *Scanner {
 	case SUSEEnterpriseLinux:
 		return &Scanner{
 			vs: susecvrf.NewVulnSrc(susecvrf.SUSEEnterpriseLinux),
+		}
+	case SUSEEnterpriseLinuxMicro:
+		return &Scanner{
+			vs: susecvrf.NewVulnSrc(susecvrf.SUSEEnterpriseLinuxMicro),
 		}
 	case OpenSUSE:
 		return &Scanner{
@@ -134,6 +152,9 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	if osFamily == ftypes.SLES {
 		return osver.Supported(ctx, slesEolDates, osFamily, osVer)
+	}
+	if osFamily == ftypes.SLEMicro {
+		return osver.Supported(ctx, slemicroEolDates, osFamily, osVer)
 	}
 	// tumbleweed is a rolling release, it has no version and no eol
 	if osFamily == ftypes.OpenSUSETumbleweed {

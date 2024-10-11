@@ -743,7 +743,7 @@ Trivy searches for SBOM files in container images with the following extensions:
 - `.cdx`
 - `.cdx.json`
 
-In addition, Trivy automatically detects SBOM files in [Bitnami images](https://github.com/bitnami/containers), [see here](../coverage/os/bitnami.md) for more details.
+In addition, Trivy automatically detects SBOM files in [Bitnami images](https://github.com/bitnami/containers), [see here](../coverage/others/bitnami.md) for more details.
 
 It is enabled in the following targets.
 

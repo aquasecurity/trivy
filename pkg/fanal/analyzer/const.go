@@ -32,6 +32,7 @@ const (
 	TypeDpkg        Type = "dpkg"
 	TypeDpkgLicense Type = "dpkg-license" // For analyzing licenses
 	TypeRpm         Type = "rpm"
+	TypeRpmArchive  Type = "rpm-archive"
 	TypeRpmqa       Type = "rpmqa"
 
 	// OS Package Repository

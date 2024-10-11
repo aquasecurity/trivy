@@ -43,48 +43,41 @@ func makeSupportedProviders() map[string]struct{} {
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	ruleNamespaces          map[string]struct{}
-	policies                map[string]*ast.Module
-	store                   storage.Store
-	dataDirs                []string
-	runtimeValues           *ast.Term
-	compiler                *ast.Compiler
-	regoErrorLimit          int
-	logger                  *log.Logger
-	traceWriter             io.Writer
-	tracePerResult          bool
-	retriever               *MetadataRetriever
-	policyFS                fs.FS
-	dataFS                  fs.FS
-	frameworks              []framework.Framework
-	spec                    string
-	includeDeprecatedChecks bool
+	ruleNamespaces           map[string]struct{}
+	policies                 map[string]*ast.Module
+	store                    storage.Store
+	runtimeValues            *ast.Term
+	compiler                 *ast.Compiler
+	regoErrorLimit           int
+	logger                   *log.Logger
+	traceWriter              io.Writer
+	tracePerResult           bool
+	retriever                *MetadataRetriever
+	policyFS                 fs.FS
+	policyDirs               []string
+	policyReaders            []io.Reader
+	dataFS                   fs.FS
+	dataDirs                 []string
+	frameworks               []framework.Framework
+	includeDeprecatedChecks  bool
+	includeEmbeddedPolicies  bool
+	includeEmbeddedLibraries bool
 
 	embeddedLibs   map[string]*ast.Module
 	embeddedChecks map[string]*ast.Module
 	customSchemas  map[string][]byte
+
+	disabledCheckIDs map[string]struct{}
 }
 
 func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
 	s.includeDeprecatedChecks = b
 }
 
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	// handled externally
-}
-
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
-}
-
 func (s *Scanner) SetRegoOnly(bool) {}
 
 func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 	s.frameworks = frameworks
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	// handled externally
 }
 
 func (s *Scanner) trace(heading string, input any) {
@@ -96,48 +89,6 @@ func (s *Scanner) trace(heading string, input any) {
 		return
 	}
 	_, _ = fmt.Fprintf(s.traceWriter, "REGO %[1]s:\n%s\nEND REGO %[1]s\n\n", heading, string(data))
-}
-
-func (s *Scanner) SetPolicyFilesystem(fsys fs.FS) {
-	s.policyFS = fsys
-}
-
-func (s *Scanner) SetDataFilesystem(fsys fs.FS) {
-	s.dataFS = fsys
-}
-
-func (s *Scanner) SetPolicyReaders(_ []io.Reader) {
-	// NOTE: Policy readers option not applicable for rego, policies are loaded on-demand by other scanners.
-}
-
-func (s *Scanner) SetTraceWriter(writer io.Writer) {
-	s.traceWriter = writer
-}
-
-func (s *Scanner) SetPerResultTracingEnabled(b bool) {
-	s.tracePerResult = b
-}
-
-func (s *Scanner) SetPolicyDirs(_ ...string) {
-	// NOTE: Policy dirs option not applicable for rego, policies are loaded on-demand by other scanners.
-}
-
-func (s *Scanner) SetDataDirs(dirs ...string) {
-	s.dataDirs = dirs
-}
-
-func (s *Scanner) SetPolicyNamespaces(namespaces ...string) {
-	for _, namespace := range namespaces {
-		s.ruleNamespaces[namespace] = struct{}{}
-	}
-}
-
-func (s *Scanner) SetRegoErrorLimit(limit int) {
-	s.regoErrorLimit = limit
-}
-
-func (s *Scanner) SetCustomSchemas(v map[string][]byte) {
-	s.customSchemas = v
 }
 
 type DynamicMetadata struct {
@@ -152,11 +103,12 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	LoadAndRegister()
 
 	s := &Scanner{
-		regoErrorLimit: ast.CompileErrorLimitDefault,
-		ruleNamespaces: make(map[string]struct{}),
-		runtimeValues:  addRuntimeValues(),
-		logger:         log.WithPrefix("rego"),
-		customSchemas:  make(map[string][]byte),
+		regoErrorLimit:   ast.CompileErrorLimitDefault,
+		ruleNamespaces:   make(map[string]struct{}),
+		runtimeValues:    addRuntimeValues(),
+		logger:           log.WithPrefix("rego"),
+		customSchemas:    make(map[string][]byte),
+		disabledCheckIDs: make(map[string]struct{}),
 	}
 
 	maps.Copy(s.ruleNamespaces, builtinNamespaces)

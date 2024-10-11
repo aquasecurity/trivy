@@ -29,21 +29,21 @@ const updateInterval = 1 * time.Hour
 
 // Server represents Trivy server
 type Server struct {
-	appVersion   string
-	addr         string
-	cacheDir     string
-	dbDir        string
-	token        string
-	tokenHeader  string
-	pathPrefix   string
-	dbRepository name.Reference
+	appVersion     string
+	addr           string
+	cacheDir       string
+	dbDir          string
+	token          string
+	tokenHeader    string
+	pathPrefix     string
+	dbRepositories []name.Reference
 
 	// For OCI registries
 	types.RegistryOptions
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix string, dbRepository name.Reference, opt types.RegistryOptions) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix string, dbRepositories []name.Reference, opt types.RegistryOptions) Server {
 	return Server{
 		appVersion:      appVersion,
 		addr:            addr,
@@ -52,7 +52,7 @@ func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix string
 		token:           token,
 		tokenHeader:     tokenHeader,
 		pathPrefix:      pathPrefix,
-		dbRepository:    dbRepository,
+		dbRepositories:  dbRepositories,
 		RegistryOptions: opt,
 	}
 }
@@ -63,7 +63,7 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(db.NewClient(s.dbDir, true, db.WithDBRepository(s.dbRepository)))
+		worker := newDBWorker(db.NewClient(s.dbDir, true, db.WithDBRepository(s.dbRepositories)))
 		for {
 			time.Sleep(updateInterval)
 			if err := worker.update(ctx, s.appVersion, s.dbDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {

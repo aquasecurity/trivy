@@ -21,14 +21,14 @@ import (
 var mu sync.Mutex
 
 // DownloadDB downloads the DB
-func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository name.Reference, quiet, skipUpdate bool,
+func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories []name.Reference, quiet, skipUpdate bool,
 	opt ftypes.RegistryOptions) error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	ctx = log.WithContextPrefix(ctx, "db")
+	ctx = log.WithContextPrefix(ctx, log.PrefixVulnerabilityDB)
 	dbDir := db.Dir(cacheDir)
-	client := db.NewClient(dbDir, quiet, db.WithDBRepository(dbRepository))
+	client := db.NewClient(dbDir, quiet, db.WithDBRepository(dbRepositories))
 	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
@@ -36,7 +36,6 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 
 	if needsUpdate {
 		log.InfoContext(ctx, "Need to update DB")
-		log.InfoContext(ctx, "Downloading DB...", log.String("repository", dbRepository.String()))
 		if err = client.Download(ctx, dbDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
@@ -78,8 +77,8 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 
 }
 
-// InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool, checkBundleRepository string, registryOpts ftypes.RegistryOptions) ([]string, error) {
+// InitBuiltinChecks downloads the built-in policies and loads them
+func InitBuiltinChecks(ctx context.Context, cacheDir string, quiet, skipUpdate bool, checkBundleRepository string, registryOpts ftypes.RegistryOptions) ([]string, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -97,14 +96,14 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	}
 
 	if needsUpdate {
-		log.Info("Need to update the built-in policies")
-		log.Info("Downloading the built-in policies...")
-		if err = client.DownloadBuiltinPolicies(ctx, registryOpts); err != nil {
+		log.InfoContext(ctx, "Need to update the built-in checks")
+		log.InfoContext(ctx, "Downloading the built-in checks...")
+		if err = client.DownloadBuiltinChecks(ctx, registryOpts); err != nil {
 			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
 		}
 	}
 
-	policyPaths, err := client.LoadBuiltinPolicies()
+	policyPaths, err := client.LoadBuiltinChecks()
 	if err != nil {
 		if skipUpdate {
 			msg := "No downloadable policies were loaded as --skip-check-update is enabled"

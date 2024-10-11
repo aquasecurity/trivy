@@ -54,6 +54,9 @@ var (
 		".gz",
 		".gzip",
 		".tar",
+	}
+
+	allowedBinaries = []string{
 		".pyc",
 	}
 )
@@ -61,6 +64,10 @@ var (
 func init() {
 	// The scanner will be initialized later via InitScanner()
 	analyzer.RegisterAnalyzer(NewSecretAnalyzer(secret.Scanner{}, ""))
+}
+
+func allowedBinary(filename string) bool {
+	return slices.Contains(allowedBinaries, filepath.Ext(filename))
 }
 
 // SecretAnalyzer is an analyzer for secrets
@@ -96,7 +103,7 @@ func (a *SecretAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Do not scan binaries
 	binary, err := utils.IsBinary(input.Content, input.Info.Size())
-	if binary || err != nil {
+	if err != nil || (binary && !allowedBinary(input.FilePath)) {
 		return nil, nil
 	}
 
@@ -104,12 +111,20 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		log.WithPrefix("secret").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.FilePath(input.FilePath), log.Int64("size (MB)", size/1048576))
 	}
 
-	content, err := io.ReadAll(input.Content)
-	if err != nil {
-		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
-	}
+	var content []byte
 
-	content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))
+	if !binary {
+		content, err = io.ReadAll(input.Content)
+		if err != nil {
+			return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
+		}
+		content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))
+	} else {
+		content, err = utils.ExtractPrintableBytes(input.Content)
+		if err != nil {
+			return nil, xerrors.Errorf("binary read error %s: %w", input.FilePath, err)
+		}
+	}
 
 	filePath := input.FilePath
 	// Files extracted from the image have an empty input.Dir.
@@ -122,6 +137,7 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	result := a.scanner.Scan(secret.ScanArgs{
 		FilePath: filePath,
 		Content:  content,
+		Binary:   binary,
 	})
 
 	if len(result.Findings) == 0 {

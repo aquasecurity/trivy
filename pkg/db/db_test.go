@@ -159,7 +159,7 @@ func TestClient_Download(t *testing.T) {
 		{
 			name:    "invalid gzip",
 			input:   "testdata/trivy.db",
-			wantErr: "unexpected EOF",
+			wantErr: "OCI artifact error: failed to download vulnerability DB",
 		},
 	}
 

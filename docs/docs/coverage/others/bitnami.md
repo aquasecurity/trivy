@@ -4,8 +4,8 @@
     Scanning results may be inaccurate.
 
 While it is not an OS, this page describes the details of the [container images provided by Bitnami](https://github.com/bitnami/containers).
-Bitnami images are based on [Debian](debian.md).
-Please see [the Debian page](debian.md) for OS packages.
+Bitnami images are based on [Debian](../os/debian.md).
+Please see [the Debian page](../os/debian.md) for OS packages.
 
 Trivy supports the following scanners for Bitnami packages.
 

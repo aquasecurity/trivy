@@ -55,6 +55,11 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			family = types.OpenSUSELeap
 		case "sles":
 			family = types.SLES
+		// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
+		// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
+		// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
+		case "sle-micro", "sl-micro", "sle-micro-rancher":
+			family = types.SLEMicro
 		case "photon":
 			family = types.Photon
 		case "wolfi":

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func TestSkipFile(t *testing.T) {
@@ -64,7 +64,7 @@ func TestSkipFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			for file, want := range tt.wants {
 				file = filepath.ToSlash(filepath.Clean(file))
-				got := walker.SkipPath(file, walker.CleanSkipPaths(tt.skipFiles))
+				got := utils.SkipPath(file, utils.CleanSkipPaths(tt.skipFiles))
 				assert.Equal(t, want, got, fmt.Sprintf("skipFiles: %s, file: %s", tt.skipFiles, file))
 			}
 		})
@@ -138,7 +138,7 @@ func TestSkipDir(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			for dir, want := range tt.wants {
 				dir = filepath.ToSlash(filepath.Clean(dir))
-				got := walker.SkipPath(dir, walker.CleanSkipPaths(tt.skipDirs))
+				got := utils.SkipPath(dir, utils.CleanSkipPaths(tt.skipDirs))
 				assert.Equal(t, want, got, fmt.Sprintf("defaultSkipDirs: %s, dir: %s", tt.skipDirs, dir))
 			}
 		})

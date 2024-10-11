@@ -553,7 +553,7 @@ var builtinRules = []Rule{
 		Category: CategoryGrafana,
 		Title:    "Grafana API token",
 		Severity: "MEDIUM",
-		Regex:    MustCompile(`['\"]eyJrIjoi(?i)[a-z0-9\-_=]{72,92}['\"]`),
+		Regex:    MustCompile(`['\"]?eyJrIjoi(?i)[a-z0-9\-_=]{72,92}['\"]?`),
 		Keywords: []string{"eyJrIjoi"},
 	},
 	{

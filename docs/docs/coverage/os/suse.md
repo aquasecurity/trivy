@@ -3,7 +3,8 @@ Trivy supports the following distributions:
 
 - openSUSE Leap
 - openSUSE Tumbleweed
-- SUSE Enterprise Linux (SLE)
+- SUSE Linux Enterprise (SLE)
+- SUSE Linux Enterprise Micro
 
 Please see [here](index.md#supported-os) for supported versions.
 

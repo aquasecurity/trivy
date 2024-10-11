@@ -9,6 +9,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -53,13 +54,13 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 		// Skip unnecessary files
 		switch {
 		case d.IsDir():
-			if SkipPath(relPath, opt.SkipDirs) {
+			if utils.SkipPath(relPath, opt.SkipDirs) {
 				return filepath.SkipDir
 			}
 			return nil
 		case !d.Type().IsRegular():
 			return nil
-		case SkipPath(relPath, opt.SkipFiles):
+		case utils.SkipPath(relPath, opt.SkipFiles):
 			return nil
 		}
 
@@ -148,7 +149,7 @@ func (w *FS) BuildSkipPaths(base string, paths []string) []string {
 		relativePaths = append(relativePaths, relPath)
 	}
 
-	relativePaths = CleanSkipPaths(relativePaths)
+	relativePaths = utils.CleanSkipPaths(relativePaths)
 	return relativePaths
 }
 

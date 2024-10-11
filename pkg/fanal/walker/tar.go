@@ -27,8 +27,8 @@ type LayerTar struct {
 
 func NewLayerTar(opt Option) LayerTar {
 	return LayerTar{
-		skipFiles: CleanSkipPaths(opt.SkipFiles),
-		skipDirs:  CleanSkipPaths(opt.SkipDirs),
+		skipFiles: utils.CleanSkipPaths(opt.SkipFiles),
+		skipDirs:  utils.CleanSkipPaths(opt.SkipDirs),
 	}
 }
 
@@ -63,12 +63,12 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 
 		switch hdr.Typeflag {
 		case tar.TypeDir:
-			if SkipPath(filePath, w.skipDirs) {
+			if utils.SkipPath(filePath, w.skipDirs) {
 				skippedDirs = append(skippedDirs, filePath)
 				continue
 			}
 		case tar.TypeReg:
-			if SkipPath(filePath, w.skipFiles) {
+			if utils.SkipPath(filePath, w.skipFiles) {
 				continue
 			}
 		// symlinks and hardlinks have no content in reader, skip them

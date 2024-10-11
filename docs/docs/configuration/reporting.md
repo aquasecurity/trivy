@@ -5,7 +5,7 @@ Trivy supports the following formats:
 
 - Table
 - JSON
-- [SARIF](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning)
+- [SARIF][sarif-home]
 - Template
 - SBOM
 - GitHub dependency snapshot
@@ -252,16 +252,19 @@ $ trivy image -f json -o results.json golang:1.12-alpine
 |      Secret      |     ✓     |
 |     License      |     ✓     |
 
-[SARIF][sarif] can be generated with the `--format sarif` flag.
+[SARIF][sarif-home] (Static Analysis Results Interchange Format) complying with [SARIF 2.1.0 OASIS standard][sarif-spec] can be generated with the `--format sarif` flag.
 
 ```
 $ trivy image --format sarif -o report.sarif  golang:1.12-alpine
 ```
 
-This SARIF file can be uploaded to GitHub code scanning results, and there is a [Trivy GitHub Action][action] for automating this process.
+This SARIF file can be uploaded to several platforms, including:
+
+- [GitHub code scanning results][sarif-github], and there is a [Trivy GitHub Action][action] for automating this process
+- [SonarQube][sarif-sonar]
 
 ### GitHub dependency snapshot
-Trivy supports the following packages.
+Trivy supports the following packages:
 
 - [OS packages][os_packages]
 - [Language-specific packages][language_packages]
@@ -430,7 +433,10 @@ $ trivy convert --format table --severity CRITICAL result.json
 [cargo-auditable]: https://github.com/rust-secure-code/cargo-auditable/
 [action]: https://github.com/aquasecurity/trivy-action
 [asff]: ../../tutorials/integrations/aws-security-hub.md
-[sarif]: https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/managing-results-from-code-scanning
+[sarif-home]: https://sarifweb.azurewebsites.net
+[sarif-spec]: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
+[sarif-github]: https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning
+[sarif-sonar]: https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/importing-external-issues/importing-issues-from-sarif-reports/
 [sprig]: http://masterminds.github.io/sprig/
 [github-sbom]: https://docs.github.com/en/rest/dependency-graph/dependency-submission?apiVersion=2022-11-28#about-dependency-submissions
 [github-sbom-submit]: https://docs.github.com/en/rest/dependency-graph/dependency-submission?apiVersion=2022-11-28#create-a-snapshot-of-dependencies-for-a-repository

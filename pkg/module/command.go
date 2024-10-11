@@ -23,15 +23,11 @@ func Install(ctx context.Context, dir, repo string, quiet bool, opt types.Regist
 	}
 
 	log.Info("Installing the module from the repository...", log.String("repo", repo))
-	artifact, err := oci.NewArtifact(repo, quiet, opt)
-	if err != nil {
-		return xerrors.Errorf("module initialize error: %w", err)
-	}
+	art := oci.NewArtifact(repo, opt)
 
 	dst := filepath.Join(dir, ref.Context().Name())
 	log.Debug("Installing the module...", log.String("dst", dst))
-
-	if err = artifact.Download(ctx, dst, oci.DownloadOption{MediaType: mediaType}); err != nil {
+	if err = art.Download(ctx, dst, oci.DownloadOption{MediaType: mediaType, Quiet: quiet}); err != nil {
 		return xerrors.Errorf("module download error: %w", err)
 	}
 

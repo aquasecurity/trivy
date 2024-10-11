@@ -623,9 +623,9 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			if tt.analyzerType == analyzer.TypeJar {
 				// init java-trivy-db with skip update
-				repo, err := name.NewTag(javadb.DefaultRepository)
+				repo, err := name.NewTag(javadb.DefaultGHCRRepository)
 				require.NoError(t, err)
-				javadb.Init("./language/java/jar/testdata", repo, true, false, types.RegistryOptions{Insecure: false})
+				javadb.Init("./language/java/jar/testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 			}
 
 			ctx := context.Background()
