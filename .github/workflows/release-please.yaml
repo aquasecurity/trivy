@@ -83,33 +83,35 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.check-release-commit.outputs.is_release == 'true' }}
     steps:
-      - name: Tag release
-        if: ${{ needs.check-release-commit.outputs.version }}
-        uses: actions/github-script@v7
+      - name: Checkout specific commit
+        uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.ORG_REPO_TOKEN }} # To trigger another workflow
-          script: |
-            await github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: `refs/tags/v${{ needs.check-release-commit.outputs.version }}`,
-              sha: '${{ needs.check-release-commit.outputs.release_sha }}'
-            });
+          fetch-depth: 0
+          ref: ${{ needs.check-release-commit.outputs.release_sha }}
+          token: ${{ secrets.ORG_REPO_TOKEN }} # Must have `repo` and `workflow` scopes
 
-      # When v0.50.0 is released, a release branch "release/v0.50" is created.
-      - name: Create release branch for patch versions
-        if: ${{ endsWith(needs.check-release-commit.outputs.version, '.0') }} # Skip patch versions
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
-          script: |
-            const releaseBranch = '${{ needs.check-release-commit.outputs.release_branch }}';
-            await github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: `refs/heads/${releaseBranch}`,
-              sha: '${{ needs.check-release-commit.outputs.release_sha }}'
-            });
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # `/repos/{owner}/{repo}/git/refs` API seems to work only with the head commit.
+      # cf. https://github.com/orgs/community/discussions/68932#discussioncomment-7176743
+      - name: Create and push tag
+        env:
+          VERSION: ${{ needs.check-release-commit.outputs.version }}
+        run: |
+          git tag "v$VERSION"
+          git push --tags
+
+      - name: Create release branch
+        if: ${{ endsWith(needs.check-release-commit.outputs.version, '.0') }}
+        env:
+          RELEASE_BRANCH: ${{ needs.check-release-commit.outputs.release_branch }}
+        run: |
+          git checkout -b "$RELEASE_BRANCH"
+          git push origin "$RELEASE_BRANCH"
+
 
       # Add release branch to rulesets to enable merge queue
       - name: Add release branch to rulesets
