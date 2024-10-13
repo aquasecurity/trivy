@@ -7,7 +7,6 @@ import (
 	"slices"
 	"sort"
 	"strings"
-	"sync"
 
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -108,8 +107,8 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	var results types.Results
 
-	// Filter packages according to the options
-	excludePackages(&target, options)
+	// Filter packages by relationship
+	filterPkgByRelationship(&target, options)
 
 	// Add packages if needed and scan packages for vulnerabilities
 	vulnResults, eosl, err := s.scanVulnerabilities(ctx, target, options)
@@ -404,15 +403,6 @@ func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
 }
 
-func excludePackages(target *types.ScanTarget, options types.ScanOptions) {
-	// Filter packages by relationship
-	filterPkgByRelationship(target, options)
-
-	// By default, development packages are removed from the result
-	// '--include-dev-deps' option allows including them
-	excludeDevDeps(target.Applications, options.IncludeDevDeps)
-}
-
 func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions) {
 	if slices.Compare(options.PkgRelationships, ftypes.Relationships) == 0 {
 		return // No need to filter
@@ -427,25 +417,6 @@ func filterPkgByRelationship(target *types.ScanTarget, options types.ScanOptions
 	target.Packages = filter(target.Packages)
 	for i, app := range target.Applications {
 		target.Applications[i].Packages = filter(app.Packages)
-	}
-}
-
-// excludeDevDeps removes development dependencies from the list of applications
-func excludeDevDeps(apps []ftypes.Application, include bool) {
-	if include {
-		return
-	}
-
-	onceInfo := sync.OnceFunc(func() {
-		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
-	})
-	for i := range apps {
-		apps[i].Packages = lo.Filter(apps[i].Packages, func(lib ftypes.Package, index int) bool {
-			if lib.Dev {
-				onceInfo()
-			}
-			return !lib.Dev
-		})
 	}
 }
 
