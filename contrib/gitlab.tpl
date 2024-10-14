@@ -29,7 +29,10 @@
   {{- range . }}
   {{- $target := .Target }}
     {{- $image := $target | regexFind "[^\\s]+" }}
-    {{- $os := regexReplaceAll ".+\\((.+)\\)" $target "${1}" }}
+    {{- $os := "Unknown" }}
+    {{- if contains "(" $target -}}
+      {{- $os = regexReplaceAll ".+\\((.+)\\)" $target "${1}" }}
+    {{- end }}
     {{- range .Vulnerabilities -}}
     {{- if $t_first -}}
       {{- $t_first = false -}}
