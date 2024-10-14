@@ -50,6 +50,12 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeYAML:                  types.YAML,
 }
 
+type DisabledCheck struct {
+	ID      string
+	Scanner string // For logging
+	Reason  string // For logging
+}
+
 type ScannerOption struct {
 	Trace                    bool
 	RegoOnly                 bool
@@ -74,9 +80,9 @@ type ScannerOption struct {
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
 
-	DisabledCheckIDs []string
-	SkipFiles        []string
-	SkipDirs         []string
+	DisabledChecks []DisabledCheck
+	SkipFiles      []string
+	SkipDirs       []string
 }
 
 func (o *ScannerOption) Sort() {
@@ -211,11 +217,17 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 }
 
 func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
+		log.Info("Check disabled", log.String("ID", check.ID),
+			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
+		return check.ID
+	})
+
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
-		rego.WithDisabledCheckIDs(opt.DisabledCheckIDs...),
+		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
