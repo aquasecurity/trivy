@@ -139,6 +139,7 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 }
 
 func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguration, error) {
+	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	newfs, err := s.filterFS(fsys)
 	if err != nil {
 		return nil, xerrors.Errorf("fs filter error: %w", err)
@@ -147,12 +148,12 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
-	log.Debug("Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
+	log.DebugContext(ctx, "Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
 		var invalidContentError *cfparser.InvalidContentError
 		if errors.As(err, &invalidContentError) {
-			log.Error("scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
+			log.ErrorContext(ctx, "scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}
 		return nil, xerrors.Errorf("scan config error: %w", err)
@@ -218,7 +219,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 
 func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
 	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
-		log.Info("Check disabled", log.String("ID", check.ID),
+		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
 			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
 		return check.ID
 	})
