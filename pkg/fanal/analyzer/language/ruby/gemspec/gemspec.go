@@ -2,6 +2,7 @@ package gemspec
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -27,7 +28,12 @@ func (a gemspecLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 		gemspec.NewParser(), input.Options.FileChecksum)
 }
 
-func (a gemspecLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a gemspecLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("RUBY")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("npm yarn oss").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	return fileRegex.MatchString(filepath.ToSlash(filePath))
 }
 

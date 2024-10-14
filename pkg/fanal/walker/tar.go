@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"io"
 	"io/fs"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -77,6 +78,11 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 		}
 
 		if underSkippedDir(filePath, skippedDirs) {
+			continue
+		}
+
+		if size := hdr.FileInfo().Size(); size > 10485760 && os.Getenv("FILE_SIZE_LIMIT") != "" {
+			// 10MB
 			continue
 		}
 

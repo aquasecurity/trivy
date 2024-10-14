@@ -2,6 +2,7 @@ package pom
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -43,7 +44,12 @@ func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*
 	return res, nil
 }
 
-func (a pomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a pomAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("JAVA_POM")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("java pom oss").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	return filepath.Base(filePath) == types.MavenPom
 }
 

@@ -85,7 +85,12 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	}, nil
 }
 
-func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a npmLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("NPM")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("npm oss").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	fileName := filepath.Base(filePath)
 	// Don't save package-lock.json from the `node_modules` directory to avoid duplication and mistakes.
 	if fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules") {

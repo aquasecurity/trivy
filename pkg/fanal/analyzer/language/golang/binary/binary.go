@@ -3,6 +3,7 @@ package binary
 import (
 	"context"
 	"errors"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"os"
 
 	"golang.org/x/xerrors"
@@ -35,6 +36,11 @@ func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 }
 
 func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("GOLANG_BINARY")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("golang oss binary").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	return utils.IsExecutable(fileInfo)
 }
 

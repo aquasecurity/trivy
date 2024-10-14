@@ -78,6 +78,7 @@ const (
 	connect     = `\s*(:|=>|=)?\s*`
 	startSecret = `(^|\s+)`
 	endSecret   = `[.,]?(\s+|$)`
+	startWord   = "([^0-9a-zA-Z]|^)"
 
 	aws = `aws_?`
 )

@@ -3,6 +3,7 @@ package nuget
 import (
 	"context"
 	"errors"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"io"
 	"io/fs"
 	"os"
@@ -104,7 +105,12 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 	}, nil
 }
 
-func (a *nugetLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a *nugetLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("NUGET")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("nuget").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	fileName := filepath.Base(filePath)
 	return slices.Contains(requiredFiles, fileName)
 }

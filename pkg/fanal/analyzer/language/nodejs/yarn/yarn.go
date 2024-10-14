@@ -105,9 +105,13 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	}, nil
 }
 
-func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a yarnAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
 	dirs, fileName := splitPath(filePath)
-
+	others := os.Getenv("NPM_YARN")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("npm yarn oss").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	if fileName == types.YarnLock &&
 		// skipping yarn.lock in cache folders
 		lo.Some(dirs, []string{

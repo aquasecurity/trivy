@@ -271,6 +271,11 @@ func Prefix(prefix string) slog.Attr {
 	return slog.Any(prefixKey, logPrefix("["+prefix+"] "))
 }
 
+// FilePath returns an Attr that represents a filePath.
+func FilePath(filePath string) slog.Attr {
+	return String("file_path", filePath)
+}
+
 func isLogPrefix(a slog.Attr) bool {
 	_, ok := a.Value.Any().(logPrefix)
 	return ok
