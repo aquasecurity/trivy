@@ -3,9 +3,12 @@ package image
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"reflect"
+	"runtime/pprof"
 	"strings"
 	"sync"
 
@@ -73,7 +76,54 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
+// startCPUProfile begins CPU profiling and writes the profile to a file
+func startCPUProfile(filename string) {
+	f, err := os.Create(filename)
+	if err != nil {
+		fmt.Println("Could not create CPU profile file:", err)
+		return
+	}
+
+	// Start CPU profiling
+	if err := pprof.StartCPUProfile(f); err != nil {
+		fmt.Println("Could not start CPU profile:", err)
+		f.Close()
+		return
+	}
+	fmt.Printf("CPU profiling started, output file: %s\n", filename)
+}
+
+// stopCPUProfile stops the CPU profile and flushes data to the file
+func stopCPUProfile() {
+	pprof.StopCPUProfile()
+	fmt.Println("CPU profiling stopped.")
+}
+
+// createHeapProfile writes the current heap (memory) profile to a file
+func createHeapProfile(filename string) {
+	f, err := os.Create(filename)
+	if err != nil {
+		fmt.Println("Could not create heap profile file:", err)
+		return
+	}
+	defer f.Close()
+
+	// Capture and write the heap profile
+	if err := pprof.WriteHeapProfile(f); err != nil {
+		fmt.Println("Could not write heap profile:", err)
+		return
+	}
+	fmt.Printf("Heap profile written to %s\n", filename)
+}
+
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+	go func() {
+		fmt.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	startCPUProfile("cpu_profile.prof")
+	defer stopCPUProfile()
+
 	imageID, err := a.image.ID()
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get the image ID: %w", err)
@@ -125,6 +175,8 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	if err = a.inspect(ctx, missingImageKey, missingLayers, baseDiffIDs, layerKeyMap, configFile); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("analyze error: %w", err)
 	}
+
+	defer createHeapProfile("heap_profile.prof")
 
 	return types.ArtifactReference{
 		Name:    a.image.Name(),
