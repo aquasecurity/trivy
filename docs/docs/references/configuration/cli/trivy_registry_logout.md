@@ -1,11 +1,22 @@
-## trivy auth
+## trivy registry logout
 
-Authentication
+Log out of a registry
+
+```
+trivy registry logout SERVER [flags]
+```
+
+### Examples
+
+```
+  # Log out of reg.example.com
+  trivy registry logout reg.example.com
+```
 
 ### Options
 
 ```
-  -h, --help   help for auth
+  -h, --help   help for logout
 ```
 
 ### Options inherited from parent commands
@@ -23,7 +34,5 @@ Authentication
 
 ### SEE ALSO
 
-* [trivy](trivy.md)	 - Unified security scanner
-* [trivy auth login](trivy_auth_login.md)	 - Log in to a registry
-* [trivy auth logout](trivy_auth_logout.md)	 - Log out of a registry
+* [trivy registry](trivy_registry.md)	 - Manage registry authentication
 
