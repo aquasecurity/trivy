@@ -91,11 +91,12 @@ func (a *SecretAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 		return nil
 	}
 	configPath := opt.SecretScannerOption.ConfigPath
-	c, err := secret.ParseConfig(configPath)
-	if err != nil {
-		return xerrors.Errorf("secret config error: %w", err)
+	config := secret.Config{
+		EnableBuiltinRuleIDs: []string{"aws-access-key-id", "aws-secret-access-key", "github-pat", "github-oauth",
+			"github-app-token", "github-refresh-token", "github-fine-grained-pat", "gitlab-pat", "dockerconfig-secret"},
+		DisableRuleIDs: []string{"private-key"},
 	}
-	a.scanner = secret.NewScanner(c)
+	a.scanner = secret.NewScanner(&config)
 	a.configPath = configPath
 	return nil
 }
