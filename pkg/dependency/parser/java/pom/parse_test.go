@@ -1974,6 +1974,21 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:      "space at the start and/or end of the text nodes",
+			inputFile: filepath.Join("testdata", "with-spaces", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example : root-pom-with-spaces : 1.0.0",
+					Name:         "com.example : root-pom-with-spaces ",
+					Version:      " 1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+			},
+			// wantDeps: []ftypes.Dependency{
+			// },
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
