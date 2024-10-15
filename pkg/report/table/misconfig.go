@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/fatih/color"
 	"golang.org/x/term"
 
@@ -53,8 +54,10 @@ func (r *misconfigRenderer) Render() string {
 	// Trivy doesn't currently support showing suppressed misconfigs
 	// So just skip this result
 	if len(r.result.Misconfigurations) == 0 {
+		log.Info("No results found")
 		return ""
 	}
+
 	target := fmt.Sprintf("%s (%s)", r.result.Target, r.result.Type)
 	RenderTarget(r.w, target, r.ansi)
 
