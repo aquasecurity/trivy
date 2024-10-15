@@ -7,7 +7,7 @@ The following scanners are supported.
 
 | Package manager | SBOM | Vulnerability | License |
 |-----------------|:----:|:-------------:|:-------:|
-| Pkg.jl          |  ✓   |       -       |    -    |
+| Pkg.jl          |  ✓   |       -       |    ✓    |
 
 The following table provides an outline of the features Trivy offers.
 
