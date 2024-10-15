@@ -1,16 +1,16 @@
-## trivy auth login
+## trivy registry login
 
 Log in to a registry
 
 ```
-trivy auth login SERVER [flags]
+trivy registry login SERVER [flags]
 ```
 
 ### Examples
 
 ```
   # Log in to reg.example.com
-  cat ~/my_password.txt | trivy auth login --username foo --password-stdin reg.example.com
+  cat ~/my_password.txt | trivy registry login --username foo --password-stdin reg.example.com
 ```
 
 ### Options
@@ -37,5 +37,5 @@ trivy auth login SERVER [flags]
 
 ### SEE ALSO
 
-* [trivy auth](trivy_auth.md)	 - Authentication
+* [trivy registry](trivy_registry.md)	 - Manage registry authentication
 

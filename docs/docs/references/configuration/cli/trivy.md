@@ -43,7 +43,6 @@ trivy [global flags] command [flags] target
 
 ### SEE ALSO
 
-* [trivy auth](trivy_auth.md)	 - Authentication
 * [trivy clean](trivy_clean.md)	 - Remove cached files
 * [trivy config](trivy_config.md)	 - Scan config files for misconfigurations
 * [trivy convert](trivy_convert.md)	 - Convert Trivy JSON report into a different format
@@ -52,6 +51,7 @@ trivy [global flags] command [flags] target
 * [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
+* [trivy registry](trivy_registry.md)	 - Manage registry authentication
 * [trivy repository](trivy_repository.md)	 - Scan a repository
 * [trivy rootfs](trivy_rootfs.md)	 - Scan rootfs
 * [trivy sbom](trivy_sbom.md)	 - Scan SBOM for vulnerabilities and licenses
