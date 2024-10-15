@@ -758,7 +758,7 @@ func TestContainerd_PullImage(t *testing.T) {
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
 				},
 				RepoTags:    []string{testutil.ImageName("", "alpine-310", "")},
-				RepoDigests: []string{testutil.ImageName("", "alpine-310", "sha256:72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb")},
+				RepoDigests: []string{testutil.ImageName("", "", "sha256:72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb")},
 				ConfigFile: v1.ConfigFile{
 					Architecture: "amd64",
 					Created: v1.Time{
