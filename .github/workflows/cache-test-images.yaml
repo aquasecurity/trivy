@@ -27,7 +27,8 @@ jobs:
         if: github.ref_name == 'main'
         id: image-digest
         run: |
-          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          source .testimages
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
@@ -67,7 +68,8 @@ jobs:
         if: github.ref_name == 'main'
         id: image-digest
         run: |
-          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-vm-images)
+          source .testimages
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
