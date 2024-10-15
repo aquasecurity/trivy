@@ -2,12 +2,13 @@ package testutil
 
 import (
 	"bufio"
-	_ "embed"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	_ "embed"
 )
 
 var (
@@ -18,7 +19,7 @@ var (
 func init() {
 	_, b, _, _ := runtime.Caller(0)
 	currentDir := filepath.Dir(b)
-	f, err := os.Open(filepath.Join(currentDir, "../../.testimages"))
+	f, err := os.Open(filepath.Join(currentDir, "..", "..", ".testimages"))
 	if err != nil {
 		panic(err)
 	}
