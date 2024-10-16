@@ -1974,20 +1974,69 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		//[INFO] com.example:root-pom-with-spaces:jar:1.0.0
+		//[INFO] \- org.example:example-nested:jar:3.3.3:compile
+		//[INFO]    \- org.example:example-dependency:jar:1.2.4:compile
+		//[INFO]       \- org.example:example-api:jar:2.0.0:compile
 		{
 			name:      "space at the start and/or end of the text nodes",
 			inputFile: filepath.Join("testdata", "with-spaces", "pom.xml"),
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example : root-pom-with-spaces : 1.0.0",
-					Name:         "com.example : root-pom-with-spaces ",
-					Version:      " 1.0.0",
+					ID:           "com.example:root-pom-with-spaces:1.0.0",
+					Name:         "com.example:root-pom-with-spaces",
+					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
+				{
+					ID:           "org.example:example-nested:3.3.3",
+					Name:         "org.example:example-nested",
+					Version:      "3.3.3",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 20,
+							EndLine:   24,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipIndirect,
+				},
+				// dependency version is taken from `com.example:root-pom-with-spaces` from dependencyManagement
+				// not from `com.example:example-nested` from `com.example:example-nested`
+				{
+					ID:           "org.example:example-dependency:1.2.4",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.4",
+					Relationship: ftypes.RelationshipIndirect,
+				},
 			},
-			// wantDeps: []ftypes.Dependency{
-			// },
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:root-pom-with-spaces:1.0.0",
+					DependsOn: []string{
+						"org.example:example-nested:3.3.3",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:1.2.4",
+					DependsOn: []string{
+						"org.example:example-api:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested:3.3.3",
+					DependsOn: []string{
+						"org.example:example-dependency:1.2.4",
+					},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {

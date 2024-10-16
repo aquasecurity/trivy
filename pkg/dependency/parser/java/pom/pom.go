@@ -333,7 +333,7 @@ func (props *properties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error 
 			return xerrors.Errorf("XML decode error: %w", err)
 		}
 
-		(*props)[p.XMLName.Local] = strings.TrimSpace(p.Value)
+		(*props)[p.XMLName.Local] = p.Value
 	}
 	return nil
 }
