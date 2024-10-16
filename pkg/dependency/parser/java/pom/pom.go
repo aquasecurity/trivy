@@ -23,11 +23,14 @@ type pom struct {
 	content  *pomXML
 }
 
-func (p *pom) inherit(result analysisResult) {
+func (p *pom) inherit(parent *pom) {
+	if parent == nil {
+		return
+	}
 	// Merge properties
-	p.content.Properties = utils.MergeMaps(result.properties, p.content.Properties)
+	p.content.Properties = utils.MergeMaps(parent.properties(), p.content.Properties)
 
-	art := p.artifact().Inherit(result.artifact)
+	art := p.artifact().Inherit(parent.artifact())
 
 	p.content.GroupId = art.GroupID
 	p.content.ArtifactId = art.ArtifactID
@@ -289,7 +292,7 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	}
 
 	var locations ftypes.Locations
-	if opts.lineNumber {
+	if d.StartLine != 0 && d.EndLine != 0 {
 		locations = ftypes.Locations{
 			{
 				StartLine: d.StartLine,
