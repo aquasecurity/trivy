@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-
-	_ "embed"
 )
 
 var (
@@ -24,6 +22,7 @@ func init() {
 		panic(err)
 	}
 	defer f.Close()
+
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		if strings.HasPrefix(scanner.Text(), "#") {
@@ -40,6 +39,9 @@ func init() {
 				testVMImages = value
 			}
 		}
+	}
+	if err = scanner.Err(); err != nil {
+		panic(err)
 	}
 }
 
