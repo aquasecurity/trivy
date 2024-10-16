@@ -325,7 +325,7 @@ type analysisOptions struct {
 }
 
 func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
-	if pom == nil || pom.content == nil {
+	if pom.nil() {
 		return analysisResult{}, nil
 	}
 	// Update remoteRepositories
@@ -356,7 +356,7 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 
 // resolveParent resolves its parent POMs and inherits properties, dependencies, and dependencyManagement.
 func (p *Parser) resolveParent(pom *pom) error {
-	if pom == nil || pom.content == nil {
+	if pom.nil() {
 		return nil
 	}
 

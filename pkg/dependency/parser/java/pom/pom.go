@@ -23,6 +23,10 @@ type pom struct {
 	content  *pomXML
 }
 
+func (p *pom) nil() bool {
+	return p == nil || p.content == nil
+}
+
 func (p *pom) inherit(parent *pom) {
 	if parent == nil {
 		return
@@ -43,12 +47,12 @@ func (p *pom) inherit(parent *pom) {
 	}
 }
 
-func (p pom) properties() properties {
+func (p *pom) properties() properties {
 	props := p.content.Properties
 	return utils.MergeMaps(props, p.projectProperties())
 }
 
-func (p pom) projectProperties() map[string]string {
+func (p *pom) projectProperties() map[string]string {
 	val := reflect.ValueOf(p.content).Elem()
 	props := p.listProperties(val)
 
@@ -76,7 +80,7 @@ func (p pom) projectProperties() map[string]string {
 	return projectProperties
 }
 
-func (p pom) listProperties(val reflect.Value) map[string]string {
+func (p *pom) listProperties(val reflect.Value) map[string]string {
 	props := make(map[string]string)
 	for i := 0; i < val.NumField(); i++ {
 		f := val.Type().Field(i)
@@ -109,17 +113,17 @@ func (p pom) listProperties(val reflect.Value) map[string]string {
 	return props
 }
 
-func (p pom) artifact() artifact {
+func (p *pom) artifact() artifact {
 	return newArtifact(p.content.GroupId, p.content.ArtifactId, p.content.Version, p.licenses(), p.content.Properties)
 }
 
-func (p pom) licenses() []string {
+func (p *pom) licenses() []string {
 	return slices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
 		return lic.Name, lic.Name != ""
 	}))
 }
 
-func (p pom) repositories(servers []Server) ([]string, []string) {
+func (p *pom) repositories(servers []Server) ([]string, []string) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []string
 	for _, rep := range p.content.Repositories.Repository {
