@@ -19,7 +19,7 @@ var (
 func init() {
 	_, b, _, _ := runtime.Caller(0)
 	currentDir := filepath.Dir(b)
-	f, err := os.Open(filepath.Join(currentDir, "..", "..", ".testimages"))
+	f, err := os.Open(filepath.Join(currentDir, "..", "..", "integration", "testimages.ini"))
 	if err != nil {
 		panic(err)
 	}

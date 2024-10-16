@@ -90,7 +90,7 @@ jobs:
       - name: Generate image list digest
         id: image-digest
         run: |
-          source .testimages
+          source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
@@ -148,7 +148,7 @@ jobs:
       - name: Generate image list digest
         id: image-digest
         run: |
-          source .testimages
+          source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
@@ -187,7 +187,7 @@ jobs:
       - name: Generate image list digest
         id: image-digest
         run: |
-          source .testimages
+          source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT

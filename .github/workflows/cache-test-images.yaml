@@ -27,7 +27,7 @@ jobs:
         if: github.ref_name == 'main'
         id: image-digest
         run: |
-          source .testimages
+          source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
@@ -68,7 +68,7 @@ jobs:
         if: github.ref_name == 'main'
         id: image-digest
         run: |
-          source .testimages
+          source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
