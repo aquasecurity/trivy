@@ -69,7 +69,7 @@ jobs:
         id: image-digest
         run: |
           source .testimages
-          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
