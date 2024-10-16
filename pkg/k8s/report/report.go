@@ -57,9 +57,9 @@ type Resource struct {
 	Namespace string `json:",omitempty"`
 	Kind      string
 	Name      string
-	Metadata  types.Metadata `json:",omitempty"`
-	Results   types.Results  `json:",omitempty"`
-	Error     string         `json:",omitempty"`
+	Metadata  []types.Metadata `json:",omitempty"`
+	Results   types.Results    `json:",omitempty"`
+	Error     string           `json:",omitempty"`
 
 	// original report
 	Report types.Report `json:"-"`
@@ -99,11 +99,15 @@ func (r Report) consolidate() ConsolidatedReport {
 		key := v.fullname()
 
 		if res, ok := index[key]; ok {
+			// Combine metadata
+			metadata := lo.UniqBy(append(res.Metadata, v.Metadata...), func(x types.Metadata) string {
+				return x.ImageID
+			})
 			index[key] = Resource{
 				Namespace: res.Namespace,
 				Kind:      res.Kind,
 				Name:      res.Name,
-				Metadata:  res.Metadata,
+				Metadata:  metadata,
 				Results:   append(res.Results, v.Results...),
 				Error:     res.Error,
 			}
@@ -214,7 +218,7 @@ func infraResource(misConfig Resource) bool {
 func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
 	r := createK8sResource(artifact, report.Results)
 
-	r.Metadata = report.Metadata
+	r.Metadata = []types.Metadata{report.Metadata}
 	r.Report = report
 	// if there was any error during the scan
 	if err != nil {
@@ -244,7 +248,7 @@ func createK8sResource(artifact *artifacts.Artifact, scanResults types.Results) 
 		Namespace: artifact.Namespace,
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
-		Metadata:  types.Metadata{},
+		Metadata:  []types.Metadata{},
 		Results:   results,
 		Report: types.Report{
 			Results:      results,
