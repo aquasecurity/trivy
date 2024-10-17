@@ -44,7 +44,7 @@ func main() {
 
 	newBranch := fmt.Sprintf("ci/helm-chart/bump-trivy-to-%s", trivyVersion)
 	title := fmt.Sprintf("\"ci(helm): bump Trivy version to %s\"", trivyVersion)
-	description := fmt.Sprintf("\"# Description\n\nThis PR bumps Trivy up to the %s version for the Helm chart.\"", trivyVersion)
+	description := fmt.Sprintf("\"# Description\\n\\nThis PR bumps Trivy up to the %s version for the Helm chart.\"", trivyVersion)
 
 	cmds := [][]string{
 		[]string{"sed", "-i", "-e", fmt.Sprintf("s/appVersion: %s/appVersion: %s/g", currentAppVersion, trivyVersion), chartFile},
