@@ -100,11 +100,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	// Main module
 	if m := modFileParsed.Module; m != nil {
-		ver := strings.TrimPrefix(m.Mod.Version, "v")
 		pkgs[m.Mod.Path] = ftypes.Package{
-			ID:                 packageID(m.Mod.Path, ver),
+			ID:                 packageID(m.Mod.Path, m.Mod.Version),
 			Name:               m.Mod.Path,
-			Version:            ver,
+			Version:            m.Mod.Version,
 			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
 			Relationship:       ftypes.RelationshipRoot,
 		}
@@ -116,11 +115,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		if skipIndirect && require.Indirect {
 			continue
 		}
-		ver := strings.TrimPrefix(require.Mod.Version, "v")
 		pkgs[require.Mod.Path] = ftypes.Package{
-			ID:                 packageID(require.Mod.Path, ver),
+			ID:                 packageID(require.Mod.Path, require.Mod.Version),
 			Name:               require.Mod.Path,
-			Version:            ver,
+			Version:            require.Mod.Version,
 			Relationship:       lo.Ternary(require.Indirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			ExternalReferences: p.GetExternalRefs(require.Mod.Path),
 		}
