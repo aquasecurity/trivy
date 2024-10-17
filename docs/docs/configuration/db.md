@@ -1,4 +1,8 @@
-# DB
+# Trivy Databases
+
+Trivy relies on so called databases to function with up-to-date security information. Trivy databases include: vulnerabilities, Java packages, and misconfiguration checks. These databases are being pulled by Trivy automatically when needed, so normally you don’t notice it.
+
+## Vulnerability Databases
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -9,8 +13,6 @@
 
 The vulnerability database and the Java index database are needed only for vulnerability scanning.
 See [here](../scanner/vulnerability.md) for the detail.
-
-## Vulnerability Database
 
 ### Skip update of vulnerability DB
 If you want to skip downloading the vulnerability database, use the `--skip-db-update` option.
@@ -48,10 +50,16 @@ $ trivy image --download-db-only
 ```
 
 ### DB Repository
-`Trivy` could also download the vulnerability database from an external OCI registry by using `--db-repository` option.
+Trivy could also download the vulnerability database from an alternative OCI registry by using `--db-repository` option.
 
 ```
 $ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
+```
+
+The `--db-repository` flag accepts multiple values, which can be used to specify multiple alternative repository locations. In case of failure, Trivy will fall back to alternative registries in the order specified. An attempt to download from the next repository is only made if a temporary error is received (e.g. status 429 or 5xx).
+
+```
+$ trivy image --db-repository ,my.registry.local/trivy-db,registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-d
 ```
 
 The media type of the OCI layer must be `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip`.
@@ -99,7 +107,7 @@ Skipping an update can be done by using the `--skip-java-db-update` option, whil
 !!! Note
     In [Client/Server](../references/modes/client-server.md) mode, `Java index DB` is currently only used on the `client` side.
 
-Downloading the Java index DB from an external OCI registry can be done by using the `--java-db-repository` option.
+Downloading the Java index DB from an external OCI registry can be done by using the `--java-db-repository` option, which also accepts multiple options.
 
 ```
 $ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
@@ -113,8 +121,51 @@ You can reference the OCI manifest of [trivy-java-db].
 
     `java-db-registry:latest` => `java-db-registry:latest`, but `java-db-registry` => `java-db-registry:1`.
 
+## Checks Database
+
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |           |
+| Misconfiguration |     ✓     |
+|      Secret      |           |
+|     License      |           |
+
+The Checks database is needed only for misconfiguration (IaC) scanning.
+See [here](../scanner/misconfiguration/check/builtin.md) for the detail.
+
+Trivy has an extensive library of misconfiguration checks that is maintained at <https://github.com/aquasecurity/trivy-checks>.  
+
+### Skip update of Checks DB
+If you want to skip downloading the checks database, use the `--skip-check-update` option.
+
+```
+$ trivy config --skip-check-update ./myapp
+```
+
+### DB Repository
+Trivy could also download the vulnerability database from an alternative OCI registry by using `--checks-bundle-repository` option.
+
+```
+$ trivy config --checks-bundle-repository my.registry.local/trivy-checks ./myapp
+```
+
+Unlike vulnerability databases registry locaiton options, the checks db registry location option does not support fallback through multiple options.
+
 ## Remove DBs
-"trivy clean" command removes caches and databases.
+
+`trivy clean` command removes caches and databases.
+You can select which cache component to remove:
+
+option | description
+--- | ---
+`-a`/`--all` | remove all caches
+`--checks-bundle` | remove checks bundle
+`--java-db` | remove Java database
+`--scan-cache` | remove scan cache (container and VM image analysis results)
+`--vex-repo` | remove VEX repositories
+`--vuln-db` | remove vulnerability database
+
+Example:
 
 ```
 $ trivy clean --vuln-db --java-db
