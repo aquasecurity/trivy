@@ -10,6 +10,10 @@ import (
 )
 
 func (p *Property) IsConvertableTo(conversionType cftypes.CfType) bool {
+	if p.IsNil() {
+		return false
+	}
+
 	switch conversionType {
 	case cftypes.Int:
 		return p.isConvertableToInt()
@@ -62,6 +66,9 @@ func (p *Property) isConvertableToInt() bool {
 }
 
 func (p *Property) ConvertTo(conversionType cftypes.CfType) *Property {
+	if p.IsNil() {
+		return nil
+	}
 
 	if p.Type() == conversionType {
 		return p
