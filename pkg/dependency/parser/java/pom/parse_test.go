@@ -1690,9 +1690,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		// [INFO] com.example:child-depManagement-in-parent:jar:1.0.0
-		// [INFO] +- org.example:example-api:jar:1.0.1:compile
 		// [INFO] +- org.example:example-api2:jar:1.0.2:runtime
-		// [INFO] \- org.example:example-api3:jar:4.0.3:compile
+		// [INFO] +- org.example:example-api3:jar:4.0.3:compile
+		// [INFO] \- org.example:example-api:jar:1.0.1:compile
 		{
 			name:      "dependency from parent uses version from child(scanned) pom depManagement",
 			inputFile: filepath.Join("testdata", "use-child-dep-management-in-parent", "pom.xml"),
