@@ -16,6 +16,32 @@ import (
 
 var r = regexp.MustCompile("\\\\|/|:|\\*|\\?|<|>")
 
+func generateTempFileByArtifact(artifact *artifacts.Artifact, tempFolder string) (string, error) {
+	filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
+	if runtime.GOOS == "windows" {
+		// removes characters not permitted in file/directory names on Windows
+		filename = filenameWindowsFriendly(filename)
+	}
+	file, err := os.CreateTemp(tempFolder, filename)
+	if err != nil {
+		return "", xerrors.Errorf("failed to create temporary file: %w", err)
+	}
+	shouldRemove := false
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Error("Failed to close temp file", log.FilePath(file.Name()), log.Err(err))
+		}
+		if shouldRemove {
+			removeFile(file.Name())
+		}
+	}()
+	if err := yaml.NewEncoder(file).Encode(artifact.RawResource); err != nil {
+		shouldRemove = true
+		return "", xerrors.Errorf("failed to encode artifact: %w", err)
+	}
+	return filepath.Base(file.Name()), nil
+}
+
 // generateTempFolder creates a folder with yaml files generated from kubernetes artifacts
 // returns a folder name, a map for mapping a temp target file to k8s artifact and error
 func generateTempFolder(arts []*artifacts.Artifact) (string, map[string]*artifacts.Artifact, error) {
@@ -26,25 +52,12 @@ func generateTempFolder(arts []*artifacts.Artifact) (string, map[string]*artifac
 
 	m := make(map[string]*artifacts.Artifact)
 	for _, artifact := range arts {
-		filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
-		if runtime.GOOS == "windows" {
-			// removes characters not permitted in file/directory names on Windows
-			filename = filenameWindowsFriendly(filename)
-		}
-		file, err := os.CreateTemp(tempFolder, filename)
+		filename, err := generateTempFileByArtifact(artifact, tempFolder)
 		if err != nil {
-			log.Error("Failed to create temp file", log.String("path", filename), log.Err(err))
+			log.Error("Failed to create temp file", log.FilePath(filename), log.Err(err))
 			continue
 		}
-		if err := yaml.NewEncoder(file).Encode(artifact.RawResource); err != nil {
-			removeFile(filename)
-			log.Error("Failed marshaling resource to a temp file", log.String("path", filename), log.Err(err))
-			continue
-		}
-		if err := file.Close(); err != nil {
-			log.Error("Failed to close temp file", log.String("path", file.Name()), log.Err(err))
-		}
-		m[filepath.Base(file.Name())] = artifact
+		m[filename] = artifact
 	}
 	return tempFolder, m, nil
 }
