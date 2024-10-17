@@ -78,7 +78,6 @@ nav:
               - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
-              - Conda: docs/coverage/os/conda.md
               - Debian: docs/coverage/os/debian.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
@@ -88,7 +87,6 @@ nav:
               - Ubuntu: docs/coverage/os/ubuntu.md
               - Wolfi: docs/coverage/os/wolfi.md
               - Google Distroless (Images): docs/coverage/os/google-distroless.md
-              - Bitnami (Images): docs/coverage/os/bitnami.md
           - Language:
               - Overview: docs/coverage/language/index.md
               - C/C++: docs/coverage/language/c.md
@@ -112,6 +110,10 @@ nav:
               - Helm: docs/coverage/iac/helm.md
               - Kubernetes: docs/coverage/iac/kubernetes.md
               - Terraform: docs/coverage/iac/terraform.md
+          - Others:
+              - Bitnami Images: docs/coverage/others/bitnami.md
+              - Conda: docs/coverage/others/conda.md
+              - RPM Archives: docs/coverage/others/rpm.md
           - Kubernetes: docs/coverage/kubernetes.md
       - Configuration:
           - Overview: docs/configuration/index.md
@@ -176,6 +178,10 @@ nav:
                       - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
                       - Plugin Upgrade: docs/references/configuration/cli/trivy_plugin_upgrade.md
                       - Plugin Search: docs/references/configuration/cli/trivy_plugin_search.md
+                  - Registry:
+                        - Registry: docs/references/configuration/cli/trivy_registry.md
+                        - Registry Login: docs/references/configuration/cli/trivy_registry_login.md
+                        - Registry Logout: docs/references/configuration/cli/trivy_registry_logout.md
                   - Repository: docs/references/configuration/cli/trivy_repository.md
                   - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
                   - SBOM: docs/references/configuration/cli/trivy_sbom.md

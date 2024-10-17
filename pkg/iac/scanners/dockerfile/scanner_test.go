@@ -1,4 +1,4 @@
-package dockerfile
+package dockerfile_test
 
 import (
 	"bytes"
@@ -10,9 +10,10 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
 )
 
 const DS006PolicyWithDockerfileSchema = `# METADATA
@@ -219,7 +220,7 @@ USER root
 		"/rules/rule.rego": DS006LegacyWithOldStyleMetadata,
 	})
 
-	scanner := NewScanner(options.ScannerWithPolicyDirs("rules"))
+	scanner := dockerfile.NewScanner(rego.WithPolicyDirs("rules"))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -563,11 +564,11 @@ COPY --from=dep /binary /`
 
 			var traceBuf bytes.Buffer
 
-			scanner := NewScanner(
-				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithEmbeddedLibraries(true),
-				options.ScannerWithTrace(&traceBuf),
-				options.ScannerWithRegoErrorLimits(0),
+			scanner := dockerfile.NewScanner(
+				rego.WithPolicyDirs("rules"),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithTrace(&traceBuf),
+				rego.WithRegoErrorLimits(0),
 			)
 
 			results, err := scanner.ScanFS(context.TODO(), fsys, "code")

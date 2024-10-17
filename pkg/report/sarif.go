@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"net/url"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -61,9 +63,9 @@ type sarifData struct {
 	helpMarkdown     string
 	resourceClass    types.ResultClass
 	severity         string
-	url              string
+	url              *url.URL
 	resultIndex      int
-	artifactLocation string
+	artifactLocation *url.URL
 	locationMessage  string
 	message          string
 	cvssScore        string
@@ -97,8 +99,8 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			"precision":         "very-high",
 			"security-severity": data.cvssScore,
 		})
-	if data.url != "" {
-		r.WithHelpURI(data.url)
+	if data.url != nil && data.url.String() != "" {
+		r.WithHelpURI(data.url.String())
 	}
 }
 
@@ -109,7 +111,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations(toSarifLocations(data.locations, data.artifactLocation, data.locationMessage))
+		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
 	sw.run.AddResult(result)
 }
 
@@ -163,9 +165,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
 				cvssScore:        getCVSSScore(vuln),
-				url:              vuln.PrimaryURL,
+				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
-				artifactLocation: path,
+				artifactLocation: toUri(path),
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
 				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
@@ -186,9 +188,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  misconf.ID,
 				severity:         misconf.Severity,
 				cvssScore:        severityToScore(misconf.Severity),
-				url:              misconf.PrimaryURL,
+				url:              toUri(misconf.PrimaryURL),
 				resourceClass:    res.Class,
-				artifactLocation: locationURI,
+				artifactLocation: toUri(locationURI),
 				locationMessage:  locationURI,
 				locations: []location{
 					{
@@ -213,9 +215,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  secret.RuleID,
 				severity:         secret.Severity,
 				cvssScore:        severityToScore(secret.Severity),
-				url:              builtinRulesUrl,
+				url:              toUri(builtinRulesUrl),
 				resourceClass:    res.Class,
-				artifactLocation: target,
+				artifactLocation: toUri(target),
 				locationMessage:  target,
 				locations: []location{
 					{
@@ -242,9 +244,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  id,
 				severity:         license.Severity,
 				cvssScore:        severityToScore(license.Severity),
-				url:              license.Link,
+				url:              toUri(license.Link),
 				resourceClass:    res.Class,
-				artifactLocation: target,
+				artifactLocation: toUri(target),
 				resultIndex:      getRuleIndex(id, ruleIndexes),
 				shortDescription: desc,
 				fullDescription:  desc,
@@ -346,6 +348,15 @@ func ToPathUri(input string, resultClass types.ResultClass) string {
 
 func clearURI(s string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(s, "\\", "/"), "git::https:/", "")
+}
+
+func toUri(str string) *url.URL {
+	uri, err := url.Parse(str)
+	if err != nil {
+		logger := log.WithPrefix("sarif")
+		logger.Error("Unable to parse URI", log.String("URI", str), log.Err(err))
+	}
+	return uri
 }
 
 func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {

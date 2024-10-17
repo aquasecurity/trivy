@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
@@ -956,11 +957,11 @@ deny[res] {
 }`
 
 	localScanner := New(
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(true),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(true),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithPolicyNamespaces("user"),
-		options.ScannerWithPolicyReader(strings.NewReader(check)),
+		rego.WithPolicyNamespaces("user"),
+		rego.WithPolicyReader(strings.NewReader(check)),
 		ScannerWithDownloadsAllowed(false),
 		ScannerWithSkipCachedModules(true),
 	)

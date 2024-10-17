@@ -75,7 +75,7 @@ func (s *Scanner) loadEmbedded() error {
 	return nil
 }
 
-func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies bool, srcFS fs.FS, paths []string, readers []io.Reader) error {
+func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 
 	if s.policies == nil {
 		s.policies = make(map[string]*ast.Module)
@@ -90,19 +90,19 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		return err
 	}
 
-	if enableEmbeddedPolicies {
+	if s.includeEmbeddedPolicies {
 		s.policies = lo.Assign(s.policies, s.embeddedChecks)
 	}
 
-	if enableEmbeddedLibraries {
+	if s.includeEmbeddedLibraries {
 		s.policies = lo.Assign(s.policies, s.embeddedLibs)
 	}
 
 	var err error
-	if len(paths) > 0 {
-		loaded, err := LoadPoliciesFromDirs(srcFS, paths...)
+	if len(s.policyDirs) > 0 {
+		loaded, err := LoadPoliciesFromDirs(srcFS, s.policyDirs...)
 		if err != nil {
-			return fmt.Errorf("failed to load rego checks from %s: %w", paths, err)
+			return fmt.Errorf("failed to load rego checks from %s: %w", s.policyDirs, err)
 		}
 		for name, policy := range loaded {
 			s.policies[name] = policy
@@ -110,8 +110,8 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		s.logger.Debug("Checks from disk are loaded", log.Int("count", len(loaded)))
 	}
 
-	if len(readers) > 0 {
-		loaded, err := s.loadPoliciesFromReaders(readers)
+	if len(s.policyReaders) > 0 {
+		loaded, err := s.loadPoliciesFromReaders(s.policyReaders)
 		if err != nil {
 			return fmt.Errorf("failed to load rego checks from reader(s): %w", err)
 		}
@@ -143,7 +143,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	}
 	s.store = store
 
-	return s.compilePolicies(srcFS, paths)
+	return s.compilePolicies(srcFS, s.policyDirs)
 }
 
 func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
@@ -295,15 +295,24 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 			continue
 		}
 
+		if IsBuiltinNamespace(getModuleNamespace(module)) {
+			if _, disabled := s.disabledCheckIDs[meta.ID]; disabled { // ignore builtin disabled checks
+				continue
+			}
+		}
+
 		if len(meta.InputOptions.Selectors) == 0 {
-			s.logger.Warn(
-				"Module has no input selectors - it will be loaded for all inputs!",
-				log.FilePath(module.Package.Location.File),
-				log.String("module", name),
-			)
+			if !meta.Library {
+				s.logger.Warn(
+					"Module has no input selectors - it will be loaded for all inputs!",
+					log.FilePath(module.Package.Location.File),
+					log.String("module", name),
+				)
+			}
 			filtered[name] = module
 			continue
 		}
+
 		for _, selector := range meta.InputOptions.Selectors {
 			if selector.Type == string(s.sourceType) {
 				filtered[name] = module

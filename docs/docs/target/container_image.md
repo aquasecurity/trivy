@@ -154,6 +154,8 @@ See https://avd.aquasec.com/misconfig/ds026
 !!! tip
     You can see how each layer is created with `docker history`.
 
+The [AVD-DS-0016](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/) check is disabled for this scan type, see [issue](https://github.com/aquasecurity/trivy/issues/7368) for details.
+
 ### Secrets
 Trivy detects secrets on the configuration of container images.
 The image config is converted into JSON and Trivy scans the file for secrets.
@@ -297,7 +299,7 @@ Trivy supports registries that comply with the following specifications.
 - [Docker Registry HTTP API V2](https://docs.docker.com/registry/spec/api/)
 - [OCI Distribution Specification](https://github.com/opencontainers/distribution-spec)
 
-You can configure credentials with `docker login`.
+You can configure credentials with `trivy registry login`.
 See [here](../advanced/private-registries/index.md) for the detail.
 
 ### Tar Files

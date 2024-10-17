@@ -32,6 +32,7 @@ const (
 	TypeDpkg        Type = "dpkg"
 	TypeDpkgLicense Type = "dpkg-license" // For analyzing licenses
 	TypeRpm         Type = "rpm"
+	TypeRpmArchive  Type = "rpm-archive"
 	TypeRpmqa       Type = "rpmqa"
 
 	// OS Package Repository
@@ -75,10 +76,11 @@ const (
 	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg Type = "python-pkg"
-	TypePip       Type = "pip"
-	TypePipenv    Type = "pipenv"
-	TypePoetry    Type = "poetry"
+	TypePythonPkg    Type = "python-pkg"
+	TypePythonPkgEgg Type = "python-egg"
+	TypePip          Type = "pip"
+	TypePipenv       Type = "pipenv"
+	TypePoetry       Type = "poetry"
 
 	// Go
 	TypeGoBinary Type = "gobinary"

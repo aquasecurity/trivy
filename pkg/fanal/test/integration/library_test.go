@@ -7,20 +7,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"sort"
-	"strings"
 	"testing"
 
-	dimage "github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/client"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -29,6 +22,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	_ "modernc.org/sqlite"
 )
 
@@ -36,7 +32,7 @@ var update = flag.Bool("update", false, "update golden files")
 
 type testCase struct {
 	name                string
-	remoteImageName     string
+	imageTag            string
 	imageFile           string
 	wantOS              types.OS
 	wantPkgsFromCmds    string
@@ -45,63 +41,63 @@ type testCase struct {
 
 var tests = []testCase{
 	{
-		name:            "happy path, alpine:3.10",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-		imageFile:       "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
+		name:      "happy path, alpine:3.10",
+		imageTag:  "alpine-310",
+		imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 		wantOS: types.OS{
 			Name:   "3.10.2",
 			Family: "alpine",
 		},
 	},
 	{
-		name:            "happy path, amazonlinux:2",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:amazon-2",
-		imageFile:       "../../../../integration/testdata/fixtures/images/amazon-2.tar.gz",
+		name:      "happy path, amazonlinux:2",
+		imageTag:  "amazon-2",
+		imageFile: "../../../../integration/testdata/fixtures/images/amazon-2.tar.gz",
 		wantOS: types.OS{
 			Name:   "2 (Karoo)",
 			Family: "amazon",
 		},
 	},
 	{
-		name:            "happy path, debian:buster",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
-		imageFile:       "../../../../integration/testdata/fixtures/images/debian-buster.tar.gz",
+		name:      "happy path, debian:buster",
+		imageTag:  "debian-buster",
+		imageFile: "../../../../integration/testdata/fixtures/images/debian-buster.tar.gz",
 		wantOS: types.OS{
 			Name:   "10.1",
 			Family: "debian",
 		},
 	},
 	{
-		name:            "happy path, photon:3.0",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:photon-30",
-		imageFile:       "../../../../integration/testdata/fixtures/images/photon-30.tar.gz",
+		name:      "happy path, photon:3.0",
+		imageTag:  "photon-30",
+		imageFile: "../../../../integration/testdata/fixtures/images/photon-30.tar.gz",
 		wantOS: types.OS{
 			Name:   "3.0",
 			Family: "photon",
 		},
 	},
 	{
-		name:            "happy path, registry.redhat.io/ubi7",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:ubi-7",
-		imageFile:       "../../../../integration/testdata/fixtures/images/ubi-7.tar.gz",
+		name:      "happy path, registry.redhat.io/ubi7",
+		imageTag:  "ubi-7",
+		imageFile: "../../../../integration/testdata/fixtures/images/ubi-7.tar.gz",
 		wantOS: types.OS{
 			Name:   "7.7",
 			Family: "redhat",
 		},
 	},
 	{
-		name:            "happy path, opensuse leap 15.1",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151",
-		imageFile:       "../../../../integration/testdata/fixtures/images/opensuse-leap-151.tar.gz",
+		name:      "happy path, opensuse leap 15.1",
+		imageTag:  "opensuse-leap-151",
+		imageFile: "../../../../integration/testdata/fixtures/images/opensuse-leap-151.tar.gz",
 		wantOS: types.OS{
 			Name:   "15.1",
 			Family: "opensuse.leap",
 		},
 	},
 	{
-		name:            "happy path, opensuse tumbleweed",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:opensuse-tumbleweed",
-		imageFile:       "../../../../integration/testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
+		name:      "happy path, opensuse tumbleweed",
+		imageTag:  "opensuse-tumbleweed",
+		imageFile: "../../../../integration/testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
 		wantOS: types.OS{
 			Name:   "20240607",
 			Family: "opensuse.tumbleweed",
@@ -109,27 +105,27 @@ var tests = []testCase{
 	},
 	{
 		// from registry.suse.com/suse/sle15:15.3.17.8.16
-		name:            "happy path, suse 15.3 (NDB)",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:suse-15.3_ndb",
-		imageFile:       "../../../../integration/testdata/fixtures/images/suse-15.3_ndb.tar.gz",
+		name:      "happy path, suse 15.3 (NDB)",
+		imageTag:  "suse-15.3_ndb",
+		imageFile: "../../../../integration/testdata/fixtures/images/suse-15.3_ndb.tar.gz",
 		wantOS: types.OS{
 			Name:   "15.3",
 			Family: "suse linux enterprise server",
 		},
 	},
 	{
-		name:            "happy path, Fedora 35",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:fedora-35",
-		imageFile:       "../../../../integration/testdata/fixtures/images/fedora-35.tar.gz",
+		name:      "happy path, Fedora 35",
+		imageTag:  "fedora-35",
+		imageFile: "../../../../integration/testdata/fixtures/images/fedora-35.tar.gz",
 		wantOS: types.OS{
 			Name:   "35",
 			Family: "fedora",
 		},
 	},
 	{
-		name:            "happy path, vulnimage with lock files",
-		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
-		imageFile:       "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
+		name:      "happy path, vulnimage with lock files",
+		imageTag:  "vulnimage",
+		imageFile: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
 		wantOS: types.OS{
 			Name:   "3.7.1",
 			Family: "alpine",
@@ -139,60 +135,14 @@ var tests = []testCase{
 	},
 }
 
-func TestFanal_Library_DockerLessMode(t *testing.T) {
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			ctx := context.Background()
-			d := t.TempDir()
-
-			c, err := cache.NewFSCache(d)
-			require.NoError(t, err, tt.name)
-
-			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-			require.NoError(t, err)
-
-			// remove existing Image if any
-			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dimage.RemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
-
-			// Enable only registry scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.ImageOptions{
-				ImageSources: types.ImageSources{types.RemoteImageSource},
-			})
-			require.NoError(t, err)
-			defer cleanup()
-
-			// don't scan licenses in the test - in parallel it will fail
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{
-				DisabledAnalyzers: []analyzer.Type{
-					analyzer.TypeExecutable,
-					analyzer.TypeLicenseFile,
-				},
-			})
-			require.NoError(t, err)
-
-			applier := applier.NewApplier(c)
-
-			// run tests twice, one without cache and with cache
-			for i := 1; i <= 2; i++ {
-				runChecks(t, ctx, ar, applier, tt)
-			}
-
-			// clear Cache
-			require.NoError(t, c.Clear())
-		})
-	}
-}
-
 func TestFanal_Library_DockerMode(t *testing.T) {
 	// Disable updating golden files because local images don't have compressed layer digests,
 	// and updating golden files in this function results in incomplete files.
 	if *update {
 		t.Skipf("This test creates wrong golden file")
 	}
+
+	cli := testutil.NewDockerClient(t)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
@@ -201,20 +151,10 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			c, err := cache.NewFSCache(d)
 			require.NoError(t, err)
 
-			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-			require.NoError(t, err, tt.name)
-
-			testfile, err := os.Open(tt.imageFile)
-			require.NoError(t, err)
-
-			// load image into docker engine
-			resp, err := cli.ImageLoad(ctx, testfile, true)
-			require.NoError(t, err, tt.name)
-			_, err = io.Copy(io.Discard, resp.Body)
-			require.NoError(t, err, tt.name)
+			loadedImage := cli.ImageLoad(t, ctx, tt.imageFile)
 
 			// Enable only dockerd scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.ImageOptions{
+			img, cleanup, err := image.NewContainerImage(ctx, loadedImage, types.ImageOptions{
 				ImageSources: types.ImageSources{types.DockerImageSource},
 			})
 			require.NoError(t, err, tt.name)
@@ -238,11 +178,6 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 
 			// clear Cache
 			require.NoError(t, c.Clear(), tt.name)
-
-			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dimage.RemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
 		})
 	}
 }
@@ -297,8 +232,7 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	// Sort OS packages for consistency
 	sort.Sort(detail.Packages)
 
-	splitted := strings.Split(tc.remoteImageName, ":")
-	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", splitted[len(splitted)-1])
+	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tc.imageTag)
 
 	if *update {
 		b, err := json.MarshalIndent(detail.Packages, "", "  ")

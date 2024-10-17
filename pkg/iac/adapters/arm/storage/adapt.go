@@ -62,6 +62,12 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 			MinimumTLSVersion: resource.Properties.GetMapValue("minimumTlsVersion").AsStringValue("", resource.Properties.GetMetadata()),
 			Queues:            queues,
 		}
+
+		publicNetworkAccess := resource.Properties.GetMapValue("publicNetworkAccess")
+		account.PublicNetworkAccess = types.Bool(
+			publicNetworkAccess.AsStringValue("Enabled", publicNetworkAccess.Metadata).EqualTo("Enabled"),
+			publicNetworkAccess.Metadata,
+		)
 		accounts = append(accounts, account)
 	}
 	return accounts
