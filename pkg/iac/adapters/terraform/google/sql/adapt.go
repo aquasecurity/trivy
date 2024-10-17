@@ -52,6 +52,7 @@ func adaptInstance(resource *terraform.Block) sql.DatabaseInstance {
 			IPConfiguration: sql.IPConfiguration{
 				Metadata:           resource.GetMetadata(),
 				RequireTLS:         iacTypes.BoolDefault(false, resource.GetMetadata()),
+				SSLMode:            iacTypes.String("", resource.GetMetadata()),
 				EnableIPv4:         iacTypes.BoolDefault(true, resource.GetMetadata()),
 				AuthorizedNetworks: nil,
 			},
@@ -125,12 +126,6 @@ func adaptIPConfig(resource *terraform.Block) sql.IPConfiguration {
 		CIDR iacTypes.StringValue
 	}
 
-	tlsRequiredAttr := resource.GetAttribute("require_ssl")
-	tlsRequiredVal := tlsRequiredAttr.AsBoolValueOrDefault(false, resource)
-
-	ipv4enabledAttr := resource.GetAttribute("ipv4_enabled")
-	ipv4enabledVal := ipv4enabledAttr.AsBoolValueOrDefault(true, resource)
-
 	authNetworksBlocks := resource.GetBlocks("authorized_networks")
 	for _, authBlock := range authNetworksBlocks {
 		nameVal := authBlock.GetAttribute("name").AsStringValueOrDefault("", authBlock)
@@ -147,8 +142,9 @@ func adaptIPConfig(resource *terraform.Block) sql.IPConfiguration {
 
 	return sql.IPConfiguration{
 		Metadata:           resource.GetMetadata(),
-		RequireTLS:         tlsRequiredVal,
-		EnableIPv4:         ipv4enabledVal,
+		RequireTLS:         resource.GetAttribute("require_ssl").AsBoolValueOrDefault(false, resource),
+		SSLMode:            resource.GetAttribute("ssl_mode").AsStringValueOrDefault("", resource),
+		EnableIPv4:         resource.GetAttribute("ipv4_enabled").AsBoolValueOrDefault(true, resource),
 		AuthorizedNetworks: authorizedNetworks,
 	}
 }
