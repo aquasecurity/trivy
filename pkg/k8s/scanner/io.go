@@ -3,6 +3,7 @@ package scanner
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 
@@ -15,29 +16,56 @@ import (
 
 var r = regexp.MustCompile("\\\\|/|:|\\*|\\?|<|>")
 
-func createTempFile(artifact *artifacts.Artifact) (string, error) {
+func generateTempFileByArtifact(artifact *artifacts.Artifact, tempFolder string) (string, error) {
 	filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
-
 	if runtime.GOOS == "windows" {
 		// removes characters not permitted in file/directory names on Windows
 		filename = filenameWindowsFriendly(filename)
 	}
-	file, err := os.CreateTemp("", filename)
+	file, err := os.CreateTemp(tempFolder, filename)
 	if err != nil {
-		return "", xerrors.Errorf("creating tmp file error: %w", err)
+		return "", xerrors.Errorf("failed to create temporary file: %w", err)
 	}
+	shouldRemove := false
 	defer func() {
 		if err := file.Close(); err != nil {
-			log.Error("Failed to close temp file", log.String("path", file.Name()), log.Err(err))
+			log.Error("Failed to close temp file", log.FilePath(file.Name()), log.Err(err))
+		}
+		if shouldRemove {
+			removeFile(file.Name())
 		}
 	}()
-
 	if err := yaml.NewEncoder(file).Encode(artifact.RawResource); err != nil {
-		removeFile(filename)
-		return "", xerrors.Errorf("marshaling resource error: %w", err)
+		shouldRemove = true
+		return "", xerrors.Errorf("failed to encode artifact: %w", err)
+	}
+	return filepath.Base(file.Name()), nil
+}
+
+// generateTempFolder creates a folder with yaml files generated from kubernetes artifacts
+// returns a folder name, a map for mapping a temp target file to k8s artifact and error
+func generateTempFolder(arts []*artifacts.Artifact) (string, map[string]*artifacts.Artifact, error) {
+	tempFolder, err := os.MkdirTemp("", "trivyk8s*")
+	if err != nil {
+		return "", nil, xerrors.Errorf("failed to create temp folder: %w", err)
 	}
 
-	return file.Name(), nil
+	m := make(map[string]*artifacts.Artifact)
+	for _, artifact := range arts {
+		filename, err := generateTempFileByArtifact(artifact, tempFolder)
+		if err != nil {
+			log.Error("Failed to create temp file", log.FilePath(filename), log.Err(err))
+			continue
+		}
+		m[filename] = artifact
+	}
+	return tempFolder, m, nil
+}
+
+func removeFolder(foldername string) {
+	if err := os.RemoveAll(foldername); err != nil {
+		log.Error("Failed to remove temp folder", log.String("path", foldername), log.Err(err))
+	}
 }
 
 func removeFile(filename string) {
