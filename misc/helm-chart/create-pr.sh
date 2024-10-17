@@ -39,4 +39,4 @@ echo "$PR_DESCRIPTION"
 
 # Create a new pull request
 echo "Creating pull request..."
-gh pr create --base main --head "$NEW_BRANCH" --title "$TITLE" --body "$PR_DESCRIPTION" --repo "$GITHUB_REPOSITORY" --label "lifecycle/active"
+gh pr create --base main --head "$NEW_BRANCH" --title "$TITLE" --body "$PR_DESCRIPTION" --repo "$GITHUB_REPOSITORY"
