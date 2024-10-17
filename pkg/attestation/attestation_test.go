@@ -9,7 +9,6 @@ import (
 	slsa "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/attestation"
 )
 
@@ -28,7 +27,7 @@ func TestStatement_UnmarshalJSON(t *testing.T) {
 					PredicateType: "cosign.sigstore.dev/attestation/v1",
 					Subject: []in_toto.Subject{
 						{
-							Name: testutil.ImageName("", "", ""),
+							Name: "ghcr.io/aquasecurity/trivy-test-images", // Defined in the attestations.json file
 							Digest: slsa.DigestSet{
 								"sha256": "72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb",
 							},
