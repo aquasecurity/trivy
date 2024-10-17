@@ -131,8 +131,8 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 						Privileged: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						Environment: []ecs.EnvVar{
 							{
-								Name:  "ENVIRONMENT",
-								Value: "development",
+								Name:  iacTypes.StringTest("ENVIRONMENT"),
+								Value: iacTypes.StringTest("development"),
 							},
 						},
 					},
