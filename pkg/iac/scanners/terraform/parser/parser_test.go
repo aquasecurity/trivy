@@ -1578,6 +1578,17 @@ resource "test_resource" "test" {
 }`,
 			expected: []any{},
 		},
+		{
+			name: "no for-each attribute",
+			src: `resource "test_resource" "test" {
+  dynamic "foo" {
+    content {
+      bar = foo.value
+	}
+  }
+}`,
+			expected: []any{},
+		},
 	}
 
 	for _, tt := range tests {
