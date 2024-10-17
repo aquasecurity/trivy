@@ -13,19 +13,20 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	types "github.com/aquasecurity/trivy/pkg/iac/types/rules"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
+	ruleTypes "github.com/aquasecurity/trivy/pkg/iac/types/rules"
 )
 
 type Pool struct {
 	size     int
 	modules  terraform.Modules
 	state    *state.State
-	rules    []types.RegisteredRule
+	rules    []ruleTypes.RegisteredRule
 	rs       *rego.Scanner
 	regoOnly bool
 }
 
-func NewPool(size int, rules []types.RegisteredRule, modules terraform.Modules, st *state.State, regoScanner *rego.Scanner, regoOnly bool) *Pool {
+func NewPool(size int, rules []ruleTypes.RegisteredRule, modules terraform.Modules, st *state.State, regoScanner *rego.Scanner, regoOnly bool) *Pool {
 	return &Pool{
 		size:     size,
 		rules:    rules,
@@ -100,12 +101,12 @@ type Job interface {
 
 type infraRuleJob struct {
 	state *state.State
-	rule  types.RegisteredRule
+	rule  ruleTypes.RegisteredRule
 }
 
 type hclModuleRuleJob struct {
 	module *terraform.Module
-	rule   types.RegisteredRule
+	rule   ruleTypes.RegisteredRule
 }
 
 type regoJob struct {
@@ -142,7 +143,7 @@ func (h *hclModuleRuleJob) Run() (results scan.Results, err error) {
 }
 
 func (h *regoJob) Run() (results scan.Results, err error) {
-	regoResults, err := h.scanner.ScanInput(context.TODO(), rego.Input{
+	regoResults, err := h.scanner.ScanInput(context.TODO(), types.SourceCloud, rego.Input{
 		Contents: h.state.ToRego(),
 		Path:     h.basePath,
 	})
