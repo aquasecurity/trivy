@@ -1373,7 +1373,7 @@ func TestDynamicBlocks(t *testing.T) {
 		expected []any
 	}{
 		{
-			name: "tuple of int",
+			name: "for-each use tuple of int",
 			src: `resource "test_resource" "test" {
   dynamic "foo" {
     for_each = [80, 443]
@@ -1385,7 +1385,7 @@ func TestDynamicBlocks(t *testing.T) {
 			expected: []any{float64(80), float64(443)},
 		},
 		{
-			name: "list of int",
+			name: "for-each use list of int",
 			src: `resource "test_resource" "test" {
   dynamic "foo" {
     for_each = tolist([80, 443])
@@ -1397,7 +1397,7 @@ func TestDynamicBlocks(t *testing.T) {
 			expected: []any{float64(80), float64(443)},
 		},
 		{
-			name: "set of int",
+			name: "for-each use set of int",
 			src: `resource "test_resource" "test" {
   dynamic "foo" {
     for_each = toset([80, 443])
@@ -1409,7 +1409,7 @@ func TestDynamicBlocks(t *testing.T) {
 			expected: []any{float64(80), float64(443)},
 		},
 		{
-			name: "list of bool",
+			name: "for-each use list of bool",
 			src: `resource "test_resource" "test" {
   dynamic "foo" {
     for_each = tolist([true])
@@ -1431,7 +1431,7 @@ func TestDynamicBlocks(t *testing.T) {
 			expected: []any{},
 		},
 		{
-			name: "tuple of objects",
+			name: "for-each use tuple of objects",
 			src: `variable "test_var" {
   type    = list(object({ enabled = bool }))
   default = [{ enabled = true }]
@@ -1449,7 +1449,7 @@ resource "test_resource" "test" {
 			expected: []any{true},
 		},
 		{
-			name: "object key",
+			name: "attribute ref to object key",
 			src: `variable "some_var" {
   type = map(
     object({
@@ -1474,7 +1474,7 @@ resource "test_resource" "test" {
 			expected: []any{"ssh", "http", "https"},
 		},
 		{
-			name: "object value",
+			name: "attribute ref to object value",
 			src: `variable "some_var" {
   type = map(
     object({
@@ -1499,7 +1499,7 @@ resource "test_resource" "test" {
 			expected: []any{"login", "proxy", "proxy"},
 		},
 		{
-			name: "map key",
+			name: "attribute ref to map key",
 			src: `variable "some_var" {
   type = map
   default = {
@@ -1520,7 +1520,7 @@ resource "test_resource" "test" {
 			expected: []any{"ssh", "http", "https"},
 		},
 		{
-			name: "map key",
+			name: "attribute ref to map value",
 			src: `variable "some_var" {
   type = map
   default = {
@@ -1541,7 +1541,7 @@ resource "test_resource" "test" {
 			expected: []any{"login", "proxy", "proxy"},
 		},
 		{
-			name: "with iterator",
+			name: "dynamic block with iterator",
 			src: `resource "test_resource" "test" {
   dynamic "foo" {
     for_each = ["foo", "bar"]
@@ -1567,7 +1567,7 @@ resource "test_resource" "test" {
 			expected: []any{"foo", "bar"},
 		},
 		{
-			name: "null value",
+			name: "for-each use null value",
 			src: `resource "test_resource" "test" {
   dynamic "foo" {
     for_each = null
@@ -1576,6 +1576,7 @@ resource "test_resource" "test" {
 	}
   }
 }`,
+			expected: []any{},
 		},
 	}
 
