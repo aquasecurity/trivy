@@ -6,19 +6,19 @@
     <artifactId> root-pom-with-spaces </artifactId>
     <version> 1.0.0</version>
 
+    <properties>
+        <dependency.version > 1.2.4</dependency.version >
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId> org.example</groupId>
                 <artifactId>example-dependency </artifactId>
-                <version>1.2.4 </version>
+                <version>${dependency.version} </version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <properties>
-        <dependency.version > 1.2.4</dependency.version >
-    </properties>
 
     <dependencies>
         <dependency>
