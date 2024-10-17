@@ -1996,8 +1996,8 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipDirect,
 					Locations: ftypes.Locations{
 						{
-							StartLine: 20,
-							EndLine:   24,
+							StartLine: 24,
+							EndLine:   28,
 						},
 					},
 				},

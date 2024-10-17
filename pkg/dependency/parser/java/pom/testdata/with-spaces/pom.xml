@@ -16,6 +16,10 @@
         </dependencies>
     </dependencyManagement>
 
+    <properties>
+        <dependency.version > 1.2.4</dependency.version >
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId> org.example </groupId>
