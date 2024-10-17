@@ -4,13 +4,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/magefile/mage/sh"
-	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/magefile/mage/sh"
+	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
 )
 
 const chartFile = "./helm/trivy/Chart.yaml"
