@@ -13,7 +13,7 @@
         <groupId>com.example</groupId>
         <artifactId>parent</artifactId>
         <version>3.0.0</version>
-        <relativePath>../parent</relativePath>
+        <relativePath>../</relativePath>
     </parent>
 
     <licenses>

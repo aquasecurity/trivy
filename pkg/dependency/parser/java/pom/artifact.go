@@ -163,7 +163,7 @@ func evaluateVariable(s string, props map[string]string, seenProps []string) str
 		}
 		s = strings.ReplaceAll(s, m[0], newValue)
 	}
-	return s
+	return strings.TrimSpace(s)
 }
 
 func printLoopedPropertiesStack(env string, usedProps []string) {

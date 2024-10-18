@@ -184,7 +184,7 @@ func TestRegistry(t *testing.T) {
 			golden: "testdata/alpine-310.json.golden",
 		},
 		{
-			name:      "authenticate with 'trivy auth login'",
+			name:      "authenticate with 'trivy registry login'",
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			os:        "alpine 3.10.2",
@@ -295,7 +295,7 @@ func setupEnv(t *testing.T, imageRef name.Reference, baseDir string, opt registr
 		case opt.AuthLogin:
 			t.Setenv("DOCKER_CONFIG", t.TempDir())
 			err := execute([]string{
-				"auth",
+				"registry",
 				"login",
 				"--username",
 				opt.Username,

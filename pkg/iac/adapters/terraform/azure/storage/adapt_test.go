@@ -19,6 +19,20 @@ func Test_Adapt(t *testing.T) {
 		expected  storage.Storage
 	}{
 		{
+			name:      "default",
+			terraform: `resource "azurerm_storage_account" "example" {}`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					{
+						PublicNetworkAccess: iacTypes.BoolTest(true),
+						MinimumTLSVersion:   iacTypes.StringTest(minimumTlsVersionOneTwo),
+						EnforceHTTPS:        iacTypes.BoolTest(true),
+					},
+					{},
+				},
+			},
+		},
+		{
 			name: "defined",
 			terraform: `
 			resource "azurerm_resource_group" "example" {
@@ -45,6 +59,7 @@ func Test_Adapt(t *testing.T) {
 					}
 				  }
 				min_tls_version          = "TLS1_2"
+				public_network_access_enabled = false
 			  }
 
 			  resource "azurerm_storage_account_network_rules" "test" {
@@ -65,9 +80,10 @@ func Test_Adapt(t *testing.T) {
 				Accounts: []storage.Account{
 
 					{
-						Metadata:          iacTypes.NewTestMetadata(),
-						EnforceHTTPS:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						MinimumTLSVersion: iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+						Metadata:            iacTypes.NewTestMetadata(),
+						EnforceHTTPS:        iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						MinimumTLSVersion:   iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
+						PublicNetworkAccess: iacTypes.BoolTest(false),
 						NetworkRules: []storage.NetworkRule{
 							{
 								Metadata: iacTypes.NewTestMetadata(),

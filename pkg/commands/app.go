@@ -100,7 +100,7 @@ func NewApp() *cobra.Command {
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
 		NewCleanCommand(globalFlags),
-		NewAuthCommand(globalFlags),
+		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
 	)
 
@@ -1235,11 +1235,11 @@ func NewCleanCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func NewAuthCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+func NewRegistryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:           "auth [flags]",
+		Use:           "registry [flags]",
 		GroupID:       groupUtility,
-		Short:         "Authentication",
+		Short:         "Manage registry authentication",
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
@@ -1255,7 +1255,7 @@ func NewAuthCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		Example: `  # Log in to reg.example.com
-  cat ~/my_password.txt | trivy auth login --username foo --password-stdin reg.example.com`,
+  cat ~/my_password.txt | trivy registry login --username foo --password-stdin reg.example.com`,
 		Args: cobra.ExactArgs(1),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := loginFlags.Bind(cmd); err != nil {
@@ -1277,7 +1277,7 @@ func NewAuthCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		Example: `  # Log out of reg.example.com
-  trivy auth logout reg.example.com`,
+  trivy registry logout reg.example.com`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return auth.Logout(cmd.Context(), args[0])

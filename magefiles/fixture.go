@@ -10,13 +10,13 @@ import (
 	"github.com/google/go-containerregistry/pkg/crane"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/magefile/mage/sh"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
 )
 
 func fixtureContainerImages() error {
-	const (
-		testImages = "ghcr.io/aquasecurity/trivy-test-images"
-		dir        = "integration/testdata/fixtures/images/"
-	)
+	var testImages = testutil.ImageName("", "", "")
+	const dir = "integration/testdata/fixtures/images/"
 	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
@@ -48,8 +48,8 @@ func fixtureContainerImages() error {
 }
 
 func fixtureVMImages() error {
+	var testVMImages = testutil.VMImageName("", "", "")
 	const (
-		testVMImages    = "ghcr.io/aquasecurity/trivy-test-vm-images"
 		titleAnnotation = "org.opencontainers.image.title"
 		dir             = "integration/testdata/fixtures/vm-images/"
 	)

@@ -2,11 +2,11 @@ Trivy can download images from a private registry without the need for installin
 This makes it easy to run within a CI process.
 
 ## Login
-You can log in to a private registry using the `trivy auth login` command.
+You can log in to a private registry using the `trivy registry login` command.
 It uses the Docker configuration file (`~/.docker/config.json`) to store the credentials under the hood, and the configuration file path can be configured by `DOCKER_CONFIG` environment variable.
 
 ```shell
-$ cat ~/my_password.txt | trivy auth login --username foo --password-stdin ghcr.io
+$ cat ~/my_password.txt | trivy registry login --username foo --password-stdin ghcr.io
 $ trivy image ghcr.io/your/private_image
 ```
 
@@ -23,7 +23,7 @@ $ TRIVY_USERNAME=YOUR_USERNAME TRIVY_PASSWORD=YOUR_PASSWORD trivy image YOUR_PRI
     To mitigate this risk:
 
     1. Set credentials cautiously and only when necessary.
-    2. Prefer using `trivy auth config` to pre-configure credentials with specific registries, which ensures credentials are only sent to appropriate registries.
+    2. Prefer using `trivy registry login` to pre-configure credentials with specific registries, which ensures credentials are only sent to appropriate registries.
 
 Trivy also supports providing credentials through CLI flags:
 

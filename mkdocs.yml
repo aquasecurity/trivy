@@ -158,10 +158,6 @@ nav:
           - Configuration:
               - CLI:
                   - Overview: docs/references/configuration/cli/trivy.md
-                  - Auth:
-                      - Auth: docs/references/configuration/cli/trivy_auth.md
-                      - Auth Login: docs/references/configuration/cli/trivy_auth_login.md
-                      - Auth Logout: docs/references/configuration/cli/trivy_auth_logout.md
                   - Clean: docs/references/configuration/cli/trivy_clean.md
                   - Config: docs/references/configuration/cli/trivy_config.md
                   - Convert: docs/references/configuration/cli/trivy_convert.md
@@ -182,6 +178,10 @@ nav:
                       - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
                       - Plugin Upgrade: docs/references/configuration/cli/trivy_plugin_upgrade.md
                       - Plugin Search: docs/references/configuration/cli/trivy_plugin_search.md
+                  - Registry:
+                        - Registry: docs/references/configuration/cli/trivy_registry.md
+                        - Registry Login: docs/references/configuration/cli/trivy_registry_login.md
+                        - Registry Logout: docs/references/configuration/cli/trivy_registry_logout.md
                   - Repository: docs/references/configuration/cli/trivy_repository.md
                   - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
                   - SBOM: docs/references/configuration/cli/trivy_sbom.md
