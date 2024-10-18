@@ -29,6 +29,9 @@ const (
 var (
 	// GitHub Container Registry
 	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-java-db", SchemaVersion)
+
+	// AWS ECR
+	DefaultECRRepository = fmt.Sprintf("%s:%d", "public.ecr.aws/aquasecurity/trivy-db", SchemaVersion)
 )
 
 var updater *Updater
