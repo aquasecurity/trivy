@@ -24,6 +24,7 @@ import (
 )
 
 func setupPrivateRegistry(t *testing.T) *httptest.Server {
+	t.Helper()
 	images := map[string]v1.Image{
 		"v2/library/alpine:3.10": localImage(t),
 	}
@@ -42,12 +43,14 @@ func setupPrivateRegistry(t *testing.T) *httptest.Server {
 
 // setupConfigDir sets up an isolated configDir() for this test.
 func setupConfigDir(t *testing.T) string {
+	t.Helper()
 	p := t.TempDir()
 	t.Setenv("DOCKER_CONFIG", p)
 	return p
 }
 
 func setupDockerConfig(t *testing.T, content string) {
+	t.Helper()
 	cd := setupConfigDir(t)
 	p := filepath.Join(cd, "config.json")
 
@@ -237,6 +240,7 @@ func (uh *userAgentsTrackingHandler) ServeHTTP(rw http.ResponseWriter, r *http.R
 }
 
 func setupAgentTrackingRegistry(t *testing.T) (*httptest.Server, *userAgentsTrackingHandler) {
+	t.Helper()
 	images := map[string]v1.Image{
 		"v2/library/alpine:3.10": localImage(t),
 	}
@@ -276,6 +280,7 @@ func TestUserAgents(t *testing.T) {
 }
 
 func localImage(t *testing.T) v1.Image {
+	t.Helper()
 	img, err := tarfile.ImageFromPath("../fanal/test/testdata/alpine-310.tar.gz")
 	require.NoError(t, err)
 	return img

@@ -28,6 +28,7 @@ import (
 )
 
 func setupGitRepository(t *testing.T, repo, dir string) *httptest.Server {
+	t.Helper()
 	gs := gittest.NewServer(t, repo, dir)
 
 	worktree := t.TempDir()
@@ -53,6 +54,7 @@ func setupGitRepository(t *testing.T, repo, dir string) *httptest.Server {
 }
 
 func modifyManifest(t *testing.T, worktree, version string) {
+	t.Helper()
 	manifestPath := filepath.Join(worktree, "plugin.yaml")
 	b, err := os.ReadFile(manifestPath)
 	require.NoError(t, err)
