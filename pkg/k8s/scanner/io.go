@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var r = regexp.MustCompile("\\\\|/|:|\\*|\\?|<|>")
+var r = regexp.MustCompile("[\\\\/:*?<>]")
 
 func generateTempFileByArtifact(artifact *artifacts.Artifact, tempFolder string) (string, error) {
 	filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
