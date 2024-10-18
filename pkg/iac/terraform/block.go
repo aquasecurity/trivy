@@ -691,10 +691,6 @@ func (b *Block) validateForEach() (cty.Value, error) {
 		return cty.NilVal, fmt.Errorf("cannot use a %s value in for_each. An iterable collection is required", forEachVal.GoString())
 	}
 
-	if forEachVal.IsNull() || !forEachVal.IsKnown() {
-		return cty.NilVal, errors.New("cannot use a null or unknown value in for_each")
-	}
-
 	return forEachVal, nil
 }
 
