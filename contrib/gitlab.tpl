@@ -29,6 +29,10 @@
   {{- range . }}
   {{- $target := .Target }}
     {{- $image := $target | regexFind "[^\\s]+" }}
+    {{- $os := $target | splitList "(" | last | trimSuffix ")" }}
+    {{- if eq $os $target -}}
+      {{- $os = "Unknown" -}}
+    {{- end }}
     {{- range .Vulnerabilities -}}
     {{- if $t_first -}}
       {{- $t_first = false -}}
@@ -65,7 +69,7 @@
           "version": "{{ .InstalledVersion }}"
         },
         {{- /* TODO: No mapping available - https://github.com/aquasecurity/trivy/issues/332 */}}
-        "operating_system": "Unknown",
+        "operating_system": "{{ $os }}",
         "image": "{{ $image }}"
       },
       "identifiers": [
