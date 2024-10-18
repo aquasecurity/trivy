@@ -29,9 +29,9 @@
   {{- range . }}
   {{- $target := .Target }}
     {{- $image := $target | regexFind "[^\\s]+" }}
-    {{- $os := "Unknown" }}
-    {{- if contains "(" $target -}}
-      {{- $os = regexReplaceAll ".+\\((.+)\\)" $target "${1}" }}
+    {{- $os := $target | splitList "(" | last | trimSuffix ")" }}
+    {{- if eq $os $target -}}
+      {{- $os = "Unknown" -}}
     {{- end }}
     {{- range .Vulnerabilities -}}
     {{- if $t_first -}}
