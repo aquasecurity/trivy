@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/storage"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -43,6 +45,10 @@ func Test_AdaptStorage(t *testing.T) {
 					"minimumTlsVersion":        azure.NewValue("TLS1_2", types.NewTestMetadata()),
 					"supportsHttpsTrafficOnly": azure.NewValue(true, types.NewTestMetadata()),
 					"publicNetworkAccess":      azure.NewValue("Disabled", types.NewTestMetadata()),
+					"networkAcls": azure.NewValue(map[string]azure.Value{
+						"bypass":        azure.NewValue("Logging, Metrics", types.NewTestMetadata()),
+						"defaultAction": azure.NewValue("Allow", types.NewTestMetadata()),
+					}, types.NewTestMetadata()),
 				}, types.NewTestMetadata()),
 			},
 		},
@@ -52,9 +58,20 @@ func Test_AdaptStorage(t *testing.T) {
 
 	require.Len(t, output.Accounts, 1)
 
-	account := output.Accounts[0]
-	assert.Equal(t, "TLS1_2", account.MinimumTLSVersion.Value())
-	assert.True(t, account.EnforceHTTPS.Value())
-	assert.False(t, account.PublicNetworkAccess.Value())
+	expected := storage.Storage{
+		Accounts: []storage.Account{{
+			MinimumTLSVersion:   types.StringTest("TLS1_2"),
+			EnforceHTTPS:        types.BoolTest(true),
+			PublicNetworkAccess: types.BoolTest(false),
+			NetworkRules: []storage.NetworkRule{{
+				Bypass: []types.StringValue{
+					types.StringTest("Logging"),
+					types.StringTest("Metrics"),
+				},
+				AllowByDefault: types.BoolTest(true),
+			}},
+		}},
+	}
 
+	testutil.AssertDefsecEqual(t, expected, output)
 }
