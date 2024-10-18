@@ -489,3 +489,10 @@ func (CloudActions) Generate() error {
 func VEX(_ context.Context, dir string) error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_vex", "./magefiles/vex.go", "--dir", dir)
 }
+
+type Helm mg.Namespace
+
+// UpdateVersion updates a version for Trivy Helm Chart and creates a PR
+func (Helm) UpdateVersion() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_helm", "./magefiles")
+}
