@@ -7884,6 +7884,9 @@
         "startline": {
           "type": "integer"
         },
+        "unresolvable": {
+          "type": "boolean"
+        },
         "value": {
           "type": "boolean"
         }
@@ -7915,6 +7918,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         },
         "value": {
           "type": "string"
@@ -7948,6 +7954,9 @@
         "startline": {
           "type": "integer"
         },
+        "unresolvable": {
+          "type": "boolean"
+        },
         "value": {
           "type": "integer"
         }
@@ -7980,6 +7989,9 @@
         "startline": {
           "type": "integer"
         },
+        "unresolvable": {
+          "type": "boolean"
+        },
         "value": {
           "type": "object"
         }
@@ -8011,6 +8023,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         }
       }
     },
@@ -8040,6 +8055,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         },
         "value": {
           "type": "string"
@@ -8072,6 +8090,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         },
         "value": {
           "type": "string"
