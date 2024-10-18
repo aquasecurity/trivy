@@ -2,6 +2,7 @@ package pnpm
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"os"
 	"path/filepath"
 
@@ -32,7 +33,12 @@ func (a pnpmLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	return res, nil
 }
 
-func (a pnpmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a pnpmLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("NPM_PNPM")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("npm yarn oss").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	fileName := filepath.Base(filePath)
 	return utils.StringInSlice(fileName, requiredFiles)
 }

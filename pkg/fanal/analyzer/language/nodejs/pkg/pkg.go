@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"os"
 	"path/filepath"
 
@@ -46,7 +47,12 @@ func (a nodePkgLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 	return language.AnalyzePackage(types.NodePkg, input.FilePath, input.Content, &parser{}, input.Options.FileChecksum)
 }
 
-func (a nodePkgLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a nodePkgLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("NPM_PKG")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("npm yarn oss").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	return requiredFile == filepath.Base(filePath)
 }
 

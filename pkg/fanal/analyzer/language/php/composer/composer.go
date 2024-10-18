@@ -78,7 +78,12 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 	}, nil
 }
 
-func (a composerAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a composerAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	others := os.Getenv("PHP")
+	if size := fileInfo.Size(); size > 10485760 && others != "" { // 10MB
+		log.WithPrefix("npm yarn oss").Warn("The size of the scanned file is too large. It is recommended to use `--skip-files` for this file to avoid high memory consumption.", log.Int64("size (MB)", size/1048576))
+		return false
+	}
 	fileName := filepath.Base(filePath)
 	if !slices.Contains(requiredFiles, fileName) {
 		return false
