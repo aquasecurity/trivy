@@ -124,6 +124,9 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 		}
 	}
 
+	// ID
+	r.printf("%s\r\n", misconf.ID)
+
 	// severity
 	switch misconf.Severity {
 	case severityCritical:
