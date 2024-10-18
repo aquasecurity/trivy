@@ -538,9 +538,9 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 		}
 	}
 
-	// SPDX needs to calculate digests for package files
+	// SPDX and CycloneDX need to calculate digests for package files
 	var fileChecksum bool
-	if opts.Format == types.FormatSPDXJSON || opts.Format == types.FormatSPDX {
+	if opts.Format == types.FormatSPDXJSON || opts.Format == types.FormatSPDX || opts.Format == types.FormatCycloneDX {
 		fileChecksum = true
 	}
 
