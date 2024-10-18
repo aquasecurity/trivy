@@ -15,6 +15,7 @@ import (
 )
 
 func AssertRuleFound(t *testing.T, ruleID string, results scan.Results, message string, args ...any) {
+	t.Helper()
 	found := ruleIDInResults(ruleID, results.GetFailed())
 	assert.True(t, found, append([]any{message}, args...)...)
 	for _, result := range results.GetFailed() {
@@ -32,6 +33,7 @@ func AssertRuleFound(t *testing.T, ruleID string, results scan.Results, message 
 }
 
 func AssertRuleNotFound(t *testing.T, ruleID string, results scan.Results, message string, args ...any) {
+	t.Helper()
 	found := ruleIDInResults(ruleID, results.GetFailed())
 	assert.False(t, found, append([]any{message}, args...)...)
 }
@@ -46,6 +48,7 @@ func ruleIDInResults(ruleID string, results scan.Results) bool {
 }
 
 func CreateFS(t *testing.T, files map[string]string) fs.FS {
+	t.Helper()
 	memfs := memoryfs.New()
 	for name, content := range files {
 		name := strings.TrimPrefix(name, "/")
@@ -58,6 +61,7 @@ func CreateFS(t *testing.T, files map[string]string) fs.FS {
 }
 
 func AssertDefsecEqual(t *testing.T, expected, actual any) {
+	t.Helper()
 	expectedJson, err := json.MarshalIndent(expected, "", "\t")
 	require.NoError(t, err)
 	actualJson, err := json.MarshalIndent(actual, "", "\t")

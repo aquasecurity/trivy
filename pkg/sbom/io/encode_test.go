@@ -914,6 +914,7 @@ var (
 )
 
 func newTestBOM(t *testing.T) *core.BOM {
+	t.Helper()
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(appComponent)
@@ -922,6 +923,7 @@ func newTestBOM(t *testing.T) *core.BOM {
 
 // BOM without root component
 func newTestBOM2(t *testing.T) *core.BOM {
+	t.Helper()
 	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
 	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(libComponent)

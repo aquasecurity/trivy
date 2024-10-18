@@ -17,6 +17,7 @@ import (
 )
 
 func newTempDB(t *testing.T, dbPath string) (string, error) {
+	t.Helper()
 	dir := t.TempDir()
 	if dbPath != "" {
 		d := filepath.Join(dir, "fanal")

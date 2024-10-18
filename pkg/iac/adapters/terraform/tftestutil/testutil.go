@@ -10,6 +10,7 @@ import (
 )
 
 func CreateModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
+	t.Helper()
 	fs := testutil.CreateFS(t, map[string]string{
 		"source" + ext: source,
 	})

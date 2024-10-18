@@ -54,6 +54,7 @@ func TestRepository_Manifest(t *testing.T) {
 		{
 			name: "local manifest exists",
 			setup: func(t *testing.T, dir string, _ *repo.Repository) {
+				t.Helper()
 				manifestFile := filepath.Join(dir, "vex", "repositories", "test-repo", "vex-repository.json")
 				testutil.MustWriteJSON(t, manifestFile, manifest)
 			},
@@ -62,6 +63,7 @@ func TestRepository_Manifest(t *testing.T) {
 		{
 			name: "fetch from remote",
 			setup: func(t *testing.T, dir string, r *repo.Repository) {
+				t.Helper()
 				r.URL = ts.URL
 			},
 			want: manifest,
@@ -69,6 +71,7 @@ func TestRepository_Manifest(t *testing.T) {
 		{
 			name: "http error",
 			setup: func(t *testing.T, dir string, r *repo.Repository) {
+				t.Helper()
 				r.URL = ts.URL + "/error"
 			},
 			wantErr: "failed to download the repository metadata",
@@ -105,6 +108,7 @@ func TestRepository_Index(t *testing.T) {
 		{
 			name: "local index exists",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				indexData := repo.RawIndex{
 					UpdatedAt: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 					Packages: []repo.PackageEntry{
@@ -148,6 +152,7 @@ func TestRepository_Index(t *testing.T) {
 		{
 			name: "invalid JSON in index file",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				indexPath := filepath.Join(cacheDir, "vex", "repositories", r.Name, "0.1", "index.json")
 				testutil.MustWriteFile(t, indexPath, []byte("invalid JSON"))
 			},
@@ -190,6 +195,7 @@ func TestRepository_Update(t *testing.T) {
 		{
 			name: "successful update",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 			},
 			clockTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -201,6 +207,7 @@ func TestRepository_Update(t *testing.T) {
 		{
 			name: "no update needed (within update interval)",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				setUpManifest(t, cacheDir, "") // No location as the test server is not used
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
@@ -221,6 +228,7 @@ func TestRepository_Update(t *testing.T) {
 		{
 			name: "update needed (update interval passed)",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
@@ -241,6 +249,7 @@ func TestRepository_Update(t *testing.T) {
 		{
 			name: "no update needed (304 Not Modified)",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
@@ -261,6 +270,7 @@ func TestRepository_Update(t *testing.T) {
 		{
 			name: "update with no existing cache.json",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				setUpManifest(t, cacheDir, ts.URL+"/archive.zip")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
@@ -281,6 +291,7 @@ func TestRepository_Update(t *testing.T) {
 		{
 			name: "download error",
 			setup: func(t *testing.T, cacheDir string, r *repo.Repository) {
+				t.Helper()
 				setUpManifest(t, cacheDir, ts.URL+"/error")
 
 				repoDir := filepath.Join(cacheDir, "vex", "repositories", r.Name)
@@ -319,12 +330,14 @@ func TestRepository_Update(t *testing.T) {
 }
 
 func setupManager(t *testing.T) (string, *repo.Manager) {
+	t.Helper()
 	tempDir := t.TempDir()
 	t.Setenv("XDG_DATA_HOME", "testdata")
 	return tempDir, repo.NewManager(tempDir)
 }
 
 func setUpManifest(t *testing.T, dir, url string) {
+	t.Helper()
 	manifest := repo.Manifest{
 		Name:        "test-repo",
 		Description: "test repository",
@@ -345,6 +358,7 @@ func setUpManifest(t *testing.T, dir, url string) {
 }
 
 func setUpRepository(t *testing.T) *httptest.Server {
+	t.Helper()
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/archive.zip":

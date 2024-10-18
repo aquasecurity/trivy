@@ -28,6 +28,7 @@ func (f fakeLayer) MediaType() (types.MediaType, error) {
 }
 
 func NewFakeLayer(t *testing.T, input string, mediaType types.MediaType) v1.Layer {
+	t.Helper()
 	layer, err := tarball.LayerFromFile(input, tarball.WithMediaType(mediaType))
 	require.NoError(t, err)
 
@@ -39,6 +40,7 @@ type FakeDBOptions struct {
 }
 
 func NewFakeDB(t *testing.T, dbPath string, opts FakeDBOptions) *oci.Artifact {
+	t.Helper()
 	mediaType := lo.Ternary(opts.MediaType != "", opts.MediaType, defaultMediaType)
 	img := new(fakei.FakeImage)
 	img.LayersReturns([]v1.Layer{NewFakeLayer(t, dbPath, mediaType)}, nil)
@@ -66,6 +68,7 @@ func NewFakeDB(t *testing.T, dbPath string, opts FakeDBOptions) *oci.Artifact {
 }
 
 func ArchiveDir(t *testing.T, dir string) string {
+	t.Helper()
 	tmpDBPath := filepath.Join(t.TempDir(), "db.tar")
 	f, err := os.Create(tmpDBPath)
 	require.NoError(t, err)

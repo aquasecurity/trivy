@@ -26,6 +26,7 @@ var signature = &object.Signature{
 }
 
 func NewServer(t *testing.T, repo, dir string) *httptest.Server {
+	t.Helper()
 	wtDir := t.TempDir()
 
 	// git init
@@ -60,6 +61,7 @@ func NewServer(t *testing.T, repo, dir string) *httptest.Server {
 }
 
 func Clone(t *testing.T, ts *httptest.Server, repo, worktree string) *git.Repository {
+	t.Helper()
 	cloneOptions := git.CloneOptions{
 		URL: ts.URL + "/" + repo + ".git",
 	}
@@ -71,6 +73,7 @@ func Clone(t *testing.T, ts *httptest.Server, repo, worktree string) *git.Reposi
 }
 
 func CommitAll(t *testing.T, r *git.Repository, msg string) {
+	t.Helper()
 	w, err := r.Worktree()
 	require.NoError(t, err)
 
@@ -84,6 +87,7 @@ func CommitAll(t *testing.T, r *git.Repository, msg string) {
 }
 
 func SetTag(t *testing.T, r *git.Repository, tag string) {
+	t.Helper()
 	h, err := r.Head()
 	require.NoError(t, err)
 
@@ -96,6 +100,7 @@ func SetTag(t *testing.T, r *git.Repository, tag string) {
 }
 
 func PushTags(t *testing.T, r *git.Repository) {
+	t.Helper()
 	t.Log("git push --tags")
 	err := r.Push(&git.PushOptions{
 		RemoteName: "origin",
@@ -111,6 +116,7 @@ func PushTags(t *testing.T, r *git.Repository) {
 }
 
 func CreateRemoteBranch(t *testing.T, r *git.Repository, branchName string) {
+	t.Helper()
 	wt, err := r.Worktree()
 	require.NoError(t, err)
 

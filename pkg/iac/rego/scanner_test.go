@@ -20,6 +20,7 @@ import (
 )
 
 func CreateFS(t *testing.T, files map[string]string) fs.FS {
+	t.Helper()
 	memfs := memoryfs.New()
 	for name, content := range files {
 		name := strings.TrimPrefix(name, "/")

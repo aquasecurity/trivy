@@ -288,6 +288,7 @@ spec:
 }
 
 func assertLines(t *testing.T, content string, results scan.Results) {
+	t.Helper()
 	lines := strings.Split(content, "\n")
 	for _, res := range results {
 		actualCode, err := res.GetCode()

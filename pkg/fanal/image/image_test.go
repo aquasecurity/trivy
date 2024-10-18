@@ -20,6 +20,7 @@ import (
 )
 
 func setupEngineAndRegistry(t *testing.T) (*httptest.Server, *httptest.Server) {
+	t.Helper()
 	imagePaths := map[string]string{
 		"alpine:3.10":  "../test/testdata/alpine-310.tar.gz",
 		"alpine:3.11":  "../test/testdata/alpine-311.tar.gz",
@@ -302,6 +303,7 @@ func TestNewDockerImage(t *testing.T) {
 }
 
 func setupPrivateRegistry(t *testing.T) *httptest.Server {
+	t.Helper()
 	images := map[string]v1.Image{
 		"v2/library/alpine:3.10": localImage(t),
 	}
@@ -557,6 +559,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 }
 
 func localImage(t *testing.T) v1.Image {
+	t.Helper()
 	img, err := tarfile.ImageFromPath("../test/testdata/alpine-310.tar.gz")
 	require.NoError(t, err)
 	return img

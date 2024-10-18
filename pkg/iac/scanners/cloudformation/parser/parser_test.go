@@ -14,6 +14,7 @@ import (
 )
 
 func parseFile(t *testing.T, source, name string) (FileContexts, error) {
+	t.Helper()
 	tmp, err := os.MkdirTemp(os.TempDir(), "defsec")
 	require.NoError(t, err)
 	defer func() { _ = os.RemoveAll(tmp) }()
@@ -174,6 +175,7 @@ Resources:
 }
 
 func createTestFileContext(t *testing.T, source string) *FileContext {
+	t.Helper()
 	contexts, err := parseFile(t, source, "main.yaml")
 	require.NoError(t, err)
 	require.Len(t, contexts, 1)

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -481,6 +481,7 @@ func TestFilter(t *testing.T) {
 		{
 			name: "VEX Repository",
 			setup: func(t *testing.T, tmpDir string) {
+				t.Helper()
 				// Create repository.yaml
 				vexDir := filepath.Join(tmpDir, ".trivy", "vex")
 				require.NoError(t, os.MkdirAll(vexDir, 0755))

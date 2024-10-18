@@ -24,6 +24,7 @@ import (
 )
 
 func setupInstalledPlugin(t *testing.T, homeDir string, p plugin.Plugin) {
+	t.Helper()
 	pluginDir := filepath.Join(homeDir, ".trivy", "plugins", p.Name)
 
 	// Create the test plugin directory
@@ -372,6 +373,7 @@ func TestManager_Upgrade(t *testing.T) {
 }
 
 func verifyVersion(t *testing.T, ctx context.Context, m *plugin.Manager, pluginName, expectedVersion string) {
+	t.Helper()
 	plugins, err := m.LoadAll(ctx)
 	require.NoError(t, err)
 	for _, p := range plugins {

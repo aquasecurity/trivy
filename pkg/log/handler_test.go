@@ -148,6 +148,7 @@ func TestContext(t *testing.T) {
 }
 
 func compareLines(t *testing.T, got string, wantLines []string) {
+	t.Helper()
 	// Strip color codes from the output.
 	got = stripColorCodes(got)
 
