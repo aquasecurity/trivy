@@ -1,0 +1,67 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/sbom/multiple-os.sdpx.json",
+  "ArtifactType": "spdx",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "12.5"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/sbom/multiple-os.sdpx.json (debian 12.5)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Packages": [
+        {
+          "ID": "libmd0@1.0.4-2",
+          "Name": "libmd0",
+          "Identifier": {
+            "PURL": "pkg:deb/debian/libmd0@1.0.4-2?arch=arm64\u0026distro=debian-12.5",
+            "UID": "bd94e402741d3988",
+            "BOMRef": "Package-gnrtd175"
+          },
+          "Version": "1.0.4-2",
+          "Arch": "arm64",
+          "SrcName": "libmd",
+          "SrcVersion": "1.0.4",
+          "SrcRelease": "2",
+          "Licenses": [
+            "MIT"
+          ],
+          "Layer": {}
+        },
+        {
+          "ID": "libmount1@2.38.1-5+deb12u1",
+          "Name": "libmount1",
+          "Identifier": {
+            "PURL": "pkg:deb/debian/libmount1@2.38.1-5%2Bdeb12u1?arch=arm64\u0026distro=debian-12.5",
+            "UID": "ae2f6c69df04ce11",
+            "BOMRef": "Package-gnrtd259"
+          },
+          "Version": "2.38.1-5+deb12u1",
+          "Arch": "arm64",
+          "SrcName": "util-linux",
+          "SrcVersion": "2.38.1",
+          "SrcRelease": "5+deb12u1",
+          "Licenses": [
+            "MIT"
+          ],
+          "Layer": {}
+        }
+      ]
+    }
+  ]
+}
