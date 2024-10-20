@@ -76,11 +76,11 @@ var (
 	}
 
 	juliaV10FormatPkgs = []ftypes.Package{
-		{ID: "767738be-2f1f-45a9-b806-0234f3164144", Name: "Foo", Version: "unknown", Locations: []ftypes.Location{{StartLine: 1, EndLine: 5}}},
-		{ID: "6f418443-bd2e-4783-b551-cdbac608adf2", Name: "Foo", Version: "unknown", Locations: []ftypes.Location{{StartLine: 7, EndLine: 10}}},
-		{ID: "2a550a13-6bab-4a91-a4ee-dff34d6b99d0", Name: "Bar", Version: "unknown", Locations: []ftypes.Location{{StartLine: 12, EndLine: 14}}},
+		{ID: "767738be-2f1f-45a9-b806-0234f3164144", Name: "Foo", Version: "unknown", InstalledFiles: []string{"deps/Foo1"}, Locations: []ftypes.Location{{StartLine: 1, EndLine: 5}}},
+		{ID: "6f418443-bd2e-4783-b551-cdbac608adf2", Name: "Foo", Version: "unknown", InstalledFiles: []string{"deps/Foo2.jl"}, Locations: []ftypes.Location{{StartLine: 7, EndLine: 10}}},
+		{ID: "2a550a13-6bab-4a91-a4ee-dff34d6b99d0", Name: "Bar", Version: "unknown", InstalledFiles: []string{"deps/Bar"}, Locations: []ftypes.Location{{StartLine: 12, EndLine: 14}}},
 		{ID: "6801f525-dc68-44e8-a4e8-cabd286279e7", Name: "Baz", Version: "unknown", Locations: []ftypes.Location{{StartLine: 19, EndLine: 21}}},
-		{ID: "b5ec9b9c-e354-47fd-b367-a348bdc8f909", Name: "Qux", Version: "unknown", Locations: []ftypes.Location{{StartLine: 26, EndLine: 28}}},
+		{ID: "b5ec9b9c-e354-47fd-b367-a348bdc8f909", Name: "Qux", Version: "unknown", InstalledFiles: []string{"deps/Qux.jl"}, Locations: []ftypes.Location{{StartLine: 26, EndLine: 28}}},
 	}
 
 	juliaV10FormatDeps = []ftypes.Dependency{
