@@ -570,6 +570,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 			AWSEndpoint:       opts.Endpoint,
 			FileChecksum:      fileChecksum,
 			DetectionPriority: opts.DetectionPriority,
+			IncludeDevDeps:    opts.IncludeDevDeps,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{
