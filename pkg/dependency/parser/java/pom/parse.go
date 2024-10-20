@@ -703,7 +703,7 @@ func (p *Parser) remoteRepoRequest(repo string, paths []string) (*http.Request, 
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
-	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
+	req, err := http.NewRequest(http.MethodGet, repoURL.String(), http.NoBody)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create HTTP request: %w", err)
 	}

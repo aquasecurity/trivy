@@ -334,7 +334,7 @@ func requestRegistryToken(imageRef name.Reference, baseDir string, opt registryO
 	}
 
 	// Get a registry token
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/auth", opt.AuthURL), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/auth", opt.AuthURL), nil)
 	if err != nil {
 		return "", err
 	}

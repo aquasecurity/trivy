@@ -105,6 +105,7 @@ linters:
     - typecheck
     - unconvert
     - unused
+    - usestdlibvars
 
 run:
   go: '1.22'
