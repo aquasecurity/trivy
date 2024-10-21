@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -40,7 +41,14 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		case "ID":
 			id = strings.Trim(value, `"'`)
 		case "VERSION_ID":
+			if id == "openEuler" {
+				continue
+			}
 			versionID = strings.Trim(value, `"'`)
+		case "VERSION":
+			// Get openEuler detailed version
+			re := regexp.MustCompile(`\(|\)`)
+			versionID = strings.ReplaceAll(re.ReplaceAllString(strings.Trim(value, `"'`), ""), " ", "-")
 		default:
 			continue
 		}
@@ -66,6 +74,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			family = types.Wolfi
 		case "chainguard":
 			family = types.Chainguard
+		case "openEuler":
+			family = types.OpenEuler
 		case "azurelinux":
 			family = types.Azure
 		case "mariner":

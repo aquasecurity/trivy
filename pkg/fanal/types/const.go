@@ -41,6 +41,7 @@ const (
 	SLES               OSType = "suse linux enterprise server"
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
+	OpenEuler          OSType = "openEuler"
 )
 
 // Programming language dependencies

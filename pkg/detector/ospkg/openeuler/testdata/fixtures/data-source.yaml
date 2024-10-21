@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: openEuler-22.03-LTS-SP2
+      value:
+        ID: "openeuler"
+        Name: "openEuler CVRF"
+        URL: "https://repo.openeuler.org/security/data/cvrf"
