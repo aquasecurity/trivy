@@ -167,7 +167,7 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 }
 
 func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.Artifact) ([]report.Resource, error) {
-	folder, artifactsByFilename, err := generateTempFolder(k8sArtifacts)
+	folder, artifactsByFilename, err := generateTempDir(k8sArtifacts)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to generate temp folder: %w", err)
 	}

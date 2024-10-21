@@ -42,9 +42,9 @@ func generateTempFileByArtifact(artifact *artifacts.Artifact, tempFolder string)
 	return filepath.Base(file.Name()), nil
 }
 
-// generateTempFolder creates a folder with yaml files generated from kubernetes artifacts
+// generateTempDir creates a folder with yaml files generated from kubernetes artifacts
 // returns a folder name, a map for mapping a temp target file to k8s artifact and error
-func generateTempFolder(arts []*artifacts.Artifact) (string, map[string]*artifacts.Artifact, error) {
+func generateTempDir(arts []*artifacts.Artifact) (string, map[string]*artifacts.Artifact, error) {
 	tempFolder, err := os.MkdirTemp("", "trivyk8s*")
 	if err != nil {
 		return "", nil, xerrors.Errorf("failed to create temp folder: %w", err)
