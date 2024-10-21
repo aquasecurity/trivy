@@ -626,7 +626,7 @@ func TrimLicenseText(text string) string {
 }
 
 // version number match
-var versionRegexpString = "([A-UW-Z)]{2,})( LICENSE)?\\s*[,(-]?\\s*(V|V\\.|VER|VER\\.|VERSION|VERSION-|-)?\\s*([1-9](\\.\\d)*)[)]?"
+var versionRegexpString = "([A-UW-Z)])( LICENSE)?\\s*[,(-]?\\s*(V|V\\.|VER|VER\\.|VERSION|VERSION-|-)?\\s*([1-9](\\.\\d)*)[)]?"
 
 // case insensitive version match anywhere in string
 var versionRegexp = regexp.MustCompile("(?i)" + versionRegexpString)
