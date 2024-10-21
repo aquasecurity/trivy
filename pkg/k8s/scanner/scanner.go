@@ -167,16 +167,16 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 }
 
 func (s *Scanner) scanMisconfigs(ctx context.Context, k8sArtifacts []*artifacts.Artifact) ([]report.Resource, error) {
-	folder, artifactsByFilename, err := generateTempDir(k8sArtifacts)
+	dir, artifactsByFilename, err := generateTempDir(k8sArtifacts)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to generate temp folder: %w", err)
+		return nil, xerrors.Errorf("failed to generate temp dir: %w", err)
 	}
 
-	s.opts.Target = folder
+	s.opts.Target = dir
 
 	configReport, err := s.runner.ScanFilesystem(ctx, s.opts)
 	// remove config files after scanning
-	removeFolder(folder)
+	removeDir(dir)
 
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan filesystem: %w", err)

@@ -16,13 +16,13 @@ import (
 
 var r = regexp.MustCompile("[\\\\/:*?<>]")
 
-func generateTempFileByArtifact(artifact *artifacts.Artifact, tempFolder string) (string, error) {
+func generateTempFileByArtifact(artifact *artifacts.Artifact, tempDir string) (string, error) {
 	filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
 	if runtime.GOOS == "windows" {
 		// removes characters not permitted in file/directory names on Windows
 		filename = filenameWindowsFriendly(filename)
 	}
-	file, err := os.CreateTemp(tempFolder, filename)
+	file, err := os.CreateTemp(tempDir, filename)
 	if err != nil {
 		return "", xerrors.Errorf("failed to create temporary file: %w", err)
 	}
@@ -42,35 +42,35 @@ func generateTempFileByArtifact(artifact *artifacts.Artifact, tempFolder string)
 	return filepath.Base(file.Name()), nil
 }
 
-// generateTempDir creates a folder with yaml files generated from kubernetes artifacts
-// returns a folder name, a map for mapping a temp target file to k8s artifact and error
+// generateTempDir creates a directory with yaml files generated from kubernetes artifacts
+// returns a directory name, a map for mapping a temp target file to k8s artifact and error
 func generateTempDir(arts []*artifacts.Artifact) (string, map[string]*artifacts.Artifact, error) {
-	tempFolder, err := os.MkdirTemp("", "trivyk8s*")
+	tempDir, err := os.MkdirTemp("", "trivyk8s*")
 	if err != nil {
-		return "", nil, xerrors.Errorf("failed to create temp folder: %w", err)
+		return "", nil, xerrors.Errorf("failed to create temp directory: %w", err)
 	}
 
 	m := make(map[string]*artifacts.Artifact)
 	for _, artifact := range arts {
-		filename, err := generateTempFileByArtifact(artifact, tempFolder)
+		filename, err := generateTempFileByArtifact(artifact, tempDir)
 		if err != nil {
 			log.Error("Failed to create temp file", log.FilePath(filename), log.Err(err))
 			continue
 		}
 		m[filename] = artifact
 	}
-	return tempFolder, m, nil
+	return tempDir, m, nil
 }
 
-func removeFolder(foldername string) {
-	if err := os.RemoveAll(foldername); err != nil {
-		log.Error("Failed to remove temp folder", log.String("path", foldername), log.Err(err))
+func removeDir(dirname string) {
+	if err := os.RemoveAll(dirname); err != nil {
+		log.Error("Failed to remove temp directory", log.FilePath(dirname), log.Err(err))
 	}
 }
 
 func removeFile(filename string) {
 	if err := os.Remove(filename); err != nil {
-		log.Error("Failed to remove temp file", log.String("path", filename), log.Err(err))
+		log.Error("Failed to remove temp file", log.FilePath(filename), log.Err(err))
 	}
 }
 
