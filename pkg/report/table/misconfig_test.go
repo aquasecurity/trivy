@@ -44,8 +44,7 @@ my-file ()
 Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-AVD-XYZ-0123
-HIGH: Oh no, a bad config.
+AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -104,8 +103,7 @@ my-file ()
 Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-AVD-XYZ-0123
-HIGH: Oh no, a bad config.
+AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -176,8 +174,7 @@ my-file ()
 Tests: 2 (SUCCESSES: 1, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-FAIL: AVD-XYZ-0123
-HIGH: Oh no, a bad config.
+FAIL: AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -191,8 +188,7 @@ See https://google.com/search?q=bad%20config
 ────────────────────────────────────────
 
 
-PASS: AVD-XYZ-0456
-MEDIUM: Oh no, a bad config AGAIN.
+PASS: AVD-XYZ-0456 (MEDIUM): Oh no, a bad config AGAIN.
 ════════════════════════════════════════
 Your config file is still not good.
 
@@ -316,8 +312,7 @@ terraform-aws-modules/security-group/aws/main.tf (terraform)
 Tests: 6 (SUCCESSES: 5, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
-AVD-AWS-0107
-CRITICAL: Security group rule allows ingress from public internet.
+AVD-AWS-0107 (CRITICAL): Security group rule allows ingress from public internet.
 ════════════════════════════════════════
 Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.
 
