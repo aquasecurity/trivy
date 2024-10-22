@@ -3,6 +3,8 @@
 package main
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -60,4 +62,33 @@ func TestNewVersion(t *testing.T) {
 			assert.Equal(t, test.newHelmVersion, newHelmVersion)
 		})
 	}
+}
+
+func TestBumpHelmChart_Success(t *testing.T) {
+	tempFile, err := ioutil.TempFile("", "Chart-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(tempFile.Name())
+
+	content := `
+apiVersion: v2
+name: trivy
+version: 0.8.0
+appVersion: 0.55.0
+description: Trivy helm chart
+keywords:
+  - scanner
+  - trivy
+  - vulnerability
+`
+	err = ioutil.WriteFile(tempFile.Name(), []byte(content), 0644)
+	assert.NoError(t, err)
+
+	newVersion, err := bumpHelmChart(tempFile.Name(), "0.55.1")
+	assert.NoError(t, err)
+	assert.Equal(t, "0.8.1", newVersion)
+
+	updatedContent, err := ioutil.ReadFile(tempFile.Name())
+	assert.NoError(t, err)
+	assert.Contains(t, string(updatedContent), "appVersion: 0.55.1")
+	assert.Contains(t, string(updatedContent), "version: 0.8.1")
 }

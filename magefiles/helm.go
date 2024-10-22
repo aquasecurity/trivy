@@ -21,29 +21,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not determine Trivy version: %v", err)
 	}
-	input, err := os.ReadFile(chartFile)
+
+	newHelmVersion, err := bumpHelmChart(chartFile, trivyVersion)
 	if err != nil {
-		log.Fatalf("could not find helm chart %s: %v", chartFile, err)
-	}
-	yamlData := map[string]interface{}{}
-	if err := yaml.Unmarshal(input, &yamlData); err != nil {
-		log.Fatalf("could not unmarshal helm chart %s: %v", chartFile, err)
-	}
-	currentTrivyVersion, ok := yamlData["appVersion"].(string)
-	if !ok {
-		log.Fatalf("could not determine current app version")
-	}
-	currentHelmVersion, ok := yamlData["version"].(string)
-	if !ok {
-		log.Fatalf("could not determine current helm version")
-	}
-	newHelmVersion, err := buildNewHelmVersion(currentHelmVersion, currentTrivyVersion, trivyVersion)
-	if err != nil {
-		log.Fatalf("could not build new helm version: %v", err)
+		log.Fatalf("could not bump Trivy version to %q: %v", trivyVersion, err)
 	}
 
-	log.Printf("Current helm version %q with Trivy %q will bump up %q with Trivy %q",
-		currentHelmVersion, currentTrivyVersion, newHelmVersion, trivyVersion)
+	log.Printf("Current helm version will bump up %q with Trivy %q", newHelmVersion, trivyVersion)
 
 	newBranch := fmt.Sprintf("ci/helm-chart/bump-trivy-to-%s", trivyVersion)
 	title := fmt.Sprintf("ci(helm): bump Trivy version to %s for Trivy Helm Chart %s", trivyVersion, newHelmVersion)
@@ -51,8 +35,6 @@ func main() {
 		trivyVersion, newHelmVersion)
 
 	cmds := [][]string{
-		[]string{"sed", "-i", "-e", fmt.Sprintf("s/appVersion: %s/appVersion: %s/g", currentTrivyVersion, trivyVersion), chartFile},
-		[]string{"sed", "-i", "-e", fmt.Sprintf("s/version: %s/version: %s/g", currentHelmVersion, newHelmVersion), chartFile},
 		[]string{"git", "switch", "-c", newBranch},
 		[]string{"git", "add", "./helm/trivy/Chart.yaml"},
 		[]string{"git", "commit", "-m", title},
@@ -64,6 +46,38 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Print("Successfully created PR with a new helm version")
+}
+
+type Chart struct {
+	Version    string `yaml:"version"`
+	AppVersion string `yaml:"appVersion"`
+}
+
+// bumpHelmChart bumps up helm and trivy versions inside Chart.yaml
+// returns a new helm version
+func bumpHelmChart(filename, trivyVersion string) (string, error) {
+	input, err := os.ReadFile(filename)
+	if err != nil {
+		return "", xerrors.Errorf("could not read file %q: %w", filename, err)
+	}
+	currentHelmChart := &Chart{}
+	if err := yaml.Unmarshal(input, currentHelmChart); err != nil {
+		return "", xerrors.Errorf("could not unmarshal helm chart %q: %w", filename, err)
+	}
+
+	newHelmVersion, err := buildNewHelmVersion(currentHelmChart.Version, currentHelmChart.AppVersion, trivyVersion)
+	if err != nil {
+		return "", xerrors.Errorf("could not build new helm version: %v", err)
+	}
+	cmds := [][]string{
+		[]string{"sed", "-i", "-e", fmt.Sprintf("s/appVersion: %s/appVersion: %s/g", currentHelmChart.AppVersion, trivyVersion), filename},
+		[]string{"sed", "-i", "-e", fmt.Sprintf("s/version: %s/version: %s/g", currentHelmChart.Version, newHelmVersion), filename},
+	}
+
+	if err := runShCommands(cmds); err != nil {
+		return "", xerrors.Errorf("could not update Helm Chart %q: %w", newHelmVersion, err)
+	}
+	return newHelmVersion, nil
 }
 
 func runShCommands(cmds [][]string) error {
