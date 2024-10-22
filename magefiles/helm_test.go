@@ -55,7 +55,9 @@ func TestNewVersion(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.newHelmVersion, buildNewHelmVersion(test.currentHelmVersion, test.currentTrivyVersion, test.newTrivyVersion))
+			newHelmVersion, err := buildNewHelmVersion(test.currentHelmVersion, test.currentTrivyVersion, test.newTrivyVersion)
+			assert.NoError(t, err)
+			assert.Equal(t, test.newHelmVersion, newHelmVersion)
 		})
 	}
 }

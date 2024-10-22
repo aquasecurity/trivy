@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"strings"
+
+	"github.com/aquasecurity/go-version/pkg/semver"
 
 	"github.com/magefile/mage/sh"
 	"golang.org/x/xerrors"
@@ -37,7 +37,10 @@ func main() {
 	if !ok {
 		log.Fatalf("could not determine current helm version")
 	}
-	newHelmVersion := buildNewHelmVersion(currentHelmVersion, currentTrivyVersion, trivyVersion)
+	newHelmVersion, err := buildNewHelmVersion(currentHelmVersion, currentTrivyVersion, trivyVersion)
+	if err != nil {
+		log.Fatalf("could not build new helm version: %v", err)
+	}
 
 	log.Printf("Current helm version %q with Trivy %q will bump up %q with Trivy %q",
 		currentHelmVersion, currentTrivyVersion, newHelmVersion, trivyVersion)
@@ -72,40 +75,29 @@ func runShCommands(cmds [][]string) error {
 	return nil
 }
 
-func splitVersion(version string) []int {
-	items := strings.Split(version, ".")
-	result := make([]int, len(items))
-	for i, item := range items {
-		result[i], _ = strconv.Atoi(item)
-	}
-	return result
-}
-
-func buildNewHelmVersion(currentHelm, currentTrivy, newTrivy string) string {
-	ch := splitVersion(currentHelm)
-	ct := splitVersion(currentTrivy)
-	tr := splitVersion(newTrivy)
-
-	if len(ch) != len(ct) || len(ch) != len(tr) || len(ch) != 3 {
-		log.Fatalf("invalid version lengths for %q, %q and %q", currentHelm, currentTrivy, newTrivy)
+func buildNewHelmVersion(currentHelm, currentTrivy, newTrivy string) (string, error) {
+	currentHelmVersion, err := semver.Parse(currentHelm)
+	if err != nil {
+		return "", xerrors.Errorf("could not parse current helm version: %w", err)
 	}
 
-	n := len(ch)
-	res := make([]string, n)
-	if tr[0] != ct[0] {
-		res[0] = strconv.Itoa(tr[0])
-		res[1] = strconv.Itoa(tr[1])
-		res[2] = "0"
-		return strings.Join(res, ".")
+	currentTrivyVersion, err := semver.Parse(currentTrivy)
+	if err != nil {
+		return "", xerrors.Errorf("could not parse current trivy version: %w", err)
 	}
 
-	res[0] = strconv.Itoa(tr[0])
-	if tr[1] != ct[1] {
-		res[1] = strconv.Itoa(ch[1] + tr[1] - ct[1])
-		res[2] = "0"
-	} else {
-		res[1] = strconv.Itoa(ch[1])
-		res[2] = strconv.Itoa(ch[2] + tr[2] - ct[2])
+	newTrivyVersion, err := semver.Parse(newTrivy)
+	if err != nil {
+		return "", xerrors.Errorf("could not parse new trivy version: %w", err)
 	}
-	return strings.Join(res, ".")
+
+	if newTrivyVersion.Major().Compare(currentTrivyVersion.Major()) > 0 {
+		return currentHelmVersion.IncMajor().String(), nil
+	}
+
+	if newTrivyVersion.Minor().Compare(currentTrivyVersion.Minor()) > 0 {
+		return currentHelmVersion.IncMinor().String(), nil
+	}
+
+	return currentHelmVersion.IncPatch().String(), nil
 }
