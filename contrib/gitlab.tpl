@@ -24,15 +24,18 @@
     "status": "success",
     "type": "container_scanning"
   },
+  {{- $image := "Unknown" -}}
+  {{- $os := "Unknown" -}}
+  {{- range . }}
+    {{- if eq .Class "os-pkgs" -}}
+      {{- $target := .Target }}
+        {{- $image = $target | regexFind "[^\\s]+" }}
+        {{- $os = $target | splitList "(" | last | trimSuffix ")" }}
+    {{- end }}
+  {{- end }}
   "vulnerabilities": [
   {{- $t_first := true }}
   {{- range . }}
-  {{- $target := .Target }}
-    {{- $image := $target | regexFind "[^\\s]+" }}
-    {{- $os := $target | splitList "(" | last | trimSuffix ")" }}
-    {{- if eq $os $target -}}
-      {{- $os = "Unknown" -}}
-    {{- end }}
     {{- range .Vulnerabilities -}}
     {{- if $t_first -}}
       {{- $t_first = false -}}
