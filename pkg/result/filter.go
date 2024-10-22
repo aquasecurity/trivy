@@ -130,13 +130,12 @@ func filterMisconfigurations(result *types.Result, severities []string, includeN
 
 		// Filter by ignore file
 		if f := ignoreConfig.MatchMisconfiguration(misconf.ID, misconf.AVDID, result.Target); f != nil {
-			result.MisconfSummary.Exceptions++
 			result.ModifiedFindings = append(result.ModifiedFindings,
 				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue
 		}
 
-		// Count successes, failures, and exceptions
+		// Count successes and failures
 		summarize(misconf.Status, result.MisconfSummary)
 
 		if misconf.Status != types.MisconfStatusFailure && !includeNonFailures {
@@ -210,8 +209,6 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 		summary.Failures++
 	case types.MisconfStatusPassed:
 		summary.Successes++
-	case types.MisconfStatusException:
-		summary.Exceptions++
 	}
 }
 
@@ -256,7 +253,6 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 			return err
 		}
 		if ignored {
-			result.MisconfSummary.Exceptions++
 			switch misconf.Status {
 			case types.MisconfStatusFailure:
 				result.MisconfSummary.Failures--

@@ -754,13 +754,12 @@ func ConvertFromRPCMisconfigurations(rpcMisconfs []*common.Misconfiguration) []f
 	var misconfs []ftypes.Misconfiguration
 	for _, rpcMisconf := range rpcMisconfs {
 		misconfs = append(misconfs, ftypes.Misconfiguration{
-			FileType:   ftypes.ConfigType(rpcMisconf.FileType),
-			FilePath:   rpcMisconf.FilePath,
-			Successes:  ConvertFromRPCMisconfResults(rpcMisconf.Successes),
-			Warnings:   ConvertFromRPCMisconfResults(rpcMisconf.Warnings),
-			Failures:   ConvertFromRPCMisconfResults(rpcMisconf.Failures),
-			Exceptions: ConvertFromRPCMisconfResults(rpcMisconf.Exceptions),
-			Layer:      ftypes.Layer{},
+			FileType:  ftypes.ConfigType(rpcMisconf.FileType),
+			FilePath:  rpcMisconf.FilePath,
+			Successes: ConvertFromRPCMisconfResults(rpcMisconf.Successes),
+			Warnings:  ConvertFromRPCMisconfResults(rpcMisconf.Warnings),
+			Failures:  ConvertFromRPCMisconfResults(rpcMisconf.Failures),
+			Layer:     ftypes.Layer{},
 		})
 	}
 	return misconfs
@@ -875,12 +874,11 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	var misconfigurations []*common.Misconfiguration
 	for _, m := range blobInfo.Misconfigurations {
 		misconfigurations = append(misconfigurations, &common.Misconfiguration{
-			FileType:   string(m.FileType),
-			FilePath:   m.FilePath,
-			Successes:  ConvertToMisconfResults(m.Successes),
-			Warnings:   ConvertToMisconfResults(m.Warnings),
-			Failures:   ConvertToMisconfResults(m.Failures),
-			Exceptions: ConvertToMisconfResults(m.Exceptions),
+			FileType:  string(m.FileType),
+			FilePath:  m.FilePath,
+			Successes: ConvertToMisconfResults(m.Successes),
+			Warnings:  ConvertToMisconfResults(m.Warnings),
+			Failures:  ConvertToMisconfResults(m.Failures),
 		})
 
 	}

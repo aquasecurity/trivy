@@ -210,9 +210,6 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 		for _, w := range misconf.Successes {
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusPassed, misconf.Layer))
 		}
-		for _, w := range misconf.Exceptions {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusException, misconf.Layer))
-		}
 
 		results = append(results, types.Result{
 			Target:            misconf.FilePath,
