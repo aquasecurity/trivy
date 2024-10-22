@@ -23,7 +23,7 @@ env:
   KIND_VERSION: "v0.14.0"
   KIND_IMAGE: "kindest/node:v1.23.6@sha256:b1fa224cc6c7ff32455e0b1fd9cbfd3d3bc87ecaa8fcb06961ed1afb3db0f9ae"
 jobs:
-  # `test-chart` job starts if a PR with Helm Chart is created, merged etc. 
+  # `test-chart` job starts if a PR with Helm Chart is created, merged etc.
   test-chart:
     if: github.event_name != 'push'
     runs-on: ubuntu-20.04
@@ -81,8 +81,8 @@ jobs:
           # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows the created PR to trigger tests and other workflows
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
-  
-  # `publish-chart` job starts if a PR with a new Helm Chart is merged or manually 
+
+  # `publish-chart` job starts if a PR with a new Helm Chart is merged or manually
   publish-chart:
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     needs:

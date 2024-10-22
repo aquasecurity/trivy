@@ -36,7 +36,7 @@ func main() {
 
 	cmds := [][]string{
 		[]string{"git", "switch", "-c", newBranch},
-		[]string{"git", "add", "./helm/trivy/Chart.yaml"},
+		[]string{"git", "add", chartFile},
 		[]string{"git", "commit", "-m", title},
 		[]string{"git", "push", "origin", newBranch},
 		[]string{"gh", "pr", "create", "--base", "main", "--head", newBranch, "--title", title, "--body", description, "--repo", "$GITHUB_REPOSITORY"},
@@ -53,8 +53,8 @@ type Chart struct {
 	AppVersion string `yaml:"appVersion"`
 }
 
-// bumpHelmChart bumps up helm and trivy versions inside Chart.yaml
-// returns a new helm version
+// bumpHelmChart bumps up helm and trivy versions inside a file (Chart.yaml)
+// it returns a new helm version and error
 func bumpHelmChart(filename, trivyVersion string) (string, error) {
 	input, err := os.ReadFile(filename)
 	if err != nil {
