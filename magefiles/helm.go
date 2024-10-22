@@ -25,30 +25,31 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not find helm chart %s: %v", chartFile, err)
 	}
-	jsonData := map[string]interface{}{}
-	if err := yaml.Unmarshal(input, &jsonData); err != nil {
+	yamlData := map[string]interface{}{}
+	if err := yaml.Unmarshal(input, &yamlData); err != nil {
 		log.Fatalf("could not unmarshal helm chart %s: %v", chartFile, err)
 	}
-	currentAppVersion, ok := jsonData["appVersion"].(string)
+	currentTrivyVersion, ok := yamlData["appVersion"].(string)
 	if !ok {
 		log.Fatalf("could not determine current app version")
 	}
-	currentHelmVersion, ok := jsonData["version"].(string)
+	currentHelmVersion, ok := yamlData["version"].(string)
 	if !ok {
 		log.Fatalf("could not determine current helm version")
 	}
-	newHelmVersion := newHelmVersion(currentHelmVersion, currentAppVersion, trivyVersion)
+	newHelmVersion := buildNewHelmVersion(currentHelmVersion, currentTrivyVersion, trivyVersion)
 
 	log.Printf("Current helm version %q with Trivy %q will bump up %q with Trivy %q",
-		currentHelmVersion, currentAppVersion, newHelmVersion, trivyVersion)
+		currentHelmVersion, currentTrivyVersion, newHelmVersion, trivyVersion)
 
 	newBranch := fmt.Sprintf("ci/helm-chart/bump-trivy-to-%s", trivyVersion)
-	title := fmt.Sprintf("ci(helm): bump Trivy version to %s", trivyVersion)
-	description := fmt.Sprintf("This PR bumps Trivy up to the %s version for the Helm chart.", trivyVersion)
+	title := fmt.Sprintf("ci(helm): bump Trivy version to %s for Trivy Helm Chart %s", trivyVersion, newHelmVersion)
+	description := fmt.Sprintf("This PR bumps Trivy up to the %s version for the Trivy Helm chart %s.",
+		trivyVersion, newHelmVersion)
 
 	cmds := [][]string{
-		[]string{"sed", "-i", "-e", fmt.Sprintf("s/appVersion: %s/appVersion: %s/g", currentAppVersion, trivyVersion), chartFile},
-		[]string{"sed", "-i", "-e", fmt.Sprintf("s/version: %s/version: %s/g", currentHelmVersion, trivyVersion), chartFile},
+		[]string{"sed", "-i", "-e", fmt.Sprintf("s/appVersion: %s/appVersion: %s/g", currentTrivyVersion, trivyVersion), chartFile},
+		[]string{"sed", "-i", "-e", fmt.Sprintf("s/version: %s/version: %s/g", currentHelmVersion, newHelmVersion), chartFile},
 		[]string{"git", "switch", "-c", newBranch},
 		[]string{"git", "add", "./helm/trivy/Chart.yaml"},
 		[]string{"git", "commit", "-m", title},
@@ -80,7 +81,7 @@ func splitVersion(version string) []int {
 	return result
 }
 
-func newHelmVersion(currentHelm, currentTrivy, newTrivy string) string {
+func buildNewHelmVersion(currentHelm, currentTrivy, newTrivy string) string {
 	ch := splitVersion(currentHelm)
 	ct := splitVersion(currentTrivy)
 	tr := splitVersion(newTrivy)
