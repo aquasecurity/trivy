@@ -27,7 +27,8 @@ func TestMisconfigRenderer(t *testing.T) {
 				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						ID:          "some-alias-for-a-check",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -61,7 +62,7 @@ See https://google.com/search?q=bad%20config
 				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -126,7 +127,7 @@ See https://google.com/search?q=bad%20config
 				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1, Exceptions: 0},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -157,7 +158,7 @@ See https://google.com/search?q=bad%20config
 						},
 					},
 					{
-						ID:          "AVD-XYZ-0456",
+						AVDID:       "AVD-XYZ-0456",
 						Title:       "Config file is bad again",
 						Description: "Your config file is still not good.",
 						Message:     "Oh no, a bad config AGAIN.",
@@ -213,7 +214,7 @@ See https://google.com/search?q=bad%20config
 					{
 						Type:        "Terraform Security Check",
 						ID:          "AVD-AWS-0107",
-						AVDID:       "AVS-AWS-0107",
+						AVDID:       "AVD-AWS-0107",
 						Title:       "An ingress security group rule allows traffic from /0",
 						Description: "Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.",
 						Message:     "Security group rule allows ingress from public internet.",

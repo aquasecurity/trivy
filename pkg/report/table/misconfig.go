@@ -127,15 +127,15 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 	// ID & severity
 	switch misconf.Severity {
 	case severityCritical:
-		r.printf("%s <red><bold>(%s): ", misconf.ID, misconf.Severity)
+		r.printf("%s <red><bold>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityHigh:
-		r.printf("%s <red>(%s): ", misconf.ID, misconf.Severity)
+		r.printf("%s <red>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityMedium:
-		r.printf("%s <yellow>(%s): ", misconf.ID, misconf.Severity)
+		r.printf("%s <yellow>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityLow:
-		r.printf("%s (%s): ", misconf.ID, misconf.Severity)
+		r.printf("%s (%s): ", misconf.AVDID, misconf.Severity)
 	default:
-		r.printf("%s <blue>(%s): ", misconf.ID, misconf.Severity)
+		r.printf("%s <blue>(%s): ", misconf.AVDID, misconf.Severity)
 	}
 
 	// heading
