@@ -16,7 +16,7 @@
     </testsuite>
 
 {{- if .MisconfSummary }}
-    <testsuite tests="{{ add .MisconfSummary.Successes .MisconfSummary.Failures }}" failures="{{ .MisconfSummary.Failures }}" name="{{  .Target }}" errors="0" skipped="{{ .MisconfSummary.Exceptions }}" time="">
+    <testsuite tests="{{ add .MisconfSummary.Successes .MisconfSummary.Failures }}" failures="{{ .MisconfSummary.Failures }}" name="{{  .Target }}" errors="0" time="">
 {{- else }}
     <testsuite tests="0" failures="0" name="{{  .Target }}" errors="0" skipped="0" time="">
 {{- end }}
