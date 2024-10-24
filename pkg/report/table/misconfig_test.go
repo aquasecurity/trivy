@@ -24,7 +24,7 @@ func TestMisconfigRenderer(t *testing.T) {
 			name: "single result",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:          "some-alias-for-a-check",
@@ -42,7 +42,7 @@ func TestMisconfigRenderer(t *testing.T) {
 			want: `
 my-file ()
 ==========
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 AVD-XYZ-0123 (HIGH): Oh no, a bad config.
@@ -59,7 +59,7 @@ See https://google.com/search?q=bad%20config
 			name: "single result with code",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						AVDID:       "AVD-XYZ-0123",
@@ -101,7 +101,7 @@ See https://google.com/search?q=bad%20config
 			want: `
 my-file ()
 ==========
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 AVD-XYZ-0123 (HIGH): Oh no, a bad config.
@@ -124,7 +124,7 @@ See https://google.com/search?q=bad%20config
 			name: "multiple results",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						AVDID:       "AVD-XYZ-0123",
@@ -172,7 +172,7 @@ See https://google.com/search?q=bad%20config
 			want: `
 my-file ()
 ==========
-Tests: 2 (SUCCESSES: 1, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 2 (SUCCESSES: 1, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 FAIL: AVD-XYZ-0123 (HIGH): Oh no, a bad config.
@@ -206,9 +206,8 @@ See https://google.com/search?q=bad%20config
 				Class:  types.ClassConfig,
 				Type:   "terraform",
 				MisconfSummary: &types.MisconfSummary{
-					Successes:  5,
-					Failures:   1,
-					Exceptions: 0,
+					Successes: 5,
+					Failures:  1,
 				},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
@@ -310,7 +309,7 @@ See https://google.com/search?q=bad%20config
 			want: `
 terraform-aws-modules/security-group/aws/main.tf (terraform)
 ============================================================
-Tests: 6 (SUCCESSES: 5, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 6 (SUCCESSES: 5, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
 AVD-AWS-0107 (CRITICAL): Security group rule allows ingress from public internet.

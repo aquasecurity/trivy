@@ -163,7 +163,7 @@ Some fields are displayed in scan results.
 k.yaml (kubernetes)
 ───────────────────
 
-Tests: 32 (SUCCESSES: 31, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 32 (SUCCESSES: 31, FAILURES: 1)
 Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 LOW: Found deployment 'my-deployment' but deployments are not allowed

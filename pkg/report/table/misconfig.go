@@ -61,8 +61,8 @@ func (r *misconfigRenderer) Render() string {
 	total, summaries := summarize(r.severities, r.countSeverities())
 
 	summary := r.result.MisconfSummary
-	r.printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
-		summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
+	r.printf("Tests: %d (SUCCESSES: %d, FAILURES: %d)\n",
+		summary.Successes+summary.Failures, summary.Successes, summary.Failures)
 	r.printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	for _, m := range r.result.Misconfigurations {

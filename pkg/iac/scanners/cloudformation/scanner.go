@@ -205,6 +205,7 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 	}
 	results = append(results, regoResults...)
 
+	// ignore a result based on user input
 	results.Ignore(cfCtx.Ignores, nil)
 
 	for _, ignored := range results.GetIgnored() {

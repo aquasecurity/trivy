@@ -820,17 +820,6 @@ func TestScanner_Scan(t *testing.T) {
 										},
 									},
 								},
-								Exceptions: ftypes.MisconfResults{
-									{
-										Namespace: "main.kubernetes.id100",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID100",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "HIGH",
-										},
-									},
-								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 								},
@@ -918,18 +907,6 @@ func TestScanner_Scan(t *testing.T) {
 							Namespace: "main.kubernetes.id300",
 							Severity:  "MEDIUM",
 							Status:    types.MisconfStatusFailure,
-							Layer: ftypes.Layer{
-								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-							},
-						},
-						{
-							Type:      "Kubernetes Security Check",
-							ID:        "ID100",
-							Title:     "Bad Deployment",
-							Message:   "No issues found",
-							Namespace: "main.kubernetes.id100",
-							Severity:  "HIGH",
-							Status:    types.MisconfStatusException,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},

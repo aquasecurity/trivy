@@ -61,9 +61,8 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						Class:  types.ClassConfig,
 						Type:   ftypes.Kubernetes,
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  0,
-							Failures:   1,
-							Exceptions: 0,
+							Successes: 0,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
@@ -79,9 +78,8 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						Class:  types.ClassConfig,
 						Type:   ftypes.Kubernetes,
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  0,
-							Failures:   1,
-							Exceptions: 0,
+							Successes: 0,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{

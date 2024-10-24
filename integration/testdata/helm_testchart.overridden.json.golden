@@ -22,8 +22,7 @@
       "Type": "helm",
       "MisconfSummary": {
         "Successes": 88,
-        "Failures": 6,
-        "Exceptions": 0
+        "Failures": 6
       },
       "Misconfigurations": [
         {
@@ -569,8 +568,7 @@
       "Type": "helm",
       "MisconfSummary": {
         "Successes": 61,
-        "Failures": 0,
-        "Exceptions": 0
+        "Failures": 0
       }
     },
     {
@@ -579,8 +577,7 @@
       "Type": "helm",
       "MisconfSummary": {
         "Successes": 60,
-        "Failures": 0,
-        "Exceptions": 0
+        "Failures": 0
       }
     }
   ]

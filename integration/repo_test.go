@@ -310,15 +310,6 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/dockerfile-rule-exception.json.golden",
 		},
 		{
-			name: "dockerfile with namespace exception",
-			args: args{
-				scanner:     types.MisconfigScanner,
-				policyPaths: []string{"testdata/fixtures/repo/namespace-exception/policy"},
-				input:       "testdata/fixtures/repo/namespace-exception",
-			},
-			golden: "testdata/dockerfile-namespace-exception.json.golden",
-		},
-		{
 			name: "dockerfile with custom policies",
 			args: args{
 				scanner:     types.MisconfigScanner,

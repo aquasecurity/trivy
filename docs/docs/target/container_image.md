@@ -119,7 +119,7 @@ $ trivy image --image-config-scanners misconfig [YOUR_IMAGE_NAME]
 ```
 alpine:3.17 (dockerfile)
 ========================
-Tests: 24 (SUCCESSES: 21, FAILURES: 3, EXCEPTIONS: 0)
+Tests: 24 (SUCCESSES: 21, FAILURES: 3)
 Failures: 3 (UNKNOWN: 0, LOW: 2, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 HIGH: Specify at least 1 USER command in Dockerfile with non-root user as argument
