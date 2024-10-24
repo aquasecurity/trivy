@@ -4,6 +4,7 @@ package main
 
 import (
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -78,7 +79,7 @@ keywords:
   - trivy
   - vulnerability
 `
-	err = ioutil.WriteFile(tempFile.Name(), []byte(content), 0644)
+	err = os.WriteFile(tempFile.Name(), []byte(content), 0644)
 	assert.NoError(t, err)
 
 	newVersion, err := bumpHelmChart(tempFile.Name(), "0.55.1")
