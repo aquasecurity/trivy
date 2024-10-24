@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/authn/github"
 	"github.com/google/go-containerregistry/pkg/crane"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/magefile/mage/sh"
@@ -14,13 +16,15 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 )
 
+var auth = crane.WithAuthFromKeychain(authn.NewMultiKeychain(authn.DefaultKeychain, github.Keychain))
+
 func fixtureContainerImages() error {
 	var testImages = testutil.ImageName("", "", "")
 	const dir = "integration/testdata/fixtures/images/"
 	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
-	tags, err := crane.ListTags(testImages)
+	tags, err := crane.ListTags(testImages, auth)
 	if err != nil {
 		return err
 	}
@@ -32,7 +36,7 @@ func fixtureContainerImages() error {
 		}
 		fmt.Printf("Downloading %s...\n", tag)
 		imgName := fmt.Sprintf("%s:%s", testImages, tag)
-		img, err := crane.Pull(imgName)
+		img, err := crane.Pull(imgName, auth)
 		if err != nil {
 			return err
 		}
@@ -56,12 +60,12 @@ func fixtureVMImages() error {
 	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
-	tags, err := crane.ListTags(testVMImages)
+	tags, err := crane.ListTags(testVMImages, auth)
 	if err != nil {
 		return err
 	}
 	for _, tag := range tags {
-		img, err := crane.Pull(fmt.Sprintf("%s:%s", testVMImages, tag))
+		img, err := crane.Pull(fmt.Sprintf("%s:%s", testVMImages, tag), auth)
 		if err != nil {
 			return err
 		}

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/authn/github"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
@@ -166,7 +167,7 @@ func authOptions(ctx context.Context, ref name.Reference, option types.RegistryO
 		return []remote.Option{remote.WithAuth(&bearer)}
 	default:
 		// Use the keychain anyway at the end
-		opts = append(opts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
+		opts = append(opts, remote.WithAuthFromKeychain(authn.NewMultiKeychain(authn.DefaultKeychain, github.Keychain)))
 		return opts
 	}
 }
