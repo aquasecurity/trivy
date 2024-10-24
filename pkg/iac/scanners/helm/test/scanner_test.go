@@ -18,11 +18,6 @@ import (
 )
 
 func Test_helm_scanner_with_archive(t *testing.T) {
-	// TODO(simar7): Figure out why this test fails on Winndows only
-	if runtime.GOOS == "windows" {
-		t.Skip("skipping test on windows")
-	}
-
 	tests := []struct {
 		testName    string
 		chartName   string
@@ -30,10 +25,10 @@ func Test_helm_scanner_with_archive(t *testing.T) {
 		archiveName string
 	}{
 		{
-			testName:    "Parsing tarball 'mysql-8.8.26.tar'",
+			testName:    "Parsing tarball 'mysql-8.8.26.tgz'",
 			chartName:   "mysql",
-			path:        filepath.Join("testdata", "mysql-8.8.26.tar"),
-			archiveName: "mysql-8.8.26.tar",
+			path:        filepath.Join("testdata", "mysql-8.8.26.tgz"),
+			archiveName: "mysql-8.8.26.tgz",
 		},
 	}
 
@@ -198,10 +193,10 @@ deny[res] {
 		archiveName string
 	}{
 		{
-			testName:    "Parsing tarball 'mysql-8.8.26.tar'",
+			testName:    "Parsing tarball 'mysql-8.8.26.tgz'",
 			chartName:   "mysql",
-			path:        filepath.Join("testdata", "mysql-8.8.26.tar"),
-			archiveName: "mysql-8.8.26.tar",
+			path:        filepath.Join("testdata", "mysql-8.8.26.tgz"),
+			archiveName: "mysql-8.8.26.tgz",
 		},
 	}
 
