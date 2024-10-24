@@ -1,14 +1,14 @@
 apiVersion: v2
 appVersion: "1.1"
 description: Test Chart
-name: y-chart
+name: my-chart
 version: 1.0.0
-kubeVersion: ">=1.21"
 
 dependencies:
-  - name: common
-    repository: https://charts.bitnami.com/bitnami
-    version: 2.26.0
-  - name: opentelemetry-collector
-    version: 0.108.0
-    repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+  - name: mysql-operator
+    version: 2.2.2
+    repository: https://mysql.github.io/mysql-operator
+
+  - name: wordpress-operator
+    version: 0.12.4
+    repository: https://helm-charts.bitpoke.io

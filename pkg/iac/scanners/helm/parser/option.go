@@ -13,25 +13,25 @@ type Option func(p *Parser)
 
 func OptionWithValuesFile(paths ...string) Option {
 	return func(p *Parser) {
-		p.valuesFiles = paths
+		p.valueOpts.ValueFiles = paths
 	}
 }
 
 func OptionWithValues(values ...string) Option {
 	return func(p *Parser) {
-		p.values = values
+		p.valueOpts.Values = values
 	}
 }
 
 func OptionWithFileValues(values ...string) Option {
 	return func(p *Parser) {
-		p.fileValues = values
+		p.valueOpts.FileValues = values
 	}
 }
 
 func OptionWithStringValues(values ...string) Option {
 	return func(p *Parser) {
-		p.stringValues = values
+		p.valueOpts.StringValues = values
 	}
 }
 

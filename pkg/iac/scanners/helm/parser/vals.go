@@ -109,6 +109,7 @@ func readFile(filePath string) ([]byte, error) {
 		}
 		return data.Bytes(), err
 	} else {
+		// TODO: use fs package
 		return os.ReadFile(filePath)
 	}
 }

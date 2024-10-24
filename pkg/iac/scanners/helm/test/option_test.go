@@ -39,22 +39,21 @@ func Test_helm_parser_with_options_with_values_file(t *testing.T) {
 				opts = append(opts, parser.OptionWithValuesFile(test.valuesFile))
 			}
 
-			helmParser, err := parser.New(chartName, opts...)
+			helmParser, err := parser.New(opts...)
 			require.NoError(t, err)
-			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
-			manifests, err := helmParser.RenderedChartFiles()
+			manifests, err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 
 			assert.Len(t, manifests, 3)
 
 			for _, manifest := range manifests {
-				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
+				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.Path)
 
 				expectedContent, err := os.ReadFile(expectedPath)
 				require.NoError(t, err)
 
 				cleanExpected := strings.ReplaceAll(string(expectedContent), "\r\n", "\n")
-				cleanActual := strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n")
+				cleanActual := strings.ReplaceAll(manifest.Content, "\r\n", "\n")
 
 				assert.Equal(t, cleanExpected, cleanActual)
 			}
@@ -93,23 +92,22 @@ func Test_helm_parser_with_options_with_set_value(t *testing.T) {
 				opts = append(opts, parser.OptionWithValues(test.values))
 			}
 
-			helmParser, err := parser.New(chartName, opts...)
+			helmParser, err := parser.New(opts...)
 			require.NoError(t, err)
-			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
-			require.NoError(t, err)
-			manifests, err := helmParser.RenderedChartFiles()
+
+			manifests, err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 
 			assert.Len(t, manifests, 3)
 
 			for _, manifest := range manifests {
-				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
+				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.Path)
 
 				expectedContent, err := os.ReadFile(expectedPath)
 				require.NoError(t, err)
 
 				cleanExpected := strings.ReplaceAll(string(expectedContent), "\r\n", "\n")
-				cleanActual := strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n")
+				cleanActual := strings.ReplaceAll(manifest.Content, "\r\n", "\n")
 
 				assert.Equal(t, cleanExpected, cleanActual)
 			}
@@ -143,23 +141,22 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 				opts = append(opts, parser.OptionWithAPIVersions(test.apiVersions...))
 			}
 
-			helmParser, err := parser.New(chartName, opts...)
+			helmParser, err := parser.New(opts...)
 			require.NoError(t, err)
-			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
-			require.NoError(t, err)
-			manifests, err := helmParser.RenderedChartFiles()
+
+			manifests, err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 
 			assert.Len(t, manifests, 1)
 
 			for _, manifest := range manifests {
-				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
+				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.Path)
 
 				expectedContent, err := os.ReadFile(expectedPath)
 				require.NoError(t, err)
 
 				cleanExpected := strings.TrimSpace(strings.ReplaceAll(string(expectedContent), "\r\n", "\n"))
-				cleanActual := strings.TrimSpace(strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n"))
+				cleanActual := strings.TrimSpace(strings.ReplaceAll(manifest.Content, "\r\n", "\n"))
 
 				assert.Equal(t, cleanExpected, cleanActual)
 			}
@@ -198,26 +195,27 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 
 			opts = append(opts, parser.OptionWithKubeVersion(test.kubeVersion))
 
-			helmParser, err := parser.New(chartName, opts...)
+			helmParser, err := parser.New(opts...)
 			if test.expectedError != "" {
 				require.EqualError(t, err, test.expectedError)
 				return
 			}
 			require.NoError(t, err)
-			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
-			manifests, err := helmParser.RenderedChartFiles()
+
+			fsys := os.DirFS(filepath.Join("testdata", chartName))
+			manifests, err := helmParser.ParseFS(context.TODO(), fsys, ".")
 			require.NoError(t, err)
 
 			assert.Len(t, manifests, 1)
 
 			for _, manifest := range manifests {
-				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
+				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.Path)
 
 				expectedContent, err := os.ReadFile(expectedPath)
 				require.NoError(t, err)
 
 				cleanExpected := strings.TrimSpace(strings.ReplaceAll(string(expectedContent), "\r\n", "\n"))
-				cleanActual := strings.TrimSpace(strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n"))
+				cleanActual := strings.TrimSpace(strings.ReplaceAll(manifest.Content, "\r\n", "\n"))
 
 				assert.Equal(t, cleanExpected, cleanActual)
 			}
