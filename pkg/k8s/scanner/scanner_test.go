@@ -20,16 +20,17 @@ import (
 )
 
 func TestScanner_Scan(t *testing.T) {
-	flagOpts := flag.Options{ReportOptions: flag.ReportOptions{Format: "cyclonedx"}}
 	tests := []struct {
 		name           string
 		clusterName    string
+		opts           flag.Options
 		artifacts      []*artifacts.Artifact
 		wantComponents []*core.Component
 	}{
 		{
 			name:        "test cluster info with resources",
 			clusterName: "test-cluster",
+			opts:        flag.Options{ReportOptions: flag.ReportOptions{Format: "cyclonedx"}},
 			artifacts: []*artifacts.Artifact{
 				{
 					Namespace: "kube-system",
@@ -277,10 +278,10 @@ func TestScanner_Scan(t *testing.T) {
 			ctx := context.Background()
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			runner, err := cmd.NewRunner(ctx, flagOpts)
+			runner, err := cmd.NewRunner(ctx, tt.opts)
 			require.NoError(t, err)
 
-			scanner := NewScanner(tt.clusterName, runner, flagOpts)
+			scanner := NewScanner(tt.clusterName, runner, tt.opts)
 			got, err := scanner.Scan(ctx, tt.artifacts)
 			require.NoError(t, err)
 
