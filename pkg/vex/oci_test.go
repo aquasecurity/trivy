@@ -28,6 +28,7 @@ import (
 )
 
 func setUpRegistry(t *testing.T) (*httptest.Server, v1.Hash) {
+	t.Helper()
 	imgWithVEX := setUpImage(t)
 	d, err := imgWithVEX.Digest()
 	require.NoError(t, err)
@@ -48,6 +49,7 @@ func setUpRegistry(t *testing.T) (*httptest.Server, v1.Hash) {
 }
 
 func setUpImage(t *testing.T) v1.Image {
+	t.Helper()
 	img, err := random.Image(100, 1, random.WithSource(rand.NewSource(0)))
 	require.NoError(t, err)
 
@@ -55,6 +57,7 @@ func setUpImage(t *testing.T) v1.Image {
 }
 
 func setUpVEXAttestation(t *testing.T) v1.Image {
+	t.Helper()
 	envelope := createVEXAttestation(t)
 	b, err := json.Marshal(envelope)
 	require.NoError(t, err)
@@ -67,6 +70,7 @@ func setUpVEXAttestation(t *testing.T) v1.Image {
 }
 
 func createVEXAttestation(t *testing.T) dsse.Envelope {
+	t.Helper()
 	var v openvex.VEX
 	testutil.MustReadJSON(t, "testdata/openvex-oci.json", &v)
 

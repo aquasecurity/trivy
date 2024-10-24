@@ -28,6 +28,7 @@ func TestRun(t *testing.T) {
 			},
 			wantErr: false,
 			checkFunc: func(t *testing.T, dir string) {
+				t.Helper()
 				assert.NoDirExists(t, filepath.Join(dir, "fanal"))
 				assert.NoDirExists(t, filepath.Join(dir, "db"))
 				assert.NoDirExists(t, filepath.Join(dir, "java-db"))
@@ -43,6 +44,7 @@ func TestRun(t *testing.T) {
 			},
 			wantErr: false,
 			checkFunc: func(t *testing.T, dir string) {
+				t.Helper()
 				assert.NoDirExists(t, filepath.Join(dir, "fanal"))
 				assert.DirExists(t, filepath.Join(dir, "db"))
 				assert.DirExists(t, filepath.Join(dir, "java-db"))
@@ -57,6 +59,7 @@ func TestRun(t *testing.T) {
 			},
 			wantErr: false,
 			checkFunc: func(t *testing.T, dir string) {
+				t.Helper()
 				assert.NoDirExists(t, filepath.Join(dir, "db"))
 				assert.DirExists(t, filepath.Join(dir, "fanal"))
 				assert.DirExists(t, filepath.Join(dir, "java-db"))
@@ -71,6 +74,7 @@ func TestRun(t *testing.T) {
 			},
 			wantErr: false,
 			checkFunc: func(t *testing.T, dir string) {
+				t.Helper()
 				assert.NoDirExists(t, filepath.Join(dir, "java-db"))
 				assert.DirExists(t, filepath.Join(dir, "fanal"))
 				assert.DirExists(t, filepath.Join(dir, "db"))
@@ -85,6 +89,7 @@ func TestRun(t *testing.T) {
 			},
 			wantErr: false,
 			checkFunc: func(t *testing.T, dir string) {
+				t.Helper()
 				assert.NoDirExists(t, filepath.Join(dir, "policy"))
 				assert.DirExists(t, filepath.Join(dir, "fanal"))
 				assert.DirExists(t, filepath.Join(dir, "db"))
@@ -99,6 +104,7 @@ func TestRun(t *testing.T) {
 			},
 			wantErr: false,
 			checkFunc: func(t *testing.T, dir string) {
+				t.Helper()
 				assert.DirExists(t, filepath.Join(dir, "policy"))
 				assert.DirExists(t, filepath.Join(dir, "fanal"))
 				assert.DirExists(t, filepath.Join(dir, "db"))
@@ -145,6 +151,7 @@ func TestRun(t *testing.T) {
 }
 
 func createTestFiles(t *testing.T, dir string) {
+	t.Helper()
 	subdirs := []string{
 		"fanal",
 		"db",

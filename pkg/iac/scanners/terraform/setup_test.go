@@ -15,6 +15,7 @@ import (
 )
 
 func createModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
+	t.Helper()
 	fs := testutil.CreateFS(t, map[string]string{
 		"source" + ext: source,
 	})
@@ -31,10 +32,12 @@ func createModulesFromSource(t *testing.T, source, ext string) terraform.Modules
 }
 
 func scanHCLWithWorkspace(t *testing.T, source, workspace string) scan.Results {
+	t.Helper()
 	return scanHCL(t, source, ScannerWithWorkspaceName(workspace))
 }
 
 func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
+	t.Helper()
 
 	fs := testutil.CreateFS(t, map[string]string{
 		"main.tf": source,
@@ -47,6 +50,7 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 }
 
 func scanJSON(t *testing.T, source string) scan.Results {
+	t.Helper()
 
 	fs := testutil.CreateFS(t, map[string]string{
 		"main.tf.json": source,
