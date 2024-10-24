@@ -33,22 +33,24 @@ func Test_helm_parser(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
 			chartName := test.chartName
-			helmParser, err := parser.New(chartName)
+			helmParser, err := parser.New()
 			require.NoError(t, err)
-			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS("testdata"), chartName))
-			manifests, err := helmParser.RenderedChartFiles()
+
+			fsys := os.DirFS("testdata")
+			manifests, err := helmParser.ParseFS(context.TODO(), fsys, chartName)
 			require.NoError(t, err)
 
 			assert.Len(t, manifests, 3)
 
 			for _, manifest := range manifests {
-				expectedPath := filepath.Join("testdata", "expected", chartName, manifest.TemplateFilePath)
+				expectedPath := filepath.Join("testdata", "expected", chartName, manifest.Path)
 
 				expectedContent, err := os.ReadFile(expectedPath)
 				require.NoError(t, err)
 
-				got := strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n")
-				assert.Equal(t, strings.ReplaceAll(string(expectedContent), "\r\n", "\n"), got)
+				expected := strings.ReplaceAll(string(expectedContent), "\r\n", "\n")
+				got := strings.ReplaceAll(manifest.Content, "\r\n", "\n")
+				assert.Equal(t, expected, got)
 			}
 		})
 	}
@@ -71,9 +73,12 @@ func Test_helm_parser_where_name_non_string(t *testing.T) {
 
 		t.Logf("Running test: %s", test.testName)
 
-		helmParser, err := parser.New(chartName)
+		helmParser, err := parser.New()
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
+
+		fsys := os.DirFS(filepath.Join("testdata", chartName))
+		_, err = helmParser.ParseFS(context.TODO(), fsys, ".")
+		require.NoError(t, err)
 	}
 }
 
@@ -84,11 +89,6 @@ func Test_tar_is_chart(t *testing.T) {
 		archiveFile string
 		isHelmChart bool
 	}{
-		{
-			testName:    "standard tarball",
-			archiveFile: "mysql-8.8.26.tar",
-			isHelmChart: true,
-		},
 		{
 			testName:    "gzip tarball with tar.gz extension",
 			archiveFile: "mysql-8.8.26.tar.gz",
@@ -131,11 +131,6 @@ func Test_helm_tarball_parser(t *testing.T) {
 		archiveFile string
 	}{
 		{
-			testName:    "standard tarball",
-			chartName:   "mysql",
-			archiveFile: "mysql-8.8.26.tar",
-		},
-		{
 			testName:    "gzip tarball with tar.gz extension",
 			chartName:   "mysql",
 			archiveFile: "mysql-8.8.26.tar.gz",
@@ -159,11 +154,10 @@ func Test_helm_tarball_parser(t *testing.T) {
 
 		testFs := os.DirFS(testTemp)
 
-		helmParser, err := parser.New(test.archiveFile)
+		helmParser, err := parser.New()
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(context.TODO(), testFs, "."))
 
-		manifests, err := helmParser.RenderedChartFiles()
+		manifests, err := helmParser.ParseFS(context.TODO(), testFs, ".")
 		require.NoError(t, err)
 
 		assert.Len(t, manifests, 6)
@@ -178,18 +172,20 @@ func Test_helm_tarball_parser(t *testing.T) {
 		}
 
 		for _, manifest := range manifests {
-			filename := filepath.Base(manifest.TemplateFilePath)
+			filename := filepath.Base(manifest.Path)
 			assert.Contains(t, oneOf, filename)
 
-			if strings.HasSuffix(manifest.TemplateFilePath, "secrets.yaml") {
+			if strings.HasSuffix(manifest.Path, "secrets.yaml") {
 				continue
 			}
-			expectedPath := filepath.Join("testdata", "expected", test.chartName, manifest.TemplateFilePath)
+			expectedPath := filepath.Join("testdata", "expected", test.chartName, manifest.Path)
 
 			expectedContent, err := os.ReadFile(expectedPath)
 			require.NoError(t, err)
 
-			assert.Equal(t, strings.ReplaceAll(string(expectedContent), "\r\n", "\n"), strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n"))
+			expected := strings.ReplaceAll(string(expectedContent), "\r\n", "\n")
+			got := strings.ReplaceAll(manifest.Content, "\r\n", "\n")
+			assert.Equal(t, expected, got)
 		}
 	}
 }

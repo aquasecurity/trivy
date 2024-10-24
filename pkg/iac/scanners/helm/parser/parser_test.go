@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"context"
@@ -6,61 +6,64 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 )
 
-func TestParseFS(t *testing.T) {
-	t.Run("source chart is located next to an same archived chart", func(t *testing.T) {
-		p, err := New(".")
-		require.NoError(t, err)
-		require.NoError(t, p.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", "chart-and-archived-chart")), "."))
+func Test_ParseFS(t *testing.T) {
 
-		expectedFiles := []string{
-			"my-chart/Chart.yaml",
-			"my-chart/templates/pod.yaml",
-		}
-		assert.Equal(t, expectedFiles, p.filepaths)
-	})
+	tests := []struct {
+		name     string
+		dir      string
+		expected []string
+	}{
+		{
+			name:     "source chart is located next to an same archived chart",
+			dir:      "chart-and-archived-chart",
+			expected: []string{"templates/pod.yaml"},
+		},
+		{
+			name: "archive with symlinks",
+			// shared-library in "charts" is symlink
+			// ln -s ../shared-library charts/shared-library
+			// helm package .
+			dir:      "archive-with-symlinks",
+			expected: []string{"charts/foo/templates/secret.yaml"},
+		},
+		{
+			name: "chart with multiple archived deps",
+			dir:  "multiple-archived-deps",
+			expected: []string{
+				"charts/wordpress-operator/templates/clusterrolebinding.yaml",
+				"charts/wordpress-operator/templates/service.yaml",
+				"charts/wordpress-operator/templates/deployment.yaml",
+				"charts/wordpress-operator/templates/serviceaccount.yaml",
+				"charts/wordpress-operator/templates/clusterrole.yaml",
+				"charts/mysql-operator/templates/service_account_operator.yaml",
+				"charts/mysql-operator/templates/cluster_role_operator.yaml",
+				"charts/mysql-operator/templates/cluster_role_sidecar.yaml",
+				"charts/mysql-operator/templates/cluster_role_binding_operator.yaml",
+				"charts/mysql-operator/templates/service.yaml",
+				"charts/mysql-operator/templates/deployment.yaml",
+				"charts/mysql-operator/templates/cluster_kopf_keepering.yaml",
+			},
+		},
+	}
 
-	t.Run("archive with symlinks", func(t *testing.T) {
-		// mkdir -p chart && cd $_
-		// touch Chart.yaml
-		// mkdir -p dir && cp -p Chart.yaml dir/Chart.yaml
-		// mkdir -p sym-to-file && ln -s ../Chart.yaml sym-to-file/Chart.yaml
-		// ln -s dir sym-to-dir
-		// mkdir rec-sym && touch rec-sym/Chart.yaml
-		// ln -s . ./rec-sym/a
-		// cd .. && tar -czvf chart.tar.gz chart && rm -rf chart
-		p, err := New(".")
-		require.NoError(t, err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p, err := parser.New()
+			require.NoError(t, err)
 
-		fsys := os.DirFS(filepath.Join("testdata", "archive-with-symlinks"))
-		require.NoError(t, p.ParseFS(context.TODO(), fsys, "chart.tar.gz"))
+			fsys := os.DirFS(filepath.Join("testdata", tt.dir))
+			files, err := p.ParseFS(context.TODO(), fsys, ".")
+			require.NoError(t, err)
 
-		expectedFiles := []string{
-			"chart/Chart.yaml",
-			"chart/dir/Chart.yaml",
-			"chart/rec-sym/Chart.yaml",
-			"chart/rec-sym/a/Chart.yaml",
-			"chart/sym-to-dir/Chart.yaml",
-			"chart/sym-to-file/Chart.yaml",
-		}
-		assert.Equal(t, expectedFiles, p.filepaths)
-	})
-
-	t.Run("chart with multiple archived deps", func(t *testing.T) {
-		p, err := New(".")
-		require.NoError(t, err)
-
-		fsys := os.DirFS(filepath.Join("testdata", "multiple-archived-deps"))
-		require.NoError(t, p.ParseFS(context.TODO(), fsys, "."))
-
-		expectedFiles := []string{
-			"Chart.yaml",
-			"charts/common-2.26.0.tgz",
-			"charts/opentelemetry-collector-0.108.0.tgz",
-		}
-		assert.Equal(t, expectedFiles, p.filepaths)
-	})
+			paths := lo.Map(files, func(f parser.ChartFile, _ int) string { return f.Path })
+			assert.ElementsMatch(t, tt.expected, paths)
+		})
+	}
 }
