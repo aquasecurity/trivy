@@ -26,7 +26,7 @@ jobs:
   # `test-chart` job starts if a PR with Helm Chart is created, merged etc.
   test-chart:
     if: github.event_name != 'push'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.6
@@ -58,7 +58,7 @@ jobs:
   # `update-chart-version` job starts if a new tag is pushed
   update-chart-version:
     if: github.event_name == 'push'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.6
@@ -87,7 +87,7 @@ jobs:
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     needs:
       - test-chart
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.6
