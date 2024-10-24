@@ -118,7 +118,7 @@ func (s *GenericScanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (sc
 	}
 
 	s.logger.Debug("Scanning files...", log.Int("count", len(inputs)))
-	results, err := regoScanner.ScanInput(ctx, inputs...)
+	results, err := regoScanner.ScanInput(ctx, s.source, inputs...)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func (s *GenericScanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
-	regoScanner := rego.NewScanner(s.source, s.options...)
+	regoScanner := rego.NewScanner(s.options...)
 	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return nil, err
 	}
