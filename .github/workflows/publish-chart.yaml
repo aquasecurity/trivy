@@ -35,11 +35,12 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814
         with:
-          version: v3.5.0
+          version: v3.14.4
       - name: Set up python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.7
+          python-version: '3.x'
+          check-latest: true
       - name: Setup Chart Linting
         id: lint
         uses: helm/chart-testing-action@e6669bcd63d7cb57cb4380c33043eebe5d111992
