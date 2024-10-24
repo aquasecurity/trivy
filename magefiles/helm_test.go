@@ -4,7 +4,6 @@ package main
 
 import (
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -65,9 +64,8 @@ func TestNewVersion(t *testing.T) {
 }
 
 func TestBumpHelmChart_Success(t *testing.T) {
-	tempFile, err := ioutil.TempFile("", "Chart-*.yaml")
+	tempFile, err := ioutil.TempFile(t.TempDir(), "Chart-*.yaml")
 	assert.NoError(t, err)
-	defer os.Remove(tempFile.Name())
 
 	content := `
 apiVersion: v2
