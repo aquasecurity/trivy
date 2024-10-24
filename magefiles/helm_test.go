@@ -3,7 +3,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -65,7 +64,7 @@ func TestNewVersion(t *testing.T) {
 }
 
 func TestBumpHelmChart_Success(t *testing.T) {
-	tempFile, err := ioutil.TempFile(t.TempDir(), "Chart-*.yaml")
+	tempFile, err := os.CreateTemp(t.TempDir(), "Chart-*.yaml")
 	assert.NoError(t, err)
 
 	content := `
@@ -86,7 +85,7 @@ keywords:
 	assert.NoError(t, err)
 	assert.Equal(t, "0.8.1", newVersion)
 
-	updatedContent, err := ioutil.ReadFile(tempFile.Name())
+	updatedContent, err := os.ReadFile(tempFile.Name())
 	assert.NoError(t, err)
 	assert.Contains(t, string(updatedContent), "appVersion: 0.55.1")
 	assert.Contains(t, string(updatedContent), "version: 0.8.1")
