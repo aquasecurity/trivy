@@ -81,6 +81,14 @@
       "purl": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
       "properties": [
         {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
+        {
           "name": "aquasecurity:trivy:PkgID",
           "value": "bash@5.0-4"
         },
@@ -105,6 +113,14 @@
       "version": "2.0.5-1",
       "purl": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
       "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
         {
           "name": "aquasecurity:trivy:PkgID",
           "value": "libidn2-0@2.0.5-1"
@@ -140,6 +156,14 @@
         {
           "name": "aquasecurity:trivy:FilePath",
           "value": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
         },
         {
           "name": "aquasecurity:trivy:PkgID",
