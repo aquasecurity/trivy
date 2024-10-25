@@ -55,7 +55,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-deprecated-checks         include deprecated checks
       --include-dev-deps                  include development dependencies in the report (supported: npm, yarn)
-      --include-non-failures              include successes and failures, available with '--scanners misconfig'
+      --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1])
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files

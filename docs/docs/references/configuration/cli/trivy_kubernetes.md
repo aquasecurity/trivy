@@ -69,7 +69,7 @@ trivy kubernetes [flags] [CONTEXT]
       --include-deprecated-checks         include deprecated checks
       --include-kinds strings             indicate the kinds included in scanning (example: node)
       --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
-      --include-non-failures              include successes and failures, available with '--scanners misconfig'
+      --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1])
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
