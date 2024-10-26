@@ -91,7 +91,13 @@ func (r Report) consolidate() ConsolidatedReport {
 		if vulnerabilitiesOrSecretResource(m) {
 			vulnerabilities = append(vulnerabilities, m)
 		} else if misconfigsResource(m) {
-			index[m.fullname()] = m
+			// there is a case if an image doesn't contain vulns or secrets, but has some Dockerfile
+			// such result shouldn't misconfig result
+			if res, ok := index[m.fullname()]; ok {
+				index[m.fullname()].Results[0].Misconfigurations = append(res.Results[0].Misconfigurations, m.Results[0].Misconfigurations...)
+			} else {
+				index[m.fullname()] = m
+			}
 		}
 	}
 
