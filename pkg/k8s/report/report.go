@@ -92,10 +92,10 @@ func (r Report) consolidate() ConsolidatedReport {
 			vulnerabilities = append(vulnerabilities, m)
 		}
 		if misconfigsResource(m) {
-			if res, ok := index[m.fullname()]; ok {
-				index[m.fullname()].Results[0].Misconfigurations = append(res.Results[0].Misconfigurations, m.Results[0].Misconfigurations...)
-			} else {
-				index[m.fullname()] = m
+			res, ok := index[m.fullname()]
+			index[m.fullname()] = m
+			if ok {
+				index[m.fullname()].Results[0].Misconfigurations = append(index[m.fullname()].Results[0].Misconfigurations, res.Results[0].Misconfigurations...)
 			}
 		}
 	}
