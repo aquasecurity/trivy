@@ -96,6 +96,10 @@ func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, target string) error {
 			return nil
 		}
 
+		if _, err := fs.Stat(p.workingFS, filePath); err != nil {
+			return nil
+		}
+
 		if detection.IsArchive(filePath) && !isDependencyChartArchive(p.workingFS, filePath) {
 			tarFS, err := p.addTarToFS(filePath)
 			if errors.Is(err, errSkipFS) {
@@ -126,7 +130,7 @@ func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, target string) error {
 
 func isDependencyChartArchive(fsys fs.FS, archivePath string) bool {
 	parent := path.Dir(archivePath)
-	if !strings.HasSuffix(parent, "charts") {
+	if path.Base(parent) != "charts" {
 		return false
 	}
 
