@@ -56,6 +56,13 @@ Homebrew for MacOS and Linux.
 brew install trivy
 ```
 
+### Windows (Official)
+
+1. Download trivy_x.xx.x_windows-64bit.zip file from [releases page](https://github.com/aquasecurity/trivy/releases/).
+2. Unzip file and copy to any folder.
+3. Ensure PATH environment variable is configured to folder trivy installed.
+
+
 ### Arch Linux (Community)
 
 Arch Linux Package Repository.
