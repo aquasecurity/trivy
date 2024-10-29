@@ -118,7 +118,7 @@ func TestToolchainVersion(t *testing.T) {
 					Name: "1.21.1",
 				},
 			},
-			want: "v1.21.1",
+			want: "1.21.1",
 		},
 		{
 			name: "version from toolchain line with suffix",
@@ -127,13 +127,13 @@ func TestToolchainVersion(t *testing.T) {
 					Name: "1.21.1-custom",
 				},
 			},
-			want: "v1.21.1",
+			want: "1.21.1",
 		},
 		{
 			name: "'1.18rc1' from go line",
 			modFile: modfile.File{
 				Go: &modfile.Go{
-					Version: "v1.18rc1",
+					Version: "1.18rc1",
 				},
 			},
 			want: "",
@@ -142,7 +142,7 @@ func TestToolchainVersion(t *testing.T) {
 			name: "'1.18.1' from go line",
 			modFile: modfile.File{
 				Go: &modfile.Go{
-					Version: "v1.18.1",
+					Version: "1.18.1",
 				},
 			},
 			want: "",
@@ -151,7 +151,7 @@ func TestToolchainVersion(t *testing.T) {
 			name: "'1.20' from go line",
 			modFile: modfile.File{
 				Go: &modfile.Go{
-					Version: "v1.20",
+					Version: "1.20",
 				},
 			},
 			want: "",
@@ -160,28 +160,28 @@ func TestToolchainVersion(t *testing.T) {
 			name: "'1.21' from go line",
 			modFile: modfile.File{
 				Go: &modfile.Go{
-					Version: "v1.21",
+					Version: "1.21",
 				},
 			},
-			want: "v1.21.0",
+			want: "1.21.0",
 		},
 		{
 			name: "'1.21rc1' from go line",
 			modFile: modfile.File{
 				Go: &modfile.Go{
-					Version: "v1.21rc1",
+					Version: "1.21rc1",
 				},
 			},
-			want: "v1.21rc1",
+			want: "1.21rc1",
 		},
 		{
 			name: "'1.21.2' from go line",
 			modFile: modfile.File{
 				Go: &modfile.Go{
-					Version: "v1.21.2",
+					Version: "1.21.2",
 				},
 			},
-			want: "v1.21.2",
+			want: "1.21.2",
 		},
 	}
 

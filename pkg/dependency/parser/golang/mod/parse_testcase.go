@@ -23,7 +23,7 @@ var (
 		{
 			ID:           "stdlib@v1.22.5",
 			Name:         "stdlib",
-			Version:      "v1.22.5",
+			Version:      "1.22.5",
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
