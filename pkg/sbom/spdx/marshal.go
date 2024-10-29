@@ -50,6 +50,8 @@ const (
 	PackageSupplierNoAssertion  = "NOASSERTION"
 	PackageSupplierOrganization = "Organization"
 
+	PackageAnnotatorToolField = "Tool"
+
 	RelationShipContains  = common.TypeRelationshipContains
 	RelationShipDescribe  = common.TypeRelationshipDescribe
 	RelationShipDependsOn = common.TypeRelationshipDependsOn
@@ -80,6 +82,7 @@ type Marshaler struct {
 	format     spdx.Document
 	hasher     Hash
 	appVersion string // Trivy version. It needed for `creator` field
+	timeNow    string
 }
 
 type Hash func(v any, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
@@ -121,6 +124,9 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		relationShips []*spdx.Relationship
 		packages      []*spdx.Package
 	)
+
+	// Lock time to use same time for all spdx fields
+	m.timeNow = clock.Now(ctx).UTC().Format(time.RFC3339)
 
 	root := bom.Root()
 	pkgDownloadLocation := m.packageDownloadLocation(root)
@@ -216,7 +222,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 					CreatorType: "Tool",
 				},
 			},
-			Created: clock.Now(ctx).UTC().Format(time.RFC3339),
+			Created: m.timeNow,
 		},
 		Packages:      packages,
 		Relationships: relationShips,
@@ -258,17 +264,25 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, pkgDownloadLocation st
 		PackageName:               root.Name,
 		PackageSPDXIdentifier:     elementID(camelCase(string(root.Type)), pkgID),
 		PackageDownloadLocation:   pkgDownloadLocation,
-		PackageAttributionTexts:   m.spdxAttributionTexts(root),
+		Annotations:               m.spdxAnnotations(root),
 		PackageExternalReferences: externalReferences,
 		PrimaryPackagePurpose:     pkgPurpose,
 	}, nil
 }
 
-func (m *Marshaler) appendAttributionText(attributionTexts []string, key, value string) []string {
+func (m *Marshaler) appendAnnotation(annotations []spdx.Annotation, key, value string) []spdx.Annotation {
 	if value == "" {
-		return attributionTexts
+		return annotations
 	}
-	return append(attributionTexts, fmt.Sprintf("%s: %s", key, value))
+	return append(annotations, spdx.Annotation{
+		AnnotationDate: m.timeNow,
+		AnnotationType: spdx.CategoryOther,
+		Annotator: spdx.Annotator{
+			Annotator:     fmt.Sprintf("%s-%s", CreatorTool, m.appVersion),
+			AnnotatorType: PackageAnnotatorToolField,
+		},
+		AnnotationComment: fmt.Sprintf("%s: %s", key, value),
+	})
 }
 
 func (m *Marshaler) purlExternalReference(packageURL string) *spdx.PackageExternalReference {
@@ -343,7 +357,7 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 		PrimaryPackagePurpose:     purpose,
 		PackageDownloadLocation:   pkgDownloadLocation,
 		PackageExternalReferences: pkgExtRefs,
-		PackageAttributionTexts:   m.spdxAttributionTexts(c),
+		Annotations:               m.spdxAnnotations(c),
 		PackageSourceInfo:         sourceInfo,
 		PackageSupplier:           supplier,
 		PackageChecksums:          m.spdxChecksums(digests),
@@ -365,16 +379,15 @@ func spdxPkgName(component *core.Component) string {
 	}
 	return component.Name
 }
-
-func (m *Marshaler) spdxAttributionTexts(c *core.Component) []string {
-	var texts []string
+func (m *Marshaler) spdxAnnotations(c *core.Component) []spdx.Annotation {
+	var annotations []spdx.Annotation
 	for _, p := range c.Properties {
 		// Add properties that are not in other fields.
 		if !slices.Contains(duplicateProperties, p.Name) {
-			texts = m.appendAttributionText(texts, p.Name, p.Value)
+			annotations = m.appendAnnotation(annotations, p.Name, p.Value)
 		}
 	}
-	return texts
+	return annotations
 }
 
 func (m *Marshaler) spdxLicense(c *core.Component) string {
