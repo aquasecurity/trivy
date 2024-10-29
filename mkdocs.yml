@@ -121,7 +121,7 @@ nav:
           - Skipping Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
-          - DB: docs/configuration/db.md
+          - Databases: docs/configuration/db.md
           - Others: docs/configuration/others.md
       - Supply Chain:
           - SBOM: docs/supply-chain/sbom.md

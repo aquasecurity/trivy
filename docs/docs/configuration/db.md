@@ -1,120 +1,137 @@
-# DB
+# Trivy Databases
 
-|     Scanner      | Supported |
-|:----------------:|:---------:|
-|  Vulnerability   |     ✓     |
-| Misconfiguration |           |
-|      Secret      |           |
-|     License      |           |
+When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations. These so called "databases" are fetched and maintained by Trivy automatically as needed, so normally you shouldn't notice or worry about them. However, some situations might require your attention to Trivy's network connectivity. This section elaborates on the database management mechanism and it's configuration options.
 
-The vulnerability database and the Java index database are needed only for vulnerability scanning.
-See [here](../scanner/vulnerability.md) for the detail.
+Trivy relies on the following databases:
 
-## Vulnerability Database
+DB | Artifact name | Contents | Purpose
+--- | --- | --- | ---
+Vulnerabilities DB | `trivy-db` | CVE information collected from various feeds | used only for [vulnerability scanning](../scanner/vulnerability.md)
+Java DB | `trivy-java-db` | Index of Java artifacts and their hash digest | used to identify Java artifacts only in [Java vulnerability scanning](../coverage/language/java.md)
+Misconfiguration DB | `checks-db` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
+VEX Hub | `vex-hub` | VEX statements | Used only in [VEX Hub is enabled](../supply-chain/vex/repo.md) in vulnerability scanning.
 
-### Skip update of vulnerability DB
-If you want to skip downloading the vulnerability database, use the `--skip-db-update` option.
+## External Services
+
+In addition to the above, some specific scanning features might connect to external services, and have different connectivity requirements and configuration options. This document discusses only Trivy's own databases, but for your convenience here are use cases where external services are involved:
+
+- [Java vulnerability scanning](../coverage/language/java.md).
+
+## Locations
+
+Following are official locations of Trivy databases:
+
+| Registry | Image Address | Link
+| --- | --- | ---
+| GHCR | `ghcr.io/aquasecurity/trivy-db:2` | <https://ghcr.io/aquasecurity/trivy-db>
+| | `ghcr.io/aquasecurity/trivy-java-db` | <https://ghcr.io/aquasecurity/trivy-java-db>
+| | `aquaghcr.io/aquasecurity/ecurity/trivy-checks` | <https://ghcr.io/aquasecurity/trivy-checks>
+| Docker Hub | `aquasec/trivy-db:2` | <https://hub.docker.com/r/aquasec/trivy-db>
+| | `aquasec/trivy-java-db:1` | <https://hub.docker.com/r/aquasec/trivy-java-db>
+| AWS ECR | `public.ecr.aws/aquasecurity/trivy-db:2` | <https://gallery.ecr.aws/aquasecurity/trivy-db>
+| | `public.ecr.aws/aquasecurity/trivy-java-db:1` | <https://gallery.ecr.aws/aquasecurity/trivy-java-db>
+
+ VEX Hub is fetched from VEX Hub GitHub Repository directly: <https://github.com/aquasecurity/vexhub>.
+
+### Automatic fallback
+
+Trivy will attempt to pull images from the official registries in the order specified. In case of failure of pulling a database, Trivy will fall back to the next alternative registry in the order specified.  
+You can specify additional alternative repositories as explained in the [configuring database locations section](#locations).
+
+The Checks Database registry location option does not support fallback through multiple options.
+
+## Connectivity requirements
+
+| database | location | protocol | hosts
+| --- | --- | --- | ---
+| <ul><li>`trivy-db`</li><li>`trivy-java-db`</li><li>`checks-db`</li></ul> | GHCR | [OCI Distribution](https://github.com/opencontainers/distribution-spec) over HTTPS | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul>
+| `vexhub`| GitHub | Git over HTTPS | <ul><li>`api.github.com`</li><li>`codeload.github.com`</li></ul>
+
+For more information about GitHub connectivity (including specific IP addresses), please refer to [GitHub's connectivity troubleshooting guide](https://docs.github.com/en/get-started/using-github/troubleshooting-connectivity-problems).
+
+### Rate limiting
+
+Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to update its databases. If you are facing rate-limiting issues:
+1. Consider self-hosting the databases, or implementing a proxy-cache in your organization.
+2. Look into specific registry rate-limiting policies which might provide solution for your use-case (for example by authenticating with the registry).
+3. Consider using a commercial service that provides the full [Aqua platform](https://www.aquasec.com/products/software-supply-chain-security/), which includes a stable and reliable scanning service.
+
+## DB Management Configuration
+
+### Database Locations
+
+You can configure Trivy to download databases from alternative locations by using the flags:
+
+- `--db-repository`
+- `--java-db-repository`
+- `--checks-bundle-repository`
+
+The value should be an image address in a container registry.
+
+For example:
 
 ```
-$ trivy image --skip-db-update python:3.4-alpine3.9
+trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
 
-<details>
-<summary>Result</summary>
+The `--db-repository` flag accepts multiple values, which can be used to specify multiple alternative repository locations. In case of failure, Trivy will fall back to alternative registries in the order specified. An attempt to download from the next repository is only made if a temporary error is received (e.g. status 429 or 5xx).
+
+For example:
 
 ```
-2019-05-16T12:48:08.703+0900    INFO    Detecting Alpine vulnerabilities...
-
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
+trivy image --db-repository my.registry.local/trivy-db,registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
 
-</details>
-
-### Only download vulnerability database
-You can also ask `Trivy` to simply retrieve the vulnerability database.
-This is useful to initialize workers in Continuous Integration systems.
-
-```
-$ trivy image --download-db-only
-```
-
-### DB Repository
-`Trivy` could also download the vulnerability database from an external OCI registry by using `--db-repository` option.
-
-```
-$ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
-```
-
-The media type of the OCI layer must be `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip`.
-You can reference the OCI manifest of [trivy-db].
-
-<details>
-<summary>Manifest</summary>
-
-```shell
-{
-  "schemaVersion": 2,
-  "mediaType": "application/vnd.oci.image.manifest.v1+json",
-  "config": {
-    "mediaType": "application/vnd.aquasec.trivy.config.v1+json",
-    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "size": 2
-  },
-  "layers": [
-    {
-      "mediaType": "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip",
-      "digest": "sha256:29ad6505b8957c7cd4c367e7c705c641a9020d2be256812c5f4cc2fc099f4f02",
-      "size": 55474933,
-      "annotations": {
-        "org.opencontainers.image.title": "db.tar.gz"
-      }
-    }
-  ],
-  "annotations": {
-    "org.opencontainers.image.created": "2024-09-11T06:14:51Z"
-  }
-}
-```
-</details>
+!!! note 
+    setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
 
 !!!note
-    Trivy automatically adds the `trivy-db` schema version as a tag if the tag is not used:
+    When pulling `trivy-db` or `trivy-java-db`, if image tag is not specified, Trivy defaults to the db schema number instead of the `latest` tag. Currently, for `trivy-db` the default tag is `2`, for `trivy-java-db` the default tag is `1`, for `trivy-checks` the default tag is `0`.
 
-    `trivy-db-registry:latest` => `trivy-db-registry:latest`, but `trivy-db-registry` => `trivy-db-registry:2`.
+VEX Hub repository locations can be configured separately using the [VEX configuration file](../supply-chain/vex/repo.md)
 
+### Skip updates
 
-## Java Index Database
-The same options are also available for the Java index DB, which is used for scanning Java applications.
-Skipping an update can be done by using the `--skip-java-db-update` option, while `--download-java-db-only` can be used to only download the Java index DB.
+You can configure Trivy to not attempt to download database at all using the flags:
 
-!!! Note
-    In [Client/Server](../references/modes/client-server.md) mode, `Java index DB` is currently only used on the `client` side.
+- `--skip-db-update`
+- `--skip-java-db-update`
+- `--skip-check-update`
 
-Downloading the Java index DB from an external OCI registry can be done by using the `--java-db-repository` option.
+For example:
 
 ```
-$ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
+trivy image --skip-db-update --skip-java-db-update --offline-scan --skip-check-update myimage
 ```
 
-The media type of the OCI layer must be `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip`.
-You can reference the OCI manifest of [trivy-java-db].
+### Only update
 
-!!!note
-    Trivy automatically adds the `trivy-java-db` schema version as a tag if the tag is not used:
+You can ask `Trivy` to update the database without performing a scan using the flags:
 
-    `java-db-registry:latest` => `java-db-registry:latest`, but `java-db-registry` => `java-db-registry:1`.
+- `--download-db-only`
+- `--download-java-db-only`
 
-## Remove DBs
-"trivy clean" command removes caches and databases.
+For example:
+
+```
+trivy image --download-db-only
+```
+
+### Remove Databases
+
+`trivy clean` command removes caches and databases.
+You can select which cache component to remove:
+
+option | description
+--- | ---
+`-a`/`--all` | remove all caches
+`--checks-bundle` | remove checks bundle
+`--java-db` | remove Java database
+`--scan-cache` | remove scan cache (container and VM image analysis results)
+`--vex-repo` | remove VEX repositories
+`--vuln-db` | remove vulnerability database
+
+Example:
 
 ```
 $ trivy clean --vuln-db --java-db
@@ -122,5 +139,13 @@ $ trivy clean --vuln-db --java-db
 2024-06-24T11:42:31+06:00       INFO    Removing Java database...
 ```
 
-[trivy-db]: https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db
-[trivy-java-db]: https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
+## Self-Hosting
+
+You can host all of Trivy's databases on your own local environment (to prevent external connectivity). For more information, refer to the [Air-Gapped Environments and Self-Hosting](../advanced/air-gap.md) document.
+
+When serving, proxying, or manipulating Trivy's databases, note that the media type of the OCI layer is not a standard container image type.
+
+DB | Media Type | Reference
+--- | --- | ---
+`trivy-db` | `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` | <https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db>
+`trivy-java-db` | `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip` | https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
