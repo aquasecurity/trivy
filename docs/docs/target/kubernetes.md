@@ -38,7 +38,7 @@ for example:
 trivy k8s --report summary
 ```
 
-!!! note "Multi-container pods"
+!!! note "JSON result for multi-container pods"
     For multi-container pods, it may be challenging to associate results with specific images in the json summary report. Kubernetes treats a pod as a single object, so individual images within the pod aren’t distinguished. 
     For detailed information, please use the `--report all` option.
 
