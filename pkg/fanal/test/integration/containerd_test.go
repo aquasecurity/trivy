@@ -76,9 +76,13 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 	t.Helper()
 	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
+
+	// Load `containerd` image from tar file to avoid fetching it from remote registry
+	loadedImage := cli.ImageLoad(t, ctx, "../../../../integration/testdata/fixtures/images/containerd.tar.gz")
+
 	req := testcontainers.ContainerRequest{
 		Name:  "containerd",
-		Image: testutil.ImageName("containerd", "latest", ""),
+		Image: loadedImage,
 		Entrypoint: []string{
 			"/bin/sh",
 			"-c",
