@@ -7,6 +7,7 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
       - '.release-please-manifest.json' ## don't run tests for release-please PRs
+      - 'helm/trivy/Chart.yaml'
   merge_group:
   workflow_dispatch:
 
@@ -90,7 +91,8 @@ jobs:
       - name: Generate image list digest
         id: image-digest
         run: |
-          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
@@ -147,7 +149,8 @@ jobs:
       - name: Generate image list digest
         id: image-digest
         run: |
-          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
@@ -185,7 +188,8 @@ jobs:
       - name: Generate image list digest
         id: image-digest
         run: |
-          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-vm-images)
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
           DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 

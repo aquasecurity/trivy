@@ -18,10 +18,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const (
-	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
-)
-
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name            string
