@@ -134,7 +134,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			}
 
 			// If the replace directive has a version on the left side, make sure it matches the version that was imported.
-			if rep.Old.Version != "" && old.Version != rep.Old.Version[1:] {
+			if rep.Old.Version != "" && old.Version != rep.Old.Version {
 				continue
 			}
 
@@ -151,9 +151,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 			// Add replaced package to package register.
 			pkgs[rep.New.Path] = ftypes.Package{
-				ID:                 packageID(rep.New.Path, rep.New.Version[1:]),
+				ID:                 packageID(rep.New.Path, rep.New.Version),
 				Name:               rep.New.Path,
-				Version:            rep.New.Version[1:],
+				Version:            rep.New.Version,
 				Relationship:       old.Relationship,
 				ExternalReferences: p.GetExternalRefs(rep.New.Path),
 			}
