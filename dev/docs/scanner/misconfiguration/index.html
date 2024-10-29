@@ -1390,20 +1390,6 @@ You're not viewing the latest version.
 
             
           
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="check/exceptions/" class="md-nav__link">
-        Exceptions
-      </a>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -4430,7 +4416,7 @@ $ trivy config ./build
 
 Dockerfile (dockerfile)
 =======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 23 (SUCCESSES: 22, FAILURES: 1)
 Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 MEDIUM: Specify a tag in the &#39;FROM&#39; statement for image &#39;alpine&#39;
@@ -4479,7 +4465,7 @@ Total: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1<
 
 Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 <span class="o">=======================</span>
-Tests: <span class="m">17</span> <span class="o">(</span>SUCCESSES: <span class="m">16</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">17</span> <span class="o">(</span>SUCCESSES: <span class="m">16</span>, FAILURES: <span class="m">1</span><span class="o">)</span>
 Failures: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 HIGH: Last USER <span class="nb">command</span> <span class="k">in</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>
@@ -4510,7 +4496,7 @@ $ trivy config --severity HIGH,CRITICAL ./iac
 
 Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 
-Tests: <span class="m">21</span> <span class="o">(</span>SUCCESSES: <span class="m">20</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">21</span> <span class="o">(</span>SUCCESSES: <span class="m">20</span>, FAILURES: <span class="m">1</span><span class="o">)</span>
 Failures: <span class="m">1</span> <span class="o">(</span>MEDIUM: <span class="m">0</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 HIGH: Specify at least <span class="m">1</span> USER <span class="nb">command</span> <span class="k">in</span> Dockerfile with non-root user as argument
@@ -4524,7 +4510,7 @@ See https://avd.aquasec.com/misconfig/ds002
 
 deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
 
-Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">15</span>, FAILURES: <span class="m">5</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">15</span>, FAILURES: <span class="m">5</span><span class="o">)</span>
 Failures: <span class="m">5</span> <span class="o">(</span>MEDIUM: <span class="m">4</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 MEDIUM: Container <span class="s1">&#39;hello-kubernetes&#39;</span> of Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.allowPrivilegeEscalation&#39;</span> to <span class="nb">false</span>
@@ -4623,7 +4609,7 @@ See https://avd.aquasec.com/misconfig/ksv026
 
 mysql-8.8.26.tar:templates/primary/statefulset.yaml <span class="o">(</span>helm<span class="o">)</span>
 
-Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">18</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">18</span>, FAILURES: <span class="m">2</span><span class="o">)</span>
 Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="m">2</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 MEDIUM: Container <span class="s1">&#39;mysql&#39;</span> of StatefulSet <span class="s1">&#39;mysql&#39;</span> should <span class="nb">set</span> <span class="s1">&#39;securityContext.allowPrivilegeEscalation&#39;</span> to <span class="nb">false</span>
@@ -4676,35 +4662,35 @@ See https://avd.aquasec.com/misconfig/ksv012
 </div>
 <div class="highlight"><pre><span></span><code>Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 <span class="o">=======================</span>
-Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">22</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">22</span>, FAILURES: <span class="m">1</span><span class="o">)</span>
 Failures: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 ...
 
 deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
 <span class="o">============================</span>
-Tests: <span class="m">28</span> <span class="o">(</span>SUCCESSES: <span class="m">15</span>, FAILURES: <span class="m">13</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">28</span> <span class="o">(</span>SUCCESSES: <span class="m">15</span>, FAILURES: <span class="m">13</span><span class="o">)</span>
 Failures: <span class="m">13</span> <span class="o">(</span>MEDIUM: <span class="m">4</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 ...
 
 main.tf <span class="o">(</span>terraform<span class="o">)</span>
 <span class="o">===================</span>
-Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">14</span>, FAILURES: <span class="m">9</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">14</span>, FAILURES: <span class="m">9</span><span class="o">)</span>
 Failures: <span class="m">9</span> <span class="o">(</span>HIGH: <span class="m">6</span>, CRITICAL: <span class="m">1</span><span class="o">)</span>
 
 ...
 
 bucket.yaml <span class="o">(</span>cloudformation<span class="o">)</span>
 <span class="o">============================</span>
-Tests: <span class="m">9</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">6</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">9</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">6</span><span class="o">)</span>
 Failures: <span class="m">6</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">2</span>, HIGH: <span class="m">4</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 ...
 
 mysql-8.8.26.tar:templates/primary/statefulset.yaml <span class="o">(</span>helm<span class="o">)</span>
 <span class="o">==========================================================</span>
-Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">18</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">20</span> <span class="o">(</span>SUCCESSES: <span class="m">18</span>, FAILURES: <span class="m">2</span><span class="o">)</span>
 Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="m">2</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 </code></pre></div>
 <h2 id="configuration">Configuration</h2>
@@ -4763,7 +4749,7 @@ deny<span class="o">[</span>res<span class="o">]</span> <span class="o">{</span>
 $ trivy config --misconfig-scanners<span class="o">=</span>json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
 serverless.yaml <span class="o">(</span>yaml<span class="o">)</span>
 
-Tests: <span class="m">4</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">4</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">1</span><span class="o">)</span>
 Failures: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 LOW: Service name <span class="s2">&quot;serverless-rest-api-with-pynamodb&quot;</span> is not allowed
