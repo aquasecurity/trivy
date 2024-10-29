@@ -93,7 +93,7 @@ jobs:
         run: |
           source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
-          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"]' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test images from cache
@@ -151,7 +151,7 @@ jobs:
         run: |
           source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
-          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"]' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Restore test images from cache
