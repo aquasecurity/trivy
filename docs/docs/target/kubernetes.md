@@ -38,6 +38,10 @@ for example:
 trivy k8s --report summary
 ```
 
+!!! note "Multi-container pods"
+    For multi-container pods, it may be challenging to associate results with specific images in the summary report. Kubernetes treats a pod as a single object, so individual images within the pod aren’t distinguished. 
+    For detailed information, please use the `--report all` and `--format json` options.
+
 By default Trivy will look for a [`kubeconfig` configuration file in the default location](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), and use the default cluster that is specified.  
 You can also specify a `kubeconfig` using the `--kubeconfig` flag:
 
