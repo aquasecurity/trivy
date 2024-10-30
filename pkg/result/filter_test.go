@@ -233,9 +233,8 @@ func TestFilter(t *testing.T) {
 							vuln2,
 						},
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  0,
-							Failures:   1,
-							Exceptions: 0,
+							Successes: 0,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf1,
@@ -403,9 +402,8 @@ func TestFilter(t *testing.T) {
 						Target: "deployment.yaml",
 						Class:  types.ClassConfig,
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  1,
-							Failures:   1,
-							Exceptions: 1,
+							Successes: 1,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf1,
@@ -522,9 +520,8 @@ func TestFilter(t *testing.T) {
 					{
 						Target: "app/Dockerfile",
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  0,
-							Failures:   1,
-							Exceptions: 2,
+							Successes: 0,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf3,
@@ -641,9 +638,8 @@ func TestFilter(t *testing.T) {
 				Results: types.Results{
 					{
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  1,
-							Failures:   1,
-							Exceptions: 1,
+							Successes: 1,
+							Failures:  1,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf1,
