@@ -167,10 +167,10 @@
           "PkgID": "github.com/docker/distribution@v2.7.1+incompatible",
           "PkgName": "github.com/docker/distribution",
           "PkgIdentifier": {
-            "PURL": "pkg:golang/github.com/docker/distribution@2.7.1%2Bincompatible",
-            "UID": "94306cdcf85fb50a"
+            "PURL": "pkg:golang/github.com/docker/distribution@v2.7.1%2Bincompatible",
+            "UID": "3ad40723ed2fce22"
           },
-          "InstalledVersion": "2.7.1+incompatible",
+          "InstalledVersion": "v2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",
           "Layer": {},
