@@ -126,7 +126,7 @@ First, make a copy of VEX Hub in a location that is accessible to Trivy.
 1. Modify the downloaded manifest file's [Location URL](https://github.com/aquasecurity/vex-repo-spec?tab=readme-ov-file#locations-subfields) field to the URL of the archive file on your server (e.g `url: https://server.local/main.zip`).
 1. Make the manifest file available for serving from your server under the `/.well-known` path  (e.g `https://server.local/.well-known/vex-repository.json`).
 
-Then, tell Trivy to use the local VEX Repository:
+Then tell Trivy to use the local VEX Repository:
 
 1. Locate your [Trivy VEX configuration file](../supply-chain/vex/repo/#configuration-file) by running `trivy vex repo init`. Make the following changes to the file.
 1. Disable the default VEX Hub repo (`enabled: false`)
