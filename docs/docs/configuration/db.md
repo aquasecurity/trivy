@@ -38,7 +38,7 @@ Following are official locations of Trivy databases:
 Trivy will attempt to pull images from the official registries in the order specified. In case of failure of pulling a database, Trivy will fall back to the next alternative registry in the order specified.  
 You can specify additional alternative repositories as explained in the [configuring database locations section](#locations).
 
-The Checks Database registry location option does not support fallback through multiple options.
+The Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the checks-db, Trivy will use the embedded checks as a fallback.
 
 ## Connectivity requirements
 
