@@ -34,16 +34,6 @@ trivy image \
 
 If the registry requires authentication, you can configure it as described in the [private registry authentication document](../advanced/private-registries/index.md).
 
-### Pull through cache
-
-You can install a pull-through cache service inside your environment that automatically serves consecutive pulls from cache instead of reaching the origin.  
-Here are some examples for pull-through cache solutions:
-
-- [Docker Registry](https://docs.docker.com/docker-hub/mirror/)
-- [Harbor](https://goharbor.io/docs/2.1.0/administration/configure-proxy-cache/)
-- [Zot](https://zotregistry.dev/v2.1.0/articles/mirroring)
-- [AWS ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/pull-through-cache.html) 
-
 ## Manual cache population
 
 You can also download the databases files manually and surgically populate the Trivy cache directory with them.
