@@ -84,7 +84,7 @@ trivy image --db-repository my.registry.local/trivy-db,registry.gitlab.com/gitla
 ```
 
 !!! note 
-    setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
+    Setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
 
 !!!note
     When pulling `trivy-db` or `trivy-java-db`, if image tag is not specified, Trivy defaults to the db schema number instead of the `latest` tag.
