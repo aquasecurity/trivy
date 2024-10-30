@@ -20,7 +20,7 @@ First, make a copy of the databases into your container registry. The different 
 
 Then, tell Trivy to use the local registry using the relevant flags.
 
-For example, we if we scan a Java application, we copy the `trivy-db` and `trivy-java-db` databases to our local registry, and tell Trivy to use them. In this case we also need to turn off Trivy's [Java scanner external service](../coverage/language/java.md) with the `--offline-scan` flag:
+For example, we if we scan a Java application, we copy the `trivy-db` and `trivy-java-db` databases to our local registry and tell Trivy to use them. In this case we also need to turn off Trivy's [Java scanner external service](../coverage/language/java.md) with the `--offline-scan` flag:
 
 ```shell
 trivy image \
