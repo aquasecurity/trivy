@@ -8,7 +8,7 @@ DB | Artifact name | Contents | Purpose
 --- | --- | --- | ---
 Vulnerabilities DB | `trivy-db` | CVE information collected from various feeds | used only for [vulnerability scanning](../scanner/vulnerability.md)
 Java DB | `trivy-java-db` | Index of Java artifacts and their hash digest | used to identify Java artifacts only in [Java vulnerability scanning](../coverage/language/java.md)
-Misconfiguration DB | `checks-db` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
+Misconfiguration DB | `trivy-chekcs` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
 VEX Hub | `vex-hub` | VEX statements | Used only in [VEX Hub is enabled](../supply-chain/vex/repo.md) in vulnerability scanning.
 
 ## External Services
@@ -38,13 +38,13 @@ Following are official locations of Trivy databases:
 Trivy will attempt to pull images from the official registries in the order specified. In case of failure of pulling a database, Trivy will fall back to the next alternative registry in the order specified.  
 You can specify additional alternative repositories as explained in the [configuring database locations section](#locations).
 
-The Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the checks-db, Trivy will use the embedded checks as a fallback.
+The Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the trivy-chekcs DB, Trivy will use the embedded checks as a fallback.
 
 ## Connectivity requirements
 
 | database | location | protocol | hosts
 | --- | --- | --- | ---
-| <ul><li>`trivy-db`</li><li>`trivy-java-db`</li><li>`checks-db`</li></ul> | GHCR | [OCI Distribution](https://github.com/opencontainers/distribution-spec) over HTTPS | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul>
+| <ul><li>`trivy-db`</li><li>`trivy-java-db`</li><li>`trivy-chekcs`</li></ul> | GHCR | [OCI Distribution](https://github.com/opencontainers/distribution-spec) over HTTPS | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul>
 | `vexhub`| GitHub | Git over HTTPS | <ul><li>`api.github.com`</li><li>`codeload.github.com`</li></ul>
 
 For more information about GitHub connectivity (including specific IP addresses), please refer to [GitHub's connectivity troubleshooting guide](https://docs.github.com/en/get-started/using-github/troubleshooting-connectivity-problems).
@@ -150,4 +150,4 @@ DB | Media Type | Reference
 --- | --- | ---
 `trivy-db` | `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` | <https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db>
 `trivy-java-db` | `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip` | https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
-`checks-db` | `application/vnd.oci.image.manifest.v1+json` | https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks
+`trivy-chekcs` | `application/vnd.oci.image.manifest.v1+json` | https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks
