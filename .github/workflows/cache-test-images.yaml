@@ -29,7 +29,7 @@ jobs:
         run: |
           source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
-          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"]' | sha256sum | cut -d' ' -f1)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       ## We need to work with test image cache only for main branch
@@ -70,7 +70,7 @@ jobs:
         run: |
           source integration/testimages.ini
           IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
-          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags | sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       ## We need to work with test VM image cache only for main branch
