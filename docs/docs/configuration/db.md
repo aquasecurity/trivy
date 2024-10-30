@@ -86,7 +86,7 @@ trivy image --db-repository my.registry.local/trivy-db,registry.gitlab.com/gitla
     setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
 
 !!!note
-    When pulling `trivy-db` or `trivy-java-db`, if image tag is not specified, Trivy defaults to the db schema number instead of the `latest` tag. Currently, for `trivy-db` the default tag is `2`, for `trivy-java-db` the default tag is `1`, for `trivy-checks` the default tag is `0`.
+    When pulling `trivy-db` or `trivy-java-db`, if image tag is not specified, Trivy defaults to the db schema number instead of the `latest` tag.
 
 VEX Hub repository locations can be configured separately using the [VEX configuration file](../supply-chain/vex/repo.md)
 
