@@ -56,7 +56,6 @@ nav:
               - Overview: docs/scanner/misconfiguration/index.md
               - Policy:
                   - Built-in Checks: docs/scanner/misconfiguration/check/builtin.md
-                  - Exceptions: docs/scanner/misconfiguration/check/exceptions.md
               - Custom Checks:
                   - Overview: docs/scanner/misconfiguration/custom/index.md
                   - Data: docs/scanner/misconfiguration/custom/data.md
