@@ -87,7 +87,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Type:    core.TypeApplication,
 					Name:    "github.com/containerd/containerd",
-					Version: "1.5.2",
+					Version: "v1.5.2",
 					Properties: []core.Property{
 						{
 							Name:      k8sComponentName,
@@ -104,7 +104,7 @@ func TestScanner_Scan(t *testing.T) {
 						PURL: &packageurl.PackageURL{
 							Type:       "golang",
 							Name:       "github.com/containerd/containerd",
-							Version:    "1.5.2",
+							Version:    "v1.5.2",
 							Qualifiers: packageurl.Qualifiers{},
 						},
 						BOMRef: "pkg:golang/github.com%2Fcontainerd%2Fcontainerd@1.5.2",
@@ -113,12 +113,12 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Type:    core.TypeApplication,
 					Name:    "k8s.io/apiserver",
-					Version: "1.21.1",
+					Version: "v1.21.1",
 					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    purl.TypeK8s,
 							Name:    "k8s.io/apiserver",
-							Version: "1.21.1",
+							Version: "v1.21.1",
 						},
 						BOMRef: "pkg:k8s/k8s.io%2Fapiserver@1.21.1",
 					},
