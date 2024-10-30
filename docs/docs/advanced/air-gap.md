@@ -15,7 +15,7 @@ You can host Trivy's databases in a container registry that is accessible to Tri
 
 First, make a copy of the databases into your container registry. The different databases, their use cases, and their locations are detailed in the [Trivy Databases](../configuration/db.md) document.
 
- !!! note
+!!! note
     You will need to keep the databases updated in order to maintain relevant scanning results.
 
 Then, tell Trivy to use the local registry using the relevant flags.
