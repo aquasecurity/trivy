@@ -1,6 +1,7 @@
 package mod
 
 import (
+	"fmt"
 	"io"
 	"regexp"
 	"strconv"
@@ -90,9 +91,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	if p.useMinVersion {
 		if toolchainVer := toolchainVersion(modFileParsed.Toolchain, modFileParsed.Go); toolchainVer != "" {
 			pkgs["stdlib"] = ftypes.Package{
-				ID:           packageID("stdlib", toolchainVer),
-				Name:         "stdlib",
-				Version:      toolchainVer,
+				ID:   packageID("stdlib", toolchainVer),
+				Name: "stdlib",
+				// Our versioning library doesn't support canonical (goX.Y.Z) format,
+				// So we need to add `v` prefix for consistency (with module and dependency versions).
+				Version:      fmt.Sprintf("v%s", toolchainVer),
 				Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 			}
 		}
