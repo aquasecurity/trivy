@@ -52,6 +52,7 @@ For more information about GitHub connectivity (including specific IP addresses)
 ### Rate limiting
 
 Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to update its databases. If you are facing rate-limiting issues:
+
 1. Consider self-hosting the databases, or implementing a proxy-cache in your organization.
 2. Look into specific registry rate-limiting policies which might provide solution for your use-case (for example by authenticating with the registry).
 3. Consider using a commercial service that provides the full [Aqua platform](https://www.aquasec.com/products/software-supply-chain-security/), which includes a stable and reliable scanning service.
