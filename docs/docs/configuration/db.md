@@ -139,15 +139,3 @@ $ trivy clean --vuln-db --java-db
 2024-06-24T11:42:31+06:00       INFO    Removing vulnerability database...
 2024-06-24T11:42:31+06:00       INFO    Removing Java database...
 ```
-
-## Self-Hosting
-
-You can host all of Trivy's databases on your own local environment (to prevent external connectivity). For more information, refer to the [Air-Gapped Environments and Self-Hosting](../advanced/air-gap.md) document.
-
-When serving, proxying, or manipulating Trivy's databases, note that the media type of the OCI layer is not a standard container image type.
-
-DB | Media Type | Reference
---- | --- | ---
-`trivy-db` | `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` | <https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db>
-`trivy-java-db` | `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip` | https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
-`trivy-chekcs` | `application/vnd.oci.image.manifest.v1+json` | https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks

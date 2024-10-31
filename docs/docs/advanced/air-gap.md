@@ -30,6 +30,16 @@ trivy image \
     myimage
 ```
 
+### OCI Media Types
+
+When serving, proxying, or manipulating Trivy's databases, note that the media type of the OCI layer is not a standard container image type:
+
+DB | Media Type | Reference
+--- | --- | ---
+`trivy-db` | `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` | <https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db>
+`trivy-java-db` | `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip` | https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
+`trivy-chekcs` | `application/vnd.oci.image.manifest.v1+json` | https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks
+
 ### Registry Authentication
 
 If the registry requires authentication, you can configure it as described in the [private registry authentication document](../advanced/private-registries/index.md).
