@@ -9,7 +9,7 @@ DB | Artifact name | Contents | Purpose
 Vulnerabilities DB | `trivy-db` | CVE information collected from various feeds | used only for [vulnerability scanning](../scanner/vulnerability.md)
 Java DB | `trivy-java-db` | Index of Java artifacts and their hash digest | used to identify Java artifacts only in [Java vulnerability scanning](../coverage/language/java.md)
 Misconfiguration DB | `trivy-chekcs` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
-VEX Hub | `vex-hub` | VEX statements | Used only in [VEX Hub is enabled](../supply-chain/vex/repo.md) in vulnerability scanning.
+VEX Hub | `vex-hub` | VEX statements | Used only in [VEX Repository is enabled](../supply-chain/vex/repo.md) in vulnerability scanning.
 
 ## External Services
 
