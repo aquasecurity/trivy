@@ -21,16 +21,16 @@ import (
 func TestFilter(t *testing.T) {
 	var (
 		pkg1 = ftypes.Package{
-			ID:      "foo@1.2.3",
+			ID:      "foo@v1.2.3",
 			Name:    "foo",
-			Version: "1.2.3",
+			Version: "v1.2.3",
 			Identifier: ftypes.PkgIdentifier{
 				UID: "01",
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
 					Name:      "foo",
-					Version:   "1.2.3",
+					Version:   "v1.2.3",
 				},
 			},
 		}
@@ -90,14 +90,14 @@ func TestFilter(t *testing.T) {
 		vuln6 = types.DetectedVulnerability{
 			VulnerabilityID:  "CVE-2019-0006",
 			PkgName:          "foo",
-			InstalledVersion: "1.2.3",
+			InstalledVersion: "v1.2.3",
 			FixedVersion:     "1.2.4",
 			PkgIdentifier: ftypes.PkgIdentifier{
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
 					Name:      "foo",
-					Version:   "1.2.3",
+					Version:   "v1.2.3",
 				},
 			},
 			Vulnerability: dbTypes.Vulnerability{
@@ -107,14 +107,14 @@ func TestFilter(t *testing.T) {
 		vuln7 = types.DetectedVulnerability{
 			VulnerabilityID:  "CVE-2019-0007",
 			PkgName:          "bar",
-			InstalledVersion: "2.3.4",
+			InstalledVersion: "v2.3.4",
 			FixedVersion:     "2.3.5",
 			PkgIdentifier: ftypes.PkgIdentifier{
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
 					Name:      "bar",
-					Version:   "2.3.4",
+					Version:   "v2.3.4",
 				},
 			},
 			Vulnerability: dbTypes.Vulnerability{

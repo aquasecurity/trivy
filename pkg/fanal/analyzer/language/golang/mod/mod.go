@@ -148,7 +148,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			}
 
 			// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-			modDir := filepath.Join(modPath, fmt.Sprintf("%s@v%s", normalizeModName(lib.Name), lib.Version))
+			modDir := filepath.Join(modPath, fmt.Sprintf("%s@%s", normalizeModName(lib.Name), lib.Version))
 
 			// Collect licenses
 			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
