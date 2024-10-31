@@ -4915,11 +4915,11 @@ ignore {
     input.CweIDs[_] == &quot;CWE-20&quot;
 }
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
+<div class="highlight"><pre><span></span><code>trivy image --ignore-policy examples/ignore-policies/basic.rego centos:7
 </code></pre></div>
 <p>For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>.
 More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.56.0/pkg/result/module.go">here</a>.</p>
-<p>You can find more example checks <a href="https://github.com/aquasecurity/trivy/tree/v0.56.0/pkg/result/module.go">here</a></p>
+<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.56.0/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.56.0/examples/ignore-policies">here</a>.</p>
 <h3 id="by-vulnerability-exploitability-exchange-vex">By Vulnerability Exploitability Exchange (VEX)</h3>
 <table>
 <thead>
