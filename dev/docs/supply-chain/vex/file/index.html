@@ -4535,7 +4535,7 @@ Take a look at the example below.</p>
 <span class="s">      },</span>
 <span class="s">      &quot;affects&quot;: [</span>
 <span class="s">        {</span>
-<span class="s">          &quot;ref&quot;: &quot;urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@1.44.234&quot;</span>
+<span class="s">          &quot;ref&quot;: &quot;urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@v1.44.234&quot;</span>
 <span class="s">        }</span>
 <span class="s">      ]</span>
 <span class="s">    }</span>
@@ -4578,7 +4578,7 @@ Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m"
 ┌───────────────────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
 │          Library          │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                           Title                            │
 ├───────────────────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
-│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ <span class="m">1</span>.44.234          │               │ aws-sdk-go: In-band key negotiation issue <span class="k">in</span> AWS S3 Crypto │
+│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ v1.44.234         │               │ aws-sdk-go: In-band key negotiation issue <span class="k">in</span> AWS S3 Crypto │
 │                           │               │          │                   │               │ SDK <span class="k">for</span> golang...                                          │
 │                           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-8912                  │
 └───────────────────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
@@ -4971,9 +4971,9 @@ Let's consider a project with the following dependency tree, where <code>Module 
 <span class="w">    </span><span class="nt">&quot;vulnerability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-XXXX-YYYY&quot;</span><span class="p">},</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;products&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <span class="w">      </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-b@1.0.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-b@v1.0.0&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;subcomponents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-c@2.0.0&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:golang/module-c@v2.0.0&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 <span class="w">        </span><span class="p">]</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="p">],</span><span class="w"></span>
