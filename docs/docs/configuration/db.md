@@ -45,7 +45,7 @@ The Checks Database registry location option does not support fallback through m
 | database | location | protocol | hosts
 | --- | --- | --- | ---
 | <ul><li>`trivy-db`</li><li>`trivy-java-db`</li><li>`trivy-chekcs`</li></ul> | GHCR | [OCI Distribution](https://github.com/opencontainers/distribution-spec) over HTTPS | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul>
-| `vexhub`| GitHub | Git over HTTPS | <ul><li>`api.github.com`</li><li>`codeload.github.com`</li></ul>
+| `vexhub`| GitHub | HTTPS | <ul><li>`api.github.com`</li><li>`codeload.github.com`</li></ul>
 
 For more information about GitHub connectivity (including specific IP addresses), please refer to [GitHub's connectivity troubleshooting guide](https://docs.github.com/en/get-started/using-github/troubleshooting-connectivity-problems).
 
