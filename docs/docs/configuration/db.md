@@ -23,13 +23,13 @@ Following are official locations of Trivy databases:
 
 | Registry | Image Address | Link
 | --- | --- | ---
-| GHCR | `ghcr.io/aquasecurity/trivy-db:2` | <https://ghcr.io/aquasecurity/trivy-db>
+| GHCR | `ghcr.io/aquasecurity/trivy-db` | <https://ghcr.io/aquasecurity/trivy-db>
 | | `ghcr.io/aquasecurity/trivy-java-db` | <https://ghcr.io/aquasecurity/trivy-java-db>
-| | `aquaghcr.io/aquasecurity/ecurity/trivy-checks` | <https://ghcr.io/aquasecurity/trivy-checks>
-| Docker Hub | `aquasec/trivy-db:2` | <https://hub.docker.com/r/aquasec/trivy-db>
-| | `aquasec/trivy-java-db:1` | <https://hub.docker.com/r/aquasec/trivy-java-db>
-| AWS ECR | `public.ecr.aws/aquasecurity/trivy-db:2` | <https://gallery.ecr.aws/aquasecurity/trivy-db>
-| | `public.ecr.aws/aquasecurity/trivy-java-db:1` | <https://gallery.ecr.aws/aquasecurity/trivy-java-db>
+| | `ghcr.io/aquasecurity/trivy-checks` | <https://ghcr.io/aquasecurity/trivy-checks>
+| Docker Hub | `aquasec/trivy-db` | <https://hub.docker.com/r/aquasec/trivy-db>
+| | `aquasec/trivy-java-db` | <https://hub.docker.com/r/aquasec/trivy-java-db>
+| AWS ECR | `public.ecr.aws/aquasecurity/trivy-db` | <https://gallery.ecr.aws/aquasecurity/trivy-db>
+| | `public.ecr.aws/aquasecurity/trivy-java-db` | <https://gallery.ecr.aws/aquasecurity/trivy-java-db>
 
  VEX Hub is fetched from VEX Hub GitHub Repository directly: <https://github.com/aquasecurity/vexhub>.
 
