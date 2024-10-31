@@ -90,8 +90,13 @@ func (r Report) consolidate() ConsolidatedReport {
 	for _, m := range r.Resources {
 		if vulnerabilitiesOrSecretResource(m) {
 			vulnerabilities = append(vulnerabilities, m)
-		} else {
+		}
+		if misconfigsResource(m) {
+			res, ok := index[m.fullname()]
 			index[m.fullname()] = m
+			if ok {
+				index[m.fullname()].Results[0].Misconfigurations = append(index[m.fullname()].Results[0].Misconfigurations, res.Results[0].Misconfigurations...)
+			}
 		}
 	}
 
@@ -276,6 +281,10 @@ func shouldAddToReport(scanners types.Scanners) bool {
 
 func vulnerabilitiesOrSecretResource(resource Resource) bool {
 	return len(resource.Results) > 0 && (len(resource.Results[0].Vulnerabilities) > 0 || len(resource.Results[0].Secrets) > 0)
+}
+
+func misconfigsResource(resource Resource) bool {
+	return len(resource.Results) > 0 && len(resource.Results[0].Misconfigurations) > 0
 }
 
 func nodeKind(resource Resource) Resource {

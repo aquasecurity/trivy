@@ -112,7 +112,7 @@ trivy config --severity HIGH,CRITICAL examples/misconf/mixed
 
 Dockerfile (dockerfile)
 =======================
-Tests: 17 (SUCCESSES: 16, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 17 (SUCCESSES: 16, FAILURES: 1)
 Failures: 1 (HIGH: 1, CRITICAL: 0)
 
 HIGH: Last USER command in Dockerfile should not be 'root'
@@ -130,13 +130,13 @@ See https://avd.aquasec.com/misconfig/ds002
 
 deployment.yaml (kubernetes)
 ============================
-Tests: 8 (SUCCESSES: 8, FAILURES: 0, EXCEPTIONS: 0)
+Tests: 8 (SUCCESSES: 8, FAILURES: 0)
 Failures: 0 (HIGH: 0, CRITICAL: 0)
 
 
 main.tf (terraform)
 ===================
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (HIGH: 0, CRITICAL: 1)
 
 CRITICAL: Classic resources should not be used.

@@ -22,8 +22,7 @@
       "Type": "helm",
       "MisconfSummary": {
         "Successes": 80,
-        "Failures": 14,
-        "Exceptions": 0
+        "Failures": 14
       },
       "Misconfigurations": [
         {

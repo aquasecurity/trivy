@@ -19,6 +19,7 @@ var (
 		Aliases: []Alias{
 			{
 				Name:       "skip-policy-update",
+				ConfigName: "rego.skip-policy-update",
 				Deprecated: true,
 			},
 		},
