@@ -72,7 +72,7 @@ trivy image [flags] IMAGE_NAME
       --image-config-scanners strings     comma-separated list of what security issues to detect on container image configurations (misconfig,secret)
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-deprecated-checks         include deprecated checks
-      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
+      --include-non-failures              include successes, available with '--scanners misconfig'
       --input string                      input file path instead of image name
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1])
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)

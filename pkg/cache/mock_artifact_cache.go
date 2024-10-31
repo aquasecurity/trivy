@@ -229,9 +229,6 @@ func (_m *MockArtifactCache) PutBlob(blobID string, blobInfo types.BlobInfo) err
 		for j := range blobInfo.Misconfigurations[i].Warnings {
 			blobInfo.Misconfigurations[i].Warnings[j].Code = types.Code{}
 		}
-		for j := range blobInfo.Misconfigurations[i].Exceptions {
-			blobInfo.Misconfigurations[i].Exceptions[j].Code = types.Code{}
-		}
 	}
 
 	ret := _m.Called(blobID, blobInfo)

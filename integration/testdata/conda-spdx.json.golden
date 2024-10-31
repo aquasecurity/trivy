@@ -31,10 +31,15 @@
           "referenceLocator": "pkg:conda/openssl@1.1.1q"
         }
       ],
-      "attributionTexts": [
-        "PkgType: conda-pkg"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: conda-pkg"
+        }
+      ]
     },
     {
       "name": "pip",
@@ -55,20 +60,30 @@
           "referenceLocator": "pkg:conda/pip@22.2.2"
         }
       ],
-      "attributionTexts": [
-        "PkgType: conda-pkg"
-      ],
-      "primaryPackagePurpose": "LIBRARY"
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: conda-pkg"
+        }
+      ]
     },
     {
       "name": "testdata/fixtures/repo/conda",
       "SPDXID": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
-      "attributionTexts": [
-        "SchemaVersion: 2"
-      ],
-      "primaryPackagePurpose": "SOURCE"
+      "primaryPackagePurpose": "SOURCE",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "SchemaVersion: 2"
+        }
+      ]
     }
   ],
   "files": [

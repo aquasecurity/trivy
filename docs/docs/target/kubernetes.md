@@ -280,8 +280,7 @@ trivy k8s --format json -o results.json cluster
           "Type": "kubernetes",
           "MisconfSummary": {
             "Successes": 20,
-            "Failures": 19,
-            "Exceptions": 0
+            "Failures": 19
           },
           "Misconfigurations": [
             {

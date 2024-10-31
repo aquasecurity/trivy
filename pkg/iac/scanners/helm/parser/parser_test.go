@@ -48,4 +48,34 @@ func TestParseFS(t *testing.T) {
 		}
 		assert.Equal(t, expectedFiles, p.filepaths)
 	})
+
+	t.Run("chart with multiple archived deps", func(t *testing.T) {
+		p, err := New(".")
+		require.NoError(t, err)
+
+		fsys := os.DirFS(filepath.Join("testdata", "multiple-archived-deps"))
+		require.NoError(t, p.ParseFS(context.TODO(), fsys, "."))
+
+		expectedFiles := []string{
+			"Chart.yaml",
+			"charts/common-2.26.0.tgz",
+			"charts/opentelemetry-collector-0.108.0.tgz",
+		}
+		assert.Equal(t, expectedFiles, p.filepaths)
+	})
+
+	t.Run("archives are not dependencies", func(t *testing.T) {
+		p, err := New(".")
+		require.NoError(t, err)
+
+		fsys := os.DirFS(filepath.Join("testdata", "non-deps-archives"))
+		require.NoError(t, p.ParseFS(context.TODO(), fsys, "."))
+
+		expectedFiles := []string{
+			"Chart.yaml",
+			"backup_charts/wordpress-operator/Chart.yaml",
+			"backup_charts/mysql-operator/Chart.yaml",
+		}
+		assert.Subset(t, p.filepaths, expectedFiles)
+	})
 }

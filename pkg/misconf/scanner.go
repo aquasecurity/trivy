@@ -488,8 +488,6 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			switch flattened.Status {
 			case scan.StatusPassed:
 				misconf.Successes = append(misconf.Successes, misconfResult)
-			case scan.StatusIgnored:
-				misconf.Exceptions = append(misconf.Exceptions, misconfResult)
 			case scan.StatusFailed:
 				misconf.Failures = append(misconf.Failures, misconfResult)
 			}

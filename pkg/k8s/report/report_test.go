@@ -119,6 +119,23 @@ var (
 		},
 	}
 
+	orionDeployWithAnotherMisconfig = Resource{
+		Namespace: "default",
+		Kind:      "Deploy",
+		Name:      "orion",
+		Results: types.Results{
+			{
+				Misconfigurations: []types.DetectedMisconfiguration{
+					{
+						ID:       "ID201",
+						Status:   types.MisconfStatusFailure,
+						Severity: "HIGH",
+					},
+				},
+			},
+		},
+	}
+
 	image1WithVulns = Resource{
 		Namespace: "default",
 		Kind:      "Pod",
@@ -424,6 +441,10 @@ var (
 )
 
 func TestReport_consolidate(t *testing.T) {
+	concatenatedResource := orionDeployWithAnotherMisconfig
+	concatenatedResource.Results[0].Misconfigurations = append(concatenatedResource.Results[0].Misconfigurations,
+		deployOrionWithMisconfigs.Results[0].Misconfigurations...)
+
 	tests := []struct {
 		name             string
 		report           Report
@@ -469,6 +490,18 @@ func TestReport_consolidate(t *testing.T) {
 			expectedFindings: map[string]Resource{
 				"default/deploy/orion":  deployOrionWithVulns,
 				"default/cronjob/hello": cronjobHelloWithVulns,
+			},
+		},
+		{
+			name: "report with misconfigs in image and pod",
+			report: Report{
+				Resources: []Resource{
+					deployOrionWithMisconfigs,
+					orionDeployWithAnotherMisconfig,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/deploy/orion": concatenatedResource,
 			},
 		},
 		{
