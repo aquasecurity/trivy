@@ -1904,6 +1904,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#supported-scopes" class="md-nav__link">
+    supported scopes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#empty-dependency-version" class="md-nav__link">
     empty dependency version
   </a>
@@ -4246,6 +4253,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#supported-scopes" class="md-nav__link">
+    supported scopes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#empty-dependency-version" class="md-nav__link">
     empty dependency version
   </a>
@@ -4453,6 +4467,8 @@ The vulnerability database will be downloaded anyway.</p>
 <p class="admonition-title">Warning</p>
 <p>Trivy may skip some dependencies (that were not found on your local machine) when the <code>--offline-scan</code> flag is passed.</p>
 </div>
+<h3 id="supported-scopes">supported scopes</h3>
+<p>Trivy only scans <code>import</code>, <code>compile</code>, <code>runtime</code> and empty <a href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope">maven scopes</a>. Other scopes and <code>Optional</code> dependencies are not currently being analyzed.</p>
 <h3 id="empty-dependency-version">empty dependency version</h3>
 <p>There are cases when Trivy cannot determine the version of dependencies:</p>
 <ul>
