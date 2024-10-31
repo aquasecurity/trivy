@@ -70,7 +70,7 @@ The vulnerability database will be downloaded anyway.
     Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
 
 ### supported scopes
-Trivy only scans `import`, `compile`, `runtime` and empty [maven scopes][maven-scopes]. Other scopes are not analyzed.
+Trivy only scans `import`, `compile`, `runtime` and empty [maven scopes][maven-scopes]. Other scopes are not currently being analyzed.
 
 ### empty dependency version
 There are cases when Trivy cannot determine the version of dependencies:
