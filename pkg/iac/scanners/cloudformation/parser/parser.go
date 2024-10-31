@@ -3,13 +3,13 @@ package parser
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
 	"path/filepath"
 	"strings"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
@@ -171,18 +171,17 @@ func (p *Parser) parseParams() error {
 
 	params := make(Parameters)
 
-	var errs []error
-
+	var errs error
 	for _, path := range p.parameterFiles {
 		if parameters, err := p.parseParametersFile(path); err != nil {
-			errs = append(errs, err)
+			errs = multierror.Append(errs, err)
 		} else {
 			params.Merge(parameters)
 		}
 	}
 
-	if len(errs) != 0 {
-		return errors.Join(errs...)
+	if errs != nil {
+		return errs
 	}
 
 	params.Merge(p.parameters)
