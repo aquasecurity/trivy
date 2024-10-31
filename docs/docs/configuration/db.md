@@ -80,7 +80,7 @@ The flags accepts multiple values, which can be used to specify multiple alterna
 For example:
 
 ```
-trivy image --db-repository my.registry.local/trivy-db,registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
+trivy image --db-repository my.registry.local/trivy-db --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
 
 !!! note 
