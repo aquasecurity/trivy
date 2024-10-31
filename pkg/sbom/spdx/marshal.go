@@ -249,7 +249,7 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, timeNow, pkgDownloadLo
 		externalReferences = append(externalReferences, m.purlExternalReference(root.PkgIdentifier.PURL.String()))
 	}
 
-	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", root.Name, root.Type))
+	pkgID, err := calcPkgID(m.hasher, root.ID())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", pkgID, err)
 	}
@@ -301,7 +301,7 @@ func (m *Marshaler) advisoryExternalReference(primaryURL string) *spdx.PackageEx
 }
 
 func (m *Marshaler) spdxPackage(c *core.Component, timeNow, pkgDownloadLocation string) (spdx.Package, error) {
-	pkgID, err := calcPkgID(m.hasher, c)
+	pkgID, err := calcPkgID(m.hasher, c.ID())
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
 	}
