@@ -82,6 +82,16 @@ trivy k8s --report summary cluster
 
 For a more complete introduction, check out the basic Trivy Demo: <https://github.com/itaysk/trivy-demo>
 
+## Learn more
+
+Now that you up and ready, here are some resources to help you deepen your knowledge:
+
+- Learn more about Trivy's capabilities by exploring the complete [documentation](../docs/index.md).
+- Explore community questions and under [GitHub Discussions](https://github.com/aquasecurity/trivy/discussions).
+- Stay up to date by watching for [New Releases & Announcements](https://github.com/aquasecurity/trivy/discussions/categories/announcements).
+- Follow Trivy on Twitter/X: [@aquatrivy](https://x.com/aquatrivy)
+- Explore and subscribe to our YouTube channel [@AquaSecOSS](http://youtube.com/@aquasecoss)
+
 # Want more? Check out Aqua
 
 If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.  
