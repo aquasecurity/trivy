@@ -3,12 +3,12 @@ package spdx
 import (
 	"context"
 	"fmt"
+	"hash/fnv"
 	"slices"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/mitchellh/hashstructure/v2"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
@@ -80,29 +80,13 @@ var duplicateProperties = []string{
 
 type Marshaler struct {
 	format     spdx.Document
-	hasher     Hash
 	appVersion string // Trivy version. It needed for `creator` field
 }
 
-type Hash func(v any, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
-
-type marshalOption func(*Marshaler)
-
-func WithHasher(hasher Hash) marshalOption {
-	return func(opts *Marshaler) {
-		opts.hasher = hasher
-	}
-}
-
-func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
+func NewMarshaler(version string) *Marshaler {
 	m := &Marshaler{
 		format:     spdx.Document{},
-		hasher:     hashstructure.Hash,
 		appVersion: version,
-	}
-
-	for _, opt := range opts {
-		opt(m)
 	}
 
 	return m
@@ -249,7 +233,7 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, timeNow, pkgDownloadLo
 		externalReferences = append(externalReferences, m.purlExternalReference(root.PkgIdentifier.PURL.String()))
 	}
 
-	pkgID, err := calcPkgID(m.hasher, root.ID())
+	pkgID, err := calcPkgID(root.ID().String())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", pkgID, err)
 	}
@@ -301,7 +285,7 @@ func (m *Marshaler) advisoryExternalReference(primaryURL string) *spdx.PackageEx
 }
 
 func (m *Marshaler) spdxPackage(c *core.Component, timeNow, pkgDownloadLocation string) (spdx.Package, error) {
-	pkgID, err := calcPkgID(m.hasher, c.ID())
+	pkgID, err := calcPkgID(c.ID().String())
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
 	}
@@ -435,7 +419,7 @@ func (m *Marshaler) spdxFiles(c *core.Component) ([]*spdx.File, error) {
 }
 
 func (m *Marshaler) spdxFile(filePath string, digests []digest.Digest) (*spdx.File, error) {
-	pkgID, err := calcPkgID(m.hasher, filePath)
+	pkgID, err := calcPkgID(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
 	}
@@ -518,16 +502,14 @@ func getDocumentNamespace(root *core.Component) string {
 	)
 }
 
-func calcPkgID(h Hash, v any) (string, error) {
-	f, err := h(v, hashstructure.FormatV2, &hashstructure.HashOptions{
-		ZeroNil:      true,
-		SlicesAsSets: true,
-	})
+func calcPkgID(s string) (string, error) {
+	h := fnv.New64()
+	_, err := h.Write([]byte(s))
 	if err != nil {
-		return "", xerrors.Errorf("could not build package ID for %+v: %w", v, err)
+		return "", xerrors.Errorf("could not build package ID for %q: %w", s, err)
 	}
 
-	return fmt.Sprintf("%x", f), nil
+	return fmt.Sprintf("%x", h.Sum64()), nil
 }
 
 func camelCase(inputUnderScoreStr string) (camelCase string) {
