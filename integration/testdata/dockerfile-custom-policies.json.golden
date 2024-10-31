@@ -21,7 +21,7 @@
       "Class": "config",
       "Type": "dockerfile",
       "MisconfSummary": {
-        "Successes": 27,
+        "Successes": 28,
         "Failures": 2
       },
       "Misconfigurations": [

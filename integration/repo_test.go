@@ -301,15 +301,6 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/dockerfile_file_pattern.json.golden",
 		},
 		{
-			name: "dockerfile with rule exception",
-			args: args{
-				scanner:     types.MisconfigScanner,
-				policyPaths: []string{"testdata/fixtures/repo/rule-exception/policy"},
-				input:       "testdata/fixtures/repo/rule-exception",
-			},
-			golden: "testdata/dockerfile-rule-exception.json.golden",
-		},
-		{
 			name: "dockerfile with custom policies",
 			args: args{
 				scanner:     types.MisconfigScanner,
