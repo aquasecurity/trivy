@@ -477,31 +477,13 @@ ignore {
 ```
 
 ```bash
-trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
+trivy image --ignore-policy examples/ignore-policies/basic.rego centos:7
 ```
 
 For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`.
 More info about the helper functions are in the library [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go).
 
-You can find more example checks [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/contrib/example_policy).
-
-You can also create a whitelist of checks using Rego. The policy below ignores all checks that are not allowed:
-
-```rego
-package trivy
-
-import rego.v1
-
-allowed_checks := {
-    "AVD-AWS-0089"
-}
-
-default ignore := false
-
-ignore if not is_check_allowed
-
-is_check_allowed if input.AVDID in allowed_checks
-```
+You can create a whitelist of checks using Rego, see the detailed [example](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/ignore-policies/whitelist.rego). Additional examples are available [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/ignore-policies).
 
 ### By Vulnerability Exploitability Exchange (VEX)
 |     Scanner      | Supported |
