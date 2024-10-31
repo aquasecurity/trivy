@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
@@ -600,14 +601,14 @@ func (b *Block) IsNotNil() bool {
 func (b *Block) ExpandBlock() error {
 	var (
 		expanded []*Block
-		errs     []error
+		errs     error
 	)
 
 	for _, child := range b.childBlocks {
 		if child.Type() == "dynamic" {
 			blocks, err := child.expandDynamic()
 			if err != nil {
-				errs = append(errs, err)
+				errs = multierror.Append(errs, err)
 				continue
 			}
 			expanded = append(expanded, blocks...)
@@ -618,7 +619,7 @@ func (b *Block) ExpandBlock() error {
 		b.injectBlock(block)
 	}
 
-	return errors.Join(errs...)
+	return errs
 }
 
 func (b *Block) expandDynamic() ([]*Block, error) {
@@ -638,7 +639,7 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 
 	var (
 		expanded []*Block
-		errs     []error
+		errs     error
 	)
 
 	forEachVal.ForEachElement(func(key, val cty.Value) (stop bool) {
@@ -648,7 +649,7 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 
 		iteratorName, err := b.iteratorName(realBlockType)
 		if err != nil {
-			errs = append(errs, err)
+			errs = multierror.Append(errs, err)
 			return
 		}
 
@@ -664,7 +665,7 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 			inherited.hclBlock.Labels = []string{}
 			inherited.hclBlock.Type = realBlockType
 			if err := inherited.ExpandBlock(); err != nil {
-				errs = append(errs, err)
+				errs = multierror.Append(errs, err)
 				return
 			}
 			expanded = append(expanded, inherited)
@@ -676,7 +677,7 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 		b.markExpanded()
 	}
 
-	return expanded, errors.Join(errs...)
+	return expanded, errs
 }
 
 func (b *Block) validateForEach() (cty.Value, error) {
