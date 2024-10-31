@@ -35,7 +35,7 @@ Following are official locations of Trivy databases:
 
 ### Automatic fallback
 
-Trivy will attempt to pull images from the official registries in the order specified. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries in the order specified.  
+Trivy will attempt to pull images from the official registries in the order specified. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries.  
 You can specify additional alternative repositories as explained in the [configuring database locations section](#locations).
 
 The Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the trivy-chekcs DB, Trivy will use the embedded checks as a fallback.
