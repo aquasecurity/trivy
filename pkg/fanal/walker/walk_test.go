@@ -1,7 +1,6 @@
 package walker_test
 
 import (
-	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -42,8 +41,11 @@ func TestSkipFile(t *testing.T) {
 			},
 		},
 		{
-			name:      "multiple skip files",
-			skipFiles: []string{"/etc/*/*", "/var/log/*.txt"},
+			name: "multiple skip files",
+			skipFiles: []string{
+				"/etc/*/*",
+				"/var/log/*.txt",
+			},
 			wants: map[string]bool{
 				"/etc/foo":         false,
 				"/etc/foo/bar":     true,
@@ -65,7 +67,7 @@ func TestSkipFile(t *testing.T) {
 			for file, want := range tt.wants {
 				file = filepath.ToSlash(filepath.Clean(file))
 				got := utils.SkipPath(file, utils.CleanSkipPaths(tt.skipFiles))
-				assert.Equal(t, want, got, fmt.Sprintf("skipFiles: %s, file: %s", tt.skipFiles, file))
+				assert.Equal(t, want, got, "skipFiles: %s, file: %s", tt.skipFiles, file)
 			}
 		})
 	}
@@ -108,8 +110,11 @@ func TestSkipDir(t *testing.T) {
 			},
 		},
 		{
-			name:     "multiple dirs",
-			skipDirs: []string{"/etc/*/*", "/var/log/*"},
+			name: "multiple dirs",
+			skipDirs: []string{
+				"/etc/*/*",
+				"/var/log/*",
+			},
 			wants: map[string]bool{
 				"/etc/foo":     false,
 				"/etc/foo/bar": true,
@@ -139,7 +144,7 @@ func TestSkipDir(t *testing.T) {
 			for dir, want := range tt.wants {
 				dir = filepath.ToSlash(filepath.Clean(dir))
 				got := utils.SkipPath(dir, utils.CleanSkipPaths(tt.skipDirs))
-				assert.Equal(t, want, got, fmt.Sprintf("defaultSkipDirs: %s, dir: %s", tt.skipDirs, dir))
+				assert.Equal(t, want, got, "defaultSkipDirs: %s, dir: %s", tt.skipDirs, dir)
 			}
 		})
 	}
