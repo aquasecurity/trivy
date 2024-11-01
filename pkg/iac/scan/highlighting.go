@@ -46,7 +46,7 @@ func highlight(fsKey, filename string, startLine, endLine int, input, theme stri
 		return nil
 	}
 
-	lines := strings.Split(string(highlighted), "\n")
+	lines := strings.Split(highlighted, "\n")
 	globalCache.Set(key, lines)
 	return lines
 }

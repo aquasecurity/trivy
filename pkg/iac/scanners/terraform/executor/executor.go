@@ -119,19 +119,34 @@ func renderCause(modules terraform.Modules, causeRng types.Range) scan.RenderedC
 	}
 
 	f := hclwrite.NewEmptyFile()
-	block := f.Body().AppendNewBlock(tfBlock.Type(), tfBlock.Labels())
+	block := hclwrite.NewBlock(tfBlock.Type(), normalizeBlockLables(tfBlock))
 
 	if !writeBlock(tfBlock, block, causeRng) {
 		return scan.RenderedCause{}
 	}
 
+	f.Body().AppendBlock(block)
+
 	cause := string(hclwrite.Format(f.Bytes()))
-	cause = strings.TrimSuffix(string(cause), "\n")
+	cause = strings.TrimSuffix(cause, "\n")
 	highlighted, _ := scan.Highlight(causeRng.GetFilename(), cause, scan.DarkTheme)
 	return scan.RenderedCause{
 		Raw:         cause,
 		Highlighted: highlighted,
 	}
+}
+
+func normalizeBlockLables(block *terraform.Block) []string {
+	labels := block.Labels()
+	if block.IsExpanded() {
+		nameLabel := labels[len(labels)-1]
+		idx := strings.LastIndex(nameLabel, "[")
+		if idx != -1 {
+			labels[len(labels)-1] = nameLabel[:idx]
+		}
+	}
+
+	return labels
 }
 
 func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.Range) bool {
