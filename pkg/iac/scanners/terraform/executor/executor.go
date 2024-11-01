@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"runtime"
 	"sort"
+	"strings"
 
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 
@@ -98,7 +100,74 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 	results = e.filterResults(results)
 
 	e.sortResults(results)
+	for i, res := range results {
+		if res.Status() != scan.StatusFailed {
+			continue
+		}
+
+		res.WithRenderedCause(renderCause(modules, res.Range()))
+		results[i] = res
+	}
+
 	return results, nil
+}
+
+func renderCause(modules terraform.Modules, causeRng types.Range) scan.RenderedCause {
+	tfBlock := findBlockByRange(modules, causeRng)
+	if tfBlock == nil {
+		return scan.RenderedCause{}
+	}
+
+	f := hclwrite.NewEmptyFile()
+	block := f.Body().AppendNewBlock(tfBlock.Type(), tfBlock.Labels())
+
+	if !writeBlock(tfBlock, block, causeRng) {
+		return scan.RenderedCause{}
+	}
+
+	cause := string(hclwrite.Format(f.Bytes()))
+	cause = strings.TrimSuffix(string(cause), "\n")
+	highlighted, _ := scan.Highlight(causeRng.GetFilename(), cause, scan.DarkTheme)
+	return scan.RenderedCause{
+		Raw:         cause,
+		Highlighted: highlighted,
+	}
+}
+
+func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.Range) bool {
+	var found bool
+	for _, attr := range tfBlock.Attributes() {
+		if !attr.GetMetadata().Range().Covers(causeRng) || attr.IsLiteral() {
+			continue
+		}
+		found = true
+		block.Body().SetAttributeValue(attr.Name(), attr.Value())
+	}
+
+	for _, childTfBlock := range tfBlock.AllBlocks() {
+		if !childTfBlock.GetMetadata().Range().Covers(causeRng) {
+			continue
+		}
+		childBlock := hclwrite.NewBlock(childTfBlock.Type(), nil)
+
+		attrFound := writeBlock(childTfBlock, childBlock, causeRng)
+		if attrFound {
+			block.Body().AppendBlock(childBlock)
+		}
+		found = found || attrFound
+	}
+
+	return found
+}
+
+func findBlockByRange(modules terraform.Modules, causeRng types.Range) *terraform.Block {
+	for _, block := range modules.GetBlocks() {
+		blockRng := block.GetMetadata().Range()
+		if blockRng.GetFilename() == causeRng.GetFilename() && blockRng.Includes(causeRng) {
+			return block
+		}
+	}
+	return nil
 }
 
 func (e *Executor) filterResults(results scan.Results) scan.Results {

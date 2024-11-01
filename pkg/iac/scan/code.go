@@ -77,7 +77,7 @@ func (c *Code) IsCauseMultiline() bool {
 }
 
 const (
-	darkTheme  = "solarized-dark256"
+	DarkTheme  = "solarized-dark256"
 	lightTheme = "github"
 )
 
@@ -89,7 +89,7 @@ type codeSettings struct {
 }
 
 var defaultCodeSettings = codeSettings{
-	theme:              darkTheme,
+	theme:              DarkTheme,
 	allowTruncation:    true,
 	maxLines:           10,
 	includeHighlighted: true,
@@ -105,7 +105,7 @@ func OptionCodeWithTheme(theme string) CodeOption {
 
 func OptionCodeWithDarkTheme() CodeOption {
 	return func(s *codeSettings) {
-		s.theme = darkTheme
+		s.theme = DarkTheme
 	}
 }
 

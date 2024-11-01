@@ -41,12 +41,17 @@ func highlight(fsKey, filename string, startLine, endLine int, input, theme stri
 		return lines
 	}
 
-	lexer := lexers.Match(filename)
-	if lexer == nil {
-		lexer = lexers.Fallback
+	highlighted, ok := Highlight(filename, input, theme)
+	if !ok {
+		return nil
 	}
-	lexer = chroma.Coalesce(lexer)
 
+	lines := strings.Split(string(highlighted), "\n")
+	globalCache.Set(key, lines)
+	return lines
+}
+
+func Highlight(filename string, input, theme string) (string, bool) {
 	style := styles.Get(theme)
 	if style == nil {
 		style = styles.Fallback
@@ -56,20 +61,23 @@ func highlight(fsKey, filename string, startLine, endLine int, input, theme stri
 		formatter = formatters.Fallback
 	}
 
+	lexer := lexers.Match(filename)
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+	lexer = chroma.Coalesce(lexer)
+
 	iterator, err := lexer.Tokenise(nil, input)
 	if err != nil {
-		return nil
+		return "", false
 	}
 
 	var buffer bytes.Buffer
 	if err := formatter.Format(&buffer, style, iterator); err != nil {
-		return nil
+		return "", false
 	}
 
-	raw := shiftANSIOverLineEndings(buffer.Bytes())
-	lines := strings.Split(string(raw), "\n")
-	globalCache.Set(key, lines)
-	return lines
+	return string(shiftANSIOverLineEndings(buffer.Bytes())), true
 }
 
 func shiftANSIOverLineEndings(input []byte) []byte {
