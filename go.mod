@@ -423,3 +423,5 @@ require (
 	sigs.k8s.io/kustomize/kyaml v0.17.1 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )
+
+replace github.com/aquasecurity/trivy-db => github.com/bpfoster/trivy-db v0.0.0-20241102100020-ed3cdbf030cb
