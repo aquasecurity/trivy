@@ -707,7 +707,7 @@ func (b *Block) iteratorName(blockType string) (string, error) {
 	}
 
 	if len(traversal) != 1 {
-		return "", fmt.Errorf("dynamic iterator must be a single variable name")
+		return "", errors.New("dynamic iterator must be a single variable name")
 	}
 
 	return traversal.RootName(), nil

@@ -222,7 +222,7 @@ func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
 	}
 
 	if r == nil {
-		return nil, fmt.Errorf("there is nothing in the release")
+		return nil, errors.New("there is nothing in the release")
 	}
 	return r, nil
 }

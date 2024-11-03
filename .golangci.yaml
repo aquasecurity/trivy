@@ -80,6 +80,17 @@ linters-settings:
       - licence
       - optimise
       - simmilar
+  perfsprint:
+    # Optimizes even if it requires an int or uint type cast.
+    int-conversion: false
+    # Optimizes into `err.Error()` even if it is only equivalent for non-nil errors.
+    err-error: true
+    # Optimizes `fmt.Errorf`.
+    errorf: true
+    # Optimizes `fmt.Sprintf` with only one argument.
+    sprintf1: false
+    # Optimizes into strings concatenation.
+    strconcat: false
   revive:
     ignore-generated-header: true
   testifylint:
@@ -99,6 +110,7 @@ linters:
     - govet
     - ineffassign
     - misspell
+    - perfsprint
     - revive
     - tenv
     - testifylint
@@ -139,5 +151,8 @@ issues:
       linters:
         - gocritic
       text: "importShadow:"
+    - linters:
+        - perfsprint
+      text: "fmt.Sprint"
   exclude-use-default: false
   max-same-issues: 0

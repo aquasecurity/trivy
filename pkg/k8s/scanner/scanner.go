@@ -3,6 +3,7 @@ package scanner
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -374,7 +375,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 	// Find the first node name to identify AKS cluster
 	var nodeName string
 	if nodeName = s.findNodeName(allArtifact); nodeName == "" {
-		return nil, fmt.Errorf("failed to find node name")
+		return nil, errors.New("failed to find node name")
 	}
 
 	kbom := core.NewBOM(core.Options{

@@ -1,6 +1,7 @@
 package armjson
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 )
@@ -42,5 +43,5 @@ func (n *node) decodeNumber(v reflect.Value) error {
 		return fmt.Errorf("cannot decode number value to %s target", v.Kind())
 	}
 
-	return fmt.Errorf("internal value is not numeric")
+	return errors.New("internal value is not numeric")
 }
