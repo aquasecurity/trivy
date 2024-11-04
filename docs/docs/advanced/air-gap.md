@@ -4,14 +4,21 @@ Trivy needs to connect to the internet occasionally in order to download relevan
 
 ## Network requirements
 
-Trivy's databases are distributed as OCI images via GitHub Container registry (GHCR):
+Trivy's databases are distributed as OCI images via GitHub Container registry (GHCR), AWS Elastic Container Registry (ECR) or DockerHub:
 
-- <https://ghcr.io/aquasecurity/trivy-db>
-- <https://ghcr.io/aquasecurity/trivy-java-db>
-- <https://ghcr.io/aquasecurity/trivy-checks>
+- [AWS ECR](https://gallery.ecr.aws/aquasecurity): ``public.ecr.aws``
+- [DockerHub](https://hub.docker.com/u/aquasec): ``index.docker.io``
+- [GHCR](https://github.com/orgs/aquasecurity/packages): ``ghcr.io``
 
-The following hosts are required in order to fetch them:
+The following hosts are at least required in order to fetch them:
 
+AWS ECR:
+- `public.ecr.aws`
+
+DockerHub:
+- `index.docker.io`
+
+GHCR:
 - `ghcr.io`
 - `pkg-containers.githubusercontent.com`
 
