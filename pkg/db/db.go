@@ -25,6 +25,12 @@ const (
 )
 
 var (
+	// AWS Elastic Container Registry
+	DefaultECRRepository = fmt.Sprintf("%s:%d", "public.ecr.aws/aquasecurity/trivy-db", db.SchemaVersion)
+	defaultECRRepository = lo.Must(name.NewTag(DefaultECRRepository))
+	// DockerHub
+	DefaultDockerHubRepository = fmt.Sprintf("%s:%d", "aquasec/trivy-db", db.SchemaVersion)
+	defaultDockerHubRepository = lo.Must(name.NewTag(DefaultDockerHubRepository))
 	// GitHub Container Registry
 	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
 	defaultGHCRRepository = lo.Must(name.NewTag(DefaultGHCRRepository))
@@ -73,6 +79,8 @@ func Dir(cacheDir string) string {
 func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
 		dbRepositories: []name.Reference{
+			defaultECRRepository,
+			defaultDockerHubRepository,
 			defaultGHCRRepository,
 		},
 	}
