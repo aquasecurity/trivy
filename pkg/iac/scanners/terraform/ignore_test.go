@@ -1,161 +1,118 @@
 package terraform
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
-
-var exampleRule = scan.Rule{
-	Provider:  providers.AWSProvider,
-	Service:   "service",
-	ShortCode: "abc123",
-	AVDID:     "AWS-ABC-123",
-	Aliases:   []string{"aws-other-abc123"},
-	Severity:  severity.High,
-	CustomChecks: scan.CustomChecks{
-		Terraform: &scan.TerraformCustomCheck{
-			RequiredLabels: []string{"bad"},
-			Check: func(resourceBlock *terraform.Block, _ *terraform.Module) (results scan.Results) {
-				if attr, _ := resourceBlock.GetNestedAttribute("secure_settings.enabled"); attr.IsNotNil() {
-					if attr.IsFalse() {
-						results.Add("example problem", attr)
-					}
-				} else {
-					attr := resourceBlock.GetAttribute("secure")
-					if attr.IsNil() {
-						results.Add("example problem", resourceBlock)
-					}
-					if attr.IsFalse() {
-						results.Add("example problem", attr)
-					}
-				}
-				return
-			},
-		},
-	},
-}
 
 func Test_IgnoreAll(t *testing.T) {
 
 	var testCases = []struct {
 		name         string
-		inputOptions string
+		source       string
 		assertLength int
 	}{
 		{
-			name: "IgnoreAll",
-			inputOptions: `
-resource "bad" "my-rule" {
-    secure = false // tfsec:ignore:*
+			name: "inline rule",
+			source: `
+resource "aws_s3_bucket" "test" {
+  bucket = "" // tfsec:ignore:*
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreLineAboveTheBlock",
-			inputOptions: `
+			name: "rule above block",
+			source: `
 // tfsec:ignore:*
-resource "bad" "my-rule" {
-   secure = false 
+resource "aws_s3_bucket" "test" {}
+`,
+			assertLength: 0,
+		},
+		{
+			name: "rule above block with boolean parameter",
+			source: `
+// tfsec:ignore:*[object_lock_enabled=false]
+resource "aws_s3_bucket" "test" {
+  object_lock_enabled = false
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreLineAboveTheBlockMatchingParamBool",
-			inputOptions: `
-// tfsec:ignore:*[secure=false]
-resource "bad" "my-rule" {
-   secure = false
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "IgnoreLineAboveTheBlockNotMatchingParamBool",
-			inputOptions: `
-// tfsec:ignore:*[secure=true]
-resource "bad" "my-rule" {
-   secure = false 
+			name: "rule above block with non-matching boolean parameter",
+			source: `
+// tfsec:ignore:*[object_lock_enabled=false]
+resource "aws_s3_bucket" "test" {
+  object_lock_enabled = true
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "IgnoreLineAboveTheBlockMatchingParamString",
-			inputOptions: `
-// tfsec:ignore:*[name=myrule]
-resource "bad" "my-rule" {
-    name = "myrule"
-    secure = false
+			name: "rule above block with string parameter",
+			source: `
+// tfsec:ignore:*[acl=private]
+resource "aws_s3_bucket" "test" {
+    acl = "private"
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreLineAboveTheBlockNotMatchingParamString",
-			inputOptions: `
-// tfsec:ignore:*[name=myrule2]
-resource "bad" "my-rule" {
-    name = "myrule"
-    secure = false 
+			name: "rule above block with non-matching string parameter",
+			source: `
+// tfsec:ignore:*[acl=private]
+resource "aws_s3_bucket" "test" {
+    acl = "public"
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "IgnoreLineAboveTheBlockMatchingParamInt",
-			inputOptions: `
-// tfsec:ignore:*[port=123]
-resource "bad" "my-rule" {
-   secure = false
-   port = 123
+			name: "rule above block with int parameter",
+			source: `
+// tfsec:ignore:*[some_int=123]
+resource "aws_s3_bucket" "test" {
+   some_int = 123
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreLineAboveTheBlockNotMatchingParamInt",
-			inputOptions: `
-// tfsec:ignore:*[port=456]
-resource "bad" "my-rule" {
-   secure = false 
-   port = 123
+			name: "rule above block with non-matching int parameter",
+			source: `
+// tfsec:ignore:*[some_int=456]
+resource "aws_s3_bucket" "test" {
+   some_int = 123
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "IgnoreLineStackedAboveTheBlock",
-			inputOptions: `
+			name: "stacked rules above block",
+			source: `
 // tfsec:ignore:*
 // tfsec:ignore:a
 // tfsec:ignore:b
 // tfsec:ignore:c
 // tfsec:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
-}
+resource "aws_s3_bucket" "test" {}
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreLineStackedAboveTheBlockWithoutMatch",
-			inputOptions: `
+			name: "stacked rules above block without a match",
+			source: `
 #tfsec:ignore:*
 
 #tfsec:ignore:x
@@ -163,233 +120,162 @@ resource "bad" "my-rule" {
 #tfsec:ignore:b
 #tfsec:ignore:c
 #tfsec:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
-}
+resource "aws_s3_bucket" "test" {}
 `,
 			assertLength: 1,
 		},
 		{
-			name: "IgnoreLineStackedAboveTheBlockWithHashesWithoutSpaces",
-			inputOptions: `
+			name: "stacked rules above block without spaces between '#' comments",
+			source: `
 #tfsec:ignore:*
 #tfsec:ignore:a
 #tfsec:ignore:b
 #tfsec:ignore:c
 #tfsec:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
-}
+resource "aws_s3_bucket" "test" {}
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreLineStackedAboveTheBlockWithoutSpaces",
-			inputOptions: `
+			name: "stacked rules above block without spaces between '//' comments",
+			source: `
 //tfsec:ignore:*
 //tfsec:ignore:a
 //tfsec:ignore:b
 //tfsec:ignore:c
 //tfsec:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
+resource "aws_s3_bucket" "test" {}
+`,
+			assertLength: 0,
+		},
+		{
+			name: "rule above the finding",
+			source: `
+resource "aws_s3_bucket" "test" {
+	# tfsec:ignore:aws-s3-non-empty-bucket
+    bucket = ""
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreLineAboveTheLine",
-			inputOptions: `
-resource "bad" "my-rule" {
-	# tfsec:ignore:aws-service-abc123
-    secure = false
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "IgnoreWithExpDateIfDateBreachedThenDontIgnore",
-			inputOptions: `
-resource "bad" "my-rule" {
-    secure = false # tfsec:ignore:aws-service-abc123:exp:2000-01-02
+			name: "rule with breached expiration date",
+			source: `
+resource "aws_s3_bucket" "test" {
+    bucket = "" # tfsec:ignore:aws-s3-non-empty-bucket:exp:2000-01-02
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "IgnoreWithExpDateIfDateNotBreachedThenIgnoreIgnore",
-			inputOptions: `
-resource "bad" "my-rule" {
-    secure = false # tfsec:ignore:aws-service-abc123:exp:2221-01-02
+			name: "rule with unbreached expiration date",
+			source: `
+resource "aws_s3_bucket" "test" {
+    bucket = "" # tfsec:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreWithExpDateIfDateInvalidThenDropTheIgnore",
-			inputOptions: `
-resource "bad" "my-rule" {
-   secure = false # tfsec:ignore:aws-service-abc123:exp:2221-13-02
+			name: "rule with invalid expiration date",
+			source: `
+resource "aws_s3_bucket" "test" {
+   bucket = "" # tfsec:ignore:aws-s3-non-empty-bucket:exp:2221-13-02
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "IgnoreAboveResourceBlockWithExpDateIfDateNotBreachedThenIgnoreIgnore",
-			inputOptions: `
-#tfsec:ignore:aws-service-abc123:exp:2221-01-02
-resource "bad" "my-rule" {
+			name: "rule above block with unbreached expiration date",
+			source: `
+#tfsec:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
+resource "aws_s3_bucket" "test" {}
+`,
+			assertLength: 0,
+		},
+		{
+			name: "trivy inline rule ignore all checks",
+			source: `
+resource "aws_s3_bucket" "test" {
+    bucket = "" // trivy:ignore:*
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "IgnoreAboveResourceBlockWithExpDateAndMultipleIgnoresIfDateNotBreachedThenIgnoreIgnore",
-			inputOptions: `
-# tfsec:ignore:aws-service-abc123:exp:2221-01-02
-resource "bad" "my-rule" {
-	
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "IgnoreForImpliedIAMResource",
-			inputOptions: `
-terraform {
-  required_version = "~> 1.1.6"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.48"
-    }
-  }
-}
-
-# Retrieve an IAM group defined outside of this Terraform config.
-
-# tfsec:ignore:aws-iam-enforce-mfa
-data "aws_iam_group" "externally_defined_group" {
-  group_name = "group-name" # tfsec:ignore:aws-iam-enforce-mfa
-}
-
-# Create an IAM policy and attach it to the group.
-
-# tfsec:ignore:aws-iam-enforce-mfa
-resource "aws_iam_policy" "test_policy" {
-  name   = "test-policy"                                 # tfsec:ignore:aws-iam-enforce-mfa
-  policy = data.aws_iam_policy_document.test_policy.json # tfsec:ignore:aws-iam-enforce-mfa
-}
-
-# tfsec:ignore:aws-iam-enforce-mfa
-resource "aws_iam_group_policy_attachment" "test_policy_attachment" {
-  group      = data.aws_iam_group.externally_defined_group.group_name # tfsec:ignore:aws-iam-enforce-mfa
-  policy_arn = aws_iam_policy.test_policy.arn                         # tfsec:ignore:aws-iam-enforce-mfa
-}
-
-# tfsec:ignore:aws-iam-enforce-mfa
-data "aws_iam_policy_document" "test_policy" {
-  statement {
-    sid = "PublishToCloudWatch" # tfsec:ignore:aws-iam-enforce-mfa
-    actions = [
-      "cloudwatch:PutMetricData", # tfsec:ignore:aws-iam-enforce-mfa
-    ]
-    resources = ["*"] # tfsec:ignore:aws-iam-enforce-mfa
-  }
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "TrivyIgnoreAll",
-			inputOptions: `
-resource "bad" "my-rule" {
-    secure = false // trivy:ignore:*
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "TrivyIgnoreLineAboveTheBlock",
-			inputOptions: `
+			name: "trivy rule above the block",
+			source: `
 // trivy:ignore:*
-resource "bad" "my-rule" {
-   secure = false 
+resource "aws_s3_bucket" "test" {}
+`,
+			assertLength: 0,
+		},
+		{
+			name: "trivy rule above block with boolean parameter",
+			source: `
+// trivy:ignore:*[force_destroy=true]
+resource "aws_s3_bucket" "test" {
+  force_destroy = true
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "TrivyIgnoreLineAboveTheBlockMatchingParamBool",
-			inputOptions: `
-// trivy:ignore:*[secure=false]
-resource "bad" "my-rule" {
-   secure = false
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "TrivyIgnoreLineAboveTheBlockNotMatchingParamBool",
-			inputOptions: `
-// trivy:ignore:*[secure=true]
-resource "bad" "my-rule" {
-   secure = false 
+			name: "trivy rule above block with non-matching boolean parameter",
+			source: `
+// trivy:ignore:*[force_destroy=false]
+resource "aws_s3_bucket" "test" {
+  force_destroy = true
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "TrivyIgnoreLineAboveTheBlockMatchingParamString",
-			inputOptions: `
-// trivy:ignore:*[name=myrule]
-resource "bad" "my-rule" {
-    name = "myrule"
-    secure = false
+			name: "trivy rule above block with string parameter",
+			source: `
+// trivy:ignore:*[acl=private]
+resource "aws_s3_bucket" "test" {
+    acl = "private"
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "TrivyIgnoreLineAboveTheBlockNotMatchingParamString",
-			inputOptions: `
-// trivy:ignore:*[name=myrule2]
-resource "bad" "my-rule" {
-    name = "myrule"
-    secure = false 
+			name: "trivy rule above block with non-matching string parameter",
+			source: `
+// trivy:ignore:*[acl=private]
+resource "aws_s3_bucket" "test" {
+    acl = "public" 
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "TrivyIgnoreLineAboveTheBlockMatchingParamInt",
-			inputOptions: `
-// trivy:ignore:*[port=123]
-resource "bad" "my-rule" {
-   secure = false
-   port = 123
+			name: "trivy rule above block with int parameter",
+			source: `
+// trivy:ignore:*[some_int=123]
+resource "aws_s3_bucket" "test" {
+   some_int = 123
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "TrivyIgnoreLineAboveTheBlockNotMatchingParamInt",
-			inputOptions: `
-// trivy:ignore:*[port=456]
-resource "bad" "my-rule" {
-   secure = false 
-   port = 123
+			name: "trivy rule above block with non-matching int parameter",
+			source: `
+// trivy:ignore:*[some_int=456]
+resource "aws_s3_bucket" "test" {
+   some_int = 123
 }
 `,
 			assertLength: 1,
 		},
 		{
 			name: "ignore by nested attribute",
-			inputOptions: `
-// trivy:ignore:*[secure_settings.enabled=false]
-resource "bad" "my-rule" {
-  secure_settings {
+			source: `
+// trivy:ignore:*[versioning.enabled=false]
+resource "aws_s3_bucket" "test" {
+  versioning {
     enabled = false
   }
 }
@@ -398,10 +284,10 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by nested attribute of another type",
-			inputOptions: `
-// trivy:ignore:*[secure_settings.enabled=1]
-resource "bad" "my-rule" {
-  secure_settings {
+			source: `
+// trivy:ignore:*[versioning.enabled=1]
+resource "aws_s3_bucket" "test" {
+  versioning {
     enabled = false
   }
 }
@@ -410,10 +296,10 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by non-existent nested attribute",
-			inputOptions: `
-// trivy:ignore:*[secure_settings.rule=myrule]
-resource "bad" "my-rule" {
-  secure_settings {
+			source: `
+// trivy:ignore:*[versioning.target=foo]
+resource "aws_s3_bucket" "test" {
+  versioning {
     enabled = false
   }
 }
@@ -422,24 +308,24 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore resource with `for_each` meta-argument",
-			inputOptions: `
-// trivy:ignore:*[secure=false]
-resource "bad" "my-rule" {
-  for_each = toset(["false", "true", "false"])
-  secure   = each.key
+			source: `
+// trivy:ignore:*[acl=public]
+resource "aws_s3_bucket" "test" {
+  for_each = toset(["private", "public"])
+  acl = each.value
 }
 `,
-			assertLength: 0,
+			assertLength: 1,
 		},
 		{
 			name: "ignore by dynamic block value",
-			inputOptions: `
-// trivy:ignore:*[secure_settings.enabled=false]
-resource "bad" "my-rule" {
-  dynamic "secure_settings" {
-    for_each = ["false", "true"]
+			source: `
+// trivy:ignore:*[versioning.enabled=false]
+resource "aws_s3_bucket" "test" {
+  dynamic "versioning" {
+    for_each = [{}]
     content {
-      enabled = secure_settings.value
+      enabled = false
     }
   }
 }
@@ -447,37 +333,20 @@ resource "bad" "my-rule" {
 			assertLength: 0,
 		},
 		{
-			name: "ignore by indexed dynamic block value",
-			inputOptions: `
-// trivy:ignore:*[secure_settings.0.enabled=false]
-resource "bad" "my-rule" {
-  dynamic "secure_settings" {
-    for_each = ["false", "true"]
-    content {
-      enabled = secure_settings.value
-    }
-  }
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "TrivyIgnoreLineStackedAboveTheBlock",
-			inputOptions: `
+			name: "trivy rules stacked above the block",
+			source: `
 // trivy:ignore:*
 // trivy:ignore:a
 // trivy:ignore:b
 // trivy:ignore:c
 // trivy:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
-}
+resource "aws_s3_bucket" "test" {}
 `,
 			assertLength: 0,
 		},
 		{
-			name: "TrivyIgnoreLineStackedAboveTheBlockWithoutMatch",
-			inputOptions: `
+			name: "Trivy rules stacked above the block without a match",
+			source: `
 #trivy:ignore:*
 
 #trivy:ignore:x
@@ -485,150 +354,86 @@ resource "bad" "my-rule" {
 #trivy:ignore:b
 #trivy:ignore:c
 #trivy:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
-}
+resource "aws_s3_bucket" "test" {}
 `,
 			assertLength: 1,
 		},
 		{
-			name: "TrivyIgnoreLineStackedAboveTheBlockWithHashesWithoutSpaces",
-			inputOptions: `
+			name: "trivy rules stacked above the block with hashes and no spaces",
+			source: `
 #trivy:ignore:*
 #trivy:ignore:a
 #trivy:ignore:b
 #trivy:ignore:c
 #trivy:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
-}
+resource "aws_s3_bucket" "test" {}
 `,
 			assertLength: 0,
 		},
 		{
-			name: "TrivyIgnoreLineStackedAboveTheBlockWithoutSpaces",
-			inputOptions: `
+			name: "trivy rules stacked above the block without spaces",
+			source: `
 //trivy:ignore:*
 //trivy:ignore:a
 //trivy:ignore:b
 //trivy:ignore:c
 //trivy:ignore:d
-resource "bad" "my-rule" {
-   secure = false 
+resource "aws_s3_bucket" "test" {}
+`,
+			assertLength: 0,
+		},
+		{
+			name: "trivy rule above the finding",
+			source: `
+resource "aws_s3_bucket" "test" {
+	# trivy:ignore:aws-s3-non-empty-bucket
+    bucket = ""
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "TrivyIgnoreLineAboveTheLine",
-			inputOptions: `
-resource "bad" "my-rule" {
-	# trivy:ignore:aws-service-abc123
-    secure = false
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "TrivyIgnoreWithExpDateIfDateBreachedThenDontIgnore",
-			inputOptions: `
-resource "bad" "my-rule" {
-    secure = false # trivy:ignore:aws-service-abc123:exp:2000-01-02
+			name: "trivy rule with breached expiration date",
+			source: `
+resource "aws_s3_bucket" "test" {
+    bucket = "" # trivy:ignore:aws-s3-non-empty-bucket:exp:2000-01-02
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "TrivyIgnoreWithExpDateIfDateNotBreachedThenIgnoreIgnore",
-			inputOptions: `
-resource "bad" "my-rule" {
-    secure = false # trivy:ignore:aws-service-abc123:exp:2221-01-02
+			name: "trivy rule with unbreached expiration date",
+			source: `
+resource "aws_s3_bucket" "test" {
+    bucket = "" # trivy:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
 }
 `,
 			assertLength: 0,
 		},
 		{
-			name: "TrivyIgnoreWithExpDateIfDateInvalidThenDropTheIgnore",
-			inputOptions: `
-resource "bad" "my-rule" {
-   secure = false # trivy:ignore:aws-service-abc123:exp:2221-13-02
+			name: "trivy rule with invalid expiration date",
+			source: `
+resource "aws_s3_bucket" "test" {
+   bucket = "" # trivy:ignore:aws-s3-non-empty-bucket:exp:2221-13-02
 }
 `,
 			assertLength: 1,
 		},
 		{
-			name: "TrivyIgnoreAboveResourceBlockWithExpDateIfDateNotBreachedThenIgnoreIgnore",
-			inputOptions: `
-#trivy:ignore:aws-service-abc123:exp:2221-01-02
-resource "bad" "my-rule" {
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "TrivyIgnoreAboveResourceBlockWithExpDateAndMultipleIgnoresIfDateNotBreachedThenIgnoreIgnore",
-			inputOptions: `
-# trivy:ignore:aws-service-abc123:exp:2221-01-02
-resource "bad" "my-rule" {
-	
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "TrivyIgnoreForImpliedIAMResource",
-			inputOptions: `
-terraform {
-  required_version = "~> 1.1.6"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.48"
-    }
-  }
-}
-
-# Retrieve an IAM group defined outside of this Terraform config.
-
-# trivy:ignore:aws-iam-enforce-mfa
-data "aws_iam_group" "externally_defined_group" {
-  group_name = "group-name" # trivy:ignore:aws-iam-enforce-mfa
-}
-
-# Create an IAM policy and attach it to the group.
-
-# trivy:ignore:aws-iam-enforce-mfa
-resource "aws_iam_policy" "test_policy" {
-  name   = "test-policy"                                 # trivy:ignore:aws-iam-enforce-mfa
-  policy = data.aws_iam_policy_document.test_policy.json # trivy:ignore:aws-iam-enforce-mfa
-}
-
-# trivy:ignore:aws-iam-enforce-mfa
-resource "aws_iam_group_policy_attachment" "test_policy_attachment" {
-  group      = data.aws_iam_group.externally_defined_group.group_name # trivy:ignore:aws-iam-enforce-mfa
-  policy_arn = aws_iam_policy.test_policy.arn                         # trivy:ignore:aws-iam-enforce-mfa
-}
-
-# trivy:ignore:aws-iam-enforce-mfa
-data "aws_iam_policy_document" "test_policy" {
-  statement {
-    sid = "PublishToCloudWatch" # trivy:ignore:aws-iam-enforce-mfa
-    actions = [
-      "cloudwatch:PutMetricData", # trivy:ignore:aws-iam-enforce-mfa
-    ]
-    resources = ["*"] # trivy:ignore:aws-iam-enforce-mfa
-  }
-}
+			name: "trivy rule above block with unbreached expiration date",
+			source: `
+#trivy:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
+resource "aws_s3_bucket" "test" {}
 `,
 			assertLength: 0,
 		},
 		{
 			name: "ignore by each.value",
-			inputOptions: `
+			source: `
 // trivy:ignore:*[each.value=false]
 resource "bad" "my-rule" {
   for_each = toset(["false", "true", "false"])
+
   secure   = each.value
 }
 `,
@@ -636,46 +441,35 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by nested each.value",
-			inputOptions: `
+			source: `
 locals {
-  vms = [
-    {
-      ip_address = "10.0.0.1"
-      name       = "vm-1"
-    },
-    {
-      ip_address = "10.0.0.2"
-      name       = "vm-2"
-    }
-  ]
+  acls = toset(["private", "public"])
 }
-// trivy:ignore:*[each.value.name=vm-2]
-resource "bad" "my-rule" {
-  secure = false
-  for_each   = { for vm in local.vms : vm.name => vm }
-  ip_address = each.value.ip_address
+// trivy:ignore:*[each.value=private]
+resource "aws_s3_bucket" "test" {
+  for_each = local.acls
+
+  acl = each.value
 }
 `,
 			assertLength: 1,
 		},
 		{
 			name: "ignore resource with `count` meta-argument",
-			inputOptions: `
+			source: `
 // trivy:ignore:*[count.index=1]
-resource "bad" "my-rule" {
+resource "aws_s3_bucket" "test" {
   count = 2
-  secure = false
 }
 `,
 			assertLength: 1,
 		},
 		{
 			name: "invalid index when accessing blocks",
-			inputOptions: `
+			source: `
 // trivy:ignore:*[ingress.99.port=9090]
 // trivy:ignore:*[ingress.-10.port=9090]
-resource "bad" "my-rule" {
-  secure = false
+resource "aws_s3_bucket" "test" {
   dynamic "ingress" {
     for_each = [8080, 9090]
     content {
@@ -688,10 +482,9 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by list value",
-			inputOptions: `
+			source: `
 #trivy:ignore:*[someattr.1.Environment=dev]
-resource "bad" "my-rule" {
-  secure = false
+resource "aws_s3_bucket" "test" {
   someattr = [
 	{
 		Environment = "prod"
@@ -706,9 +499,9 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by list value with invalid index",
-			inputOptions: `
+			source: `
 #trivy:ignore:*[someattr.-2.Environment=dev]
-resource "bad" "my-rule" {
+resource "aws_s3_bucket" "test" {
   secure = false
   someattr = [
 	{
@@ -724,9 +517,9 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by object value",
-			inputOptions: `
+			source: `
 #trivy:ignore:*[tags.Environment=dev]
-resource "bad" "my-rule" {
+resource "aws_s3_bucket" "test" {
   secure = false
   tags = {
     Environment = "dev"
@@ -737,9 +530,9 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by object value in block",
-			inputOptions: `
+			source: `
 #trivy:ignore:*[someblock.tags.Environment=dev]
-resource "bad" "my-rule" {
+resource "aws_s3_bucket" "test" {
   secure = false
   someblock {
 	tags = {
@@ -752,7 +545,7 @@ resource "bad" "my-rule" {
 		},
 		{
 			name: "ignore by list value in map",
-			inputOptions: `
+			source: `
 variable "testvar" {
   type = map(list(string))
   default = {
@@ -762,7 +555,7 @@ variable "testvar" {
 }
 
 #trivy:ignore:*[someblock.someattr.server1.1=dev]
-resource "bad" "my-rule" {
+resource "aws_s3_bucket" "test" {
   secure = false
   someblock {
 	someattr = var.testvar
@@ -771,22 +564,118 @@ resource "bad" "my-rule" {
 `,
 			assertLength: 0,
 		},
+		{
+			name: "ignore by alias",
+			source: `#tfsec:ignore:my-alias
+resource "aws_s3_bucket" "test" {}`,
+			assertLength: 0,
+		},
+		{
+			name: "ignore by alias with trivy prefix",
+			source: `#tfsec:ignore:my-alias
+resource "aws_s3_bucket" "test" {}`,
+			assertLength: 0,
+		},
 	}
-
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			results := scanHCL(t, tc.inputOptions)
+			results := scanHCL(
+				t, tc.source,
+				rego.WithEmbeddedLibraries(true),
+				rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+				rego.WithPolicyNamespaces("user"),
+				options.ScannerWithRegoOnly(true),
+			)
 			assert.Len(t, results.GetFailed(), tc.assertLength)
 		})
 	}
 }
 
+func Test_IgnoreByIndexedDynamicBlock(t *testing.T) {
+
+	check := `# METADATA
+# custom:
+#   avd_id: USER-TEST-0124
+#   short_code: test
+#   provider: aws
+#   service: ec2
+package user.test124
+
+import rego.v1
+
+deny contains res if  {
+	some group in input.aws.ec2.securitygroups
+	some rule in group.ingressrules
+	rule.toport.value < 1024
+	res := result.new(
+		sprintf("Port below 1024 is not allowed, but got %s", [rule.toport.value]),
+		rule.toport,
+	)
+}
+`
+
+	tests := []struct {
+		name     string
+		source   string
+		expected int
+	}{
+		{
+			name: "by dynamic value",
+			source: `// trivy:ignore:*[ingress.from_port=80]
+resource "aws_security_group" "loadbalancer" {
+  name = "test"
+
+  dynamic "ingress" {
+    for_each = [80, 443]
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+}
+`,
+			expected: 0,
+		},
+		{
+			name: "access by index",
+			source: `// trivy:ignore:*[ingress.0.from_port=80]
+resource "aws_security_group" "loadbalancer" {
+  name = "test"
+
+  dynamic "ingress" {
+    for_each = [80, 443]
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+}
+`,
+			expected: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := fstest.MapFS{
+				"main.tf": {
+					Data: []byte(tt.source),
+				},
+			}
+
+			results, err := scanFS(fsys, ".", rego.WithPolicyReader(strings.NewReader(check)))
+			require.NoError(t, err)
+			require.Len(t, results.GetFailed(), tt.expected)
+		})
+	}
+}
+
 func Test_IgnoreByWorkspace(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
 
 	tests := []struct {
 		name           string
@@ -795,92 +684,49 @@ func Test_IgnoreByWorkspace(t *testing.T) {
 	}{
 		{
 			name: "with expiry and workspace",
-			src: `# tfsec:ignore:aws-service-abc123:exp:2221-01-02:ws:testworkspace
-resource "bad" "my-rule" {}`,
+			src: `# tfsec:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:testworkspace
+resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 0,
 		},
 		{
 			name: "bad workspace",
-			src: `# tfsec:ignore:aws-service-abc123:exp:2221-01-02:ws:otherworkspace
-resource "bad" "my-rule" {}`,
+			src: `# tfsec:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:otherworkspace
+resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 1,
 		},
 		{
 			name: "with expiry and workspace, trivy prefix",
-			src: `# trivy:ignore:aws-service-abc123:exp:2221-01-02:ws:testworkspace
-resource "bad" "my-rule" {}`,
+			src: `# trivy:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:testworkspace
+resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 0,
 		},
 		{
 			name: "bad workspace, trivy prefix",
-			src: `# trivy:ignore:aws-service-abc123:exp:2221-01-02:ws:otherworkspace
-resource "bad" "my-rule" {}`,
+			src: `# trivy:ignore:aws-s3-non-empty-bucket:exp:2221-01-02:ws:otherworkspace
+resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 1,
 		},
 		{
 			name: "workspace with wildcard",
 			src: `# tfsec:ignore:*:ws:test* 
-resource "bad" "my-rule" {}`,
+resource "aws_s3_bucket" "test" {}`,
 			expectedFailed: 0,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			results := scanHCLWithWorkspace(t, tt.src, "testworkspace")
+			fsys := fstest.MapFS{
+				"main.tf": &fstest.MapFile{
+					Data: []byte(tt.src),
+				},
+			}
+
+			results, err := scanFS(fsys, ".", ScannerWithWorkspaceName("testworkspace"))
+			require.NoError(t, err)
 			assert.Len(t, results.GetFailed(), tt.expectedFailed)
 		})
 	}
-}
-
-func Test_IgnoreInline(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
-
-	results := scanHCL(t, fmt.Sprintf(`
-	resource "bad" "sample" {
-		  secure = false # tfsec:ignore:%s
-	}
-	  `, exampleRule.LongID()))
-	assert.Empty(t, results.GetFailed())
-}
-
-func Test_IgnoreWithAliasCodeStillIgnored(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
-
-	results := scanHCLWithWorkspace(t, `
-# tfsec:ignore:aws-other-abc123
-resource "bad" "my-rule" {
-	
-}
-`, "testworkspace")
-	assert.Empty(t, results.GetFailed())
-}
-
-func Test_TrivyIgnoreWithAliasCodeStillIgnored(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
-
-	results := scanHCLWithWorkspace(t, `
-# trivy:ignore:aws-other-abc123
-resource "bad" "my-rule" {
-	
-}
-`, "testworkspace")
-	assert.Empty(t, results.GetFailed())
-}
-
-func Test_TrivyIgnoreInline(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
-
-	results := scanHCL(t, fmt.Sprintf(`
-	resource "bad" "sample" {
-		  secure = false # trivy:ignore:%s
-	}
-	  `, exampleRule.LongID()))
-	assert.Empty(t, results.GetFailed())
 }
 
 func Test_IgnoreInlineByAVDID(t *testing.T) {
@@ -888,30 +734,33 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 		input string
 	}{
 		{
-			input: `
-	resource "bad" "sample" {
-		  secure = false # tfsec:ignore:%s
-	}
+			input: `resource "aws_s3_bucket" "test" {
+  bucket = "" # tfsec:ignore:%s
+}
 	  `,
 		},
 		{
-			input: `
-	resource "bad" "sample" {
-		  secure = false # trivy:ignore:%s
-	}
+			input: `resource "aws_s3_bucket" "test" {
+  bucket = "" # trivy:ignore:%s
+}
 	  `,
 		},
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-		for _, id := range []string{exampleRule.AVDID, strings.ToLower(exampleRule.AVDID), exampleRule.ShortCode, exampleRule.LongID()} {
-			id := id
-			t.Run("", func(t *testing.T) {
-				reg := rules.Register(exampleRule)
-				defer rules.Deregister(reg)
-				results := scanHCL(t, fmt.Sprintf(tc.input, id))
-				assert.Empty(t, results.GetFailed())
+		ids := []string{
+			"USER-TEST-0123", strings.ToLower("user-test-0123"),
+			"non-empty-bucket", "aws-s3-non-empty-bucket",
+		}
+
+		for _, id := range ids {
+			t.Run(id, func(t *testing.T) {
+				fsys := fstest.MapFS{
+					"main.tf": &fstest.MapFile{
+						Data: []byte(fmt.Sprintf(tc.input, id)),
+					},
+				}
+				assertNonEmptyBucketCheckNotFound(t, fsys)
 			})
 		}
 	}
@@ -935,37 +784,12 @@ func TestIgnoreRemoteTerraformResource(t *testing.T) {
 }
 `,
 		".terraform/modules/bucket/main.tf": `
-# trivy:ignore:test-0001
+# trivy:ignore:user-test-0123
 resource "aws_s3_bucket" "test" {
   bucket = ""
 }
 `,
 	})
 
-	check := `# METADATA
-# title: Test
-# custom:
-#   id: test-0001
-#   avdid: test-0001
-
-package user.test0001
-
-deny[res] {
-	bucket := input.aws.s3.buckets[_]
-	bucket.name.value == ""
-	res := result.new("Empty bucket name!", bucket)
-}`
-
-	localScanner := New(
-		rego.WithEmbeddedPolicies(false),
-		rego.WithEmbeddedLibraries(true),
-		options.ScannerWithRegoOnly(true),
-		rego.WithPolicyNamespaces("user"),
-		rego.WithPolicyReader(strings.NewReader(check)),
-		ScannerWithDownloadsAllowed(false),
-		ScannerWithSkipCachedModules(true),
-	)
-	results, err := localScanner.ScanFS(context.TODO(), fsys, ".")
-	require.NoError(t, err)
-	assert.Empty(t, results.GetFailed())
+	assertNonEmptyBucketCheckNotFound(t, fsys)
 }

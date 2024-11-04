@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+// TODO use emptyBucketCheck
 const emptyBucketRule = `
 # METADATA
 # schemas:

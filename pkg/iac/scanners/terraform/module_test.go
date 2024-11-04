@@ -20,6 +20,10 @@ var emptyBucketCheck = `# METADATA
 # custom:
 #   avd_id: USER-TEST-0123
 #   short_code: non-empty-bucket
+#   provider: aws
+#   service: s3
+#   aliases:
+#   - my-alias
 #   input:
 #     selector:
 #     - type: cloud
@@ -33,7 +37,7 @@ import rego.v1
 deny contains res if  {
 	some bucket in input.aws.s3.buckets
 	bucket.name.value == ""
-	res := result.new("The bucket name cannot be empty.", bucket)
+	res := result.new("The bucket name cannot be empty.", bucket.name)
 }
 `
 
@@ -102,7 +106,7 @@ func Test_ProblemInModuleIgnored(t *testing.T) {
 
 	fsys := testutil.CreateFS(t, map[string]string{
 		"/project/main.tf": `
-#tfsec:ignore:cloud-general-non-empty-bucket
+#tfsec:ignore:aws-s3-non-empty-bucket
 module "something" {
 	source = "../modules/problem"
 }
@@ -427,13 +431,17 @@ resource "aws_s3_bucket" "test" {
 
 }
 
-func scanFS(fsys fs.FS, target string) (scan.Results, error) {
-	s := New(
-		rego.WithEmbeddedLibraries(true),
-		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
-		rego.WithPolicyNamespaces("user"),
-		options.ScannerWithRegoOnly(true),
-		ScannerWithAllDirectories(true),
+func scanFS(fsys fs.FS, target string, opts ...options.ScannerOption) (scan.Results, error) {
+	s := New(append(
+		[]options.ScannerOption{
+			rego.WithEmbeddedLibraries(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+			options.ScannerWithRegoOnly(true),
+			ScannerWithAllDirectories(true),
+		},
+		opts...,
+	)...,
 	)
 
 	return s.ScanFS(context.TODO(), fsys, target)
@@ -445,7 +453,7 @@ func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
 	results, err := scanFS(fsys, "project")
 	require.NoError(t, err)
 
-	testutil.AssertRuleFound(t, "cloud-general-non-empty-bucket", results, "")
+	testutil.AssertRuleFound(t, "aws-s3-non-empty-bucket", results, "")
 }
 
 func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS) {
@@ -454,5 +462,5 @@ func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS) {
 	results, err := scanFS(fsys, "project")
 	require.NoError(t, err)
 
-	testutil.AssertRuleNotFound(t, "cloud-general-non-empty-bucket", results, "")
+	testutil.AssertRuleNotFound(t, "aws-s3-non-empty-bucket", results, "")
 }

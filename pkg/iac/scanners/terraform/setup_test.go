@@ -30,10 +30,6 @@ func createModulesFromSource(t *testing.T, source, ext string) terraform.Modules
 	return modules
 }
 
-func scanHCLWithWorkspace(t *testing.T, source, workspace string) scan.Results {
-	return scanHCL(t, source, ScannerWithWorkspaceName(workspace))
-}
-
 func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
 
 	fs := testutil.CreateFS(t, map[string]string{
