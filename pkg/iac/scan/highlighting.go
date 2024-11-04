@@ -51,7 +51,7 @@ func highlight(fsKey, filename string, startLine, endLine int, input, theme stri
 	return lines
 }
 
-func Highlight(filename string, input, theme string) (string, bool) {
+func Highlight(filename, input, theme string) (string, bool) {
 	style := styles.Get(theme)
 	if style == nil {
 		style = styles.Fallback
