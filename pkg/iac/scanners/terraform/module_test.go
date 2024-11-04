@@ -2,50 +2,46 @@ package terraform
 
 import (
 	"context"
+	"io/fs"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-checks/checks/cloud/aws/iam"
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-var badRule = scan.Rule{
-	Provider:    providers.AWSProvider,
-	Service:     "service",
-	ShortCode:   "abc",
-	Summary:     "A stupid example check for a test.",
-	Impact:      "You will look stupid",
-	Resolution:  "Don't do stupid stuff",
-	Explanation: "Bad should not be set.",
-	Severity:    severity.High,
-	CustomChecks: scan.CustomChecks{
-		Terraform: &scan.TerraformCustomCheck{
-			RequiredTypes:  []string{"resource"},
-			RequiredLabels: []string{"problem"},
-			Check: func(resourceBlock *terraform.Block, _ *terraform.Module) (results scan.Results) {
-				if attr := resourceBlock.GetAttribute("bad"); attr.IsTrue() {
-					results.Add("bad", attr)
-				}
-				return
-			},
-		},
-	},
+var emptyBucketCheck = `# METADATA
+# schemas:
+# - input: schema.cloud
+# custom:
+#   avd_id: USER-TEST-0123
+#   short_code: non-empty-bucket
+#   input:
+#     selector:
+#     - type: cloud
+#       subtypes:
+#         - service: s3
+#           provider: aws
+package user.test123
+
+import rego.v1
+
+deny contains res if  {
+	some bucket in input.aws.s3.buckets
+	bucket.name.value == ""
+	res := result.new("The bucket name cannot be empty.", bucket)
 }
+`
 
 // IMPORTANT: if this test is failing, you probably need to set the version of go-cty in go.mod to the same version that hcl uses.
 func Test_GoCtyCompatibilityIssue(t *testing.T) {
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"/project/main.tf": `
 data "aws_vpc" "default" {
   default = true
@@ -76,192 +72,115 @@ resource "aws_security_group" "this" {
   }                                                 
 }  
 
-resource "problem" "uhoh" {
-	bad = true
+resource "aws_s3_bucket" "test" {
+  bucket = ""
 }
 `,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInModuleInSiblingDir(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"/project/main.tf": `
 module "something" {
 	source = "../modules/problem"
 }
 `,
 		"modules/problem/main.tf": `
-resource "problem" "uhoh" {
-	bad = true
+resource "aws_s3_bucket" "test" {
+  bucket = ""
 }
 `},
 	)
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
+	assertNonEmptyBucketCheckFound(t, fsys)
 
 }
 
 func Test_ProblemInModuleIgnored(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"/project/main.tf": `
-#tfsec:ignore:aws-service-abc
+#tfsec:ignore:cloud-general-non-empty-bucket
 module "something" {
 	source = "../modules/problem"
 }
 `,
 		"modules/problem/main.tf": `
-resource "problem" "uhoh" {
-	bad = true
+resource "aws_s3_bucket" "test" {
+  bucket = ""
 }
 `},
 	)
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleNotFound(t, badRule.LongID(), results, "")
-
+	assertNonEmptyBucketCheckNotFound(t, fsys)
 }
 
 func Test_ProblemInModuleInSubdirectory(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something" {
 	source = "./modules/problem"
 }
 `,
 		"project/modules/problem/main.tf": `
-resource "problem" "uhoh" {
-	bad = true
+resource "aws_s3_bucket" "test" {
+  bucket = ""
 }
 `})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInModuleInParentDir(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something" {
 	source = "../problem"
 }
 `,
 		"problem/main.tf": `
-resource "problem" "uhoh" {
-	bad = true
+resource "aws_s3_bucket" "test" {
+  bucket = ""
 }
 `})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInModuleReuse(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something_good" {
 	source = "../modules/problem"
-	bad = false
+	bucket = "test"
 }
 
 module "something_bad" {
 	source = "../modules/problem"
-	bad = true
+	bucket = ""
 }
 `,
 		"modules/problem/main.tf": `
-variable "bad" {
-	default = false
-}
-resource "problem" "uhoh" {
-	bad = var.bad
+variable "bucket" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
 }
 `})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInNestedModule(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something" {
 	source = "../modules/a"
@@ -278,112 +197,82 @@ module "something" {
 }
 `,
 		"modules/c/main.tf": `
-resource "problem" "uhoh" {
-	bad = true
+resource "aws_s3_bucket" "test" {
+  bucket = ""
 }
 `,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInReusedNestedModule(t *testing.T) {
-
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something" {
   source = "../modules/a"
-  bad = false
+  bucket = "test"
 }
 
 module "something-bad" {
 	source = "../modules/a"
-	bad = true
+	bucket = ""
 }
 `,
 		"modules/a/main.tf": `
-variable "bad" {
-	default = false
-}
+variable "bucket" {}
+
 module "something" {
 	source = "../../modules/b"
-	bad = var.bad
+	bucket = var.bucket
 }
 `,
 		"modules/b/main.tf": `
-variable "bad" {
-	default = false
-}
+variable "bucket" {}
+
 module "something" {
 	source = "../c"
-	bad = var.bad
+	bucket = var.bad
 }
 `,
 		"modules/c/main.tf": `
-variable "bad" {
-	default = false
-}
-resource "problem" "uhoh" {
-	bad = var.bad
+variable "bucket" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
 }
 `,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInInitialisedModule(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something" {
   	source = "../modules/somewhere"
-	bad = false
+	bucket = "test"
 }
 `,
 		"modules/somewhere/main.tf": `
 module "something_nested" {
 	count = 1
   	source = "github.com/some/module.git"
-	bad = true
+	bucket = ""
 }
 
-variable "bad" {
-	default = false
+variable "bucket" {
+	default = ""
 }
 
 `,
 		"project/.terraform/modules/something.something_nested/main.tf": `
-variable "bad" {
-	default = false
-}
-resource "problem" "uhoh" {
-	bad = var.bad
+variable "bucket" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
 }
 `,
 		"project/.terraform/modules/modules.json": `
@@ -394,40 +283,28 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInReusedInitialisedModule(t *testing.T) {
 
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something" {
   	source = "/nowhere"
-	bad = false
+	bucket = ""
 } 
+
 module "something2" {
 	source = "/nowhere"
-  	bad = true
+  	bucket = ""
 }
 `,
 		"project/.terraform/modules/a/main.tf": `
-variable "bad" {
-	default = false
-}
-resource "problem" "uhoh" {
-	bad = var.bad
+variable "bucket" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
 }
 `,
 		"project/.terraform/modules/modules.json": `
@@ -435,230 +312,165 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_ProblemInDuplicateModuleNameAndPath(t *testing.T) {
-	registered := rules.Register(badRule)
-	defer rules.Deregister(registered)
-
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 module "something" {
   source = "../modules/a"
-  bad = 0
+  s3_bucket_count = 0
 }
 
 module "something-bad" {
 	source = "../modules/a"
-	bad = 1
+	s3_bucket_count = 1
 }
 `,
 		"modules/a/main.tf": `
-variable "bad" {
+variable "s3_bucket_count" {
 	default = 0
 }
 module "something" {
 	source = "../b"
-	bad = var.bad
+	s3_bucket_count = var.s3_bucket_count
 }
 `,
 		"modules/b/main.tf": `
-variable "bad" {
+variable "s3_bucket_count" {
 	default = 0
 }
 module "something" {
 	source = "../c"
-	bad = var.bad
+	s3_bucket_count = var.s3_bucket_count
 }
 `,
 		"modules/c/main.tf": `
-variable "bad" {
+variable "s3_bucket_count" {
 	default = 0
 }
-resource "problem" "uhoh" {
-	count = var.bad
-	bad = true
+
+resource "aws_s3_bucket" "test" {
+  count = var.s3_bucket_count
+  bucket = ""
 }
 `,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
-
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_Dynamic_Variables(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 resource "something" "this" {
-
 	dynamic "blah" {
 		for_each = ["a"]
-
 		content {
-			ok = true
+			bucket = ""
 		}
 	}
 }
-	
-resource "bad" "thing" {
-	secure = something.this.blah[0].ok
+
+resource "aws_s3_bucket" "test" {
+  secure = something.this.blah[0].bucket
 }
 `})
 
-	r1 := scan.Rule{
-		Provider:  providers.AWSProvider,
-		Service:   "service",
-		ShortCode: "abc123",
-		Severity:  severity.High,
-		CustomChecks: scan.CustomChecks{
-			Terraform: &scan.TerraformCustomCheck{
-				RequiredLabels: []string{"bad"},
-				Check: func(resourceBlock *terraform.Block, _ *terraform.Module) (results scan.Results) {
-					if resourceBlock.GetAttribute("secure").IsTrue() {
-						return
-					}
-					results.Add("example problem", resourceBlock)
-					return
-				},
-			},
-		},
-	}
-	reg := rules.Register(r1)
-	defer rules.Deregister(reg)
-
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, r1.LongID(), results, "")
+	assertNonEmptyBucketCheckFound(t, fsys)
 }
 
 func Test_Dynamic_Variables_FalsePositive(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 resource "something" "else" {
-	x = 1
 	dynamic "blah" {
-		for_each = toset(["true"])
-
+		for_each = toset(["test"])
 		content {
-			ok = blah.value
+			bucket = blah.value
 		}
 	}
 }
-	
-resource "bad" "thing" {
-	secure = something.else.blah.ok
+
+resource "aws_s3_bucket" "test" {
+  bucket = something.else.blah.bucket
 }
 `})
 
-	r1 := scan.Rule{
-		Provider:  providers.AWSProvider,
-		Service:   "service",
-		ShortCode: "abc123",
-		Severity:  severity.High,
-		CustomChecks: scan.CustomChecks{
-			Terraform: &scan.TerraformCustomCheck{
-				RequiredLabels: []string{"bad"},
-				Check: func(resourceBlock *terraform.Block, _ *terraform.Module) (results scan.Results) {
-					if resourceBlock.GetAttribute("secure").IsTrue() {
-						return
-					}
-					results.Add("example problem", resourceBlock)
-					return
-				},
-			},
-		},
-	}
-	reg := rules.Register(r1)
-	defer rules.Deregister(reg)
-
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
-	modules, _, err := p.EvaluateAll(context.TODO())
-	require.NoError(t, err)
-
-	results, err := executor.New().Execute(modules)
-	require.NoError(t, err)
-
-	testutil.AssertRuleNotFound(t, r1.LongID(), results, "")
+	assertNonEmptyBucketCheckNotFound(t, fsys)
 }
 
 func Test_ReferencesPassedToNestedModule(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
 
-resource "aws_iam_group" "developers" {
-    name = "developers"
+resource "some_resource" "this" {
+    name = "test"
 }
 
 module "something" {
 	source = "../modules/a"
-    group = aws_iam_group.developers.name
+    bucket = some_resource.this.name
 }
 `,
 		"modules/a/main.tf": `
-variable "group" {
+variable "bucket" {
     type = string
 }
 
-resource "aws_iam_group_policy" "mfa" {
-  group = var.group
-  policy = data.aws_iam_policy_document.policy.json
-}
-
-data "aws_iam_policy_document" "policy" {
-  statement {
-    sid    = "main"
-    effect = "Allow"
-
-    actions   = ["s3:*"]
-    resources = ["*"]
-    condition {
-        test = "Bool"
-        variable = "aws:MultiFactorAuthPresent"
-        values = ["true"]
-    }
-  }
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
 }
 `})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
-	err := p.ParseFS(context.TODO(), "project")
-	require.NoError(t, err)
+	assertNonEmptyBucketCheckNotFound(t, fsys)
+
+}
+
+func scanFS(fsys fs.FS) (scan.Results, error) {
+	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+	if err := p.ParseFS(context.TODO(), "project"); err != nil {
+		return nil, err
+	}
+
 	modules, _, err := p.EvaluateAll(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+
+	regoScanner := rego.NewScanner(
+		iacTypes.SourceCloud,
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
+	)
+
+	if err := regoScanner.LoadPolicies(fsys); err != nil {
+		return nil, err
+	}
+
+	return executor.New(
+		executor.OptionWithRegoScanner(regoScanner),
+		executor.OptionWithRegoOnly(true),
+	).Execute(modules)
+}
+
+func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
+	t.Helper()
+
+	results, err := scanFS(fsys)
 	require.NoError(t, err)
 
-	results, err := executor.New().Execute(modules)
+	testutil.AssertRuleFound(t, "cloud-general-non-empty-bucket", results, "")
+}
+
+func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS) {
+	t.Helper()
+
+	results, err := scanFS(fsys)
 	require.NoError(t, err)
 
-	testutil.AssertRuleNotFound(t, iam.CheckEnforceGroupMFA.LongID(), results, "")
-
+	testutil.AssertRuleNotFound(t, "cloud-general-non-empty-bucket", results, "")
 }
