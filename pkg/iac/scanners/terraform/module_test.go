@@ -11,9 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 var emptyBucketCheck = `# METADATA
@@ -429,38 +427,22 @@ resource "aws_s3_bucket" "test" {
 
 }
 
-func scanFS(fsys fs.FS) (scan.Results, error) {
-	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
-	if err := p.ParseFS(context.TODO(), "project"); err != nil {
-		return nil, err
-	}
-
-	modules, _, err := p.EvaluateAll(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-
-	regoScanner := rego.NewScanner(
-		iacTypes.SourceCloud,
+func scanFS(fsys fs.FS, target string) (scan.Results, error) {
+	s := New(
 		rego.WithEmbeddedLibraries(true),
 		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 		rego.WithPolicyNamespaces("user"),
+		options.ScannerWithRegoOnly(true),
+		ScannerWithAllDirectories(true),
 	)
 
-	if err := regoScanner.LoadPolicies(fsys); err != nil {
-		return nil, err
-	}
-
-	return executor.New(
-		executor.OptionWithRegoScanner(regoScanner),
-		executor.OptionWithRegoOnly(true),
-	).Execute(modules)
+	return s.ScanFS(context.TODO(), fsys, target)
 }
 
 func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
 	t.Helper()
 
-	results, err := scanFS(fsys)
+	results, err := scanFS(fsys, "project")
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, "cloud-general-non-empty-bucket", results, "")
@@ -469,7 +451,7 @@ func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
 func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS) {
 	t.Helper()
 
-	results, err := scanFS(fsys)
+	results, err := scanFS(fsys, "project")
 	require.NoError(t, err)
 
 	testutil.AssertRuleNotFound(t, "cloud-general-non-empty-bucket", results, "")
