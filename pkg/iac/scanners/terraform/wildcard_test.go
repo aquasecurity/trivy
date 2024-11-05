@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_WildcardMatchingOnRequiredLabels(t *testing.T) {
@@ -71,7 +73,12 @@ func Test_WildcardMatchingOnRequiredLabels(t *testing.T) {
 			reg := rules.Register(rule)
 			defer rules.Deregister(reg)
 
-			results := scanHCL(t, test.input)
+			fsys := testutil.CreateFS(t, map[string]string{
+				"main.tf": test.input,
+			})
+			s := New()
+			results, err := s.ScanFS(context.TODO(), fsys, ".")
+			require.NoError(t, err)
 
 			if test.expectedFailure {
 				testutil.AssertRuleFound(t, fmt.Sprintf("custom-service-%s", code), results, "")

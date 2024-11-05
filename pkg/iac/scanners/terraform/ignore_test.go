@@ -11,7 +11,6 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_IgnoreAll(t *testing.T) {
@@ -582,10 +581,8 @@ resource "aws_s3_bucket" "test" {}`,
 		t.Run(tc.name, func(t *testing.T) {
 			results := scanHCL(
 				t, tc.source,
-				rego.WithEmbeddedLibraries(true),
 				rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 				rego.WithPolicyNamespaces("user"),
-				options.ScannerWithRegoOnly(true),
 			)
 			assert.Len(t, results.GetFailed(), tc.assertLength)
 		})
@@ -669,7 +666,8 @@ resource "aws_security_group" "loadbalancer" {
 			}
 
 			results, err := scanFS(fsys, ".",
-				rego.WithPolicyReader(strings.NewReader(check)), rego.WithPolicyNamespaces("user"))
+				rego.WithPolicyReader(strings.NewReader(check)),
+				rego.WithPolicyNamespaces("user"))
 			require.NoError(t, err)
 			require.Len(t, results.GetFailed(), tt.expected)
 		})
