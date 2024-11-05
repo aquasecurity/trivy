@@ -1,6 +1,4 @@
-# Getting Started
-
-This section will help you take your first steps with Trivy.
+# First steps with Trivy
 
 ## Get Trivy
 
@@ -28,23 +26,15 @@ trivy <target> [--scanners <scanner1,scanner2>] <subject>
 
 ### Examples
 
-Scan a container image from registry, with the default scanner which is Vulnerabilities scanner):
+Scan a container image from registry, with the default scanner which is Vulnerabilities scanner:
 
 ```bash
 trivy image python:3.4-alpine
 ```
 
-<details>
-<summary>Result</summary>
-
-<figure style="text-align: center">
-  <video width="1000" autoplay muted controls loop>
-    <source src="https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov" type="video/mp4" />
-  </video>
-  <figcaption>Demo: Vulnerability Detection</figcaption>
-</figure>
-
-</details>
+<video width="1000" muted controls>
+  <source src="https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov" type="video/mp4" />
+</video>
 
 Scan a local code repository, for vulnerabilities, exposed secrets and misconfigurations:
 
@@ -52,33 +42,17 @@ Scan a local code repository, for vulnerabilities, exposed secrets and misconfig
 trivy fs --scanners vuln,secret,misconfig /path/to/myproject
 ```
 
-<details>
-<summary>Result</summary>
+<video width="1000" muted controls>
+  <source src="https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov" type="video/mp4" />
+</video>
 
-<figure style="text-align: center">
-  <video width="1000" autoplay muted controls loop>
-    <source src="https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov" type="video/mp4" />
-  </video>
-  <figcaption>Demo: Misconfiguration Detection</figcaption>
-</figure>
-
-</details>
-
-Scan a Kubernetes cluster, for default scanners which are all available scanners, and show a summary report:
+Scan a Kubernetes cluster, with all available scanners, and show a summary report:
 
 ```bash
 trivy k8s --report summary cluster
 ```
 
-<details>
-<summary>Result</summary>
-
-<figure style="text-align: center">
-  <img src="imgs/secret-demo.gif" width="1000">
-  <figcaption>Demo: Secret Detection</figcaption>
-</figure>
-
-</details>
+<img src="/docs/imgs/trivy-k8s.png" width="1000" />
 
 For a more complete introduction, check out the basic Trivy Demo: <https://github.com/itaysk/trivy-demo>
 

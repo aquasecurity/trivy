@@ -7,8 +7,9 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: "blob/main/docs/"
 
 nav:
-  - Getting Started: 
-      - Overview: index.md
+  - Home: index.md
+  - Getting Started:
+      - First steps: getting-started/index.md 
       - Installation: getting-started/installation.md
       - Signature Verification: getting-started/signature-verification.md
       - FAQ: getting-started/faq.md

@@ -82,6 +82,7 @@ body {
 		transition: all .2s ease;
 		font-size: 16px;
 		display: inline-block;
+		font-weight: 700;
 		
 		&.is-seafoam {
 			background-color: $aq-sea-foam;
@@ -102,6 +103,16 @@ body {
 			} //is-outlines
 			
 		} //is-seafoam
+
+		&.large_btn {
+			font-size: 22px;
+			padding: 16px 27px;
+			margin-right: 12px;
+
+			@media screen and (max-width: $tablet), print {
+				font-size: 18px;
+			} //until tablet
+		}
 		
 
 
@@ -301,7 +312,7 @@ body {
 
 					@media screen and (max-width: $widescreen), print {
 						width: 70%;
-					} //until tablet
+					} //until widescreen
 
 					@media screen and (max-width: $tablet), print { //769
 

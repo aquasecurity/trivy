@@ -37,6 +37,7 @@ body {
   transition: all 0.2s ease;
   font-size: 16px;
   display: inline-block;
+  font-weight: 700;
 }
 .trivy_v1_homepage_wrap .button.is-seafoam {
   background-color: #00ffe4;
@@ -52,6 +53,16 @@ body {
 .trivy_v1_homepage_wrap .button.is-seafoam.is-outlined:hover {
   background-color: #00ffe4;
   color: #07242d;
+}
+.trivy_v1_homepage_wrap .button.large_btn {
+  font-size: 22px;
+  padding: 16px 27px;
+  margin-right: 12px;
+}
+@media screen and (max-width: 769px), print {
+  .trivy_v1_homepage_wrap .button.large_btn {
+    font-size: 18px;
+  }
 }
 .trivy_v1_homepage_wrap .button.solidseafoamarrowbutton {
   background-color: #00ffe4;

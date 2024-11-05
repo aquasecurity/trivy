@@ -1,16 +1,14 @@
 {% extends "base.html" %}
 
 {% block extrahead %}
-<!-- Determine title -->
+
 {% set title = config.site_name %}
 {% if page and page.title and not page.is_homepage %}
   {% set title = config.site_name ~ " - " ~ page.title | striptags %}
 {% endif %}
 
-<!-- The image needs to have an absolute URL -->
 {% set image = config.site_url ~ 'assets/images/illustrations/banner.png' %}
 
-<!-- Open graph meta tags -->
 <meta property="og:type" content="website" />
 <meta property="og:title" content="{{ title }}" />
 <meta property="og:description" content="{{ config.site_description }}" />
@@ -20,12 +18,12 @@
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
 
-<!-- google-site-verification meta-tag -->
-<meta name="google-site-verification" content="" />
-
 <style>
   :root{
     --md-primary-fg-color:#0a0b23;
+  }
+  .md-typeset a{
+    color:#10147e;
   }
 </style>
 {% endblock %}
