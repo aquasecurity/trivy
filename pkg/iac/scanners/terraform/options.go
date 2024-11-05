@@ -100,3 +100,11 @@ func ScannerWithSkipDirs(dirs []string) options.ScannerOption {
 		}
 	}
 }
+
+func ScannerWithStopOnHCLError(stop bool) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if tf, ok := s.(ConfigurableTerraformScanner); ok {
+			tf.AddParserOptions(parser.OptionStopOnHCLError(stop))
+		}
+	}
+}
