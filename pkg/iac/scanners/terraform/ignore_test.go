@@ -668,7 +668,8 @@ resource "aws_security_group" "loadbalancer" {
 				},
 			}
 
-			results, err := scanFS(fsys, ".", rego.WithPolicyReader(strings.NewReader(check)))
+			results, err := scanFS(fsys, ".",
+				rego.WithPolicyReader(strings.NewReader(check)), rego.WithPolicyNamespaces("user"))
 			require.NoError(t, err)
 			require.Len(t, results.GetFailed(), tt.expected)
 		})
@@ -722,7 +723,11 @@ resource "aws_s3_bucket" "test" {}`,
 				},
 			}
 
-			results, err := scanFS(fsys, ".", ScannerWithWorkspaceName("testworkspace"))
+			results, err := scanFS(fsys, ".",
+				rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+				rego.WithPolicyNamespaces("user"),
+				ScannerWithWorkspaceName("testworkspace"),
+			)
 			require.NoError(t, err)
 			assert.Len(t, results.GetFailed(), tt.expectedFailed)
 		})

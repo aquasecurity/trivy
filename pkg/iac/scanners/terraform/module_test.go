@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"context"
 	"io/fs"
 	"strings"
 	"testing"
@@ -10,36 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
-
-var emptyBucketCheck = `# METADATA
-# schemas:
-# - input: schema.cloud
-# custom:
-#   avd_id: USER-TEST-0123
-#   short_code: non-empty-bucket
-#   provider: aws
-#   service: s3
-#   aliases:
-#   - my-alias
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package user.test123
-
-import rego.v1
-
-deny contains res if  {
-	some bucket in input.aws.s3.buckets
-	bucket.name.value == ""
-	res := result.new("The bucket name cannot be empty.", bucket.name)
-}
-`
 
 // IMPORTANT: if this test is failing, you probably need to set the version of go-cty in go.mod to the same version that hcl uses.
 func Test_GoCtyCompatibilityIssue(t *testing.T) {
@@ -431,26 +401,13 @@ resource "aws_s3_bucket" "test" {
 
 }
 
-func scanFS(fsys fs.FS, target string, opts ...options.ScannerOption) (scan.Results, error) {
-	s := New(append(
-		[]options.ScannerOption{
-			rego.WithEmbeddedLibraries(true),
-			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
-			rego.WithPolicyNamespaces("user"),
-			options.ScannerWithRegoOnly(true),
-			ScannerWithAllDirectories(true),
-		},
-		opts...,
-	)...,
-	)
-
-	return s.ScanFS(context.TODO(), fsys, target)
-}
-
 func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
 	t.Helper()
 
-	results, err := scanFS(fsys, "project")
+	results, err := scanFS(fsys, "project",
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
+	)
 	require.NoError(t, err)
 
 	testutil.AssertRuleFound(t, "aws-s3-non-empty-bucket", results, "")
@@ -459,7 +416,10 @@ func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
 func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS) {
 	t.Helper()
 
-	results, err := scanFS(fsys, "project")
+	results, err := scanFS(fsys, "project",
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
+	)
 	require.NoError(t, err)
 
 	testutil.AssertRuleNotFound(t, "aws-s3-non-empty-bucket", results, "")

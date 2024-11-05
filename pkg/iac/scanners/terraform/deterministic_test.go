@@ -1,11 +1,13 @@
 package terraform
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 )
 
 func Test_DeterministicResults(t *testing.T) {
@@ -13,8 +15,6 @@ func Test_DeterministicResults(t *testing.T) {
 		"first.tf": `
 resource "aws_s3_bucket" "test" {
   for_each = other.thing
-
-  bucket = ""
 }
 		`,
 		"second.tf": `
@@ -33,7 +33,10 @@ locals {
 	})
 
 	for i := 0; i < 100; i++ {
-		results, err := scanFS(fsys, ".")
+		results, err := scanFS(fsys, ".",
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+		)
 		require.NoError(t, err)
 		require.Len(t, results.GetFailed(), 2)
 	}

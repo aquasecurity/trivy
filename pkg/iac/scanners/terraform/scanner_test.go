@@ -20,27 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-// TODO use emptyBucketCheck
-const emptyBucketRule = `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}
-`
-
 func Test_OptionWithPolicyDirs(t *testing.T) {
 
 	fs := testutil.CreateFS(t, map[string]string{
@@ -710,7 +689,7 @@ resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 }
 `,
-		"rules/bucket_name.rego": emptyBucketRule,
+		"rules/bucket_name.rego": emptyBucketCheck,
 	})
 
 	configsFS := testutil.CreateFS(t, map[string]string{
@@ -720,6 +699,7 @@ bucket_name = "test"
 	})
 
 	scanner := New(
+		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
@@ -747,13 +727,14 @@ resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 }
 `,
-		"rules/bucket_name.rego": emptyBucketRule,
+		"rules/bucket_name.rego": emptyBucketCheck,
 		"main.tfvars": `
 bucket_name = "test"
 `,
 	})
 
 	scanner := New(
+		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
@@ -806,25 +787,7 @@ resource "aws_security_group" "main" {
 	description = var.security_group_description
 }
 `,
-		"/rules/bucket_name.rego": `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}
-`,
+		"/rules/bucket_name.rego": emptyBucketCheck,
 		"/rules/sec_group_description.rego": `
 # METADATA
 # schemas:
@@ -847,6 +810,7 @@ deny[res] {
 	})
 
 	scanner := New(
+		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithPolicyDirs("rules"),
 		rego.WithEmbeddedPolicies(false),
