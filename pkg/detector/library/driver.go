@@ -133,6 +133,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 			InstalledVersion: pkgVer,
 			FixedVersion:     createFixedVersions(adv),
 			DataSource:       adv.DataSource,
+			Custom:           adv.Custom,
 		}
 		vulns = append(vulns, vuln)
 	}
