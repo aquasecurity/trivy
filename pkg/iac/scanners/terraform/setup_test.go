@@ -82,14 +82,13 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 	return results
 }
 
-func scanJSON(t *testing.T, source string) scan.Results {
+func scanJSON(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"main.tf.json": source,
 	})
 
-	s := New(rego.WithEmbeddedPolicies(true), rego.WithEmbeddedLibraries(true))
-	results, err := s.ScanFS(context.TODO(), fs, ".")
+	results, err := scanFS(fsys, ".", opts...)
 	require.NoError(t, err)
 	return results
 }
