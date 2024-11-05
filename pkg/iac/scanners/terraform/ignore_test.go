@@ -616,7 +616,7 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 						Data: []byte(fmt.Sprintf(tc.input, id)),
 					},
 				}
-				assertNonEmptyBucketCheckNotFound(t, fsys)
+				assertNonEmptyBucketCheckNotFound(t, fsys, ".")
 			})
 		}
 	}
@@ -647,5 +647,5 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckNotFound(t, fsys)
+	assertNonEmptyBucketCheckNotFound(t, fsys, ".")
 }

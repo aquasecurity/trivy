@@ -52,7 +52,7 @@ func Test_WildcardMatchingOnRequiredLabels(t *testing.T) {
 
 		code := fmt.Sprintf("wild%d", i)
 
-		t.Run(code, func(t *testing.T) {
+		t.Run(test.pattern, func(t *testing.T) {
 
 			rule := scan.Rule{
 				Service:   "service",

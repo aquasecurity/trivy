@@ -50,7 +50,7 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInModuleInSiblingDir(t *testing.T) {
@@ -68,7 +68,7 @@ resource "aws_s3_bucket" "test" {
 `},
 	)
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 
 }
 
@@ -88,7 +88,7 @@ resource "aws_s3_bucket" "test" {
 `},
 	)
 
-	assertNonEmptyBucketCheckNotFound(t, fsys)
+	assertNonEmptyBucketCheckNotFound(t, fsys, "project")
 }
 
 func Test_ProblemInModuleInSubdirectory(t *testing.T) {
@@ -105,7 +105,7 @@ resource "aws_s3_bucket" "test" {
 }
 `})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInModuleInParentDir(t *testing.T) {
@@ -122,7 +122,7 @@ resource "aws_s3_bucket" "test" {
 }
 `})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInModuleReuse(t *testing.T) {
@@ -147,7 +147,7 @@ resource "aws_s3_bucket" "test" {
 }
 `})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInNestedModule(t *testing.T) {
@@ -175,7 +175,7 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInReusedNestedModule(t *testing.T) {
@@ -216,7 +216,7 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInInitialisedModule(t *testing.T) {
@@ -255,7 +255,7 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInReusedInitialisedModule(t *testing.T) {
@@ -284,7 +284,7 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_ProblemInDuplicateModuleNameAndPath(t *testing.T) {
@@ -330,7 +330,7 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_Dynamic_Variables(t *testing.T) {
@@ -350,7 +350,7 @@ resource "aws_s3_bucket" "test" {
 }
 `})
 
-	assertNonEmptyBucketCheckFound(t, fsys)
+	assertNonEmptyBucketCheckFound(t, fsys, "project")
 }
 
 func Test_Dynamic_Variables_FalsePositive(t *testing.T) {
@@ -370,7 +370,7 @@ resource "aws_s3_bucket" "test" {
 }
 `})
 
-	assertNonEmptyBucketCheckNotFound(t, fsys)
+	assertNonEmptyBucketCheckNotFound(t, fsys, "project")
 }
 
 func Test_ReferencesPassedToNestedModule(t *testing.T) {
@@ -397,14 +397,14 @@ resource "aws_s3_bucket" "test" {
 }
 `})
 
-	assertNonEmptyBucketCheckNotFound(t, fsys)
+	assertNonEmptyBucketCheckNotFound(t, fsys, "project")
 
 }
 
-func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
+func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS, target string) {
 	t.Helper()
 
-	results, err := scanFS(fsys, "project",
+	results, err := scanFS(fsys, target,
 		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 		rego.WithPolicyNamespaces("user"),
 	)
@@ -413,10 +413,10 @@ func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS) {
 	testutil.AssertRuleFound(t, "aws-s3-non-empty-bucket", results, "")
 }
 
-func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS) {
+func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS, target string) {
 	t.Helper()
 
-	results, err := scanFS(fsys, "project",
+	results, err := scanFS(fsys, target,
 		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 		rego.WithPolicyNamespaces("user"),
 	)
