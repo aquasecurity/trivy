@@ -1,6 +1,7 @@
 # Trivy Databases
 
-When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations. These so called "databases" are fetched and maintained by Trivy automatically as needed, so normally you shouldn't notice or worry about them. However, some situations might require your attention to Trivy's network connectivity. This section elaborates on the database management mechanism and it's configuration options.
+When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations. These so called "databases" are fetched and maintained by Trivy automatically as needed, so normally you shouldn't notice or worry about them.   
+This document elaborates on the database management mechanism and it's configuration options.
 
 Trivy relies on the following databases:
 
@@ -9,17 +10,13 @@ DB | Artifact name | Contents | Purpose
 Vulnerabilities DB | `trivy-db` | CVE information collected from various feeds | used only for [vulnerability scanning](../scanner/vulnerability.md)
 Java DB | `trivy-java-db` | Index of Java artifacts and their hash digest | used to identify Java artifacts only in [JAR scanning](../coverage/language/java.md)
 Misconfiguration DB | `trivy-chekcs` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
-VEX Hub | `vex-hub` | VEX statements | Used only when [VEX Repository is enabled](../supply-chain/vex/repo.md) in vulnerability scanning.
 
-## External Services
-
-In addition to the above, some specific scanning features might connect to external services, and have different connectivity requirements and configuration options. This document discusses only Trivy's own databases, but for your convenience here are use cases where external services are involved:
-
-- [Java vulnerability scanning](../coverage/language/java.md).
+!!! note
+    This is not an exhaustive list of Trivy's external connectivity requirements. There are additional external resources that might be required by specific Trivy features. To learn about external connectivity requirements, refer to the [Network connectivity document](../advanced/air-gap.md).
 
 ## Locations
 
-Following are official locations of Trivy databases:
+Trivy's databases are published to the following locations:
 
 | Registry | Image Address | Link
 | --- | --- | ---
@@ -31,31 +28,15 @@ Following are official locations of Trivy databases:
 | AWS ECR | `public.ecr.aws/aquasecurity/trivy-db` | <https://gallery.ecr.aws/aquasecurity/trivy-db>
 | | `public.ecr.aws/aquasecurity/trivy-java-db` | <https://gallery.ecr.aws/aquasecurity/trivy-java-db>
 
- VEX Hub is fetched from VEX Hub GitHub Repository directly: <https://github.com/aquasecurity/vexhub>.
+## Pulling and fallback
 
-### Automatic fallback
+Trivy will attempt to pull images from the following registries in the order specified. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries.
 
-Trivy will attempt to pull images from the official registries in the order specified. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries.  
+1. `ghcr.io/aquasecurity`
+
 You can specify additional alternative repositories as explained in the [configuring database locations section](#locations).
 
-The Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the trivy-chekcs DB, Trivy will use the embedded checks as a fallback.
-
-## Connectivity requirements
-
-| database | location | protocol | hosts
-| --- | --- | --- | ---
-| <ul><li>`trivy-db`</li><li>`trivy-java-db`</li><li>`trivy-chekcs`</li></ul> | GHCR | [OCI Distribution](https://github.com/opencontainers/distribution-spec) over HTTPS | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul>
-| `vexhub`| GitHub | HTTPS | <ul><li>`api.github.com`</li><li>`codeload.github.com`</li></ul>
-
-For more information about GitHub connectivity (including specific IP addresses), please refer to [GitHub's connectivity troubleshooting guide](https://docs.github.com/en/get-started/using-github/troubleshooting-connectivity-problems).
-
-### Rate limiting
-
-Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to update its databases. If you are facing rate-limiting issues:
-
-1. Consider self-hosting the databases, or implementing a proxy-cache in your organization.
-2. Look into specific registry rate-limiting policies which might provide solution for your use-case (for example by authenticating with the registry).
-3. Consider using a commercial service that provides the full [Aqua platform](https://www.aquasec.com/products/software-supply-chain-security/), which includes a stable and reliable scanning service.
+Note that the Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the trivy-checks DB, Trivy will use the embedded checks as a fallback.
 
 ## DB Management Configuration
 
@@ -88,8 +69,6 @@ trivy image --db-repository my.registry.local/trivy-db --db-repository registry.
 
 !!!note
     When pulling `trivy-db` or `trivy-java-db`, if image tag is not specified, Trivy defaults to the db schema number instead of the `latest` tag.
-
-VEX Hub repository locations can be configured separately using the [VEX configuration file](../supply-chain/vex/repo.md)
 
 ### Skip updates
 
@@ -129,7 +108,6 @@ option | description
 `--checks-bundle` | remove checks bundle
 `--java-db` | remove Java database
 `--scan-cache` | remove scan cache (container and VM image analysis results)
-`--vex-repo` | remove VEX repositories
 `--vuln-db` | remove vulnerability database
 
 Example:

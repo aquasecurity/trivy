@@ -1,54 +1,49 @@
-# Air-Gapped Environments and Self-Hosting
+# Network Connectivity
 
-When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations. These so called "databases" are fetched and maintained by Trivy automatically as needed.
+Trivy requires internet connectivity in order to function normally. If your organizations blocks or restricts network traffic, that could prevent Trivy from working correctly.
+This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted networks environments, including completely air-gapped environments.
 
-If your organizations blocks or restricts network traffic (from the machine Trivy runs on), Trivy might not be able to download the databases from public repositories.
+The following external resources are required by Trivy for the respective features:
 
-This document explains how handle such advanced connectivity scenarios.
-
-!!! note
-    Please familiarize yourself with the [Databases document](../configuration/db.md) that explains about the different databases used by Trivy and the different configuration options that control them. This guide assumes you are already familiar with the concepts explained there.
-
-## Self-Hosting
-
-You can host Trivy's databases in a container registry that is accessible to Trivy.
-
-First, make a copy of the databases into your container registry. The different databases, their use cases, and their locations are detailed in the [Trivy Databases](../configuration/db.md) document.
-
-!!! note
-    You will need to keep the databases updated in order to maintain relevant scanning results.
-
-Then, tell Trivy to use the local registry using the relevant flags.
-
-For example, we if we scan a Java application, we copy the `trivy-db` and `trivy-java-db` databases to our local registry and tell Trivy to use them. In this case we also need to turn off Trivy's [Java scanner external service](../coverage/language/java.md) with the `--offline-scan` flag:
-
-```shell
-trivy image \
-    --db-repository myregistry.local/trivy-db \
-    --java-db-repository myregistry.local/trivy-java-db \
-    --offline-scan \
-    myimage
-```
-
-### OCI Media Types
-
-When serving, proxying, or manipulating Trivy's databases, note that the media type of the OCI layer is not a standard container image type:
-
-DB | Media Type | Reference
+External Resource | Feature | Details
 --- | --- | ---
-`trivy-db` | `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` | <https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db>
-`trivy-java-db` | `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip` | https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
-`trivy-chekcs` | `application/vnd.oci.image.manifest.v1+json` | https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks
+Vulnerability Database | Vulnerability scanning | [Trivy DB](../scanner/vulnerability.md)
+Java Vulnerability Database | Java vulnerability scanning | [Trivy Java DB](../coverage/language/java.md)
+Misconfigurations Database | Misconfigurations scanning | [Trivy Checks](../scanner/misconfiguration/check/builtin.md)
+VEX Hub | VEX Hub | [VEX Hub](../supply-chain/vex/repo/#vex-hub)
+Maven Central / Remote Repositories | Java vulnerability scanning | [Java Scanner/Remote Repositories](../coverage/language/java.md#remote-repositories)
 
-### Registry Authentication
+!!! note
+Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to connect to external resources.
 
-If the registry requires authentication, you can configure it as described in the [private registry authentication document](../advanced/private-registries/index.md).
+The rest of this document details each resource's connectivity requirements and relevant configuration options.
 
-## Manual cache population
+## Vulnerability & Java databases
 
-You can also download the databases files manually and surgically populate the Trivy cache directory with them.
+### Connectivity requirements
 
-### Downloading the DB files
+Trivy's Vulnerability and Java databases are packaged as OCI images and stored in public container registries. Trivy may attempt to download databases from the following locations:
+
+- `ghcr.io/aquasecurity/trivy-db`
+- `ghcr.io/aquasecurity/trivy-java-db`
+
+Communication with OCI Registries follows the [OCI Distribution](https://github.com/opencontainers/distribution-spec) spec.
+
+The following hosts are known to be used by the default container registries:
+
+Registry | Hosts | Additional info
+--- | --- | ---
+GitHub Container Registry | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul> | [GitHub's IP addresses](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-githubs-ip-addresses) 
+
+### Self-hosting
+
+You can host Trivy's databases in your own container registry. Please refer to [Self-hosting document](./self-hosting.md) for a detailed guide.
+
+### Manual cache population
+
+You can download the databases files manually and surgically populate the Trivy cache directory with them.
+
+#### Downloading the DB files
 
 On a machine with internet access, pull the database container archive from the public registry into your local workspace:
 
@@ -77,7 +72,7 @@ Note that these examples operate in the current working directory.
 
 You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files, copy them over to the air-gapped environment.
 
-### Populating the Trivy Cache
+#### Populating the Trivy Cache
 
 In order to populate the cache, you need to identify the location of the cache directory. If it is under the default location, you can run the following command to find it:
 
@@ -100,7 +95,7 @@ mkdir -p ${TRIVY_CACHE_DIR}/db
 cp /path/to/trivy.db /path/to/metadata.json ${TRIVY_CACHE_DIR}/db/
 ```
 
-### Java DB
+#### Java DB adaptations
 
 For Java DB the process is the same, except for the following:
 
@@ -110,27 +105,43 @@ For Java DB the process is the same, except for the following:
 
 ## Misconfigurations scanning
 
-Misconfigurations checks are also embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
+### Connectivity requirements
+
+Trivy's misconfiguration database is packaged as an OCI image and follows the same connectivity requirements as the Vulnerability and Java databases, as can be seen [here](#vulnerability-java-databases).
+
+### Self-hosting
+
+You can host Trivy's databases in your own container registry. Please refer to [Self-hosting document](./self-hosting.md) for a detailed guide.
+
+### Embedded checks
+
+Misconfigurations checks are embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
 
 ## VEX Hub
 
-You can host a copy of VEX Hub on your own internal server.
+### Connectivity Requirements
 
-First, make a copy of VEX Hub in a location that is accessible to Trivy.
+VEX Hub is fetched from VEX Hub GitHub Repository directly: <https://github.com/aquasecurity/vexhub>. Using simple HTTPS requests.
 
-1. Download the [VEX Hub](https://github.com/aquasecurity/vexhub) archive from: <https://github.com/aquasecurity/vexhub/archive/refs/heads/main.zip>.
-1. Download the [VEX Hub Repository Manifest](https://github.com/aquasecurity/vex-repo-spec#2-repository-manifest) file from: <https://github.com/aquasecurity/vexhub/blob/main/vex-repository.json>.
-1. Create or identify an internal HTTP server that can serve the VEX Hub repository in your environment (e.g `https://server.local`).
-1. Make the downloaded archive file available for serving from your server (e.g `https://server.local/main.zip`).
-1. Modify the downloaded manifest file's [Location URL](https://github.com/aquasecurity/vex-repo-spec?tab=readme-ov-file#locations-subfields) field to the URL of the archive file on your server (e.g `url: https://server.local/main.zip`).
-1. Make the manifest file available for serving from your server under the `/.well-known` path  (e.g `https://server.local/.well-known/vex-repository.json`).
+The following hosts are known to be used by GitHub's services:
 
-Then tell Trivy to use the local VEX Repository:
+- `api.github.com`
+- `codeload.github.com`
 
-1. Locate your [Trivy VEX configuration file](../supply-chain/vex/repo/#configuration-file) by running `trivy vex repo init`. Make the following changes to the file.
-1. Disable the default VEX Hub repo (`enabled: false`)
-1. Add your internal VEX Hub repository as a [custom repository](../supply-chain/vex/repo/#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
+For more information about GitHub connectivity (including specific IP addresses), please refer to [GitHub's connectivity troubleshooting guide](https://docs.github.com/en/get-started/using-github/troubleshooting-connectivity-problems).
 
-### VEX Hub Authentication
+### Self-hosting
 
-If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](../supply-chain/vex/repo/#authentication).
+You can host a copy of VEX Hub on your own internal server. Please refer to the [self-hosting document](./self-hosting.md) for a detailed guide.
+
+## Maven Central / Remote Repositories
+
+### Connectivity requirements
+
+Trivy might attempt to connect to the following URLs:
+
+- `https://repo.maven.apache.org/maven2`
+
+### Offline mode
+
+There's no way to leverage Maven Central in a network-restricted environment, but you can prevent Trivy from trying to connect to it by using the `--offline-scan` flag.
