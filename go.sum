@@ -418,8 +418,8 @@ github.com/blang/semver/v4 v4.0.0 h1:1PFHFE6yCCTv8C1TeyNNarDzntLi7wMI5i/pzqYIsAM
 github.com/blang/semver/v4 v4.0.0/go.mod h1:IbckMUScFkM3pff0VJDNKRiT6TG/YpiHIM2yvyW5YoQ=
 github.com/bmatcuk/doublestar/v4 v4.6.1 h1:FH9SifrbvJhnlQpztAx++wlkk70QBf0iBWDwNy7PA4I=
 github.com/bmatcuk/doublestar/v4 v4.6.1/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fTSPVIjEY1Wr7jzc=
-github.com/bpfoster/trivy-db v0.0.0-20241102100020-ed3cdbf030cb h1:h1WaB6D68Q72lDQUMss4sNjIuphrNTK+m9yguX3zhSg=
-github.com/bpfoster/trivy-db v0.0.0-20241102100020-ed3cdbf030cb/go.mod h1:zCVvBtp/UyymPTAtJ6B52isz8AB8KkPjbyfCjWyyuDI=
+github.com/bpfoster/trivy-db v0.0.0-20241105044614-a135499d61b1 h1:yensoeGEksLkf7Emu2ET3g7sTflRZqBC9/KiDdtJZD4=
+github.com/bpfoster/trivy-db v0.0.0-20241105044614-a135499d61b1/go.mod h1:zCVvBtp/UyymPTAtJ6B52isz8AB8KkPjbyfCjWyyuDI=
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0 h1:any4BmKE+jGIaMpnU8YgH/I2LPiLBufr6oMMlVBbn9M=
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0/go.mod h1:bm7JXdkRd4BHJk9HpwqAI8BoAY1lps46Enkdqw6aRX0=
 github.com/briandowns/spinner v1.23.0 h1:alDF2guRWqa/FOZZYWjlMIx2L6H0wyewPxo/CH4Pt2A=
