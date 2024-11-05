@@ -175,9 +175,9 @@ func (r *Rule) MatchKeywords(content []byte) bool {
 	if len(r.Keywords) == 0 {
 		return true
 	}
-
+	var contentLower = bytes.ToLower(content)
 	for _, kw := range r.Keywords {
-		if bytes.Contains(bytes.ToLower(content), []byte(strings.ToLower(kw))) {
+		if bytes.Contains(contentLower, []byte(strings.ToLower(kw))) {
 			return true
 		}
 	}
