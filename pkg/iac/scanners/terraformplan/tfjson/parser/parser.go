@@ -11,28 +11,17 @@ import (
 	"github.com/liamg/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Parser struct {
-	debugWriter    io.Writer
-	stopOnHCLError bool
+	logger *log.Logger
 }
 
-func New(options ...Option) *Parser {
-	parser := &Parser{}
-
-	for _, o := range options {
-		o(parser)
+func New() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("tfjson parser"),
 	}
-	return parser
-}
-
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debugWriter = writer
-}
-
-func (p *Parser) SetStopOnHCLError(b bool) {
-	p.stopOnHCLError = b
 }
 
 func (p *Parser) ParseFile(filepath string) (*PlanFile, error) {
@@ -101,14 +90,14 @@ func getResources(module Module, resourceChanges []ResourceChange, configuration
 		// process the changes to get the after state
 		for k, v := range changes.After {
 			switch t := v.(type) {
-			case []interface{}:
+			case []any:
 				if len(t) == 0 {
 					continue
 				}
 				val := t[0]
 				switch v := val.(type) {
 				// is it a HCL block?
-				case map[string]interface{}:
+				case map[string]any:
 					res.Blocks[k] = v
 				// just a normal attribute then
 				default:

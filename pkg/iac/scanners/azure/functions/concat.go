@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func Concat(args ...interface{}) interface{} {
+func Concat(args ...any) any {
 
 	switch args[0].(type) {
 	case string:
@@ -13,10 +13,10 @@ func Concat(args ...interface{}) interface{} {
 			result += fmt.Sprintf("%v", arg)
 		}
 		return result
-	case interface{}:
-		var result []interface{}
+	case any:
+		var result []any
 		for _, arg := range args {
-			argArr, ok := arg.([]interface{})
+			argArr, ok := arg.([]any)
 			if !ok {
 				continue
 			}

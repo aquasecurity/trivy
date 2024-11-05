@@ -1,7 +1,7 @@
 {
-  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
-  "specVersion": "1.5",
+  "specVersion": "1.6",
   "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
   "version": 1,
   "metadata": {
@@ -34,6 +34,12 @@
       "type": "library",
       "name": "openssl",
       "version": "1.1.1q",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "237db0da53131e4548cb1181337fa0f420299e1f"
+        }
+      ],
       "licenses": [
         {
           "license": {
@@ -58,6 +64,12 @@
       "type": "library",
       "name": "pip",
       "version": "22.2.2",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
+        }
+      ],
       "licenses": [
         {
           "license": {

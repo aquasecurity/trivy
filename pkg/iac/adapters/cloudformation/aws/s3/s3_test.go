@@ -1,14 +1,14 @@
 package s3
 
 import (
-	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/liamg/iamgo"
+
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAdapt(t *testing.T) {
@@ -56,36 +56,74 @@ Resources:
             ExpirationInDays: 365
       AccelerateConfiguration:
         AccelerationStatus: Enabled
+      VersioningConfiguration:
+        Status: Enabled
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  SampleBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref Bucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - 'arn:aws:s3:::testbucket/*'
+            Principal: '*'
 `,
 			expected: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Name: types.String("logging-bucket", types.NewTestMetadata()),
+						Name: types.StringTest("logging-bucket"),
 					},
 					{
-						Name: types.String("test-bucket", types.NewTestMetadata()),
+						Name: types.StringTest("test-bucket"),
 						Encryption: s3.Encryption{
-							Enabled:   types.Bool(true, types.NewTestMetadata()),
-							Algorithm: types.String("aws:kms", types.NewTestMetadata()),
-							KMSKeyId:  types.String("Key", types.NewTestMetadata()),
+							Enabled:   types.BoolTest(true),
+							Algorithm: types.StringTest("aws:kms"),
+							KMSKeyId:  types.StringTest("Key"),
 						},
-						ACL: types.String("aws-exec-read", types.NewTestMetadata()),
+						ACL: types.StringTest("aws-exec-read"),
 						PublicAccessBlock: &s3.PublicAccessBlock{
-							BlockPublicACLs:       types.Bool(true, types.NewTestMetadata()),
-							BlockPublicPolicy:     types.Bool(true, types.NewTestMetadata()),
-							IgnorePublicACLs:      types.Bool(true, types.NewTestMetadata()),
-							RestrictPublicBuckets: types.Bool(true, types.NewTestMetadata()),
+							BlockPublicACLs:       types.BoolTest(true),
+							BlockPublicPolicy:     types.BoolTest(true),
+							IgnorePublicACLs:      types.BoolTest(true),
+							RestrictPublicBuckets: types.BoolTest(true),
 						},
 						Logging: s3.Logging{
-							TargetBucket: types.String("LoggingBucket", types.NewTestMetadata()),
-							Enabled:      types.Bool(true, types.NewTestMetadata()),
+							TargetBucket: types.StringTest("LoggingBucket"),
+							Enabled:      types.BoolTest(true),
 						},
 						LifecycleConfiguration: []s3.Rules{
 							{
-								Status: types.String("Enabled", types.NewTestMetadata()),
+								Status: types.StringTest("Enabled"),
 							},
 						},
-						AccelerateConfigurationStatus: types.String("Enabled", types.NewTestMetadata()),
+						AccelerateConfigurationStatus: types.StringTest("Enabled"),
+						Versioning: s3.Versioning{
+							Enabled: types.BoolTest(true),
+						},
+						Website: &s3.Website{},
+						BucketPolicies: []iam.Policy{
+							{
+								Document: iam.Document{
+									Parsed: iamgo.NewPolicyBuilder().
+										WithStatement(
+											iamgo.NewStatementBuilder().
+												WithActions([]string{"s3:GetObject"}).
+												WithAllPrincipals(true).
+												WithEffect("Allow").
+												WithResources([]string{"arn:aws:s3:::testbucket/*"}).
+												Build(),
+										).
+										WithVersion("2012-10-17T00:00:00Z").
+										Build(),
+								},
+							},
+						},
 					},
 				},
 			},
@@ -101,7 +139,7 @@ Resources:
 			expected: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Name: types.String("test-bucket", types.NewTestMetadata()),
+						Name: types.StringTest("test-bucket"),
 						Encryption: s3.Encryption{
 							Enabled: types.BoolDefault(false, types.NewTestMetadata()),
 						},
@@ -126,11 +164,11 @@ Resources:
 			expected: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Name: types.String("test-bucket", types.NewTestMetadata()),
+						Name: types.StringTest("test-bucket"),
 						Encryption: s3.Encryption{
 							Enabled:   types.BoolDefault(false, types.NewTestMetadata()),
-							KMSKeyId:  types.String("alias/my-key", types.NewTestMetadata()),
-							Algorithm: types.String("aes256", types.NewTestMetadata()),
+							KMSKeyId:  types.StringTest("alias/my-key"),
+							Algorithm: types.StringTest("aes256"),
 						},
 					},
 				},
@@ -140,16 +178,7 @@ Resources:
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			fsys := testutil.CreateFS(t, map[string]string{
-				"main.yaml": tt.source,
-			})
-
-			fctx, err := parser.New().ParseFile(context.TODO(), fsys, "main.yaml")
-			require.NoError(t, err)
-
-			adapted := Adapt(*fctx)
-			testutil.AssertDefsecEqual(t, tt.expected, adapted)
+			testutil.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
 

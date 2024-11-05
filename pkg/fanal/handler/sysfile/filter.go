@@ -2,9 +2,8 @@ package nodejs
 
 import (
 	"context"
+	"slices"
 	"strings"
-
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -58,7 +57,7 @@ func (h systemFileFilteringPostHandler) Handle(_ context.Context, result *analyz
 		// Trim leading slashes to be the same format as the path in container images.
 		systemFile := strings.TrimPrefix(file, "/")
 		// We should check the root filepath ("/") and ignore it.
-		// Otherwise libraries with an empty filePath will be removed.
+		// Otherwise, packages with an empty filePath will be removed.
 		if systemFile != "" {
 			systemFiles = append(systemFiles, systemFile)
 		}
@@ -73,7 +72,7 @@ func (h systemFileFilteringPostHandler) Handle(_ context.Context, result *analyz
 		}
 
 		var pkgs []types.Package
-		for _, lib := range app.Libraries {
+		for _, lib := range app.Packages {
 			// If the lang-specific package was installed by OS package manager, it should not be taken.
 			// Otherwise, the package version will be wrong, then it will lead to false positive.
 			if slices.Contains(systemFiles, lib.FilePath) {
@@ -82,8 +81,8 @@ func (h systemFileFilteringPostHandler) Handle(_ context.Context, result *analyz
 			pkgs = append(pkgs, lib)
 		}
 
-		// Overwrite Libraries
-		app.Libraries = pkgs
+		// Overwrite Packages
+		app.Packages = pkgs
 		apps = append(apps, app)
 	}
 

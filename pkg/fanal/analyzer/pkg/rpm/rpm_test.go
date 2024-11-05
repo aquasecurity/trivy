@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type mockRPMDB struct {
@@ -97,9 +97,9 @@ func Test_splitFileName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotName, gotVer, gotRel, err := splitFileName(tt.filename)
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 			assert.Equal(t, tt.wantName, gotName)
 			assert.Equal(t, tt.wantVer, gotVer)
@@ -125,13 +125,20 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 			mock: mock{
 				packages: []*rpmdb.PackageInfo{
 					{
-						Name:       "glibc",
-						Version:    "2.17",
-						Release:    "307.el7.1",
-						Arch:       "x86_64",
-						SourceRpm:  "glibc-2.17-317.el7.src.rpm",
-						DirNames:   []string{"/etc", "/lib64"},
-						DirIndexes: []int32{0, 0, 1},
+						Name:      "glibc",
+						Version:   "2.17",
+						Release:   "307.el7.1",
+						Arch:      "x86_64",
+						SourceRpm: "glibc-2.17-317.el7.src.rpm",
+						DirNames: []string{
+							"/etc",
+							"/lib64",
+						},
+						DirIndexes: []int32{
+							0,
+							0,
+							1,
+						},
 						BaseNames: []string{
 							"ld.so.conf",
 							"rpc",
@@ -182,7 +189,13 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 							"/usr/lib/.build-id/aa/",
 							"/usr/share/man/man1/",
 						},
-						DirIndexes: []int32{0, 1, 2, 3, 4},
+						DirIndexes: []int32{
+							0,
+							1,
+							2,
+							3,
+							4,
+						},
 						BaseNames: []string{
 							"curl",
 							".build-id",
@@ -259,8 +272,8 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 				err:      tt.mock.err,
 			}
 
-			a := rpmPkgAnalyzer{}
-			gotPkgs, gotFiles, err := a.listPkgs(m)
+			a := newRPMPkgAnalyzer()
+			gotPkgs, gotFiles, err := a.listPkgs(context.Background(), m)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

@@ -3,14 +3,12 @@ package state
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
-
-	"github.com/stretchr/testify/assert"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_Merging(t *testing.T) {

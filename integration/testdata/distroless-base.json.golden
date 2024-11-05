@@ -56,7 +56,8 @@
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "96b92444b87304a5"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -140,7 +141,8 @@
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "96b92444b87304a5"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
@@ -230,7 +232,8 @@
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "ed86402b9a8c2be6"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -314,7 +317,8 @@
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
           "PkgIdentifier": {
-            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
+            "UID": "ed86402b9a8c2be6"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",

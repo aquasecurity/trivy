@@ -6,36 +6,40 @@ import (
 	"strings"
 
 	"github.com/liamg/jfather"
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type lockFile struct {
+type LockFile struct {
 	Packages []packageInfo `json:"packages"`
 }
 type packageInfo struct {
 	Name      string            `json:"name"`
 	Version   string            `json:"version"`
 	Require   map[string]string `json:"require"`
-	License   []string          `json:"license"`
+	License   any               `json:"license"`
 	StartLine int
 	EndLine   int
 }
 
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	var lockFile lockFile
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("composer"),
+	}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("read error: %w", err)
@@ -44,61 +48,61 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	libs := make(map[string]types.Library)
+	pkgs := make(map[string]ftypes.Package)
 	foundDeps := make(map[string][]string)
-	for _, pkg := range lockFile.Packages {
-		lib := types.Library{
-			ID:       dependency.ID(ftypes.Composer, pkg.Name, pkg.Version),
-			Name:     pkg.Name,
-			Version:  pkg.Version,
-			Indirect: false, // composer.lock file doesn't have info about Direct/Indirect deps. Will think that all dependencies are Direct
-			License:  strings.Join(pkg.License, ", "),
-			Locations: []types.Location{
+	for _, lpkg := range lockFile.Packages {
+		pkg := ftypes.Package{
+			ID:           dependency.ID(ftypes.Composer, lpkg.Name, lpkg.Version),
+			Name:         lpkg.Name,
+			Version:      lpkg.Version,
+			Relationship: ftypes.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
+			Licenses:     licenses(lpkg.License),
+			Locations: []ftypes.Location{
 				{
-					StartLine: pkg.StartLine,
-					EndLine:   pkg.EndLine,
+					StartLine: lpkg.StartLine,
+					EndLine:   lpkg.EndLine,
 				},
 			},
 		}
-		libs[lib.Name] = lib
+		pkgs[pkg.Name] = pkg
 
 		var dependsOn []string
-		for depName := range pkg.Require {
+		for depName := range lpkg.Require {
 			// Require field includes required php version, skip this
 			// Also skip PHP extensions
 			if depName == "php" || strings.HasPrefix(depName, "ext") {
 				continue
 			}
-			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the libraries
+			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the packages
 		}
 		if len(dependsOn) > 0 {
-			foundDeps[lib.ID] = dependsOn
+			foundDeps[pkg.ID] = dependsOn
 		}
 	}
 
 	// fill deps versions
-	var deps []types.Dependency
-	for libID, depsOn := range foundDeps {
+	var deps ftypes.Dependencies
+	for pkgID, depsOn := range foundDeps {
 		var dependsOn []string
 		for _, depName := range depsOn {
-			if lib, ok := libs[depName]; ok {
-				dependsOn = append(dependsOn, lib.ID)
+			if pkg, ok := pkgs[depName]; ok {
+				dependsOn = append(dependsOn, pkg.ID)
 				continue
 			}
-			log.Logger.Debugf("unable to find version of %s", depName)
+			p.logger.Debug("Unable to find version", log.String("name", depName))
 		}
 		sort.Strings(dependsOn)
-		deps = append(deps, types.Dependency{
-			ID:        libID,
+		deps = append(deps, ftypes.Dependency{
+			ID:        pkgID,
 			DependsOn: dependsOn,
 		})
 	}
 
-	libSlice := maps.Values(libs)
-	sort.Sort(types.Libraries(libSlice))
-	sort.Sort(types.Dependencies(deps))
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+	sort.Sort(deps)
 
-	return libSlice, deps, nil
+	return pkgSlice, deps, nil
 }
 
 // UnmarshalJSONWithMetadata needed to detect start and end lines of deps
@@ -109,5 +113,25 @@ func (t *packageInfo) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	// Decode func will overwrite line numbers if we save them first
 	t.StartLine = node.Range().Start.Line
 	t.EndLine = node.Range().End.Line
+	return nil
+}
+
+// licenses returns slice of licenses from string, string with separators (`or`, `and`, etc.) or string array
+// cf. https://getcomposer.org/doc/04-schema.md#license
+func licenses(val any) []string {
+	switch v := val.(type) {
+	case string:
+		if v != "" {
+			return licensing.SplitLicenses(v)
+		}
+	case []any:
+		var lics []string
+		for _, l := range v {
+			if lic, ok := l.(string); ok {
+				lics = append(lics, lic)
+			}
+		}
+		return lics
+	}
 	return nil
 }

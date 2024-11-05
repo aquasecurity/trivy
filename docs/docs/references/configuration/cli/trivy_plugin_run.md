@@ -3,7 +3,7 @@
 Run a plugin on the fly
 
 ```
-trivy plugin run URL | FILE_PATH
+trivy plugin run NAME | URL | FILE_PATH
 ```
 
 ### Options

@@ -1,14 +1,11 @@
 package rds
 
 import (
-	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAdapt(t *testing.T) {
@@ -18,7 +15,7 @@ func TestAdapt(t *testing.T) {
 		expected rds.RDS
 	}{
 		{
-			name: "cluster with instances",
+			name: "complete",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:
   RDSCluster:
@@ -65,92 +62,113 @@ Resources:
     Properties:
       Description: "CloudFormation Sample MySQL Parameter Group"
       DBParameterGroupName: "testgroup"
+      Parameters:
+        sql_mode: IGNORE_SPACE
+  DbSecurityByEC2SecurityGroup: 
+    Type: AWS::RDS::DBSecurityGroup
+    Properties: 
+      GroupDescription: "Ingress for Amazon EC2 security group"
 `,
 			expected: rds.RDS{
+				Classic: rds.Classic{
+					DBSecurityGroups: []rds.DBSecurityGroup{{}},
+				},
 				ParameterGroups: []rds.ParameterGroups{
 					{
-						Metadata:             types.NewTestMetadata(),
-						DBParameterGroupName: types.String("testgroup", types.NewTestMetadata()),
+						DBParameterGroupName: types.StringTest("testgroup"),
 					},
 				},
 				Clusters: []rds.Cluster{
 					{
-						Metadata:                  types.NewTestMetadata(),
-						BackupRetentionPeriodDays: types.Int(2, types.NewTestMetadata()),
-						Engine:                    types.String("aurora-postgresql", types.NewTestMetadata()),
+						BackupRetentionPeriodDays: types.IntTest(2),
+						Engine:                    types.StringTest("aurora-postgresql"),
 						Encryption: rds.Encryption{
-							EncryptStorage: types.Bool(true, types.NewTestMetadata()),
-							KMSKeyID:       types.String("your-kms-key-id", types.NewTestMetadata()),
+							EncryptStorage: types.BoolTest(true),
+							KMSKeyID:       types.StringTest("your-kms-key-id"),
 						},
 						PerformanceInsights: rds.PerformanceInsights{
-							Metadata: types.NewTestMetadata(),
-							Enabled:  types.Bool(true, types.NewTestMetadata()),
-							KMSKeyID: types.String("test-kms-key-id", types.NewTestMetadata()),
+							Enabled:  types.BoolTest(true),
+							KMSKeyID: types.StringTest("test-kms-key-id"),
 						},
-						PublicAccess:       types.Bool(false, types.NewTestMetadata()),
-						DeletionProtection: types.Bool(true, types.NewTestMetadata()),
+						PublicAccess:       types.BoolTest(false),
+						DeletionProtection: types.BoolTest(true),
 						Instances: []rds.ClusterInstance{
 							{
 								Instance: rds.Instance{
-									Metadata:         types.NewTestMetadata(),
-									StorageEncrypted: types.Bool(true, types.NewTestMetadata()),
+									StorageEncrypted: types.BoolTest(true),
 									Encryption: rds.Encryption{
-										EncryptStorage: types.Bool(true, types.NewTestMetadata()),
-										KMSKeyID:       types.String("your-kms-key-id", types.NewTestMetadata()),
+										EncryptStorage: types.BoolTest(true),
+										KMSKeyID:       types.StringTest("your-kms-key-id"),
 									},
-									DBInstanceIdentifier:      types.String("test", types.NewTestMetadata()),
-									PubliclyAccessible:        types.Bool(false, types.NewTestMetadata()),
-									PublicAccess:              types.BoolDefault(false, types.NewTestMetadata()),
-									BackupRetentionPeriodDays: types.IntDefault(1, types.NewTestMetadata()),
-									Engine:                    types.StringDefault("aurora-mysql", types.NewTestMetadata()),
-									EngineVersion:             types.String("5.7.12", types.NewTestMetadata()),
-									MultiAZ:                   types.Bool(true, types.NewTestMetadata()),
-									AutoMinorVersionUpgrade:   types.Bool(true, types.NewTestMetadata()),
-									DBInstanceArn:             types.String("arn:aws:rds:us-east-2:123456789012:db:my-mysql-instance-1", types.NewTestMetadata()),
-									IAMAuthEnabled:            types.Bool(true, types.NewTestMetadata()),
+									DBInstanceIdentifier:      types.StringTest("test"),
+									PubliclyAccessible:        types.BoolTest(false),
+									PublicAccess:              types.BoolTest(false),
+									BackupRetentionPeriodDays: types.IntTest(1),
+									Engine:                    types.StringTest("aurora-mysql"),
+									EngineVersion:             types.StringTest("5.7.12"),
+									MultiAZ:                   types.BoolTest(true),
+									AutoMinorVersionUpgrade:   types.BoolTest(true),
+									DBInstanceArn:             types.StringTest("arn:aws:rds:us-east-2:123456789012:db:my-mysql-instance-1"),
+									IAMAuthEnabled:            types.BoolTest(true),
 									PerformanceInsights: rds.PerformanceInsights{
-										Metadata: types.NewTestMetadata(),
-										Enabled:  types.Bool(true, types.NewTestMetadata()),
-										KMSKeyID: types.String("test-kms-key-id2", types.NewTestMetadata()),
+										Enabled:  types.BoolTest(true),
+										KMSKeyID: types.StringTest("test-kms-key-id2"),
 									},
 									EnabledCloudwatchLogsExports: []types.StringValue{
-										types.String("error", types.NewTestMetadata()),
-										types.String("general", types.NewTestMetadata()),
+										types.StringTest("error"),
+										types.StringTest("general"),
 									},
 									DBParameterGroups: []rds.DBParameterGroupsList{
 										{
-											DBParameterGroupName: types.String("testgroup", types.NewTestMetadata()),
+											DBParameterGroupName: types.StringTest("testgroup"),
 										},
 									},
 									TagList: []rds.TagList{
-										{
-											Metadata: types.NewTestMetadata(),
-										},
-										{
-											Metadata: types.NewTestMetadata(),
-										},
+										{},
+										{},
 									},
 								},
-								ClusterIdentifier: types.String("RDSCluster", types.NewTestMetadata()),
+								ClusterIdentifier: types.StringTest("RDSCluster"),
 							},
 						},
 					},
 				},
 			},
 		},
+		{
+			name: "complete",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  RDSCluster:
+    Type: 'AWS::RDS::DBCluster'
+  RDSDBInstance1:
+    Type: 'AWS::RDS::DBInstance'
+  RDSDBParameterGroup:
+    Type: 'AWS::RDS::DBParameterGroup'
+  DbSecurityByEC2SecurityGroup: 
+    Type: AWS::RDS::DBSecurityGroup
+`,
+			expected: rds.RDS{
+				Classic: rds.Classic{
+					DBSecurityGroups: []rds.DBSecurityGroup{{}},
+				},
+				ParameterGroups: []rds.ParameterGroups{{}},
+				Clusters: []rds.Cluster{{
+					Engine:                    types.StringTest("aurora"),
+					BackupRetentionPeriodDays: types.IntTest(1),
+				}},
+				Instances: []rds.Instance{{
+					BackupRetentionPeriodDays: types.IntTest(1),
+					PublicAccess:              types.BoolTest(true),
+					DBParameterGroups:         []rds.DBParameterGroupsList{{}},
+				}},
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fs := testutil.CreateFS(t, map[string]string{
-				"template.yaml": tt.source,
-			})
-
-			p := parser.New()
-			fctx, err := p.ParseFile(context.TODO(), fs, "template.yaml")
-			require.NoError(t, err)
-
-			testutil.AssertDefsecEqual(t, tt.expected, Adapt(*fctx))
+			testutil.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
 

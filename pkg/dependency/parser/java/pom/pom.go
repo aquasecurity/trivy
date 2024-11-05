@@ -13,8 +13,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type pom struct {
@@ -22,11 +23,18 @@ type pom struct {
 	content  *pomXML
 }
 
-func (p *pom) inherit(result analysisResult) {
-	// Merge properties
-	p.content.Properties = utils.MergeMaps(result.properties, p.content.Properties)
+func (p *pom) nil() bool {
+	return p == nil || p.content == nil
+}
 
-	art := p.artifact().Inherit(result.artifact)
+func (p *pom) inherit(parent *pom) {
+	if parent == nil {
+		return
+	}
+	// Merge properties
+	p.content.Properties = utils.MergeMaps(parent.properties(), p.content.Properties)
+
+	art := p.artifact().Inherit(parent.artifact())
 
 	p.content.GroupId = art.GroupID
 	p.content.ArtifactId = art.ArtifactID
@@ -39,12 +47,12 @@ func (p *pom) inherit(result analysisResult) {
 	}
 }
 
-func (p pom) properties() properties {
+func (p *pom) properties() properties {
 	props := p.content.Properties
 	return utils.MergeMaps(props, p.projectProperties())
 }
 
-func (p pom) projectProperties() map[string]string {
+func (p *pom) projectProperties() map[string]string {
 	val := reflect.ValueOf(p.content).Elem()
 	props := p.listProperties(val)
 
@@ -72,7 +80,7 @@ func (p pom) projectProperties() map[string]string {
 	return projectProperties
 }
 
-func (p pom) listProperties(val reflect.Value) map[string]string {
+func (p *pom) listProperties(val reflect.Value) map[string]string {
 	props := make(map[string]string)
 	for i := 0; i < val.NumField(); i++ {
 		f := val.Type().Field(i)
@@ -105,27 +113,30 @@ func (p pom) listProperties(val reflect.Value) map[string]string {
 	return props
 }
 
-func (p pom) artifact() artifact {
+func (p *pom) artifact() artifact {
 	return newArtifact(p.content.GroupId, p.content.ArtifactId, p.content.Version, p.licenses(), p.content.Properties)
 }
 
-func (p pom) licenses() []string {
-	return lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
+func (p *pom) licenses() []string {
+	return slices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
 		return lic.Name, lic.Name != ""
-	})
+	}))
 }
 
-func (p pom) repositories(servers []Server) []string {
-	var urls []string
+func (p *pom) repositories(servers []Server) ([]string, []string) {
+	logger := log.WithPrefix("pom")
+	var releaseRepos, snapshotRepos []string
 	for _, rep := range p.content.Repositories.Repository {
+		snapshot := rep.Snapshots.Enabled == "true"
+		release := rep.Releases.Enabled == "true"
 		// Add only enabled repositories
-		if rep.Releases.Enabled == "false" && rep.Snapshots.Enabled == "false" {
+		if !release && !snapshot {
 			continue
 		}
 
 		repoURL, err := url.Parse(rep.URL)
 		if err != nil {
-			log.Logger.Debugf("Unable to parse remote repository url: %s", err)
+			logger.Debug("Unable to parse remote repository url", log.Err(err))
 			continue
 		}
 
@@ -138,10 +149,16 @@ func (p pom) repositories(servers []Server) []string {
 			}
 		}
 
-		log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
-		urls = append(urls, repoURL.String())
+		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
+		if snapshot {
+			snapshotRepos = append(snapshotRepos, repoURL.String())
+		}
+		if release {
+			releaseRepos = append(releaseRepos, repoURL.String())
+		}
 	}
-	return urls
+
+	return releaseRepos, snapshotRepos
 }
 
 type pomXML struct {
@@ -232,9 +249,11 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		if managed.Version != "" {
 			dep.Version = evaluateVariable(managed.Version, props, nil)
 		}
+
 		if managed.Scope != "" {
 			dep.Scope = evaluateVariable(managed.Scope, props, nil)
 		}
+
 		if managed.Optional {
 			dep.Optional = managed.Optional
 		}
@@ -256,9 +275,8 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		if !dep.Optional {
 			dep.Optional = managed.Optional
 		}
-		if len(dep.Exclusions.Exclusion) == 0 {
-			dep.Exclusions = managed.Exclusions
-		}
+		// `mvn` always merges exceptions for pom and parent
+		dep.Exclusions.Exclusion = append(dep.Exclusions.Exclusion, managed.Exclusions.Exclusion...)
 	}
 	return dep
 }
@@ -277,9 +295,9 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		exclusions[fmt.Sprintf("%s:%s", e.GroupID, e.ArtifactID)] = struct{}{}
 	}
 
-	var locations types.Locations
-	if opts.lineNumber {
-		locations = types.Locations{
+	var locations ftypes.Locations
+	if d.StartLine != 0 && d.EndLine != 0 {
+		locations = ftypes.Locations{
 			{
 				StartLine: d.StartLine,
 				EndLine:   d.EndLine,
@@ -288,11 +306,12 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	}
 
 	return artifact{
-		GroupID:    d.GroupID,
-		ArtifactID: d.ArtifactID,
-		Version:    newVersion(d.Version),
-		Exclusions: exclusions,
-		Locations:  locations,
+		GroupID:      d.GroupID,
+		ArtifactID:   d.ArtifactID,
+		Version:      newVersion(d.Version),
+		Exclusions:   exclusions,
+		Locations:    locations,
+		Relationship: ftypes.RelationshipIndirect, // default
 	}
 }
 

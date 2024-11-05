@@ -2,7 +2,7 @@ package functions
 
 import "strconv"
 
-func Int(args ...interface{}) interface{} {
+func Int(args ...any) any {
 	if len(args) != 1 {
 		return 0
 	}

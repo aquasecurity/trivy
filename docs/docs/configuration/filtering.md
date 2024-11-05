@@ -101,7 +101,7 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 </details>
 
 ```bash
-trivy conf --severity HIGH,CRITICAL examples/misconf/mixed
+trivy config --severity HIGH,CRITICAL examples/misconf/mixed
 ```
 
 <details>
@@ -112,7 +112,7 @@ trivy conf --severity HIGH,CRITICAL examples/misconf/mixed
 
 Dockerfile (dockerfile)
 =======================
-Tests: 17 (SUCCESSES: 16, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 17 (SUCCESSES: 16, FAILURES: 1)
 Failures: 1 (HIGH: 1, CRITICAL: 0)
 
 HIGH: Last USER command in Dockerfile should not be 'root'
@@ -130,13 +130,13 @@ See https://avd.aquasec.com/misconfig/ds002
 
 deployment.yaml (kubernetes)
 ============================
-Tests: 8 (SUCCESSES: 8, FAILURES: 0, EXCEPTIONS: 0)
+Tests: 8 (SUCCESSES: 8, FAILURES: 0)
 Failures: 0 (HIGH: 0, CRITICAL: 0)
 
 
 main.tf (terraform)
 ===================
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (HIGH: 0, CRITICAL: 1)
 
 CRITICAL: Classic resources should not be used.
@@ -236,6 +236,9 @@ You can filter the results by
 - [Vulnerability Exploitability Exchange (VEX)](#by-vulnerability-exploitability-exchange-vex)
 
 To show the suppressed results, use the `--show-suppressed` flag.
+
+!!! note
+    It's exported as `ExperimentalModifiedFindings` in the JSON output.
 
 ```bash
 $ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
@@ -474,13 +477,13 @@ ignore {
 ```
 
 ```bash
-trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
+trivy image --ignore-policy examples/ignore-policies/basic.rego centos:7
 ```
 
 For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`.
 More info about the helper functions are in the library [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go).
 
-You can find more example policies [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
+You can create a whitelist of checks using Rego, see the detailed [example](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/ignore-policies/whitelist.rego). Additional examples are available [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/ignore-policies).
 
 ### By Vulnerability Exploitability Exchange (VEX)
 |     Scanner      | Supported |
@@ -490,7 +493,7 @@ You can find more example policies [here](https://github.com/aquasecurity/trivy/
 |      Secret      |           |
 |     License      |           |
 
-Please refer to the [VEX documentation](../supply-chain/vex.md) for the details.
+Please refer to the [VEX documentation](../supply-chain/vex/index.md) for the details.
 
 
 [^1]: license name is used as id for `.trivyignore.yaml` files.

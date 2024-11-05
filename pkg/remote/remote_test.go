@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -16,15 +18,17 @@ import (
 
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/registry"
+	"github.com/aquasecurity/testdocker/tarfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
-func setupPrivateRegistry() *httptest.Server {
-	imagePaths := map[string]string{
-		"v2/library/alpine:3.10": "../fanal/test/testdata/alpine-310.tar.gz",
+func setupPrivateRegistry(t *testing.T) *httptest.Server {
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
 	}
 	tr := registry.NewDockerRegistry(registry.Option{
-		Images: imagePaths,
+		Images: images,
 		Auth: auth.Auth{
 			User:     "test",
 			Password: "testpass",
@@ -32,6 +36,7 @@ func setupPrivateRegistry() *httptest.Server {
 		},
 	})
 
+	tr.Config.Handler = newUserAgentsTrackingHandler(tr.Config.Handler)
 	return tr
 }
 
@@ -56,7 +61,7 @@ func encode(user, pass string) string {
 }
 
 func TestGet(t *testing.T) {
-	tr := setupPrivateRegistry()
+	tr := setupPrivateRegistry(t)
 	defer tr.Close()
 
 	serverAddr := tr.Listener.Addr().String()
@@ -110,7 +115,7 @@ func TestGet(t *testing.T) {
 			name: "keychain",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("test", "testpass")),
+				config:    fmt.Sprintf(`{"auths": {%q: {"auth": %q}}}`, serverAddr, encode("test", "testpass")),
 				option: types.RegistryOptions{
 					Insecure: true,
 				},
@@ -180,7 +185,7 @@ func TestGet(t *testing.T) {
 			name: "bad keychain",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("foo", "bar")),
+				config:    fmt.Sprintf(`{"auths": {%q: {"auth": %q}}}`, serverAddr, encode("foo", "bar")),
 				option: types.RegistryOptions{
 					Insecure: true,
 				},
@@ -202,7 +207,76 @@ func TestGet(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 		})
 	}
+}
+
+type userAgentsTrackingHandler struct {
+	hr http.Handler
+
+	mu     sync.Mutex
+	agents map[string]struct{}
+}
+
+func newUserAgentsTrackingHandler(hr http.Handler) *userAgentsTrackingHandler {
+	return &userAgentsTrackingHandler{
+		hr:     hr,
+		agents: make(map[string]struct{}),
+	}
+}
+
+func (uh *userAgentsTrackingHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	for _, agent := range r.Header["User-Agent"] {
+		// Skip test framework user agent
+		if agent != "Go-http-client/1.1" {
+			uh.agents[agent] = struct{}{}
+		}
+	}
+	uh.hr.ServeHTTP(rw, r)
+}
+
+func setupAgentTrackingRegistry(t *testing.T) (*httptest.Server, *userAgentsTrackingHandler) {
+	images := map[string]v1.Image{
+		"v2/library/alpine:3.10": localImage(t),
+	}
+	tr := registry.NewDockerRegistry(registry.Option{
+		Images: images,
+	})
+
+	tracker := newUserAgentsTrackingHandler(tr.Config.Handler)
+	tr.Config.Handler = tracker
+
+	return tr, tracker
+}
+
+func TestUserAgents(t *testing.T) {
+	tr, tracker := setupAgentTrackingRegistry(t)
+	defer tr.Close()
+
+	serverAddr := tr.Listener.Addr().String()
+
+	n, err := name.ParseReference(fmt.Sprintf("%s/library/alpine:3.10", serverAddr))
+	require.NoError(t, err)
+
+	_, err = Get(context.Background(), n, types.RegistryOptions{
+		Credentials: []types.Credential{
+			{
+				Username: "test",
+				Password: "testpass",
+			},
+		},
+		Insecure: true,
+	})
+	require.NoError(t, err)
+
+	require.Len(t, tracker.agents, 1)
+	_, ok := tracker.agents[fmt.Sprintf("trivy/%s go-containerregistry", app.Version())]
+	require.True(t, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
+}
+
+func localImage(t *testing.T) v1.Image {
+	img, err := tarfile.ImageFromPath("../fanal/test/testdata/alpine-310.tar.gz")
+	require.NoError(t, err)
+	return img
 }

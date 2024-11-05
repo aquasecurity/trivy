@@ -3,15 +3,15 @@ package s3
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	"github.com/liamg/iamgo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_PublicAccessBlock(t *testing.T) {
@@ -56,7 +56,7 @@ resource "aws_s3_bucket_public_access_block" "example_access_block"{
 			modules := tftestutil.CreateModulesFromSource(t, tC.source, ".tf")
 			s3Ctx := Adapt(modules)
 
-			assert.Equal(t, tC.expectedBuckets, len(s3Ctx.Buckets))
+			assert.Len(t, s3Ctx.Buckets, tC.expectedBuckets)
 
 			for _, bucket := range s3Ctx.Buckets {
 				if tC.hasPublicAccess {
@@ -149,6 +149,15 @@ func Test_Adapt(t *testing.T) {
 			 resource "aws_s3_bucket_acl" "example" {
 				bucket = aws_s3_bucket.example.id
 				acl    = "private"
+				access_control_policy {
+					grant {
+						grantee {
+							type = "Group"
+							uri  = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+						}
+						permission = "READ_ACP"
+					}
+				}
 			  }
 
 			  resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
@@ -250,6 +259,51 @@ func Test_Adapt(t *testing.T) {
 							TargetBucket: iacTypes.String("aws_s3_bucket.example", iacTypes.NewTestMetadata()),
 						},
 						ACL: iacTypes.String("private", iacTypes.NewTestMetadata()),
+						Grants: []s3.Grant{
+							{
+								Metadata: iacTypes.NewTestMetadata(),
+								Grantee: s3.Grantee{
+									Type: iacTypes.StringTest("Group"),
+									URI:  iacTypes.StringTest("http://acs.amazonaws.com/groups/s3/LogDelivery"),
+								},
+								Permissions: iacTypes.StringValueList{
+									iacTypes.StringTest("READ_ACP"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "bucket with grants",
+			terraform: `
+resource "aws_s3_bucket" "this" {
+  bucket = "test"
+
+  grant {
+	type = "Group"
+	uri  = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+	permissions = ["FULL_CONTROL"]
+  }
+}
+`,
+			expected: s3.S3{
+				Buckets: []s3.Bucket{
+					{
+						Name: iacTypes.StringTest("test"),
+						ACL:  iacTypes.StringTest("private"),
+						Grants: []s3.Grant{
+							{
+								Grantee: s3.Grantee{
+									Type: iacTypes.StringTest("Group"),
+									URI:  iacTypes.StringTest("http://acs.amazonaws.com/groups/s3/LogDelivery"),
+								},
+								Permissions: iacTypes.StringValueList{
+									iacTypes.StringTest("FULL_CONTROL"),
+								},
+							},
+						},
 					},
 				},
 			},

@@ -6,17 +6,16 @@ import (
 	"testing"
 	"time"
 
-	google_protobuf "github.com/golang/protobuf/ptypes/empty"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -116,7 +115,7 @@ func TestScanServer_Scan(t *testing.T) {
 								Severity:         common.Severity_MEDIUM,
 								SeveritySource:   "nvd",
 								Layer:            &common.Layer{},
-								Cvss:             map[string]*common.CVSS{},
+								Cvss:             make(map[string]*common.CVSS),
 								VendorSeverity: map[string]common.Severity{
 									string(vulnerability.NVD): common.Severity_MEDIUM,
 								},
@@ -124,10 +123,10 @@ func TestScanServer_Scan(t *testing.T) {
 								Title:       "dos",
 								Description: "dos vulnerability",
 								References:  []string{"http://example.com"},
-								LastModifiedDate: &timestamp.Timestamp{
+								LastModifiedDate: &timestamppb.Timestamp{
 									Seconds: 1577840460,
 								},
-								PublishedDate: &timestamp.Timestamp{
+								PublishedDate: &timestamppb.Timestamp{
 									Seconds: 978310860,
 								},
 								DataSource: &common.DataSource{
@@ -175,11 +174,11 @@ func TestScanServer_Scan(t *testing.T) {
 			s := NewScanServer(mockDriver)
 			got, err := s.Scan(context.Background(), tt.args.in)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}
-			assert.NoError(t, err, tt.name)
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -193,7 +192,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 		name     string
 		args     args
 		putImage cache.ArtifactCachePutArtifactExpectation
-		want     *google_protobuf.Empty
+		want     *emptypb.Empty
 		wantErr  string
 	}{
 		{
@@ -204,7 +203,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					ArtifactInfo: &rpcCache.ArtifactInfo{
 						SchemaVersion: 1,
 						Architecture:  "amd64",
-						Created: func() *timestamp.Timestamp {
+						Created: func() *timestamppb.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
 							t := timestamppb.New(d)
 							return t
@@ -226,7 +225,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			want: &google_protobuf.Empty{},
+			want: &emptypb.Empty{},
 		},
 		{
 			name: "sad path",
@@ -235,7 +234,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					ArtifactInfo: &rpcCache.ArtifactInfo{
 						SchemaVersion: 1,
-						Created: func() *timestamp.Timestamp {
+						Created: func() *timestamppb.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
 							t := timestamppb.New(d)
 							return t
@@ -274,11 +273,11 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 			got, err := s.PutArtifact(context.Background(), tt.args.in)
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			assert.Equal(t, tt.want, got)
@@ -294,7 +293,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 		name     string
 		args     args
 		putLayer cache.ArtifactCachePutBlobExpectation
-		want     *google_protobuf.Empty
+		want     *emptypb.Empty
 		wantErr  string
 	}{
 		{
@@ -363,7 +362,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "php-app/composer.lock",
-								Libraries: []*common.Package{
+								Packages: []*common.Package{
 									{
 										Name:    "guzzlehttp/guzzle",
 										Version: "6.2.0",
@@ -444,7 +443,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "php-app/composer.lock",
-								Libraries: ftypes.Packages{
+								Packages: ftypes.Packages{
 									{
 										Name:    "guzzlehttp/guzzle",
 										Version: "6.2.0",
@@ -461,7 +460,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					},
 				},
 			},
-			want: &google_protobuf.Empty{},
+			want: &emptypb.Empty{},
 		},
 		{
 			name: "sad path",
@@ -509,11 +508,11 @@ func TestCacheServer_PutBlob(t *testing.T) {
 			got, err := s.PutBlob(context.Background(), tt.args.in)
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			assert.Equal(t, tt.want, got)
@@ -574,11 +573,11 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 			s := NewCacheServer(mockCache)
 			got, err := s.MissingBlobs(tt.args.ctx, tt.args.in)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
+				require.Error(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			} else {
-				assert.NoError(t, err, tt.name)
+				require.NoError(t, err, tt.name)
 			}
 
 			assert.Equal(t, tt.want, got)

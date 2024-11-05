@@ -5,10 +5,10 @@ import (
 	"io"
 	"regexp"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -17,15 +17,15 @@ var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
 type packageJSON struct {
 	Name                 string            `json:"name"`
 	Version              string            `json:"version"`
-	License              interface{}       `json:"license"`
+	License              any               `json:"license"`
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
-	Workspaces           []string          `json:"workspaces"`
+	Workspaces           any               `json:"workspaces"`
 }
 
 type Package struct {
-	types.Library
+	ftypes.Package
 	Dependencies         map[string]string
 	OptionalDependencies map[string]string
 	DevDependencies      map[string]string
@@ -56,30 +56,57 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}
 
 	return Package{
-		Library: types.Library{
-			ID:      id,
-			Name:    pkgJSON.Name,
-			Version: pkgJSON.Version,
-			License: parseLicense(pkgJSON.License),
+		Package: ftypes.Package{
+			ID:       id,
+			Name:     pkgJSON.Name,
+			Version:  pkgJSON.Version,
+			Licenses: parseLicense(pkgJSON.License),
 		},
 		Dependencies:         pkgJSON.Dependencies,
 		OptionalDependencies: pkgJSON.OptionalDependencies,
 		DevDependencies:      pkgJSON.DevDependencies,
-		Workspaces:           pkgJSON.Workspaces,
+		Workspaces:           parseWorkspaces(pkgJSON.Workspaces),
 	}, nil
 }
 
-func parseLicense(val interface{}) string {
+func parseLicense(val any) []string {
 	// the license isn't always a string, check for legacy struct if not string
 	switch v := val.(type) {
 	case string:
-		return v
-	case map[string]interface{}:
+		if v != "" {
+			return []string{v}
+		}
+	case map[string]any:
 		if license, ok := v["type"]; ok {
-			return license.(string)
+			if s, ok := license.(string); ok && s != "" {
+				return []string{s}
+			}
 		}
 	}
-	return ""
+	return nil
+}
+
+// parseWorkspaces returns slice of workspaces
+func parseWorkspaces(val any) []string {
+	// Workspaces support 2 types - https://github.com/SchemaStore/schemastore/blob/d9516961f8a5b0e65a457808070147b5a866f60b/src/schemas/json/package.json#L777
+	switch ws := val.(type) {
+	// Workspace as object (map[string][]string)
+	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
+	case map[string]any:
+		// Take only workspaces for `packages` - https://classic.yarnpkg.com/blog/2018/02/15/nohoist/
+		if pkgsWorkspaces, ok := ws["packages"]; ok {
+			return lo.Map(pkgsWorkspaces.([]any), func(workspace any, _ int) string {
+				return workspace.(string)
+			})
+		}
+	// Workspace as string array
+	// e.g.   "workspaces": ["packages/*", "backend"],
+	case []any:
+		return lo.Map(ws, func(workspace any, _ int) string {
+			return workspace.(string)
+		})
+	}
+	return nil
 }
 
 func IsValidName(name string) bool {

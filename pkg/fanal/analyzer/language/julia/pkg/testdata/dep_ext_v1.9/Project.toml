@@ -1,0 +1,9 @@
+name = "packageName"
+uuid = "1c653b0a-0b5a-4cff-b25a-92f0db012773"
+version = "0.1.0"
+
+[deps]
+AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
+
+[compat]
+AbstractFFTs = "1.3"

@@ -3,14 +3,13 @@ package cloudfront
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptDistribution(t *testing.T) {
@@ -84,7 +83,7 @@ func Test_adaptDistribution(t *testing.T) {
 				},
 				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
 					Metadata:             iacTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: iacTypes.String("allow-all", iacTypes.NewTestMetadata()),
+					ViewerProtocolPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 
 				ViewerCertificate: cloudfront.ViewerCertificate{

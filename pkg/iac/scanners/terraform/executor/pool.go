@@ -17,24 +17,22 @@ import (
 )
 
 type Pool struct {
-	size         int
-	modules      terraform.Modules
-	state        *state.State
-	rules        []types.RegisteredRule
-	ignoreErrors bool
-	rs           *rego.Scanner
-	regoOnly     bool
+	size     int
+	modules  terraform.Modules
+	state    *state.State
+	rules    []types.RegisteredRule
+	rs       *rego.Scanner
+	regoOnly bool
 }
 
-func NewPool(size int, rules []types.RegisteredRule, modules terraform.Modules, st *state.State, ignoreErrors bool, regoScanner *rego.Scanner, regoOnly bool) *Pool {
+func NewPool(size int, rules []types.RegisteredRule, modules terraform.Modules, st *state.State, regoScanner *rego.Scanner, regoOnly bool) *Pool {
 	return &Pool{
-		size:         size,
-		rules:        rules,
-		state:        st,
-		modules:      modules,
-		ignoreErrors: ignoreErrors,
-		rs:           regoScanner,
-		regoOnly:     regoOnly,
+		size:     size,
+		rules:    rules,
+		state:    st,
+		modules:  modules,
+		rs:       regoScanner,
+		regoOnly: regoOnly,
 	}
 }
 
@@ -69,17 +67,15 @@ func (p *Pool) Run() (scan.Results, error) {
 				for _, module := range p.modules {
 					mod := *module
 					outgoing <- &hclModuleRuleJob{
-						module:       &mod,
-						rule:         r,
-						ignoreErrors: p.ignoreErrors,
+						module: &mod,
+						rule:   r,
 					}
 				}
 			} else {
 				// run defsec rule
 				outgoing <- &infraRuleJob{
-					state:        p.state,
-					rule:         r,
-					ignoreErrors: p.ignoreErrors,
+					state: p.state,
+					rule:  r,
 				}
 			}
 		}
@@ -105,14 +101,11 @@ type Job interface {
 type infraRuleJob struct {
 	state *state.State
 	rule  types.RegisteredRule
-
-	ignoreErrors bool
 }
 
 type hclModuleRuleJob struct {
-	module       *terraform.Module
-	rule         types.RegisteredRule
-	ignoreErrors bool
+	module *terraform.Module
+	rule   types.RegisteredRule
 }
 
 type regoJob struct {
@@ -122,24 +115,21 @@ type regoJob struct {
 }
 
 func (h *infraRuleJob) Run() (_ scan.Results, err error) {
-	if h.ignoreErrors {
-		defer func() {
-			if panicErr := recover(); panicErr != nil {
-				err = fmt.Errorf("%s\n%s", panicErr, string(runtimeDebug.Stack()))
-			}
-		}()
-	}
+	defer func() {
+		if panicErr := recover(); panicErr != nil {
+			err = fmt.Errorf("%s\n%s", panicErr, string(runtimeDebug.Stack()))
+		}
+	}()
+
 	return h.rule.Evaluate(h.state), err
 }
 
 func (h *hclModuleRuleJob) Run() (results scan.Results, err error) {
-	if h.ignoreErrors {
-		defer func() {
-			if panicErr := recover(); panicErr != nil {
-				err = fmt.Errorf("%s\n%s", panicErr, string(runtimeDebug.Stack()))
-			}
-		}()
-	}
+	defer func() {
+		if panicErr := recover(); panicErr != nil {
+			err = fmt.Errorf("%s\n%s", panicErr, string(runtimeDebug.Stack()))
+		}
+	}()
 	customCheck := h.rule.GetRule().CustomChecks.Terraform
 	for _, block := range h.module.GetBlocks() {
 		if !isCustomCheckRequiredForBlock(customCheck, block) {
@@ -260,7 +250,7 @@ type Worker struct {
 	incoming <-chan Job
 	mu       sync.Mutex
 	results  scan.Results
-	panic    interface{}
+	panic    any
 }
 
 func NewWorker(incoming <-chan Job) *Worker {

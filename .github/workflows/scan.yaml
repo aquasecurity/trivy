@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
 
       - name: Run Trivy vulnerability scanner and create GitHub issues
-        uses: knqyf263/trivy-issue-action@v0.0.5
+        uses: knqyf263/trivy-issue-action@v0.0.6
         with:
           assignee: knqyf263
           severity: CRITICAL

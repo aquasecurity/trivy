@@ -10,13 +10,11 @@ import (
 	"sort"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/dart/pub"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -35,12 +33,14 @@ const (
 
 // pubSpecLockAnalyzer analyzes `pubspec.lock`
 type pubSpecLockAnalyzer struct {
-	parser godeptypes.Parser
+	logger *log.Logger
+	parser language.Parser
 }
 
-func newPubSpecLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newPubSpecLockAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return pubSpecLockAnalyzer{
-		parser: pub.NewParser(),
+		logger: log.WithPrefix("pub"),
+		parser: pub.NewParser(opts.DetectionPriority == types.PriorityComprehensive),
 	}, nil
 }
 
@@ -49,9 +49,9 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 
 	// get all DependsOn from cache dir
 	// lib ID -> DependsOn names
-	allDependsOn, err := findDependsOn()
+	allDependsOn, err := a.findDependsOn()
 	if err != nil {
-		log.Logger.Warnf("Unable to parse cache dir: %s", err)
+		a.logger.Warn("Unable to parse cache dir", log.Err(err))
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
@@ -70,22 +70,22 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 
 		if allDependsOn != nil {
 			// Required to search for library versions for DependsOn.
-			libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, string) {
+			pkgs := lo.SliceToMap(app.Packages, func(lib types.Package) (string, string) {
 				return lib.Name, lib.ID
 			})
 
-			for i, lib := range app.Libraries {
+			for i, lib := range app.Packages {
 				var dependsOn []string
 				for _, depName := range allDependsOn[lib.ID] {
-					if depID, ok := libs[depName]; ok {
+					if depID, ok := pkgs[depName]; ok {
 						dependsOn = append(dependsOn, depID)
 					}
 				}
-				app.Libraries[i].DependsOn = dependsOn
+				app.Packages[i].DependsOn = dependsOn
 			}
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})
@@ -98,10 +98,11 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 	}, nil
 }
 
-func findDependsOn() (map[string][]string, error) {
+func (a pubSpecLockAnalyzer) findDependsOn() (map[string][]string, error) {
 	dir := cacheDir()
 	if !fsutils.DirExists(dir) {
-		log.Logger.Debugf("Cache dir (%s) not found. Need 'dart pub get' to fill dependency relationships", dir)
+		a.logger.Debug("Cache dir not found. Need 'dart pub get' to fill dependency relationships",
+			log.String("dir", dir))
 		return nil, nil
 	}
 
@@ -113,7 +114,7 @@ func findDependsOn() (map[string][]string, error) {
 	if err := fsutils.WalkDir(os.DirFS(dir), ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		id, dependsOn, err := parsePubSpecYaml(r)
 		if err != nil {
-			log.Logger.Debugf("Unable to parse %q: %s", path, err)
+			a.logger.Debug("Unable to parse pubspec.yaml", log.FilePath(path), log.Err(err))
 			return nil
 		}
 		if id != "" {
@@ -143,9 +144,9 @@ func cacheDir() string {
 }
 
 type pubSpecYaml struct {
-	Name         string                 `yaml:"name"`
-	Version      string                 `yaml:"version,omitempty"`
-	Dependencies map[string]interface{} `yaml:"dependencies,omitempty"`
+	Name         string         `yaml:"name"`
+	Version      string         `yaml:"version,omitempty"`
+	Dependencies map[string]any `yaml:"dependencies,omitempty"`
 }
 
 func parsePubSpecYaml(r io.Reader) (string, []string, error) {
@@ -164,7 +165,7 @@ func parsePubSpecYaml(r io.Reader) (string, []string, error) {
 
 	// pubspec.yaml uses version ranges
 	// save only dependencies names
-	dependsOn := maps.Keys(spec.Dependencies)
+	dependsOn := lo.Keys(spec.Dependencies)
 
 	return dependency.ID(types.Pub, spec.Name, spec.Version), dependsOn, nil
 }

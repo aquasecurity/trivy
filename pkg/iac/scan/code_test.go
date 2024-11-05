@@ -1,33 +1,29 @@
 package scan
 
 import (
-	"os"
 	"strings"
 	"testing"
-
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
-
 	"github.com/stretchr/testify/require"
 
-	"github.com/liamg/memoryfs"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func TestResult_GetCode(t *testing.T) {
-
+	const line = "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind."
 	tests := []struct {
-		name       string
-		source     string
-		filename   string
-		start      int
-		end        int
-		outerStart int
-		outerEnd   int
-		expected   []Line
-		options    []CodeOption
-		wantErr    bool
-		annotation string
+		name           string
+		source         string
+		filename       string
+		startInnerLine int
+		endInnerLine   int
+		startOuterLine int
+		endOuterLine   int
+		expected       []Line
+		options        []CodeOption
+		wantErr        bool
 	}{
 		{
 			name: "basic w/ defaults",
@@ -35,9 +31,9 @@ func TestResult_GetCode(t *testing.T) {
 2
 3
 4`,
-			filename: "test.txt",
-			start:    2,
-			end:      3,
+			filename:       "test.txt",
+			startInnerLine: 2,
+			endInnerLine:   3,
 			expected: []Line{
 				{
 					Number:      2,
@@ -62,12 +58,12 @@ func TestResult_GetCode(t *testing.T) {
 			source: `resource "aws_s3_bucket" "something" {
 	bucket = "something"
 }`,
-			filename:   "main.tf",
-			start:      2,
-			end:        2,
-			outerStart: 1,
-			outerEnd:   3,
-			options:    []CodeOption{OptionCodeWithHighlighted(false)},
+			filename:       "main.tf",
+			startInnerLine: 2,
+			endInnerLine:   2,
+			startOuterLine: 1,
+			endOuterLine:   3,
+			options:        []CodeOption{OptionCodeWithHighlighted(false)},
 			expected: []Line{
 				{
 					Number:  1,
@@ -92,10 +88,10 @@ func TestResult_GetCode(t *testing.T) {
 2
 3
 4`,
-			filename: "",
-			start:    2,
-			end:      3,
-			wantErr:  true,
+			filename:       "",
+			startInnerLine: 2,
+			endInnerLine:   3,
+			wantErr:        true,
 		},
 		{
 			name: "no line numbers",
@@ -103,10 +99,10 @@ func TestResult_GetCode(t *testing.T) {
 2
 3
 4`,
-			filename: "test.txt",
-			start:    0,
-			end:      0,
-			wantErr:  true,
+			filename:       "test.txt",
+			startInnerLine: 0,
+			endInnerLine:   0,
+			wantErr:        true,
 		},
 		{
 			name: "negative line numbers",
@@ -114,10 +110,10 @@ func TestResult_GetCode(t *testing.T) {
 2
 3
 4`,
-			filename: "test.txt",
-			start:    -2,
-			end:      -1,
-			wantErr:  true,
+			filename:       "test.txt",
+			startInnerLine: -2,
+			endInnerLine:   -1,
+			wantErr:        true,
 		},
 		{
 			name: "invalid line numbers",
@@ -125,17 +121,17 @@ func TestResult_GetCode(t *testing.T) {
 2
 3
 4`,
-			filename: "test.txt",
-			start:    5,
-			end:      6,
-			wantErr:  true,
+			filename:       "test.txt",
+			startInnerLine: 5,
+			endInnerLine:   6,
+			wantErr:        true,
 		},
 		{
-			name:     "syntax highlighting",
-			source:   `FROM ubuntu`,
-			filename: "Dockerfile",
-			start:    1,
-			end:      1,
+			name:           "syntax highlighting",
+			source:         `FROM ubuntu`,
+			filename:       "Dockerfile",
+			startInnerLine: 1,
+			endInnerLine:   1,
 			expected: []Line{
 				{
 					Number:      1,
@@ -148,81 +144,81 @@ func TestResult_GetCode(t *testing.T) {
 			},
 		},
 		{
-			name:     "truncation",
-			source:   strings.Repeat("If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.\n", 100),
-			filename: "longfile.txt",
-			start:    1,
-			end:      100,
+			name:           "truncation",
+			source:         strings.Repeat(line+"\n", 100),
+			filename:       "longfile.txt",
+			startInnerLine: 1,
+			endInnerLine:   100,
 			expected: []Line{
 				{
 					Number:      1,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  true,
 					LastCause:   false,
 				},
 				{
 					Number:      2,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   false,
 				},
 				{
 					Number:      3,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   false,
 				},
 				{
 					Number:      4,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   false,
 				},
 				{
 					Number:      5,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   false,
 				},
 				{
 					Number:      6,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   false,
 				},
 				{
 					Number:      7,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   false,
 				},
 				{
 					Number:      8,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   false,
 				},
 				{
 					Number:      9,
-					Content:     "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Content:     line,
 					IsCause:     true,
-					Highlighted: "If you can do a half-assed job of anything, you're a one-eyed man in a kingdom of the blind.",
+					Highlighted: line,
 					FirstCause:  false,
 					LastCause:   true,
 				},
@@ -232,26 +228,97 @@ func TestResult_GetCode(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "invalid inner range",
+			source:         `Test`,
+			filename:       "test.txt",
+			startInnerLine: 0,
+			endInnerLine:   0,
+			wantErr:        true,
+		},
+		{
+			name:           "invalid outer range",
+			source:         `Test`,
+			filename:       "test.txt",
+			startInnerLine: 10,
+			endInnerLine:   12,
+			startOuterLine: 5,
+			endOuterLine:   3,
+			wantErr:        true,
+		},
+		{
+			name:           "truncate with outer range",
+			source:         strings.Repeat(line+"\n", 100),
+			filename:       "longfile.txt",
+			startOuterLine: 1,
+			endOuterLine:   100,
+			startInnerLine: 10,
+			endInnerLine:   12,
+			options:        []CodeOption{OptionCodeWithTruncation(true)},
+			expected: []Line{
+				{
+					Number:      1,
+					Content:     line,
+					Highlighted: line,
+				},
+				{
+					Number:    2,
+					Truncated: true,
+				},
+				{
+					Number:      10,
+					Content:     line,
+					IsCause:     true,
+					FirstCause:  true,
+					Highlighted: line,
+				},
+				{
+					Number:      11,
+					Content:     line,
+					IsCause:     true,
+					Highlighted: line,
+				},
+				{
+					Number:      12,
+					Content:     line,
+					IsCause:     true,
+					LastCause:   true,
+					Highlighted: line,
+				},
+				{
+					Number:    99,
+					Truncated: true,
+				},
+				{
+					Number:      100,
+					Content:     line,
+					Highlighted: line,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			system := memoryfs.New()
-			require.NoError(t, system.WriteFile(test.filename, []byte(test.source), os.ModePerm))
+			fsys := fstest.MapFS{
+				test.filename: &fstest.MapFile{
+					Data: []byte(test.source),
+				},
+			}
+
 			meta := iacTypes.NewMetadata(
-				iacTypes.NewRange(test.filename, test.start, test.end, "", system),
+				iacTypes.NewRange(test.filename, test.startInnerLine, test.endInnerLine, "", fsys),
 				"",
 			)
-			if test.outerStart > 0 {
+			if test.startOuterLine > 0 {
 				meta = meta.WithParent(iacTypes.NewMetadata(
-					iacTypes.NewRange(test.filename, test.outerStart, test.outerEnd, "", system),
+					iacTypes.NewRange(test.filename, test.startOuterLine, test.endOuterLine, "", fsys),
 					"",
 				))
 			}
 			result := &Result{
-				annotation: test.annotation,
-				metadata:   meta,
-				fsPath:     test.filename,
+				metadata: meta,
+				fsPath:   test.filename,
 			}
 			code, err := result.GetCode(test.options...)
 			if test.wantErr {
@@ -263,4 +330,73 @@ func TestResult_GetCode(t *testing.T) {
 		})
 	}
 
+}
+
+func TestCode_IsCauseMultiline(t *testing.T) {
+
+	tests := []struct {
+		name     string
+		code     Code
+		expected bool
+	}{
+		{
+			name: "no cause",
+			code: Code{
+				Lines: []Line{
+					{
+						Number:      1,
+						Content:     "Test",
+						Highlighted: "Test",
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "one cause",
+			code: Code{
+				Lines: []Line{
+					{
+						Number:      1,
+						Content:     "Test",
+						IsCause:     true,
+						Highlighted: "Test",
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "multiple causes",
+			code: Code{
+				Lines: []Line{
+					{
+						Number:      1,
+						Content:     "Test",
+						IsCause:     true,
+						Highlighted: "Test",
+					},
+					{
+						Number:      2,
+						Content:     "Test",
+						IsCause:     true,
+						Highlighted: "Test",
+					},
+					{
+						Number:      3,
+						Content:     "Test",
+						IsCause:     true,
+						Highlighted: "Test",
+					},
+				},
+			},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.code.IsCauseMultiline())
+		})
+	}
 }

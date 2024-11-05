@@ -50,14 +50,19 @@ func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, tr
 }
 
 func (r *misconfigRenderer) Render() string {
+	// Trivy doesn't currently support showing suppressed misconfigs
+	// So just skip this result
+	if len(r.result.Misconfigurations) == 0 {
+		return ""
+	}
 	target := fmt.Sprintf("%s (%s)", r.result.Target, r.result.Type)
 	RenderTarget(r.w, target, r.ansi)
 
 	total, summaries := summarize(r.severities, r.countSeverities())
 
 	summary := r.result.MisconfSummary
-	r.printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
-		summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
+	r.printf("Tests: %d (SUCCESSES: %d, FAILURES: %d)\n",
+		summary.Successes+summary.Failures, summary.Successes, summary.Failures)
 	r.printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	for _, m := range r.result.Misconfigurations {
@@ -81,7 +86,7 @@ func (r *misconfigRenderer) countSeverities() map[string]int {
 	return severityCount
 }
 
-func (r *misconfigRenderer) printf(format string, args ...interface{}) {
+func (r *misconfigRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }
@@ -119,18 +124,18 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 		}
 	}
 
-	// severity
+	// ID & severity
 	switch misconf.Severity {
 	case severityCritical:
-		r.printf("<red><bold>%s: ", misconf.Severity)
+		r.printf("%s <red><bold>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityHigh:
-		r.printf("<red>%s: ", misconf.Severity)
+		r.printf("%s <red>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityMedium:
-		r.printf("<yellow>%s: ", misconf.Severity)
+		r.printf("%s <yellow>(%s): ", misconf.AVDID, misconf.Severity)
 	case severityLow:
-		r.printf("%s: ", misconf.Severity)
+		r.printf("%s (%s): ", misconf.AVDID, misconf.Severity)
 	default:
-		r.printf("<blue>%s: ", misconf.Severity)
+		r.printf("%s <blue>(%s): ", misconf.AVDID, misconf.Severity)
 	}
 
 	// heading

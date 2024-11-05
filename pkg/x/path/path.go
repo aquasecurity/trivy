@@ -1,9 +1,8 @@
 package path
 
 import (
+	"slices"
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 // Contains reports whether the path contains the subpath.

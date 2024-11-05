@@ -21,9 +21,8 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 125,
-        "Failures": 14,
-        "Exceptions": 0
+        "Successes": 79,
+        "Failures": 14
       },
       "Misconfigurations": [
         {
@@ -890,10 +889,11 @@
           "Namespace": "builtin.kubernetes.KSV117",
           "Query": "data.builtin.kubernetes.KSV117.deny",
           "Resolution": "Do not map the container ports to privileged host ports when starting a container.",
-          "Severity": "HIGH",
+          "Severity": "MEDIUM",
           "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv117",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+            "https://www.stigviewer.com/stig/kubernetes/2022-12-02/finding/V-242414",
             "https://avd.aquasec.com/misconfig/ksv117"
           ],
           "Status": "FAIL",

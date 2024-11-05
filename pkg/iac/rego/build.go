@@ -1,6 +1,7 @@
 package rego
 
 import (
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -12,32 +13,47 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS) (*ast.SchemaSet, bool, error) {
+func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS, customSchemas map[string][]byte) (*ast.SchemaSet, bool, error) {
 	schemaSet := ast.NewSchemaSet()
-	schemaSet.Put(ast.MustParseRef("schema.input"), make(map[string]interface{})) // for backwards compat only
+	schemaSet.Put(ast.MustParseRef("schema.input"), make(map[string]any)) // for backwards compat only
 	var customFound bool
+
 	for _, policy := range policies {
 		for _, annotation := range policy.Annotations {
 			for _, ss := range annotation.Schemas {
 				schemaName, err := ss.Schema.Ptr()
-				if err != nil {
+				if err != nil || schemaName == "input" {
 					continue
 				}
-				if schemaName != "input" {
-					if schema, ok := schemas.SchemaMap[types.Source(schemaName)]; ok {
-						customFound = true
-						schemaSet.Put(ast.MustParseRef(ss.Schema.String()), util.MustUnmarshalJSON([]byte(schema)))
-					} else {
-						b, err := findSchemaInFS(paths, fsys, schemaName)
-						if err != nil {
-							return schemaSet, true, err
-						}
-						if b != nil {
-							customFound = true
-							schemaSet.Put(ast.MustParseRef(ss.Schema.String()), util.MustUnmarshalJSON(b))
-						}
-					}
+
+				if schemaSet.Get(ss.Schema) != nil {
+					continue
 				}
+
+				var schema []byte
+				if s, ok := schemas.SchemaMap[types.Source(schemaName)]; ok {
+					schema = []byte(s)
+				} else if s, ok := customSchemas[schemaName]; ok {
+					schema = s
+				} else {
+					b, err := findSchemaInFS(paths, fsys, schemaName)
+					if err != nil {
+						return schemaSet, true, err
+					}
+
+					if b == nil {
+						return nil, false, fmt.Errorf("could not find schema %q", schemaName)
+					}
+
+					schema = b
+				}
+
+				var rawSchema any
+				if err := util.UnmarshalJSON(schema, &rawSchema); err != nil {
+					return schemaSet, false, fmt.Errorf("could not parse schema %q: %w", schemaName, err)
+				}
+				customFound = true
+				schemaSet.Put(ss.Schema, rawSchema)
 			}
 		}
 	}

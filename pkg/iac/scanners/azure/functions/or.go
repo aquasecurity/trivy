@@ -1,6 +1,6 @@
 package functions
 
-func Or(args ...interface{}) interface{} {
+func Or(args ...any) any {
 
 	if len(args) <= 1 {
 		return false

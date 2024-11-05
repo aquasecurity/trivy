@@ -49,19 +49,26 @@ var NonsensitiveFunc = function.New(&function.Spec{
 		return args[0].Type(), nil
 	},
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
-		if args[0].IsKnown() && !args[0].HasMark(MarkedSensitive) {
-			return cty.DynamicVal, function.NewArgErrorf(0, "the given value is not sensitive, so this call is redundant")
-		}
-		v, m := args[0].Unmark()
-		delete(m, MarkedSensitive) // remove the sensitive marking
-		return v.WithMarks(m), nil
+		v, marks := args[0].Unmark()
+		delete(marks, MarkedSensitive) // remove the sensitive marking
+		return v.WithMarks(marks), nil
 	},
 })
 
-func Sensitive(v cty.Value) (cty.Value, error) {
-	return SensitiveFunc.Call([]cty.Value{v})
-}
-
-func Nonsensitive(v cty.Value) (cty.Value, error) {
-	return NonsensitiveFunc.Call([]cty.Value{v})
-}
+var IssensitiveFunc = function.New(&function.Spec{
+	Params: []function.Parameter{{
+		Name:             "value",
+		Type:             cty.DynamicPseudoType,
+		AllowUnknown:     true,
+		AllowNull:        true,
+		AllowMarked:      true,
+		AllowDynamicType: true,
+	}},
+	Type: func(args []cty.Value) (cty.Type, error) {
+		return cty.Bool, nil
+	},
+	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
+		s := args[0].HasMark(MarkedSensitive)
+		return cty.BoolVal(s), nil
+	},
+})

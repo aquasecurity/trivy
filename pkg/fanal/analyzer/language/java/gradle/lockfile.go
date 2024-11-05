@@ -13,7 +13,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/gradle/lockfile"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -32,19 +31,21 @@ const (
 
 // gradleLockAnalyzer analyzes '*gradle.lockfile'
 type gradleLockAnalyzer struct {
-	parser godeptypes.Parser
+	logger *log.Logger
+	parser language.Parser
 }
 
 func newGradleLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gradleLockAnalyzer{
+		logger: log.WithPrefix("gradle"),
 		parser: lockfile.NewParser(),
 	}, nil
 }
 
 func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	poms, err := parsePoms()
+	poms, err := a.parsePoms()
 	if err != nil {
-		log.Logger.Warnf("Unable to get licenses and dependsOn: %s", err)
+		a.logger.Warn("Unable to get licenses and dependencies", log.Err(err))
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
@@ -63,16 +64,16 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			return nil
 		}
 
-		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, struct{}) {
+		pkgs := lo.SliceToMap(app.Packages, func(lib types.Package) (string, struct{}) {
 			return lib.ID, struct{}{}
 		})
 
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			pom := poms[lib.ID]
 
 			// Fill licenses from pom file
 			if len(pom.Licenses.License) > 0 {
-				app.Libraries[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
+				app.Packages[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
 					return license.Name
 				})
 			}
@@ -81,15 +82,15 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			var deps []string
 			for _, dep := range pom.Dependencies.Dependency {
 				id := packageID(dep.GroupID, dep.ArtifactID, dep.Version)
-				if _, ok := libs[id]; ok {
+				if _, ok := pkgs[id]; ok {
 					deps = append(deps, id)
 				}
 			}
 			sort.Strings(deps)
-			app.Libraries[i].DependsOn = deps
+			app.Packages[i].DependsOn = deps
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})

@@ -3,29 +3,29 @@ package lockfile
 import (
 	"os"
 	"sort"
-	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
+		want      []ftypes.Package
 	}{
 		{
 			name:      "happy path",
 			inputFile: "testdata/happy.lockfile",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
-					ID:       "cglib:cglib-nodep:2.1.2",
-					Name:     "cglib:cglib-nodep",
-					Version:  "2.1.2",
-					Indirect: true,
-					Locations: []types.Location{
+					ID:      "cglib:cglib-nodep:2.1.2",
+					Name:    "cglib:cglib-nodep",
+					Version: "2.1.2",
+					Locations: []ftypes.Location{
 						{
 							StartLine: 4,
 							EndLine:   4,
@@ -33,11 +33,10 @@ func TestParser_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:       "org.springframework:spring-asm:3.1.3.RELEASE",
-					Name:     "org.springframework:spring-asm",
-					Version:  "3.1.3.RELEASE",
-					Indirect: true,
-					Locations: []types.Location{
+					ID:      "org.springframework:spring-asm:3.1.3.RELEASE",
+					Name:    "org.springframework:spring-asm",
+					Version: "3.1.3.RELEASE",
+					Locations: []ftypes.Location{
 						{
 							StartLine: 5,
 							EndLine:   5,
@@ -45,11 +44,10 @@ func TestParser_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:       "org.springframework:spring-beans:5.0.5.RELEASE",
-					Name:     "org.springframework:spring-beans",
-					Version:  "5.0.5.RELEASE",
-					Indirect: true,
-					Locations: []types.Location{
+					ID:      "org.springframework:spring-beans:5.0.5.RELEASE",
+					Name:    "org.springframework:spring-beans",
+					Version: "5.0.5.RELEASE",
+					Locations: []ftypes.Location{
 						{
 							StartLine: 6,
 							EndLine:   6,
@@ -69,21 +67,11 @@ func TestParser_Parse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewParser()
 			f, err := os.Open(tt.inputFile)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
-			libs, _, _ := parser.Parse(f)
-			sortLibs(libs)
-			assert.Equal(t, tt.want, libs)
+			pkgs, _, _ := parser.Parse(f)
+			sort.Sort(ftypes.Packages(pkgs))
+			assert.Equal(t, tt.want, pkgs)
 		})
 	}
-}
-
-func sortLibs(libs []types.Library) {
-	sort.Slice(libs, func(i, j int) bool {
-		ret := strings.Compare(libs[i].Name, libs[j].Name)
-		if ret == 0 {
-			return libs[i].Version < libs[j].Version
-		}
-		return ret < 0
-	})
 }

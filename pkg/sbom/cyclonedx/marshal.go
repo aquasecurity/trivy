@@ -3,6 +3,7 @@ package cyclonedx
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"slices"
 	"sort"
 	"strconv"
@@ -60,7 +61,7 @@ func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*cd
 // Marshal converts the Trivy component to the CycloneDX format
 func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*cdx.BOM, error) {
 	m.bom = bom
-	m.componentIDs = make(map[uuid.UUID]string, m.bom.NumComponents())
+	m.componentIDs = make(map[uuid.UUID]string, len(m.bom.Components()))
 
 	cdxBOM := cdx.NewBOM()
 	cdxBOM.SerialNumber = uuid.New().URN()
@@ -108,12 +109,12 @@ func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component,
 	}
 
 	cdxComponent := &cdx.Component{
-		BOMRef:     component.PkgID.BOMRef,
+		BOMRef:     component.PkgIdentifier.BOMRef,
 		Type:       componentType,
 		Name:       component.Name,
 		Group:      component.Group,
 		Version:    component.Version,
-		PackageURL: m.PackageURL(component.PkgID.PURL),
+		PackageURL: m.PackageURL(component.PkgIdentifier.PURL),
 		Supplier:   m.Supplier(component.Supplier),
 		Hashes:     m.Hashes(component.Files),
 		Licenses:   m.Licenses(component.Licenses),
@@ -268,7 +269,7 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", d.Algorithm())
+			log.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
 			continue
 		}
 
@@ -298,7 +299,7 @@ func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
 	cdxProps := make([]cdx.Property, 0, len(properties))
 	for _, property := range properties {
 		namespace := Namespace
-		if len(property.Namespace) > 0 {
+		if property.Namespace != "" {
 			namespace = property.Namespace
 		}
 
@@ -332,6 +333,10 @@ func (*Marshaler) affects(ref, version string) cdx.Affects {
 func (*Marshaler) advisories(refs []string) *[]cdx.Advisory {
 	refs = lo.Uniq(refs)
 	advs := lo.FilterMap(refs, func(ref string, _ int) (cdx.Advisory, bool) {
+		// There are cases when `ref` contains extra info
+		// But we need to use only URL.
+		// cf. https://github.com/aquasecurity/trivy/issues/6801
+		ref = trimNonUrlInfo(ref)
 		return cdx.Advisory{URL: ref}, ref != ""
 	})
 
@@ -343,6 +348,17 @@ func (*Marshaler) advisories(refs []string) *[]cdx.Advisory {
 	}
 
 	return &advs
+}
+
+// trimNonUrlInfo returns first valid URL.
+func trimNonUrlInfo(ref string) string {
+	ss := strings.Split(ref, " ")
+	for _, s := range ss {
+		if u, err := url.Parse(s); err == nil && u.Scheme != "" && u.Host != "" {
+			return s
+		}
+	}
+	return ""
 }
 
 func (m *Marshaler) marshalVulnerability(bomRef string, vuln core.Vulnerability) *cdx.Vulnerability {
@@ -390,7 +406,7 @@ func (*Marshaler) cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Logger.Debugf("cwe id parse error: %s", err)
+			log.Debug("CWE-ID parse error", log.Err(err))
 			continue
 		}
 		ret = append(ret, number)

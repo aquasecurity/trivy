@@ -3,11 +3,10 @@ package flag_test
 import (
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -15,41 +14,37 @@ import (
 
 func TestDBFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		SkipDBUpdate   bool
-		DownloadDBOnly bool
-		Light          bool
+		SkipDBUpdate     bool
+		DownloadDBOnly   bool
+		Light            bool
+		DBRepository     []string
+		JavaDBRepository []string
 	}
 	tests := []struct {
-		name      string
-		fields    fields
-		want      flag.DBOptions
-		wantLogs  []string
-		assertion require.ErrorAssertionFunc
+		name     string
+		fields   fields
+		want     flag.DBOptions
+		wantLogs []string
+		wantErr  string
 	}{
 		{
 			name: "happy",
 			fields: fields{
-				SkipDBUpdate:   true,
-				DownloadDBOnly: false,
+				SkipDBUpdate:     true,
+				DownloadDBOnly:   false,
+				DBRepository:     []string{"ghcr.io/aquasecurity/trivy-db"},
+				JavaDBRepository: []string{"ghcr.io/aquasecurity/trivy-java-db"},
 			},
 			want: flag.DBOptions{
-				SkipDBUpdate:   true,
-				DownloadDBOnly: false,
-			},
-			assertion: require.NoError,
-		},
-		{
-			name: "light",
-			fields: fields{
-				Light: true,
-			},
-			want: flag.DBOptions{
-				Light: true,
+				SkipDBUpdate:       true,
+				DownloadDBOnly:     false,
+				DBRepositories:     []name.Reference{name.Tag{}}, // All fields are unexported
+				JavaDBRepositories: []name.Reference{name.Tag{}}, // All fields are unexported
 			},
 			wantLogs: []string{
-				"'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649",
+				`Adding schema version to the DB repository for backward compatibility	repository="ghcr.io/aquasecurity/trivy-db:2"`,
+				`Adding schema version to the DB repository for backward compatibility	repository="ghcr.io/aquasecurity/trivy-java-db:1"`,
 			},
-			assertion: require.NoError,
 		},
 		{
 			name: "sad",
@@ -57,37 +52,61 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				SkipDBUpdate:   true,
 				DownloadDBOnly: true,
 			},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
-				require.ErrorContains(t, err, "--skip-db-update and --download-db-only options can not be specified both")
+			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
+		},
+		{
+			name: "invalid repo",
+			fields: fields{
+				SkipDBUpdate:   true,
+				DownloadDBOnly: false,
+				DBRepository:   []string{"foo:bar:baz"},
+			},
+			wantErr: "invalid DB repository",
+		},
+		{
+			name: "multiple repos",
+			fields: fields{
+				SkipDBUpdate:     true,
+				DownloadDBOnly:   false,
+				DBRepository:     []string{"ghcr.io/aquasecurity/trivy-db:2", "gallery.ecr.aws/aquasecurity/trivy-db:2"},
+				JavaDBRepository: []string{"ghcr.io/aquasecurity/trivy-java-db:1", "gallery.ecr.aws/aquasecurity/trivy-java-db:1"},
+			},
+			want: flag.DBOptions{
+				SkipDBUpdate:       true,
+				DownloadDBOnly:     false,
+				DBRepositories:     []name.Reference{name.Tag{}, name.Tag{}}, // All fields are unexported
+				JavaDBRepositories: []name.Reference{name.Tag{}, name.Tag{}}, // All fields are unexported
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			level := zap.WarnLevel
-			core, obs := observer.New(level)
-			log.Logger = zap.New(core).Sugar()
+			out := newLogger(log.LevelInfo)
 
 			viper.Set(flag.SkipDBUpdateFlag.ConfigName, tt.fields.SkipDBUpdate)
 			viper.Set(flag.DownloadDBOnlyFlag.ConfigName, tt.fields.DownloadDBOnly)
-			viper.Set(flag.LightFlag.ConfigName, tt.fields.Light)
+			viper.Set(flag.DBRepositoryFlag.ConfigName, tt.fields.DBRepository)
+			viper.Set(flag.JavaDBRepositoryFlag.ConfigName, tt.fields.JavaDBRepository)
 
 			// Assert options
 			f := &flag.DBFlagGroup{
-				DownloadDBOnly: flag.DownloadDBOnlyFlag.Clone(),
-				SkipDBUpdate:   flag.SkipDBUpdateFlag.Clone(),
-				Light:          flag.LightFlag.Clone(),
+				DownloadDBOnly:     flag.DownloadDBOnlyFlag.Clone(),
+				SkipDBUpdate:       flag.SkipDBUpdateFlag.Clone(),
+				DBRepositories:     flag.DBRepositoryFlag.Clone(),
+				JavaDBRepositories: flag.JavaDBRepositoryFlag.Clone(),
 			}
 			got, err := f.ToOptions()
-			tt.assertion(t, err)
-			assert.Equalf(t, tt.want, got, "ToOptions()")
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+
+			assert.EqualExportedValues(t, tt.want, got)
 
 			// Assert log messages
-			var gotMessages []string
-			for _, entry := range obs.AllUntimed() {
-				gotMessages = append(gotMessages, entry.Message)
-			}
-			assert.Equal(t, tt.wantLogs, gotMessages, tt.name)
+			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)
 		})
 	}
 }

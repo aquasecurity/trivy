@@ -52,6 +52,20 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "sbt package",
+			typ:  ftypes.Sbt,
+			pkg: ftypes.Package{
+				Name:    "org.typelevel:cats-core_2.12",
+				Version: "2.9.0",
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.typelevel",
+				Name:      "cats-core_2.12",
+				Version:   "2.9.0",
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
@@ -132,6 +146,19 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "conda environment.yaml",
+			typ:  ftypes.CondaEnv,
+			pkg: ftypes.Package{
+				Name:    "blas",
+				Version: "1.0",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeConda,
+				Name:    "blas",
+				Version: "1.0",
+			},
+		},
+		{
 			name: "composer package",
 			typ:  ftypes.Composer,
 			pkg: ftypes.Package{
@@ -164,7 +191,7 @@ func TestNewPackageURL(t *testing.T) {
 			typ:  ftypes.GoModule,
 			pkg: ftypes.Package{
 				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
-				Version: "(devel)",
+				Version: "",
 			},
 			want: nil,
 		},
@@ -393,6 +420,26 @@ func TestNewPackageURL(t *testing.T) {
 			},
 			wantErr: "failed to parse digest",
 		},
+		{
+			name: "julia project",
+			typ:  ftypes.Julia,
+			pkg: ftypes.Package{
+				ID:      "ade2ca70-3891-5945-98fb-dc099432e06a",
+				Name:    "Dates",
+				Version: "1.9.0",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeJulia,
+				Name:    "Dates",
+				Version: "1.9.0",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "uuid",
+						Value: "ade2ca70-3891-5945-98fb-dc099432e06a",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -403,7 +450,7 @@ func TestNewPackageURL(t *testing.T) {
 				assert.Contains(t, err.Error(), tc.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.want, packageURL, tc.name)
 		})
 	}
@@ -521,7 +568,7 @@ func TestFromString(t *testing.T) {
 				assert.ErrorContains(t, err, tc.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.want, *pkg, tc.name)
 		})
 	}
@@ -747,7 +794,7 @@ func TestPackageURL_LangType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := (purl.PackageURL)(tt.purl)
+			p := purl.PackageURL(tt.purl)
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
 		})
 	}
@@ -762,38 +809,38 @@ func TestPackageURL_Match(t *testing.T) {
 	}{
 		{
 			name:       "same purl",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
 			want:       true,
 		},
 		{
 			name:       "different type",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
 			target:     "pkg:maven/github.com/aquasecurity/trivy@0.49.0",
 			want:       false,
 		},
 		{
 			name:       "different namespace",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity2/trivy@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity2/trivy@v.49.0",
 			want:       false,
 		},
 		{
 			name:       "different name",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity/tracee@0.49.0",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/tracee@v0.49.0",
 			want:       false,
 		},
 		{
 			name:       "different version",
-			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
-			target:     "pkg:golang/github.com/aquasecurity/trivy@0.49.1",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@v0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@v0.49.1",
 			want:       false,
 		},
 		{
 			name:       "version wildcard",
 			constraint: "pkg:golang/github.com/aquasecurity/trivy",
-			target:     "pkg:golang/github.com/aquasecurity/trivy@0.50.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@v0.50.0",
 			want:       true,
 		},
 		{

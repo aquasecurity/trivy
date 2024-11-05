@@ -1,10 +1,12 @@
 package dependency_test
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestID(t *testing.T) {
@@ -32,7 +34,7 @@ func TestID(t *testing.T) {
 			args: args{
 				ltype:   types.GoModule,
 				name:    "test",
-				version: "1.0.0",
+				version: "v1.0.0",
 			},
 			want: "test@v1.0.0",
 		},
@@ -40,6 +42,15 @@ func TestID(t *testing.T) {
 			name: "gradle",
 			args: args{
 				ltype:   types.Gradle,
+				name:    "test",
+				version: "1.0.0",
+			},
+			want: "test:1.0.0",
+		},
+		{
+			name: "sbt",
+			args: args{
+				ltype:   types.Sbt,
 				name:    "test",
 				version: "1.0.0",
 			},

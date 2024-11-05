@@ -8,9 +8,9 @@ import (
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -21,6 +21,7 @@ const storageEBSCacheSize = 128
 // EBS represents an artifact for AWS EBS snapshots
 type EBS struct {
 	Storage
+	logger     *log.Logger
 	snapshotID string
 	ebs        ebsfile.EBSAPI
 }
@@ -33,26 +34,27 @@ func newEBS(snapshotID string, vm Storage, region, endpoint string) (*EBS, error
 
 	return &EBS{
 		Storage:    vm,
+		logger:     log.WithPrefix("ebs"),
 		snapshotID: snapshotID,
 		ebs:        ebs,
 	}, nil
 }
 
-func (a *EBS) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+func (a *EBS) Inspect(ctx context.Context) (artifact.Reference, error) {
 	sr, err := a.openEBS(ctx)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("EBS open error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("EBS open error: %w", err)
 	}
 
 	cacheKey, err := a.calcCacheKey(a.snapshotID)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("cache key calculation error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("cache key calculation error: %w", err)
 	}
 
 	if a.hasCache(cacheKey) {
-		return types.ArtifactReference{
+		return artifact.Reference{
 			Name:    a.snapshotID,
-			Type:    types.ArtifactVM,
+			Type:    artifact.TypeVM,
 			ID:      cacheKey, // use a cache key as pseudo artifact ID
 			BlobIDs: []string{cacheKey},
 		}, nil
@@ -60,16 +62,16 @@ func (a *EBS) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 
 	blobInfo, err := a.Analyze(ctx, sr)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("inspection error: %w", err)
+		return artifact.Reference{}, xerrors.Errorf("inspection error: %w", err)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
-	return types.ArtifactReference{
+	return artifact.Reference{
 		Name:    a.snapshotID,
-		Type:    types.ArtifactVM,
+		Type:    artifact.TypeVM,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
@@ -88,7 +90,7 @@ func (a *EBS) openEBS(ctx context.Context) (*io.SectionReader, error) {
 	return r, nil
 }
 
-func (a *EBS) Clean(_ types.ArtifactReference) error {
+func (a *EBS) Clean(_ artifact.Reference) error {
 	return nil
 }
 
@@ -107,7 +109,7 @@ func (a *EBS) calcCacheKey(key string) (string, error) {
 func (a *EBS) hasCache(cacheKey string) bool {
 	_, missingCacheKeys, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
 	if err != nil {
-		log.Logger.Debugf("Unable to query missing cache: %s", err)
+		a.logger.Debug("Unable to query missing cache", log.Err(err))
 		return false
 	}
 
@@ -116,6 +118,6 @@ func (a *EBS) hasCache(cacheKey string) bool {
 		return true
 	}
 
-	log.Logger.Debugf("Missing virtual machine cache: %s", cacheKey)
+	a.logger.Debug("Missing virtual machine cache", log.String("key", cacheKey))
 	return false
 }

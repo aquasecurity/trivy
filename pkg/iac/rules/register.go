@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy-policies/specs"
+	"github.com/aquasecurity/trivy-checks/pkg/specs"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	dftypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -125,7 +125,7 @@ func GetFrameworkRules(fw ...framework.Framework) []ruleTypes.RegisteredRule {
 }
 
 func GetSpecRules(spec string) []ruleTypes.RegisteredRule {
-	if len(spec) > 0 {
+	if spec != "" {
 		return coreRegistry.getSpecRules(spec)
 	}
 

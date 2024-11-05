@@ -9,12 +9,12 @@ import (
 func Test_data_uri_from_string(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "data uri from string",
-			args: []interface{}{
+			args: []any{
 				"Hello",
 			},
 			expected: "data:text/plain;charset=utf8;base64,SGVsbG8=",
@@ -32,12 +32,12 @@ func Test_data_uri_from_string(t *testing.T) {
 func Test_string_from_data_uri(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "data uri to string",
-			args: []interface{}{
+			args: []any{
 				"data:;base64,SGVsbG8sIFdvcmxkIQ==",
 			},
 			expected: "Hello, World!",

@@ -1,18 +1,18 @@
-# Debugging policies
+# Debugging checks
 When working on more complex queries (or when learning Rego), it's useful to see exactly how the policy is applied.
 For this purpose you can use the `--trace` flag.
 This will output a large trace from Open Policy Agent like the following:
 
 !!! tip
-    Only failed policies show traces. If you want to debug a passed policy, you need to make it fail on purpose.
+    Only failed checks show traces. If you want to debug a passed check, you need to make it fail on purpose.
 
 ```shell
-$ trivy conf --trace configs/
+$ trivy config --trace configs/
 2022-05-16T13:47:58.853+0100	INFO	Detected config files: 1
 
 Dockerfile (dockerfile)
 =======================
-Tests: 23 (SUCCESSES: 21, FAILURES: 2, EXCEPTIONS: 0)
+Tests: 23 (SUCCESSES: 21, FAILURES: 2)
 Failures: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 1, CRITICAL: 0)
 
 MEDIUM: Specify a tag in the 'FROM' statement for image 'alpine'

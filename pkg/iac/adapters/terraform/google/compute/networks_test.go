@@ -5,9 +5,8 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptNetworks(t *testing.T) {
@@ -40,7 +39,7 @@ func Test_adaptNetworks(t *testing.T) {
 				source_ranges = ["1.2.3.4/32"]
 				allow {
 				  protocol = "icmp"
-				  ports     = ["80", "8080"]
+				  ports     = ["80", "8080", "9090-9095"]
 				}
 			  }
 `,
@@ -58,9 +57,19 @@ func Test_adaptNetworks(t *testing.T) {
 									IsAllow:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 									Protocol: iacTypes.String("icmp", iacTypes.NewTestMetadata()),
 									Enforced: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-									Ports: []iacTypes.IntValue{
-										iacTypes.Int(80, iacTypes.NewTestMetadata()),
-										iacTypes.Int(8080, iacTypes.NewTestMetadata()),
+									Ports: []compute.PortRange{
+										{
+											Start: iacTypes.IntTest(80),
+											End:   iacTypes.IntTest(80),
+										},
+										{
+											Start: iacTypes.IntTest(8080),
+											End:   iacTypes.IntTest(8080),
+										},
+										{
+											Start: iacTypes.IntTest(9090),
+											End:   iacTypes.IntTest(9095),
+										},
 									},
 								},
 								SourceRanges: []iacTypes.StringValue{

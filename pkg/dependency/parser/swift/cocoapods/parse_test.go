@@ -4,23 +4,29 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string // Test input file
-		wantLibs  []types.Library
-		wantDeps  []types.Dependency
+		wantPkgs  []ftypes.Package
+		wantDeps  []ftypes.Dependency
 	}{
 		{
 			name:      "happy path",
 			inputFile: "testdata/happy.lock",
-			wantLibs: []types.Library{
+			wantPkgs: []ftypes.Package{
+				{
+					ID:      "AppCenter@4.2.0",
+					Name:    "AppCenter",
+					Version: "4.2.0",
+				},
 				{
 					ID:      "AppCenter/Analytics@4.2.0",
 					Name:    "AppCenter/Analytics",
@@ -37,17 +43,12 @@ func TestParse(t *testing.T) {
 					Version: "4.2.0",
 				},
 				{
-					ID:      "AppCenter@4.2.0",
-					Name:    "AppCenter",
-					Version: "4.2.0",
-				},
-				{
 					ID:      "KeychainAccess@4.2.1",
 					Name:    "KeychainAccess",
 					Version: "4.2.1",
 				},
 			},
-			wantDeps: []types.Dependency{
+			wantDeps: []ftypes.Dependency{
 				{
 					ID: "AppCenter/Analytics@4.2.0",
 					DependsOn: []string{
@@ -85,10 +86,10 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotLibs, gotDeps, err := cocoapods.NewParser().Parse(f)
+			gotPkgs, gotDeps, err := cocoapods.NewParser().Parse(f)
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.wantLibs, gotLibs)
+			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}

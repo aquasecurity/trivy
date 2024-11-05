@@ -10,7 +10,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	apiregistry "github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/client"
 )
@@ -72,7 +72,7 @@ func (d Docker) Logout(conf RegistryConfig) error {
 // ReplicateImage tags the given imagePath and pushes it to the given dest registry.
 func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, dest RegistryConfig) error {
 	// remove existing Image if any
-	_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
+	_, _ = d.cli.ImageRemove(ctx, imageRef, image.RemoveOptions{
 		Force:         true,
 		PruneChildren: true,
 	})
@@ -81,6 +81,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
+	defer testfile.Close()
 
 	// load image into docker engine
 	resp, err := d.cli.ImageLoad(ctx, testfile, true)
@@ -98,11 +99,11 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		return err
 	}
 	defer func() {
-		_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, imageRef, image.RemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})
-		_, _ = d.cli.ImageRemove(ctx, targetImageRef, types.ImageRemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, targetImageRef, image.RemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})
@@ -113,7 +114,9 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		return err
 	}
 
-	pushOut, err := d.cli.ImagePush(ctx, targetImageRef, types.ImagePushOptions{RegistryAuth: auth})
+	pushOut, err := d.cli.ImagePush(ctx, targetImageRef, image.PushOptions{
+		RegistryAuth: auth,
+	})
 	if err != nil {
 		return err
 	}

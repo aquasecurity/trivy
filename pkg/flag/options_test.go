@@ -1,14 +1,19 @@
 package flag_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/samber/lo"
-	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/require"
+	"bytes"
+	"log/slog"
+	"strings"
 	"testing"
 
+	"github.com/samber/lo"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestFlag_Parse(t *testing.T) {
@@ -124,4 +129,27 @@ func setSliceValue[T any](key string, value []T) {
 	if len(value) > 0 {
 		viper.Set(key, value)
 	}
+}
+
+type Output struct {
+	b *bytes.Buffer
+}
+
+func (o Output) Messages() []string {
+	var messages []string
+	for _, line := range strings.Split(o.b.String(), "\n") {
+		if line == "" {
+			continue
+		}
+		ss := strings.Split(line, "\t")
+		messages = append(messages, strings.Join(ss[2:], "\t"))
+	}
+	return messages
+}
+
+func newLogger(level slog.Level) Output {
+	out := bytes.NewBuffer(nil)
+	logger := log.New(log.NewHandler(out, &log.Options{Level: level}))
+	log.SetDefault(logger)
+	return Output{b: out}
 }

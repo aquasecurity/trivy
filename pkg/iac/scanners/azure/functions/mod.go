@@ -1,6 +1,6 @@
 package functions
 
-func Mod(args ...interface{}) interface{} {
+func Mod(args ...any) any {
 	if len(args) != 2 {
 		return 0
 	}

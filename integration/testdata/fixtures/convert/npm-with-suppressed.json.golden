@@ -1,0 +1,195 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2024-09-09T13:21:09.230231+06:00",
+  "ArtifactName": "package-lock.json",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "package-lock.json",
+      "Class": "lang-pkgs",
+      "Type": "npm",
+      "Packages": [
+        {
+          "ID": "debug@3.0.1",
+          "Name": "debug",
+          "Identifier": {
+            "PURL": "pkg:npm/debug@3.0.1",
+            "UID": "45acc377fa09cc3"
+          },
+          "Version": "3.0.1",
+          "Relationship": "direct",
+          "DependsOn": [
+            "ms@2.0.0"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 19
+            }
+          ]
+        },
+        {
+          "ID": "ms@2.0.0",
+          "Name": "ms",
+          "Identifier": {
+            "PURL": "pkg:npm/ms@2.0.0",
+            "UID": "f51af0181daf2ced"
+          },
+          "Version": "2.0.0",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 20,
+              "EndLine": 25
+            }
+          ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2017-20165",
+          "PkgID": "debug@3.0.1",
+          "PkgName": "debug",
+          "PkgIdentifier": {
+            "PURL": "pkg:npm/debug@3.0.1",
+            "UID": "45acc377fa09cc3"
+          },
+          "InstalledVersion": "3.0.1",
+          "FixedVersion": "3.1.0, 2.6.9",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-20165",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory npm",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
+          },
+          "Title": "A vulnerability classified as problematic has been found in debug-js d ...",
+          "Description": "A vulnerability classified as problematic has been found in debug-js debug up to 3.0.x. This affects the function useColors of the file src/node.js. The manipulation of the argument str leads to inefficient regular expression complexity. Upgrading to version 3.1.0 is able to address this issue. The identifier of the patch is c38a0166c266a679c8de012d4eaccec3f944e685. It is recommended to upgrade the affected component. The identifier VDB-217665 was assigned to this vulnerability.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-1333"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://github.com/debug-js/debug",
+            "https://github.com/debug-js/debug/commit/c38a0166c266a679c8de012d4eaccec3f944e685",
+            "https://github.com/debug-js/debug/commit/f53962e944a87e6ca9bb622a2a12dffc22a9bb5a",
+            "https://github.com/debug-js/debug/pull/504",
+            "https://github.com/debug-js/debug/releases/tag/2.6.9",
+            "https://github.com/debug-js/debug/releases/tag/3.1.0",
+            "https://nvd.nist.gov/vuln/detail/CVE-2017-20165",
+            "https://vuldb.com/?ctiid.217665",
+            "https://vuldb.com/?id.217665"
+          ],
+          "PublishedDate": "2023-01-09T10:15:10.447Z",
+          "LastModifiedDate": "2024-05-17T01:17:24.28Z"
+        }
+      ],
+      "ExperimentalModifiedFindings": [
+        {
+          "Type": "vulnerability",
+          "Status": "not_affected",
+          "Statement": "vulnerable_code_not_in_execute_path",
+          "Source": "./vex.json",
+          "Finding": {
+            "VulnerabilityID": "CVE-2017-16137",
+            "PkgID": "debug@3.0.1",
+            "PkgName": "debug",
+            "PkgIdentifier": {
+              "PURL": "pkg:npm/debug@3.0.1",
+              "UID": "45acc377fa09cc3"
+            },
+            "InstalledVersion": "3.0.1",
+            "FixedVersion": "2.6.9, 3.1.0, 3.2.7, 4.3.1",
+            "Status": "fixed",
+            "Layer": {},
+            "SeveritySource": "ghsa",
+            "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-16137",
+            "DataSource": {
+              "ID": "ghsa",
+              "Name": "GitHub Security Advisory npm",
+              "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
+            },
+            "Title": "nodejs-debug: Regular expression Denial of Service",
+            "Description": "The debug module is vulnerable to regular expression denial of service when untrusted user input is passed into the o formatter. It takes around 50k characters to block for 2 seconds making this a low severity issue.",
+            "Severity": "LOW",
+            "CweIDs": [
+              "CWE-400"
+            ],
+            "VendorSeverity": {
+              "ghsa": 1,
+              "nvd": 2,
+              "redhat": 2
+            },
+            "CVSS": {
+              "ghsa": {
+                "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                "V3Score": 3.7
+              },
+              "nvd": {
+                "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+                "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                "V2Score": 5,
+                "V3Score": 5.3
+              },
+              "redhat": {
+                "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                "V3Score": 5.3
+              }
+            },
+            "References": [
+              "https://access.redhat.com/security/cve/CVE-2017-16137",
+              "https://github.com/debug-js/debug/commit/4e2150207c568adb9ead8f4c4528016081c88020",
+              "https://github.com/debug-js/debug/commit/71169065b5262f9858ac78cc0b688c84a438f290",
+              "https://github.com/debug-js/debug/commit/b6d12fdbc63b483e5c969da33ea6adc09946b5ac",
+              "https://github.com/debug-js/debug/commit/f53962e944a87e6ca9bb622a2a12dffc22a9bb5a",
+              "https://github.com/debug-js/debug/issues/797",
+              "https://github.com/visionmedia/debug",
+              "https://github.com/visionmedia/debug/issues/501",
+              "https://github.com/visionmedia/debug/pull/504",
+              "https://lists.apache.org/thread.html/r8ba4c628fba7181af58817d452119481adce4ba92e889c643e4c7dd3%40%3Ccommits.netbeans.apache.org%3E",
+              "https://lists.apache.org/thread.html/r8ba4c628fba7181af58817d452119481adce4ba92e889c643e4c7dd3@%3Ccommits.netbeans.apache.org%3E",
+              "https://lists.apache.org/thread.html/rb5ac16fad337d1f3bb7079549f97d8166d0ef3082629417c39f12d63%40%3Cnotifications.netbeans.apache.org%3E",
+              "https://lists.apache.org/thread.html/rb5ac16fad337d1f3bb7079549f97d8166d0ef3082629417c39f12d63@%3Cnotifications.netbeans.apache.org%3E",
+              "https://nodesecurity.io/advisories/534",
+              "https://nvd.nist.gov/vuln/detail/CVE-2017-16137",
+              "https://www.cve.org/CVERecord?id=CVE-2017-16137"
+            ],
+            "PublishedDate": "2018-06-07T02:29:03.817Z",
+            "LastModifiedDate": "2023-11-07T02:40:28.13Z"
+          }
+        }
+      ]
+    }
+  ]
+}

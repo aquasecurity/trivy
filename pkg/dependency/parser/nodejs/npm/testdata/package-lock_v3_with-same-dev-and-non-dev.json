@@ -1,0 +1,74 @@
+{
+  "name": "5139",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "5139",
+      "version": "1.0.0",
+      "license": "ISC",
+      "dependencies": {
+        "minimist": "^0.0.8"
+      },
+      "devDependencies": {
+        "fsevents": "^1.2.9"
+      }
+    },
+    "node_modules/fsevents": {
+      "version": "1.2.9",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-1.2.9.tgz",
+      "integrity": "sha512-oeyj2H3EjjonWcFjD5NvZNE9Rqe4UW+nQBU2HNeKw0koVLEFIhtyETyAakeAM3de7Z/SW5kcA+fZUait9EApnw==",
+      "bundleDependencies": [
+        "node-pre-gyp"
+      ],
+      "deprecated": "The v1 package contains DANGEROUS / INSECURE binaries. Upgrade to safe fsevents v2",
+      "dev": true,
+      "hasInstallScript": true,
+      "os": [
+        "darwin"
+      ],
+      "dependencies": {
+        "node-pre-gyp": "^0.12.0"
+      },
+      "engines": {
+        "node": ">=4.0"
+      }
+    },
+    "node_modules/fsevents/node_modules/minimist": {
+      "version": "0.0.8",
+      "dev": true,
+      "inBundle": true,
+      "license": "MIT"
+    },
+    "node_modules/fsevents/node_modules/mkdirp": {
+      "version": "0.5.1",
+      "dev": true,
+      "inBundle": true,
+      "license": "MIT",
+      "dependencies": {
+        "minimist": "0.0.8"
+      },
+      "bin": {
+        "mkdirp": "bin/cmd.js"
+      }
+    },
+    "node_modules/fsevents/node_modules/node-pre-gyp": {
+      "version": "0.12.0",
+      "dev": true,
+      "inBundle": true,
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "mkdirp": "^0.5.1"
+      },
+      "bin": {
+        "node-pre-gyp": "bin/node-pre-gyp"
+      }
+    },
+    "node_modules/minimist": {
+      "version": "0.0.8",
+      "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz",
+      "integrity": "sha512-miQKw5Hv4NS1Psg2517mV4e4dYNaO3++hjAvLOAzKqZ61rH8NS1SK+vbfBWZ5PY/Me/bEWhUwqMghEW5Fb9T7Q=="
+    }
+  }
+}

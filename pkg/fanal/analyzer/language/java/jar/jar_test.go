@@ -6,7 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -14,10 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 
 	_ "modernc.org/sqlite"
-)
-
-const (
-	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
 )
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
@@ -35,7 +33,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.war",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "org.glassfish:javax.el",
 								FilePath: "testdata/test.war/WEB-INF/lib/javax.el-3.0.0.jar",
@@ -90,7 +88,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.par",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
@@ -110,7 +108,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.jar",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
@@ -130,23 +128,25 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// init java-trivy-db with skip update
-			javadb.Init("testdata", defaultJavaDBRepository, true, false, types.RegistryOptions{Insecure: false})
+			repo, err := name.NewTag(javadb.DefaultGHCRRepository)
+			require.NoError(t, err)
+			javadb.Init("testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
 
 			mfs := mapfs.New()
-			err := mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
-			assert.NoError(t, err)
+			err = mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
+			require.NoError(t, err)
 			err = mfs.WriteFile(tt.inputFile, tt.inputFile)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS:      mfs,
 				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

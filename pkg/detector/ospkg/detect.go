@@ -10,9 +10,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/mariner"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
@@ -30,21 +30,24 @@ var (
 	ErrUnsupportedOS = xerrors.New("unsupported os")
 
 	drivers = map[ftypes.OSType]Driver{
-		ftypes.Alpine:       alpine.NewScanner(),
-		ftypes.Alma:         alma.NewScanner(),
-		ftypes.Amazon:       amazon.NewScanner(),
-		ftypes.CBLMariner:   mariner.NewScanner(),
-		ftypes.Debian:       debian.NewScanner(),
-		ftypes.Ubuntu:       ubuntu.NewScanner(),
-		ftypes.RedHat:       redhat.NewScanner(),
-		ftypes.CentOS:       redhat.NewScanner(),
-		ftypes.Rocky:        rocky.NewScanner(),
-		ftypes.Oracle:       oracle.NewScanner(),
-		ftypes.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
-		ftypes.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
-		ftypes.Photon:       photon.NewScanner(),
-		ftypes.Wolfi:        wolfi.NewScanner(),
-		ftypes.Chainguard:   chainguard.NewScanner(),
+		ftypes.Alpine:             alpine.NewScanner(),
+		ftypes.Alma:               alma.NewScanner(),
+		ftypes.Amazon:             amazon.NewScanner(),
+		ftypes.Azure:              azure.NewAzureScanner(),
+		ftypes.CBLMariner:         azure.NewMarinerScanner(),
+		ftypes.Debian:             debian.NewScanner(),
+		ftypes.Ubuntu:             ubuntu.NewScanner(),
+		ftypes.RedHat:             redhat.NewScanner(),
+		ftypes.CentOS:             redhat.NewScanner(),
+		ftypes.Rocky:              rocky.NewScanner(),
+		ftypes.Oracle:             oracle.NewScanner(),
+		ftypes.OpenSUSETumbleweed: suse.NewScanner(suse.OpenSUSETumbleweed),
+		ftypes.OpenSUSELeap:       suse.NewScanner(suse.OpenSUSE),
+		ftypes.SLES:               suse.NewScanner(suse.SUSEEnterpriseLinux),
+		ftypes.SLEMicro:           suse.NewScanner(suse.SUSEEnterpriseLinuxMicro),
+		ftypes.Photon:             photon.NewScanner(),
+		ftypes.Wolfi:              wolfi.NewScanner(),
+		ftypes.Chainguard:         chainguard.NewScanner(),
 	}
 )
 
@@ -55,12 +58,14 @@ func RegisterDriver(name ftypes.OSType, driver Driver) {
 
 // Driver defines operations for OS package scan
 type Driver interface {
-	Detect(string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
+	Detect(context.Context, string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(context.Context, ftypes.OSType, string) bool
 }
 
 // Detect detects the vulnerabilities
 func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
+	ctx = log.WithContextPrefix(ctx, string(osFamily))
+
 	driver, err := newDriver(osFamily)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
@@ -73,7 +78,7 @@ func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo 
 	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
 		return pkg.Name != "gpg-pubkey"
 	})
-	vulns, err := driver.Detect(osName, repo, filteredPkgs)
+	vulns, err := driver.Detect(ctx, osName, repo, filteredPkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
@@ -86,6 +91,6 @@ func newDriver(osFamily ftypes.OSType) (Driver, error) {
 		return driver, nil
 	}
 
-	log.Logger.Warnf("unsupported os : %s", osFamily)
+	log.Warn("Unsupported os", log.String("family", string(osFamily)))
 	return nil, ErrUnsupportedOS
 }

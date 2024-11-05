@@ -78,8 +78,13 @@ func ResolveIntrinsicFunc(property *Property) (*Property, bool) {
 
 	for funcName := range property.AsMap() {
 		if fn := intrinsicFuncs[funcName]; fn != nil {
-			//
-			return fn(property)
+			prop, resolved := fn(property)
+			if prop == nil || !resolved {
+				return prop, false
+			}
+
+			prop.inferType()
+			return prop, true
 		}
 	}
 	return property, false
@@ -95,7 +100,7 @@ func getIntrinsicTag(tag string) string {
 	}
 }
 
-func abortIntrinsic(property *Property, msg string, components ...string) (*Property, bool) {
+func abortIntrinsic(property *Property, _ string, _ ...string) (*Property, bool) {
 	//
 	return property, false
 }

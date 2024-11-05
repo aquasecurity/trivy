@@ -8,37 +8,58 @@ import (
 	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/preview/preview/containerregistry/runtime/containerregistry"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-type Registry struct {
+type RegistryClient struct {
 	domain string
+	scope  string
+	cloud  cloud.Configuration
+}
+
+type Registry struct {
 }
 
 const (
-	azureURL = "azurecr.io"
-	scope    = "https://management.azure.com/.default"
-	scheme   = "https"
+	azureURL      = ".azurecr.io"
+	chinaAzureURL = ".azurecr.cn"
+	scope         = "https://management.azure.com/.default"
+	chinaScope    = "https://management.chinacloudapi.cn/.default"
+	scheme        = "https"
 )
 
-func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) error {
-	if !strings.HasSuffix(domain, azureURL) {
-		return xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
+func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) (intf.RegistryClient, error) {
+	if strings.HasSuffix(domain, azureURL) {
+		return &RegistryClient{
+			domain: domain,
+			scope:  scope,
+			cloud:  cloud.AzurePublic,
+		}, nil
+	} else if strings.HasSuffix(domain, chinaAzureURL) {
+		return &RegistryClient{
+			domain: domain,
+			scope:  chinaScope,
+			cloud:  cloud.AzureChina,
+		}, nil
 	}
-	r.domain = domain
-	return nil
+
+	return nil, xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
 }
 
-func (r *Registry) GetCredential(ctx context.Context) (string, string, error) {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
+func (r *RegistryClient) GetCredential(ctx context.Context) (string, string, error) {
+	opts := azcore.ClientOptions{Cloud: r.cloud}
+	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{ClientOptions: opts})
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to generate acr credential error: %w", err)
 	}
-	aadToken, err := cred.GetToken(ctx, policy.TokenRequestOptions{Scopes: []string{scope}})
+	aadToken, err := cred.GetToken(ctx, policy.TokenRequestOptions{Scopes: []string{r.scope}})
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to get an access token: %w", err)
 	}

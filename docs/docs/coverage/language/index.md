@@ -26,7 +26,8 @@ On the other hand, when the target is a post-build artifact, like a container im
 |                      | egg package[^1]                                                                            |     ✅     |     ✅      |       -        |       -        |
 |                      | wheel package[^2]                                                                          |     ✅     |     ✅      |       -        |       -        |
 |                      | conda package[^3]                                                                          |     ✅     |     ✅      |       -        |       -        |
-| [PHP](php.md)        | composer.lock                                                                              |     ✅     |     ✅      |       ✅        |       ✅        |
+| [PHP](php.md)        | composer.lock                                                                              |     -     |     -      |       ✅        |       ✅        |
+|                      | installed.json                                                                             |     ✅     |     ✅      |       -        |       -        |
 | [Node.js](nodejs.md) | package-lock.json                                                                          |     -     |     -      |       ✅        |       ✅        |
 |                      | yarn.lock                                                                                  |     -     |     -      |       ✅        |       ✅        |
 |                      | pnpm-lock.yaml                                                                             |     -     |     -      |       ✅        |       ✅        |
@@ -38,6 +39,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Java](java.md)      | JAR/WAR/PAR/EAR[^4]                                                                        |     ✅     |     ✅      |       -        |       -        |
 |                      | pom.xml                                                                                    |     -     |     -      |       ✅        |       ✅        |
 |                      | *gradle.lockfile                                                                           |     -     |     -      |       ✅        |       ✅        |
+|                      | *.sbt.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
 | [Go](golang.md)      | Binaries built by Go                                                                       |     ✅     |     ✅      |       -        |       -        |
 |                      | go.mod                                                                                     |     -     |     -      |       ✅        |       ✅        |
 | [Rust](rust.md)      | Cargo.lock                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
@@ -47,6 +49,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
+| [Julia](julia.md)    | Manifest.toml                                                                              |     ✅     |     ✅      |       ✅        |       ✅        |
 
 The path of these files does not matter.
 

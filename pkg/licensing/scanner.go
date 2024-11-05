@@ -1,7 +1,7 @@
 package licensing
 
 import (
-	"golang.org/x/exp/slices"
+	"slices"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -21,8 +21,9 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
+	license := NormalizeLicense(licenseName)
 	for category, names := range s.categories {
-		if slices.Contains(names, licenseName) {
+		if slices.Contains(names, license.License) {
 			return category, categoryToSeverity(category).String()
 		}
 	}

@@ -1,6 +1,6 @@
 package functions
 
-func Take(args ...interface{}) interface{} {
+func Take(args ...any) any {
 	if len(args) != 2 {
 		return ""
 	}
@@ -15,7 +15,7 @@ func Take(args ...interface{}) interface{} {
 			return input
 		}
 		return input[:count]
-	case interface{}:
+	case any:
 		switch iType := input.(type) {
 		case []int:
 			if count > len(iType) {
@@ -37,7 +37,7 @@ func Take(args ...interface{}) interface{} {
 				return iType
 			}
 			return iType[:count]
-		case []interface{}:
+		case []any:
 			if count > len(iType) {
 				return iType
 			}

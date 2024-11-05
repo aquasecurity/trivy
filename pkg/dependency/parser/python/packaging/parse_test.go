@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    []types.Library
+		want    []ftypes.Package
 		wantErr bool
 	}{
 		// listing dependencies based on METADATA/PKG-INFO files
@@ -33,16 +33,26 @@ func TestParse(t *testing.T) {
 			// cd /usr/lib/python3.9/site-packages/setuptools-52.0.0-py3.9.egg-info/
 			// cat PKG-INFO | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: []types.Library{{Name: "setuptools", Version: "51.3.3", License: "UNKNOWN"}},
+			want: []ftypes.Package{
+				{
+					Name:    "setuptools",
+					Version: "51.3.3",
+					Licenses: []string{
+						"UNKNOWN",
+					},
+				},
+			},
 		},
 		{
 			name:  "egg PKG-INFO with description containing non-RFC 7230 bytes",
 			input: "testdata/unidecode-egg-info.PKG-INFO",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
 					Name:    "Unidecode",
 					Version: "0.4.1",
-					License: "UNKNOWN",
+					Licenses: []string{
+						"UNKNOWN",
+					},
 				},
 			},
 		},
@@ -55,7 +65,15 @@ func TestParse(t *testing.T) {
 			// cd /usr/lib/python3.9/site-packages/
 			// cat distlib-0.3.1-py3.9.egg-info | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: []types.Library{{Name: "distlib", Version: "0.3.1", License: "Python license"}},
+			want: []ftypes.Package{
+				{
+					Name:    "distlib",
+					Version: "0.3.1",
+					Licenses: []string{
+						"Python license",
+					},
+				},
+			},
 		},
 		{
 			name:  "wheel METADATA",
@@ -67,31 +85,61 @@ func TestParse(t *testing.T) {
 			// find dist-infos/ | grep -v METADATA | xargs rm -R
 
 			// for single METADATA file with known name
-			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: []types.Library{{Name: "simple", Version: "0.1.0", License: ""}},
+			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^Licenses: []string{" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\"}, \""$2"\", \""$3"\"\}\n")}'
+			want: []ftypes.Package{
+				{
+					Name:     "simple",
+					Version:  "0.1.0",
+					Licenses: nil,
+				},
+			},
 		},
 		{
 			name: "wheel METADATA",
 
 			// for single METADATA file with known name
-			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
+			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^Licenses: []string{" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\"}, \""$2"\", \""$3"\"\}\n")}'
 			input: "testdata/distlib-0.3.1.METADATA",
-			want:  []types.Library{{Name: "distlib", Version: "0.3.1", License: "Python Software Foundation License"}},
+			want: []ftypes.Package{
+				{
+					Name:    "distlib",
+					Version: "0.3.1",
+					Licenses: []string{
+						"Python Software Foundation License",
+					},
+				},
+			},
 		},
 		{
 			name: "wheel METADATA",
 			// Input defines "Classifier: License" but it ends at "OSI Approved" which doesn't define any specific license, thus "License" field is added to results
 			input: "testdata/asyncssh-2.14.2.METADATA",
 
-			want: []types.Library{{Name: "asyncssh", Version: "2.14.2", License: "Eclipse Public License v2.0"}},
+			want: []ftypes.Package{
+				{
+					Name:    "asyncssh",
+					Version: "2.14.2",
+					Licenses: []string{
+						"Eclipse Public License v2.0",
+					},
+				},
+			},
 		},
 		{
 			name: "wheel METADATA",
 			// Input defines multiple "Classifier: License"
 			input: "testdata/pyphen-0.14.0.METADATA",
 
-			want: []types.Library{
-				{Name: "pyphen", Version: "0.14.0", License: "GNU General Public License v2 or later (GPLv2+), GNU Lesser General Public License v2 or later (LGPLv2+), Mozilla Public License 1.1 (MPL 1.1)"},
+			want: []ftypes.Package{
+				{
+					Name:    "pyphen",
+					Version: "0.14.0",
+					Licenses: []string{
+						"GNU General Public License v2 or later (GPLv2+)",
+						"GNU Lesser General Public License v2 or later (LGPLv2+)",
+						"Mozilla Public License 1.1 (MPL 1.1)",
+					},
+				},
 			},
 		},
 		{
@@ -102,33 +150,39 @@ func TestParse(t *testing.T) {
 		{
 			name:  "with License-Expression field",
 			input: "testdata/iniconfig-2.0.0.METADATA",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
 					Name:    "iniconfig",
 					Version: "2.0.0",
-					License: "MIT",
+					Licenses: []string{
+						"MIT",
+					},
 				},
 			},
 		},
 		{
 			name:  "with an empty license field but with license in Classifier",
 			input: "testdata/zipp-3.12.1.METADATA",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
 					Name:    "zipp",
 					Version: "3.12.1",
-					License: "MIT License",
+					Licenses: []string{
+						"MIT License",
+					},
 				},
 			},
 		},
 		{
 			name:  "without licenses, but with a license file (a license in Classifier was removed)",
 			input: "testdata/networkx-3.0.METADATA",
-			want: []types.Library{
+			want: []ftypes.Package{
 				{
 					Name:    "networkx",
 					Version: "3.0",
-					License: "file://LICENSE.txt",
+					Licenses: []string{
+						"file://LICENSE.txt",
+					},
 				},
 			},
 		},

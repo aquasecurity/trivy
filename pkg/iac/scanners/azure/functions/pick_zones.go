@@ -1,6 +1,6 @@
 package functions
 
-func PickZones(args ...interface{}) interface{} {
+func PickZones(args ...any) any {
 	if len(args) < 3 {
 		return nil
 	}

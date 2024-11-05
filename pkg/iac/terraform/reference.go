@@ -160,7 +160,7 @@ func (r Reference) Key() string {
 	return fmt.Sprintf("%v", key(r))
 }
 
-func key(r Reference) interface{} {
+func key(r Reference) any {
 	if r.key.IsNull() || !r.key.IsKnown() {
 		return ""
 	}

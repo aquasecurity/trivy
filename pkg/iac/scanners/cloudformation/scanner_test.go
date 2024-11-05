@@ -2,14 +2,16 @@ package cloudformation
 
 import (
 	"context"
+	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -56,7 +58,7 @@ deny[res] {
 `,
 	})
 
-	scanner := New(options.ScannerWithPolicyDirs("rules"), options.ScannerWithRegoOnly(true))
+	scanner := New(rego.WithPolicyDirs("rules"), options.ScannerWithRegoOnly(true))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -81,7 +83,9 @@ deny[res] {
 			Terraform: (*scan.TerraformCustomCheck)(nil),
 		},
 		RegoPackage: "data.builtin.dockerfile.DS006",
-		Frameworks:  map[framework.Framework][]string{},
+		Frameworks: map[framework.Framework][]string{
+			framework.Default: {},
+		},
 	}, results.GetFailed()[0].Rule())
 
 	failure := results.GetFailed()[0]
@@ -100,4 +104,131 @@ deny[res] {
 			Annotation: "",
 		},
 	}, actualCode.Lines)
+}
+
+const bucketNameCheck = `# METADATA
+# title: "test rego"
+# scope: package
+# schemas:
+# - input: schema["cloud"]
+# custom:
+#   id: AVD-AWS-001
+#   avd_id: AVD-AWS-001
+#   provider: aws
+#   service: s3
+#   severity: LOW
+#   input:
+#     selector:
+#     - type: cloud
+#       subtypes:
+#         - service: s3
+#           provider: aws
+package user.aws.aws001
+
+deny[res] {
+	bucket := input.aws.s3.buckets[_]
+	bucket.name.value == "test-bucket"
+	res := result.new("Denied", bucket.name)
+}
+
+deny[res] {
+	bucket := input.aws.s3.buckets[_]
+	algo := bucket.encryption.algorithm
+	algo.value == "AES256"
+	res := result.new("Denied", algo)
+}
+`
+
+func TestIgnore(t *testing.T) {
+	tests := []struct {
+		name    string
+		src     string
+		ignored int
+	}{
+		{
+			name: "without ignore",
+			src: `---
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
+`,
+			ignored: 0,
+		},
+		{
+			name: "rule before resource",
+			src: `---
+Resources:
+#trivy:ignore:AVD-AWS-001
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
+`,
+			ignored: 1,
+		},
+		{
+			name: "rule before property",
+			src: `---
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+#trivy:ignore:AVD-AWS-001
+      BucketName: test-bucket
+`,
+			ignored: 1,
+		},
+		{
+			name: "rule on the same line with the property",
+			src: `---
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket  #trivy:ignore:AVD-AWS-001
+`,
+			ignored: 1,
+		},
+		{
+			name: "rule on the same line with the nested property",
+			src: `---
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256 #trivy:ignore:AVD-AWS-001
+`,
+			ignored: 1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(t, map[string]string{
+				"/code/main.yaml": tt.src,
+			})
+
+			scanner := New(
+				options.ScannerWithRegoOnly(true),
+				rego.WithEmbeddedPolicies(false),
+				rego.WithPolicyReader(strings.NewReader(bucketNameCheck)),
+				rego.WithPolicyNamespaces("user"),
+			)
+
+			results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+			require.NoError(t, err)
+
+			if tt.ignored == 0 {
+				require.Len(t, results.GetFailed(), 1)
+			} else {
+				assert.Len(t, results.GetIgnored(), tt.ignored)
+			}
+		})
+	}
 }

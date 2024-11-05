@@ -6,7 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -55,7 +56,7 @@ var (
 	CacheDirFlag = Flag[string]{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
-		Default:    fsutils.CacheDir(),
+		Default:    cache.DefaultDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}
@@ -105,7 +106,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 }
 
 func (f *GlobalFlagGroup) Name() string {
-	return "global"
+	return "Global"
 }
 
 func (f *GlobalFlagGroup) Flags() []Flagger {
@@ -143,6 +144,8 @@ func (f *GlobalFlagGroup) ToOptions() (GlobalOptions, error) {
 
 	// Keep TRIVY_NON_SSL for backward compatibility
 	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
+
+	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
 	return GlobalOptions{
 		ConfigFile:            f.ConfigFile.Value(),

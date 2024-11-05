@@ -1,11 +1,13 @@
 package composer
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
@@ -13,15 +15,15 @@ var (
 	// apk add jq
 	// composer require guzzlehttp/guzzle:6.5.8
 	// composer require pear/log:1.13.3 --dev
-	// composer show -i --no-dev -f json | jq --sort-keys -rc '.installed[] | "{ID: \"\(.name)@\(.version)\", Name: \"\(.name)\", Version: \"\(.version)\", License: \"MIT\", Locations: []types.Location{{StartLine: , EndLine: }}},"'
+	// composer show -i --no-dev -f json | jq --sort-keys -rc '.installed[] | "{ID: \"\(.name)@\(.version)\", Name: \"\(.name)\", Version: \"\(.version)\", License: \"MIT\", Locations: []ftypes.Location{{StartLine: , EndLine: }}},"'
 	// locations are filled manually
-	composerLibs = []types.Library{
+	composerPkgs = []ftypes.Package{
 		{
-			ID:      "guzzlehttp/guzzle@6.5.8",
-			Name:    "guzzlehttp/guzzle",
-			Version: "6.5.8",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "guzzlehttp/guzzle@6.5.8",
+			Name:     "guzzlehttp/guzzle",
+			Version:  "6.5.8",
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
 				{
 					StartLine: 9,
 					EndLine:   123,
@@ -29,11 +31,11 @@ var (
 			},
 		},
 		{
-			ID:      "guzzlehttp/promises@1.5.2",
-			Name:    "guzzlehttp/promises",
-			Version: "1.5.2",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "guzzlehttp/promises@1.5.2",
+			Name:     "guzzlehttp/promises",
+			Version:  "1.5.2",
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
 				{
 					StartLine: 124,
 					EndLine:   207,
@@ -41,11 +43,11 @@ var (
 			},
 		},
 		{
-			ID:      "guzzlehttp/psr7@1.9.0",
-			Name:    "guzzlehttp/psr7",
-			Version: "1.9.0",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "guzzlehttp/psr7@1.9.0",
+			Name:     "guzzlehttp/psr7",
+			Version:  "1.9.0",
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
 				{
 					StartLine: 208,
 					EndLine:   317,
@@ -53,11 +55,11 @@ var (
 			},
 		},
 		{
-			ID:      "psr/http-message@1.0.1",
-			Name:    "psr/http-message",
-			Version: "1.0.1",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "psr/http-message@1.0.1",
+			Name:     "psr/http-message",
+			Version:  "1.0.1",
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
 				{
 					StartLine: 318,
 					EndLine:   370,
@@ -65,11 +67,11 @@ var (
 			},
 		},
 		{
-			ID:      "ralouphie/getallheaders@3.0.3",
-			Name:    "ralouphie/getallheaders",
-			Version: "3.0.3",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "ralouphie/getallheaders@3.0.3",
+			Name:     "ralouphie/getallheaders",
+			Version:  "3.0.3",
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
 				{
 					StartLine: 371,
 					EndLine:   414,
@@ -77,11 +79,11 @@ var (
 			},
 		},
 		{
-			ID:      "symfony/polyfill-intl-idn@v1.27.0",
-			Name:    "symfony/polyfill-intl-idn",
-			Version: "v1.27.0",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "symfony/polyfill-intl-idn@v1.27.0",
+			Name:     "symfony/polyfill-intl-idn",
+			Version:  "v1.27.0",
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
 				{
 					StartLine: 415,
 					EndLine:   501,
@@ -89,32 +91,32 @@ var (
 			},
 		},
 		{
-			ID:      "symfony/polyfill-intl-normalizer@v1.27.0",
-			Name:    "symfony/polyfill-intl-normalizer",
-			Version: "v1.27.0",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "symfony/polyfill-intl-normalizer@v1.27.0",
+			Name:     "symfony/polyfill-intl-normalizer",
+			Version:  "v1.27.0",
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
 				{
 					StartLine: 502,
-					EndLine:   585,
+					EndLine:   583,
 				},
 			},
 		},
 		{
-			ID:      "symfony/polyfill-php72@v1.27.0",
-			Name:    "symfony/polyfill-php72",
-			Version: "v1.27.0",
-			License: "MIT",
-			Locations: []types.Location{
+			ID:       "symfony/polyfill-php72@v1.27.0",
+			Name:     "symfony/polyfill-php72",
+			Version:  "v1.27.0",
+			Licenses: []string{"MIT", "BSD-2-Clause"},
+			Locations: []ftypes.Location{
 				{
-					StartLine: 586,
-					EndLine:   661,
+					StartLine: 584,
+					EndLine:   657,
 				},
 			},
 		},
 	}
 	// dependencies are filled manually
-	composerDeps = []types.Dependency{
+	composerDeps = []ftypes.Dependency{
 		{
 			ID: "guzzlehttp/guzzle@6.5.8",
 			DependsOn: []string{
@@ -144,13 +146,13 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name     string
 		file     string
-		wantLibs []types.Library
-		wantDeps []types.Dependency
+		wantPkgs []ftypes.Package
+		wantDeps []ftypes.Dependency
 	}{
 		{
 			name:     "happy path",
 			file:     "testdata/composer_happy.lock",
-			wantLibs: composerLibs,
+			wantPkgs: composerPkgs,
 			wantDeps: composerDeps,
 		},
 	}
@@ -161,10 +163,10 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotLibs, gotDeps, err := NewParser().Parse(f)
+			gotPkgs, gotDeps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.wantLibs, gotLibs)
+			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}

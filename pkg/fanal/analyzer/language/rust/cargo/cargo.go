@@ -6,21 +6,20 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
 	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/rust/cargo"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -41,12 +40,14 @@ var requiredFiles = []string{
 }
 
 type cargoAnalyzer struct {
-	lockParser godeptypes.Parser
+	logger     *log.Logger
+	lockParser language.Parser
 	comparer   compare.GenericComparer
 }
 
 func newCargoAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &cargoAnalyzer{
+		logger:     log.WithPrefix("cargo"),
 		lockParser: cargo.NewParser(),
 		comparer:   compare.GenericComparer{},
 	}, nil
@@ -70,9 +71,10 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
 		if err = a.removeDevDependencies(input.FS, path.Dir(filePath), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", path.Join(path.Dir(filePath), types.CargoToml), err)
+			a.logger.Warn("Unable to parse Cargo.toml q to identify direct dependencies",
+				log.FilePath(path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
 		}
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 
 		return nil
@@ -107,32 +109,33 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	cargoTOMLPath := path.Join(dir, types.CargoToml)
 	directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Cargo: %s not found", cargoTOMLPath)
+		a.logger.Debug("Cargo.toml not found", log.FilePath(cargoTOMLPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
-	// Cargo.toml file can contain same libraries with different versions.
+	// Cargo.toml file can contain same packages with different versions.
 	// Save versions separately for version comparison by comparator
-	pkgIDs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
 	// Identify direct dependencies
 	pkgs := make(map[string]types.Package)
 	for name, constraint := range directDeps {
-		for _, pkg := range app.Libraries {
+		for _, pkg := range app.Packages {
 			if pkg.Name != name {
 				continue
 			}
 
 			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
-				log.Logger.Warnf("Unable to match Cargo version: package: %s, error: %s", pkg.ID, err)
+				a.logger.Warn("Unable to match Cargo version", log.String("package", pkg.ID), log.Err(err))
 				continue
 			} else if match {
 				// Mark as a direct dependency
 				pkg.Indirect = false
+				pkg.Relationship = types.RelationshipDirect
 				pkgs[pkg.ID] = pkg
 				break
 			}
@@ -145,11 +148,11 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
 	}
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
-	// Save only prod libraries
-	app.Libraries = pkgSlice
+	// Save only prod packages
+	app.Packages = pkgSlice
 	return nil
 }
 
@@ -164,7 +167,7 @@ type cargoTomlWorkspace struct {
 	Members      []string     `toml:"members"`
 }
 
-type Dependencies map[string]interface{}
+type Dependencies map[string]any
 
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
@@ -179,7 +182,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[stri
 		memberPath := path.Join(path.Dir(filePath), member, types.CargoToml)
 		memberDeps, _, err := parseCargoTOML(fsys, memberPath)
 		if err != nil {
-			log.Logger.Warnf("Unable to parse %q: %s", memberPath, err)
+			a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", memberPath), log.Err(err))
 			continue
 		}
 		// Member dependencies shouldn't overwrite dependencies from root cargo.toml file
@@ -193,7 +196,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[stri
 		case string:
 			// e.g. regex = "1.5"
 			deps[name] = ver
-		case map[string]interface{}:
+		case map[string]any:
 			// e.g. serde = { version = "1.0", features = ["derive"] }
 			for k, v := range ver {
 				if k == "version" {
@@ -221,6 +224,7 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps 
 		}
 
 		dep.Indirect = true
+		dep.Relationship = types.RelationshipIndirect
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)
 	}

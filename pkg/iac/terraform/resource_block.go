@@ -8,15 +8,15 @@ import (
 )
 
 type PlanReference struct {
-	Value interface{}
+	Value any
 }
 
 type PlanBlock struct {
 	Type       string
 	Name       string
 	BlockType  string
-	Blocks     map[string]map[string]interface{}
-	Attributes map[string]interface{}
+	Blocks     map[string]map[string]any
+	Attributes map[string]any
 }
 
 func NewPlanBlock(blockType, resourceType, resourceName string) *PlanBlock {
@@ -28,8 +28,8 @@ func NewPlanBlock(blockType, resourceType, resourceName string) *PlanBlock {
 		Type:       resourceType,
 		Name:       resourceName,
 		BlockType:  blockType,
-		Blocks:     make(map[string]map[string]interface{}),
-		Attributes: make(map[string]interface{}),
+		Blocks:     make(map[string]map[string]any),
+		Attributes: make(map[string]any),
 	}
 }
 
@@ -53,7 +53,7 @@ func (rb *PlanBlock) ToHCL() string {
 	}
 
 	var res bytes.Buffer
-	if err := resourceTmpl.Execute(&res, map[string]interface{}{
+	if err := resourceTmpl.Execute(&res, map[string]any{
 		"BlockType":  rb.BlockType,
 		"Type":       rb.Type,
 		"Name":       rb.Name,
@@ -72,11 +72,11 @@ var resourceTemplate = `{{ .BlockType }} "{{ .Type }}" "{{ .Name }}" {
 	{{end}}{{ end }}}
 {{end}}}`
 
-func renderTemplateValue(val interface{}) string {
+func renderTemplateValue(val any) string {
 	switch t := val.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		return fmt.Sprintf("= %s", renderMap(t))
-	case []interface{}:
+	case []any:
 		if isMapSlice(t) {
 			return renderSlice(t)
 		}
@@ -86,21 +86,15 @@ func renderTemplateValue(val interface{}) string {
 	}
 }
 
-func renderPrimitive(val interface{}) string {
+func renderPrimitive(val any) string {
 	switch t := val.(type) {
 	case PlanReference:
 		return fmt.Sprintf("%v", t.Value)
 	case string:
-		if strings.Contains(t, "\n") {
-			return fmt.Sprintf(`<<EOF
-%s
-EOF
-`, t)
-		}
-		return fmt.Sprintf("%q", t)
-	case map[string]interface{}:
+		return parseStringPrimitive(t)
+	case map[string]any:
 		return renderMap(t)
-	case []interface{}:
+	case []any:
 		return renderSlice(t)
 	default:
 		return fmt.Sprintf("%#v", t)
@@ -108,20 +102,33 @@ EOF
 
 }
 
-func isMapSlice(vars []interface{}) bool {
+func parseStringPrimitive(input string) string {
+	// we must escape templating
+	// ref: https://developer.hashicorp.com/terraform/language/expressions/strings#escape-sequences-1
+	input = escapeSpecialSequences(input)
+	if strings.Contains(input, "\n") {
+		return fmt.Sprintf(`<<EOF
+		%s
+		EOF
+		`, input)
+	}
+	return fmt.Sprintf("%q", input)
+}
+
+func isMapSlice(vars []any) bool {
 	if len(vars) == 0 {
 		return false
 	}
 	val := vars[0]
 	switch val.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		return true
 	default:
 		return false
 	}
 }
 
-func renderSlice(vals []interface{}) string {
+func renderSlice(vals []any) string {
 	if len(vals) == 0 {
 		return "[]"
 	}
@@ -130,7 +137,7 @@ func renderSlice(vals []interface{}) string {
 
 	switch t := val.(type) {
 	// if vals[0] is a map[string]interface this is a block, so render it as a map
-	case map[string]interface{}:
+	case map[string]any:
 		return renderMap(t)
 	// otherwise its going to be just a list of primitives
 	default:
@@ -143,7 +150,7 @@ func renderSlice(vals []interface{}) string {
 	}
 }
 
-func renderMap(val map[string]interface{}) string {
+func renderMap(val map[string]any) string {
 	if len(val) == 0 {
 		return "{}"
 	}
@@ -157,4 +164,30 @@ func renderMap(val map[string]interface{}) string {
 	}
 	result = fmt.Sprintf("%s}", result)
 	return result
+}
+
+func escapeSpecialSequences(input string) string {
+	var sb strings.Builder
+	sb.Grow(len(input))
+	for i, r := range input {
+		if r == '$' || r == '%' {
+			sb.WriteRune(r)
+			remain := input[i+1:]
+
+			// it's not a special sequence
+			if remain == "" || remain[0] != '{' {
+				continue
+			}
+
+			// sequence is already escaped
+			if i > 0 && rune(input[i-1]) == r {
+				continue
+			}
+
+			sb.WriteRune(r)
+		} else {
+			sb.WriteRune(r)
+		}
+	}
+	return sb.String()
 }

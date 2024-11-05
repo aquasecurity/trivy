@@ -20,12 +20,13 @@ import (
 	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -95,7 +96,7 @@ func TestTLSRegistry(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
+			imageName: testutil.ImageName("", "alpine-310", ""),
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.ImageOptions{
 				RegistryOptions: types.RegistryOptions{
@@ -120,7 +121,7 @@ func TestTLSRegistry(t *testing.T) {
 		},
 		{
 			name:      "happy path with docker login",
-			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
+			imageName: testutil.ImageName("", "alpine-310", ""),
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.ImageOptions{
 				RegistryOptions: types.RegistryOptions{
@@ -140,7 +141,7 @@ func TestTLSRegistry(t *testing.T) {
 		},
 		{
 			name:      "sad path: tls verify",
-			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
+			imageName: testutil.ImageName("", "alpine-310", ""),
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.ImageOptions{
 				RegistryOptions: types.RegistryOptions{
@@ -156,7 +157,7 @@ func TestTLSRegistry(t *testing.T) {
 		},
 		{
 			name:      "sad path: no credential",
-			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
+			imageName: testutil.ImageName("", "alpine-310", ""),
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.ImageOptions{
 				RegistryOptions: types.RegistryOptions{

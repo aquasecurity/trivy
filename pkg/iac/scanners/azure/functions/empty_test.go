@@ -9,48 +9,48 @@ import (
 func Test_Empty(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected bool
 	}{
 		{
 			name: "string is empty",
-			args: []interface{}{
+			args: []any{
 				"",
 			},
 			expected: true,
 		},
 		{
 			name: "string is not empty",
-			args: []interface{}{
+			args: []any{
 				"hello, world",
 			},
 			expected: false,
 		},
 		{
 			name: "array is empty",
-			args: []interface{}{
+			args: []any{
 				[]string{},
 			},
 			expected: true,
 		},
 		{
 			name: "array is not empty",
-			args: []interface{}{
+			args: []any{
 				[]string{"Hello", "World"},
 			},
 			expected: false,
 		},
 		{
 			name: "map is empty",
-			args: []interface{}{
-				map[string]interface{}{},
+			args: []any{
+				make(map[string]any),
 			},
 			expected: true,
 		},
 		{
 			name: "map is not empty",
-			args: []interface{}{
-				map[string]interface{}{
+			args: []any{
+				map[string]any{
 					"hello": "world",
 				},
 				"world",

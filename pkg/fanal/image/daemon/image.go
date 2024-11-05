@@ -110,16 +110,25 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 		return nil, xerrors.Errorf("unable to get diff IDs: %w", err)
 	}
 
-	created, err := time.Parse(time.RFC3339Nano, img.inspect.Created)
-	if err != nil {
-		return nil, xerrors.Errorf("failed parsing created %s: %w", img.inspect.Created, err)
+	var created v1.Time
+	// `Created` field can be empty. Skip parsing to avoid error.
+	// cf. https://github.com/moby/moby/blob/8e96db1c328d0467b015768e42a62c0f834970bb/api/types/types.go#L76-L77
+	if img.inspect.Created != "" {
+		var t time.Time
+		t, err = time.Parse(time.RFC3339Nano, img.inspect.Created)
+		if err != nil {
+			return nil, xerrors.Errorf("failed parsing created %s: %w", img.inspect.Created, err)
+		}
+		created = v1.Time{
+			Time: t,
+		}
 	}
 
 	return &v1.ConfigFile{
 		Architecture:  img.inspect.Architecture,
 		Author:        img.inspect.Author,
 		Container:     img.inspect.Container,
-		Created:       v1.Time{Time: created},
+		Created:       created,
 		DockerVersion: img.inspect.DockerVersion,
 		Config:        img.imageConfig(img.inspect.Config),
 		History:       img.history,
@@ -132,7 +141,7 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 }
 
 func (img *image) configFile() (*v1.ConfigFile, error) {
-	log.Logger.Debug("Saving the container image to a local file to obtain the image config...")
+	log.Debug("Saving the container image to a local file to obtain the image config...")
 
 	// Need to fall back into expensive operations like "docker save"
 	// because the config file cannot be generated properly from container engine API for some reason.

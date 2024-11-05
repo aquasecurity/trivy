@@ -1,0 +1,192 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/ubi-7.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "redhat",
+      "Name": "7.7"
+    },
+    "ImageID": "sha256:6fecccc91c83e11ae4fede6793e9410841221d4779520c2b9e9fb7f7b3830264",
+    "DiffIDs": [
+      "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac",
+      "sha256:ecb0311889b3478bc9b62660fa9391d5ebf8da4c6ae143cb33434873668f9e36"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2019-09-02T12:56:43.939095Z",
+      "docker_version": "1.13.1",
+      "history": [
+        {
+          "created": "2019-09-02T12:56:36.440695936Z",
+          "comment": "Imported from -"
+        },
+        {
+          "created": "2019-09-02T12:56:43.939095Z"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac",
+          "sha256:ecb0311889b3478bc9b62660fa9391d5ebf8da4c6ae143cb33434873668f9e36"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "container=oci"
+        ],
+        "Hostname": "0da2e3774382",
+        "Image": "2e9103a7b91a7ffe333e9162ce98ea078263747527571655e93bd4d35ee278f0",
+        "Labels": {
+          "architecture": "x86_64",
+          "authoritative-source-url": "registry.access.redhat.com",
+          "build-date": "2019-09-02T12:56:18.824770",
+          "com.redhat.build-host": "cpt-1005.osbs.prod.upshift.rdu2.redhat.com",
+          "com.redhat.component": "ubi7-container",
+          "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+          "description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+          "distribution-scope": "public",
+          "io.k8s.description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+          "io.k8s.display-name": "Red Hat Universal Base Image 7",
+          "io.openshift.tags": "base rhel7",
+          "maintainer": "Red Hat, Inc.",
+          "name": "ubi7",
+          "release": "140",
+          "summary": "Provides the latest release of the Red Hat Universal Base Image 7.",
+          "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi7/images/7.7-140",
+          "vcs-ref": "4c80c8aa26e69950ab11b87789c8fb7665b1632d",
+          "vcs-type": "git",
+          "vendor": "Red Hat, Inc.",
+          "version": "7.7"
+        },
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/ubi-7.tar.gz (redhat 7.7)",
+      "Class": "os-pkgs",
+      "Type": "redhat",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@4.2.46-33.el7.x86_64",
+          "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/redhat/bash@4.2.46-33.el7?arch=x86_64\u0026distro=redhat-7.7",
+            "UID": "f5b786381193ad1b"
+          },
+          "InstalledVersion": "4.2.46-33.el7",
+          "Status": "will_not_fix",
+          "Layer": {
+            "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",
+            "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
+          },
+          "SeveritySource": "redhat",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
+          "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
+          "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-273"
+          ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.2,
+              "V3Score": 7.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            }
+          },
+          "References": [
+            "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
+            "https://access.redhat.com/security/cve/CVE-2019-18276",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
+            "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
+            "https://linux.oracle.com/cve/CVE-2019-18276.html",
+            "https://linux.oracle.com/errata/ELSA-2021-1679.html",
+            "https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-18276",
+            "https://security.gentoo.org/glsa/202105-34",
+            "https://security.netapp.com/advisory/ntap-20200430-0003/",
+            "https://www.youtube.com/watch?v=-wGtxJ8opa8"
+          ],
+          "PublishedDate": "2019-11-28T01:15:00Z",
+          "LastModifiedDate": "2021-05-26T12:15:00Z"
+        }
+      ]
+    },
+    {
+      "Target": "Python",
+      "Class": "lang-pkgs",
+      "Type": "python-pkg",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-40897",
+          "PkgName": "setuptools",
+          "PkgPath": "usr/lib/python2.7/site-packages/setuptools-0.9.8-py2.7.egg-info/PKG-INFO",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/setuptools@0.9.8",
+            "UID": "13d32ebdc7bda1b4"
+          },
+          "InstalledVersion": "0.9.8",
+          "FixedVersion": "65.5.1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",
+            "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-40897",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "pypa-setuptools: Regular Expression Denial of Service (ReDoS) in package_index.py",
+          "Description": "Python Packaging Authority (PyPA) setuptools before 65.5.1 allows remote attackers to cause a denial of service via HTML in a crafted package or custom PackageIndex page. There is a Regular Expression Denial of Service (ReDoS) in package_index.py.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-1333"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 5.9
+            }
+          },
+          "References": [
+            "https://access.redhat.com/errata/RHSA-2023:0952",
+            "https://access.redhat.com/security/cve/CVE-2022-40897"
+          ],
+          "PublishedDate": "2022-12-23T00:15:13.987Z",
+          "LastModifiedDate": "2024-06-21T19:15:23.877Z"
+        }
+      ]
+    }
+  ]
+}

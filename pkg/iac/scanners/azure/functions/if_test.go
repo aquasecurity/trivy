@@ -10,27 +10,27 @@ func Test_If(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
-		expected interface{}
+		args     []any
+		expected any
 	}{
 		{
 			name:     "If with true",
-			args:     []interface{}{true, "true", "false"},
+			args:     []any{true, "true", "false"},
 			expected: "true",
 		},
 		{
 			name:     "If with false",
-			args:     []interface{}{false, "true", "false"},
+			args:     []any{false, "true", "false"},
 			expected: "false",
 		},
 		{
 			name: "If with true and slice returned",
-			args: []interface{}{
+			args: []any{
 				true,
-				[]interface{}{"Hello", "World"},
-				[]interface{}{"Goodbye", "World"},
+				[]any{"Hello", "World"},
+				[]any{"Goodbye", "World"},
 			},
-			expected: []interface{}{"Hello", "World"},
+			expected: []any{"Hello", "World"},
 		},
 	}
 

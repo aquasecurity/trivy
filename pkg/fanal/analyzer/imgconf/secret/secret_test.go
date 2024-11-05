@@ -99,7 +99,7 @@ func Test_secretAnalyzer_Analyze(t *testing.T) {
 				Config: tt.config,
 			})
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
 			require.NoError(t, err)

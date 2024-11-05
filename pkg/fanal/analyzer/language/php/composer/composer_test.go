@@ -20,19 +20,20 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 	}{
 		{
 			name: "happy path",
-			dir:  "testdata/happy",
+			dir:  "testdata/composer/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "pear/log@1.13.3",
-								Name:     "pear/log",
-								Version:  "1.13.3",
-								Indirect: false,
-								Licenses: []string{"MIT"},
+								ID:           "pear/log@1.13.3",
+								Name:         "pear/log",
+								Version:      "1.13.3",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
 								Locations: []types.Location{
 									{
 										StartLine: 9,
@@ -42,11 +43,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								DependsOn: []string{"pear/pear_exception@v1.0.2"},
 							},
 							{
-								ID:       "pear/pear_exception@v1.0.2",
-								Name:     "pear/pear_exception",
-								Version:  "v1.0.2",
-								Indirect: true,
-								Licenses: []string{"BSD-2-Clause"},
+								ID:           "pear/pear_exception@v1.0.2",
+								Name:         "pear/pear_exception",
+								Version:      "v1.0.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Licenses:     []string{"BSD-2-Clause"},
 								Locations: []types.Location{
 									{
 										StartLine: 69,
@@ -61,19 +63,20 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 		},
 		{
 			name: "no composer.json",
-			dir:  "testdata/no-composer-json",
+			dir:  "testdata/composer/no-composer-json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "pear/log@1.13.3",
-								Name:     "pear/log",
-								Version:  "1.13.3",
-								Indirect: false,
-								Licenses: []string{"MIT"},
+								ID:           "pear/log@1.13.3",
+								Name:         "pear/log",
+								Version:      "1.13.3",
+								Indirect:     false,
+								Relationship: types.RelationshipUnknown,
+								Licenses:     []string{"MIT"},
 								Locations: []types.Location{
 									{
 										StartLine: 9,
@@ -83,11 +86,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								DependsOn: []string{"pear/pear_exception@v1.0.2"},
 							},
 							{
-								ID:       "pear/pear_exception@v1.0.2",
-								Name:     "pear/pear_exception",
-								Version:  "v1.0.2",
-								Indirect: false,
-								Licenses: []string{"BSD-2-Clause"},
+								ID:           "pear/pear_exception@v1.0.2",
+								Name:         "pear/pear_exception",
+								Version:      "v1.0.2",
+								Indirect:     false,
+								Relationship: types.RelationshipUnknown,
+								Licenses:     []string{"BSD-2-Clause"},
 								Locations: []types.Location{
 									{
 										StartLine: 69,
@@ -102,19 +106,20 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 		},
 		{
 			name: "wrong composer.json",
-			dir:  "testdata/wrong-composer-json",
+			dir:  "testdata/composer/wrong-composer-json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "pear/log@1.13.3",
-								Name:     "pear/log",
-								Version:  "1.13.3",
-								Indirect: false,
-								Licenses: []string{"MIT"},
+								ID:           "pear/log@1.13.3",
+								Name:         "pear/log",
+								Version:      "1.13.3",
+								Indirect:     false,
+								Relationship: types.RelationshipUnknown,
+								Licenses:     []string{"MIT"},
 								Locations: []types.Location{
 									{
 										StartLine: 9,
@@ -124,11 +129,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								DependsOn: []string{"pear/pear_exception@v1.0.2"},
 							},
 							{
-								ID:       "pear/pear_exception@v1.0.2",
-								Name:     "pear/pear_exception",
-								Version:  "v1.0.2",
-								Indirect: false,
-								Licenses: []string{"BSD-2-Clause"},
+								ID:           "pear/pear_exception@v1.0.2",
+								Name:         "pear/pear_exception",
+								Version:      "v1.0.2",
+								Indirect:     false,
+								Relationship: types.RelationshipUnknown,
+								Licenses:     []string{"BSD-2-Clause"},
 								Locations: []types.Location{
 									{
 										StartLine: 69,
@@ -143,7 +149,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 		},
 		{
 			name: "broken composer.lock",
-			dir:  "testdata/sad",
+			dir:  "testdata/composer/sad",
 			want: &analyzer.AnalysisResult{},
 		},
 	}
@@ -157,7 +163,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

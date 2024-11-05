@@ -28,12 +28,12 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Gradle,
 						FilePath: "gradle.lockfile",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "junit:junit:4.13",
-								Name:     "junit:junit",
-								Version:  "4.13",
-								Indirect: true,
+								ID:           "junit:junit:4.13",
+								Name:         "junit:junit",
+								Version:      "4.13",
+								Relationship: types.RelationshipUnknown,
 								Locations: []types.Location{
 									{
 										StartLine: 4,
@@ -48,10 +48,10 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "org.hamcrest:hamcrest-core:1.3",
-								Name:     "org.hamcrest:hamcrest-core",
-								Version:  "1.3",
-								Indirect: true,
+								ID:           "org.hamcrest:hamcrest-core:1.3",
+								Name:         "org.hamcrest:hamcrest-core",
+								Version:      "1.3",
+								Relationship: types.RelationshipUnknown,
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -72,12 +72,12 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Gradle,
 						FilePath: "gradle.lockfile",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:       "junit:junit:4.13",
-								Name:     "junit:junit",
-								Version:  "4.13",
-								Indirect: true,
+								ID:           "junit:junit:4.13",
+								Name:         "junit:junit",
+								Version:      "4.13",
+								Relationship: types.RelationshipUnknown,
 								Locations: []types.Location{
 									{
 										StartLine: 4,
@@ -86,10 +86,10 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "org.hamcrest:hamcrest-core:1.3",
-								Name:     "org.hamcrest:hamcrest-core",
-								Version:  "1.3",
-								Indirect: true,
+								ID:           "org.hamcrest:hamcrest-core:1.3",
+								Name:         "org.hamcrest:hamcrest-core",
+								Version:      "1.3",
+								Relationship: types.RelationshipUnknown,
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -122,7 +122,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

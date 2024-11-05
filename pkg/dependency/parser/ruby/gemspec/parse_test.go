@@ -8,50 +8,62 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/ruby/gemspec"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
+		want      []ftypes.Package
 		wantErr   string
 	}{
 		{
 			name:      "happy",
 			inputFile: "testdata/normal00.gemspec",
-			want: []types.Library{{
-				Name:    "rake",
-				Version: "13.0.3",
-				License: "MIT",
-			}},
+			want: []ftypes.Package{
+				{
+					Name:     "rake",
+					Version:  "13.0.3",
+					Licenses: []string{"MIT"},
+				},
+			},
 		},
 		{
 			name:      "another variable name",
 			inputFile: "testdata/normal01.gemspec",
-			want: []types.Library{{
-				Name:    "async",
-				Version: "1.25.0",
-			}},
+			want: []ftypes.Package{
+				{
+					Name:    "async",
+					Version: "1.25.0",
+				},
+			},
 		},
 		{
 			name:      "license",
 			inputFile: "testdata/license.gemspec",
-			want: []types.Library{{
-				Name:    "async",
-				Version: "1.25.0",
-				License: "MIT",
-			}},
+			want: []ftypes.Package{
+				{
+					Name:     "async",
+					Version:  "1.25.0",
+					Licenses: []string{"MIT"},
+				},
+			},
 		},
 		{
 			name:      "multiple licenses",
 			inputFile: "testdata/multiple_licenses.gemspec",
-			want: []types.Library{{
-				Name:    "test-unit",
-				Version: "3.3.7",
-				License: "Ruby, BSDL, PSFL",
-			}},
+			want: []ftypes.Package{
+				{
+					Name:    "test-unit",
+					Version: "3.3.7",
+					Licenses: []string{
+						"Ruby",
+						"BSDL",
+						"PSFL",
+					},
+				},
+			},
 		},
 		{
 			name:      "malformed variable name",
@@ -71,7 +83,7 @@ func TestParse(t *testing.T) {
 
 			got, _, err := gemspec.NewParser().Parse(f)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}

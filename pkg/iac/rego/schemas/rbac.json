@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/aquasecurity/trivy-policies/blob/main/pkg/rego/schemas/rbac.json",
+  "$id": "https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/rbac.json",
   "type": "object",
   "properties": {
     "apiVersion": {

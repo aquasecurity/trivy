@@ -8,14 +8,13 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/php/composer"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -27,7 +26,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeComposer, newComposerAnalyzer)
 }
 
-const version = 1
+const composerAnalyzerVersion = 1
 
 var requiredFiles = []string{
 	types.ComposerLock,
@@ -35,7 +34,7 @@ var requiredFiles = []string{
 }
 
 type composerAnalyzer struct {
-	lockParser godeptypes.Parser
+	lockParser language.Parser
 }
 
 func newComposerAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -62,9 +61,10 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 
 		// Parse composer.json alongside composer.lock to identify the direct dependencies
 		if err = a.mergeComposerJson(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.ComposerJson), err)
+			log.Warn("Unable to parse composer.json to identify direct dependencies",
+				log.FilePath(filepath.Join(filepath.Dir(path), types.ComposerJson)), log.Err(err))
 		}
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 
 		return nil
@@ -96,7 +96,7 @@ func (a composerAnalyzer) Type() analyzer.Type {
 }
 
 func (a composerAnalyzer) Version() int {
-	return version
+	return composerAnalyzerVersion
 }
 
 func (a composerAnalyzer) parseComposerLock(path string, r io.Reader) (*types.Application, error) {
@@ -109,16 +109,19 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 	p, err := a.parseComposerJson(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from composer.lock
-		log.Logger.Debugf("Unable to determine the direct dependencies: %s not found", path)
+		log.Debug("Unable to determine the direct dependencies, composer.json not found", log.FilePath(path))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	for i, lib := range app.Libraries {
+	for i, pkg := range app.Packages {
 		// Identify the direct/transitive dependencies
-		if _, ok := p[lib.Name]; !ok {
-			app.Libraries[i].Indirect = true
+		if _, ok := p[pkg.Name]; ok {
+			app.Packages[i].Relationship = types.RelationshipDirect
+		} else {
+			app.Packages[i].Indirect = true
+			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
 

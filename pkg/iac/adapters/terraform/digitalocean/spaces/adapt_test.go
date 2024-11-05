@@ -3,14 +3,13 @@ package spaces
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean/spaces"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean/spaces"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptBuckets(t *testing.T) {
@@ -70,7 +69,7 @@ func Test_adaptBuckets(t *testing.T) {
 					Metadata:     iacTypes.NewTestMetadata(),
 					Name:         iacTypes.String("", iacTypes.NewTestMetadata()),
 					Objects:      nil,
-					ACL:          iacTypes.String("public-read", iacTypes.NewTestMetadata()),
+					ACL:          iacTypes.String("private", iacTypes.NewTestMetadata()),
 					ForceDestroy: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					Versioning: spaces.Versioning{
 						Metadata: iacTypes.NewTestMetadata(),

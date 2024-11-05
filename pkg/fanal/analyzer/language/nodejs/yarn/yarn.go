@@ -10,17 +10,17 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -42,19 +42,29 @@ const version = 2
 var fragmentRegexp = regexp.MustCompile(`(\S+):(@?.*?)(@(.*?)|)$`)
 
 type yarnAnalyzer struct {
+	logger            *log.Logger
 	packageJsonParser *packagejson.Parser
-	lockParser        godeptypes.Parser
 	comparer          npm.Comparer
 	license           *license.License
 }
 
 func newYarnAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &yarnAnalyzer{
+		logger:            log.WithPrefix("yarn"),
 		packageJsonParser: packagejson.NewParser(),
-		lockParser:        yarn.NewParser(),
 		comparer:          npm.Comparer{},
 		license:           license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
+}
+
+type parserWithPatterns struct {
+	patterns map[string][]string
+}
+
+func (p *parserWithPatterns) Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	pkgs, deps, patterns, err := yarn.NewParser().Parse(r)
+	p.patterns = patterns
+	return pkgs, deps, err
 }
 
 func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -65,8 +75,9 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
+		parser := &parserWithPatterns{}
 		// Parse yarn.lock
-		app, err := a.parseYarnLock(filePath, r)
+		app, err := language.Parse(types.Yarn, filePath, r, parser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -75,18 +86,19 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		licenses, err := a.traverseLicenses(input.FS, filePath)
 		if err != nil {
-			log.Logger.Debugf("Unable to traverse licenses: %s", err)
+			a.logger.Debug("Unable to traverse licenses", log.Err(err))
 		}
 
 		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
-		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to remove dev dependencies: %s", path.Join(path.Dir(filePath), types.NpmPkg), err)
+		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app, parser.patterns); err != nil {
+			a.logger.Warn("Unable to parse package.json to remove dev dependencies",
+				log.FilePath(path.Join(path.Dir(filePath), types.NpmPkg)), log.Err(err))
 		}
 
 		// Fill licenses
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			if l, ok := licenses[lib.ID]; ok {
-				app.Libraries[i].Licenses = l
+				app.Packages[i].Licenses = l
 			}
 		}
 
@@ -146,36 +158,32 @@ func (a yarnAnalyzer) Version() int {
 	return version
 }
 
-func (a yarnAnalyzer) parseYarnLock(filePath string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Yarn, filePath, r, a.lockParser)
-}
-
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
-func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
+func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application, patterns map[string][]string) error {
 	packageJsonPath := path.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Yarn: %s not found", packageJsonPath)
+		a.logger.Debug("package.json not found", log.FilePath(packageJsonPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", dir, err)
 	}
 
-	// yarn.lock file can contain same libraries with different versions
+	// yarn.lock file can contain same packages with different versions
 	// save versions separately for version comparison by comparator
-	pkgIDs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
 	// Walk prod dependencies
-	pkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDeps, false)
+	pkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDeps, patterns, false)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
 
 	// Walk dev dependencies
-	devPkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDevDeps, true)
+	devPkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDevDeps, patterns, true)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
@@ -184,20 +192,20 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	// If the same package is found in both prod and dev dependencies, use the one in prod.
 	pkgs = lo.Assign(devPkgs, pkgs)
 
-	pkgSlice := maps.Values(pkgs)
+	pkgSlice := lo.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
-	// Save libraries
-	app.Libraries = pkgSlice
+	// Save packages
+	app.Packages = pkgSlice
 	return nil
 }
 
-func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]types.Package,
-	directDeps map[string]string, dev bool) (map[string]types.Package, error) {
+func (a yarnAnalyzer) walkDependencies(pkgs []types.Package, pkgIDs map[string]types.Package,
+	directDeps map[string]string, patterns map[string][]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
-	pkgs := make(map[string]types.Package)
-	for _, pkg := range libs {
+	directPkgs := make(map[string]types.Package)
+	for _, pkg := range pkgs {
 		constraint, ok := directDeps[pkg.Name]
 		if !ok {
 			continue
@@ -210,26 +218,32 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 			constraint = m[4]
 		}
 
-		// npm has own comparer to compare versions
-		if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-			return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
-		} else if !match {
-			continue
+		// Try to find an exact match to the pattern.
+		// In some cases, patterns from yarn.lock and package.json may not match (e.g., yarn v2 uses the allowed version for ID).
+		// Therefore, if the patterns don't match - compare versions.
+		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, constraint)) {
+			// npm has own comparer to compare versions
+			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+			} else if !match {
+				continue
+			}
 		}
 
 		// Mark as a direct dependency
 		pkg.Indirect = false
+		pkg.Relationship = types.RelationshipDirect
 		pkg.Dev = dev
-		pkgs[pkg.ID] = pkg
+		directPkgs[pkg.ID] = pkg
 
 	}
 
 	// Walk indirect dependencies
-	for _, pkg := range pkgs {
-		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
+	for _, pkg := range directPkgs {
+		a.walkIndirectDependencies(pkg, pkgIDs, directPkgs)
 	}
 
-	return pkgs, nil
+	return directPkgs, nil
 }
 
 func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
@@ -244,6 +258,7 @@ func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps m
 		}
 
 		dep.Indirect = true
+		dep.Relationship = types.RelationshipIndirect
 		dep.Dev = pkg.Dev
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)

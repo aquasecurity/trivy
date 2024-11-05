@@ -5,25 +5,24 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	libs := make(map[string]types.Library)
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	pkgs := make(map[string]ftypes.Package)
 	var dependsOn, directDeps []string
-	var deps []types.Dependency
+	var deps []ftypes.Dependency
 	var pkgID string
 
 	lineNum := 1
@@ -34,7 +33,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		// Parse dependencies
 		if countLeadingSpace(line) == 4 {
 			if len(dependsOn) > 0 {
-				deps = append(deps, types.Dependency{
+				deps = append(deps, ftypes.Dependency{
 					ID:        pkgID,
 					DependsOn: dependsOn,
 				})
@@ -49,12 +48,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			version = strings.SplitN(version, "-", 2)[0] // drop platform (e.g. 1.13.6-x86_64-linux => 1.13.6)
 			name := s[0]
 			pkgID = packageID(name, version)
-			libs[name] = types.Library{
-				ID:       pkgID,
-				Name:     name,
-				Version:  version,
-				Indirect: true,
-				Locations: []types.Location{
+			pkgs[name] = ftypes.Package{
+				ID:           pkgID,
+				Name:         name,
+				Version:      version,
+				Relationship: ftypes.RelationshipIndirect,
+				Locations: []ftypes.Location{
 					{
 						StartLine: lineNum,
 						EndLine:   lineNum,
@@ -77,7 +76,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 	// append last dependency (if any)
 	if len(dependsOn) > 0 {
-		deps = append(deps, types.Dependency{
+		deps = append(deps, ftypes.Dependency{
 			ID:        pkgID,
 			DependsOn: dependsOn,
 		})
@@ -85,17 +84,17 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 	// Identify which are direct dependencies
 	for _, d := range directDeps {
-		if l, ok := libs[d]; ok {
-			l.Indirect = false
-			libs[d] = l
+		if l, ok := pkgs[d]; ok {
+			l.Relationship = ftypes.RelationshipDirect
+			pkgs[d] = l
 		}
 	}
 
 	for i, dep := range deps {
 		dependsOn = make([]string, 0)
 		for _, pkgName := range dep.DependsOn {
-			if lib, ok := libs[pkgName]; ok {
-				dependsOn = append(dependsOn, packageID(pkgName, lib.Version))
+			if pkg, ok := pkgs[pkgName]; ok {
+				dependsOn = append(dependsOn, packageID(pkgName, pkg.Version))
 			}
 		}
 		deps[i].DependsOn = dependsOn
@@ -104,11 +103,9 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	libSlice := maps.Values(libs)
-	sort.Slice(libSlice, func(i, j int) bool {
-		return libSlice[i].Name < libSlice[j].Name
-	})
-	return libSlice, deps, nil
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+	return pkgSlice, deps, nil
 }
 
 func countLeadingSpace(line string) int {

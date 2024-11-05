@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -39,17 +40,19 @@ func TestWriter_Write(t *testing.T) {
 						Type:   "yarn",
 						Packages: []ftypes.Package{
 							{
-								Name:    "@xtuc/ieee754",
-								Version: "1.2.0",
+								Name:         "@xtuc/ieee754",
+								Version:      "1.2.0",
+								Relationship: ftypes.RelationshipDirect,
 							},
 							{
-								Name:    "@xtuc/long",
-								Version: "4.2.2",
+								Name:         "@xtuc/long",
+								Version:      "4.2.2",
+								Relationship: ftypes.RelationshipDirect,
 							},
 							{
-								Name:     "@xtuc/binaryen",
-								Version:  "1.37.33",
-								Indirect: true,
+								Name:         "@xtuc/binaryen",
+								Version:      "1.37.33",
+								Relationship: ftypes.RelationshipIndirect,
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -243,11 +246,11 @@ func TestWriter_Write(t *testing.T) {
 			inputResults := tt.report
 
 			err := w.Write(context.Background(), inputResults)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			var got github.DependencySnapshot
 			err = json.Unmarshal(written.Bytes(), &got)
-			assert.NoError(t, err, "invalid github written")
+			require.NoError(t, err, "invalid github written")
 			assert.Equal(t, tt.want, got.Manifests, tt.name)
 		})
 	}

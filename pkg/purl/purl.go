@@ -84,7 +84,7 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		var qs packageurl.Qualifiers
 		name, namespace, qs = parseApk(name, metadata.OS)
 		qualifiers = append(qualifiers, qs...)
-	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
+	case packageurl.TypeMaven, packageurl.TypeGradle:
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
 		name = parsePyPI(name)
@@ -109,6 +109,10 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 			return nil, nil
 		}
 		return (*PackageURL)(purl), nil
+	case packageurl.TypeJulia:
+		var qs packageurl.Qualifiers
+		namespace, name, qs = parseJulia(name, pkg.ID) // for Julia, the ID is set to the package UUID
+		qualifiers = append(qualifiers, qs...)
 	}
 
 	return (*PackageURL)(packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath)), nil
@@ -354,16 +358,19 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl
 		return "", packageurl.Qualifiers{}
 	}
 
-	// SLES string has whitespace
 	family := fos.Family
-	if fos.Family == ftypes.SLES {
-		family = "sles"
+	// SLES string has whitespace, also highlevel family is not the same as distro
+	if fos.Family == ftypes.SLES || fos.Family == ftypes.SLEMicro {
+		family = "suse"
+	}
+	if fos.Family == ftypes.OpenSUSETumbleweed || fos.Family == ftypes.OpenSUSELeap {
+		family = "opensuse"
 	}
 
 	qualifiers := packageurl.Qualifiers{
 		{
 			Key:   "distro",
-			Value: fmt.Sprintf("%s-%s", family, fos.Name),
+			Value: fmt.Sprintf("%s-%s", fos.Family, fos.Name),
 		},
 	}
 
@@ -424,15 +431,29 @@ func parseNpm(pkgName string) (string, string) {
 	return parsePkgName(name)
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/7759d1cf81629267742eeeb0cdfccf5ebd624cc5/PURL-TYPES.rst#julia
+func parseJulia(pkgName, pkgUUID string) (string, string, packageurl.Qualifiers) {
+	namespace, name := parsePkgName(pkgName)
+	qualifiers := packageurl.Qualifiers{
+		{
+			Key:   "uuid",
+			Value: pkgUUID,
+		},
+	}
+	return namespace, name, qualifiers
+}
+
 func purlType(t ftypes.TargetType) string {
 	switch t {
-	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		return packageurl.TypeMaven
 	case ftypes.Bundler, ftypes.GemSpec:
 		return packageurl.TypeGem
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		return packageurl.TypeNuget
-	case ftypes.CondaPkg:
+	case ftypes.Composer, ftypes.ComposerVendor:
+		return packageurl.TypeComposer
+	case ftypes.CondaPkg, ftypes.CondaEnv:
 		return packageurl.TypeConda
 	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry:
 		return packageurl.TypePyPi
@@ -452,16 +473,19 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypePub
 	case ftypes.RustBinary, ftypes.Cargo:
 		return packageurl.TypeCargo
-	case ftypes.Alpine:
+	case ftypes.Alpine, ftypes.Chainguard, ftypes.Wolfi:
 		return packageurl.TypeApk
 	case ftypes.Debian, ftypes.Ubuntu:
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
-		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.Photon:
+		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.SLEMicro, ftypes.Photon,
+		ftypes.Azure, ftypes.CBLMariner:
 		return packageurl.TypeRPM
 	case TypeOCI:
 		return packageurl.TypeOCI
+	case ftypes.Julia:
+		return packageurl.TypeJulia
 	}
 	return string(t)
 }

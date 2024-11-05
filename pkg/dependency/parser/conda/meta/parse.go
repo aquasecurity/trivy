@@ -5,7 +5,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -17,14 +18,14 @@ type packageJSON struct {
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
 // Parse parses Anaconda (a.k.a. conda) environment metadata.
 // e.g. <conda-root>/envs/<env>/conda-meta/<package>.json
 // For details see https://conda.io/projects/conda/en/latest/user-guide/concepts/environments.html
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var data packageJSON
 	err := json.NewDecoder(r).Decode(&data)
 	if err != nil {
@@ -35,11 +36,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("unable to parse conda package")
 	}
 
-	return []types.Library{
+	return []ftypes.Package{
 		{
-			Name:    data.Name,
-			Version: data.Version,
-			License: data.License, // can be empty
+			Name:     data.Name,
+			Version:  data.Version,
+			Licenses: licensing.SplitLicenses(data.License),
 		},
 	}, nil, nil
 }

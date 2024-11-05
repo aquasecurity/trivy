@@ -1,10 +1,10 @@
 package parser
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"testing"
 )
 
 func Test_resolve_find_in_map_value(t *testing.T) {
@@ -97,4 +97,27 @@ Resources:
 
 	nodeTypeProp := testRes.GetStringProperty("CacheNodeType", "")
 	assert.Equal(t, "cache.t2.micro", nodeTypeProp.Value())
+}
+
+func Test_InferType(t *testing.T) {
+	source := `---
+Mappings:
+  ApiDB:
+     MultiAZ:
+        development: False
+Resources:
+  ApiDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      MultiAZ: !FindInMap [ApiDB, MultiAZ, development]
+`
+
+	ctx := createTestFileContext(t, source)
+	require.NotNil(t, ctx)
+
+	testRes := ctx.GetResourceByLogicalID("ApiDB")
+	require.NotNil(t, testRes)
+
+	nodeTypeProp := testRes.GetBoolProperty("MultiAZ")
+	assert.False(t, nodeTypeProp.Value())
 }

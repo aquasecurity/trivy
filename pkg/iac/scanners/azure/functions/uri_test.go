@@ -9,12 +9,12 @@ import (
 func Test_Uri(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "uri from a base and relative with no trailing slash",
-			args: []interface{}{
+			args: []any{
 				"http://contoso.org/firstpath",
 				"myscript.sh",
 			},
@@ -22,7 +22,7 @@ func Test_Uri(t *testing.T) {
 		},
 		{
 			name: "uri from a base and relative with  trailing slash",
-			args: []interface{}{
+			args: []any{
 				"http://contoso.org/firstpath/",
 				"myscript.sh",
 			},
@@ -30,7 +30,7 @@ func Test_Uri(t *testing.T) {
 		},
 		{
 			name: "uri from a base with trailing slash and relative with ../",
-			args: []interface{}{
+			args: []any{
 				"http://contoso.org/firstpath/",
 				"../myscript.sh",
 			},

@@ -2,7 +2,6 @@ package jar_test
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,7 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
@@ -23,7 +23,7 @@ var (
 	// mvn dependency:list
 	// mvn dependency:tree -Dscope=compile -Dscope=runtime | awk '/:tree/,/BUILD SUCCESS/' | awk 'NR > 1 { print }' | head -n -2 | awk '{print $NF}' | awk -F":" '{printf("{\""$1":"$2"\", \""$4 "\", \"\"},\n")}'
 	// paths filled in manually
-	wantMaven = []types.Library{
+	wantMaven = []ftypes.Package{
 		{
 			Name:     "com.example:web-app",
 			Version:  "1.0-SNAPSHOT",
@@ -70,7 +70,7 @@ var (
 	// docker run --rm --name test -it test bash
 	// gradle app:dependencies --configuration implementation | grep "[+\]---" | cut -d" " -f2 | awk -F":" '{printf("{\""$1":"$2"\", \""$3"\", \"\"},\n")}'
 	// paths filled in manually
-	wantGradle = []types.Library{
+	wantGradle = []ftypes.Package{
 		{
 			Name:     "commons-dbcp:commons-dbcp",
 			Version:  "1.4",
@@ -94,7 +94,7 @@ var (
 	}
 
 	// manually created
-	wantSHA1 = []types.Library{
+	wantSHA1 = []ftypes.Package{
 		{
 			Name:     "org.springframework:spring-core",
 			Version:  "5.3.3",
@@ -103,7 +103,7 @@ var (
 	}
 
 	// offline
-	wantOffline = []types.Library{
+	wantOffline = []ftypes.Package{
 		{
 			Name:     "org.springframework:Spring Framework",
 			Version:  "2.5.6.SEC03",
@@ -112,7 +112,7 @@ var (
 	}
 
 	// manually created
-	wantHeuristic = []types.Library{
+	wantHeuristic = []ftypes.Package{
 		{
 			Name:     "com.example:heuristic",
 			Version:  "1.0.0-SNAPSHOT",
@@ -121,7 +121,7 @@ var (
 	}
 
 	// manually created
-	wantFatjar = []types.Library{
+	wantFatjar = []ftypes.Package{
 		{
 			Name:     "com.google.guava:failureaccess",
 			Version:  "1.0.1",
@@ -150,7 +150,7 @@ var (
 	}
 
 	// manually created
-	wantNestedJar = []types.Library{
+	wantNestedJar = []ftypes.Package{
 		{
 			Name:     "test:nested",
 			Version:  "0.0.1",
@@ -168,22 +168,54 @@ var (
 		},
 	}
 
-	// manually created
-	wantDuplicatesJar = []types.Library{
+	// Manually created.
+	// Files of `io.quarkus.gizmo.gizmo-1.1.jar` (gizmo:1.1.0 (from sha1)):
+	//├── bar
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.13.4)
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.12.3)
+	//├── foo
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.12.3)
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.13.4)
+	//├── jars
+	//│   ├── log4j-1.2.16.jar (log4j:1.2.16)
+	//│   └── log4j-1.2.17.jar (log4j:1.2.17)
+	//└── META-INF
+	//    ├── INDEX.LIST
+	//    ├── MANIFEST.MF
+	//    └── maven
+	//        └── io.quarkus.gizmo
+	//            └── gizmo
+	//                ├── pom.properties (gizmo:1.1)
+	//                └── pom.xml
+	wantDuplicatesJar = []ftypes.Package{
 		{
 			Name:     "io.quarkus.gizmo:gizmo",
-			Version:  "1.1.1.Final",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+			Version:  "1.1",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.16",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.16.jar",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.16.jar",
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
-			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.17.jar",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.17.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.12.3",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.13.4",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 	}
 )
@@ -203,7 +235,7 @@ type doc struct {
 	ArtifactID   string `json:"a"`
 	Version      string `json:"v"`
 	P            string `json:"p"`
-	VersionCount int    `json:versionCount`
+	VersionCount int    `json:"versionCount"`
 }
 
 func TestParse(t *testing.T) {
@@ -211,7 +243,7 @@ func TestParse(t *testing.T) {
 		name    string
 		file    string // Test input file
 		offline bool
-		want    []types.Library
+		want    []ftypes.Package
 	}{
 		{
 			name: "maven",
@@ -251,7 +283,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "duplicate libraries",
-			file: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+			file: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 			want: wantDuplicatesJar,
 		},
 	}
@@ -277,13 +309,13 @@ func TestParse(t *testing.T) {
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "Gizmo"):
 			res.Response.NumFound = 0
-		case strings.Contains(r.URL.Query().Get("q"), "85d30c06026afd9f5be26da3194d4698c447a904"):
+		case strings.Contains(r.URL.Query().Get("q"), "1c78bbc4d8c58b9af8eee82b84f2c26ec48e9a2b"):
 			res.Response.Docs = []doc{
 				{
 					ID:         "io.quarkus.gizmo.gizmo",
 					GroupID:    "io.quarkus.gizmo",
 					ArtifactID: "gizmo",
-					Version:    "1.1.1.Final",
+					Version:    "1.1.0",
 				},
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "heuristic"):
@@ -319,12 +351,8 @@ func TestParse(t *testing.T) {
 			got, _, err := p.Parse(f)
 			require.NoError(t, err)
 
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].Name < got[j].Name
-			})
-			sort.Slice(v.want, func(i, j int) bool {
-				return v.want[i].Name < v.want[j].Name
-			})
+			sort.Sort(ftypes.Packages(got))
+			sort.Sort(ftypes.Packages(v.want))
 
 			assert.Equal(t, v.want, got)
 		})

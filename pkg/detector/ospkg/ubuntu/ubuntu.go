@@ -60,6 +60,9 @@ var (
 		"22.04":     time.Date(2027, 4, 23, 23, 59, 59, 0, time.UTC),
 		"22.10":     time.Date(2023, 7, 20, 23, 59, 59, 0, time.UTC),
 		"23.04":     time.Date(2024, 1, 20, 23, 59, 59, 0, time.UTC),
+		"23.10":     time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
+		"24.04":     time.Date(2034, 3, 31, 23, 59, 59, 0, time.UTC),
+		"24.10":     time.Date(2025, 7, 9, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -76,10 +79,9 @@ func NewScanner() *Scanner {
 }
 
 // Detect scans and returns the vulnerabilities
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Ubuntu vulnerabilities...")
-	log.Logger.Debugf("ubuntu: os version: %s", osVer)
-	log.Logger.Debugf("ubuntu: the number of packages: %d", len(pkgs))
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
@@ -91,7 +93,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
 		if err != nil {
-			log.Logger.Debugf("failed to parse Ubuntu installed package version: %w", err)
+			log.DebugContext(ctx, "Failed to parse the installed package version", log.Err(err))
 			continue
 		}
 
@@ -115,7 +117,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
-				log.Logger.Debugf("failed to parse Ubuntu package version: %w", err)
+				log.DebugContext(ctx, "Failed to parse the fixed version",
+					log.String("version", adv.FixedVersion), log.Err(err))
 				continue
 			}
 

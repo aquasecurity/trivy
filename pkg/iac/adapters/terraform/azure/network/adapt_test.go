@@ -3,13 +3,13 @@ package network
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -65,15 +65,15 @@ func Test_Adapt(t *testing.T) {
 								SourcePorts: []network.PortRange{
 									{
 										Metadata: iacTypes.NewTestMetadata(),
-										Start:    0,
-										End:      65535,
+										Start:    iacTypes.IntTest(0),
+										End:      iacTypes.IntTest(65535),
 									},
 								},
 								DestinationPorts: []network.PortRange{
 									{
 										Metadata: iacTypes.NewTestMetadata(),
-										Start:    3389,
-										End:      3389,
+										Start:    iacTypes.IntTest(3389),
+										End:      iacTypes.IntTest(3389),
 									},
 								},
 								Protocol: iacTypes.String("TCP", iacTypes.NewTestMetadata()),

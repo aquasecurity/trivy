@@ -9,20 +9,25 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
-func NewParser() types.Parser {
-	return &Parser{}
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("python"),
+	}
 }
 
 // Parse parses egg and wheel metadata.
 // e.g. .egg-info/PKG-INFO and dist-info/METADATA
-func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	rd := textproto.NewReader(bufio.NewReader(r))
 	h, err := rd.ReadMIMEHeader()
 	if e := textproto.ProtocolError(""); errors.As(err, &e) {
@@ -30,7 +35,7 @@ func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, e
 		// cf. https://cs.opensource.google/go/go/+/a6642e67e16b9d769a0c08e486ba08408064df19
 		// However, our required key/value could have been correctly parsed,
 		// so we continue with the subsequent process.
-		log.Logger.Debugf("MIME protocol error: %s", err)
+		p.logger.Debug("MIME protocol error", log.Err(err))
 	} else if err != nil && err != io.EOF {
 		return nil, nil, xerrors.Errorf("read MIME error: %w", err)
 	}
@@ -65,7 +70,8 @@ func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, e
 
 		if l := h.Get("License"); l != "" {
 			if len(licenses) != 0 {
-				log.Logger.Infof("License acquired from METADATA classifiers may be subject to additional terms for [%s:%s]", name, version)
+				p.logger.Info("License acquired from METADATA classifiers may be subject to additional terms",
+					log.String("name", name), log.String("version", version))
 			} else {
 				license = l
 			}
@@ -74,14 +80,14 @@ func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, e
 	}
 
 	if license == "" && h.Get("License-File") != "" {
-		license = "file://" + h.Get("License-File")
+		license = licensing.LicenseFilePrefix + h.Get("License-File")
 	}
 
-	return []types.Library{
+	return []ftypes.Package{
 		{
-			Name:    name,
-			Version: version,
-			License: license,
+			Name:     name,
+			Version:  version,
+			Licenses: licensing.SplitLicenses(license),
 		},
 	}, nil, nil
 }

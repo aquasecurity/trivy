@@ -3,25 +3,27 @@
 package integration
 
 import (
-	"github.com/aquasecurity/trivy/pkg/types"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	"github.com/stretchr/testify/require"
 )
 
 func TestTar(t *testing.T) {
 	type args struct {
-		IgnoreUnfixed bool
-		Severity      []string
-		IgnoreIDs     []string
-		Format        types.Format
-		Input         string
-		SkipDirs      []string
-		SkipFiles     []string
+		IgnoreUnfixed     bool
+		Severity          []string
+		IgnoreIDs         []string
+		Format            types.Format
+		Input             string
+		SkipDirs          []string
+		SkipFiles         []string
+		DetectionPriority ftypes.DetectionPriority
 	}
 	tests := []struct {
 		name   string
@@ -240,7 +242,7 @@ func TestTar(t *testing.T) {
 			golden: "testdata/centos-7.json.golden",
 		},
 		{
-			name: "centos 7with --ignore-unfixed option",
+			name: "centos 7 with --ignore-unfixed option",
 			args: args{
 				IgnoreUnfixed: true,
 				Format:        types.FormatJSON,
@@ -273,6 +275,15 @@ func TestTar(t *testing.T) {
 				Input:  "testdata/fixtures/images/ubi-7.tar.gz",
 			},
 			golden: "testdata/ubi-7.json.golden",
+		},
+		{
+			name: "ubi 7 with comprehensive priority",
+			args: args{
+				Format:            types.FormatJSON,
+				Input:             "testdata/fixtures/images/ubi-7.tar.gz",
+				DetectionPriority: ftypes.PriorityComprehensive,
+			},
+			golden: "testdata/ubi-7-comprehensive.json.golden",
 		},
 		{
 			name: "almalinux 8",
@@ -321,6 +332,22 @@ func TestTar(t *testing.T) {
 				Input:  "testdata/fixtures/images/opensuse-leap-151.tar.gz",
 			},
 			golden: "testdata/opensuse-leap-151.json.golden",
+		},
+		{
+			name: "opensuse tumbleweed",
+			args: args{
+				Format: types.FormatJSON,
+				Input:  "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
+			},
+			golden: "testdata/opensuse-tumbleweed.json.golden",
+		},
+		{
+			name: "sle micro rancher 5.4",
+			args: args{
+				Format: types.FormatJSON,
+				Input: "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+			},
+			golden: "testdata/sl-micro-rancher5.4.json.golden",
 		},
 		{
 			name: "photon 3.0",
@@ -372,7 +399,7 @@ func TestTar(t *testing.T) {
 				"-q",
 				"--format",
 				string(tt.args.Format),
-				"--skip-update",
+				"--skip-db-update",
 			}
 
 			if tt.args.IgnoreUnfixed {
@@ -384,7 +411,7 @@ func TestTar(t *testing.T) {
 			if len(tt.args.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
 				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.IgnoreIDs, "\n")), 0444)
-				assert.NoError(t, err, "failed to write .trivyignore")
+				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
 			if tt.args.Input != "" {
@@ -401,6 +428,10 @@ func TestTar(t *testing.T) {
 				for _, skipDir := range tt.args.SkipDirs {
 					osArgs = append(osArgs, "--skip-dirs", skipDir)
 				}
+			}
+
+			if tt.args.DetectionPriority != "" {
+				osArgs = append(osArgs, "--detection-priority", string(tt.args.DetectionPriority))
 			}
 
 			// Run Trivy

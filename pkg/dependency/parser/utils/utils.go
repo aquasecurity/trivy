@@ -2,11 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"maps"
 	"sort"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func UniqueStrings(ss []string) []string {
@@ -22,36 +23,36 @@ func UniqueStrings(ss []string) []string {
 	return results
 }
 
-func UniqueLibraries(libs []types.Library) []types.Library {
-	if len(libs) == 0 {
+func UniquePackages(pkgs []ftypes.Package) []ftypes.Package {
+	if len(pkgs) == 0 {
 		return nil
 	}
-	unique := make(map[string]types.Library)
-	for _, lib := range libs {
-		identifier := fmt.Sprintf("%s@%s", lib.Name, lib.Version)
+	unique := make(map[string]ftypes.Package)
+	for _, pkg := range pkgs {
+		identifier := fmt.Sprintf("%s@%s", pkg.Name, pkg.Version)
 		if l, ok := unique[identifier]; !ok {
-			unique[identifier] = lib
+			unique[identifier] = pkg
 		} else {
-			// There are times when we get 2 same libraries as root and dev dependencies.
+			// There are times when we get 2 same packages as root and dev dependencies.
 			// https://github.com/aquasecurity/trivy/issues/5532
 			// In these cases, we need to mark the dependency as a root dependency.
-			if !lib.Dev {
-				l.Dev = lib.Dev
+			if !pkg.Dev {
+				l.Dev = pkg.Dev
 				unique[identifier] = l
 			}
 
-			if len(lib.Locations) > 0 {
+			if len(pkg.Locations) > 0 {
 				// merge locations
-				l.Locations = append(l.Locations, lib.Locations...)
+				l.Locations = append(l.Locations, pkg.Locations...)
 				sort.Sort(l.Locations)
 				unique[identifier] = l
 			}
 		}
 	}
-	libSlice := maps.Values(unique)
-	sort.Sort(types.Libraries(libSlice))
+	pkgSlice := lo.Values(unique)
+	sort.Sort(ftypes.Packages(pkgSlice))
 
-	return libSlice
+	return pkgSlice
 }
 
 func MergeMaps(parent, child map[string]string) map[string]string {

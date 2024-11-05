@@ -1,18 +1,21 @@
 package flag
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
+	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -54,7 +57,7 @@ var (
 	ListAllPkgsFlag = Flag[bool]{
 		Name:       "list-all-pkgs",
 		ConfigName: "list-all-pkgs",
-		Usage:      "enabling the option will output all packages regardless of vulnerability",
+		Usage:      "output all packages in the JSON report regardless of vulnerability",
 	}
 	IgnoreFileFlag = Flag[string]{
 		Name:       "ignorefile",
@@ -198,35 +201,30 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 
 	if template != "" {
 		if format == "" {
-			log.Logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
+			log.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
 		} else if format != "template" {
-			log.Logger.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", format)
+			log.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", format)
 		}
 	} else {
 		if format == types.FormatTemplate {
-			log.Logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
+			log.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
 
-	// "--list-all-pkgs" option is unavailable with "--format table".
-	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if listAllPkgs && format == types.FormatTable {
-		log.Logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
+	// "--list-all-pkgs" option is unavailable with other than "--format json".
+	// If user specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
+	if listAllPkgs && format != types.FormatJSON {
+		log.Warn(`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`)
 	}
 
 	// "--dependency-tree" option is available only with "--format table".
 	if dependencyTree {
-		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
+		log.Info(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
 			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
 			`It supports limited package managers. Please see the document for the detail.`)
 		if format != types.FormatTable {
-			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
+			log.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
-	}
-
-	// Enable '--list-all-pkgs' if needed
-	if f.forceListAllPkgs(format, listAllPkgs, dependencyTree) {
-		listAllPkgs = true
 	}
 
 	cs, err := loadComplianceTypes(f.Compliance.Value())
@@ -240,6 +238,10 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		if err != nil {
 			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
 		}
+	}
+
+	if viper.IsSet(f.IgnoreFile.ConfigName) && !fsutils.FileExists(f.IgnoreFile.Value()) {
+		return ReportOptions{}, xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
 	}
 
 	return ReportOptions{
@@ -261,33 +263,16 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
-	if len(compliance) > 0 && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
+	if compliance != "" && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 
-	cs, err := spec.GetComplianceSpec(compliance)
+	cs, err := spec.GetComplianceSpec(compliance, cache.DefaultDir())
 	if err != nil {
 		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
 	}
 
 	return cs, nil
-}
-
-func (f *ReportFlagGroup) forceListAllPkgs(format types.Format, listAllPkgs, dependencyTree bool) bool {
-	if slices.Contains(types.SupportedSBOMFormats, format) && !listAllPkgs {
-		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", types.SupportedSBOMFormats)
-		return true
-	}
-	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if format == types.FormatSarif && !listAllPkgs {
-		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
-		return true
-	}
-	if dependencyTree && !listAllPkgs {
-		log.Logger.Debugf("'--dependency-tree' enables '--list-all-pkgs'.")
-		return true
-	}
-	return false
 }
 
 func toSeverity(severity []string) []dbTypes.Severity {
@@ -300,6 +285,6 @@ func toSeverity(severity []string) []dbTypes.Severity {
 		sev, _ := dbTypes.NewSeverity(s)
 		return sev
 	})
-	log.Logger.Debugf("Severities: %q", severities)
+	log.Debug("Parsed severities", log.Any("severities", severities))
 	return severities
 }

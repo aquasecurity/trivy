@@ -3,7 +3,7 @@ package rpc
 import (
 	"time"
 
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/twitchtv/twirp"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -32,8 +32,8 @@ func Retry(f func() error) error {
 
 	b := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), maxRetries)
 	err := backoff.RetryNotify(operation, b, func(err error, _ time.Duration) {
-		log.Logger.Warn(err)
-		log.Logger.Info("Retrying HTTP request...")
+		log.Warn("HTTP error", log.Err(err))
+		log.Info("Retrying HTTP request...")
 	})
 	if err != nil {
 		return err

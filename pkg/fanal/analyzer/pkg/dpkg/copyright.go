@@ -7,10 +7,10 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -88,7 +88,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.Licens
 			l := strings.TrimSpace(line[8:])
 
 			l = normalizeLicense(l)
-			if len(l) > 0 {
+			if l != "" {
 				for _, lic := range licensing.SplitLicenses(l) {
 					lic = licensing.Normalize(lic)
 					if !slices.Contains(licenses, lic) {

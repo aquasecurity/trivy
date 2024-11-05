@@ -33,13 +33,13 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.RustBinary, ftypes.Cargo:
 		ecosystem = vulnerability.Cargo
 		comparer = compare.GenericComparer{}
-	case ftypes.Composer:
+	case ftypes.Composer, ftypes.ComposerVendor:
 		ecosystem = vulnerability.Composer
 		comparer = compare.GenericComparer{}
 	case ftypes.GoBinary, ftypes.GoModule:
 		ecosystem = vulnerability.Go
 		comparer = compare.GenericComparer{}
-	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		ecosystem = vulnerability.Maven
 		comparer = maven.Comparer{}
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
@@ -72,8 +72,8 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
 		ecosystem = vulnerability.Cocoapods
 		comparer = rubygems.Comparer{}
-	case ftypes.CondaPkg:
-		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
+	case ftypes.CondaPkg, ftypes.CondaEnv:
+		log.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
 	case ftypes.Bitnami:
 		ecosystem = vulnerability.Bitnami
@@ -81,8 +81,12 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.K8sUpstream:
 		ecosystem = vulnerability.Kubernetes
 		comparer = compare.GenericComparer{}
+	case ftypes.Julia:
+		log.Warn("Julia is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, false
 	default:
-		log.Logger.Warnf("The %q library type is not supported for vulnerability scanning", libType)
+		log.Warn("The library type is not supported for vulnerability scanning",
+			log.String("type", string(libType)))
 		return Driver{}, false
 	}
 	return Driver{

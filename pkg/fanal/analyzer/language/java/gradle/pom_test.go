@@ -1,10 +1,11 @@
 package gradle
 
 import (
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_parsePom(t *testing.T) {

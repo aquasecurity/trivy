@@ -27,7 +27,7 @@ message PackageInfo {
 message Application {
   string           type      = 1;
   string           file_path = 2;
-  repeated Package libraries = 3;
+  repeated Package packages  = 3;
 }
 
 message Package {
@@ -59,6 +59,7 @@ message Package {
 message PkgIdentifier {
   string purl    = 1;
   string bom_ref = 2;
+  string uid     = 3;
 }
 
 message Location {
@@ -72,7 +73,8 @@ message Misconfiguration {
   repeated MisconfResult successes  = 3;
   repeated MisconfResult warnings   = 4;
   repeated MisconfResult failures   = 5;
-  repeated MisconfResult exceptions = 6;
+
+  reserved 6;  // deprecated 'exceptions'
 }
 
 message MisconfResult {
@@ -225,6 +227,7 @@ message DetectedLicense {
   string               name       = 5;
   float                confidence = 6;
   string               link       = 7;
+  string               text       = 8;
 }
 
 message LicenseFile {

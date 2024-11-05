@@ -4,100 +4,26 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/fs"
-	"path/filepath"
 	"strings"
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
-var _ options.ConfigurableParser = (*Parser)(nil)
-
-type Parser struct {
-	debug        debug.Logger
-	skipRequired bool
-}
-
-func (p *Parser) SetDebugWriter(writer io.Writer) {
-	p.debug = debug.New(writer, "dockerfile", "parser")
-}
-
-func (p *Parser) SetSkipRequiredCheck(b bool) {
-	p.skipRequired = b
-}
-
-// New creates a new Dockerfile parser
-func New(opts ...options.ParserOption) *Parser {
-	p := &Parser{}
-	for _, option := range opts {
-		option(p)
-	}
-	return p
-}
-
-func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[string]*dockerfile.Dockerfile, error) {
-
-	files := make(map[string]*dockerfile.Dockerfile)
-	if err := fs.WalkDir(target, filepath.ToSlash(path), func(path string, entry fs.DirEntry, err error) error {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-		if err != nil {
-			return err
-		}
-		if entry.IsDir() {
-			return nil
-		}
-		if !p.Required(path) {
-			return nil
-		}
-		df, err := p.ParseFile(ctx, target, path)
-		if err != nil {
-			// TODO add debug for parse errors
-			return nil
-		}
-		files[path] = df
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return files, nil
-}
-
-// ParseFile parses Dockerfile content from the provided filesystem path.
-func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (*dockerfile.Dockerfile, error) {
-	f, err := fsys.Open(filepath.ToSlash(path))
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = f.Close() }()
-	return p.parse(path, f)
-}
-
-func (p *Parser) Required(path string) bool {
-	if p.skipRequired {
-		return true
-	}
-	return detection.IsType(path, nil, detection.FileTypeDockerfile)
-}
-
-func (p *Parser) parse(path string, r io.Reader) (*dockerfile.Dockerfile, error) {
+func Parse(_ context.Context, r io.Reader, path string) (any, error) {
 	parsed, err := parser.Parse(r)
 	if err != nil {
 		return nil, fmt.Errorf("dockerfile parse error: %w", err)
 	}
 
-	var parsedFile dockerfile.Dockerfile
-	var stage dockerfile.Stage
-	var stageIndex int
+	var (
+		parsedFile dockerfile.Dockerfile
+		stage      dockerfile.Stage
+		stageIndex int
+	)
+
 	fromValue := "args"
 	for _, child := range parsed.AST.Children {
 		child.Value = strings.ToLower(child.Value)

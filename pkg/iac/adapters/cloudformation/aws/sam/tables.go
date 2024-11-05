@@ -2,11 +2,11 @@ package sam
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getSimpleTables(cfFile parser2.FileContext) (tables []sam.SimpleTable) {
+func getSimpleTables(cfFile parser.FileContext) (tables []sam.SimpleTable) {
 
 	tableResources := cfFile.GetResourcesByType("AWS::Serverless::SimpleTable")
 	for _, r := range tableResources {
@@ -22,21 +22,18 @@ func getSimpleTables(cfFile parser2.FileContext) (tables []sam.SimpleTable) {
 	return tables
 }
 
-func getSSESpecification(r *parser2.Resource) sam.SSESpecification {
+func getSSESpecification(r *parser.Resource) sam.SSESpecification {
+	if sse := r.GetProperty("SSESpecification"); sse.IsNotNil() {
+		return sam.SSESpecification{
+			Metadata:       sse.Metadata(),
+			Enabled:        sse.GetBoolProperty("SSEEnabled"),
+			KMSMasterKeyID: sse.GetStringProperty("KMSMasterKeyId"),
+		}
+	}
 
-	spec := sam.SSESpecification{
+	return sam.SSESpecification{
 		Metadata:       r.Metadata(),
 		Enabled:        iacTypes.BoolDefault(false, r.Metadata()),
 		KMSMasterKeyID: iacTypes.StringDefault("", r.Metadata()),
 	}
-
-	if sse := r.GetProperty("SSESpecification"); sse.IsNotNil() {
-		spec = sam.SSESpecification{
-			Metadata:       sse.Metadata(),
-			Enabled:        sse.GetBoolProperty("SSEEnabled"),
-			KMSMasterKeyID: sse.GetStringProperty("KMSMasterKeyID"),
-		}
-	}
-
-	return spec
 }

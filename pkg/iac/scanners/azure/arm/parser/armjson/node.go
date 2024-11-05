@@ -5,7 +5,7 @@ import "github.com/aquasecurity/trivy/pkg/iac/types"
 type Node interface {
 	Comments() []Node
 	Range() Range
-	Decode(target interface{}) error
+	Decode(target any) error
 	Kind() Kind
 	Content() []Node
 	Metadata() types.Metadata
@@ -22,7 +22,7 @@ type Position struct {
 }
 
 type node struct {
-	raw      interface{}
+	raw      any
 	start    Position
 	end      Position
 	kind     Kind

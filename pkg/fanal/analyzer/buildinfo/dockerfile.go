@@ -9,6 +9,7 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"github.com/moby/buildkit/frontend/dockerfile/shell"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -25,13 +26,13 @@ const dockerfileAnalyzerVersion = 1
 type dockerfileAnalyzer struct{}
 
 func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	// ported from https://github.com/moby/buildkit/blob/b33357bcd2e3319b0323037c900c13b45a228df1/frontend/dockerfile/dockerfile2llb/convert.go#L73
+	// ported from https://github.com/moby/buildkit/blob/e83d79a51fb49aeb921d8a2348ae14a58701c98c/frontend/dockerfile/dockerfile2llb/convert.go#L88-L89
 	dockerfile, err := parser.Parse(target.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("dockerfile parse error: %w", err)
 	}
 
-	stages, metaArgs, err := instructions.Parse(dockerfile.AST)
+	stages, metaArgs, err := instructions.Parse(dockerfile.AST, nil)
 	if err != nil {
 		return nil, xerrors.Errorf("instruction parse error: %w", err)
 	}
@@ -44,28 +45,27 @@ func (a dockerfileAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisI
 	}
 
 	shlex := shell.NewLex(dockerfile.EscapeToken)
-	env := metaArgsToMap(args)
-
+	envs := metaArgsToEnvGetter(args)
 	var component, arch string
 	for _, st := range stages {
 		for _, cmd := range st.Commands {
 			switch c := cmd.(type) {
 			case *instructions.EnvCommand:
-				for _, kvp := range c.Env {
-					env[kvp.Key] = kvp.Value
-				}
+				envs.addKeyValuePairsToEnvGetter(c.Env)
 			case *instructions.LabelCommand:
 				for _, kvp := range c.Labels {
-					key, err := shlex.ProcessWordWithMap(kvp.Key, env)
+					workResult, err := shlex.ProcessWordWithMatches(kvp.Key, envs)
 					if err != nil {
 						return nil, xerrors.Errorf("unable to evaluate the label '%s': %w", kvp.Key, err)
 					}
 
-					key = strings.ToLower(key)
+					key := strings.ToLower(workResult.Result)
 					if key == "com.redhat.component" || key == "bzcomponent" {
-						component, err = shlex.ProcessWordWithMap(kvp.Value, env)
+						workResult, err = shlex.ProcessWordWithMatches(kvp.Value, envs)
+						component = workResult.Result
 					} else if key == "architecture" {
-						arch, err = shlex.ProcessWordWithMap(kvp.Value, env)
+						workResult, err = shlex.ProcessWordWithMatches(kvp.Value, envs)
+						arch = workResult.Result
 					}
 
 					if err != nil {
@@ -117,15 +117,38 @@ func parseVersion(nvr string) string {
 	return version
 }
 
-// https://github.com/moby/buildkit/blob/b33357bcd2e3319b0323037c900c13b45a228df1/frontend/dockerfile/dockerfile2llb/convert.go#L474-L482
-func metaArgsToMap(metaArgs []instructions.KeyValuePairOptional) map[string]string {
-	m := make(map[string]string)
+type envGetter struct {
+	m map[string]string
+}
 
-	for _, arg := range metaArgs {
-		m[arg.Key] = arg.ValueString()
+func (e *envGetter) addKeyValuePairsToEnvGetter(kvp instructions.KeyValuePairs) {
+	if e.m == nil {
+		e.m = make(map[string]string)
 	}
 
-	return m
+	for _, kv := range kvp {
+		e.m[kv.Key] = kv.Value
+	}
+}
+
+func metaArgsToEnvGetter(metaArgs []instructions.KeyValuePairOptional) *envGetter {
+	env := &envGetter{
+		m: make(map[string]string),
+	}
+
+	for _, kv := range metaArgs {
+		env.m[kv.Key] = kv.ValueString()
+	}
+	return env
+}
+
+func (e *envGetter) Get(key string) (string, bool) {
+	v, ok := e.m[key]
+	return v, ok
+}
+
+func (e *envGetter) Keys() []string {
+	return lo.Keys(e.m)
 }
 
 func setKVValue(kvpo instructions.KeyValuePairOptional, values map[string]string) instructions.KeyValuePairOptional {

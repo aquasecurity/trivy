@@ -8,7 +8,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -43,11 +44,11 @@ var (
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) (libs []types.Library, deps []types.Dependency, err error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) (pkgs []ftypes.Package, deps []ftypes.Dependency, err error) {
 	var newVar, name, version, license string
 
 	scanner := bufio.NewScanner(r)
@@ -94,11 +95,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) (libs []types.Library, deps []types.D
 		return nil, nil, xerrors.New("failed to parse gemspec")
 	}
 
-	return []types.Library{
+	return []ftypes.Package{
 		{
-			Name:    name,
-			Version: version,
-			License: license,
+			Name:     name,
+			Version:  version,
+			Licenses: licensing.SplitLicenses(license),
 		},
 	}, nil, nil
 }

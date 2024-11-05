@@ -3,14 +3,13 @@ package sql
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/sql"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/sql"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -35,6 +34,7 @@ func Test_Adapt(t *testing.T) {
 							name            = "internal"
 						}
 						require_ssl = true
+						ssl_mode    = "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
 					}
 				}
 			}
@@ -68,6 +68,7 @@ func Test_Adapt(t *testing.T) {
 								Metadata:   iacTypes.NewTestMetadata(),
 								RequireTLS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 								EnableIPv4: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								SSLMode:    iacTypes.StringTest("TRUSTED_CLIENT_CERTIFICATE_REQUIRED"),
 								AuthorizedNetworks: []struct {
 									Name iacTypes.StringValue
 									CIDR iacTypes.StringValue

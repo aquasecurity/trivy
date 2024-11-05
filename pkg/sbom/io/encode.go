@@ -5,11 +5,13 @@ import (
 	"slices"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -18,8 +20,9 @@ import (
 )
 
 type Encoder struct {
-	bom  *core.BOM
-	opts core.Options
+	bom        *core.BOM
+	opts       core.Options
+	components map[uuid.UUID]*core.Component
 }
 
 func NewEncoder(opts core.Options) *Encoder {
@@ -27,6 +30,9 @@ func NewEncoder(opts core.Options) *Encoder {
 }
 
 func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
+	if report.BOM != nil {
+		e.components = report.BOM.Components()
+	}
 	// Metadata component
 	root, err := e.rootComponent(report)
 	if err != nil {
@@ -34,6 +40,10 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	}
 
 	e.bom = core.NewBOM(e.opts)
+	if report.BOM != nil {
+		e.bom.SerialNumber = report.BOM.SerialNumber
+		e.bom.Version = report.BOM.Version
+	}
 	e.bom.AddComponent(root)
 
 	for _, result := range report.Results {
@@ -61,29 +71,46 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	}
 
 	switch r.ArtifactType {
-	case ftypes.ArtifactContainerImage:
+	case artifact.TypeContainerImage:
 		root.Type = core.TypeContainerImage
 		props = append(props, core.Property{
 			Name:  core.PropertyImageID,
 			Value: r.Metadata.ImageID,
 		})
 
+		// Save image labels as properties with `Labels:` prefix.
+		// e.g. `LABEL vendor="aquasecurity"` => `Labels:vendor` -> `aquasecurity`
+		for label, value := range r.Metadata.ImageConfig.Config.Labels {
+			props = append(props, core.Property{
+				Name:  core.PropertyLabelsPrefix + ":" + label,
+				Value: value,
+			})
+		}
+
 		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
 		}
 		if p != nil {
-			root.PkgID.PURL = p.Unwrap()
+			root.PkgIdentifier.PURL = p.Unwrap()
 		}
 
-	case ftypes.ArtifactVM:
+	case artifact.TypeVM:
 		root.Type = core.TypeVM
-	case ftypes.ArtifactFilesystem:
+	case artifact.TypeFilesystem:
 		root.Type = core.TypeFilesystem
-	case ftypes.ArtifactRepository:
+	case artifact.TypeRepository:
 		root.Type = core.TypeRepository
-	case ftypes.ArtifactCycloneDX:
-		return r.BOM.Root(), nil
+	case artifact.TypeCycloneDX, artifact.TypeSPDX:
+		// When we scan SBOM file
+		// If SBOM file doesn't contain root component - use filesystem
+		if r.BOM != nil && r.BOM.Root() != nil {
+			return r.BOM.Root(), nil
+		}
+		// When we scan a `json` file (meaning a file in `json` format) which was created from the SBOM file.
+		// e.g. for use in `convert` mode.
+		// See https://github.com/aquasecurity/trivy/issues/6780
+		root.Type = core.TypeFilesystem
 	}
 
 	if r.Metadata.Size != 0 {
@@ -166,52 +193,83 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	vulns := make(map[string][]core.Vulnerability)
 	for _, vuln := range result.Vulnerabilities {
 		v := e.vulnerability(vuln)
-		vulns[v.PkgID] = append(vulns[v.PkgID], v)
+		vulns[vuln.PkgIdentifier.UID] = append(vulns[vuln.PkgIdentifier.UID], v)
 	}
 
 	// Convert packages into components and add them to the BOM
+	parentRelationship := core.RelationshipContains
+
+	// UID => Package Component
 	components := make(map[string]*core.Component, len(result.Packages))
+	// PkgID => Package Component
+	dependencies := make(map[string]*core.Component, len(result.Packages))
 	for i, pkg := range result.Packages {
 		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, pkg.Version), pkg.ID)
 		result.Packages[i].ID = pkgID
 
 		// Convert packages to components
 		c := e.component(result, pkg)
-		components[pkgID+pkg.FilePath] = c
+		components[pkg.Identifier.UID] = c
+
+		// For dependencies: the key "pkgID" might be duplicated in aggregated packages,
+		// but it doesn't matter as they don't have "DependsOn".
+		dependencies[pkgID] = c
 
 		// Add a component
 		e.bom.AddComponent(c)
 
 		// Add vulnerabilities
-		if vv := vulns[pkgID]; vv != nil {
+		if vv := vulns[pkg.Identifier.UID]; vv != nil {
 			e.bom.AddVulnerabilities(c, vv)
+		}
+
+		// Handle a root package
+		if pkg.Relationship == ftypes.RelationshipRoot {
+			// If the package is a root package, add a relationship between the parent and the root package
+			e.bom.AddRelationship(parent, c, core.RelationshipContains)
+			// Replace the parent with the root package
+			parent = c
+			parentRelationship = core.RelationshipDependsOn
 		}
 	}
 
-	// Build a dependency graph
+	// Build a dependency graph between packages
 	for _, pkg := range result.Packages {
-		// Skip indirect dependencies
-		if pkg.Indirect && len(parents[pkg.ID]) != 0 {
+		if pkg.Relationship == ftypes.RelationshipRoot {
 			continue
 		}
+		c := components[pkg.Identifier.UID]
 
-		directPkg := components[pkg.ID+pkg.FilePath]
-		e.bom.AddRelationship(parent, directPkg, core.RelationshipContains)
+		// Add a relationship between the parent and the package if needed
+		if e.belongToParent(pkg, parents) {
+			e.bom.AddRelationship(parent, c, parentRelationship)
+		}
 
+		// Add relationships between the package and its dependencies
 		for _, dep := range pkg.DependsOn {
-			indirectPkg, ok := components[dep]
+			dependsOn, ok := dependencies[dep]
 			if !ok {
 				continue
 			}
-			e.bom.AddRelationship(directPkg, indirectPkg, core.RelationshipDependsOn)
+			e.bom.AddRelationship(c, dependsOn, core.RelationshipDependsOn)
 		}
 
 		// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
 		// TODO: Should check if the component has actually no dependencies or the dependency graph is not supported.
 		if len(pkg.DependsOn) == 0 {
-			e.bom.AddRelationship(directPkg, nil, "")
+			e.bom.AddRelationship(c, nil, "")
 		}
 	}
+}
+
+// existedPkgIdentifier tries to look for package identifier (BOM-ref, PURL) by component name and component type
+func (e *Encoder) existedPkgIdentifier(name string, componentType core.ComponentType) ftypes.PkgIdentifier {
+	for _, c := range e.components {
+		if c.Name == name && c.Type == componentType {
+			return c.PkgIdentifier
+		}
+	}
+	return ftypes.PkgIdentifier{}
 }
 
 func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
@@ -236,8 +294,10 @@ func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 			component.Version = osFound.Name
 		}
 		component.Type = core.TypeOS
+		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	case types.ClassLangPkg:
 		component.Type = core.TypeApplication
+		component.PkgIdentifier = e.existedPkgIdentifier(component.Name, component.Type)
 	}
 
 	e.bom.AddRelationship(root, component, core.RelationshipContains)
@@ -333,8 +393,10 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		SrcName:    pkg.SrcName,
 		SrcVersion: utils.FormatSrcVersion(pkg),
 		SrcFile:    srcFile,
-		PkgID: core.PkgID{
-			PURL: pkg.Identifier.PURL,
+		PkgIdentifier: ftypes.PkgIdentifier{
+			UID:    pkg.Identifier.UID,
+			PURL:   pkg.Identifier.PURL,
+			BOMRef: pkg.Identifier.BOMRef,
 		},
 		Supplier:   pkg.Maintainer,
 		Licenses:   pkg.Licenses,
@@ -347,12 +409,40 @@ func (*Encoder) vulnerability(vuln types.DetectedVulnerability) core.Vulnerabili
 	return core.Vulnerability{
 		Vulnerability:    vuln.Vulnerability,
 		ID:               vuln.VulnerabilityID,
-		PkgID:            lo.Ternary(vuln.PkgID == "", fmt.Sprintf("%s@%s", vuln.PkgName, vuln.InstalledVersion), vuln.PkgID),
 		PkgName:          vuln.PkgName,
 		InstalledVersion: vuln.InstalledVersion,
 		FixedVersion:     vuln.FixedVersion,
 		PrimaryURL:       vuln.PrimaryURL,
 		DataSource:       vuln.DataSource,
+	}
+}
+
+// belongToParent determines if a package should be directly included in the parent based on its relationship and dependencies.
+func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Packages) bool {
+	// Case 1: Direct/Indirect: known , DependsOn: known
+	//         1-1: Only direct packages are included in the parent (RelationshipContains or RelationshipDependsOn)
+	//         1-2: Each direct package includes its dependent packages (RelationshipDependsOn).
+	// Case 2: Direct/Indirect: unknown, DependsOn: unknown (e.g., conan lockfile v2)
+	//         All packages are included in the parent (RelationshipContains or RelationshipDependsOn).
+	// Case 3: Direct/Indirect: unknown, DependsOn: known (e.g., OS packages)
+	//         All packages are included in the parent (RelationshipContains or RelationshipDependsOn).
+	// Case 4: Direct/Indirect: known , DependsOn: unknown (e.g., go.mod without $GOPATH)
+	//         All packages are included in the parent (RelationshipContains or RelationshipDependsOn).
+	switch {
+	// Case 1-1: direct packages
+	case pkg.Relationship == ftypes.RelationshipDirect:
+		return true
+	// Case 1-2: indirect packages
+	case pkg.Relationship == ftypes.RelationshipIndirect && len(parents[pkg.ID]) != 0:
+		return false
+	// Case 2 & 3:
+	case pkg.Relationship == ftypes.RelationshipUnknown:
+		return true
+	// Case 4:
+	case pkg.Relationship == ftypes.RelationshipIndirect && len(parents[pkg.ID]) == 0:
+		return true
+	default:
+		return true
 	}
 }
 

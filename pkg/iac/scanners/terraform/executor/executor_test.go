@@ -4,15 +4,16 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 var panicRule = scan.Rule{
@@ -47,13 +48,16 @@ resource "problem" "this" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := New().Execute(modules)
-	assert.Equal(t, len(results.GetFailed()), 0)
+
+	results, err := New().Execute(modules)
+	require.Error(t, err)
+
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_PanicInCheckAllowed(t *testing.T) {
@@ -69,13 +73,14 @@ resource "problem" "this" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
+
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	_, _, err = New(OptionStopOnErrors(false)).Execute(modules)
-	assert.Error(t, err)
+	_, err = New().Execute(modules)
+	require.Error(t, err)
 }
 
 func Test_PanicNotInCheckNotIncludePassed(t *testing.T) {
@@ -91,13 +96,16 @@ resource "problem" "this" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := New().Execute(modules)
-	assert.Equal(t, len(results.GetFailed()), 0)
+
+	results, _ := New().Execute(modules)
+	require.NoError(t, err)
+
+	assert.Empty(t, results.GetFailed())
 }
 
 func Test_PanicNotInCheckNotIncludePassedStopOnError(t *testing.T) {
@@ -113,12 +121,12 @@ resource "problem" "this" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
 
-	_, _, err = New(OptionStopOnErrors(false)).Execute(modules)
-	assert.Error(t, err)
+	_, err = New().Execute(modules)
+	require.Error(t, err)
 }

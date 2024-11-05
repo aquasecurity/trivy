@@ -154,13 +154,41 @@ $ TMPDIR=/my/custom/path trivy repo ...
     write /tmp/fanal-3323732142: no space left on device
     ```
 
-Trivy uses the `/tmp` directory during image scan, if the image is large or `/tmp` is of insufficient size then the scan fails You can set the `TMPDIR` environment variable to use redirect trivy to use a directory with adequate storage.
+Trivy uses a temporary directory during image scans.
+The directory path would be determined as follows:
 
-Try:
+- On Unix systems: Use `$TMPDIR` if non-empty, else `/tmp`.
+- On Windows: Uses GetTempPath, returning the first non-empty value from `%TMP%`, `%TEMP%`, `%USERPROFILE%`, or the Windows directory.
+
+See [this documentation](https://golang.org/pkg/os/#TempDir) for more details.
+
+If the image is large or the temporary directory has insufficient space, the scan will fail.
+You can configure the directory path to redirect Trivy to a directory with adequate storage.
+On Unix systems, you can set the `$TMPDIR` environment variable.
 
 ```
 $ TMPDIR=/my/custom/path trivy image ...
 ```
+
+When scanning images from a container registry, Trivy processes each layer by streaming, loading only the necessary files for the scan into memory and discarding unnecessary files.
+If a layer contains large files that are necessary for the scan (such as JAR files or binary files), Trivy saves them to a temporary directory (e.g. $TMPDIR) on local storage to avoid increased memory consumption.
+Although these files are deleted after the scan is complete, they can temporarily increase disk consumption and potentially exhaust storage.
+In such cases, there are currently three workarounds:
+
+1. Use a temporary directory with sufficient capacity
+ 
+    This is the same as explained above.
+ 
+2. Specify a small value for `--parallel`
+ 
+    By default, multiple layers are processed in parallel.
+    If each layer contains large files, disk space may be consumed rapidly.
+    By specifying a small value such as `--parallel 1`, parallelism is reduced, which can mitigate the issue.
+
+3. Specify `--skip-files` or `--skip-dirs`
+ 
+    If the container image contains large files that do not need to be scanned, you can skip their processing by specifying --skip-files or --skip-dirs. 
+    For more details, please refer to [this documentation](../configuration/skipping.md).
 
 ## DB
 ### Old DB schema
@@ -175,10 +203,7 @@ Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database o
 !!! error
     FATAL failed to download vulnerability DB
 
-If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
-
-- ghcr.io
-- pkg-containers.githubusercontent.com
+If Trivy is running behind corporate firewall, refer to the necessary connectivity requirements as described [here][network].
 
 ### Denied
 
@@ -236,11 +261,12 @@ $ brew install aquasecurity/trivy/trivy
 ## Others
 ### Unknown error
 
-Try again with `--reset` option:
+Try again after running `trivy clean --all`:
 
 ```
-$ trivy image --reset
+$ trivy clean --all
 ```
 
 [air-gapped]: ../advanced/air-gap.md
+[network]: ../advanced/air-gap.md#network-requirements
 [redis-cache]: ../../vulnerability/examples/cache/#cache-backend

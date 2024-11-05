@@ -1,7 +1,11 @@
 package apigateway
 
 import (
+	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
@@ -9,8 +13,6 @@ import (
 	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -71,7 +73,7 @@ resource "aws_apigatewayv2_domain_name" "example" {
 								{
 									Methods: []v1.Method{
 										{
-											HTTPMethod:        String("GET"),
+											HTTPMethod:        String(http.MethodGet),
 											AuthorizationType: String("NONE"),
 											APIKeyRequired:    Bool(false),
 										},

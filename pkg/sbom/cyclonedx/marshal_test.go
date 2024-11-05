@@ -2,13 +2,12 @@ package cyclonedx_test
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -16,11 +15,53 @@ import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
+)
+
+var (
+	binutilsIdentifier = ftypes.PkgIdentifier{
+		UID: "7CC457C23685235A",
+		PURL: &packageurl.PackageURL{
+			Type:      packageurl.TypeRPM,
+			Namespace: "centos",
+			Name:      "binutils",
+			Version:   "2.30-93.el8",
+			Qualifiers: packageurl.Qualifiers{
+				{
+					Key:   "arch",
+					Value: "aarch64",
+				},
+				{
+					Key:   "distro",
+					Value: "centos-8.3.2011",
+				},
+			},
+		},
+	}
+
+	actionpack700Identifier = ftypes.PkgIdentifier{
+		UID: "DFF5FF40889105B2",
+		PURL: &packageurl.PackageURL{
+			Type:    packageurl.TypeGem,
+			Name:    "actionpack",
+			Version: "7.0.0",
+		},
+	}
+
+	actionpack701Identifier = ftypes.PkgIdentifier{
+		UID: "6B0A6392BAA7D584",
+		PURL: &packageurl.PackageURL{
+			Type:    packageurl.TypeGem,
+			Name:    "actionpack",
+			Version: "7.0.1",
+		},
+	}
 )
 
 func TestMarshaler_MarshalReport(t *testing.T) {
@@ -29,7 +70,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 		Root: true,
 		Type: core.TypeApplication,
 		Name: "jackson-databind-2.13.4.1.jar",
-		PkgID: core.PkgID{
+		PkgIdentifier: ftypes.PkgIdentifier{
 			BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
 		},
 		Properties: []core.Property{
@@ -50,7 +91,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "rails:latest",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
@@ -64,6 +105,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
 					ImageConfig: v1.ConfigFile{
 						Architecture: "arm64",
+						Config: v1.Config{
+							Labels: map[string]string{
+								"vendor": "aquasecurity",
+							},
+						},
 					},
 				},
 				Results: types.Results{
@@ -73,30 +119,13 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								ID:      "binutils@2.30-93.el8",
-								Name:    "binutils",
-								Version: "2.30",
-								Release: "93.el8",
-								Epoch:   0,
-								Arch:    "aarch64",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:      packageurl.TypeRPM,
-										Namespace: "centos",
-										Name:      "binutils",
-										Version:   "2.30-93.el8",
-										Qualifiers: packageurl.Qualifiers{
-											{
-												Key:   "arch",
-												Value: "aarch64",
-											},
-											{
-												Key:   "distro",
-												Value: "centos-8.3.2011",
-											},
-										},
-									},
-								},
+								ID:              "binutils@2.30-93.el8",
+								Name:            "binutils",
+								Version:         "2.30",
+								Release:         "93.el8",
+								Epoch:           0,
+								Arch:            "aarch64",
+								Identifier:      binutilsIdentifier,
 								SrcName:         "binutils",
 								SrcVersion:      "2.30",
 								SrcRelease:      "93.el8",
@@ -123,6 +152,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									Name: "Red Hat OVAL v2",
 									URL:  "https://www.redhat.com/security/data/oval/v2/",
 								},
+								PkgIdentifier: binutilsIdentifier,
 								Vulnerability: dtypes.Vulnerability{
 									Title:       "binutils: Use-after-free in the error function",
 									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
@@ -157,23 +187,18 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								// This package conflicts
-								ID:      "actionpack@7.0.0",
-								Name:    "actionpack",
-								Version: "7.0.0",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeGem,
-										Name:    "actionpack",
-										Version: "7.0.0",
-									},
-								},
-								Indirect: false,
+								ID:         "actionpack@7.0.0",
+								Name:       "actionpack",
+								Version:    "7.0.0",
+								Identifier: actionpack700Identifier,
+								Indirect:   false,
 							},
 							{
 								ID:      "actioncontroller@7.0.0",
 								Name:    "actioncontroller",
 								Version: "7.0.0",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "41ED2619CA718170",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "actioncontroller",
@@ -194,16 +219,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								// This package conflicts
-								ID:      "actionpack@7.0.0",
-								Name:    "actionpack",
-								Version: "7.0.0",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeGem,
-										Name:    "actionpack",
-										Version: "7.0.0",
-									},
-								},
+								ID:         "actionpack@7.0.0",
+								Name:       "actionpack",
+								Version:    "7.0.0",
+								Identifier: actionpack700Identifier,
 							},
 						},
 					},
@@ -217,6 +236,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "94AB97F672F97AFB",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNuget,
 										Name:    "Newtonsoft.Json",
@@ -235,6 +255,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.0-20210421170649-83a5a9bb288b",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "B7183ED2CF7EB470",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeGolang,
 										Namespace: "golang.org/x",
@@ -246,17 +267,17 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							// dependency has been replaced with local directory
 							{
 								Name:    "./api",
-								Version: "(devel)",
+								Version: "",
 							},
 						},
 					},
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000014",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -284,6 +305,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:ImageID",
 								Value: "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							},
+							{
+								Name:  "aquasecurity:trivy:Labels:vendor",
+								Value: "aquasecurity",
 							},
 							{
 								Name:  "aquasecurity:trivy:RepoDigest",
@@ -423,7 +448,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000013",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "./api",
-						Version: "(devel)",
+						Version: "",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgType",
@@ -668,7 +693,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "centos:latest",
-				ArtifactType:  ftypes.ArtifactContainerImage,
+				ArtifactType:  artifact.TypeContainerImage,
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
@@ -697,6 +722,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Epoch:   1,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "2FF7A09FA4E6AA2E",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeRPM,
 										Namespace: "centos",
@@ -737,6 +763,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Epoch:   0,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "2DCAB94016E57F8E",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeRPM,
 										Namespace: "centos",
@@ -770,32 +797,20 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Type:   ftypes.GemSpec,
 						Packages: []ftypes.Package{
 							{
-								ID:      "actionpack@7.0.0",
-								Name:    "actionpack",
-								Version: "7.0.0",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeGem,
-										Name:    "actionpack",
-										Version: "7.0.0",
-									},
-								},
+								ID:         "actionpack@7.0.0",
+								Name:       "actionpack",
+								Version:    "7.0.0",
+								Identifier: actionpack700Identifier,
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
 								FilePath: "tools/project-john/specifications/actionpack.gemspec",
 							},
 							{
-								ID:      "actionpack@7.0.1",
-								Name:    "actionpack",
-								Version: "7.0.1",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeGem,
-										Name:    "actionpack",
-										Version: "7.0.1",
-									},
-								},
+								ID:         "actionpack@7.0.1",
+								Name:       "actionpack",
+								Version:    "7.0.1",
+								Identifier: actionpack701Identifier,
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -804,17 +819,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID: "CVE-2022-23633",
-								PkgID:           "actionpack@7.0.0",
-								PkgName:         "actionpack",
-								PkgPath:         "tools/project-john/specifications/actionpack.gemspec",
-								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeGem,
-										Name:    "actionpack",
-										Version: "7.0.0",
-									},
-								},
+								VulnerabilityID:  "CVE-2022-23633",
+								PkgID:            "actionpack@7.0.0",
+								PkgName:          "actionpack",
+								PkgPath:          "tools/project-john/specifications/actionpack.gemspec",
+								PkgIdentifier:    actionpack700Identifier,
 								InstalledVersion: "7.0.0",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -846,25 +855,19 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										},
 									},
 									References: []string{
-										"http://www.openwall.com/lists/oss-security/2022/02/11/5",
-										"https://access.redhat.com/security/cve/CVE-2022-23633",
+										"  extraPrefix http://www.openwall.com/lists/oss-security/2022/02/11/5",
+										"https://access.redhat.com/security/cve/CVE-2022-23633 (extra suffix)",
 									},
 									PublishedDate:    lo.ToPtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
 									LastModifiedDate: lo.ToPtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
 								},
 							},
 							{
-								VulnerabilityID: "CVE-2022-23633",
-								PkgID:           "actionpack@7.0.1",
-								PkgName:         "actionpack",
-								PkgPath:         "tools/project-doe/specifications/actionpack.gemspec",
-								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeGem,
-										Name:    "actionpack",
-										Version: "7.0.1",
-									},
-								},
+								VulnerabilityID:  "CVE-2022-23633",
+								PkgID:            "actionpack@7.0.1",
+								PkgName:          "actionpack",
+								PkgPath:          "tools/project-doe/specifications/actionpack.gemspec",
+								PkgIdentifier:    actionpack701Identifier,
 								InstalledVersion: "7.0.1",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -908,10 +911,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1229,7 +1232,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "masahiro331/CVE-2021-41098",
-				ArtifactType:  ftypes.ArtifactFilesystem,
+				ArtifactType:  artifact.TypeFilesystem,
 				Results: types.Results{
 					{
 						Target: "Gemfile.lock",
@@ -1240,6 +1243,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "actioncable",
 								Version: "6.1.4.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "2E6CF0E3CD6949BD",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "actioncable",
@@ -1258,6 +1262,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "org.springframework:spring-web",
 								Version: "5.3.22",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "38DDCC9B589D3124",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.springframework",
@@ -1279,6 +1284,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "@babel/helper-string-parser",
 								Version: "7.23.4",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "F4C833D7F3FD9ECF",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeNPM,
 										Namespace: "@babel",
@@ -1292,10 +1298,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1445,7 +1451,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "./report.cdx.json",
-				ArtifactType:  ftypes.ArtifactCycloneDX,
+				ArtifactType:  artifact.TypeCycloneDX,
 				Results: types.Results{
 					{
 						Target: "Java",
@@ -1456,7 +1462,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "com.fasterxml.jackson.core:jackson-databind",
 								Version: "2.13.4.1",
 								Identifier: ftypes.PkgIdentifier{
-									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+									UID:    "9A5066570222D04C",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "com.fasterxml.jackson.core",
@@ -1473,7 +1480,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								PkgName:         "com.fasterxml.jackson.core:jackson-databind",
 								PkgPath:         "jackson-databind-2.13.4.1.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+									UID:    "9A5066570222D04C",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "com.fasterxml.jackson.core",
@@ -1517,10 +1525,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				BOM: testSBOM,
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1629,7 +1637,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "CVE-2023-34468",
-				ArtifactType:  ftypes.ArtifactFilesystem,
+				ArtifactType:  artifact.TypeFilesystem,
 				Results: types.Results{
 					{
 						Target: "Java",
@@ -1640,6 +1648,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-dbcp-base",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "6F266C79E57ADC38",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.apache.nifi",
@@ -1653,6 +1662,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-hikari-dbcp-service",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "3EA16F0A4CAB50F9",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.apache.nifi",
@@ -1669,6 +1679,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-dbcp-base",
 								PkgPath:         "nifi-dbcp-base-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
+									UID: "6F266C79E57ADC38",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.apache.nifi",
@@ -1719,6 +1730,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-hikari-dbcp-service",
 								PkgPath:         "nifi-hikari-dbcp-service-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
+									UID: "3EA16F0A4CAB50F9",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.apache.nifi",
@@ -1769,10 +1781,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1926,7 +1938,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "test-aggregate",
-				ArtifactType:  ftypes.ArtifactRepository,
+				ArtifactType:  artifact.TypeRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",
@@ -1938,6 +1950,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Name:    "ruby-typeprof",
 								Version: "0.20.1",
 								Identifier: ftypes.PkgIdentifier{
+									UID: "C861FD5FC7AC663F",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNPM,
 										Name:    "ruby-typeprof",
@@ -1955,10 +1968,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000003",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -2039,14 +2052,14 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "empty/path",
-				ArtifactType:  ftypes.ArtifactFilesystem,
+				ArtifactType:  artifact.TypeFilesystem,
 				Results:       types.Results{},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_6,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{

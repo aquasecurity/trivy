@@ -86,11 +86,11 @@ trivy config --severity CRITICAL, MEDIUM terraform-infra
 You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided [in the documentation.](https://aquasecurity.github.io/trivy/latest/docs/coverage/iac/terraform/#value-overrides) 
 
 ``` 
-trivy conf --tf-vars terraform.tfvars ./
+trivy config --tf-vars terraform.tfvars ./
 ``` 
 ### Custom Checks 
 
-We have lots of examples in the [documentation](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/) on how you can write and pass custom Rego policies into terraform misconfiguration scans. 
+We have lots of examples in the [documentation](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/) on how you can write and pass custom Rego checks into terraform misconfiguration scans. 
 
 ## Secret and vulnerability scans
 

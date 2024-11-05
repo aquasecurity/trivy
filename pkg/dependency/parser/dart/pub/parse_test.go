@@ -10,35 +10,65 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/dart/pub"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      []types.Library
-		wantErr   assert.ErrorAssertionFunc
+		name          string
+		useMinVersion bool
+		inputFile     string
+		want          []ftypes.Package
+		wantErr       assert.ErrorAssertionFunc
 	}{
 		{
-			name:      "happy path",
-			inputFile: "testdata/happy.lock",
-			want: []types.Library{
+			name:          "not use minimum version",
+			useMinVersion: false,
+			inputFile:     "testdata/happy.lock",
+			want: []ftypes.Package{
 				{
-					ID:      "crypto@3.0.2",
-					Name:    "crypto",
-					Version: "3.0.2",
+					ID:           "crypto@3.0.2",
+					Name:         "crypto",
+					Version:      "3.0.2",
+					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:      "flutter_test@0.0.0",
-					Name:    "flutter_test",
-					Version: "0.0.0",
+					ID:           "flutter_test@0.0.0",
+					Name:         "flutter_test",
+					Version:      "0.0.0",
+					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:       "uuid@3.0.6",
-					Name:     "uuid",
-					Version:  "3.0.6",
-					Indirect: true,
+					ID:           "uuid@3.0.6",
+					Name:         "uuid",
+					Version:      "3.0.6",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:          "use minimum version",
+			useMinVersion: true,
+			inputFile:     "testdata/happy.lock",
+			want: []ftypes.Package{
+				{
+					ID:           "crypto@3.0.2",
+					Name:         "crypto",
+					Version:      "3.0.2",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "flutter_test@3.3.0",
+					Name:         "flutter_test",
+					Version:      "3.3.0",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "uuid@3.0.6",
+					Name:         "uuid",
+					Version:      "3.0.6",
+					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
 			wantErr: assert.NoError,
@@ -61,16 +91,13 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotLibs, _, err := pub.NewParser().Parse(f)
+			gotPkgs, _, err := pub.NewParser(tt.useMinVersion).Parse(f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.inputFile)) {
 				return
 			}
 
-			sort.Slice(gotLibs, func(i, j int) bool {
-				return gotLibs[i].ID < gotLibs[j].ID
-			})
-
-			assert.Equal(t, tt.want, gotLibs)
+			sort.Sort(ftypes.Packages(gotPkgs))
+			assert.Equal(t, tt.want, gotPkgs)
 		})
 	}
 }

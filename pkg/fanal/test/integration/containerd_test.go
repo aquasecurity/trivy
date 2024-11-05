@@ -27,11 +27,12 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -63,7 +64,7 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 			return err, true
 		}
 		t.Cleanup(func() {
-			assert.NoError(t, client.Close())
+			require.NoError(t, client.Close())
 		})
 		return nil, false
 	})
@@ -75,9 +76,14 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 	t.Helper()
 	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
+
+	// Load `containerd` image from tar file to avoid fetching it from remote registry
+	cli := testutil.NewDockerClient(t)
+	loadedImage := cli.ImageLoad(t, ctx, "../../../../integration/testdata/fixtures/images/containerd.tar.gz")
+
 	req := testcontainers.ContainerRequest{
 		Name:  "containerd",
-		Image: "ghcr.io/aquasecurity/trivy-test-images/containerd:latest",
+		Image: loadedImage,
 		Entrypoint: []string{
 			"/bin/sh",
 			"-c",
@@ -105,7 +111,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
-		assert.NoError(t, containerdC.Terminate(ctx))
+		require.NoError(t, containerdC.Terminate(ctx))
 	})
 }
 
@@ -122,7 +128,7 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 	digest := "sha256:f12582b2f2190f350e3904462c1c23aaf366b4f76705e97b199f9bbded1d816a"
 	basename := "hello"
 	tag := "world"
-	importedImageOriginalName := "ghcr.io/aquasecurity/trivy-test-images:alpine-310"
+	importedImageOriginalName := testutil.ImageName("", "alpine-310", "")
 
 	tests := []struct {
 		name       string
@@ -295,19 +301,19 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 		name         string
 		imageName    string
 		tarArchive   string
-		wantMetadata types.ImageMetadata
+		wantMetadata artifact.ImageMetadata
 	}{
 		{
 			name:       "alpine 3.10",
-			imageName:  "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
+			imageName:  testutil.ImageName("", "alpine-310", ""),
 			tarArchive: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
 				},
-				RepoTags:    []string{"ghcr.io/aquasecurity/trivy-test-images:alpine-310"},
-				RepoDigests: []string{"ghcr.io/aquasecurity/trivy-test-images@sha256:f12582b2f2190f350e3904462c1c23aaf366b4f76705e97b199f9bbded1d816a"},
+				RepoTags:    []string{testutil.ImageName("", "alpine-310", "")},
+				RepoDigests: []string{testutil.ImageName("", "", "sha256:f12582b2f2190f350e3904462c1c23aaf366b4f76705e97b199f9bbded1d816a")},
 				ConfigFile: v1.ConfigFile{
 					Architecture: "amd64",
 					Created: v1.Time{
@@ -347,9 +353,9 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 		},
 		{
 			name:       "vulnimage",
-			imageName:  "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
+			imageName:  testutil.ImageName("", "vulnimage", ""),
 			tarArchive: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
 				DiffIDs: []string{
 					"sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
@@ -373,8 +379,8 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 					"sha256:ba17950e91742d6ac7055ea3a053fe764486658ca1ce8188f1e427b1fe2bc4da",
 					"sha256:6ef42db7800507577383edf1937cb203b9b85f619feed6046594208748ceb52c",
 				},
-				RepoTags:    []string{"ghcr.io/aquasecurity/trivy-test-images:vulnimage"},
-				RepoDigests: []string{"ghcr.io/aquasecurity/trivy-test-images@sha256:e74abbfd81e00baaf464cf9e09f8b24926e5255171e3150a60aa341ce064688f"},
+				RepoTags:    []string{testutil.ImageName("", "vulnimage", "")},
+				RepoDigests: []string{testutil.ImageName("", "", "sha256:e74abbfd81e00baaf464cf9e09f8b24926e5255171e3150a60aa341ce064688f")},
 				ConfigFile: v1.ConfigFile{
 					Architecture: "amd64",
 					Created: v1.Time{
@@ -746,18 +752,18 @@ func TestContainerd_PullImage(t *testing.T) {
 	tests := []struct {
 		name         string
 		imageName    string
-		wantMetadata types.ImageMetadata
+		wantMetadata artifact.ImageMetadata
 	}{
 		{
 			name:      "remote alpine 3.10",
-			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			wantMetadata: types.ImageMetadata{
+			imageName: testutil.ImageName("", "alpine-310", ""),
+			wantMetadata: artifact.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
 				},
-				RepoTags:    []string{"ghcr.io/aquasecurity/trivy-test-images:alpine-310"},
-				RepoDigests: []string{"ghcr.io/aquasecurity/trivy-test-images@sha256:72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb"},
+				RepoTags:    []string{testutil.ImageName("", "alpine-310", "")},
+				RepoDigests: []string{testutil.ImageName("", "", "sha256:72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb")},
 				ConfigFile: v1.ConfigFile{
 					Architecture: "amd64",
 					Created: v1.Time{

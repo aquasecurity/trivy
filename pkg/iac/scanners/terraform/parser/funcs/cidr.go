@@ -4,7 +4,6 @@ package funcs
 import (
 	"fmt"
 	"math/big"
-	"net"
 
 	"github.com/apparentlymart/go-cidr/cidr"
 	"github.com/zclconf/go-cty/cty"
@@ -25,13 +24,14 @@ var CidrHostFunc = function.New(&function.Spec{
 			Type: cty.Number,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		var hostNum *big.Int
 		if err := gocty.FromCtyValue(args[1], &hostNum); err != nil {
 			return cty.UnknownVal(cty.String), err
 		}
-		_, network, err := net.ParseCIDR(args[0].AsString())
+		_, network, err := ParseCIDR(args[0].AsString())
 		if err != nil {
 			return cty.UnknownVal(cty.String), fmt.Errorf("invalid CIDR expression: %s", err)
 		}
@@ -54,14 +54,19 @@ var CidrNetmaskFunc = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
-		_, network, err := net.ParseCIDR(args[0].AsString())
+		_, network, err := ParseCIDR(args[0].AsString())
 		if err != nil {
 			return cty.UnknownVal(cty.String), fmt.Errorf("invalid CIDR expression: %s", err)
 		}
 
-		return cty.StringVal(net.IP(network.Mask).String()), nil
+		if network.IP.To4() == nil {
+			return cty.UnknownVal(cty.String), fmt.Errorf("IPv6 addresses cannot have a netmask: %s", args[0].AsString())
+		}
+
+		return cty.StringVal(IP(network.Mask).String()), nil
 	},
 })
 
@@ -82,7 +87,8 @@ var CidrSubnetFunc = function.New(&function.Spec{
 			Type: cty.Number,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		var newbits int
 		if err := gocty.FromCtyValue(args[1], &newbits); err != nil {
@@ -93,7 +99,7 @@ var CidrSubnetFunc = function.New(&function.Spec{
 			return cty.UnknownVal(cty.String), err
 		}
 
-		_, network, err := net.ParseCIDR(args[0].AsString())
+		_, network, err := ParseCIDR(args[0].AsString())
 		if err != nil {
 			return cty.UnknownVal(cty.String), fmt.Errorf("invalid CIDR expression: %s", err)
 		}
@@ -120,9 +126,10 @@ var CidrSubnetsFunc = function.New(&function.Spec{
 		Name: "newbits",
 		Type: cty.Number,
 	},
-	Type: function.StaticReturnType(cty.List(cty.String)),
+	Type:         function.StaticReturnType(cty.List(cty.String)),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
-		_, network, err := net.ParseCIDR(args[0].AsString())
+		_, network, err := ParseCIDR(args[0].AsString())
 		if err != nil {
 			return cty.UnknownVal(cty.String), function.NewArgErrorf(0, "invalid CIDR expression: %s", err)
 		}
@@ -186,27 +193,3 @@ var CidrSubnetsFunc = function.New(&function.Spec{
 		return cty.ListVal(retVals), nil
 	},
 })
-
-// CidrHost calculates a full host IP address within a given IP network address prefix.
-func CidrHost(prefix, hostnum cty.Value) (cty.Value, error) {
-	return CidrHostFunc.Call([]cty.Value{prefix, hostnum})
-}
-
-// CidrNetmask converts an IPv4 address prefix given in CIDR notation into a subnet mask address.
-func CidrNetmask(prefix cty.Value) (cty.Value, error) {
-	return CidrNetmaskFunc.Call([]cty.Value{prefix})
-}
-
-// CidrSubnet calculates a subnet address within a given IP network address prefix.
-func CidrSubnet(prefix, newbits, netnum cty.Value) (cty.Value, error) {
-	return CidrSubnetFunc.Call([]cty.Value{prefix, newbits, netnum})
-}
-
-// CidrSubnets calculates a sequence of consecutive subnet prefixes that may
-// be of different prefix lengths under a common base prefix.
-func CidrSubnets(prefix cty.Value, newbits ...cty.Value) (cty.Value, error) {
-	args := make([]cty.Value, len(newbits)+1)
-	args[0] = prefix
-	copy(args[1:], newbits)
-	return CidrSubnetsFunc.Call(args)
-}

@@ -10,12 +10,12 @@ func Test_SubString(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "substring a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				1,
 				3,
@@ -24,7 +24,7 @@ func Test_SubString(t *testing.T) {
 		},
 		{
 			name: "substring a string with no upper bound",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				1,
 			},
@@ -32,7 +32,7 @@ func Test_SubString(t *testing.T) {
 		},
 		{
 			name: "substring a string with start higher than the length",
-			args: []interface{}{
+			args: []any{
 				"hello",
 				10,
 			},

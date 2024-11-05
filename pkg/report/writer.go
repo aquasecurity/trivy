@@ -2,14 +2,14 @@ package report
 
 import (
 	"context"
-	"errors"
 	"io"
 	"strings"
 
+	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -32,7 +32,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	}
 	defer func() {
 		if cerr := cleanup(); cerr != nil {
-			err = errors.Join(err, cerr)
+			err = multierror.Append(err, cerr)
 		}
 	}()
 
@@ -55,7 +55,11 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			IgnoredLicenses:      option.IgnoredLicenses,
 		}
 	case types.FormatJSON:
-		writer = &JSONWriter{Output: output}
+		writer = &JSONWriter{
+			Output:         output,
+			ListAllPkgs:    option.ListAllPkgs,
+			ShowSuppressed: option.ShowSuppressed,
+		}
 	case types.FormatGitHub:
 		writer = &github.Writer{
 			Output:  output,
@@ -69,20 +73,19 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	case types.FormatTemplate:
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
 		if strings.HasPrefix(option.Template, "@") && strings.HasSuffix(option.Template, "sarif.tpl") {
-			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
+			log.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = &SarifWriter{
 				Output:  output,
 				Version: option.AppVersion,
 			}
 			break
 		}
-		var err error
 		if writer, err = NewTemplateWriter(output, option.Template, option.AppVersion); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case types.FormatSarif:
 		target := ""
-		if report.ArtifactType == ftypes.ArtifactFilesystem {
+		if report.ArtifactType == artifact.TypeFilesystem {
 			target = option.Target
 		}
 		writer = &SarifWriter{

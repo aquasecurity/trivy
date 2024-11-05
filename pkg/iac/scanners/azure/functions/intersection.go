@@ -2,33 +2,33 @@ package functions
 
 import "sort"
 
-func Intersection(args ...interface{}) interface{} {
+func Intersection(args ...any) any {
 
 	if args == nil || len(args) < 2 {
-		return []interface{}{}
+		return []any{}
 	}
 
 	switch args[0].(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		return intersectionMap(args...)
-	case interface{}:
+	case any:
 		return intersectionArray(args...)
 	}
 
-	return []interface{}{}
+	return []any{}
 }
 
-func intersectionArray(args ...interface{}) interface{} {
-	var result []interface{}
-	hash := make(map[interface{}]bool)
+func intersectionArray(args ...any) any {
+	var result []any
+	hash := make(map[any]bool)
 
-	for _, arg := range args[0].([]interface{}) {
+	for _, arg := range args[0].([]any) {
 		hash[arg] = true
 	}
 
 	for i := 1; i < len(args); i++ {
-		workingHash := make(map[interface{}]bool)
-		argArr, ok := args[i].([]interface{})
+		workingHash := make(map[any]bool)
+		argArr, ok := args[i].([]any)
 		if !ok {
 			continue
 		}
@@ -51,16 +51,16 @@ func intersectionArray(args ...interface{}) interface{} {
 	return result
 }
 
-func intersectionMap(args ...interface{}) interface{} {
-	hash := make(map[string]interface{})
+func intersectionMap(args ...any) any {
+	hash := make(map[string]any)
 
-	for k, v := range args[0].(map[string]interface{}) {
+	for k, v := range args[0].(map[string]any) {
 		hash[k] = v
 	}
 
 	for i := 1; i < len(args); i++ {
-		workingHash := make(map[string]interface{})
-		argArr, ok := args[i].(map[string]interface{})
+		workingHash := make(map[string]any)
+		argArr, ok := args[i].(map[string]any)
 		if !ok {
 			continue
 		}

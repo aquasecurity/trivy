@@ -5,22 +5,22 @@ import "testing"
 func Test_Float(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected float64
 	}{
 		{
 			name:     "Float with 1",
-			args:     []interface{}{1},
+			args:     []any{1},
 			expected: 1.0,
 		},
 		{
 			name:     "Float with 2",
-			args:     []interface{}{"2"},
+			args:     []any{"2"},
 			expected: 2.0,
 		},
 		{
 			name:     "Float with 3",
-			args:     []interface{}{"2.3"},
+			args:     []any{"2.3"},
 			expected: 2.3,
 		},
 	}

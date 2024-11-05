@@ -14,11 +14,11 @@ type Metadata struct {
 	isExplicit     bool
 	isUnresolvable bool
 	parent         *Metadata
-	internal       interface{}
+	internal       any
 }
 
 func (m Metadata) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"range":        m.rnge,
 		"ref":          m.ref,
 		"managed":      m.isManaged,
@@ -30,7 +30,7 @@ func (m Metadata) MarshalJSON() ([]byte, error) {
 }
 
 func (m *Metadata) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (m *Metadata) UnmarshalJSON(data []byte) error {
 		m.isUnresolvable = keys["unresolvable"].(bool)
 	}
 	if keys["parent"] != nil {
-		if _, ok := keys["parent"].(map[string]interface{}); ok {
+		if _, ok := keys["parent"].(map[string]any); ok {
 			raw, err := json.Marshal(keys["parent"])
 			if err != nil {
 				return err
@@ -76,14 +76,15 @@ func (m *Metadata) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (m *Metadata) ToRego() interface{} {
-	input := map[string]interface{}{
+func (m *Metadata) ToRego() any {
+	input := map[string]any{
 		"filepath":     m.Range().GetLocalFilename(),
 		"startline":    m.Range().GetStartLine(),
 		"endline":      m.Range().GetEndLine(),
 		"sourceprefix": m.Range().GetSourcePrefix(),
 		"managed":      m.isManaged,
 		"explicit":     m.isExplicit,
+		"unresolvable": m.isUnresolvable,
 		"fskey":        CreateFSKey(m.Range().GetFS()),
 		"resource":     m.Reference(),
 	}
@@ -134,12 +135,12 @@ func (m Metadata) Root() Metadata {
 	return *meta
 }
 
-func (m Metadata) WithInternal(internal interface{}) Metadata {
+func (m Metadata) WithInternal(internal any) Metadata {
 	m.internal = internal
 	return m
 }
 
-func (m Metadata) Internal() interface{} {
+func (m Metadata) Internal() any {
 	return m.internal
 }
 
@@ -209,7 +210,7 @@ func (m Metadata) GetMetadata() Metadata {
 	return m
 }
 
-func (m Metadata) GetRawValue() interface{} {
+func (m Metadata) GetRawValue() any {
 	return nil
 }
 

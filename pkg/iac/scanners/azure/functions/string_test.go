@@ -9,26 +9,26 @@ import (
 func Test_String(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{
 			name: "string from a string",
-			args: []interface{}{
+			args: []any{
 				"hello",
 			},
 			expected: "hello",
 		},
 		{
 			name: "string from a bool",
-			args: []interface{}{
+			args: []any{
 				false,
 			},
 			expected: "false",
 		},
 		{
 			name: "string from an int",
-			args: []interface{}{
+			args: []any{
 				10,
 			},
 			expected: "10",

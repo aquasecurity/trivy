@@ -1,11 +1,15 @@
-package parser
+package parser_test
 
 import (
+	"context"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile/parser"
 )
 
 func Test_Parser(t *testing.T) {
@@ -15,16 +19,17 @@ RUN make /app
 CMD python /app/app.py
 `
 
-	df, err := New().parse("Dockerfile", strings.NewReader(input))
+	res, err := parser.Parse(context.TODO(), strings.NewReader(input), "Dockerfile")
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, len(df.Stages))
+	df, ok := res.(*dockerfile.Dockerfile)
+	require.True(t, ok)
 
-	require.Len(t, df.Stages, 1)
+	assert.Len(t, df.Stages, 1)
 
 	assert.Equal(t, "ubuntu:18.04", df.Stages[0].Name)
 	commands := df.Stages[0].Commands
-	assert.Equal(t, 4, len(commands))
+	assert.Len(t, commands, 4)
 
 	// FROM ubuntu:18.04
 	assert.Equal(t, "from", commands[0].Cmd)

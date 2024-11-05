@@ -105,44 +105,51 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 	return networks
 }
 
-func expandRange(ports string, attr *terraform.Attribute) []iacTypes.IntValue {
+func expandRange(ports string, meta iacTypes.Metadata) (compute.PortRange, bool) {
 	ports = strings.ReplaceAll(ports, " ", "")
 	if !strings.Contains(ports, "-") {
 		i, err := strconv.Atoi(ports)
 		if err != nil {
-			return nil
+			return compute.PortRange{}, false
 		}
-		return []iacTypes.IntValue{
-			iacTypes.Int(i, attr.GetMetadata()),
-		}
+		return compute.PortRange{
+			Metadata: meta,
+			Start:    iacTypes.Int(i, meta),
+			End:      iacTypes.Int(i, meta),
+		}, true
 	}
 	parts := strings.Split(ports, "-")
 	if len(parts) != 2 {
-		return nil
+		return compute.PortRange{}, false
 	}
 	start, err := strconv.Atoi(parts[0])
 	if err != nil {
-		return nil
+		return compute.PortRange{}, false
 	}
 	end, err := strconv.Atoi(parts[1])
 	if err != nil {
-		return nil
+		return compute.PortRange{}, false
 	}
-	var output []iacTypes.IntValue
-	for i := start; i <= end; i++ {
-		output = append(output, iacTypes.Int(i, attr.GetMetadata()))
-	}
-	return output
+
+	return compute.PortRange{
+		Metadata: meta,
+		Start:    iacTypes.Int(start, meta),
+		End:      iacTypes.Int(end, meta),
+	}, true
 }
 
 func adaptFirewallRule(firewall *compute.Firewall, firewallBlock, ruleBlock *terraform.Block, allow bool) {
 	protocolAttr := ruleBlock.GetAttribute("protocol")
 	portsAttr := ruleBlock.GetAttribute("ports")
 
-	var ports []iacTypes.IntValue
+	var rngs []compute.PortRange
 	rawPorts := portsAttr.AsStringValues()
 	for _, portStr := range rawPorts {
-		ports = append(ports, expandRange(portStr.Value(), portsAttr)...)
+		rng, ok := expandRange(portStr.Value(), portsAttr.GetMetadata())
+		if !ok {
+			continue
+		}
+		rngs = append(rngs, rng)
 	}
 
 	// ingress by default
@@ -153,7 +160,7 @@ func adaptFirewallRule(firewall *compute.Firewall, firewallBlock, ruleBlock *ter
 		Enforced: iacTypes.BoolDefault(true, firewallBlock.GetMetadata()),
 		IsAllow:  iacTypes.Bool(allow, ruleBlock.GetMetadata()),
 		Protocol: protocolAttr.AsStringValueOrDefault("tcp", ruleBlock),
-		Ports:    ports,
+		Ports:    rngs,
 	}
 
 	disabledAttr := firewallBlock.GetAttribute("disabled")

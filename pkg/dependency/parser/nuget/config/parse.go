@@ -6,7 +6,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -25,29 +25,27 @@ type config struct {
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var cfgData config
 	if err := xml.NewDecoder(r).Decode(&cfgData); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode .config file: %w", err)
 	}
 
-	var libs []types.Library
+	var pkgs []ftypes.Package
 	for _, pkg := range cfgData.Packages {
 		if pkg.ID == "" || pkg.DevDependency {
 			continue
 		}
 
-		lib := types.Library{
+		pkgs = append(pkgs, ftypes.Package{
 			Name:    pkg.ID,
 			Version: pkg.Version,
-		}
-
-		libs = append(libs, lib)
+		})
 	}
 
-	return utils.UniqueLibraries(libs), nil, nil
+	return utils.UniquePackages(pkgs), nil, nil
 }

@@ -13,11 +13,10 @@ func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
 	for _, r := range domainResources {
 
 		domain := elasticsearch.Domain{
-			Metadata:               r.Metadata(),
-			DomainName:             r.GetStringProperty("DomainName"),
-			AccessPolicies:         r.GetStringProperty("AccessPolicies"),
-			DedicatedMasterEnabled: r.GetBoolProperty("ElasticsearchClusterConfig.DedicatedMasterEnabled"),
-			VpcId:                  iacTypes.String("", r.Metadata()),
+			Metadata:       r.Metadata(),
+			DomainName:     r.GetStringProperty("DomainName"),
+			AccessPolicies: r.GetStringProperty("AccessPolicies"),
+			VpcId:          iacTypes.String("", r.Metadata()),
 			LogPublishing: elasticsearch.LogPublishing{
 				Metadata:              r.Metadata(),
 				AuditEnabled:          iacTypes.BoolDefault(false, r.Metadata()),
@@ -35,7 +34,6 @@ func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
 			Endpoint: elasticsearch.Endpoint{
 				Metadata:     r.Metadata(),
 				EnforceHTTPS: iacTypes.BoolDefault(false, r.Metadata()),
-				TLSPolicy:    iacTypes.StringDefault("Policy-Min-TLS-1-0-2019-07", r.Metadata()),
 			},
 			ServiceSoftwareOptions: elasticsearch.ServiceSoftwareOptions{
 				Metadata:        r.Metadata(),
@@ -46,25 +44,31 @@ func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
 			},
 		}
 
+		if r.Type() == "AWS::OpenSearchService::Domain" {
+			domain.DedicatedMasterEnabled = r.GetBoolProperty("ClusterConfig.DedicatedMasterEnabled")
+		} else {
+			domain.DedicatedMasterEnabled = r.GetBoolProperty("ElasticsearchClusterConfig.DedicatedMasterEnabled")
+		}
+
 		if prop := r.GetProperty("LogPublishingOptions"); prop.IsNotNil() {
 			domain.LogPublishing = elasticsearch.LogPublishing{
 				Metadata:              prop.Metadata(),
-				AuditEnabled:          prop.GetBoolProperty("AUDIT_LOGS.Enabled", false),
-				CloudWatchLogGroupArn: prop.GetStringProperty("CloudWatchLogsLogGroupArn"),
+				AuditEnabled:          prop.GetBoolProperty("AUDIT_LOGS.Enabled"),
+				CloudWatchLogGroupArn: prop.GetStringProperty("AUDIT_LOGS.CloudWatchLogsLogGroupArn"),
 			}
 		}
 
 		if prop := r.GetProperty("NodeToNodeEncryptionOptions"); prop.IsNotNil() {
 			domain.TransitEncryption = elasticsearch.TransitEncryption{
 				Metadata: prop.Metadata(),
-				Enabled:  prop.GetBoolProperty("Enabled", false),
+				Enabled:  prop.GetBoolProperty("Enabled"),
 			}
 		}
 
 		if prop := r.GetProperty("EncryptionAtRestOptions"); prop.IsNotNil() {
 			domain.AtRestEncryption = elasticsearch.AtRestEncryption{
 				Metadata: prop.Metadata(),
-				Enabled:  prop.GetBoolProperty("Enabled", false),
+				Enabled:  prop.GetBoolProperty("Enabled"),
 				KmsKeyId: prop.GetStringProperty("KmsKeyId"),
 			}
 		}
@@ -72,8 +76,8 @@ func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
 		if prop := r.GetProperty("DomainEndpointOptions"); prop.IsNotNil() {
 			domain.Endpoint = elasticsearch.Endpoint{
 				Metadata:     prop.Metadata(),
-				EnforceHTTPS: prop.GetBoolProperty("EnforceHTTPS", false),
-				TLSPolicy:    prop.GetStringProperty("TLSSecurityPolicy", "Policy-Min-TLS-1-0-2019-07"),
+				EnforceHTTPS: prop.GetBoolProperty("EnforceHTTPS"),
+				TLSPolicy:    prop.GetStringProperty("TLSSecurityPolicy"),
 			}
 		}
 

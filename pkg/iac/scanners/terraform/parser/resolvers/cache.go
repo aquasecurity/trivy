@@ -2,11 +2,14 @@ package resolvers
 
 import (
 	"context"
-	"crypto/md5" // nolint
+	"crypto/md5" // #nosec
+	"encoding/hex"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type cacheResolver struct{}
@@ -15,16 +18,21 @@ var Cache = &cacheResolver{}
 
 const tempDirName = ".aqua"
 
-func locateCacheFS() (fs.FS, error) {
-	dir, err := locateCacheDir()
+var defaultCacheDir = filepath.Join(os.TempDir(), tempDirName, "cache")
+
+func locateCacheFS(cacheDir string) (fs.FS, error) {
+	dir, err := locateCacheDir(cacheDir)
 	if err != nil {
 		return nil, err
 	}
 	return os.DirFS(dir), nil
 }
 
-func locateCacheDir() (string, error) {
-	cacheDir := filepath.Join(os.TempDir(), tempDirName, "cache")
+func locateCacheDir(cacheDir string) (string, error) {
+	if cacheDir == "" {
+		cacheDir = defaultCacheDir
+	}
+
 	if err := os.MkdirAll(cacheDir, 0o750); err != nil {
 		return "", err
 	}
@@ -36,27 +44,32 @@ func locateCacheDir() (string, error) {
 
 func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
 	if opt.SkipCache {
-		opt.Debug("Cache is disabled.")
+		opt.Logger.Debug("Module caching is disabled")
 		return nil, "", "", false, nil
 	}
-	cacheFS, err := locateCacheFS()
+	cacheFS, err := locateCacheFS(opt.CacheDir)
 	if err != nil {
-		opt.Debug("No cache filesystem is available on this machine.")
+		opt.Logger.Debug("No cache filesystem is available on this machine.", log.Err(err))
 		return nil, "", "", false, nil
 	}
-	key := cacheKey(opt.Source, opt.Version, opt.RelativePath)
-	opt.Debug("Trying to resolve: %s", key)
+
+	src, subdir := splitPackageSubdirRaw(opt.Source)
+	key := cacheKey(src, opt.Version)
+
+	opt.Logger.Debug("Trying to resolve module via cache", log.String("key", key))
 	if info, err := fs.Stat(cacheFS, filepath.ToSlash(key)); err == nil && info.IsDir() {
-		opt.Debug("Module '%s' resolving via cache...", opt.Name)
-		cacheDir, err := locateCacheDir()
+		opt.Logger.Debug("Module resolved from cache", log.String("key", key))
+		cacheDir, err := locateCacheDir(opt.CacheDir)
 		if err != nil {
 			return nil, "", "", true, err
 		}
-		return os.DirFS(filepath.Join(cacheDir, key)), opt.OriginalSource, ".", true, nil
+
+		return os.DirFS(filepath.Join(cacheDir, key)), opt.OriginalSource, subdir, true, nil
 	}
 	return nil, "", "", false, nil
 }
 
-func cacheKey(source, version, relativePath string) string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%s:%s:%s", source, version, relativePath)))) // nolint
+func cacheKey(source, version string) string {
+	hash := md5.Sum([]byte(source + ":" + version)) // #nosec
+	return hex.EncodeToString(hash[:])
 }

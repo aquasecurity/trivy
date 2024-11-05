@@ -2,11 +2,11 @@ package config
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getConfigurationAggregator(ctx parser2.FileContext) config.ConfigurationAggregrator {
+func getConfigurationAggregator(ctx parser.FileContext) config.ConfigurationAggregrator {
 
 	aggregator := config.ConfigurationAggregrator{
 		Metadata:         iacTypes.NewUnmanagedMetadata(),
@@ -25,7 +25,7 @@ func getConfigurationAggregator(ctx parser2.FileContext) config.ConfigurationAgg
 	}
 }
 
-func isSourcingAllRegions(r *parser2.Resource) iacTypes.BoolValue {
+func isSourcingAllRegions(r *parser.Resource) iacTypes.BoolValue {
 	accountProp := r.GetProperty("AccountAggregationSources")
 
 	if accountProp.IsNotNil() && accountProp.IsList() {

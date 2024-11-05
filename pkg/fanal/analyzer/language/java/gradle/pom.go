@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -65,8 +65,8 @@ func (props *Properties) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) error 
 	return nil
 }
 
-func parsePoms() (map[string]pomXML, error) {
-	cacheDir := detectCacheDir()
+func (a gradleLockAnalyzer) parsePoms() (map[string]pomXML, error) {
+	cacheDir := a.detectCacheDir()
 	// Cache dir is not found
 	if cacheDir == "" {
 		return nil, nil
@@ -80,7 +80,7 @@ func parsePoms() (map[string]pomXML, error) {
 	err := fsutils.WalkDir(os.DirFS(cacheDir), ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		pom, err := parsePom(r, path)
 		if err != nil {
-			log.Logger.Debugf("Unable to parse %q: %s", path, err)
+			a.logger.Debug("Unable to parse pom", log.FilePath(path), log.Err(err))
 			return nil
 		}
 
@@ -146,7 +146,7 @@ func (pom *pomXML) resolveDependencyVersions() error {
 	return nil
 }
 
-func detectCacheDir() string {
+func (a gradleLockAnalyzer) detectCacheDir() string {
 	// https://docs.gradle.org/current/userguide/directory_layout.html
 	dir := os.Getenv("GRADLE_USER_HOME")
 	if dir == "" {
@@ -159,7 +159,7 @@ func detectCacheDir() string {
 	dir = filepath.Join(dir, "caches")
 
 	if !fsutils.DirExists(dir) {
-		log.Logger.Debug("Unable to get licenses and dependsOn. Gradle cache dir doesn't exist.")
+		a.logger.Debug("Unable to get licenses and dependencies. Gradle cache dir doesn't exist.")
 		return ""
 	}
 	return dir

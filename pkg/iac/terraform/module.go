@@ -3,6 +3,8 @@ package terraform
 import (
 	"fmt"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 )
 
 type Module struct {
@@ -10,11 +12,11 @@ type Module struct {
 	blockMap   map[string]Blocks
 	rootPath   string
 	modulePath string
-	ignores    Ignores
+	ignores    ignore.Rules
 	parent     *Module
 }
 
-func NewModule(rootPath, modulePath string, blocks Blocks, ignores Ignores) *Module {
+func NewModule(rootPath, modulePath string, blocks Blocks, ignores ignore.Rules) *Module {
 
 	blockMap := make(map[string]Blocks)
 
@@ -41,7 +43,7 @@ func (c *Module) RootPath() string {
 	return c.rootPath
 }
 
-func (c *Module) Ignores() Ignores {
+func (c *Module) Ignores() ignore.Rules {
 	return c.ignores
 }
 

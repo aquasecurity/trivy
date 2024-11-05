@@ -70,7 +70,8 @@
           "PkgID": "bash@4.2.46-31.el7.x86_64",
           "PkgName": "bash",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64\u0026distro=centos-7.6.1810"
+            "PURL": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64\u0026distro=centos-7.6.1810",
+            "UID": "64aff37eb11b9c25"
           },
           "InstalledVersion": "4.2.46-31.el7",
           "Status": "will_not_fix",
@@ -130,7 +131,8 @@
           "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1"
+            "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
+            "UID": "20f09cdcea6545a2"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -223,7 +225,8 @@
           "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1"
+            "PURL": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810\u0026epoch=1",
+            "UID": "20f09cdcea6545a2"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",

@@ -3,65 +3,61 @@ package parser
 import (
 	"io/fs"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/zclconf/go-cty/cty"
 )
 
-type ConfigurableTerraformParser interface {
-	options.ConfigurableParser
-	SetTFVarsPaths(...string)
-	SetStopOnHCLError(bool)
-	SetWorkspaceName(string)
-	SetAllowDownloads(bool)
-	SetSkipCachedModules(bool)
-	SetConfigsFS(fsys fs.FS)
-}
+type Option func(p *Parser)
 
-type Option func(p ConfigurableTerraformParser)
-
-func OptionWithTFVarsPaths(paths ...string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if tf, ok := p.(ConfigurableTerraformParser); ok {
-			tf.SetTFVarsPaths(paths...)
-		}
+func OptionWithTFVarsPaths(paths ...string) Option {
+	return func(p *Parser) {
+		p.tfvarsPaths = paths
 	}
 }
 
-func OptionStopOnHCLError(stop bool) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if tf, ok := p.(ConfigurableTerraformParser); ok {
-			tf.SetStopOnHCLError(stop)
-		}
+func OptionStopOnHCLError(stop bool) Option {
+	return func(p *Parser) {
+		p.stopOnHCLError = stop
 	}
 }
 
-func OptionWithWorkspaceName(workspaceName string) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if tf, ok := p.(ConfigurableTerraformParser); ok {
-			tf.SetWorkspaceName(workspaceName)
-		}
+func OptionsWithTfVars(vars map[string]cty.Value) Option {
+	return func(p *Parser) {
+		p.tfvars = vars
 	}
 }
 
-func OptionWithDownloads(allowed bool) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if tf, ok := p.(ConfigurableTerraformParser); ok {
-			tf.SetAllowDownloads(allowed)
-		}
+func OptionWithWorkspaceName(workspaceName string) Option {
+	return func(p *Parser) {
+		p.workspaceName = workspaceName
 	}
 }
 
-func OptionWithSkipCachedModules(b bool) options.ParserOption {
-	return func(p options.ConfigurableParser) {
-		if tf, ok := p.(ConfigurableTerraformParser); ok {
-			tf.SetSkipCachedModules(b)
-		}
+func OptionWithDownloads(allowed bool) Option {
+	return func(p *Parser) {
+		p.allowDownloads = allowed
 	}
 }
 
-func OptionWithConfigsFS(fsys fs.FS) options.ParserOption {
-	return func(s options.ConfigurableParser) {
-		if p, ok := s.(ConfigurableTerraformParser); ok {
-			p.SetConfigsFS(fsys)
-		}
+func OptionWithSkipCachedModules(b bool) Option {
+	return func(p *Parser) {
+		p.skipCachedModules = b
+	}
+}
+
+func OptionWithConfigsFS(fsys fs.FS) Option {
+	return func(p *Parser) {
+		p.configsFS = fsys
+	}
+}
+
+func OptionWithSkipFiles(files []string) Option {
+	return func(p *Parser) {
+		p.skipPaths = files
+	}
+}
+
+func OptionWithSkipDirs(dirs []string) Option {
+	return func(p *Parser) {
+		p.skipPaths = dirs
 	}
 }

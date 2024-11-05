@@ -5,47 +5,50 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
-type ConfigurableHelmScanner interface {
-	options.ConfigurableScanner
-	AddParserOptions(options ...options.ParserOption)
-}
-
 func ScannerWithValuesFile(paths ...string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
-		if helmScanner, ok := s.(ConfigurableHelmScanner); ok {
-			helmScanner.AddParserOptions(parser.OptionWithValuesFile(paths...))
+		if helmScanner, ok := s.(*Scanner); ok {
+			helmScanner.addParserOptions(parser.OptionWithValuesFile(paths...))
 		}
 	}
 }
 
 func ScannerWithValues(values ...string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
-		if helmScanner, ok := s.(ConfigurableHelmScanner); ok {
-			helmScanner.AddParserOptions(parser.OptionWithValues(values...))
+		if helmScanner, ok := s.(*Scanner); ok {
+			helmScanner.addParserOptions(parser.OptionWithValues(values...))
 		}
 	}
 }
 
 func ScannerWithFileValues(values ...string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
-		if helmScanner, ok := s.(ConfigurableHelmScanner); ok {
-			helmScanner.AddParserOptions(parser.OptionWithFileValues(values...))
+		if helmScanner, ok := s.(*Scanner); ok {
+			helmScanner.addParserOptions(parser.OptionWithFileValues(values...))
 		}
 	}
 }
 
 func ScannerWithStringValues(values ...string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
-		if helmScanner, ok := s.(ConfigurableHelmScanner); ok {
-			helmScanner.AddParserOptions(parser.OptionWithStringValues(values...))
+		if helmScanner, ok := s.(*Scanner); ok {
+			helmScanner.addParserOptions(parser.OptionWithStringValues(values...))
 		}
 	}
 }
 
 func ScannerWithAPIVersions(values ...string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
-		if helmScanner, ok := s.(ConfigurableHelmScanner); ok {
-			helmScanner.AddParserOptions(parser.OptionWithAPIVersions(values...))
+		if helmScanner, ok := s.(*Scanner); ok {
+			helmScanner.addParserOptions(parser.OptionWithAPIVersions(values...))
+		}
+	}
+}
+
+func ScannerWithKubeVersion(values string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if helmScanner, ok := s.(*Scanner); ok {
+			helmScanner.addParserOptions(parser.OptionWithKubeVersion(values))
 		}
 	}
 }

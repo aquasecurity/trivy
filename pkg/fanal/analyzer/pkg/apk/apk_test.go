@@ -2,6 +2,7 @@ package apk
 
 import (
 	"bufio"
+	"context"
 	"os"
 	"testing"
 
@@ -32,7 +33,7 @@ var pkgs = []types.Package{
 		Version:    "1.24.2-r9",
 		SrcName:    "busybox",
 		SrcVersion: "1.24.2-r9",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-only"},
 		DependsOn:  []string{"musl@1.1.14-r10"},
 		Arch:       "x86_64",
 		Digest:     "sha1:ca124719267cd0bedc2f4cb850a286ac13f0ad44",
@@ -50,10 +51,13 @@ var pkgs = []types.Package{
 		Version:    "3.0.3-r0",
 		SrcName:    "alpine-baselayout",
 		SrcVersion: "3.0.3-r0",
-		Licenses:   []string{"GPL-2.0"},
-		DependsOn:  []string{"busybox@1.24.2-r9", "musl@1.1.14-r10"},
-		Arch:       "x86_64",
-		Digest:     "sha1:a214896150411d72dd1fafdb32d1c6c4855cccfa",
+		Licenses:   []string{"GPL-2.0-only"},
+		DependsOn: []string{
+			"busybox@1.24.2-r9",
+			"musl@1.1.14-r10",
+		},
+		Arch:   "x86_64",
+		Digest: "sha1:a214896150411d72dd1fafdb32d1c6c4855cccfa",
 		InstalledFiles: []string{
 			"etc/hosts",
 			"etc/sysctl.conf",
@@ -88,7 +92,7 @@ var pkgs = []types.Package{
 		Version:    "1.1-r0",
 		SrcName:    "alpine-keys",
 		SrcVersion: "1.1-r0",
-		Licenses:   []string{"GPL-3.0"},
+		Licenses:   []string{"GPL-2.0-or-later"},
 		Arch:       "x86_64",
 		Digest:     "sha1:4def7ffaee6aeba700c1d62570326f75cbb8fa25",
 		InstalledFiles: []string{
@@ -120,10 +124,13 @@ var pkgs = []types.Package{
 		Version:    "1.0.2h-r1",
 		SrcName:    "openssl",
 		SrcVersion: "1.0.2h-r1",
-		Licenses:   []string{"openssl"},
-		DependsOn:  []string{"musl@1.1.14-r10", "zlib@1.2.8-r2"},
-		Arch:       "x86_64",
-		Digest:     "sha1:65c860ff8f103b664f40ba849a3f5a51c69c8beb",
+		Licenses:   []string{"OpenSSL"},
+		DependsOn: []string{
+			"musl@1.1.14-r10",
+			"zlib@1.2.8-r2",
+		},
+		Arch:   "x86_64",
+		Digest: "sha1:65c860ff8f103b664f40ba849a3f5a51c69c8beb",
 		InstalledFiles: []string{
 			"lib/libcrypto.so.1.0.0",
 			"usr/bin/c_rehash",
@@ -148,7 +155,7 @@ var pkgs = []types.Package{
 		Version:    "1.0.2h-r1",
 		SrcName:    "openssl",
 		SrcVersion: "1.0.2h-r1",
-		Licenses:   []string{"openssl"},
+		Licenses:   []string{"OpenSSL"},
 		Digest:     "sha1:7120f337e93b2b4c44e0f5f31a15b60dc678ca14",
 		DependsOn: []string{
 			"libcrypto1.0@1.0.2h-r1",
@@ -166,7 +173,7 @@ var pkgs = []types.Package{
 		Version:    "2.6.7-r0",
 		SrcName:    "apk-tools",
 		SrcVersion: "2.6.7-r0",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-only"},
 		Digest:     "sha1:0990c0acd62b4175818c3a4cc60ed11f14e23bd8",
 		DependsOn: []string{
 			"libcrypto1.0@1.0.2h-r1",
@@ -185,7 +192,7 @@ var pkgs = []types.Package{
 		Version:    "1.1.6-r0",
 		SrcName:    "pax-utils",
 		SrcVersion: "1.1.6-r0",
-		Licenses:   []string{"GPL-2.0"},
+		Licenses:   []string{"GPL-2.0-only"},
 		Digest:     "sha1:f9bab817c5ad93e92a6218bc0f7596b657c02d90",
 		DependsOn:  []string{"musl@1.1.14-r10"},
 		Arch:       "x86_64",
@@ -199,8 +206,12 @@ var pkgs = []types.Package{
 		Version:    "1.1.14-r10",
 		SrcName:    "musl",
 		SrcVersion: "1.1.14-r10",
-		Licenses:   []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
-		Digest:     "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
+		Licenses: []string{
+			"MIT",
+			"BSD-3-Clause",
+			"GPL-2.0-or-later",
+		},
+		Digest: "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 			"scanelf@1.1.6-r0",
@@ -220,7 +231,7 @@ var pkgs = []types.Package{
 		Version:    "0.7-r0",
 		SrcName:    "libc-dev",
 		SrcVersion: "0.7-r0",
-		Licenses:   []string{"GPL-3.0"},
+		Licenses:   []string{"GPL-2.0-or-later"},
 		Digest:     "sha1:9055bc7afd76cf2672198042f72fc4a5ed4fa961",
 		DependsOn:  []string{"musl-utils@1.1.14-r10"},
 		Arch:       "x86_64",
@@ -244,7 +255,6 @@ var pkgs = []types.Package{
 			"usr/share/aclocal/pkg.m4",
 		},
 	},
-
 	{
 		ID:         "sqlite-libs@3.26.0-r3",
 		Name:       "sqlite-libs",
@@ -260,7 +270,6 @@ var pkgs = []types.Package{
 			"usr/lib/libsqlite3.so.0.8.6",
 		},
 	},
-
 	{
 		ID:         "test@2.9.11_pre20061021-r2",
 		Name:       "test",
@@ -281,15 +290,18 @@ var pkgs = []types.Package{
 			"usr/include/sqlite3.h",
 		},
 	},
-
 	{
 		ID:         "ada-libs@2.7.4-r0",
 		Name:       "ada-libs",
 		Version:    "2.7.4-r0",
 		SrcName:    "ada",
 		SrcVersion: "2.7.4-r0",
-		Licenses:   []string{"Apache-2.0", "MIT", "MPL-2.0"},
-		Digest:     "sha1:593154f80c440685448e0f52479725d7bc9b678d",
+		Licenses: []string{
+			"Apache-2.0",
+			"MIT",
+			"MPL-2.0",
+		},
+		Digest: "sha1:593154f80c440685448e0f52479725d7bc9b678d",
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 		},
@@ -431,7 +443,7 @@ func TestParseApkInfo(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 			scanner := bufio.NewScanner(f)
-			gotPkgs, gotFiles := a.parseApkInfo(scanner)
+			gotPkgs, gotFiles := a.parseApkInfo(context.Background(), scanner)
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantFiles, gotFiles)

@@ -3,13 +3,13 @@ package gke
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/providers/google/gke"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/gke"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -237,7 +237,7 @@ resource "google_container_cluster" "example" {
 						},
 						EnableShieldedNodes:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						EnableLegacyABAC:      iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						ResourceLabels:        iacTypes.Map(map[string]string{}, iacTypes.NewTestMetadata()),
+						ResourceLabels:        iacTypes.Map(make(map[string]string), iacTypes.NewTestMetadata()),
 						RemoveDefaultNodePool: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},

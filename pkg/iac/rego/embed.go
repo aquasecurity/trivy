@@ -2,18 +2,20 @@ package rego
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/open-policy-agent/opa/ast"
 
-	rules2 "github.com/aquasecurity/trivy-policies"
+	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func init() {
-
+var LoadAndRegister = sync.OnceFunc(func() {
 	modules, err := LoadEmbeddedPolicies()
 	if err != nil {
 		// we should panic as the policies were not embedded properly
@@ -28,12 +30,12 @@ func init() {
 	}
 
 	RegisterRegoRules(modules)
-}
+})
 
 func RegisterRegoRules(modules map[string]*ast.Module) {
 	ctx := context.TODO()
 
-	schemaSet, _, _ := BuildSchemaSetFromPolicies(modules, nil, nil)
+	schemaSet, _, _ := BuildSchemaSetFromPolicies(modules, nil, nil, make(map[string][]byte))
 
 	compiler := ast.NewCompiler().
 		WithSchemas(schemaSet).
@@ -47,26 +49,45 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 	}
 
 	retriever := NewMetadataRetriever(compiler)
+	regoCheckIDs := make(map[string]struct{})
+
 	for _, module := range modules {
 		metadata, err := retriever.RetrieveMetadata(ctx, module)
 		if err != nil {
+			log.Warn("Failed to retrieve metadata", log.String("package", module.Package.String()), log.Err(err))
 			continue
 		}
+
 		if metadata.AVDID == "" {
+			if !metadata.Library {
+				log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
+			}
 			continue
 		}
-		rules.Register(
-			metadata.ToRule(),
-		)
+
+		if !metadata.Deprecated {
+			regoCheckIDs[metadata.AVDID] = struct{}{}
+		}
+
+		rules.Register(metadata.ToRule())
+	}
+
+	for _, check := range rules.GetRegistered() {
+		if !check.Deprecated && check.CanCheck() {
+			if _, exists := regoCheckIDs[check.AVDID]; exists {
+				log.Warn("Ignore duplicate Go check", log.String("avdid", check.AVDID))
+				rules.Deregister(check)
+			}
+		}
 	}
 }
 
 func LoadEmbeddedPolicies() (map[string]*ast.Module, error) {
-	return LoadPoliciesFromDirs(rules2.EmbeddedPolicyFileSystem, ".")
+	return LoadPoliciesFromDirs(checks.EmbeddedPolicyFileSystem, ".")
 }
 
 func LoadEmbeddedLibraries() (map[string]*ast.Module, error) {
-	return LoadPoliciesFromDirs(rules2.EmbeddedLibraryFileSystem, ".")
+	return LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
 }
 
 func LoadPoliciesFromDirs(target fs.FS, paths ...string) (map[string]*ast.Module, error) {
@@ -95,8 +116,7 @@ func LoadPoliciesFromDirs(target fs.FS, paths ...string) (map[string]*ast.Module
 				ProcessAnnotation: true,
 			})
 			if err != nil {
-				// s.debug.Log("Failed to load module: %s, err: %s", filepath.ToSlash(path), err.Error())
-				return err
+				return fmt.Errorf("failed to parse Rego module: %w", err)
 			}
 			modules[path] = module
 			return nil

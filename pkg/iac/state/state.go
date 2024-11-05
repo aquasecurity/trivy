@@ -29,6 +29,6 @@ type State struct {
 	Nifcloud     nifcloud.Nifcloud
 }
 
-func (a *State) ToRego() interface{} {
+func (a *State) ToRego() any {
 	return convert.StructToRego(reflect.ValueOf(a))
 }

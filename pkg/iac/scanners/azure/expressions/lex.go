@@ -23,7 +23,7 @@ const (
 
 type Token struct {
 	Type TokenType
-	Data interface{}
+	Data any
 }
 
 type lexer struct {

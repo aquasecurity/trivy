@@ -56,7 +56,7 @@ type Range struct {
 }
 
 func (r Range) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"filename":        r.filename,
 		"startLine":       r.startLine,
 		"endLine":         r.endLine,
@@ -67,7 +67,7 @@ func (r Range) MarshalJSON() ([]byte, error) {
 }
 
 func (r *Range) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -145,4 +145,11 @@ func (r Range) GetFS() fs.FS {
 
 func (r Range) GetSourcePrefix() string {
 	return r.sourcePrefix
+}
+
+func (r Range) Validate() error {
+	if r.startLine < 0 || r.endLine < 0 || r.startLine > r.endLine {
+		return fmt.Errorf("invalid range: %s", r.String())
+	}
+	return nil
 }

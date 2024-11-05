@@ -11,13 +11,12 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 
 	debVersion "github.com/knqyf263/go-deb-version"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
@@ -31,10 +30,14 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeDpkg, newDpkgAnalyzer)
 }
 
-type dpkgAnalyzer struct{}
+type dpkgAnalyzer struct {
+	logger *log.Logger
+}
 
 func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	return &dpkgAnalyzer{}, nil
+	return &dpkgAnalyzer{
+		logger: log.WithPrefix("dpkg"),
+	}, nil
 }
 
 const (
@@ -58,7 +61,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	// parse `available` file to get digest for packages
 	digests, err := a.parseDpkgAvailable(input.FS)
 	if err != nil {
-		log.Logger.Debugf("Unable to parse %q file: %s", availableFile, err)
+		a.logger.Debug("Unable to parse the available file", log.FilePath(availableFile), log.Err(err))
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
@@ -112,31 +115,42 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 // parseDpkgInfoList parses /var/lib/dpkg/info/*.list
 func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error) {
-	var installedFiles []string
-	var previous string
+	var (
+		allLines       []string
+		installedFiles []string
+		previous       string
+	)
+
 	for scanner.Scan() {
 		current := scanner.Text()
 		if current == "/." {
 			continue
 		}
+		allLines = append(allLines, current)
+	}
 
-		// Add the file if it is not directory.
-		// e.g.
-		//  /usr/sbin
-		//  /usr/sbin/tarcat
-		//
-		// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
+	if err := scanner.Err(); err != nil {
+		return nil, xerrors.Errorf("scan error: %w", err)
+	}
+
+	// Add the file if it is not directory.
+	// e.g.
+	//  /usr/sbin
+	//  /usr/sbin/tarcat
+	//
+	// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
+	// sort first,see here:https://github.com/aquasecurity/trivy/discussions/6543
+	sort.Strings(allLines)
+	for _, current := range allLines {
 		if !strings.HasPrefix(current, previous+"/") {
 			installedFiles = append(installedFiles, previous)
 		}
 		previous = current
 	}
 
-	// Add the last file
-	installedFiles = append(installedFiles, previous)
-
-	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+	// // Add the last file
+	if previous != "" && !strings.HasSuffix(previous, "/") {
+		installedFiles = append(installedFiles, previous)
 	}
 
 	return installedFiles, nil
@@ -155,7 +169,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 	for scanner.Scan() {
 		header, err := scanner.Header()
 		if !errors.Is(err, io.EOF) && err != nil {
-			log.Logger.Warnw("Parse error", zap.String("file", availableFile), zap.Error(err))
+			a.logger.Warn("Parse error", log.FilePath(availableFile), log.Err(err))
 			continue
 		}
 		name, version, checksum := header.Get("Package"), header.Get("Version"), header.Get("SHA256")
@@ -181,7 +195,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 	for scanner.Scan() {
 		header, err := scanner.Header()
 		if !errors.Is(err, io.EOF) && err != nil {
-			log.Logger.Warnw("Parse error", zap.String("file", filePath), zap.Error(err))
+			a.logger.Warn("Parse error", log.FilePath(filePath), log.Err(err))
 			continue
 		}
 
@@ -251,8 +265,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 	}
 
 	if v, err := debVersion.NewVersion(pkg.Version); err != nil {
-		log.Logger.Warnw("Invalid version", zap.String("OS", "debian"),
-			zap.String("package", pkg.Name), zap.String("version", pkg.Version))
+		a.logger.Warn("Invalid version", log.String("OS", "debian"),
+			log.String("package", pkg.Name), log.String("version", pkg.Version))
 		return nil
 	} else {
 		pkg.ID = a.pkgID(pkg.Name, pkg.Version)
@@ -262,8 +276,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 	}
 
 	if v, err := debVersion.NewVersion(pkg.SrcVersion); err != nil {
-		log.Logger.Warnw("Invalid source version", zap.String("OS", "debian"),
-			zap.String("package", pkg.Name), zap.String("version", pkg.SrcVersion))
+		a.logger.Warn("Invalid source version", log.String("OS", "debian"),
+			log.String("package", pkg.Name), log.String("version", pkg.SrcVersion))
 		return nil
 	} else {
 		pkg.SrcVersion = v.Version()

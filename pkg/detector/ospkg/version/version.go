@@ -31,7 +31,8 @@ func Minor(osVer string) string {
 func Supported(ctx context.Context, eolDates map[string]time.Time, osFamily ftypes.OSType, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
+		log.Warn("This OS version is not on the EOL list",
+			log.String("family", string(osFamily)), log.String("version", osVer))
 		return true // can be the latest version
 	}
 	return clock.Now(ctx).Before(eol)

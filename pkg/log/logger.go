@@ -1,129 +1,93 @@
 package log
 
 import (
+	"context"
+	"fmt"
+	"io"
+	"log/slog"
 	"os"
-	"runtime"
-	"strings"
 
-	xlog "github.com/masahiro331/go-xfs-filesystem/log"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"golang.org/x/xerrors"
-
-	flog "github.com/aquasecurity/trivy/pkg/fanal/log"
+	"github.com/samber/lo"
 )
+
+const (
+	LevelDebug = slog.LevelDebug
+	LevelInfo  = slog.LevelInfo
+	LevelWarn  = slog.LevelWarn
+	LevelError = slog.LevelError
+	LevelFatal = slog.Level(12)
+
+	PrefixContainerImage   = "image"
+	PrefixPackage          = "pkg"
+	PrefixVulnerability    = "vuln"
+	PrefixMisconfiguration = "misconfig"
+	PrefixSecret           = "secret"
+	PrefixLicense          = "license"
+	PrefixVulnerabilityDB  = "vulndb"
+	PrefixJavaDB           = "javadb"
+)
+
+// Logger is an alias of slog.Logger
+type Logger = slog.Logger
+
+// New creates a new Logger with the given non-nil Handler.
+func New(h slog.Handler) *Logger {
+	return slog.New(h)
+}
+
+// InitLogger initializes the logger variable and flushes the buffered logs if needed.
+func InitLogger(debug, disable bool) {
+	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
+	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
+	h := NewHandler(out, &Options{Level: level})
+
+	// Flush the buffered logs if needed.
+	if d, ok := slog.Default().Handler().(*DeferredHandler); ok {
+		d.Flush(h)
+	}
+
+	slog.SetDefault(New(h))
+}
 
 var (
-	// Logger is the global variable for logging
-	Logger      *zap.SugaredLogger
-	debugOption bool
+	// With calls [Logger.With] on the default logger.
+	With = slog.With
+
+	SetDefault = slog.SetDefault
+
+	Debug        = slog.Debug
+	DebugContext = slog.DebugContext
+	Info         = slog.Info
+	InfoContext  = slog.InfoContext
+	Warn         = slog.Warn
+	WarnContext  = slog.WarnContext
+	Error        = slog.Error
+	ErrorContext = slog.ErrorContext
 )
 
-func init() {
-	// Set the default logger
-	Logger, _ = NewLogger(false, false) // nolint: errcheck
+// WithPrefix calls [Logger.With] with the prefix on the default logger.
+//
+// Note: If WithPrefix is called within init() or during global variable
+// initialization, it will use the default logger of log/slog package
+// before Trivy's logger is set up. In such cases, it's recommended to pass the prefix
+// via WithContextPrefix to ensure the correct logger is used.
+func WithPrefix(prefix string) *Logger {
+	return slog.Default().With(Prefix(prefix))
 }
 
-// InitLogger initialize the logger variable
-func InitLogger(debug, disable bool) (err error) {
-	debugOption = debug
-	Logger, err = NewLogger(debug, disable)
-	if err != nil {
-		return xerrors.Errorf("failed to initialize a logger: %w", err)
-	}
-
-	// Set logger for fanal
-	flog.SetLogger(Logger)
-
-	// Set logger for go-xfs-filesystem
-	xlog.SetLogger(Logger)
-
-	return nil
-
-}
-
-// NewLogger is the factory method to return the instance of logger
-func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
-	// First, define our level-handling logic.
-	errorPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel
-	})
-	logPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		if debug {
-			return lvl < zapcore.ErrorLevel
-		}
-		// Not enable debug level
-		return zapcore.DebugLevel < lvl && lvl < zapcore.ErrorLevel
-	})
-
-	encoderLevel := zapcore.CapitalColorLevelEncoder
-	// when running on Windows, don't log with color
-	if runtime.GOOS == "windows" {
-		encoderLevel = zapcore.CapitalLevelEncoder
-	}
-
-	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "Time",
-		LevelKey:       "Level",
-		NameKey:        "Name",
-		CallerKey:      "Caller",
-		MessageKey:     "Msg",
-		StacktraceKey:  "St",
-		EncodeLevel:    encoderLevel,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
-		EncodeDuration: zapcore.StringDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
-	}
-
-	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
-
-	// High-priority output should also go to standard error, and low-priority
-	// output should also go to standard out.
-	consoleLogs := zapcore.Lock(os.Stderr)
-	consoleErrors := zapcore.Lock(os.Stderr)
-	if disable {
-		devNull, err := os.Create(os.DevNull)
-		if err != nil {
-			return nil, err
-		}
-		// Discard low-priority output
-		consoleLogs = zapcore.Lock(devNull)
-	}
-
-	core := zapcore.NewTee(
-		zapcore.NewCore(consoleEncoder, consoleErrors, errorPriority),
-		zapcore.NewCore(consoleEncoder, consoleLogs, logPriority),
-	)
-
-	opts := []zap.Option{zap.ErrorOutput(zapcore.Lock(os.Stderr))}
-	if debug {
-		opts = append(opts, zap.Development())
-	}
-	logger := zap.New(core, opts...)
-
-	return logger.Sugar(), nil
-}
+func Debugf(format string, args ...any) { slog.Default().Debug(fmt.Sprintf(format, args...)) }
+func Infof(format string, args ...any)  { slog.Default().Info(fmt.Sprintf(format, args...)) }
+func Warnf(format string, args ...any)  { slog.Default().Warn(fmt.Sprintf(format, args...)) }
+func Errorf(format string, args ...any) { slog.Default().Error(fmt.Sprintf(format, args...)) }
 
 // Fatal for logging fatal errors
-func Fatal(err error) {
-	if debugOption {
-		Logger.Fatalf("%+v", err)
+func Fatal(msg string, args ...any) {
+	// Fatal errors should be logged to stderr even if the logger is disabled.
+	if h, ok := slog.Default().Handler().(*ColorHandler); ok {
+		h.out = os.Stderr
+	} else {
+		slog.SetDefault(New(NewHandler(os.Stderr, &Options{})))
 	}
-	Logger.Fatal(err)
-}
-
-func String(key, val string) zap.Field {
-	if key == "" || val == "" {
-		return zap.Skip()
-	}
-	return zap.String(key, val)
-}
-
-type PrefixedLogger struct {
-	Name string
-}
-
-func (d *PrefixedLogger) Write(p []byte) (n int, err error) {
-	Logger.Debugf("[%s] %s", d.Name, strings.TrimSpace(string(p)))
-	return len(p), nil
+	slog.Default().Log(context.Background(), LevelFatal, msg, args...)
+	os.Exit(1)
 }

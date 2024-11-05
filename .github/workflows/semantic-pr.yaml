@@ -28,7 +28,7 @@ jobs:
             ci
             chore
             revert
-            BREAKING
+            release
 
           scopes: |
             vuln
@@ -44,6 +44,7 @@ jobs:
             k8s
             aws
             vm
+            plugin
 
             alpine
             wolfi
@@ -75,6 +76,8 @@ jobs:
             dart
             swift
             bitnami
+            conda
+            julia
 
             os
             lang

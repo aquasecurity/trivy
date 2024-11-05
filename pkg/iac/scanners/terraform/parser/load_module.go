@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type ModuleDefinition struct {
@@ -20,6 +21,14 @@ type ModuleDefinition struct {
 	Definition *terraform.Block
 	Parser     *Parser
 	External   bool
+}
+
+func (d *ModuleDefinition) inputVars() map[string]cty.Value {
+	inputs := d.Definition.Values().AsValueMap()
+	if inputs == nil {
+		return make(map[string]cty.Value)
+	}
+	return inputs
 }
 
 // loadModules reads all module blocks and loads them
@@ -34,11 +43,11 @@ func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
 		}
 		moduleDefinition, err := e.loadModule(ctx, moduleBlock)
 		if err != nil {
-			e.debug.Log("Failed to load module %q. Maybe try 'terraform init'?", err)
+			e.logger.Error("Failed to load module. Maybe try 'terraform init'?", log.Err(err))
 			continue
 		}
 
-		e.debug.Log("Loaded module %q from %q.", moduleDefinition.Name, moduleDefinition.Path)
+		e.logger.Debug("Loaded module", log.String("name", moduleDefinition.Name), log.FilePath(moduleDefinition.Path))
 		moduleDefinitions = append(moduleDefinitions, moduleDefinition)
 	}
 
@@ -69,7 +78,7 @@ func (e *evaluator) loadModule(ctx context.Context, b *terraform.Block) (*Module
 	}
 
 	if def, err := e.loadModuleFromTerraformCache(ctx, b, source); err == nil {
-		e.debug.Log("found module '%s' in .terraform/modules", source)
+		e.logger.Debug("Using module from Terraform cache .terraform/modules", log.String("source", source))
 		return def, nil
 	}
 
@@ -102,7 +111,11 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 		}
 	}
 
-	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' using modules.json", b.FullName(), modulePath, e.filesystem)
+	e.logger.Debug("Module resolved using modules.json",
+		log.String("block", b.FullName()),
+		log.String("source", source),
+		log.String("modulePath", modulePath),
+	)
 	moduleParser := e.parentParser.newModuleParser(e.filesystem, source, modulePath, b.Label(), b)
 	if err := moduleParser.ParseFS(ctx, modulePath); err != nil {
 		return nil, err
@@ -118,7 +131,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 
 func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, source string) (*ModuleDefinition, error) {
 
-	e.debug.Log("locating non-initialized module '%s'...", source)
+	e.logger.Debug("Locating non-initialized module", log.String("source", source))
 
 	version := b.GetAttribute("version").AsStringValueOrDefault("", b).Value()
 	opt := resolvers.Options{
@@ -129,7 +142,7 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		WorkingDir:      e.projectRootPath,
 		Name:            b.FullName(),
 		ModulePath:      e.modulePath,
-		DebugLogger:     e.debug.Extend("resolver"),
+		Logger:          log.WithPrefix("module resolver"),
 		AllowDownloads:  e.allowDownloads,
 		SkipCache:       e.skipCachedModules,
 	}
@@ -139,7 +152,12 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		return nil, err
 	}
 	prefix = path.Join(e.parentParser.moduleSource, prefix)
-	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' with prefix '%s'", b.FullName(), downloadPath, filesystem, prefix)
+	e.logger.Debug("Module resolved",
+		log.String("block", b.FullName()),
+		log.String("source", source),
+		log.String("prefix", prefix),
+		log.FilePath(downloadPath),
+	)
 	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, downloadPath, b.Label(), b)
 	if err := moduleParser.ParseFS(ctx, downloadPath); err != nil {
 		return nil, err

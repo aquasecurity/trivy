@@ -25,7 +25,7 @@ var (
 		"4": time.Date(2013, 12, 31, 23, 59, 59, 0, time.UTC),
 		"5": time.Date(2017, 12, 31, 23, 59, 59, 0, time.UTC),
 		"6": time.Date(2021, 3, 21, 23, 59, 59, 0, time.UTC),
-		"7": time.Date(2024, 7, 23, 23, 59, 59, 0, time.UTC),
+		"7": time.Date(2024, 12, 31, 23, 59, 59, 0, time.UTC),
 		"8": time.Date(2029, 7, 18, 23, 59, 59, 0, time.UTC),
 		"9": time.Date(2032, 7, 18, 23, 59, 59, 0, time.UTC),
 	}
@@ -54,12 +54,10 @@ func extractKsplice(v string) string {
 }
 
 // Detect scans and return vulnerability in Oracle scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Oracle Linux vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = osver.Major(osVer)
-	log.Logger.Debugf("Oracle Linux: os version: %s", osVer)
-	log.Logger.Debugf("Oracle Linux: the number of packages: %d", len(pkgs))
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {

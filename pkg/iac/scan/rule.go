@@ -36,6 +36,7 @@ type TerraformCustomCheck struct {
 }
 
 type Rule struct {
+	Deprecated     bool                             `json:"deprecated"`
 	AVDID          string                           `json:"avd_id"`
 	Aliases        []string                         `json:"aliases"`
 	ShortCode      string                           `json:"short_code"`
@@ -53,6 +54,10 @@ type Rule struct {
 	RegoPackage    string                           `json:"-"`
 	Frameworks     map[framework.Framework][]string `json:"frameworks"`
 	Check          CheckFunc                        `json:"-"`
+}
+
+func (r Rule) IsDeprecated() bool {
+	return r.Deprecated
 }
 
 func (r Rule) HasID(id string) bool {

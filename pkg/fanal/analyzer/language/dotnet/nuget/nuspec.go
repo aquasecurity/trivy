@@ -9,7 +9,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -41,7 +40,6 @@ func newNuspecParser() nuspecParser {
 	}
 
 	if !fsutils.DirExists(packagesDir) {
-		log.Logger.Debugf("The nuget packages directory couldn't be found. License search disabled")
 		return nuspecParser{}
 	}
 

@@ -4,11 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
-	"github.com/stretchr/testify/require"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 )
 
 func Test_DeterministicResults(t *testing.T) {
@@ -39,12 +40,12 @@ locals {
 	})
 
 	for i := 0; i < 100; i++ {
-		p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+		p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 		err := p.ParseFS(context.TODO(), ".")
 		require.NoError(t, err)
 		modules, _, err := p.EvaluateAll(context.TODO())
 		require.NoError(t, err)
-		results, _, _ := executor.New().Execute(modules)
+		results, _ := executor.New().Execute(modules)
 		require.Len(t, results.GetFailed(), 2)
 	}
 }

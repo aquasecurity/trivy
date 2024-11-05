@@ -5,15 +5,19 @@ import (
 	"io"
 	"io/fs"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/masahiro331/go-disk"
+	diskFs "github.com/masahiro331/go-disk/fs"
 	"github.com/masahiro331/go-disk/gpt"
 	"github.com/masahiro331/go-disk/mbr"
 	"github.com/masahiro331/go-disk/types"
-	"golang.org/x/exp/slices"
+	"github.com/masahiro331/go-ext4-filesystem/ext4"
+	"github.com/masahiro331/go-xfs-filesystem/xfs"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -29,29 +33,36 @@ var requiredDiskName = []string{
 	"3",        // Common image name
 }
 
+var checkFsFuncs = []diskFs.CheckFsFunc{
+	ext4.Check,
+	xfs.Check,
+}
+
 func AppendPermitDiskName(s ...string) {
 	requiredDiskName = append(requiredDiskName, s...)
 }
 
 type VM struct {
-	walker
-	threshold int64
+	logger    *log.Logger
+	skipFiles []string
+	skipDirs  []string
 	analyzeFn WalkFunc
 }
 
-func NewVM(skipFiles, skipDirs []string) *VM {
-	threshold := defaultSizeThreshold
+func NewVM() *VM {
 	return &VM{
-		walker:    newWalker(skipFiles, skipDirs),
-		threshold: threshold,
+		logger: log.WithPrefix("vm"),
 	}
 }
 
-func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
+func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFunc) error {
+	w.skipFiles = opt.SkipFiles
+	w.skipDirs = append(opt.SkipDirs, defaultSkipDirs...)
+
 	// This function will be called on each file.
 	w.analyzeFn = fn
 
-	driver, err := disk.NewDriver(vreader)
+	driver, err := disk.NewDriver(vreader, checkFsFuncs...)
 	if err != nil {
 		return xerrors.Errorf("failed to new disk driver: %w", err)
 	}
@@ -72,7 +83,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
 
 		// Walk each partition
 		if err = w.diskWalk(root, partition); err != nil {
-			log.Logger.Warnf("Partition error: %s", err.Error())
+			w.logger.Warn("Partition error", log.Err(err))
 		}
 	}
 	return nil
@@ -80,7 +91,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
 
 // Inject disk partitioning processes from externally with diskWalk.
 func (w *VM) diskWalk(root string, partition types.Partition) error {
-	log.Logger.Debugf("Found partition: %s", partition.Name())
+	w.logger.Debug("Found partition", log.String("name", partition.Name()))
 
 	sr := partition.GetSectionReader()
 
@@ -89,7 +100,7 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 	if err != nil {
 		return xerrors.Errorf("LVM detection error: %w", err)
 	} else if foundLVM {
-		log.Logger.Errorf("LVM is not supported, skip %s.img", partition.Name())
+		w.logger.Error("LVM is not supported, skipping", log.String("name", partition.Name()+".img"))
 		return nil
 	}
 
@@ -121,13 +132,13 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 	pathName := strings.TrimPrefix(filepath.Clean(path), "/")
 	switch {
 	case fi.IsDir():
-		if w.shouldSkipDir(pathName) {
+		if utils.SkipPath(pathName, w.skipDirs) {
 			return filepath.SkipDir
 		}
 		return nil
 	case !fi.Mode().IsRegular():
 		return nil
-	case w.shouldSkipFile(pathName):
+	case utils.SkipPath(pathName, w.skipFiles):
 		return nil
 	case fi.Mode()&0x1000 == 0x1000 ||
 		fi.Mode()&0x2000 == 0x2000 ||
@@ -142,7 +153,7 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 		return nil
 	}
 
-	cvf := newCachedVMFile(fsys, pathName, w.threshold)
+	cvf := newCachedVMFile(fsys, pathName)
 	defer cvf.Clean()
 
 	if err = w.analyzeFn(path, fi, cvf.Open); err != nil {
@@ -152,18 +163,16 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 }
 
 type cachedVMFile struct {
-	fs        fs.FS
-	filePath  string
-	threshold int64
+	fs       fs.FS
+	filePath string
 
 	cf *cachedFile
 }
 
-func newCachedVMFile(fsys fs.FS, filePath string, threshold int64) *cachedVMFile {
+func newCachedVMFile(fsys fs.FS, filePath string) *cachedVMFile {
 	return &cachedVMFile{
-		fs:        fsys,
-		filePath:  filePath,
-		threshold: threshold,
+		fs:       fsys,
+		filePath: filePath,
 	}
 }
 
@@ -181,7 +190,7 @@ func (cvf *cachedVMFile) Open() (xio.ReadSeekCloserAt, error) {
 		return nil, xerrors.Errorf("file stat error: %w", err)
 	}
 
-	cvf.cf = newCachedFile(fi.Size(), f, cvf.threshold)
+	cvf.cf = newCachedFile(fi.Size(), f)
 	return cvf.cf.Open()
 }
 

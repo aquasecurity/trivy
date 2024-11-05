@@ -1,6 +1,6 @@
 package functions
 
-func Array(args ...interface{}) interface{} {
+func Array(args ...any) any {
 
 	if len(args) != 1 {
 		return ""
@@ -11,19 +11,19 @@ func Array(args ...interface{}) interface{} {
 		return []int{ctype}
 	case string:
 		return []string{ctype}
-	case map[string]interface{}:
-		var result []interface{}
+	case map[string]any:
+		var result []any
 		for k, v := range ctype {
 			result = append(result, k, v)
 		}
 		return result
-	case interface{}:
+	case any:
 		switch ctype := ctype.(type) {
 		case []string:
 			return ctype
-		case []interface{}:
+		case []any:
 			return ctype
 		}
 	}
-	return []interface{}{}
+	return []any{}
 }

@@ -2,11 +2,11 @@ package ec2
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getLaunchTemplates(file parser2.FileContext) (templates []ec2.LaunchTemplate) {
+func getLaunchTemplates(file parser.FileContext) (templates []ec2.LaunchTemplate) {
 	launchConfigResources := file.GetResourcesByType("AWS::EC2::LaunchTemplate")
 
 	for _, r := range launchConfigResources {
@@ -15,7 +15,7 @@ func getLaunchTemplates(file parser2.FileContext) (templates []ec2.LaunchTemplat
 	return templates
 }
 
-func adaptLaunchTemplate(r *parser2.Resource) ec2.LaunchTemplate {
+func adaptLaunchTemplate(r *parser.Resource) ec2.LaunchTemplate {
 	launchTemplate := ec2.LaunchTemplate{
 		Metadata: r.Metadata(),
 		Name:     r.GetStringProperty("LaunchTemplateName", ""),

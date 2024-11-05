@@ -4,56 +4,59 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
-func NewParser() types.Parser {
-	return &Parser{}
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("cocoapods"),
+	}
 }
 
 type lockFile struct {
 	Pods []any `yaml:"PODS"` // pod can be string or map[string]interface{}
 }
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	lock := &lockFile{}
 	decoder := yaml.NewDecoder(r)
 	if err := decoder.Decode(&lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode cocoapods lock file: %s", err.Error())
 	}
 
-	parsedDeps := make(map[string]types.Library) // dependency name => Library
-	directDeps := make(map[string][]string)      // dependency name => slice of child dependency names
+	parsedDeps := make(map[string]ftypes.Package) // dependency name => Package
+	directDeps := make(map[string][]string)       // dependency name => slice of child dependency names
 	for _, pod := range lock.Pods {
-		switch p := pod.(type) {
+		switch dep := pod.(type) {
 		case string: // dependency with version number
-			lib, err := parseDep(p)
+			pkg, err := parseDep(dep)
 			if err != nil {
-				log.Logger.Debug(err)
+				p.logger.Debug("Dependency parse error", log.Err(err))
 				continue
 			}
-			parsedDeps[lib.Name] = lib
-		case map[string]interface{}: // dependency with its child dependencies
-			for dep, childDeps := range p {
-				lib, err := parseDep(dep)
+			parsedDeps[pkg.Name] = pkg
+		case map[string]any:
+			for dep, childDeps := range dep {
+				pkg, err := parseDep(dep)
 				if err != nil {
-					log.Logger.Debug(err)
+					p.logger.Debug("Dependency parse error", log.Err(err))
 					continue
 				}
-				parsedDeps[lib.Name] = lib
+				parsedDeps[pkg.Name] = pkg
 
-				children, ok := childDeps.([]interface{})
+				children, ok := childDeps.([]any)
 				if !ok {
 					return nil, nil, xerrors.Errorf("invalid value of cocoapods direct dependency: %q", childDeps)
 				}
@@ -63,30 +66,30 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 					if !ok {
 						return nil, nil, xerrors.Errorf("must be string: %q", childDep)
 					}
-					directDeps[lib.Name] = append(directDeps[lib.Name], strings.Fields(s)[0])
+					directDeps[pkg.Name] = append(directDeps[pkg.Name], strings.Fields(s)[0])
 				}
 			}
 		}
 	}
 
-	var deps []types.Dependency
+	var deps ftypes.Dependencies
 	for dep, childDeps := range directDeps {
 		var dependsOn []string
 		// find versions for child dependencies
 		for _, childDep := range childDeps {
 			dependsOn = append(dependsOn, packageID(childDep, parsedDeps[childDep].Version))
 		}
-		deps = append(deps, types.Dependency{
+		deps = append(deps, ftypes.Dependency{
 			ID:        parsedDeps[dep].ID,
 			DependsOn: dependsOn,
 		})
 	}
 
-	sort.Sort(types.Dependencies(deps))
-	return utils.UniqueLibraries(maps.Values(parsedDeps)), deps, nil
+	sort.Sort(deps)
+	return utils.UniquePackages(lo.Values(parsedDeps)), deps, nil
 }
 
-func parseDep(dep string) (types.Library, error) {
+func parseDep(dep string) (ftypes.Package, error) {
 	// dep example:
 	// 'AppCenter (4.2.0)'
 	// direct dep examples:
@@ -95,18 +98,18 @@ func parseDep(dep string) (types.Library, error) {
 	// 'AppCenter/Analytics (-> 4.2.0)'
 	ss := strings.Split(dep, " (")
 	if len(ss) != 2 {
-		return types.Library{}, xerrors.Errorf("Unable to determine cocoapods dependency: %q", dep)
+		return ftypes.Package{}, xerrors.Errorf("Unable to determine cocoapods dependency: %q", dep)
 	}
 
 	name := ss[0]
 	version := strings.Trim(strings.TrimSpace(ss[1]), "()")
-	lib := types.Library{
+	pkg := ftypes.Package{
 		ID:      packageID(name, version),
 		Name:    name,
 		Version: version,
 	}
 
-	return lib, nil
+	return pkg, nil
 }
 
 func packageID(name, version string) string {

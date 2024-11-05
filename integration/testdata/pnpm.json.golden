@@ -20,13 +20,44 @@
       "Target": "pnpm-lock.yaml",
       "Class": "lang-pkgs",
       "Type": "pnpm",
+      "Packages": [
+        {
+          "ID": "jquery@3.3.9",
+          "Name": "jquery",
+          "Identifier": {
+            "PURL": "pkg:npm/jquery@3.3.9",
+            "UID": "53ca18565a4b6a47"
+          },
+          "Version": "3.3.9",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "Layer": {}
+        },
+        {
+          "ID": "lodash@4.17.4",
+          "Name": "lodash",
+          "Identifier": {
+            "PURL": "pkg:npm/lodash@4.17.4",
+            "UID": "31eadfcf58a6b128"
+          },
+          "Version": "4.17.4",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "Layer": {}
+        }
+      ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-11358",
           "PkgID": "jquery@3.3.9",
           "PkgName": "jquery",
           "PkgIdentifier": {
-            "PURL": "pkg:npm/jquery@3.3.9"
+            "PURL": "pkg:npm/jquery@3.3.9",
+            "UID": "53ca18565a4b6a47"
           },
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
@@ -158,7 +189,8 @@
           "PkgID": "lodash@4.17.4",
           "PkgName": "lodash",
           "PkgIdentifier": {
-            "PURL": "pkg:npm/lodash@4.17.4"
+            "PURL": "pkg:npm/lodash@4.17.4",
+            "UID": "31eadfcf58a6b128"
           },
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",

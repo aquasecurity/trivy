@@ -25,7 +25,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Swift,
 						FilePath: "testdata/happy/Package.resolved",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 
 							{
 								ID:      "github.com/Quick/Nimble@9.2.1",
@@ -83,7 +83,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

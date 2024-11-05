@@ -16,7 +16,7 @@ Below is a list of additional resources from the community.
 ## Misconfiguration Scanning
 
 - [Identifying Misconfigurations in your Terraform](https://youtu.be/cps1V5fOHtE)
-- [How to write custom policies for Trivy](https://blog.ediri.io/how-to-write-custom-policies-for-trivy)
+- [How to write custom checks for Trivy](https://blog.ediri.io/how-to-write-custom-policies-for-trivy)
 
 ## SBOM, Attestation & related
 

@@ -35,7 +35,7 @@ func TestManager_Register(t *testing.T) {
 				Analyzers: map[string]int{
 					"happy": 1,
 				},
-				PostAnalyzers: map[string]int{},
+				PostAnalyzers: make(map[string]int),
 			},
 			wantPostScannerVersions: map[string]int{
 				"happy": 1,
@@ -48,16 +48,16 @@ func TestManager_Register(t *testing.T) {
 				Analyzers: map[string]int{
 					"analyzer": 1,
 				},
-				PostAnalyzers: map[string]int{},
+				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{},
+			wantPostScannerVersions: make(map[string]int),
 		},
 		{
 			name:      "only post scanner",
 			moduleDir: "testdata/scanner",
 			wantAnalyzerVersions: analyzer.Versions{
-				Analyzers:     map[string]int{},
-				PostAnalyzers: map[string]int{},
+				Analyzers:     make(map[string]int),
+				PostAnalyzers: make(map[string]int),
 			},
 			wantPostScannerVersions: map[string]int{
 				"scanner": 2,
@@ -67,10 +67,10 @@ func TestManager_Register(t *testing.T) {
 			name:      "no module dir",
 			moduleDir: "no-such-dir",
 			wantAnalyzerVersions: analyzer.Versions{
-				Analyzers:     map[string]int{},
-				PostAnalyzers: map[string]int{},
+				Analyzers:     make(map[string]int),
+				PostAnalyzers: make(map[string]int),
 			},
-			wantPostScannerVersions: map[string]int{},
+			wantPostScannerVersions: make(map[string]int),
 		},
 		{
 			name:      "pass enabled modules",
@@ -84,7 +84,7 @@ func TestManager_Register(t *testing.T) {
 					"happy":    1,
 					"analyzer": 1,
 				},
-				PostAnalyzers: map[string]int{},
+				PostAnalyzers: make(map[string]int),
 			},
 			wantPostScannerVersions: map[string]int{
 				"happy": 1,
@@ -102,7 +102,7 @@ func TestManager_Register(t *testing.T) {
 	})
 	require.NoError(t, err)
 	// WASM modules must be generated before running the tests.
-	require.Equal(t, count, 3, "missing WASM modules, try 'mage test:unit' or 'mage test:generateModules'")
+	require.Equal(t, 3, count, "missing WASM modules, try 'mage test:unit' or 'mage test:generateModules'")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -92,7 +92,7 @@ func (f *IgnoreFindings) Match(id, path string, pkg *packageurl.PackageURL) *Ign
 			continue
 		}
 
-		log.Logger.Debugw("Ignored", log.String("id", id), log.String("path", path))
+		log.Debug("Ignored", log.String("id", id), log.String("target", path))
 		return &finding
 
 	}
@@ -181,7 +181,7 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 	return c.Licenses.Match(licenseID, filePath, nil)
 }
 
-func parseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
+func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
 	var conf IgnoreConfig
 	if _, err := os.Stat(ignoreFile); errors.Is(err, fs.ErrNotExist) {
 		// .trivyignore doesn't necessarily exist
@@ -223,7 +223,7 @@ func parseIgnoreYAML(ignoreFile string) (IgnoreConfig, error) {
 		return IgnoreConfig{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
-	log.Logger.Debugf("Found an ignore yaml: %s", ignoreFile)
+	log.Debug("Found an ignore yaml", log.FilePath(ignoreFile))
 
 	// Parse the YAML content
 	var ignoreConfig IgnoreConfig
@@ -239,7 +239,7 @@ func parseIgnore(ignoreFile string) (IgnoreFindings, error) {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
-	log.Logger.Debugf("Found an ignore file: %s", ignoreFile)
+	log.Debug("Found an ignore file", log.FilePath(ignoreFile))
 
 	var ignoredFindings IgnoreFindings
 	scanner := bufio.NewScanner(f)
@@ -255,7 +255,7 @@ func parseIgnore(ignoreFile string) (IgnoreFindings, error) {
 		if len(fields) > 1 {
 			exp, err = getExpirationDate(fields)
 			if err != nil {
-				log.Logger.Warnf("Error while parsing expiration date in .trivyignore file: %s", err)
+				log.Warn("Error while parsing expiration date in .trivyignore file", log.Err(err))
 				continue
 			}
 		}

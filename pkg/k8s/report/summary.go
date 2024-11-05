@@ -3,11 +3,11 @@ package report
 import (
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
@@ -35,24 +35,19 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnH
 	}
 }
 
-func ColumnHeading(scanners types.Scanners, components, availableColumns []string) []string {
+func ColumnHeading(scanners types.Scanners, availableColumns []string) []string {
 	columns := []string{
 		NamespaceColumn,
 		ResourceColumn,
 	}
-	securityOptions := make(map[string]interface{}, 0)
+	securityOptions := make(map[string]any, 0)
 	// maintain column order (vuln,config,secret)
 	for _, check := range scanners {
 		switch check {
 		case types.VulnerabilityScanner:
 			securityOptions[VulnerabilitiesColumn] = nil
 		case types.MisconfigScanner:
-			if slices.Contains(components, workloadComponent) {
-				securityOptions[MisconfigurationsColumn] = nil
-			}
-			if slices.Contains(components, infraComponent) {
-				securityOptions[MisconfigurationsColumn] = nil
-			}
+			securityOptions[MisconfigurationsColumn] = nil
 		case types.SecretScanner:
 			securityOptions[SecretsColumn] = nil
 		case types.RBACScanner:

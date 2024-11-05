@@ -5,8 +5,7 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
@@ -32,6 +31,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		severities       string
 		compliance       string
 		debug            bool
+		pkgTypes         string
 	}
 	tests := []struct {
 		name     string
@@ -47,34 +47,12 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "happy path with an cyclonedx",
 			fields: fields{
-				severities:  "CRITICAL",
-				format:      "cyclonedx",
-				listAllPkgs: true,
+				severities: "CRITICAL",
+				format:     "cyclonedx",
 			},
 			want: flag.ReportOptions{
-				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
-				Format:      types.FormatCycloneDX,
-				ListAllPkgs: true,
-			},
-		},
-		{
-			name: "happy path with an cyclonedx option list-all-pkgs is false",
-			fields: fields{
-				severities:  "CRITICAL",
-				format:      "cyclonedx",
-				listAllPkgs: false,
-				debug:       true,
-			},
-			wantLogs: []string{
-				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--list-all-pkgs'.`,
-				`Severities: ["CRITICAL"]`,
-			},
-			want: flag.ReportOptions{
-				Severities: []dbTypes.Severity{
-					dbTypes.SeverityCritical,
-				},
-				Format:      types.FormatCycloneDX,
-				ListAllPkgs: true,
+				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+				Format:     types.FormatCycloneDX,
 			},
 		},
 		{
@@ -129,7 +107,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				listAllPkgs: true,
 			},
 			wantLogs: []string{
-				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
+				`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`,
 			},
 			want: flag.ReportOptions{
 				Format:      "table",
@@ -187,12 +165,11 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Cleanup(viper.Reset)
 
-			level := zap.WarnLevel
+			level := log.LevelWarn
 			if tt.fields.debug {
-				level = zap.DebugLevel
+				level = log.LevelDebug
 			}
-			core, obs := observer.New(level)
-			log.Logger = zap.New(core).Sugar()
+			out := newLogger(level)
 
 			setValue(flag.FormatFlag.ConfigName, string(tt.fields.format))
 			setValue(flag.TemplateFlag.ConfigName, tt.fields.template)
@@ -225,15 +202,23 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			}
 
 			got, err := f.ToOptions()
-			assert.NoError(t, err)
-			assert.Equalf(t, tt.want, got, "ToOptions()")
+			require.NoError(t, err)
+			assert.EqualExportedValuesf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
-			var gotMessages []string
-			for _, entry := range obs.AllUntimed() {
-				gotMessages = append(gotMessages, entry.Message)
-			}
-			assert.Equal(t, tt.wantLogs, gotMessages, tt.name)
+			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)
 		})
 	}
+
+	t.Run("Error on non existing ignore file", func(t *testing.T) {
+		t.Cleanup(viper.Reset)
+
+		setValue(flag.IgnoreFileFlag.ConfigName, string("doesntexist"))
+		f := &flag.ReportFlagGroup{
+			IgnoreFile: flag.IgnoreFileFlag.Clone(),
+		}
+
+		_, err := f.ToOptions()
+		assert.ErrorContains(t, err, "ignore file not found: doesntexist")
+	})
 }

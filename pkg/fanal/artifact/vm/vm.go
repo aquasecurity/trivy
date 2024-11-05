@@ -7,11 +7,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
@@ -30,8 +31,18 @@ const (
 	TypeFile Type = "file"
 )
 
+var (
+	ArtifactSet = wire.NewSet(
+		walker.NewVM,
+		wire.Bind(new(Walker), new(*walker.VM)),
+		NewArtifact,
+	)
+
+	_ Walker = (*walker.VM)(nil)
+)
+
 type Walker interface {
-	Walk(*io.SectionReader, string, walker.WalkFunc) error
+	Walk(*io.SectionReader, string, walker.Option, walker.WalkFunc) error
 }
 
 func NewArtifact(target string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
@@ -98,7 +109,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	defer composite.Cleanup()
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err = a.walker.Walk(r, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
 		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)

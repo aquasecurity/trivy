@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -29,14 +30,15 @@ var requiredSuffixes = []string{
 
 type sbomAnalyzer struct{}
 
-func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Format auto-detection
 	format, err := sbom.DetectFormat(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to detect SBOM format: %w", err)
 	}
 
-	bom, err := sbom.Decode(input.Content, format)
+	ctx = log.WithContextAttrs(ctx, log.FilePath(input.FilePath))
+	bom, err := sbom.Decode(ctx, input.Content, format)
 	if err != nil {
 		return nil, xerrors.Errorf("SBOM decode error: %w", err)
 	}
@@ -77,17 +79,17 @@ func handleBitnamiImages(componentPath string, bom types.SBOM) {
 		if app.Type == ftypes.Bitnami {
 			// Set the component dir path to the application
 			bom.Applications[i].FilePath = componentPath
-			// Either Application.FilePath or Application.Libraries[].FilePath should be set
+			// Either Application.FilePath or Application.Packages[].FilePath should be set
 			continue
 		}
 
-		for j, pkg := range app.Libraries {
+		for j, pkg := range app.Packages {
 			// Set the absolute path since SBOM in Bitnami images contain a relative path
 			// e.g. modules/apm/elastic-apm-agent-1.36.0.jar
 			//      => opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar
 			// If the file path is empty, the file path will be set to the component dir path.
 			filePath := path.Join(componentPath, pkg.FilePath)
-			bom.Applications[i].Libraries[j].FilePath = filePath
+			bom.Applications[i].Packages[j].FilePath = filePath
 		}
 	}
 }

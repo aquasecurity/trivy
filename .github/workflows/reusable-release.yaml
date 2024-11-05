@@ -14,11 +14,12 @@ on:
 
 env:
   GH_USER: "aqua-bot"
+  GO_VERSION: '1.22'
 
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     permissions:
@@ -26,17 +27,8 @@ jobs:
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@v10
-        with:
-          root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
-          remove-android: 'true'
-          remove-docker-images: 'true'
-          remove-dotnet: 'true'
-          remove-haskell: 'true'
-
       - name: Cosign install
-        uses: sigstore/cosign-installer@e1523de7571e31dbe865fd2e80c5c7c23ae71eb4
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -69,14 +61,15 @@ jobs:
           password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
 
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 0
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
+          cache: false # Disable cache to avoid free space issues during `Post Setup Go` step.
 
       - name: Generate SBOM
         uses: CycloneDX/gh-gomod-generate-sbom@v2
@@ -90,15 +83,21 @@ jobs:
         run: |
           echo "$GPG_KEY" > gpg.key
 
+      # Create tmp dir for GoReleaser
+      - name: "create tmp dir"
+        run: |
+          mkdir tmp    
+
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
-          version: v1.20.0
+          version: v2.1.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_FILE: "gpg.key"
+          TMPDIR: "tmp"
 
       - name: "remove gpg key"
         run: |
@@ -109,7 +108,7 @@ jobs:
       # because GoReleaser Free doesn't support pushing images with the `--snapshot` flag.
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64, linux/arm64
           file: ./Dockerfile.canary # path to Dockerfile
@@ -121,7 +120,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4.0.2
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.

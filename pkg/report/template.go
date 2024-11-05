@@ -19,7 +19,7 @@ import (
 )
 
 // CustomTemplateFuncMap is used to overwrite existing functions for testing.
-var CustomTemplateFuncMap = make(map[string]interface{})
+var CustomTemplateFuncMap = make(map[string]any)
 
 // TemplateWriter write result in custom format defined by user's template
 type TemplateWriter struct {
@@ -40,7 +40,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 	templateFuncMap["escapeXML"] = func(input string) string {
 		escaped := &bytes.Buffer{}
 		if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-			log.Logger.Error("error while escapeString to XML: %s", err)
+			log.Error("Error while escapeString to XML", log.Err(err))
 			return input
 		}
 		return escaped.String()

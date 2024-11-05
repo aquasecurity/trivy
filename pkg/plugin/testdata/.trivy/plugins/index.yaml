@@ -1,0 +1,15 @@
+version: 1
+plugins:
+  - name: foo
+    output: true
+    maintainer: aquasecurity
+    summary: A foo plugin
+    repository: github.com/aquasecurity/trivy-plugin-foo
+  - name: bar
+    maintainer: aquasecurity
+    summary: A bar plugin
+    repository: github.com/aquasecurity/trivy-plugin-bar
+  - name: test_plugin
+    maintainer: aquasecurity
+    summary: A test plugin
+    repository: testdata/test_plugin

@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"io"
 	"net/textproto"
-	"strings"
 )
 
 type dpkgScanner struct {
@@ -42,7 +41,7 @@ func emptyLineSplit(data []byte, atEOF bool) (advance int, token []byte, err err
 		return 0, nil, nil
 	}
 
-	if i := strings.Index(string(data), "\n\n"); i >= 0 {
+	if i := bytes.Index(data, []byte("\n\n")); i >= 0 {
 		// We have a full empty line terminated block.
 		return i + 2, data[0:i], nil
 	}

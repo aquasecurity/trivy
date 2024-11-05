@@ -28,18 +28,19 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.RustBinary,
 						FilePath: "testdata/executable_rust",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
-								ID:        "crate_with_features@0.1.0",
-								Name:      "crate_with_features",
-								Version:   "0.1.0",
-								DependsOn: []string{"library_crate@0.1.0"},
+								ID:           "crate_with_features@0.1.0",
+								Name:         "crate_with_features",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								DependsOn:    []string{"library_crate@0.1.0"},
 							},
 							{
-								ID:       "library_crate@0.1.0",
-								Name:     "library_crate",
-								Version:  "0.1.0",
-								Indirect: true,
+								ID:           "library_crate@0.1.0",
+								Name:         "library_crate",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipUnknown,
 							},
 						},
 					},
@@ -68,7 +69,7 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

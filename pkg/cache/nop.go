@@ -1,16 +1,11 @@
 package cache
 
-import "github.com/aquasecurity/trivy/pkg/fanal/cache"
+import "github.com/aquasecurity/trivy/pkg/fanal/types"
 
-func NopCache(ac cache.ArtifactCache) cache.Cache {
-	return nopCache{ArtifactCache: ac}
-}
+type NopCache struct{}
 
-type nopCache struct {
-	cache.ArtifactCache
-	cache.LocalArtifactCache
-}
-
-func (nopCache) Close() error {
-	return nil
-}
+func NewNopCache() NopCache                                     { return NopCache{} }
+func (NopCache) GetArtifact(string) (types.ArtifactInfo, error) { return types.ArtifactInfo{}, nil }
+func (NopCache) GetBlob(string) (types.BlobInfo, error)         { return types.BlobInfo{}, nil }
+func (NopCache) Close() error                                   { return nil }
+func (NopCache) Clear() error                                   { return nil }

@@ -107,10 +107,10 @@ The image config is converted into Dockerfile and Trivy handles it as Dockerfile
 See [here](../scanner/misconfiguration/index.md) for the detail of Dockerfile scanning.
 
 It is disabled by default.
-You can enable it with `--image-config-scanners config`.
+You can enable it with `--image-config-scanners misconfig`.
 
 ```
-$ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
+$ trivy image --image-config-scanners misconfig [YOUR_IMAGE_NAME]
 ```
 
 <details>
@@ -119,7 +119,7 @@ $ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
 ```
 alpine:3.17 (dockerfile)
 ========================
-Tests: 24 (SUCCESSES: 21, FAILURES: 3, EXCEPTIONS: 0)
+Tests: 24 (SUCCESSES: 21, FAILURES: 3)
 Failures: 3 (UNKNOWN: 0, LOW: 2, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 HIGH: Specify at least 1 USER command in Dockerfile with non-root user as argument
@@ -153,6 +153,8 @@ See https://avd.aquasec.com/misconfig/ds026
 
 !!! tip
     You can see how each layer is created with `docker history`.
+
+The [AVD-DS-0016](https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/) check is disabled for this scan type, see [issue](https://github.com/aquasecurity/trivy/issues/7368) for details.
 
 ### Secrets
 Trivy detects secrets on the configuration of container images.
@@ -297,7 +299,7 @@ Trivy supports registries that comply with the following specifications.
 - [Docker Registry HTTP API V2](https://docs.docker.com/registry/spec/api/)
 - [OCI Distribution Specification](https://github.com/opencontainers/distribution-spec)
 
-You can configure credentials with `docker login`.
+You can configure credentials with `trivy registry login`.
 See [here](../advanced/private-registries/index.md) for the detail.
 
 ### Tar Files
@@ -436,14 +438,14 @@ The following reports are available out of the box:
 
 | Compliance                             | Version | Name for command | More info                                                                                   |
 |----------------------------------------|---------|------------------|---------------------------------------------------------------------------------------------|
-| CIS Docker Community Edition Benchmark | 1.1.0   | `docker-cis`     | [Link](https://www.aquasec.com/cloud-native-academy/docker-container/docker-cis-benchmark/) |
+| CIS Docker Community Edition Benchmark | 1.1.0   | `docker-cis-1.6.0`     | [Link](https://www.aquasec.com/cloud-native-academy/docker-container/docker-cis-benchmark/) |
 
 ### Examples
 
 Scan a container image configuration and generate a compliance summary report:
 
 ```
-$ trivy image --compliance docker-cis [YOUR_IMAGE_NAME]
+trivy image --compliance docker-cis-1.6.0 [YOUR_IMAGE_NAME]
 ```
 
 !!! note

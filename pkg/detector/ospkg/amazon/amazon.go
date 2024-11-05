@@ -40,17 +40,16 @@ func NewScanner() *Scanner {
 }
 
 // Detect scans the packages using amazon scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = strings.Fields(osVer)[0]
 	// The format `2023.xxx.xxxx` can be used.
 	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
-	log.Logger.Debugf("amazon: os version: %s", osVer)
-	log.Logger.Debugf("amazon: the number of packages: %d", len(pkgs))
+
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
@@ -66,14 +65,16 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
-			log.Logger.Debugf("failed to parse Amazon Linux installed package version: %s", err)
+			log.DebugContext(ctx, "Failed to parse the installed package version",
+				log.String("version", installed), log.Err(err))
 			continue
 		}
 
 		for _, adv := range advisories {
 			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
-				log.Logger.Debugf("failed to parse Amazon Linux package version: %s", err)
+				log.DebugContext(ctx, "Failed to parse the fixed version",
+					log.String("version", adv.FixedVersion), log.Err(err))
 				continue
 			}
 

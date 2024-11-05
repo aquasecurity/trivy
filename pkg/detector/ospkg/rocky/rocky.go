@@ -37,12 +37,10 @@ func NewScanner() *Scanner {
 }
 
 // Detect vulnerabilities in package using Rocky Linux scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Rocky Linux vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = osver.Major(osVer)
-	log.Logger.Debugf("Rocky Linux: os version: %s", osVer)
-	log.Logger.Debugf("Rocky Linux: the number of packages: %d", len(pkgs))
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	var skipPkgs []string
@@ -79,7 +77,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 		}
 	}
 	if len(skipPkgs) > 0 {
-		log.Logger.Infof("Skipped detection of these packages: %q because modular packages cannot be detected correctly due to a bug in Rocky Linux Errata. See also: https://forums.rockylinux.org/t/some-errata-missing-in-comparison-with-rhel-and-almalinux/3843", skipPkgs)
+		log.InfoContext(ctx, "Skipped detection of the packages because modular packages cannot be detected correctly due to a bug in Rocky Linux Errata. See also: https://forums.rockylinux.org/t/some-errata-missing-in-comparison-with-rhel-and-almalinux/3843",
+			log.Any("packages", skipPkgs))
 	}
 
 	return vulns, nil

@@ -7,10 +7,10 @@ import (
 	"io/fs"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/liamg/memoryfs"
 
-	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -20,41 +20,29 @@ import (
 	kparser "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	policyDirs            []string
-	dataDirs              []string
-	debug                 debug.Logger
-	options               []options.ScannerOption
-	parserOptions         []options.ParserOption
-	policyReaders         []io.Reader
-	loadEmbeddedLibraries bool
-	loadEmbeddedPolicies  bool
-	policyFS              fs.FS
-	skipRequired          bool
-	frameworks            []framework.Framework
-	spec                  string
+	mu            sync.Mutex
+	logger        *log.Logger
+	options       []options.ScannerOption
+	parserOptions []parser.Option
+	regoScanner   *rego.Scanner
 }
 
-func (s *Scanner) SetSpec(spec string) {
-	s.spec = spec
-}
-
-func (s *Scanner) SetRegoOnly(bool) {
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
-}
+func (s *Scanner) SetIncludeDeprecatedChecks(bool)                {}
+func (s *Scanner) SetRegoOnly(bool)                               {}
+func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {}
 
 // New creates a new Scanner
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		options: opts,
+		logger:  log.WithPrefix("helm scanner"),
 	}
 
 	for _, option := range opts {
@@ -63,62 +51,19 @@ func New(opts ...options.ScannerOption) *Scanner {
 	return s
 }
 
-func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
+func (s *Scanner) addParserOptions(opts ...parser.Option) {
 	s.parserOptions = append(s.parserOptions, opts...)
-}
-
-func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
-	s.loadEmbeddedPolicies = b
-}
-
-func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
-	s.loadEmbeddedLibraries = b
 }
 
 func (s *Scanner) Name() string {
 	return "Helm"
 }
 
-func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
-	s.policyReaders = readers
-}
-
-func (s *Scanner) SetSkipRequiredCheck(skip bool) {
-	s.skipRequired = skip
-}
-
-func (s *Scanner) SetDebugWriter(writer io.Writer) {
-	s.debug = debug.New(writer, "helm", "scanner")
-}
-
-func (s *Scanner) SetTraceWriter(_ io.Writer) {
-	// handled by rego later - nothing to do for now...
-}
-
-func (s *Scanner) SetPerResultTracingEnabled(_ bool) {
-	// handled by rego later - nothing to do for now...
-}
-
-func (s *Scanner) SetPolicyDirs(dirs ...string) {
-	s.policyDirs = dirs
-}
-
-func (s *Scanner) SetDataDirs(dirs ...string) {
-	s.dataDirs = dirs
-}
-
-func (s *Scanner) SetPolicyNamespaces(namespaces ...string) {
-	// handled by rego later - nothing to do for now...
-}
-
-func (s *Scanner) SetPolicyFilesystem(policyFS fs.FS) {
-	s.policyFS = policyFS
-}
-
-func (s *Scanner) SetDataFilesystem(_ fs.FS) {}
-func (s *Scanner) SetRegoErrorLimit(_ int)   {}
-
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.Results, error) {
+
+	if err := s.initRegoScanner(target); err != nil {
+		return nil, fmt.Errorf("failed to init rego scanner: %w", err)
+	}
 
 	var results []scan.Result
 	if err := fs.WalkDir(target, path, func(path string, d fs.DirEntry, err error) error {
@@ -150,6 +95,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.R
 			} else {
 				results = append(results, scanResults...)
 			}
+			return fs.SkipDir
 		}
 
 		return nil
@@ -162,7 +108,10 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.R
 }
 
 func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS) (results []scan.Result, err error) {
-	helmParser := parser.New(path, s.parserOptions...)
+	helmParser, err := parser.New(path, s.parserOptions...)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := helmParser.ParseFS(ctx, target, path); err != nil {
 		return nil, err
@@ -170,28 +119,23 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 
 	chartFiles, err := helmParser.RenderedChartFiles()
 	if err != nil { // not valid helm, maybe some other yaml etc., abort
-		s.debug.Log("Failed to render Chart files: %s", err)
+		s.logger.Error(
+			"Failed to render Chart files",
+			log.FilePath(path), log.Err(err),
+		)
 		return nil, nil
 	}
 
-	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
-	policyFS := target
-	if s.policyFS != nil {
-		policyFS = s.policyFS
-	}
-	if err := regoScanner.LoadPolicies(s.loadEmbeddedLibraries, s.loadEmbeddedPolicies, policyFS, s.policyDirs, s.policyReaders); err != nil {
-		return nil, fmt.Errorf("policies load: %w", err)
-	}
 	for _, file := range chartFiles {
 		file := file
-		s.debug.Log("Processing rendered chart file: %s", file.TemplateFilePath)
+		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
 
-		manifests, err := kparser.New().Parse(strings.NewReader(file.ManifestContent), file.TemplateFilePath)
+		manifests, err := kparser.Parse(ctx, strings.NewReader(file.ManifestContent), file.TemplateFilePath)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
 		for _, manifest := range manifests {
-			fileResults, err := regoScanner.ScanInput(ctx, rego.Input{
+			fileResults, err := s.regoScanner.ScanInput(ctx, rego.Input{
 				Path:     file.TemplateFilePath,
 				Contents: manifest,
 				FS:       target,
@@ -218,4 +162,18 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 
 	}
 	return results, nil
+}
+
+func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.regoScanner != nil {
+		return nil
+	}
+	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
+	if err := regoScanner.LoadPolicies(srcFS); err != nil {
+		return err
+	}
+	s.regoScanner = regoScanner
+	return nil
 }

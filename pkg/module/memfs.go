@@ -67,5 +67,5 @@ func (fakeRootDirInfo) Size() int64                             { return 0 }
 func (fakeRootDirInfo) Mode() fs.FileMode                       { return fs.ModeDir | 0o500 }
 func (fakeRootDirInfo) ModTime() time.Time                      { return time.Unix(0, 0) }
 func (fakeRootDirInfo) IsDir() bool                             { return true }
-func (fakeRootDirInfo) Sys() interface{}                        { return nil }
+func (fakeRootDirInfo) Sys() any                                { return nil }
 func (emptyDir) ReadDir(int) (dirents []fs.DirEntry, err error) { return }

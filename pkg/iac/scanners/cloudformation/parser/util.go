@@ -13,10 +13,20 @@ import (
 func setPropertyValueFromJson(node jfather.Node, propertyData *PropertyInner) error {
 
 	switch node.Kind() {
-
 	case jfather.KindNumber:
-		propertyData.Type = cftypes.Float64
-		return node.Decode(&propertyData.Value)
+		var val any
+		if err := node.Decode(&val); err != nil {
+			return err
+		}
+		switch v := val.(type) {
+		case float64:
+			propertyData.Type = cftypes.Float64
+			propertyData.Value = v
+		case int64:
+			propertyData.Type = cftypes.Int
+			propertyData.Value = int(v)
+		}
+		return nil
 	case jfather.KindBoolean:
 		propertyData.Type = cftypes.Bool
 		return node.Decode(&propertyData.Value)
@@ -66,13 +76,15 @@ func setPropertyValueFromYaml(node *yaml.Node, propertyData *PropertyInner) erro
 	if node.Content == nil {
 
 		switch node.Tag {
-
 		case "!!int":
 			propertyData.Type = cftypes.Int
 			propertyData.Value, _ = strconv.Atoi(node.Value)
 		case "!!bool":
 			propertyData.Type = cftypes.Bool
 			propertyData.Value, _ = strconv.ParseBool(node.Value)
+		case "!!float":
+			propertyData.Type = cftypes.Float64
+			propertyData.Value, _ = strconv.ParseFloat(node.Value, 64)
 		case "!!str", "!!string":
 			propertyData.Type = cftypes.String
 			propertyData.Value = node.Value

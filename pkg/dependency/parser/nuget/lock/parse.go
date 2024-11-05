@@ -4,11 +4,11 @@ import (
 	"io"
 
 	"github.com/liamg/jfather"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -30,11 +30,11 @@ type Dependency struct {
 
 type Parser struct{}
 
-func NewParser() types.Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
@@ -44,7 +44,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 
-	var libs []types.Library
+	var pkgs []ftypes.Package
 	depsMap := make(map[string][]string)
 	for _, targetContent := range lockFile.Targets {
 		for packageName, packageContent := range targetContent {
@@ -55,19 +55,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 			depId := packageID(packageName, packageContent.Resolved)
 
-			lib := types.Library{
-				ID:       depId,
-				Name:     packageName,
-				Version:  packageContent.Resolved,
-				Indirect: packageContent.Type != "Direct",
-				Locations: []types.Location{
+			pkg := ftypes.Package{
+				ID:           depId,
+				Name:         packageName,
+				Version:      packageContent.Resolved,
+				Relationship: lo.Ternary(packageContent.Type == "Direct", ftypes.RelationshipDirect, ftypes.RelationshipIndirect),
+				Locations: []ftypes.Location{
 					{
 						StartLine: packageContent.StartLine,
 						EndLine:   packageContent.EndLine,
 					},
 				},
 			}
-			libs = append(libs, lib)
+			pkgs = append(pkgs, pkg)
 
 			var dependsOn []string
 
@@ -85,16 +85,16 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 	}
 
-	var deps []types.Dependency
+	var deps []ftypes.Dependency
 	for depId, dependsOn := range depsMap {
-		dep := types.Dependency{
+		dep := ftypes.Dependency{
 			ID:        depId,
 			DependsOn: dependsOn,
 		}
 		deps = append(deps, dep)
 	}
 
-	return utils.UniqueLibraries(libs), deps, nil
+	return utils.UniquePackages(pkgs), deps, nil
 }
 
 // UnmarshalJSONWithMetadata needed to detect start and end lines of deps

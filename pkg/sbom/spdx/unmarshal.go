@@ -32,7 +32,7 @@ type TVDecoder struct {
 	r io.Reader
 }
 
-func (tv *TVDecoder) Decode(v interface{}) error {
+func (tv *TVDecoder) Decode(v any) error {
 	spdxDocument, err := tagvalue.Read(tv.r)
 	if err != nil {
 		return xerrors.Errorf("failed to load tag-value spdx: %w", err)
@@ -87,8 +87,16 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 			continue
 		}
 
-		compA := components[rel.RefA.ElementRefID]
-		compB := components[rel.RefB.ElementRefID]
+		compA, ok := components[rel.RefA.ElementRefID]
+		if !ok { // Skip if parent is not Package
+			continue
+		}
+
+		compB, ok := components[rel.RefB.ElementRefID]
+		if !ok { // Skip if child is not Package
+			continue
+		}
+
 		s.BOM.AddRelationship(compA, compB, s.parseRelationshipType(rel.Relationship))
 	}
 
@@ -159,7 +167,7 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 	}
 
 	// PURL
-	if component.PkgID.PURL, err = s.parseExternalReferences(spdxPkg.PackageExternalReferences); err != nil {
+	if component.PkgIdentifier.PURL, err = s.parseExternalReferences(spdxPkg.PackageExternalReferences); err != nil {
 		return nil, xerrors.Errorf("external references error: %w", err)
 	}
 
@@ -186,9 +194,21 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 		}
 	}
 
-	// Attributions
-	for _, attr := range spdxPkg.PackageAttributionTexts {
-		k, v, ok := strings.Cut(attr, ": ")
+	// Trivy stores properties in Annotations
+	// But previous versions stored properties in AttributionTexts
+	// So we need to check both cases to maintain backward compatibility
+	var props []string
+	if len(spdxPkg.Annotations) > 0 {
+		for _, annotation := range spdxPkg.Annotations {
+			props = append(props, annotation.AnnotationComment)
+		}
+	} else if len(spdxPkg.PackageAttributionTexts) > 0 {
+		for _, attr := range spdxPkg.PackageAttributionTexts {
+			props = append(props, attr)
+		}
+	}
+	for _, prop := range props {
+		k, v, ok := strings.Cut(prop, ": ")
 		if !ok {
 			continue
 		}

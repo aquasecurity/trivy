@@ -5,6 +5,8 @@ import (
 	"io/fs"
 	"path"
 	"path/filepath"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type localResolver struct{}
@@ -17,11 +19,15 @@ func (r *localResolver) Resolve(_ context.Context, target fs.FS, opt Options) (f
 	}
 	joined := path.Clean(path.Join(opt.ModulePath, opt.Source))
 	if _, err := fs.Stat(target, filepath.ToSlash(joined)); err == nil {
-		opt.Debug("Module '%s' resolved locally to %s", opt.Name, joined)
+		opt.Logger.Debug("Module resolved locally",
+			log.String("name", opt.Name), log.FilePath(joined),
+		)
 		return target, "", joined, true, nil
 	}
 
 	clean := path.Clean(opt.Source)
-	opt.Debug("Module '%s' resolved locally to %s", opt.Name, clean)
+	opt.Logger.Debug("Module resolved locally",
+		log.String("name", opt.Name), log.FilePath(clean),
+	)
 	return target, "", clean, true, nil
 }

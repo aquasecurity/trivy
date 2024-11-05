@@ -3,15 +3,16 @@ package report_test
 import (
 	"bytes"
 	"context"
-	"os"
 	"testing"
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -158,6 +159,33 @@ func TestReportWriter_Template(t *testing.T) {
 			expected: `Critical: 2, High: 1`,
 		},
 		{
+			name: "custom JSON marshaler",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Status:          dbTypes.StatusAffected,
+					PkgIdentifier: ftypes.PkgIdentifier{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeNPM,
+							Name:    "foobar",
+							Version: "1.2.3",
+						},
+					},
+				},
+			},
+			template: `{{ range . }}{{ range .Vulnerabilities}}{{ toPrettyJson . }}{{ end }}{{ end }}`,
+			expected: `{
+  "VulnerabilityID": "CVE-2019-0000",
+  "PkgName": "foo",
+  "PkgIdentifier": {
+    "PURL": "pkg:npm/foobar@1.2.3"
+  },
+  "Status": "affected",
+  "Layer": {}
+}`,
+		},
+		{
 			name:          "happy path: env var parsing",
 			detectedVulns: []types.DetectedVulnerability{},
 			template:      `{{ lower (env "AWS_ACCOUNT_ID") }}`,
@@ -168,7 +196,7 @@ func TestReportWriter_Template(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := clock.With(context.Background(), time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
 
-			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
+			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}
 			inputReport := types.Report{
 				Results: types.Results{
@@ -183,7 +211,7 @@ func TestReportWriter_Template(t *testing.T) {
 			w, err := report.NewTemplateWriter(&got, tc.template, "dev")
 			require.NoError(t, err)
 			err = w.Write(ctx, inputReport)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, got.String())
 		})
 	}

@@ -87,9 +87,11 @@ func (j containerDefinitionJSON) convert(metadata iacTypes.Metadata) ContainerDe
 }
 
 type ContainerDefinition struct {
-	Metadata     iacTypes.Metadata
-	Name         iacTypes.StringValue
-	Image        iacTypes.StringValue
+	Metadata iacTypes.Metadata
+	Name     iacTypes.StringValue
+	Image    iacTypes.StringValue
+	// TODO: CPU and Memory are strings
+	// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-cpu
 	CPU          iacTypes.IntValue
 	Memory       iacTypes.IntValue
 	Essential    iacTypes.BoolValue

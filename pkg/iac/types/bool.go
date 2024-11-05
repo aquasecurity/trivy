@@ -10,14 +10,14 @@ type BoolValue struct {
 }
 
 func (b BoolValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
+	return json.Marshal(map[string]any{
 		"value":    b.value,
 		"metadata": b.metadata,
 	})
 }
 
 func (b *BoolValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]interface{}
+	var keys map[string]any
 	if err := json.Unmarshal(data, &keys); err != nil {
 		return err
 	}
@@ -45,6 +45,10 @@ func Bool(value bool, metadata Metadata) BoolValue {
 	}
 }
 
+func BoolTest(value bool) BoolValue {
+	return Bool(value, NewTestMetadata())
+}
+
 func BoolDefault(value bool, metadata Metadata) BoolValue {
 	b := Bool(value, metadata)
 	b.BaseAttribute.metadata.isDefault = true
@@ -67,7 +71,7 @@ func (b BoolValue) Value() bool {
 	return b.value
 }
 
-func (b BoolValue) GetRawValue() interface{} {
+func (b BoolValue) GetRawValue() any {
 	return b.value
 }
 
@@ -85,8 +89,8 @@ func (b BoolValue) IsFalse() bool {
 	return !b.Value()
 }
 
-func (s BoolValue) ToRego() interface{} {
-	m := s.metadata.ToRego().(map[string]interface{})
+func (s BoolValue) ToRego() any {
+	m := s.metadata.ToRego().(map[string]any)
 	m["value"] = s.Value()
 	return m
 }

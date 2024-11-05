@@ -13,7 +13,7 @@ import (
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/exp/maps"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -103,6 +103,7 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 		if err != nil {
 			return nil, xerrors.Errorf("failed to read APKINDEX archive file: %w", err)
 		}
+		defer reader.(*builtinos.File).Close()
 	} else {
 		// nolint
 		resp, err := http.Get(url)
@@ -137,7 +138,7 @@ func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.Con
 		}
 	}
 
-	return maps.Values(uniqPkgs)
+	return lo.Values(uniqPkgs)
 }
 
 func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) (pkgs []string) {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/samber/lo"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
@@ -48,7 +49,7 @@ var (
 				case "misconf", "misconfiguration":
 					return string(types.MisconfigScanner)
 				case "config":
-					log.Logger.Warn("'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
+					log.Warn("'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
 					return string(types.MisconfigScanner)
 				}
 				return s
@@ -73,7 +74,7 @@ var (
 		ConfigName: "scan.slow",
 		Default:    false,
 		Usage:      "scan over time with lower CPU and memory utilization",
-		Deprecated: true,
+		Deprecated: `Use "--parallel 1" instead.`,
 	}
 	ParallelFlag = Flag[int]{
 		Name:       "parallel",
@@ -96,51 +97,59 @@ var (
 		Default:    "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
-	IncludeDevDepsFlag = Flag[bool]{
-		Name:       "include-dev-deps",
-		ConfigName: "include-dev-deps",
-		Usage:      "include development dependencies in the report (supported: npm, yarn)",
+	DetectionPriority = Flag[string]{
+		Name:       "detection-priority",
+		ConfigName: "scan.detection-priority",
+		Default:    string(ftypes.PriorityPrecise),
+		Values: xstrings.ToStringSlice([]ftypes.DetectionPriority{
+			ftypes.PriorityPrecise,
+			ftypes.PriorityComprehensive,
+		}),
+		Usage: `specify the detection priority:
+  - "precise": Prioritizes precise by minimizing false positives.
+  - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
+`,
 	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs       *Flag[[]string]
-	SkipFiles      *Flag[[]string]
-	OfflineScan    *Flag[bool]
-	Scanners       *Flag[[]string]
-	FilePatterns   *Flag[[]string]
-	Slow           *Flag[bool] // deprecated
-	Parallel       *Flag[int]
-	SBOMSources    *Flag[[]string]
-	RekorURL       *Flag[string]
-	IncludeDevDeps *Flag[bool]
+	SkipDirs          *Flag[[]string]
+	SkipFiles         *Flag[[]string]
+	OfflineScan       *Flag[bool]
+	Scanners          *Flag[[]string]
+	FilePatterns      *Flag[[]string]
+	Slow              *Flag[bool] // deprecated
+	Parallel          *Flag[int]
+	SBOMSources       *Flag[[]string]
+	RekorURL          *Flag[string]
+	DetectionPriority *Flag[string]
 }
 
 type ScanOptions struct {
-	Target         string
-	SkipDirs       []string
-	SkipFiles      []string
-	OfflineScan    bool
-	Scanners       types.Scanners
-	FilePatterns   []string
-	Parallel       int
-	SBOMSources    []string
-	RekorURL       string
-	IncludeDevDeps bool
+	Target            string
+	SkipDirs          []string
+	SkipFiles         []string
+	OfflineScan       bool
+	Scanners          types.Scanners
+	FilePatterns      []string
+	Parallel          int
+	SBOMSources       []string
+	RekorURL          string
+	DetectionPriority ftypes.DetectionPriority
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:       SkipDirsFlag.Clone(),
-		SkipFiles:      SkipFilesFlag.Clone(),
-		OfflineScan:    OfflineScanFlag.Clone(),
-		Scanners:       ScannersFlag.Clone(),
-		FilePatterns:   FilePatternsFlag.Clone(),
-		Parallel:       ParallelFlag.Clone(),
-		SBOMSources:    SBOMSourcesFlag.Clone(),
-		RekorURL:       RekorURLFlag.Clone(),
-		IncludeDevDeps: IncludeDevDepsFlag.Clone(),
-		Slow:           SlowFlag.Clone(),
+		SkipDirs:          SkipDirsFlag.Clone(),
+		SkipFiles:         SkipFilesFlag.Clone(),
+		OfflineScan:       OfflineScanFlag.Clone(),
+		Scanners:          ScannersFlag.Clone(),
+		FilePatterns:      FilePatternsFlag.Clone(),
+		Parallel:          ParallelFlag.Clone(),
+		SBOMSources:       SBOMSourcesFlag.Clone(),
+		RekorURL:          RekorURLFlag.Clone(),
+		Slow:              SlowFlag.Clone(),
+		DetectionPriority: DetectionPriority.Clone(),
 	}
 }
 
@@ -159,7 +168,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.Parallel,
 		f.SBOMSources,
 		f.RekorURL,
-		f.IncludeDevDeps,
+		f.DetectionPriority,
 	}
 }
 
@@ -175,20 +184,20 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 
 	parallel := f.Parallel.Value()
 	if f.Parallel != nil && parallel == 0 {
-		log.Logger.Infof("Set '--parallel' to the number of CPUs (%d)", runtime.NumCPU())
+		log.Info("Set '--parallel' to the number of CPUs", log.Int("parallel", runtime.NumCPU()))
 		parallel = runtime.NumCPU()
 	}
 
 	return ScanOptions{
-		Target:         target,
-		SkipDirs:       f.SkipDirs.Value(),
-		SkipFiles:      f.SkipFiles.Value(),
-		OfflineScan:    f.OfflineScan.Value(),
-		Scanners:       xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
-		FilePatterns:   f.FilePatterns.Value(),
-		Parallel:       parallel,
-		SBOMSources:    f.SBOMSources.Value(),
-		RekorURL:       f.RekorURL.Value(),
-		IncludeDevDeps: f.IncludeDevDeps.Value(),
+		Target:            target,
+		SkipDirs:          f.SkipDirs.Value(),
+		SkipFiles:         f.SkipFiles.Value(),
+		OfflineScan:       f.OfflineScan.Value(),
+		Scanners:          xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
+		FilePatterns:      f.FilePatterns.Value(),
+		Parallel:          parallel,
+		SBOMSources:       f.SBOMSources.Value(),
+		RekorURL:          f.RekorURL.Value(),
+		DetectionPriority: ftypes.DetectionPriority(f.DetectionPriority.Value()),
 	}, nil
 }

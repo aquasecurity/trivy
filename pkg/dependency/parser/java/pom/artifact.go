@@ -4,17 +4,24 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
+	"sync"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 var (
-	varRegexp = regexp.MustCompile(`\${(\S+?)}`)
+	varRegexp        = regexp.MustCompile(`\${(\S+?)}`)
+	emptyVersionWarn = sync.OnceFunc(func() {
+		log.WithPrefix("pom").Warn("Dependency version cannot be determined. Child dependencies will not be found.",
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/coverage/language/java/#empty-dependency-version
+			log.String("details", doc.URL("/docs/coverage/language/java/", "empty-dependency-version")))
+	})
 )
 
 type artifact struct {
@@ -25,32 +32,38 @@ type artifact struct {
 
 	Exclusions map[string]struct{}
 
-	Module bool
-	Root   bool
-	Direct bool
+	Module       bool
+	Relationship ftypes.Relationship
 
-	Locations types.Locations
+	Locations ftypes.Locations
 }
 
 func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {
 	return artifact{
-		GroupID:    evaluateVariable(groupID, props, nil),
-		ArtifactID: evaluateVariable(artifactID, props, nil),
-		Version:    newVersion(evaluateVariable(version, props, nil)),
-		Licenses:   licenses,
+		GroupID:      evaluateVariable(groupID, props, nil),
+		ArtifactID:   evaluateVariable(artifactID, props, nil),
+		Version:      newVersion(evaluateVariable(version, props, nil)),
+		Licenses:     licenses,
+		Relationship: ftypes.RelationshipIndirect, // default
 	}
 }
 
 func (a artifact) IsEmpty() bool {
-	return a.GroupID == "" || a.ArtifactID == "" || a.Version.String() == ""
+	if a.GroupID == "" || a.ArtifactID == "" {
+		return true
+	}
+	if a.Version.String() == "" {
+		emptyVersionWarn()
+		log.WithPrefix("pom").Debug("Dependency version cannot be determined.",
+			log.String("GroupID", a.GroupID),
+			log.String("ArtifactID", a.ArtifactID),
+		)
+	}
+	return false
 }
 
 func (a artifact) Equal(o artifact) bool {
 	return a.GroupID == o.GroupID || a.ArtifactID == o.ArtifactID || a.Version.String() == o.Version.String()
-}
-
-func (a artifact) JoinLicenses() string {
-	return strings.Join(a.Licenses, ", ")
 }
 
 func (a artifact) ToPOMLicenses() pomLicenses {
@@ -150,7 +163,7 @@ func evaluateVariable(s string, props map[string]string, seenProps []string) str
 		}
 		s = strings.ReplaceAll(s, m[0], newValue)
 	}
-	return s
+	return strings.TrimSpace(s)
 }
 
 func printLoopedPropertiesStack(env string, usedProps []string) {
@@ -158,5 +171,5 @@ func printLoopedPropertiesStack(env string, usedProps []string) {
 	for _, prop := range usedProps {
 		s += fmt.Sprintf("%s -> ", prop)
 	}
-	log.Logger.Warnf("Lopped properties were detected: %s%s", s, env)
+	log.Warn("Lopped properties were detected", log.String("prop", s+env))
 }

@@ -3,17 +3,15 @@ package parser
 import (
 	"context"
 	"io/fs"
-	"os"
 	"testing"
 
-	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func createMetadata(targetFS fs.FS, filename string, start, end int, ref string, parent *types.Metadata) types.Metadata {
@@ -36,11 +34,6 @@ func TestParser_Parse(t *testing.T) {
 		want           func() azure2.Deployment
 		wantDeployment bool
 	}{
-		{
-			name:           "invalid code",
-			input:          `blah`,
-			wantDeployment: false,
-		},
 		{
 			name: "basic param",
 			input: `{
@@ -210,12 +203,12 @@ func TestParser_Parse(t *testing.T) {
 
 			require.NoError(t, targetFS.WriteFile(filename, []byte(tt.input), 0644))
 
-			p := New(targetFS, options.ParserWithDebug(os.Stderr))
+			p := New(targetFS)
 			got, err := p.ParseFS(context.Background(), ".")
 			require.NoError(t, err)
 
 			if !tt.wantDeployment {
-				assert.Len(t, got, 0)
+				assert.Empty(t, got)
 				return
 			}
 
@@ -298,7 +291,7 @@ func Test_NestedResourceParsing(t *testing.T) {
 
 	require.NoError(t, targetFS.WriteFile("nested.json", []byte(input), 0644))
 
-	p := New(targetFS, options.ParserWithDebug(os.Stderr))
+	p := New(targetFS)
 	got, err := p.ParseFS(context.Background(), ".")
 	require.NoError(t, err)
 	require.Len(t, got, 1)

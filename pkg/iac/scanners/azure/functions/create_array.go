@@ -1,7 +1,7 @@
 package functions
 
-func CreateArray(args ...interface{}) interface{} {
-	var result []interface{}
+func CreateArray(args ...any) any {
+	var result []any
 	if len(args) == 0 {
 		return result
 	}

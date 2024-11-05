@@ -23,7 +23,7 @@ type ResourceInner struct {
 	Properties map[string]*Property `json:"Properties" yaml:"Properties"`
 }
 
-func (r *Resource) ConfigureResource(id string, target fs.FS, filepath string, ctx *FileContext) {
+func (r *Resource) configureResource(id string, target fs.FS, filepath string, ctx *FileContext) {
 	r.setId(id)
 	r.setFile(target, filepath)
 	r.setContext(ctx)
@@ -100,11 +100,8 @@ func (r *Resource) GetProperty(path string) *Property {
 	first := pathParts[0]
 	property := &Property{}
 
-	for n, p := range r.properties() {
-		if n == first {
-			property = p
-			break
-		}
+	if p, exists := r.properties()[first]; exists {
+		property = p
 	}
 
 	if len(pathParts) == 1 || property.IsNil() {

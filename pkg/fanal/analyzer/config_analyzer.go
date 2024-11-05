@@ -2,9 +2,9 @@ package analyzer
 
 import (
 	"context"
+	"slices"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -114,7 +114,7 @@ func (ag *ConfigAnalyzerGroup) AnalyzeImageConfig(ctx context.Context, targetOS 
 
 		r, err := a.Analyze(ctx, input)
 		if err != nil {
-			log.Logger.Debugf("Image config analysis error: %s", err)
+			log.Debug("Image config analysis error", log.Err(err))
 			continue
 		}
 

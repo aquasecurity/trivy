@@ -230,7 +230,7 @@ Reference: [VMware Virtual Disk Format 1.1.pdf][vmdk]
 |-------------------|:-------:|
 | XFS               |    ✔    |
 | EXT4              |    ✔    |
-| EXT2/3            |         |
+| EXT2/3            |    ✔    |
 | ZFS               |         |
 
 

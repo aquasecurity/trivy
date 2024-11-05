@@ -1,12 +1,13 @@
 package report
 
 import (
+	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"strings"
 
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
+	"github.com/samber/lo"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -32,7 +33,6 @@ type Option struct {
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
 	Scanners      types.Scanners
-	Components    []string
 	APIVersion    string
 }
 
@@ -57,9 +57,9 @@ type Resource struct {
 	Namespace string `json:",omitempty"`
 	Kind      string
 	Name      string
-	Metadata  types.Metadata `json:",omitempty"`
-	Results   types.Results  `json:",omitempty"`
-	Error     string         `json:",omitempty"`
+	Metadata  []types.Metadata `json:",omitempty"`
+	Results   types.Results    `json:",omitempty"`
+	Error     string           `json:",omitempty"`
 
 	// original report
 	Report types.Report `json:"-"`
@@ -90,8 +90,13 @@ func (r Report) consolidate() ConsolidatedReport {
 	for _, m := range r.Resources {
 		if vulnerabilitiesOrSecretResource(m) {
 			vulnerabilities = append(vulnerabilities, m)
-		} else {
+		}
+		if misconfigsResource(m) {
+			res, ok := index[m.fullname()]
 			index[m.fullname()] = m
+			if ok {
+				index[m.fullname()].Results[0].Misconfigurations = append(index[m.fullname()].Results[0].Misconfigurations, res.Results[0].Misconfigurations...)
+			}
 		}
 	}
 
@@ -99,11 +104,15 @@ func (r Report) consolidate() ConsolidatedReport {
 		key := v.fullname()
 
 		if res, ok := index[key]; ok {
+			// Combine metadata
+			metadata := lo.UniqBy(append(res.Metadata, v.Metadata...), func(x types.Metadata) string {
+				return x.ImageID
+			})
 			index[key] = Resource{
 				Namespace: res.Namespace,
 				Kind:      res.Kind,
 				Name:      res.Name,
-				Metadata:  res.Metadata,
+				Metadata:  metadata,
 				Results:   append(res.Results, v.Results...),
 				Error:     res.Error,
 			}
@@ -114,7 +123,7 @@ func (r Report) consolidate() ConsolidatedReport {
 		index[key] = v
 	}
 
-	consolidated.Findings = maps.Values(index)
+	consolidated.Findings = lo.Values(index)
 
 	return consolidated
 }
@@ -133,12 +142,12 @@ type reports struct {
 // - misconfiguration report
 // - rbac report
 // - infra checks report
-func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, components []string) []reports {
+func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners) []reports {
 
 	var workloadMisconfig, infraMisconfig, rbacAssessment, workloadVulnerabilities, infraVulnerabilities, workloadResource []Resource
 	for _, resource := range k8sReport.Resources {
 		switch {
-		case vulnerabilitiesOrSecretResource(resource):
+		case vulnerabilitiesOrSecretResource(resource) && !infraResource(resource):
 			if resource.Namespace == infraNamespace || nodeInfoResource(resource) {
 				infraVulnerabilities = append(infraVulnerabilities, nodeKind(resource))
 			} else {
@@ -149,8 +158,7 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 		case infraResource(resource):
 			infraMisconfig = append(infraMisconfig, nodeKind(resource))
 		case scanners.Enabled(types.MisconfigScanner) &&
-			!rbacResource(resource) &&
-			slices.Contains(components, workloadComponent):
+			!rbacResource(resource):
 			workloadMisconfig = append(workloadMisconfig, resource)
 		}
 	}
@@ -158,22 +166,21 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 	var r []reports
 	workloadResource = append(workloadResource, workloadVulnerabilities...)
 	workloadResource = append(workloadResource, workloadMisconfig...)
-	if shouldAddToReport(scanners, components, workloadComponent) {
+	if shouldAddToReport(scanners) {
 		workloadReport := Report{
 			SchemaVersion: 0,
 			ClusterName:   k8sReport.ClusterName,
 			Resources:     workloadResource,
 			name:          "Workload Assessment",
 		}
-		if slices.Contains(components, workloadComponent) {
-			r = append(r, reports{
-				Report:  workloadReport,
-				Columns: WorkloadColumns(),
-			})
-		}
+		r = append(r, reports{
+			Report:  workloadReport,
+			Columns: WorkloadColumns(),
+		})
+
 	}
 	infraMisconfig = append(infraMisconfig, infraVulnerabilities...)
-	if shouldAddToReport(scanners, components, infraComponent) {
+	if shouldAddToReport(scanners) {
 		r = append(r, reports{
 			Report: Report{
 				SchemaVersion: 0,
@@ -216,7 +223,7 @@ func infraResource(misConfig Resource) bool {
 func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
 	r := createK8sResource(artifact, report.Results)
 
-	r.Metadata = report.Metadata
+	r.Metadata = []types.Metadata{report.Metadata}
 	r.Report = report
 	// if there was any error during the scan
 	if err != nil {
@@ -246,7 +253,7 @@ func createK8sResource(artifact *artifacts.Artifact, scanResults types.Results) 
 		Namespace: artifact.Namespace,
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
-		Metadata:  types.Metadata{},
+		Metadata:  []types.Metadata{},
 		Results:   results,
 		Report: types.Report{
 			Results:      results,
@@ -260,21 +267,24 @@ func createK8sResource(artifact *artifacts.Artifact, scanResults types.Results) 
 func (r Report) PrintErrors() {
 	for _, resource := range r.Resources {
 		if resource.Error != "" {
-			log.Logger.Errorf("Error during vulnerabilities or misconfiguration scan: %s", resource.Error)
+			log.Error("Error during vulnerabilities or misconfiguration scan", log.Err(errors.New(resource.Error)))
 		}
 	}
 }
 
-func shouldAddToReport(scanners types.Scanners, components []string, componentType string) bool {
+func shouldAddToReport(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(
 		types.MisconfigScanner,
 		types.VulnerabilityScanner,
-		types.SecretScanner) &&
-		slices.Contains(components, componentType)
+		types.SecretScanner)
 }
 
 func vulnerabilitiesOrSecretResource(resource Resource) bool {
 	return len(resource.Results) > 0 && (len(resource.Results[0].Vulnerabilities) > 0 || len(resource.Results[0].Secrets) > 0)
+}
+
+func misconfigsResource(resource Resource) bool {
+	return len(resource.Results) > 0 && len(resource.Results[0].Misconfigurations) > 0
 }
 
 func nodeKind(resource Resource) Resource {

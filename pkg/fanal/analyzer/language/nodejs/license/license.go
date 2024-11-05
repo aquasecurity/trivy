@@ -17,12 +17,14 @@ import (
 )
 
 type License struct {
+	logger                    *log.Logger
 	parser                    *packagejson.Parser
 	classifierConfidenceLevel float64
 }
 
 func NewLicense(classifierConfidenceLevel float64) *License {
 	return &License{
+		logger:                    log.WithPrefix("npm"),
 		parser:                    packagejson.NewParser(),
 		classifierConfidenceLevel: classifierConfidenceLevel,
 	}
@@ -36,13 +38,14 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 			return xerrors.Errorf("unable to parse %q: %w", pkgJSONPath, err)
 		}
 
-		ok, licenseFileName := IsLicenseRefToFile(pkg.License)
+		ok, licenseFileName := IsLicenseRefToFile(pkg.Licenses)
 		if !ok {
-			licenses[pkg.ID] = []string{pkg.License}
+			licenses[pkg.ID] = pkg.Licenses
 			return nil
 		}
 
-		log.Logger.Debugf("License names are missing in %q, an attempt to find them in the %q file", pkgJSONPath, licenseFileName)
+		l.logger.Debug("License names are missing, an attempt to find them in the license file",
+			log.FilePath(pkgJSONPath), log.String("license_file", licenseFileName))
 		licenseFilePath := path.Join(path.Dir(pkgJSONPath), licenseFileName)
 
 		if findings, err := classifyLicense(licenseFilePath, l.classifierConfidenceLevel, fsys); err != nil {
@@ -51,7 +54,8 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 			// License found
 			licenses[pkg.ID] = findings.Names()
 		} else {
-			log.Logger.Debugf("The license file %q was not found or the license could not be classified", licenseFilePath)
+			l.logger.Debug("The license file was not found or the license could not be classified",
+				log.String("license_file", licenseFilePath))
 		}
 		return nil
 	}
@@ -64,19 +68,19 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 
 // IsLicenseRefToFile The license field can refer to a file
 // https://docs.npmjs.com/cli/v9/configuring-npm/package-json
-func IsLicenseRefToFile(maybeLicense string) (bool, string) {
-	if maybeLicense == "" {
+func IsLicenseRefToFile(maybeLicenses []string) (bool, string) {
+	if len(maybeLicenses) != 1 {
 		// trying to find at least the LICENSE file
 		return true, "LICENSE"
 	}
 
 	var licenseFileName string
-	if strings.HasPrefix(maybeLicense, "LicenseRef-") {
+	if strings.HasPrefix(maybeLicenses[0], "LicenseRef-") {
 		// LicenseRef-<filename>
-		licenseFileName = strings.Split(maybeLicense, "-")[1]
-	} else if strings.HasPrefix(maybeLicense, "SEE LICENSE IN ") {
+		licenseFileName = strings.Split(maybeLicenses[0], "-")[1]
+	} else if strings.HasPrefix(maybeLicenses[0], "SEE LICENSE IN ") {
 		// SEE LICENSE IN <filename>
-		parts := strings.Split(maybeLicense, " ")
+		parts := strings.Split(maybeLicenses[0], " ")
 		licenseFileName = parts[len(parts)-1]
 	}
 

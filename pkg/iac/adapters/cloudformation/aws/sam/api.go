@@ -2,11 +2,11 @@ package sam
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getApis(cfFile parser2.FileContext) (apis []sam.API) {
+func getApis(cfFile parser.FileContext) (apis []sam.API) {
 
 	apiResources := cfFile.GetResourcesByType("AWS::Serverless::Api")
 	for _, r := range apiResources {
@@ -25,7 +25,7 @@ func getApis(cfFile parser2.FileContext) (apis []sam.API) {
 	return apis
 }
 
-func getRestMethodSettings(r *parser2.Resource) sam.RESTMethodSettings {
+func getRestMethodSettings(r *parser.Resource) sam.RESTMethodSettings {
 
 	settings := sam.RESTMethodSettings{
 		Metadata:           r.Metadata(),
@@ -35,6 +35,8 @@ func getRestMethodSettings(r *parser2.Resource) sam.RESTMethodSettings {
 		MetricsEnabled:     iacTypes.BoolDefault(false, r.Metadata()),
 	}
 
+	// TODO: MethodSettings is list
+	// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-stage.html#cfn-apigateway-stage-methodsettings
 	settingsProp := r.GetProperty("MethodSettings")
 	if settingsProp.IsNotNil() {
 
@@ -47,7 +49,7 @@ func getRestMethodSettings(r *parser2.Resource) sam.RESTMethodSettings {
 		}
 
 		if loggingLevel := settingsProp.GetProperty("LoggingLevel"); loggingLevel.IsNotNil() {
-			if loggingLevel.EqualTo("OFF", parser2.IgnoreCase) {
+			if loggingLevel.EqualTo("OFF", parser.IgnoreCase) {
 				settings.LoggingEnabled = iacTypes.Bool(false, loggingLevel.Metadata())
 			} else {
 				settings.LoggingEnabled = iacTypes.Bool(true, loggingLevel.Metadata())
@@ -58,7 +60,7 @@ func getRestMethodSettings(r *parser2.Resource) sam.RESTMethodSettings {
 	return settings
 }
 
-func getAccessLogging(r *parser2.Resource) sam.AccessLogging {
+func getAccessLogging(r *parser.Resource) sam.AccessLogging {
 
 	logging := sam.AccessLogging{
 		Metadata:              r.Metadata(),
@@ -75,19 +77,17 @@ func getAccessLogging(r *parser2.Resource) sam.AccessLogging {
 	return logging
 }
 
-func getDomainConfiguration(r *parser2.Resource) sam.DomainConfiguration {
+func getDomainConfiguration(r *parser.Resource) sam.DomainConfiguration {
 
 	domainConfig := sam.DomainConfiguration{
-		Metadata:       r.Metadata(),
-		Name:           iacTypes.StringDefault("", r.Metadata()),
-		SecurityPolicy: iacTypes.StringDefault("TLS_1_0", r.Metadata()),
+		Metadata: r.Metadata(),
 	}
 
 	if domain := r.GetProperty("Domain"); domain.IsNotNil() {
 		domainConfig = sam.DomainConfiguration{
 			Metadata:       domain.Metadata(),
-			Name:           domain.GetStringProperty("DomainName", ""),
-			SecurityPolicy: domain.GetStringProperty("SecurityPolicy", "TLS_1_0"),
+			Name:           domain.GetStringProperty("DomainName"),
+			SecurityPolicy: domain.GetStringProperty("SecurityPolicy"),
 		}
 	}
 

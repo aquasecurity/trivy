@@ -3,9 +3,10 @@ package compute
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 )
 
 func TestLines(t *testing.T) {
@@ -183,8 +184,8 @@ func TestLines(t *testing.T) {
 	assert.Equal(t, 59, network.Firewall.IngressRules[0].Protocol.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 59, network.Firewall.IngressRules[0].Protocol.GetMetadata().Range().GetEndLine())
 
-	assert.Equal(t, 60, network.Firewall.IngressRules[0].Ports[0].GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 60, network.Firewall.IngressRules[0].Ports[0].GetMetadata().Range().GetEndLine())
+	assert.Equal(t, 60, network.Firewall.IngressRules[0].Ports[0].Metadata.Range().GetStartLine())
+	assert.Equal(t, 60, network.Firewall.IngressRules[0].Ports[0].Metadata.Range().GetEndLine())
 
 	assert.Equal(t, 64, network.Subnetworks[0].Metadata.Range().GetStartLine())
 	assert.Equal(t, 72, network.Subnetworks[0].Metadata.Range().GetEndLine())

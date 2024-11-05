@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,6 +15,12 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
+
+	//mage:import rpm
+	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
+	// Trivy packages should not be imported in Mage (see https://github.com/aquasecurity/trivy/pull/4242),
+	// but this package doesn't have so many dependencies, and Mage is still fast.
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -23,6 +31,14 @@ var (
 		"CGO_ENABLED": "0",
 	}
 )
+
+var protoFiles = []string{
+	"pkg/iac/scanners/terraformplan/snapshot/planproto/planfile.proto",
+}
+
+func init() {
+	slog.SetDefault(log.New(log.NewHandler(os.Stderr, nil))) // stdout is suppressed in mage
+}
 
 func version() (string, error) {
 	if ver, err := sh.Output("git", "describe", "--tags", "--always"); err != nil {
@@ -38,7 +54,7 @@ func buildLdflags() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version.ver=%s", ver), nil
+	return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version/app.ver=%s", ver), nil
 }
 
 type Tool mg.Namespace
@@ -60,13 +76,36 @@ func (Tool) Wire() error {
 }
 
 // GolangciLint installs golangci-lint
-func (Tool) GolangciLint() error {
-	const version = "v1.54.2"
-	if exists(filepath.Join(GOBIN, "golangci-lint")) {
+func (t Tool) GolangciLint() error {
+	const version = "v1.61.0"
+	bin := filepath.Join(GOBIN, "golangci-lint")
+	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
 	}
 	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, version)
 	return sh.Run("bash", "-c", command)
+}
+
+func (Tool) matchGolangciLintVersion(bin, version string) bool {
+	out, err := sh.Output(bin, "version", "--format", "json")
+	if err != nil {
+		slog.Error("Unable to get golangci-lint version", slog.Any("err", err))
+		return false
+	}
+	var output struct {
+		Version string `json:"Version"`
+	}
+	if err = json.Unmarshal([]byte(out), &output); err != nil {
+		slog.Error("Unable to parse golangci-lint version", slog.Any("err", err))
+		return false
+	}
+
+	version = strings.TrimPrefix(version, "v")
+	if output.Version != version {
+		slog.Info("golangci-lint version mismatch", slog.String("expected", version), slog.String("actual", output.Version))
+		return false
+	}
+	return true
 }
 
 // Labeler installs labeler
@@ -121,11 +160,11 @@ func Mock(dir string) error {
 func Protoc() error {
 	// It is called in the protoc container
 	if _, ok := os.LookupEnv("TRIVY_PROTOC_CONTAINER"); ok {
-		protoFiles, err := findProtoFiles()
+		rpcProtoFiles, err := findRPCProtoFiles()
 		if err != nil {
 			return err
 		}
-		for _, file := range protoFiles {
+		for _, file := range rpcProtoFiles {
 			// Check if the generated Go file is up-to-date
 			dst := strings.TrimSuffix(file, ".proto") + ".pb.go"
 			if updated, err := target.Path(dst, file); err != nil {
@@ -137,6 +176,13 @@ func Protoc() error {
 			// Generate
 			if err = sh.RunV("protoc", "--twirp_out", ".", "--twirp_opt", "paths=source_relative",
 				"--go_out", ".", "--go_opt", "paths=source_relative", file); err != nil {
+				return err
+			}
+		}
+
+		for _, file := range protoFiles {
+			if err := sh.RunV("protoc", ".", "paths=source_relative", "--go_out", ".", "--go_opt",
+				"paths=source_relative", file); err != nil {
 				return err
 			}
 		}
@@ -224,7 +270,7 @@ func compileWasmModules(pattern string) error {
 
 // Unit runs unit tests
 func (t Test) Unit() error {
-	mg.Deps(t.GenerateModules)
+	mg.Deps(t.GenerateModules, rpm.Fixtures)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-short", "-coverprofile=coverage.txt", "-covermode=atomic", "./...")
 }
 
@@ -281,13 +327,13 @@ type Lint mg.Namespace
 // Run runs linters
 func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m")
+	return sh.RunV("golangci-lint", "run")
 }
 
 // Fix auto fixes linters
 func (Lint) Fix() error {
 	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m", "--fix")
+	return sh.RunV("golangci-lint", "run", "--fix")
 }
 
 // Fmt formats Go code and proto files
@@ -298,11 +344,13 @@ func Fmt() error {
 	}
 
 	// Format proto files
-	protoFiles, err := findProtoFiles()
+	rpcProtoFiles, err := findRPCProtoFiles()
 	if err != nil {
 		return err
 	}
-	for _, file := range protoFiles {
+
+	allProtoFiles := append(protoFiles, rpcProtoFiles...)
+	for _, file := range allProtoFiles {
 		if err = sh.Run("clang-format", "-i", file); err != nil {
 			return err
 		}
@@ -389,7 +437,7 @@ func (Docs) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_docs", "./magefiles")
 }
 
-func findProtoFiles() ([]string, error) {
+func findRPCProtoFiles() ([]string, error) {
 	var files []string
 	err := filepath.WalkDir("rpc", func(path string, d fs.DirEntry, err error) error {
 		switch {
@@ -420,16 +468,31 @@ func installed(cmd string) bool {
 
 type Schema mg.Namespace
 
+// Generate generates Cloud Schema for misconfiguration scanning
 func (Schema) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "generate")
 }
 
+// Verify verifies Cloud Schema for misconfiguration scanning
 func (Schema) Verify() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "verify")
 }
 
 type CloudActions mg.Namespace
 
+// Generate generates the list of possible cloud actions with AWS
 func (CloudActions) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
+}
+
+// VEX generates a VEX document for Trivy
+func VEX(_ context.Context, dir string) error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_vex", "./magefiles/vex.go", "--dir", dir)
+}
+
+type Helm mg.Namespace
+
+// UpdateVersion updates a version for Trivy Helm Chart and creates a PR
+func (Helm) UpdateVersion() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_helm", "./magefiles")
 }

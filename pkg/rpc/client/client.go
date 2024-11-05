@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"net/http"
 
+	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -32,6 +33,7 @@ type ScannerOption struct {
 	RemoteURL     string
 	Insecure      bool
 	CustomHeaders http.Header
+	PathPrefix    string
 }
 
 // Scanner implements the RPC scanner
@@ -42,16 +44,15 @@ type Scanner struct {
 
 // NewScanner is the factory method to return RPC Scanner
 func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
-	httpClient := &http.Client{
-		Transport: &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: scannerOptions.Insecure,
-			},
-		},
-	}
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: scannerOptions.Insecure}
+	httpClient := &http.Client{Transport: tr}
 
-	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, httpClient)
+	var twirpOpts []twirp.ClientOption
+	if scannerOptions.PathPrefix != "" {
+		twirpOpts = append(twirpOpts, twirp.WithClientPathPrefix(scannerOptions.PathPrefix))
+	}
+	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, httpClient, twirpOpts...)
 
 	o := &options{rpcClient: c}
 	for _, opt := range opts {
@@ -82,9 +83,9 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				VulnType:          opts.VulnType,
+				PkgTypes:          opts.PkgTypes,
+				PkgRelationships:  xstrings.ToStringSlice(opts.PkgRelationships),
 				Scanners:          xstrings.ToStringSlice(opts.Scanners),
-				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
 				IncludeDevDeps:    opts.IncludeDevDeps,
 			},

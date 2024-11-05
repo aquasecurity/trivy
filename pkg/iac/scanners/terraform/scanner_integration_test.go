@@ -1,15 +1,15 @@
 package terraform
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_ScanRemoteModule(t *testing.T) {
@@ -44,14 +44,11 @@ deny[res] {
 }`,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
-
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(false),
+		rego.WithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
 		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
@@ -61,10 +58,6 @@ deny[res] {
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 1)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_ScanChildUseRemoteModule(t *testing.T) {
@@ -108,14 +101,11 @@ deny[res] {
 }`,
 	})
 
-	debugLog := bytes.NewBuffer([]byte{})
-
 	scanner := New(
-		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithEmbeddedPolicies(false),
-		options.ScannerWithEmbeddedLibraries(false),
+		rego.WithPolicyFilesystem(fs),
+		rego.WithPolicyDirs("rules"),
+		rego.WithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(false),
 		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
@@ -125,10 +115,6 @@ deny[res] {
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 1)
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
 }
 
 func Test_OptionWithSkipDownloaded(t *testing.T) {
@@ -161,10 +147,11 @@ deny[cause] {
 
 	t.Run("without skip", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithPolicyDirs("rules"),
+			ScannerWithSkipCachedModules(true),
+			rego.WithPolicyDirs("rules"),
 			options.ScannerWithRegoOnly(true),
-			options.ScannerWithEmbeddedPolicies(false),
-			options.ScannerWithEmbeddedLibraries(true),
+			rego.WithEmbeddedPolicies(false),
+			rego.WithEmbeddedLibraries(true),
 		)
 		results, err := scanner.ScanFS(context.TODO(), fs, "test")
 		require.NoError(t, err)
@@ -177,10 +164,10 @@ deny[cause] {
 		scanner := New(
 			ScannerWithSkipDownloaded(true),
 			ScannerWithSkipCachedModules(true),
-			options.ScannerWithPolicyDirs("rules"),
+			rego.WithPolicyDirs("rules"),
 			options.ScannerWithRegoOnly(true),
-			options.ScannerWithEmbeddedPolicies(false),
-			options.ScannerWithEmbeddedLibraries(true),
+			rego.WithEmbeddedPolicies(false),
+			rego.WithEmbeddedLibraries(true),
 		)
 		results, err := scanner.ScanFS(context.TODO(), fs, "test")
 		require.NoError(t, err)
@@ -231,10 +218,10 @@ deny[res] {
 	scanner := New(
 		ScannerWithSkipDownloaded(true),
 		ScannerWithSkipCachedModules(true),
-		options.ScannerWithPolicyDirs("rules"),
+		rego.WithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedLibraries(true),
-		options.ScannerWithEmbeddedPolicies(false),
+		rego.WithEmbeddedLibraries(true),
+		rego.WithEmbeddedPolicies(false),
 	)
 	results, err := scanner.ScanFS(context.TODO(), fs, "test")
 	require.NoError(t, err)

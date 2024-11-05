@@ -39,6 +39,12 @@ func NewPkgLicenseRenderer(result types.Result, isTerminal bool, severities []db
 }
 
 func (r pkgLicenseRenderer) Render() string {
+	// Trivy doesn't currently support showing suppressed licenses
+	// So just skip this result
+	if len(r.result.Licenses) == 0 {
+		return ""
+	}
+
 	r.setHeaders()
 	r.setRows()
 
@@ -54,7 +60,12 @@ func (r pkgLicenseRenderer) Render() string {
 }
 
 func (r pkgLicenseRenderer) setHeaders() {
-	header := []string{"Package", "License", "Classification", "Severity"}
+	header := []string{
+		"Package",
+		"License",
+		"Classification",
+		"Severity",
+	}
 	r.tableWriter.SetHeaders(header...)
 }
 
@@ -63,11 +74,17 @@ func (r pkgLicenseRenderer) setRows() {
 		var row []string
 		if r.isTerminal {
 			row = []string{
-				l.PkgName, l.Name, colorizeLicenseCategory(l.Category), ColorizeSeverity(l.Severity, l.Severity),
+				l.PkgName,
+				l.Name,
+				colorizeLicenseCategory(l.Category),
+				ColorizeSeverity(l.Severity, l.Severity),
 			}
 		} else {
 			row = []string{
-				l.PkgName, l.Name, string(l.Category), l.Severity,
+				l.PkgName,
+				l.Name,
+				string(l.Category),
+				l.Severity,
 			}
 		}
 		r.tableWriter.AddRow(row...)
@@ -82,7 +99,7 @@ func (r pkgLicenseRenderer) countSeverities() map[string]int {
 	return severityCount
 }
 
-func (r *pkgLicenseRenderer) printf(format string, args ...interface{}) {
+func (r *pkgLicenseRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }
@@ -109,6 +126,12 @@ func NewFileLicenseRenderer(result types.Result, isTerminal bool, severities []d
 }
 
 func (r fileLicenseRenderer) Render() string {
+	// Trivy doesn't currently support showing suppressed licenses
+	// So just skip this result
+	if len(r.result.Licenses) == 0 {
+		return ""
+	}
+
 	r.setHeaders()
 	r.setRows()
 
@@ -124,7 +147,12 @@ func (r fileLicenseRenderer) Render() string {
 }
 
 func (r fileLicenseRenderer) setHeaders() {
-	header := []string{"Classification", "Severity", "License", "File Location"}
+	header := []string{
+		"Classification",
+		"Severity",
+		"License",
+		"File Location",
+	}
 	r.tableWriter.SetHeaders(header...)
 }
 
@@ -148,11 +176,17 @@ func (r fileLicenseRenderer) setRows() {
 		var row []string
 		if r.isTerminal {
 			row = []string{
-				colorizeLicenseCategory(l.Category), ColorizeSeverity(l.Severity, l.Severity), l.Name, l.FilePath,
+				colorizeLicenseCategory(l.Category),
+				ColorizeSeverity(l.Severity, l.Severity),
+				l.Name,
+				l.FilePath,
 			}
 		} else {
 			row = []string{
-				string(l.Category), l.Severity, l.Name, l.FilePath,
+				string(l.Category),
+				l.Severity,
+				l.Name,
+				l.FilePath,
 			}
 		}
 		r.tableWriter.AddRow(row...)
@@ -167,7 +201,7 @@ func (r fileLicenseRenderer) countSeverities() map[string]int {
 	return severityCount
 }
 
-func (r *fileLicenseRenderer) printf(format string, args ...interface{}) {
+func (r *fileLicenseRenderer) printf(format string, args ...any) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
 }

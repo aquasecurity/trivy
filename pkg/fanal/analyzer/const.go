@@ -13,6 +13,7 @@ const (
 	TypeOSRelease  Type = "os-release"
 	TypeAlpine     Type = "alpine"
 	TypeAmazon     Type = "amazon"
+	TypeAzure      Type = "azurelinux"
 	TypeCBLMariner Type = "cbl-mariner"
 	TypeDebian     Type = "debian"
 	TypePhoton     Type = "photon"
@@ -31,6 +32,7 @@ const (
 	TypeDpkg        Type = "dpkg"
 	TypeDpkgLicense Type = "dpkg-license" // For analyzing licenses
 	TypeRpm         Type = "rpm"
+	TypeRpmArchive  Type = "rpm-archive"
 	TypeRpmqa       Type = "rpmqa"
 
 	// OS Package Repository
@@ -49,12 +51,14 @@ const (
 	TypeCargo      Type = "cargo"
 
 	// PHP
-	TypeComposer Type = "composer"
+	TypeComposer       Type = "composer"
+	TypeComposerVendor Type = "composer-vendor"
 
 	// Java
 	TypeJar        Type = "jar"
 	TypePom        Type = "pom"
 	TypeGradleLock Type = "gradle-lockfile"
+	TypeSbtLock    Type = "sbt-lockfile"
 
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
@@ -69,12 +73,14 @@ const (
 
 	// Conda
 	TypeCondaPkg Type = "conda-pkg"
+	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg Type = "python-pkg"
-	TypePip       Type = "pip"
-	TypePipenv    Type = "pipenv"
-	TypePoetry    Type = "poetry"
+	TypePythonPkg    Type = "python-pkg"
+	TypePythonPkgEgg Type = "python-egg"
+	TypePip          Type = "pip"
+	TypePipenv       Type = "pipenv"
+	TypePoetry       Type = "poetry"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -92,6 +98,9 @@ const (
 
 	// Dart
 	TypePubSpecLock Type = "pubspec-lock"
+
+	// Julia
+	TypeJulia Type = "julia"
 
 	// ============
 	// Non-packaged
@@ -117,6 +126,8 @@ const (
 	TypeTerraform             Type = Type(detection.FileTypeTerraform)
 	TypeTerraformPlanJSON     Type = Type(detection.FileTypeTerraformPlanJSON)
 	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
+	TypeYAML                  Type = Type(detection.FileTypeYAML)
+	TypeJSON                  Type = Type(detection.FileTypeJSON)
 
 	// ========
 	// License
@@ -169,6 +180,7 @@ var (
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
+		TypeSbtLock,
 		TypeNpmPkgLock,
 		TypeNodePkg,
 		TypeYarn,
@@ -177,6 +189,7 @@ var (
 		TypeDotNetCore,
 		TypePackagesProps,
 		TypeCondaPkg,
+		TypeCondaEnv,
 		TypePythonPkg,
 		TypePip,
 		TypePipenv,
@@ -189,6 +202,7 @@ var (
 		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeJulia,
 	}
 
 	// TypeLockfiles has all lock file analyzers
@@ -204,10 +218,13 @@ var (
 		TypePom,
 		TypeConanLock,
 		TypeGradleLock,
+		TypeSbtLock,
 		TypeCocoaPods,
 		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeCondaEnv,
+		TypeComposer,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
@@ -219,6 +236,7 @@ var (
 		TypeGoBinary,
 		TypeJar,
 		TypeRustBinary,
+		TypeComposerVendor,
 	}
 
 	// TypeConfigFiles has all config file analyzers
@@ -231,5 +249,7 @@ var (
 		TypeTerraform,
 		TypeTerraformPlanJSON,
 		TypeTerraformPlanSnapshot,
+		TypeYAML,
+		TypeJSON,
 	}
 )

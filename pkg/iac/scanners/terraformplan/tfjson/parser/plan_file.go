@@ -17,12 +17,12 @@ type ResourceChange struct {
 
 type ConfigurationResource struct {
 	Resource
-	Expressions map[string]interface{} `json:"expressions"`
+	Expressions map[string]any `json:"expressions"`
 }
 
 type Change struct {
-	Before map[string]interface{} `json:"before"`
-	After  map[string]interface{} `json:"after"`
+	Before map[string]any `json:"before"`
+	After  map[string]any `json:"after"`
 }
 
 type Module struct {

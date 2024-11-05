@@ -1,31 +1,19 @@
 linters-settings:
+  depguard:
+    rules:
+      main:
+        list-mode: lax
+        deny:
+          # Cannot use gomodguard, which examines go.mod, as "golang.org/x/exp/slices" is not a module and doesn't appear in go.mod.
+          - pkg: "golang.org/x/exp/slices"
+            desc: "Use 'slices' instead"
+          - pkg: "golang.org/x/exp/maps"
+            desc: "Use 'maps' or 'github.com/samber/lo' instead"
+  dupl:
+    threshold: 100
   errcheck:
     check-type-assertions: true
     check-blank: true
-  govet:
-    check-shadowing: false
-  gofmt:
-    simplify: false
-  revive:
-    ignore-generated-header: true
-  gocyclo:
-    min-complexity: 20
-  dupl:
-    threshold: 100
-  goconst:
-    min-len: 3
-    min-occurrences: 3
-  misspell:
-    locale: US
-    ignore-words:
-      - licence
-      - optimise
-  gosec:
-    excludes:
-      - G101
-      - G114
-      - G204
-      - G402
   gci:
     sections:
       - standard
@@ -33,17 +21,9 @@ linters-settings:
       - prefix(github.com/aquasecurity/)
       - blank
       - dot
-  gomodguard:
-    blocked:
-      modules:
-        - github.com/hashicorp/go-version:
-            recommendations:
-              - github.com/aquasecurity/go-version
-            reason: "`aquasecurity/go-version` is designed for our use-cases"
-        - github.com/Masterminds/semver:
-            recommendations:
-              - github.com/aquasecurity/go-version
-            reason: "`aquasecurity/go-version` is designed for our use-cases"
+  goconst:
+    min-len: 3
+    min-occurrences: 3
   gocritic:
     disabled-checks:
       - appendAssign
@@ -66,53 +46,99 @@ linters-settings:
       ruleguard:
         failOn: all
         rules: '${configDir}/misc/lint/rules.go'
-
+  gocyclo:
+    min-complexity: 20
+  gofmt:
+    simplify: false
+    rewrite-rules:
+      - pattern: 'interface{}'
+        replacement: 'any'
+  gomodguard:
+    blocked:
+      modules:
+        - github.com/hashicorp/go-version:
+            recommendations:
+              - github.com/aquasecurity/go-version
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - github.com/Masterminds/semver:
+            recommendations:
+              - github.com/aquasecurity/go-version
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
+  gosec:
+    excludes:
+      - G101
+      - G114
+      - G115
+      - G204
+      - G304
+      - G402
+  govet:
+    check-shadowing: false
+  misspell:
+    locale: US
+    ignore-words:
+      - behaviour
+      - licence
+      - optimise
+      - simmilar
+  revive:
+    ignore-generated-header: true
+  testifylint:
+    enable-all: true
 linters:
   disable-all: true
   enable:
-    - unused
-    - ineffassign
-    - typecheck
-    - govet
-    - revive
-    - gosec
-    - unconvert
+    - bodyclose
+    - depguard
+    - gci
     - goconst
+    - gocritic
     - gocyclo
     - gofmt
-    - misspell
-    - bodyclose
-    - gci
     - gomodguard
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - revive
     - tenv
-    - gocritic
+    - testifylint
+    - typecheck
+    - unconvert
+    - unused
+    - usestdlibvars
 
 run:
-  go: '1.21'
-  skip-files:
-    - ".*_mock.go$"
-    - ".*_test.go$"
-    - "integration/*"
-    - "examples/*"
+  go: '1.22'
+  timeout: 30m
 
 issues:
+  exclude-files:
+    - "mock_*.go$"
+    - "examples/*"
+  exclude-dirs:
+    - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
   exclude-rules:
-    - linters:
+    - path: ".*_test.go$"
+      linters:
+        - goconst
         - gosec
-      text: "G304: Potential file inclusion"
-    - linters:
-        - gosec
-      text: "Deferring unsafe method"
-    - linters:
-        - errcheck
-      text: "Close` is not checked"
-    - linters:
-        - errcheck
-      text: "os.*` is not checked"
-    - linters:
-        - golint
-      text: "a blank import should be only in a main or test package"
-  exclude:
-    - "should have a package comment, unless it's in another file for this package"
+        - unused
+    - path: ".*_test.go$"
+      linters:
+        - govet
+      text: "copylocks:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "commentFormatting:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "exitAfterDefer:"
+    - path: ".*_test.go$"
+      linters:
+        - gocritic
+      text: "importShadow:"
   exclude-use-default: false
   max-same-issues: 0

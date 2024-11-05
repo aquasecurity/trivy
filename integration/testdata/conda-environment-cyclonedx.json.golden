@@ -1,0 +1,80 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2021-08-25T12:20:30+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "type": "application",
+      "name": "testdata/fixtures/repo/conda-environment",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "type": "application",
+      "name": "environment.yaml",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "conda-environment"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:conda/bzip2@1.0.8",
+      "type": "library",
+      "name": "bzip2",
+      "version": "1.0.8",
+      "purl": "pkg:conda/bzip2@1.0.8",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "conda-environment"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "dependsOn": [
+        "3ff14136-e09f-4df9-80ea-000000000002"
+      ]
+    },
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "dependsOn": [
+        "pkg:conda/bzip2@1.0.8"
+      ]
+    },
+    {
+      "ref": "pkg:conda/bzip2@1.0.8",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}

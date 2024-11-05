@@ -7,17 +7,17 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/config"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/lock"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -31,12 +31,16 @@ const (
 	configFile = types.NuGetPkgsConfig
 )
 
-var requiredFiles = []string{lockFile, configFile}
+var requiredFiles = []string{
+	lockFile,
+	configFile,
+}
 
 type nugetLibraryAnalyzer struct {
-	lockParser    godeptypes.Parser
-	configParser  godeptypes.Parser
+	lockParser    language.Parser
+	configParser  language.Parser
 	licenseParser nuspecParser
+	logger        *log.Logger
 }
 
 func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -44,12 +48,16 @@ func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer,
 		lockParser:    lock.NewParser(),
 		configParser:  config.NewParser(),
 		licenseParser: newNuspecParser(),
+		logger:        log.WithPrefix("nuget"),
 	}, nil
 }
 
 func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 	foundLicenses := make(map[string][]string)
+	if a.licenseParser.packagesDir == "" {
+		a.logger.Debug("The nuget packages directory couldn't be found. License search disabled")
+	}
 
 	// We saved only config and lock files in the FS,
 	// so we need to parse all saved files
@@ -76,7 +84,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			return nil
 		}
 
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			license, ok := foundLicenses[lib.ID]
 			if !ok {
 				license, err = a.licenseParser.findLicense(lib.Name, lib.Version)
@@ -86,10 +94,10 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 				foundLicenses[lib.ID] = license
 			}
 
-			app.Libraries[i].Licenses = license
+			app.Packages[i].Licenses = license
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})
