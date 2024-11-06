@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"io/fs"
 	"strings"
 	"testing"
 
@@ -11,10 +10,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 )
 
-// IMPORTANT: if this test is failing, you probably need to set the version of go-cty in go.mod to the same version that hcl uses.
-func Test_GoCtyCompatibilityIssue(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
-		"/project/main.tf": `
+func Test_Modules(t *testing.T) {
+	tests := []struct {
+		name     string
+		files    map[string]string
+		expected bool
+	}{
+		{
+			// IMPORTANT: if this test is failing, you probably need to set the version of go-cty in go.mod to the same version that hcl uses.
+			name: "go-cty compatibility issue",
+			files: map[string]string{
+				"/project/main.tf": `
 data "aws_vpc" "default" {
   default = true
 }
@@ -22,10 +28,8 @@ data "aws_vpc" "default" {
 module "test" {
   source     = "../modules/problem/"
   cidr_block = data.aws_vpc.default.cidr_block
-}
-`,
-		"/modules/problem/main.tf": `
-variable "cidr_block" {}
+}`,
+				"/modules/problem/main.tf": `variable "cidr_block" {}
 
 variable "open" {                
   default = false
@@ -44,91 +48,69 @@ resource "aws_security_group" "this" {
   }                                                 
 }  
 
-resource "aws_s3_bucket" "test" {
-  bucket = ""
-}
-`,
-	})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInModuleInSiblingDir(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"/project/main.tf": `
+resource "aws_s3_bucket" "test" {}`,
+			},
+			expected: true,
+		},
+		{
+			name: "misconfig in sibling directory module",
+			files: map[string]string{
+				"/project/main.tf": `
 module "something" {
 	source = "../modules/problem"
 }
 `,
-		"modules/problem/main.tf": `
-resource "aws_s3_bucket" "test" {
-  bucket = ""
-}
-`},
-	)
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-
-}
-
-func Test_ProblemInModuleIgnored(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"/project/main.tf": `
+				"modules/problem/main.tf": `
+resource "aws_s3_bucket" "test" {}`,
+			},
+			expected: true,
+		},
+		{
+			name: "ignore misconfig in module",
+			files: map[string]string{
+				"/project/main.tf": `
 #tfsec:ignore:aws-s3-non-empty-bucket
 module "something" {
 	source = "../modules/problem"
 }
 `,
-		"modules/problem/main.tf": `
-resource "aws_s3_bucket" "test" {
-  bucket = ""
-}
-`},
-	)
-
-	assertNonEmptyBucketCheckNotFound(t, fsys, "project")
-}
-
-func Test_ProblemInModuleInSubdirectory(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+				"modules/problem/main.tf": `
+resource "aws_s3_bucket" "test" {}
+`,
+			},
+			expected: false,
+		},
+		{
+			name: "misconfig in subdirectory module",
+			files: map[string]string{
+				"project/main.tf": `
 module "something" {
 	source = "./modules/problem"
 }
 `,
-		"project/modules/problem/main.tf": `
-resource "aws_s3_bucket" "test" {
-  bucket = ""
-}
-`})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInModuleInParentDir(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+				"project/modules/problem/main.tf": `
+resource "aws_s3_bucket" "test" {}
+`,
+			},
+			expected: true,
+		},
+		{
+			name: "misconfig in parent directory module",
+			files: map[string]string{
+				"project/main.tf": `
 module "something" {
 	source = "../problem"
 }
 `,
-		"problem/main.tf": `
-resource "aws_s3_bucket" "test" {
-  bucket = ""
-}
-`})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInModuleReuse(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+				"problem/main.tf": `
+resource "aws_s3_bucket" "test" {}
+`},
+			expected: true,
+		},
+		{
+			name: "misconfig in reused module",
+			files: map[string]string{
+				"project/main.tf": `
 module "something_good" {
 	source = "../modules/problem"
 	bucket = "test"
@@ -139,48 +121,41 @@ module "something_bad" {
 	bucket = ""
 }
 `,
-		"modules/problem/main.tf": `
+				"modules/problem/main.tf": `
 variable "bucket" {}
 
 resource "aws_s3_bucket" "test" {
   bucket = var.bucket
 }
-`})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInNestedModule(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+`},
+			expected: true,
+		},
+		{
+			name: "misconfig in nested module",
+			files: map[string]string{
+				"project/main.tf": `
 module "something" {
 	source = "../modules/a"
 }
 `,
-		"modules/a/main.tf": `
+				"modules/a/main.tf": `
 	module "something" {
 	source = "../../modules/b"
 }
 `,
-		"modules/b/main.tf": `
+				"modules/b/main.tf": `
 module "something" {
 	source = "../c"
 }
 `,
-		"modules/c/main.tf": `
-resource "aws_s3_bucket" "test" {
-  bucket = ""
-}
-`,
-	})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInReusedNestedModule(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+				"modules/c/main.tf": `resource "aws_s3_bucket" "test" {}`,
+			},
+			expected: true,
+		},
+		{
+			name: "misconfig in reused nested module",
+			files: map[string]string{
+				"project/main.tf": `
 module "something" {
   source = "../modules/a"
   bucket = "test"
@@ -191,7 +166,7 @@ module "something-bad" {
 	bucket = ""
 }
 `,
-		"modules/a/main.tf": `
+				"modules/a/main.tf": `
 variable "bucket" {}
 
 module "something" {
@@ -199,7 +174,7 @@ module "something" {
 	bucket = var.bucket
 }
 `,
-		"modules/b/main.tf": `
+				"modules/b/main.tf": `
 variable "bucket" {}
 
 module "something" {
@@ -207,28 +182,26 @@ module "something" {
 	bucket = var.bad
 }
 `,
-		"modules/c/main.tf": `
+				"modules/c/main.tf": `
 variable "bucket" {}
 
 resource "aws_s3_bucket" "test" {
   bucket = var.bucket
 }
 `,
-	})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInInitialisedModule(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+			},
+			expected: true,
+		},
+		{
+			name: "misconfig in terraform cached module",
+			files: map[string]string{
+				"project/main.tf": `
 module "something" {
   	source = "../modules/somewhere"
 	bucket = "test"
 }
 `,
-		"modules/somewhere/main.tf": `
+				"modules/somewhere/main.tf": `
 module "something_nested" {
 	count = 1
   	source = "github.com/some/module.git"
@@ -237,31 +210,27 @@ module "something_nested" {
 
 variable "bucket" {
 	default = ""
-}
-
-`,
-		"project/.terraform/modules/something.something_nested/main.tf": `
+}`,
+				"project/.terraform/modules/something.something_nested/main.tf": `
 variable "bucket" {}
 
 resource "aws_s3_bucket" "test" {
   bucket = var.bucket
 }
 `,
-		"project/.terraform/modules/modules.json": `
+				"project/.terraform/modules/modules.json": `
 	{"Modules":[
         {"Key":"something","Source":"../modules/somewhere","Version":"2.35.0","Dir":"../modules/somewhere"},
         {"Key":"something.something_nested","Source":"git::https://github.com/some/module.git","Version":"2.35.0","Dir":".terraform/modules/something.something_nested"}
     ]}
 `,
-	})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInReusedInitialisedModule(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+			},
+			expected: true,
+		},
+		{
+			name: "misconfig in reused terraform cached module",
+			files: map[string]string{
+				"project/main.tf": `
 module "something" {
   	source = "/nowhere"
 	bucket = ""
@@ -272,24 +241,23 @@ module "something2" {
   	bucket = ""
 }
 `,
-		"project/.terraform/modules/a/main.tf": `
+				"project/.terraform/modules/a/main.tf": `
 variable "bucket" {}
 
 resource "aws_s3_bucket" "test" {
   bucket = var.bucket
 }
 `,
-		"project/.terraform/modules/modules.json": `
+				"project/.terraform/modules/modules.json": `
 	{"Modules":[{"Key":"something","Source":"/nowhere","Version":"2.35.0","Dir":".terraform/modules/a"},{"Key":"something2","Source":"/nowhere","Version":"2.35.0","Dir":".terraform/modules/a"}]}
 `,
-	})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_ProblemInDuplicateModuleNameAndPath(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+			},
+			expected: true,
+		},
+		{
+			name: "misconfig in nested modules with duplicate module names and paths",
+			files: map[string]string{
+				"project/main.tf": `
 module "something" {
   source = "../modules/a"
   s3_bucket_count = 0
@@ -300,7 +268,7 @@ module "something-bad" {
 	s3_bucket_count = 1
 }
 `,
-		"modules/a/main.tf": `
+				"modules/a/main.tf": `
 variable "s3_bucket_count" {
 	default = 0
 }
@@ -309,7 +277,7 @@ module "something" {
 	s3_bucket_count = var.s3_bucket_count
 }
 `,
-		"modules/b/main.tf": `
+				"modules/b/main.tf": `
 variable "s3_bucket_count" {
 	default = 0
 }
@@ -318,24 +286,22 @@ module "something" {
 	s3_bucket_count = var.s3_bucket_count
 }
 `,
-		"modules/c/main.tf": `
+				"modules/c/main.tf": `
 variable "s3_bucket_count" {
 	default = 0
 }
 
 resource "aws_s3_bucket" "test" {
   count = var.s3_bucket_count
-  bucket = ""
 }
 `,
-	})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_Dynamic_Variables(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+			},
+			expected: true,
+		},
+		{
+			name: "misconfigured attribute referencing to dynamic variable",
+			files: map[string]string{
+				"project/main.tf": `
 resource "something" "this" {
 	dynamic "blah" {
 		for_each = ["a"]
@@ -348,14 +314,13 @@ resource "something" "this" {
 resource "aws_s3_bucket" "test" {
   secure = something.this.blah[0].bucket
 }
-`})
-
-	assertNonEmptyBucketCheckFound(t, fsys, "project")
-}
-
-func Test_Dynamic_Variables_FalsePositive(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+`},
+			expected: true,
+		},
+		{
+			name: "attribute referencing to dynamic variable without index",
+			files: map[string]string{
+				"project/main.tf": `
 resource "something" "else" {
 	dynamic "blah" {
 		for_each = toset(["test"])
@@ -367,16 +332,13 @@ resource "something" "else" {
 
 resource "aws_s3_bucket" "test" {
   bucket = something.else.blah.bucket
-}
-`})
-
-	assertNonEmptyBucketCheckNotFound(t, fsys, "project")
-}
-
-func Test_ReferencesPassedToNestedModule(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"project/main.tf": `
+}`},
+			expected: false,
+		},
+		{
+			name: "references passed to nested module",
+			files: map[string]string{
+				"project/main.tf": `
 
 resource "some_resource" "this" {
     name = "test"
@@ -387,7 +349,7 @@ module "something" {
     bucket = some_resource.this.name
 }
 `,
-		"modules/a/main.tf": `
+				"modules/a/main.tf": `
 variable "bucket" {
     type = string
 }
@@ -395,32 +357,24 @@ variable "bucket" {
 resource "aws_s3_bucket" "test" {
   bucket = var.bucket
 }
-`})
+`},
+			expected: false,
+		},
+	}
 
-	assertNonEmptyBucketCheckNotFound(t, fsys, "project")
-
-}
-
-func assertNonEmptyBucketCheckFound(t *testing.T, fsys fs.FS, target string) {
-	t.Helper()
-
-	results, err := scanFS(fsys, target,
-		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
-		rego.WithPolicyNamespaces("user"),
-	)
-	require.NoError(t, err)
-
-	testutil.AssertRuleFound(t, "aws-s3-non-empty-bucket", results, "")
-}
-
-func assertNonEmptyBucketCheckNotFound(t *testing.T, fsys fs.FS, target string) {
-	t.Helper()
-
-	results, err := scanFS(fsys, target,
-		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
-		rego.WithPolicyNamespaces("user"),
-	)
-	require.NoError(t, err)
-
-	testutil.AssertRuleNotFound(t, "aws-s3-non-empty-bucket", results, "")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(t, tt.files)
+			results, err := scanFS(fsys, "project",
+				rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+				rego.WithPolicyNamespaces("user"),
+			)
+			require.NoError(t, err)
+			if tt.expected {
+				testutil.AssertRuleFound(t, "aws-s3-non-empty-bucket", results, "")
+			} else {
+				testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+			}
+		})
+	}
 }

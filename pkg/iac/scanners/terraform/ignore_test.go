@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -512,16 +511,9 @@ resource "aws_security_group" "loadbalancer" {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := fstest.MapFS{
-				"main.tf": {
-					Data: []byte(tt.source),
-				},
-			}
-
-			results, err := scanFS(fsys, ".",
+			results := scanHCL(t, tt.source,
 				rego.WithPolicyReader(strings.NewReader(check)),
 				rego.WithPolicyNamespaces("user"))
-			require.NoError(t, err)
 			require.Len(t, results.GetFailed(), tt.expected)
 		})
 	}
@@ -568,18 +560,11 @@ resource "aws_s3_bucket" "test" {}`,
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := fstest.MapFS{
-				"main.tf": &fstest.MapFile{
-					Data: []byte(tt.src),
-				},
-			}
-
-			results, err := scanFS(fsys, ".",
+			results := scanHCL(t, tt.src,
 				rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 				rego.WithPolicyNamespaces("user"),
 				ScannerWithWorkspaceName("testworkspace"),
 			)
-			require.NoError(t, err)
 			assert.Len(t, results.GetFailed(), tt.expectedFailed)
 		})
 	}
@@ -611,12 +596,11 @@ func Test_IgnoreInlineByAVDID(t *testing.T) {
 
 		for _, id := range ids {
 			t.Run(id, func(t *testing.T) {
-				fsys := fstest.MapFS{
-					"main.tf": &fstest.MapFile{
-						Data: []byte(fmt.Sprintf(tc.input, id)),
-					},
-				}
-				assertNonEmptyBucketCheckNotFound(t, fsys, ".")
+				results := scanHCL(t, fmt.Sprintf(tc.input, id),
+					rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+					rego.WithPolicyNamespaces("user"),
+				)
+				testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
 			})
 		}
 	}
@@ -647,5 +631,10 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	assertNonEmptyBucketCheckNotFound(t, fsys, ".")
+	results, err := scanFS(fsys, ".",
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
+	)
+	require.NoError(t, err)
+	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
 }
