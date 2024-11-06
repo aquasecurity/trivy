@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
@@ -132,7 +133,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 		deps              ftypes.Dependencies
 		rootDepManagement []pomDependency
 		uniqArtifacts     = make(map[string]artifact)
-		uniqDeps          = make(map[string][]string)
+		uniqDeps          = make(map[uuid.UUID][]string)
 	)
 
 	// Iterate direct and transitive dependencies
@@ -209,26 +210,28 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 		// Offline mode may be missing some fields.
 		if !art.IsEmpty() {
 			// Override the version
-			uniqArtifacts[art.Name()] = artifact{
+			newArt := artifact{
+				ID:           uuid.New(),
 				Version:      art.Version,
 				Licenses:     result.artifact.Licenses,
 				Relationship: art.Relationship,
 				Locations:    art.Locations,
 			}
+			uniqArtifacts[art.Name()] = newArt
 
 			// save only dependency names
 			// version will be determined later
 			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
 				return a.Name()
 			})
-			uniqDeps[packageID(art.Name(), art.Version.String())] = dependsOn
+			uniqDeps[newArt.ID] = dependsOn
 		}
 	}
 
 	// Convert to []ftypes.Package and []ftypes.Dependency
 	for name, art := range uniqArtifacts {
 		pkg := ftypes.Package{
-			ID:           packageID(name, art.Version.String()),
+			ID:           art.ID.String(),
 			Name:         name,
 			Version:      art.Version.String(),
 			Licenses:     art.Licenses,
@@ -238,9 +241,9 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 		pkgs = append(pkgs, pkg)
 
 		// Convert dependency names into dependency IDs
-		dependsOn := lo.FilterMap(uniqDeps[pkg.ID], func(dependOnName string, _ int) (string, bool) {
-			ver := depVersion(dependOnName, uniqArtifacts)
-			return packageID(dependOnName, ver), ver != ""
+		dependsOn := lo.FilterMap(uniqDeps[art.ID], func(dependOnName string, _ int) (string, bool) {
+			id := depID(dependOnName, uniqArtifacts)
+			return id, id != ""
 		})
 
 		sort.Strings(dependsOn)
@@ -258,10 +261,10 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 	return pkgs, deps, nil
 }
 
-// depVersion finds dependency in uniqArtifacts and return its version
-func depVersion(depName string, uniqArtifacts map[string]artifact) string {
+// depID finds dependency in uniqArtifacts and return its ID
+func depID(depName string, uniqArtifacts map[string]artifact) string {
 	if art, ok := uniqArtifacts[depName]; ok {
-		return art.Version.String()
+		return art.ID.String()
 	}
 	return ""
 }

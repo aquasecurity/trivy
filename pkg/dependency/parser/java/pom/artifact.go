@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/samber/lo"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -25,6 +26,7 @@ var (
 )
 
 type artifact struct {
+	ID         uuid.UUID // UUID is required to build correctly dep tree when multiple modules contain dependencies with same GAV
 	GroupID    string
 	ArtifactID string
 	Version    version
