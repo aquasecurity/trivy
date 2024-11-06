@@ -559,7 +559,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	})
 
 	// Terminate the Redis container
-	require.NoError(t, redisC.Terminate(ctx))
+	require.NoError(t, testcontainers.TerminateContainer(redisC))
 
 	t.Run("sad path", func(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir)

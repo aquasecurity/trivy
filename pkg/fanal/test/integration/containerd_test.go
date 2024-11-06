@@ -101,6 +101,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 		Started:          true,
 	})
 	require.NoError(t, err)
+	testcontainers.CleanupContainer(t, containerdC)
 
 	_, _, err = containerdC.Exec(ctx, []string{
 		"chmod",
@@ -108,10 +109,6 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 		"/run/containerd/containerd.sock",
 	})
 	require.NoError(t, err)
-
-	t.Cleanup(func() {
-		require.NoError(t, containerdC.Terminate(ctx))
-	})
 }
 
 // Each of these tests imports an image and tags it with the name found in the
