@@ -21,85 +21,68 @@ func Test_IgnoreAll(t *testing.T) {
 	}{
 		{
 			name: "inline rule ignore all checks",
-			source: `
-resource "aws_s3_bucket" "test" {
+			source: `resource "aws_s3_bucket" "test" {
   bucket = "" // %s:ignore:*
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "rule above block ignore all checks",
-			source: `
-// %s:ignore:*
-resource "aws_s3_bucket" "test" {}
-`,
+			source: `// %s:ignore:*
+resource "aws_s3_bucket" "test" {}`,
 			assertLength: 0,
 		},
 		{
 			name: "rule above block with boolean parameter",
-			source: `
-// %s:ignore:*[object_lock_enabled=false]
+			source: `// %s:ignore:*[object_lock_enabled=false]
 resource "aws_s3_bucket" "test" {
   object_lock_enabled = false
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "rule above block with non-matching boolean parameter",
-			source: `
-// %s:ignore:*[object_lock_enabled=false]
+			source: `// %s:ignore:*[object_lock_enabled=false]
 resource "aws_s3_bucket" "test" {
   object_lock_enabled = true
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "rule above block with string parameter",
-			source: `
-// %s:ignore:*[acl=private]
+			source: `// %s:ignore:*[acl=private]
 resource "aws_s3_bucket" "test" {
     acl = "private"
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "rule above block with non-matching string parameter",
-			source: `
-// %s:ignore:*[acl=private]
+			source: `// %s:ignore:*[acl=private]
 resource "aws_s3_bucket" "test" {
     acl = "public"
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "rule above block with int parameter",
-			source: `
-// %s:ignore:*[some_int=123]
+			source: `// %s:ignore:*[some_int=123]
 resource "aws_s3_bucket" "test" {
    some_int = 123
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "rule above block with non-matching int parameter",
-			source: `
-// %s:ignore:*[some_int=456]
+			source: `// %s:ignore:*[some_int=456]
 resource "aws_s3_bucket" "test" {
    some_int = 123
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "stacked rules above block",
-			source: `
-// %s:ignore:*
+			source: `// %s:ignore:*
 // %s:ignore:a
 // %s:ignore:b
 // %s:ignore:c
@@ -110,8 +93,7 @@ resource "aws_s3_bucket" "test" {}
 		},
 		{
 			name: "stacked rules above block without a match",
-			source: `
-#%s:ignore:*
+			source: `#%s:ignore:*
 
 #%s:ignore:x
 #%s:ignore:a
@@ -124,8 +106,7 @@ resource "aws_s3_bucket" "test" {}
 		},
 		{
 			name: "stacked rules above block without spaces between '#' comments",
-			source: `
-#%s:ignore:*
+			source: `#%s:ignore:*
 #%s:ignore:a
 #%s:ignore:b
 #%s:ignore:c
@@ -136,8 +117,7 @@ resource "aws_s3_bucket" "test" {}
 		},
 		{
 			name: "stacked rules above block without spaces between '//' comments",
-			source: `
-//%s:ignore:*
+			source: `//%s:ignore:*
 //%s:ignore:a
 //%s:ignore:b
 //%s:ignore:c
@@ -148,109 +128,88 @@ resource "aws_s3_bucket" "test" {}
 		},
 		{
 			name: "rule above the finding",
-			source: `
-resource "aws_s3_bucket" "test" {
+			source: `resource "aws_s3_bucket" "test" {
 	# %s:ignore:aws-s3-non-empty-bucket
     bucket = ""
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "rule with breached expiration date",
-			source: `
-resource "aws_s3_bucket" "test" {
+			source: `resource "aws_s3_bucket" "test" {
     bucket = "" # %s:ignore:aws-s3-non-empty-bucket:exp:2000-01-02
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "rule with unbreached expiration date",
-			source: `
-resource "aws_s3_bucket" "test" {
+			source: `resource "aws_s3_bucket" "test" {
     bucket = "" # %s:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "rule with invalid expiration date",
-			source: `
-resource "aws_s3_bucket" "test" {
+			source: `resource "aws_s3_bucket" "test" {
    bucket = "" # %s:ignore:aws-s3-non-empty-bucket:exp:2221-13-02
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "rule above block with unbreached expiration date",
-			source: `
-#%s:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
-resource "aws_s3_bucket" "test" {}
-`,
+			source: `#%s:ignore:aws-s3-non-empty-bucket:exp:2221-01-02
+resource "aws_s3_bucket" "test" {}`,
 			assertLength: 0,
 		},
 		{
 			name: "trivy inline rule ignore all checks",
-			source: `
-resource "aws_s3_bucket" "test" {
+			source: `resource "aws_s3_bucket" "test" {
     bucket = "" // %s:ignore:*
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "ignore by nested attribute",
-			source: `
-// %s:ignore:*[versioning.enabled=false]
+			source: `// %s:ignore:*[versioning.enabled=false]
 resource "aws_s3_bucket" "test" {
   versioning {
     enabled = false
   }
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "ignore by nested attribute of another type",
-			source: `
-// %s:ignore:*[versioning.enabled=1]
+			source: `// %s:ignore:*[versioning.enabled=1]
 resource "aws_s3_bucket" "test" {
   versioning {
     enabled = false
   }
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "ignore by non-existent nested attribute",
-			source: `
-// %s:ignore:*[versioning.target=foo]
+			source: `// %s:ignore:*[versioning.target=foo]
 resource "aws_s3_bucket" "test" {
   versioning {
     enabled = false
   }
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "ignore resource with `for_each` meta-argument",
-			source: `
-// %s:ignore:*[acl=public]
+			source: `// %s:ignore:*[acl=public]
 resource "aws_s3_bucket" "test" {
   for_each = toset(["private", "public"])
   acl = each.value
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "ignore by dynamic block value",
-			source: `
-// %s:ignore:*[versioning.enabled=false]
+			source: `// %s:ignore:*[versioning.enabled=false]
 resource "aws_s3_bucket" "test" {
   dynamic "versioning" {
     for_each = [{}]
@@ -258,51 +217,55 @@ resource "aws_s3_bucket" "test" {
       enabled = false
     }
   }
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "ignore by each.value",
-			source: `
-// %s:ignore:*[each.value=false]
-resource "bad" "my-rule" {
-  for_each = toset(["false", "true", "false"])
-
-  secure   = each.value
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "ignore by nested each.value",
-			source: `
-locals {
+			source: `locals {
   acls = toset(["private", "public"])
 }
+
 // %s:ignore:*[each.value=private]
 resource "aws_s3_bucket" "test" {
   for_each = local.acls
 
   acl = each.value
+}`,
+			assertLength: 1,
+		},
+		{
+			name: "ignore by nested each.value",
+			source: `locals {
+  acls = {
+    private = {
+      permission = "private"
+    }
+    public = {
+      permission = "public"
+    }
+  }
 }
-`,
+
+// %s:ignore:*[each.value.permission=private]
+resource "aws_s3_bucket" "test" {
+  for_each = local.acls
+
+  acl = each.value.permission
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "ignore resource with `count` meta-argument",
-			source: `
-// %s:ignore:*[count.index=1]
+			source: `// %s:ignore:*[count.index=1]
 resource "aws_s3_bucket" "test" {
   count = 2
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "invalid index when accessing blocks",
-			source: `
-// %s:ignore:*[ingress.99.port=9090]
+			source: `// %s:ignore:*[ingress.99.port=9090]
 // %s:ignore:*[ingress.-10.port=9090]
 resource "aws_s3_bucket" "test" {
   dynamic "ingress" {
@@ -311,14 +274,12 @@ resource "aws_s3_bucket" "test" {
       port = ingress.value
     }
   }
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "ignore by list value",
-			source: `
-#%s:ignore:*[someattr.1.Environment=dev]
+			source: `#%s:ignore:*[someattr.1.Environment=dev]
 resource "aws_s3_bucket" "test" {
   someattr = [
 	{
@@ -328,16 +289,13 @@ resource "aws_s3_bucket" "test" {
 		Environment = "dev"
 	}
   ]
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "ignore by list value with invalid index",
-			source: `
-#%s:ignore:*[someattr.-2.Environment=dev]
+			source: `#%s:ignore:*[someattr.-2.Environment=dev]
 resource "aws_s3_bucket" "test" {
-  secure = false
   someattr = [
 	{
 		Environment = "prod"
@@ -346,36 +304,29 @@ resource "aws_s3_bucket" "test" {
 		Environment = "dev"
 	}
   ]
-}
-`,
+}`,
 			assertLength: 1,
 		},
 		{
 			name: "ignore by object value",
-			source: `
-#%s:ignore:*[tags.Environment=dev]
+			source: `#%s:ignore:*[tags.Environment=dev]
 resource "aws_s3_bucket" "test" {
-  secure = false
   tags = {
     Environment = "dev"
   }
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
 			name: "ignore by object value in block",
-			source: `
-#%s:ignore:*[someblock.tags.Environment=dev]
+			source: `#%s:ignore:*[someblock.tags.Environment=dev]
 resource "aws_s3_bucket" "test" {
-  secure = false
   someblock {
 	tags = {
 	  Environment = "dev"
 	}
   }
-}
-`,
+}`,
 			assertLength: 0,
 		},
 		{
@@ -391,7 +342,6 @@ variable "testvar" {
 
 #%s:ignore:*[someblock.someattr.server1.1=dev]
 resource "aws_s3_bucket" "test" {
-  secure = false
   someblock {
 	someattr = var.testvar
   }
