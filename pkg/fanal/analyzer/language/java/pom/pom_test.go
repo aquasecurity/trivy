@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -30,17 +31,17 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy/pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:1.0.0",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Licenses:     []string{"Apache-2.0"},
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"com.example:example-api:2.0.0",
+									"3ff14136-e09f-4df9-80ea-000000000002",
 								},
 							},
 							{
-								ID:           "com.example:example-api:2.0.0",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 								Name:         "com.example:example-api",
 								Version:      "2.0.0",
 								Relationship: types.RelationshipDirect,
@@ -67,17 +68,17 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:1.0.0",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Relationship: types.RelationshipRoot,
 								Licenses:     []string{"Apache-2.0"},
 								DependsOn: []string{
-									"com.example:example-api:2.0.0",
+									"3ff14136-e09f-4df9-80ea-000000000002",
 								},
 							},
 							{
-								ID:           "com.example:example-api:2.0.0",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 								Name:         "com.example:example-api",
 								Version:      "2.0.0",
 								Relationship: types.RelationshipDirect,
@@ -103,18 +104,18 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/mark-as-dev/src/it/example/pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:1.0.0",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 								Name:         "com.example:example",
 								Version:      "1.0.0",
 								Licenses:     []string{"Apache-2.0"},
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"com.example:example-api:@example.version@",
+									"3ff14136-e09f-4df9-80ea-000000000002",
 								},
 								Dev: true,
 							},
 							{
-								ID:           "com.example:example-api:@example.version@",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 								Name:         "com.example:example-api",
 								Version:      "@example.version@",
 								Relationship: types.RelationshipDirect,
@@ -141,14 +142,17 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/requirements/pom.xml",
 						Packages: types.Packages{
 							{
-								ID:           "com.example:example:2.0.0",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 								Name:         "com.example:example",
 								Version:      "2.0.0",
 								Licenses:     []string{"Apache-2.0"},
 								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"3ff14136-e09f-4df9-80ea-000000000002",
+								},
 							},
 							{
-								ID:           "org.example:example-api",
+								ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 								Name:         "org.example:example-api",
 								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
@@ -177,6 +181,8 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
 			f, err := os.Open(filepath.Join(tt.inputDir, tt.inputFile))
 			require.NoError(t, err)
 			defer f.Close()

@@ -2,7 +2,7 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000005",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
@@ -17,7 +17,7 @@
       ]
     },
     "component": {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "type": "application",
       "name": "testdata/fixtures/repo/pom",
       "properties": [
@@ -30,7 +30,7 @@
   },
   "components": [
     {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000004",
       "type": "application",
       "name": "pom.xml",
       "properties": [
@@ -54,7 +54,7 @@
       "properties": [
         {
           "name": "aquasecurity:trivy:PkgID",
-          "value": "com.example:log4shell:1.0-SNAPSHOT"
+          "value": "3ff14136-e09f-4df9-80ea-000000000001"
         },
         {
           "name": "aquasecurity:trivy:PkgType",
@@ -72,7 +72,7 @@
       "properties": [
         {
           "name": "aquasecurity:trivy:PkgID",
-          "value": "com.fasterxml.jackson.core:jackson-databind:2.9.1"
+          "value": "3ff14136-e09f-4df9-80ea-000000000002"
         },
         {
           "name": "aquasecurity:trivy:PkgType",
@@ -83,13 +83,13 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "dependsOn": [
-        "3ff14136-e09f-4df9-80ea-000000000002"
+        "3ff14136-e09f-4df9-80ea-000000000004"
       ]
     },
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000004",
       "dependsOn": [
         "pkg:maven/com.example/log4shell@1.0-SNAPSHOT"
       ]

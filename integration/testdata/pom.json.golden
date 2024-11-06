@@ -23,11 +23,11 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2020-9548",
-          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1",
+          "PkgID": "3ff14136-e09f-4df9-80ea-000000000002",
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
-            "UID": "a704d87fd1c0b0e1"
+            "UID": "d0a262c16975e41d"
           },
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.4",
@@ -89,11 +89,11 @@
         },
         {
           "VulnerabilityID": "CVE-2021-20190",
-          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1",
+          "PkgID": "3ff14136-e09f-4df9-80ea-000000000002",
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
-            "UID": "a704d87fd1c0b0e1"
+            "UID": "d0a262c16975e41d"
           },
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.7",

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -15,7 +16,7 @@ import (
 )
 
 var (
-	exampleNestedScopeCompile = func(start, end int) ftypes.Package {
+	exampleNestedScopeCompile = func(id string, start, end int) ftypes.Package {
 		var location ftypes.Locations
 		if start != 0 && end != 0 {
 			location = append(location, ftypes.Location{
@@ -24,7 +25,7 @@ var (
 			})
 		}
 		return ftypes.Package{
-			ID:           "org.example:example-nested-scope-compile:1.0.0",
+			ID:           id,
 			Name:         "org.example:example-nested-scope-compile",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
@@ -32,7 +33,7 @@ var (
 		}
 	}
 
-	exampleNestedScopeEmpty = func(start, end int) ftypes.Package {
+	exampleNestedScopeEmpty = func(id string, start, end int) ftypes.Package {
 		var location ftypes.Locations
 		if start != 0 && end != 0 {
 			location = append(location, ftypes.Location{
@@ -41,7 +42,7 @@ var (
 			})
 		}
 		return ftypes.Package{
-			ID:           "org.example:example-nested-scope-empty:1.0.0",
+			ID:           id,
 			Name:         "org.example:example-nested-scope-empty",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
@@ -49,7 +50,7 @@ var (
 		}
 	}
 
-	exampleNestedScopeRuntime = func(start, end int) ftypes.Package {
+	exampleNestedScopeRuntime = func(id string, start, end int) ftypes.Package {
 		var location ftypes.Locations
 		if start != 0 && end != 0 {
 			location = append(location, ftypes.Location{
@@ -58,7 +59,7 @@ var (
 			})
 		}
 		return ftypes.Package{
-			ID:           "org.example:example-nested-scope-runtime:1.0.0",
+			ID:           id,
 			Name:         "org.example:example-nested-scope-runtime",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
@@ -66,45 +67,57 @@ var (
 		}
 	}
 
-	exampleScopeCompile = ftypes.Package{
-		ID:           "org.example:example-scope-compile:2.0.0",
-		Name:         "org.example:example-scope-compile",
-		Version:      "2.0.0",
-		Relationship: ftypes.RelationshipIndirect,
+	exampleScopeCompile = func(id string) ftypes.Package {
+		return ftypes.Package{
+			ID:           id,
+			Name:         "org.example:example-scope-compile",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		}
 	}
 
-	exampleScopeEmpty = ftypes.Package{
-		ID:           "org.example:example-scope-empty:2.0.0",
-		Name:         "org.example:example-scope-empty",
-		Version:      "2.0.0",
-		Relationship: ftypes.RelationshipIndirect,
+	exampleScopeEmpty = func(id string) ftypes.Package {
+		return ftypes.Package{
+			ID:           id,
+			Name:         "org.example:example-scope-empty",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		}
 	}
 
-	exampleScopeRuntime = ftypes.Package{
-		ID:           "org.example:example-scope-runtime:2.0.0",
-		Name:         "org.example:example-scope-runtime",
-		Version:      "2.0.0",
-		Relationship: ftypes.RelationshipIndirect,
+	exampleScopeRuntime = func(id string) ftypes.Package {
+		return ftypes.Package{
+			ID:           id,
+			Name:         "org.example:example-scope-runtime",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		}
 	}
-	exampleApiCompile = ftypes.Package{
-		ID:           "org.example:example-api-compile:3.0.0",
-		Name:         "org.example:example-api-compile",
-		Version:      "3.0.0",
-		Relationship: ftypes.RelationshipIndirect,
-	}
-
-	exampleApiEmpty = ftypes.Package{
-		ID:           "org.example:example-api-empty:3.0.0",
-		Name:         "org.example:example-api-empty",
-		Version:      "3.0.0",
-		Relationship: ftypes.RelationshipIndirect,
+	exampleApiCompile = func(id string) ftypes.Package {
+		return ftypes.Package{
+			ID:           id,
+			Name:         "org.example:example-api-compile",
+			Version:      "3.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		}
 	}
 
-	exampleApiRuntime = ftypes.Package{
-		ID:           "org.example:example-api-runtime:3.0.0",
-		Name:         "org.example:example-api-runtime",
-		Version:      "3.0.0",
-		Relationship: ftypes.RelationshipIndirect,
+	exampleApiEmpty = func(id string) ftypes.Package {
+		return ftypes.Package{
+			ID:           id,
+			Name:         "org.example:example-api-empty",
+			Version:      "3.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		}
+	}
+
+	exampleApiRuntime = func(id string) ftypes.Package {
+		return ftypes.Package{
+			ID:           id,
+			Name:         "org.example:example-api-runtime",
+			Version:      "3.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		}
 	}
 )
 
@@ -124,14 +137,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:happy:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -144,7 +157,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-runtime:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-runtime",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -158,10 +171,10 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:happy:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
-						"org.example:example-runtime:1.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -172,14 +185,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     false,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:happy:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -192,7 +205,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-runtime:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-runtime",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -206,10 +219,10 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:happy:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
-						"org.example:example-runtime:1.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -220,13 +233,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     false,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:happy:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3-SNAPSHOT",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3-SNAPSHOT",
 					Relationship: ftypes.RelationshipDirect,
@@ -238,7 +251,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -247,15 +260,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:happy:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3-SNAPSHOT",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3-SNAPSHOT",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -266,13 +279,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     false,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:happy:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:2.17.0-SNAPSHOT",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency",
 					Version:      "2.17.0-SNAPSHOT",
 					Relationship: ftypes.RelationshipDirect,
@@ -284,7 +297,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -293,15 +306,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:happy:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency:2.17.0-SNAPSHOT",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:2.17.0-SNAPSHOT",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -313,7 +326,7 @@ func TestPom_Parse(t *testing.T) {
 			offline:   true,
 			want: []ftypes.Package{
 				{
-					ID:           "org.example:example-offline:2.3.4",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "org.example:example-offline",
 					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
@@ -332,14 +345,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -354,9 +367,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -367,13 +380,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -388,9 +401,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -401,13 +414,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:test:0.0.1-SNAPSHOT",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:test",
 					Version:      "0.0.1-SNAPSHOT",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -422,9 +435,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:test:0.0.1-SNAPSHOT",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -435,13 +448,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -453,7 +466,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:4.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipIndirect,
@@ -461,15 +474,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:4.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -480,14 +493,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     false,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:1.0.0-SNAPSHOT",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "1.0.0-SNAPSHOT",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -496,9 +509,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:1.0.0-SNAPSHOT",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -509,14 +522,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:3.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "3.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -531,9 +544,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:3.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -544,14 +557,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:base:4.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:base",
 					Version:      "4.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-child:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-child",
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
@@ -564,7 +577,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -573,15 +586,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:base:4.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-child:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-child:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -592,14 +605,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -614,9 +627,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -627,13 +640,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     false,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:1.0.0-SNAPSHOT",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "1.0.0-SNAPSHOT",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.1.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipDirect,
@@ -647,9 +660,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:1.0.0-SNAPSHOT",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.1.1",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -660,14 +673,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "org.example:child:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "org.example:child",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -682,9 +695,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "org.example:child:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -700,14 +713,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:soft:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:soft",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -720,7 +733,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -734,16 +747,16 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:soft:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -760,13 +773,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:soft-transitive:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:soft-transitive",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -778,7 +791,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-dependency2:2.3.4",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency2",
 					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
@@ -790,7 +803,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -799,22 +812,22 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:soft-transitive:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency2:2.3.4",
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:example-dependency2:2.3.4",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -831,14 +844,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:hard:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:hard",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -850,7 +863,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-nested:3.3.4",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.4",
 					Relationship: ftypes.RelationshipDirect,
@@ -862,7 +875,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000005",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -871,22 +884,22 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:hard:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
-						"org.example:example-nested:3.3.4",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 				{
-					ID: "org.example:example-nested:3.3.4",
+					ID: "3ff14136-e09f-4df9-80ea-000000000004",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000005",
 					},
 				},
 			},
@@ -897,14 +910,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:hard:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:hard",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Relationship: ftypes.RelationshipDirect,
 					Locations: []ftypes.Location{
@@ -915,6 +928,14 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
+					DependsOn: []string{
+						"3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+			},
 		},
 		{
 			name:      "import dependencyManagement",
@@ -922,14 +943,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:import:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:import",
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -944,9 +965,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:import:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -957,14 +978,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:import:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:import",
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -979,9 +1000,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:import:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -992,13 +1013,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:exclusions:3.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:exclusions",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-nested:3.3.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -1010,7 +1031,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
@@ -1018,15 +1039,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:exclusions:3.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-nested:3.3.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-nested:3.3.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -1037,13 +1058,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:example:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:example",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-exclusions:4.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-exclusions",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -1055,14 +1076,14 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
@@ -1070,16 +1091,16 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:example:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-exclusions:4.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-exclusions:4.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000003",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -1098,14 +1119,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:3.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "3.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-exclusions:3.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-exclusions",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -1117,7 +1138,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-nested:3.3.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipIndirect,
@@ -1125,15 +1146,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child:3.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-exclusions:3.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-exclusions:3.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-nested:3.3.3",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -1144,13 +1165,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:wildcard-exclusions:4.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:wildcard-exclusions",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -1162,7 +1183,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-dependency2:2.3.4",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency2",
 					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
@@ -1174,7 +1195,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-nested:3.3.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -1188,11 +1209,11 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:wildcard-exclusions:4.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency2:2.3.4",
-						"org.example:example-dependency:1.2.3",
-						"org.example:example-nested:3.3.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -1203,27 +1224,27 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:aggregation:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:aggregation",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "com.example:module:1.1.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "com.example:module",
 					Version:      "1.1.1",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -1249,15 +1270,84 @@ func TestPom_Parse(t *testing.T) {
 			// [INFO] com.example:aggregation:pom:1.0.0
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:module:1.1.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
+					},
+				},
+			},
+		},
+		{
+			name:      "multi module with deps with same GAV",
+			inputFile: filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
+					Name:         "com.example:module1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
+					Name:         "com.example:module2",
+					Version:      "2.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
+					Name:         "com.example:root",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
+					Name:         "org.example:example-api",
+					Version:      "1.7.30",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "3ff14136-e09f-4df9-80ea-000000000005",
+					Name:         "org.example:example-api",
+					Version:      "1.7.30",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			//[INFO] --------------------------------[ pom ]---------------------------------
+			//[INFO]
+			//[INFO] --- dependency:3.7.0:tree (default-cli) @ module1 ---
+			//[INFO] com.example:module1:pom:1.0.0
+			//[INFO] \- org.example:example-api:jar:1.7.30:compile
+			//[INFO] --------------------------------[ pom ]---------------------------------
+			//[INFO]
+			//[INFO] --- dependency:3.7.0:tree (default-cli) @ module2 ---
+			//[INFO] com.example:module2:pom:2.0.0
+			//[INFO] \- org.example:example-api:jar:1.7.30:compile
+			//[INFO]
+			//[INFO] --------------------------------[ pom ]---------------------------------
+			//[INFO]
+			//[INFO] --- dependency:3.7.0:tree (default-cli) @ root ---
+			//[INFO] com.example:root:pom:1.0.0
+			//[INFO] ------------------------------------------------------------------------
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
+					DependsOn: []string{
+						"3ff14136-e09f-4df9-80ea-000000000003",
+					},
+				},
+				{
+					ID: "3ff14136-e09f-4df9-80ea-000000000004",
+					DependsOn: []string{
+						"3ff14136-e09f-4df9-80ea-000000000005",
 					},
 				},
 			},
@@ -1269,26 +1359,26 @@ func TestPom_Parse(t *testing.T) {
 			want: []ftypes.Package{
 				// as module
 				{
-					ID:           "org.example:module-1:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:module-1",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:module-2:3.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:module-2",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
 				},
 				{
-					ID:           "org.example:root:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "org.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
 				},
 				// as dependency
 				{
-					ID:           "org.example:module-1:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:module-1",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -1296,9 +1386,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "org.example:module-2:3.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:module-1:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -1309,32 +1399,32 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:aggregation:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:aggregation",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "com.example:module1:1.1.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "com.example:module1",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "com.example:module2:1.1.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "com.example:module2",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000005",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -1343,15 +1433,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:module1:1.1.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "com.example:module2:1.1.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000004",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000005",
 					},
 				},
 			},
@@ -1362,13 +1452,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:root-pom-dep-management:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:root-pom-dep-management",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-nested:3.3.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -1380,7 +1470,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -1389,7 +1479,7 @@ func TestPom_Parse(t *testing.T) {
 				// dependency version is taken from `com.example:root-pom-dep-management` from dependencyManagement
 				// not from `com.example:example-nested` from `com.example:example-nested`
 				{
-					ID:           "org.example:example-dependency:1.2.4",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.4",
 					Relationship: ftypes.RelationshipIndirect,
@@ -1397,21 +1487,21 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:root-pom-dep-management:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-nested:3.3.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.4",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:example-nested:3.3.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.4",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -1422,13 +1512,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "org.example:transitive-dependency-management:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "org.example:transitive-dependency-management",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency-management3:1.1.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency-management3",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipDirect,
@@ -1442,14 +1532,14 @@ func TestPom_Parse(t *testing.T) {
 				// Managed dependencies (org.example:example-api:1.7.30) in org.example:example-dependency-management3
 				// should not affect dependencies of example-dependency (org.example:example-api:2.0.0)
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
@@ -1457,21 +1547,21 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "org.example:example-dependency-management3:1.1.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:transitive-dependency-management:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-dependency-management3:1.1.1",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -1482,14 +1572,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:no-parent:1.0-SNAPSHOT",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:no-parent",
 					Version:      "1.0-SNAPSHOT",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -1504,9 +1594,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:no-parent:1.0-SNAPSHOT",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -1517,14 +1607,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:not-found-dependency:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:not-found-dependency",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-not-found:999",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-not-found",
 					Version:      "999",
 					Relationship: ftypes.RelationshipDirect,
@@ -1538,9 +1628,9 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:not-found-dependency:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-not-found:999",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -1551,7 +1641,7 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:aggregation:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:aggregation",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
@@ -1565,7 +1655,7 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:      "com.example:multiply-licenses:1.0.0",
+					ID:      "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:    "com.example:multiply-licenses",
 					Version: "1.0.0",
 					Licenses: []string{
@@ -1582,7 +1672,7 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example.app:submodule:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example.app:submodule",
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache-2.0"},
@@ -1596,7 +1686,7 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child",
 					Version:      "1.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -1610,13 +1700,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:dep-without-version:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:dep-without-version",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api",
 					Relationship: ftypes.RelationshipDirect,
 					Locations: ftypes.Locations{
@@ -1624,6 +1714,14 @@ func TestPom_Parse(t *testing.T) {
 							StartLine: 19,
 							EndLine:   22,
 						},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
+					DependsOn: []string{
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 			},
@@ -1637,13 +1735,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:root-depManagement-in-parent:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:root-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -1655,7 +1753,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:1.0.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api",
 					Version:      "1.0.1",
 					Relationship: ftypes.RelationshipIndirect,
@@ -1663,15 +1761,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:root-depManagement-in-parent:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:1.0.1",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -1685,13 +1783,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:root-depManagement-in-parent:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:root-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-dependency",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -1703,7 +1801,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api",
 					Version:      "2.0.1",
 					Relationship: ftypes.RelationshipIndirect,
@@ -1711,15 +1809,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:root-depManagement-in-parent:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-dependency:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.1",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 			},
@@ -1734,25 +1832,25 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:child-depManagement-in-parent:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:child-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.0.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-api",
 					Version:      "1.0.1",
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:           "org.example:example-api2:1.0.2",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-api2",
 					Version:      "1.0.2",
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:           "org.example:example-api3:4.0.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-api3",
 					Version:      "4.0.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -1760,11 +1858,11 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:child-depManagement-in-parent:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api2:1.0.2",
-						"org.example:example-api3:4.0.3",
-						"org.example:example-api:1.0.1",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -1787,64 +1885,64 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:inherit-scopes-from-child-deps-and-their-parents:0.0.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:inherit-scopes-from-child-deps-and-their-parents",
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
 				},
-				exampleNestedScopeCompile(16, 21),
-				exampleNestedScopeEmpty(22, 26),
-				exampleNestedScopeRuntime(10, 15),
-				exampleApiCompile,
-				exampleApiEmpty,
-				exampleApiRuntime,
-				exampleScopeCompile,
-				exampleScopeEmpty,
-				exampleScopeRuntime,
+				exampleNestedScopeCompile("3ff14136-e09f-4df9-80ea-000000000003", 16, 21),
+				exampleNestedScopeEmpty("3ff14136-e09f-4df9-80ea-000000000004", 22, 26),
+				exampleNestedScopeRuntime("3ff14136-e09f-4df9-80ea-000000000002", 10, 15),
+				exampleApiCompile("3ff14136-e09f-4df9-80ea-000000000009"),
+				exampleApiEmpty("3ff14136-e09f-4df9-80ea-000000000010"),
+				exampleApiRuntime("3ff14136-e09f-4df9-80ea-000000000008"),
+				exampleScopeCompile("3ff14136-e09f-4df9-80ea-000000000006"),
+				exampleScopeEmpty("3ff14136-e09f-4df9-80ea-000000000007"),
+				exampleScopeRuntime("3ff14136-e09f-4df9-80ea-000000000005"),
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:inherit-scopes-from-child-deps-and-their-parents:0.0.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-nested-scope-compile:1.0.0",
-						"org.example:example-nested-scope-empty:1.0.0",
-						"org.example:example-nested-scope-runtime:1.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-compile:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-scope-compile:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000005",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-empty:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-scope-empty:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000006",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-runtime:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000004",
 					DependsOn: []string{
-						"org.example:example-scope-runtime:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000007",
 					},
 				},
 				{
-					ID: "org.example:example-scope-compile:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000005",
 					DependsOn: []string{
-						"org.example:example-api-compile:3.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000008",
 					},
 				},
 				{
-					ID: "org.example:example-scope-empty:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000006",
 					DependsOn: []string{
-						"org.example:example-api-empty:3.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000009",
 					},
 				},
 				{
-					ID: "org.example:example-scope-runtime:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000007",
 					DependsOn: []string{
-						"org.example:example-api-runtime:3.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000010",
 					},
 				},
 			},
@@ -1868,50 +1966,50 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:inherit-scopes-in-children-from-root:0.0.1",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:inherit-scopes-in-children-from-root",
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
 				},
-				exampleNestedScopeCompile(51, 56),
-				exampleNestedScopeEmpty(57, 61),
-				exampleNestedScopeRuntime(45, 50),
-				exampleApiRuntime,
-				exampleScopeCompile,
-				exampleScopeEmpty,
-				exampleScopeRuntime,
+				exampleNestedScopeCompile("3ff14136-e09f-4df9-80ea-000000000003", 51, 56),
+				exampleNestedScopeEmpty("3ff14136-e09f-4df9-80ea-000000000004", 57, 61),
+				exampleNestedScopeRuntime("3ff14136-e09f-4df9-80ea-000000000002", 45, 50),
+				exampleApiRuntime("3ff14136-e09f-4df9-80ea-000000000008"),
+				exampleScopeCompile("3ff14136-e09f-4df9-80ea-000000000006"),
+				exampleScopeEmpty("3ff14136-e09f-4df9-80ea-000000000007"),
+				exampleScopeRuntime("3ff14136-e09f-4df9-80ea-000000000005"),
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:inherit-scopes-in-children-from-root:0.0.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-nested-scope-compile:1.0.0",
-						"org.example:example-nested-scope-empty:1.0.0",
-						"org.example:example-nested-scope-runtime:1.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-compile:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-scope-compile:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000005",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-empty:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-scope-empty:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000006",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-runtime:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000004",
 					DependsOn: []string{
-						"org.example:example-scope-runtime:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000007",
 					},
 				},
 				{
-					ID: "org.example:example-scope-runtime:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000005",
 					DependsOn: []string{
-						"org.example:example-api-runtime:3.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000008",
 					},
 				},
 			},
@@ -1935,41 +2033,41 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:inherit-scopes-in-parents-from-root:0.1.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:inherit-scopes-in-parents-from-root",
 					Version:      "0.1.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
-				exampleNestedScopeCompile(0, 0),
-				exampleNestedScopeRuntime(0, 0),
-				exampleApiRuntime,
-				exampleScopeCompile,
-				exampleScopeRuntime,
+				exampleNestedScopeCompile("3ff14136-e09f-4df9-80ea-000000000003", 0, 0),
+				exampleNestedScopeRuntime("3ff14136-e09f-4df9-80ea-000000000002", 0, 0),
+				exampleApiRuntime("3ff14136-e09f-4df9-80ea-000000000006"),
+				exampleScopeCompile("3ff14136-e09f-4df9-80ea-000000000005"),
+				exampleScopeRuntime("3ff14136-e09f-4df9-80ea-000000000004"),
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:inherit-scopes-in-parents-from-root:0.1.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-nested-scope-compile:1.0.0",
-						"org.example:example-nested-scope-runtime:1.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-compile:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-scope-compile:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 				{
-					ID: "org.example:example-nested-scope-runtime:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-scope-runtime:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000005",
 					},
 				},
 				{
-					ID: "org.example:example-scope-runtime:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000004",
 					DependsOn: []string{
-						"org.example:example-api-runtime:3.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000006",
 					},
 				},
 			},
@@ -1984,13 +2082,13 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:root-pom-with-spaces:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:root-pom-with-spaces",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-nested:3.3.3",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
@@ -2002,7 +2100,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -2011,7 +2109,7 @@ func TestPom_Parse(t *testing.T) {
 				// dependency version is taken from `com.example:root-pom-with-spaces` from dependencyManagement
 				// not from `com.example:example-nested` from `com.example:example-nested`
 				{
-					ID:           "org.example:example-dependency:1.2.4",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.4",
 					Relationship: ftypes.RelationshipIndirect,
@@ -2019,21 +2117,21 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:root-pom-with-spaces:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-nested:3.3.3",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "org.example:example-dependency:1.2.4",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:example-nested:3.3.3",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:example-dependency:1.2.4",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -2041,6 +2139,8 @@ func TestPom_Parse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 			defer f.Close()
