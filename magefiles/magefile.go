@@ -423,7 +423,7 @@ type Docs mg.Namespace
 // Serve launches MkDocs development server to preview the documentation page
 func (Docs) Serve() error {
 	const (
-		mkdocsImage = "aquasec/mkdocs-material:dev"
+		mkdocsImage = "squidfunk/mkdocs-material:9.5"
 		mkdocsPort  = "8000"
 	)
 	if err := sh.Run("docker", "build", "-t", mkdocsImage, "-f", "docs/build/Dockerfile", "docs/build"); err != nil {
