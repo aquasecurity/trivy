@@ -341,8 +341,8 @@ github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46 h1:
 github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46/go.mod h1:olhPNdiiAAMiSujemd1O/sc6GcyePr23f/6uGKtthNg=
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
-github.com/aquasecurity/go-version v0.0.0-20240603093900-cf8a8d29271d h1:4zour5Sh9chOg+IqIinIcJ3qtr3cIf8FdFY6aArlXBw=
-github.com/aquasecurity/go-version v0.0.0-20240603093900-cf8a8d29271d/go.mod h1:1cPOp4BaQZ1G2F5fnw4dFz6pkOyXJI9KTuak8ghIl3U=
+github.com/aquasecurity/go-version v0.0.0-20241105054539-1951e80d786f h1:6mwfszC0VohA3NF75EX8pPStmmL0spZnTlkLp83M69c=
+github.com/aquasecurity/go-version v0.0.0-20241105054539-1951e80d786f/go.mod h1:1cPOp4BaQZ1G2F5fnw4dFz6pkOyXJI9KTuak8ghIl3U=
 github.com/aquasecurity/table v1.8.0 h1:9ntpSwrUfjrM6/YviArlx/ZBGd6ix8W+MtojQcM7tv0=
 github.com/aquasecurity/table v1.8.0/go.mod h1:eqOmvjjB7AhXFgFqpJUEE/ietg7RrMSJZXyTN8E/wZw=
 github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8 h1:b43UVqYjz7qDqK+cVOtF2Lk6CxjytYItP6Pgf3wGsNE=
