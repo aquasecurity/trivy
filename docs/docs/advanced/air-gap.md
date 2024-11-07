@@ -14,7 +14,7 @@ VEX Hub | VEX Hub | [VEX Hub](../supply-chain/vex/repo/#vex-hub)
 Maven Central / Remote Repositories | Java vulnerability scanning | [Java Scanner/Remote Repositories](../coverage/language/java.md#remote-repositories)
 
 !!! note
-Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to connect to external resources.
+    Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to connect to external resources.
 
 The rest of this document details each resource's connectivity requirements and relevant configuration options.
 
