@@ -143,7 +143,7 @@ nav:
           - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Network Connectivity: docs/advanced/air-gap.md
+          - Advanced Network Scenarios: docs/advanced/air-gap.md
           - Self-Hosting Trivy's Databases: docs/advanced/self-hosting.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md

@@ -1,4 +1,4 @@
-# Network Connectivity
+# Advanced Network Scenarios
 
 Trivy requires internet connectivity in order to function normally. If your organizations blocks or restricts network traffic, that could prevent Trivy from working correctly.
 This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted networks environments, including completely air-gapped environments.
