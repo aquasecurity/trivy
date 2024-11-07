@@ -115,7 +115,7 @@ You can host Trivy's databases in your own container registry. Please refer to [
 
 ### Embedded misconfiguration database
 
-Misconfigurations checks are embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
+Misconfigurations database is embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the database from the time of the Trivy release you are using.
 
 ## VEX Hub
 
