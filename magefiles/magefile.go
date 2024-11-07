@@ -420,6 +420,14 @@ func Label() error {
 
 type Docs mg.Namespace
 
+// Compile Sass to CSS
+func (Docs) Css() error {
+	const (
+		homepageSass = "docs/assets/css/trivy_v1_homepage.scss"
+	)
+	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, strings.TrimSuffix(homepageSass, ".scss")+".min.css")
+}
+
 // Serve launches MkDocs development server to preview the documentation page
 func (Docs) Serve() error {
 	const (
