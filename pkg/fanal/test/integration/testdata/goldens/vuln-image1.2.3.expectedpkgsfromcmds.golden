@@ -1,499 +1,665 @@
 [
   {
     "Name": "acl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "181b417cffad616f"
+    },
     "Version": "2.2.52-r3",
     "Layer": {}
   },
   {
     "Name": "apr",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "5083f2ffc2b7a814"
+    },
     "Version": "1.6.3-r0",
     "Layer": {}
   },
   {
     "Name": "apr-util",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "1e0af1c3510210ba"
+    },
     "Version": "1.6.1-r1",
     "Layer": {}
   },
   {
     "Name": "attr",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "a47bcc9298df6cb9"
+    },
     "Version": "2.4.47-r6",
     "Layer": {}
   },
   {
     "Name": "autoconf",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "3c70caeaed9a6ff9"
+    },
     "Version": "2.69-r0",
     "Layer": {}
   },
   {
     "Name": "bash",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "b9623518df2580d7"
+    },
     "Version": "4.4.19-r1",
     "Layer": {}
   },
   {
     "Name": "binutils",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "9c6d3cbf28294d8c"
+    },
     "Version": "2.30-r1",
     "Layer": {}
   },
   {
     "Name": "binutils-libs",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "bd787142d4ac226b"
+    },
     "Version": "2.30-r1",
     "Layer": {}
   },
   {
     "Name": "busybox",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "7d2e7c1078ba7eb"
+    },
     "Version": "1.27.2-r11",
     "Layer": {}
   },
   {
     "Name": "bzip2",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "f10a7652e98de81"
+    },
     "Version": "1.0.6-r6",
     "Layer": {}
   },
   {
     "Name": "ca-certificates",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "15130b963760c251"
+    },
     "Version": "20171114-r0",
     "Layer": {}
   },
   {
     "Name": "coreutils",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "62b3a9f524fb42ae"
+    },
     "Version": "8.28-r0",
     "Layer": {}
   },
   {
     "Name": "cyrus-sasl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "3d54d810df71de08"
+    },
     "Version": "2.1.26-r11",
     "Layer": {}
   },
   {
     "Name": "db",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "c516bbf8a0460592"
+    },
     "Version": "5.3.28-r0",
     "Layer": {}
   },
   {
     "Name": "dpkg",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "48abb525a6e6484c"
+    },
     "Version": "1.18.24-r0",
     "Layer": {}
   },
   {
     "Name": "dpkg-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "751199098a59e38a"
+    },
     "Version": "1.18.24-r0",
     "Layer": {}
   },
   {
     "Name": "expat",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "39fb7474be7cbbd1"
+    },
     "Version": "2.2.5-r0",
     "Layer": {}
   },
   {
     "Name": "file",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "fce3c3b5b4ca8c61"
+    },
     "Version": "5.32-r0",
     "Layer": {}
   },
   {
     "Name": "g++",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "e38d4fbb4801e54"
+    },
     "Version": "6.4.0-r5",
     "Layer": {}
   },
   {
     "Name": "gcc",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "7e7a1343cbee2437"
+    },
     "Version": "6.4.0-r5",
     "Layer": {}
   },
   {
     "Name": "gdbm",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "ddf8257d2b4ffc7b"
+    },
     "Version": "1.13-r1",
     "Layer": {}
   },
   {
     "Name": "gmp",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "9543ab8b3ef71c6b"
+    },
     "Version": "6.1.2-r1",
     "Layer": {}
   },
   {
     "Name": "gnupg",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "dc05954810cd6512"
+    },
     "Version": "2.2.3-r1",
     "Layer": {}
   },
   {
     "Name": "gnutls",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "3895e3c8d3c4eec5"
+    },
     "Version": "3.6.1-r0",
     "Layer": {}
   },
   {
     "Name": "isl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "ff5808fa3be09223"
+    },
     "Version": "0.18-r0",
     "Layer": {}
   },
   {
     "Name": "libacl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "8496f22e32d90dd9"
+    },
     "Version": "2.2.52-r3",
     "Layer": {}
   },
   {
     "Name": "libassuan",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "7c44d43ad91014bb"
+    },
     "Version": "2.4.4-r0",
     "Layer": {}
   },
   {
     "Name": "libatomic",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "cc7cbb7bdeaceb7a"
+    },
     "Version": "6.4.0-r5",
     "Layer": {}
   },
   {
     "Name": "libattr",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "6ab5fd8ad7ea3579"
+    },
     "Version": "2.4.47-r6",
     "Layer": {}
   },
   {
     "Name": "libbz2",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "b88167f64940af66"
+    },
     "Version": "1.0.6-r6",
     "Layer": {}
   },
   {
     "Name": "libc-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "804732077a4c662b"
+    },
     "Version": "0.7.1-r0",
     "Layer": {}
   },
   {
     "Name": "libcap",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "d0374637d7ee148"
+    },
     "Version": "2.25-r1",
     "Layer": {}
   },
   {
     "Name": "libedit",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "a9e7bdfc780a5205"
+    },
     "Version": "20170329.3.1-r3",
     "Layer": {}
   },
   {
     "Name": "libedit-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "cc15a0075f19fb29"
+    },
     "Version": "20170329.3.1-r3",
     "Layer": {}
   },
   {
     "Name": "libffi",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "2e7d2428b7208794"
+    },
     "Version": "3.2.1-r4",
     "Layer": {}
   },
   {
     "Name": "libgcc",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "337db1c98d7a2b24"
+    },
     "Version": "6.4.0-r5",
     "Layer": {}
   },
   {
     "Name": "libgcrypt",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "607b2546f0faa0dd"
+    },
     "Version": "1.8.3-r0",
     "Layer": {}
   },
   {
     "Name": "libgomp",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "6405f9ce160ce36"
+    },
     "Version": "6.4.0-r5",
     "Layer": {}
   },
   {
     "Name": "libgpg-error",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "2e7c4543143270ba"
+    },
     "Version": "1.27-r1",
     "Layer": {}
   },
   {
     "Name": "libksba",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "2bdff3fcdb38fcc9"
+    },
     "Version": "1.3.5-r0",
     "Layer": {}
   },
   {
     "Name": "libldap",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "9a1c31386d4c51d1"
+    },
     "Version": "2.4.45-r3",
     "Layer": {}
   },
   {
     "Name": "libmagic",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "ce8c19b21901c2ec"
+    },
     "Version": "5.32-r0",
     "Layer": {}
   },
   {
     "Name": "libressl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "e0990fc64593fc34"
+    },
     "Version": "2.6.5-r0",
     "Layer": {}
   },
   {
     "Name": "libressl-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "2fc58a084fad510b"
+    },
     "Version": "2.6.5-r0",
     "Layer": {}
   },
   {
     "Name": "libressl2.6-libcrypto",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "b9b01ba0fd3c2f96"
+    },
     "Version": "2.6.5-r0",
     "Layer": {}
   },
   {
     "Name": "libressl2.6-libssl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "7450166187e3c122"
+    },
     "Version": "2.6.5-r0",
     "Layer": {}
   },
   {
     "Name": "libressl2.6-libtls",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "31e6fafea5aee605"
+    },
     "Version": "2.6.5-r0",
     "Layer": {}
   },
   {
     "Name": "libsasl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "a5d9eed6b200ec9e"
+    },
     "Version": "2.1.26-r11",
     "Layer": {}
   },
   {
     "Name": "libsodium",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "d37655d3df6e7f60"
+    },
     "Version": "1.0.15-r0",
     "Layer": {}
   },
   {
     "Name": "libsodium-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "9ad59860b74f3bc9"
+    },
     "Version": "1.0.15-r0",
     "Layer": {}
   },
   {
     "Name": "libstdc++",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "3cb038e2e3f8f2d3"
+    },
     "Version": "6.4.0-r5",
     "Layer": {}
   },
   {
     "Name": "libtasn1",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "d64e086f11523544"
+    },
     "Version": "4.12-r3",
     "Layer": {}
   },
   {
     "Name": "libunistring",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "f011d575a1de2df6"
+    },
     "Version": "0.9.7-r0",
     "Layer": {}
   },
   {
     "Name": "m4",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "9a0327634e852d10"
+    },
     "Version": "1.4.18-r0",
     "Layer": {}
   },
   {
     "Name": "make",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "5563a4c45ccc0ca6"
+    },
     "Version": "4.2.1-r0",
     "Layer": {}
   },
   {
     "Name": "mercurial",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "5b844daeeb0ae32c"
+    },
     "Version": "4.5.2-r0",
     "Layer": {}
   },
   {
     "Name": "mpc1",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "4ac00bb3c9d7b863"
+    },
     "Version": "1.0.3-r1",
     "Layer": {}
   },
   {
     "Name": "mpfr3",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "7351997d7d25f69a"
+    },
     "Version": "3.1.5-r1",
     "Layer": {}
   },
   {
     "Name": "musl",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "61c9bbf17ebf0ec5"
+    },
     "Version": "1.1.18-r3",
     "Layer": {}
   },
   {
     "Name": "musl-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "bddc3ce8e670295c"
+    },
     "Version": "1.1.18-r3",
     "Layer": {}
   },
   {
     "Name": "ncurses",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "268c30a59b31f30f"
+    },
     "Version": "6.0_p20171125-r1",
     "Layer": {}
   },
   {
     "Name": "ncurses-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "35e387a2169b6c35"
+    },
     "Version": "6.0_p20171125-r1",
     "Layer": {}
   },
   {
     "Name": "ncurses-libs",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "a698bd167c8edb63"
+    },
     "Version": "6.0_p20171125-r1",
     "Layer": {}
   },
   {
     "Name": "ncurses-terminfo",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "1d756cb96659dfe8"
+    },
     "Version": "6.0_p20171125-r1",
     "Layer": {}
   },
   {
     "Name": "ncurses-terminfo-base",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "70b90293a1ffd5c"
+    },
     "Version": "6.0_p20171125-r1",
     "Layer": {}
   },
   {
     "Name": "nettle",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "2279fda8e0f37088"
+    },
     "Version": "3.3-r0",
     "Layer": {}
   },
   {
     "Name": "npth",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "5d5e661f25ccd3bb"
+    },
     "Version": "1.5-r1",
     "Layer": {}
   },
   {
     "Name": "openldap",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "f951698c7542567d"
+    },
     "Version": "2.4.45-r3",
     "Layer": {}
   },
   {
     "Name": "p11-kit",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "f9a3b6ef16728be3"
+    },
     "Version": "0.23.2-r2",
     "Layer": {}
   },
   {
     "Name": "patch",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "59097ece63a1532"
+    },
     "Version": "2.7.5-r2",
     "Layer": {}
   },
   {
     "Name": "pcre2",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "46c51355357283bd"
+    },
     "Version": "10.30-r0",
     "Layer": {}
   },
   {
     "Name": "pinentry",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "e0aa8991cc0d7ea9"
+    },
     "Version": "1.0.0-r0",
     "Layer": {}
   },
   {
     "Name": "pkgconf",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "558f6d8317744a54"
+    },
     "Version": "1.3.10-r0",
     "Layer": {}
   },
   {
     "Name": "python2",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "7e33eccd3ce9ae3f"
+    },
     "Version": "2.7.15-r2",
     "Layer": {}
   },
   {
     "Name": "re2c",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "6dbcd72a6ade1945"
+    },
     "Version": "1.0.2-r0",
     "Layer": {}
   },
   {
     "Name": "readline",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "c1cfb597544b76a5"
+    },
     "Version": "7.0.003-r0",
     "Layer": {}
   },
   {
     "Name": "serf",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "94872f984b4a0583"
+    },
     "Version": "1.3.9-r3",
     "Layer": {}
   },
   {
     "Name": "subversion",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "8fa2da2cba41429c"
+    },
     "Version": "1.9.7-r0",
     "Layer": {}
   },
   {
     "Name": "subversion-libs",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "2591b779b8cc1ec5"
+    },
     "Version": "1.9.7-r0",
     "Layer": {}
   },
   {
     "Name": "xz",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "74d9b4a853a25311"
+    },
     "Version": "5.2.3-r1",
     "Layer": {}
   },
   {
     "Name": "xz-libs",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "e6072b890db87763"
+    },
     "Version": "5.2.3-r1",
     "Layer": {}
   },
   {
     "Name": "zlib",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "b742ac29b1f34e"
+    },
     "Version": "1.2.11-r1",
     "Layer": {}
   },
   {
     "Name": "zlib-dev",
-    "Identifier": {},
+    "Identifier": {
+      "UID": "e9a8669a86602c9d"
+    },
     "Version": "1.2.11-r1",
     "Layer": {}
   }
