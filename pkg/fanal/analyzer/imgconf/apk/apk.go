@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -134,6 +135,7 @@ func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.Con
 		pkgs = a.resolveDependencies(apkIndexArchive, pkgs)
 		results := a.guessVersion(apkIndexArchive, pkgs, history.Created.Time)
 		for _, result := range results {
+			result.Identifier.UID = dependency.UID("", result)
 			uniqPkgs[result.Name] = result
 		}
 	}
