@@ -18,6 +18,7 @@ const (
 	RelationshipRoot
 	RelationshipDirect
 	RelationshipIndirect
+	RelationshipWorkspace // For maven `modules`. TODO use it for cargo and npm workspaces
 )
 
 var (
@@ -26,6 +27,7 @@ var (
 		RelationshipRoot,
 		RelationshipDirect,
 		RelationshipIndirect,
+		RelationshipWorkspace,
 	}
 
 	relationshipNames = [...]string{
@@ -33,6 +35,7 @@ var (
 		"root",
 		"direct",
 		"indirect",
+		"workspace",
 	}
 )
 
