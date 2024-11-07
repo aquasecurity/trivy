@@ -103,7 +103,7 @@ For Java DB the process is the same, except for the following:
 2. Archive file name is `javadb.tar.gz`
 3. DB file name is `trivy-java.db`
 
-## Misconfigurations scanning
+## Misconfiguration Checks Database
 
 ### Connectivity requirements
 
