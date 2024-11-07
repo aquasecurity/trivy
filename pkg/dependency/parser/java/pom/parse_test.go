@@ -1214,7 +1214,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:module",
 					Version:      "1.1.1",
 					Licenses:     []string{"Apache 2.0"},
-					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3",
@@ -1267,24 +1267,24 @@ func TestPom_Parse(t *testing.T) {
 			inputFile: filepath.Join("testdata", "modules-infinity-loop", "pom.xml"),
 			local:     true,
 			want: []ftypes.Package{
+				{
+					ID:           "org.example:root:1.0.0",
+					Name:         "org.example:root",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
 				// as module
 				{
 					ID:           "org.example:module-1:2.0.0",
 					Name:         "org.example:module-1",
 					Version:      "2.0.0",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "org.example:module-2:3.0.0",
 					Name:         "org.example:module-2",
 					Version:      "3.0.0",
-					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
-				},
-				{
-					ID:           "org.example:root:1.0.0",
-					Name:         "org.example:root",
-					Version:      "1.0.0",
-					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				// as dependency
 				{
@@ -1318,13 +1318,13 @@ func TestPom_Parse(t *testing.T) {
 					ID:           "com.example:module1:1.1.1",
 					Name:         "com.example:module1",
 					Version:      "1.1.1",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "com.example:module2:1.1.1",
 					Name:         "com.example:module2",
 					Version:      "1.1.1",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30",
