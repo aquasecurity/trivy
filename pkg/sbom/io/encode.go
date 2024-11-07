@@ -241,7 +241,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		c := components[pkg.Identifier.UID]
 
 		// Add a relationship between the parent and the package if needed
-		if e.belongToParent(pkg, parents) {
+		if e.belongToParent(pkg, result.Type, parents) {
 			e.bom.AddRelationship(parent, c, parentRelationship)
 		}
 
@@ -418,22 +418,37 @@ func (*Encoder) vulnerability(vuln types.DetectedVulnerability) core.Vulnerabili
 }
 
 // belongToParent determines if a package should be directly included in the parent based on its relationship and dependencies.
-func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Packages) bool {
-	// Case 1: Direct/Indirect: known , DependsOn: known
+func (*Encoder) belongToParent(pkg ftypes.Package, pkgType ftypes.TargetType, parents map[string]ftypes.Packages) bool {
+	// Case 1: Direct/Indirect/Workspace: known , DependsOn: known
 	//         1-1: Only direct packages are included in the parent (RelationshipContains or RelationshipDependsOn)
 	//         1-2: Each direct package includes its dependent packages (RelationshipDependsOn).
-	// Case 2: Direct/Indirect: unknown, DependsOn: unknown (e.g., conan lockfile v2)
+	//         1-3: All workspace packages and included in the parent (RelationshipContains or RelationshipDependsOn)
+	//         1-4: Maven only: direct package is include in the workspace package only (e.g. dependencies of maven modules)
+	// Case 2: Direct/Indirect/Workspace: unknown, DependsOn: unknown (e.g., conan lockfile v2)
 	//         All packages are included in the parent (RelationshipContains or RelationshipDependsOn).
-	// Case 3: Direct/Indirect: unknown, DependsOn: known (e.g., OS packages)
+	// Case 3: Direct/Indirect/Workspace: unknown, DependsOn: known (e.g., OS packages)
 	//         All packages are included in the parent (RelationshipContains or RelationshipDependsOn).
-	// Case 4: Direct/Indirect: known , DependsOn: unknown (e.g., go.mod without $GOPATH)
+	// Case 4: Direct/Indirect/Workspace: known , DependsOn: unknown (e.g., go.mod without $GOPATH)
 	//         All packages are included in the parent (RelationshipContains or RelationshipDependsOn).
 	switch {
 	// Case 1-1: direct packages
-	case pkg.Relationship == ftypes.RelationshipDirect:
+	case pkg.Relationship == ftypes.RelationshipDirect && pkgType != ftypes.Pom:
 		return true
 	// Case 1-2: indirect packages
 	case pkg.Relationship == ftypes.RelationshipIndirect && len(parents[pkg.ID]) != 0:
+		return false
+	// Case 1-3: workspace packages
+	case pkg.Relationship == ftypes.RelationshipWorkspace:
+		return true
+	// Case 1-4: maven direct packages
+	case pkg.Relationship == ftypes.RelationshipDirect && pkgType == ftypes.Pom:
+		// Add a package to the parent relation if one of the parents is a root package
+		if _, found := lo.Find(parents[pkg.ID], func(p ftypes.Package) bool {
+			return p.Relationship == ftypes.RelationshipRoot
+		}); found {
+			return true
+		}
+		// Case where this package is a child of workspace(s) only
 		return false
 	// Case 2 & 3:
 	case pkg.Relationship == ftypes.RelationshipUnknown:
