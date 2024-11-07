@@ -420,7 +420,7 @@ func Label() error {
 
 type Docs mg.Namespace
 
-// Compile Sass to CSS
+// Prepare CSS
 func (Docs) Css() error {
 	const (
 		homepageSass = "docs/assets/css/trivy_v1_homepage.scss"
@@ -428,13 +428,21 @@ func (Docs) Css() error {
 	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, strings.TrimSuffix(homepageSass, ".scss")+".min.css")
 }
 
+// Prepare python requirements
+func (Docs) Pip() error {
+	const (
+		requirementsIn = "docs/build/requirements.in"
+	)
+	return sh.Run("pip-compile", requirementsIn, "--output-file", strings.TrimSuffix(requirementsIn, ".in")+".txt")
+}
+
 // Serve launches MkDocs development server to preview the documentation page
 func (Docs) Serve() error {
 	const (
-		mkdocsImage = "squidfunk/mkdocs-material:9.5"
+		mkdocsImage = "squidfunk/mkdocs-material:9.5.44"
 		mkdocsPort  = "8000"
 	)
-	if err := sh.Run("docker", "build", "-t", mkdocsImage, "-f", "docs/build/Dockerfile", "docs/build"); err != nil {
+	if err := sh.Run("docker", "build", "-t", mkdocsImage, "docs/build"); err != nil {
 		return err
 	}
 	return sh.Run("docker", "run", "--name", "mkdocs-serve", "--rm", "-v", "${PWD}:/docs", "-p", mkdocsPort+":8000", mkdocsImage)
