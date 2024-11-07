@@ -52,7 +52,7 @@ Scan a Kubernetes cluster, with all available scanners, and show a summary repor
 trivy k8s --report summary cluster
 ```
 
-<img src="/docs/imgs/trivy-k8s.png" width="1000" />
+<img src="../imgs/trivy-k8s.png" width="1000" alt="trivy-k8s"/>
 
 For a more complete introduction, check out the basic Trivy Demo: <https://github.com/itaysk/trivy-demo>
 
