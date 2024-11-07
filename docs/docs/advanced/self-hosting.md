@@ -10,6 +10,7 @@ If you prefer, you can host Trivy's databases in your own infrastructure. This d
 ## OCI databases
 
 The following [Trivy Databases](../configuration/db.md) are packaged as OCI images:
+
 - `trivy-db`
 - `trivy-java-db`
 - `trivy-checks`
