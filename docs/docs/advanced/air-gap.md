@@ -113,7 +113,7 @@ Trivy's misconfiguration database is packaged as an OCI image and follows the sa
 
 You can host Trivy's databases in your own container registry. Please refer to [Self-hosting document](./self-hosting.md) for a detailed guide.
 
-### Embedded checks
+### Embedded misconfiguration database
 
 Misconfigurations checks are embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.
 
