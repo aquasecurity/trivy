@@ -96,7 +96,7 @@ func InitBuiltinChecks(ctx context.Context, cacheDir string, quiet, skipUpdate b
 
 	if needsUpdate {
 		log.InfoContext(ctx, "Need to update the built-in checks")
-		log.InfoContext(ctx, "Downloading the built-in checks...")
+		log.InfoContext(ctx, "Downloading the built-in checks...", log.String("repo", checkBundleRepository))
 		if err = client.DownloadBuiltinChecks(ctx, registryOpts); err != nil {
 			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
 		}
