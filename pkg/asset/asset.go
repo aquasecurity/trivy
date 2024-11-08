@@ -37,6 +37,7 @@ func NewAssets(locations []string, assetOpts Options, opts ...Option) Assets {
 	for _, location := range locations {
 		switch {
 		case strings.HasPrefix(location, "https://"):
+			assets = append(assets, NewHTTP(location, assetOpts))
 		default:
 			assets = append(assets, NewOCI(location, assetOpts, opts...))
 		}
