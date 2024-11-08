@@ -50,19 +50,20 @@ func NewAssets(locations []string, assetOpts Options, opts ...Option) Assets {
 func (a Assets) Download(ctx context.Context, dst string) error {
 	var errs error
 	for i, art := range a {
-		log.InfoContext(ctx, "Downloading artifact...", log.String("repo", art.Location()))
+		logger := log.With("location", art.Location())
+		logger.InfoContext(ctx, "Downloading artifact...")
 		err := art.Download(ctx, dst)
 		if err == nil {
-			log.InfoContext(ctx, "OCI successfully downloaded", log.String("repo", art.Location()))
+			logger.InfoContext(ctx, "OCI successfully downloaded")
 			return nil
 		}
 
 		if !shouldTryOtherRepo(err) {
 			return xerrors.Errorf("failed to download artifact from %s: %w", art.Location(), err)
 		}
-		log.ErrorContext(ctx, "Failed to download artifact", log.String("repo", art.Location()), log.Err(err))
+		logger.ErrorContext(ctx, "Failed to download artifact", log.Err(err))
 		if i < len(a)-1 {
-			log.InfoContext(ctx, "Trying to download artifact from other repository...")
+			log.InfoContext(ctx, "Trying to download artifact from other repository...") // Use the default logger
 		}
 		errs = multierror.Append(errs, err)
 	}
