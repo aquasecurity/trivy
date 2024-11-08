@@ -1801,6 +1801,36 @@ resource "test" "fileset-func" {
 	assert.Equal(t, []string{"a.py", "path/b.py"}, attr.GetRawValue())
 }
 
+func TestExprWithMissingVar(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+variable "v" {
+	type = string
+}
+
+resource "test" "values" {
+	s = "foo-${var.v}"
+    l1 = ["foo", var.v]
+    l2 = concat(["foo"], [var.v])
+    d1 = {foo = var.v}
+    d2 = merge({"foo": "bar"}, {"baz": var.v})
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+
+	s_attr := resources[0].GetAttribute("s")
+	require.NotNil(t, s_attr)
+	assert.Equal(t, "foo-", s_attr.GetRawValue())
+
+	for _, name := range []string{"l1", "l2", "d1", "d2"} {
+		attr := resources[0].GetAttribute(name)
+		require.NotNil(t, attr)
+	}
+}
+
 func TestVarTypeShortcut(t *testing.T) {
 	files := map[string]string{
 		"main.tf": `
