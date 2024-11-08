@@ -22,10 +22,7 @@ The rest of this document details each resource's connectivity requirements and 
 
 ### Connectivity requirements
 
-Trivy's Vulnerability and Java databases are packaged as OCI images and stored in public container registries. Trivy may attempt to download databases from the following locations:
-
-- `ghcr.io/aquasecurity/trivy-db`
-- `ghcr.io/aquasecurity/trivy-java-db`
+Trivy's Vulnerability and Java databases are packaged as OCI images and stored in public container registries. The specific registries and locations are detailed in the [databases document](../configuration/db.md).
 
 Communication with OCI Registries follows the [OCI Distribution](https://github.com/opencontainers/distribution-spec) spec.
 
