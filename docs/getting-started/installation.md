@@ -18,7 +18,7 @@ Use one of the official Trivy images:
 !!! Tip
     It is advisable to mount a persistent [cache dir](../docs/configuration/cache.md) on the host into the Trivy container.
 
-!!!! Tip
+!!! Tip
     For scanning container images with Trivy, mount the container engine socket from the host into the Trivy container.
 
 Example:
