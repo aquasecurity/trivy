@@ -74,7 +74,7 @@ func (o *OCI) populate(ctx context.Context) error {
 	defer o.m.Unlock()
 
 	var nameOpts []name.Option
-	if o.opts.RegistryOptions.Insecure {
+	if o.opts.Insecure {
 		nameOpts = append(nameOpts, name.Insecure)
 	}
 
