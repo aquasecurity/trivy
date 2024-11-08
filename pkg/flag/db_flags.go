@@ -2,6 +2,8 @@ package flag
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
@@ -90,8 +92,8 @@ type DBOptions struct {
 	DownloadJavaDBOnly bool
 	SkipJavaDBUpdate   bool
 	NoProgress         bool
-	DBRepositories     []name.Reference
-	JavaDBRepositories []name.Reference
+	DBLocations        []string
+	JavaDBLocations    []string
 }
 
 // NewDBFlagGroup returns a default DBFlagGroup
@@ -147,21 +149,21 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 
-	var dbRepositories, javaDBRepositories []name.Reference
+	var dbLocations, javaDBLocations []string
 	for _, repo := range f.DBRepositories.Value() {
-		ref, err := parseRepository(repo, db.SchemaVersion)
+		ref, err := parseLocation(repo, db.SchemaVersion)
 		if err != nil {
-			return DBOptions{}, xerrors.Errorf("invalid DB repository: %w", err)
+			return DBOptions{}, xerrors.Errorf("invalid DB location: %w", err)
 		}
-		dbRepositories = append(dbRepositories, ref)
+		dbLocations = append(dbLocations, ref)
 	}
 
 	for _, repo := range f.JavaDBRepositories.Value() {
-		ref, err := parseRepository(repo, javadb.SchemaVersion)
+		ref, err := parseLocation(repo, javadb.SchemaVersion)
 		if err != nil {
-			return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
+			return DBOptions{}, xerrors.Errorf("invalid javadb location: %w", err)
 		}
-		javaDBRepositories = append(javaDBRepositories, ref)
+		javaDBLocations = append(javaDBLocations, ref)
 	}
 
 	return DBOptions{
@@ -171,26 +173,41 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		DownloadJavaDBOnly: downloadJavaDBOnly,
 		SkipJavaDBUpdate:   skipJavaDBUpdate,
 		NoProgress:         f.NoProgress.Value(),
-		DBRepositories:     dbRepositories,
-		JavaDBRepositories: javaDBRepositories,
+		DBLocations:        dbLocations,
+		JavaDBLocations:    javaDBLocations,
 	}, nil
 }
 
-func parseRepository(repo string, dbSchemaVersion int) (name.Reference, error) {
+// TODO: Remove this function after the deprecation period
+func parseLocation(location string, dbSchemaVersion int) (string, error) {
+	if strings.HasPrefix(location, "https://") {
+		return parseURL(location)
+	}
+	return parseRepository(location, dbSchemaVersion)
+}
+
+func parseURL(location string) (string, error) {
+	if _, err := url.Parse(location); err != nil {
+		return "", xerrors.Errorf("invalid URL format: %w", err)
+	}
+	return location, nil
+}
+
+func parseRepository(repo string, dbSchemaVersion int) (string, error) {
 	dbRepository, err := name.ParseReference(repo, name.WithDefaultTag(""))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Add the schema version if the tag is not specified for backward compatibility.
 	t, ok := dbRepository.(name.Tag)
 	if !ok || t.TagStr() != "" {
-		return dbRepository, nil
+		return dbRepository.String(), nil
 	}
 
 	dbRepository = t.Tag(fmt.Sprint(dbSchemaVersion))
 	log.Info("Adding schema version to the DB repository for backward compatibility",
 		log.String("repository", dbRepository.String()))
 
-	return dbRepository, nil
+	return dbRepository.String(), nil
 }

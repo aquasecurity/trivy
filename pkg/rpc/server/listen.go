@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/NYTimes/gziphandler"
-	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
@@ -29,21 +28,21 @@ const updateInterval = 1 * time.Hour
 
 // Server represents Trivy server
 type Server struct {
-	appVersion     string
-	addr           string
-	cacheDir       string
-	dbDir          string
-	token          string
-	tokenHeader    string
-	pathPrefix     string
-	dbRepositories []name.Reference
+	appVersion  string
+	addr        string
+	cacheDir    string
+	dbDir       string
+	token       string
+	tokenHeader string
+	pathPrefix  string
+	dbLocations []string
 
 	// For OCI registries
 	types.RegistryOptions
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix string, dbRepositories []name.Reference, opt types.RegistryOptions) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix string, dbLocations []string, opt types.RegistryOptions) Server {
 	return Server{
 		appVersion:      appVersion,
 		addr:            addr,
@@ -52,7 +51,7 @@ func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix string
 		token:           token,
 		tokenHeader:     tokenHeader,
 		pathPrefix:      pathPrefix,
-		dbRepositories:  dbRepositories,
+		dbLocations:     dbLocations,
 		RegistryOptions: opt,
 	}
 }
@@ -63,7 +62,7 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(db.NewClient(s.dbDir, true, db.WithDBRepository(s.dbRepositories)))
+		worker := newDBWorker(db.NewClient(s.dbDir, true, db.WithDBRepository(s.dbLocations)))
 		for {
 			time.Sleep(updateInterval)
 			if err := worker.update(ctx, s.appVersion, s.dbDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {

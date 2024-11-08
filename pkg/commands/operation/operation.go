@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -21,7 +20,7 @@ import (
 var mu sync.Mutex
 
 // DownloadDB downloads the DB
-func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories []name.Reference, quiet, skipUpdate bool,
+func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories []string, quiet, skipUpdate bool,
 	opt ftypes.RegistryOptions) error {
 	mu.Lock()
 	defer mu.Unlock()

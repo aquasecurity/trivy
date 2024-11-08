@@ -10,15 +10,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
 	"github.com/aquasecurity/trivy-java-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/asset"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
@@ -34,7 +33,7 @@ var (
 var updater *Updater
 
 type Updater struct {
-	repos          []name.Reference
+	locations      []string
 	dbDir          string
 	skip           bool
 	quiet          bool
@@ -60,7 +59,7 @@ func (u *Updater) Update() error {
 		// Download DB
 		// TODO: support remote options
 		if err := u.downloadDB(ctx); err != nil {
-			return xerrors.Errorf("OCI artifact error: %w", err)
+			return xerrors.Errorf("download error: %w", err)
 		}
 
 		// Parse the newly downloaded metadata.json
@@ -98,21 +97,22 @@ func (u *Updater) isNewDB(ctx context.Context, meta db.Metadata) bool {
 func (u *Updater) downloadDB(ctx context.Context) error {
 	log.InfoContext(ctx, "Downloading Java DB...")
 
-	artifacts := oci.NewArtifacts(u.repos, u.registryOption)
-	downloadOpt := oci.DownloadOption{
+	assets := asset.NewAssets(u.locations, asset.Options{
 		MediaType: mediaType,
 		Quiet:     u.quiet,
-	}
-	if err := artifacts.Download(ctx, u.dbDir, downloadOpt); err != nil {
+
+		RegistryOptions: u.registryOption,
+	})
+	if err := assets.Download(ctx, u.dbDir); err != nil {
 		return xerrors.Errorf("failed to download Java DB: %w", err)
 	}
 
 	return nil
 }
 
-func Init(cacheDir string, javaDBRepositories []name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+func Init(cacheDir string, javaDBLocations []string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
-		repos:          javaDBRepositories,
+		locations:      javaDBLocations,
 		dbDir:          dbDir(cacheDir),
 		skip:           skip,
 		quiet:          quiet,

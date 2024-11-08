@@ -1,4 +1,4 @@
-package oci_test
+package asset_test
 
 import (
 	"context"
@@ -14,8 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/asset"
 )
 
 type fakeLayer struct {
@@ -116,11 +115,12 @@ func TestArtifact_Download(t *testing.T) {
 				},
 			}, nil)
 
-			artifact := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
-			err = artifact.Download(context.Background(), tempDir, oci.DownloadOption{
+			artifact := asset.NewOCI("repo", asset.Options{
 				MediaType: tt.mediaType,
 				Quiet:     true,
-			})
+			}, asset.WithImage(img))
+
+			err = artifact.Download(context.Background(), tempDir)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -128,15 +127,13 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// init java-trivy-db with skip update
-			repo, err := name.NewTag(javadb.DefaultGHCRRepository)
-			require.NoError(t, err)
-			javadb.Init("testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
+			javadb.Init("testdata", []string{javadb.DefaultGHCRRepository}, true, false, types.RegistryOptions{Insecure: false})
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
 
 			mfs := mapfs.New()
-			err = mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
+			err := mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
 			require.NoError(t, err)
 			err = mfs.WriteFile(tt.inputFile, tt.inputFile)
 			require.NoError(t, err)
