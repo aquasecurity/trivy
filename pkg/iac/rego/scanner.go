@@ -247,7 +247,7 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			}
 			usedRules[ruleName] = struct{}{}
 			if isEnforcedRule(ruleName) {
-				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs, staticMeta.InputOptions.Combined)
+				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs)
 				if err != nil {
 					s.logger.Error(
 						"Error occurred while applying rule from check",
@@ -328,14 +328,7 @@ func parseRawInput(input any) (ast.Value, error) {
 	return ast.InterfaceToValue(input)
 }
 
-func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input, combined bool) (scan.Results, error) {
-
-	// handle combined evaluations if possible
-	if combined {
-		s.trace("INPUT", inputs)
-		return s.applyRuleCombined(ctx, namespace, rule, inputs)
-	}
-
+func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input) (scan.Results, error) {
 	var results scan.Results
 	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
 	for _, input := range inputs {
