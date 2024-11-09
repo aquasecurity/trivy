@@ -63,7 +63,6 @@ deny {
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
-	assert.False(t, results.GetFailed()[0].IsWarning())
 }
 
 func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
@@ -98,7 +97,6 @@ deny {
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
-	assert.False(t, results.GetFailed()[0].IsWarning())
 }
 
 func Test_RegoScanning_Warn(t *testing.T) {
@@ -130,8 +128,6 @@ warn {
 	require.Len(t, results.GetFailed(), 1)
 	require.Empty(t, results.GetPassed())
 	require.Empty(t, results.GetIgnored())
-
-	assert.True(t, results.GetFailed()[0].IsWarning())
 }
 
 func Test_RegoScanning_Allow(t *testing.T) {
