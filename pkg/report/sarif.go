@@ -346,8 +346,18 @@ func ToPathUri(input string, resultClass types.ResultClass) string {
 	return clearURI(input)
 }
 
+// clearURI clears URI for misconfigs
 func clearURI(s string) string {
-	return strings.ReplaceAll(strings.ReplaceAll(s, "\\", "/"), "git::https:/", "")
+	s = strings.ReplaceAll(s, "\\", "/")
+	if strings.HasPrefix(s, "git::https:/") {
+		s = strings.ReplaceAll(s, "git::https:/", "")
+	} else if strings.HasPrefix(s, "git@github.com:") {
+		// cf. https://developer.hashicorp.com/terraform/language/modules/sources#github
+		s = strings.ReplaceAll(s, "git@github.com:", "github.com/")
+		s = strings.ReplaceAll(s, ".git", "")
+	}
+
+	return s
 }
 
 func toUri(str string) *url.URL {
