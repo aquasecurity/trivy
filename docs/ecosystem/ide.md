@@ -36,7 +36,7 @@ Trivy Docker Desktop extension for scanning container images for vulnerabilities
 ## Rancher Desktop (Community)
 [Rancher Desktop](https://rancherdesktop.io/) is an easy way to use containers and Kubernetes on your development machine, and manage it in a GUI.
 
-Trivy is natively integrated with Rancher, no installation is needed. More info in Rancher documentation: <https://docs.rancherdesktop.io/getting-started/features#scanning-images>
+Trivy is natively integrated with Rancher, no installation is needed. More info in Rancher documentation: <https://docs.rancherdesktop.io/ui/images/#scanning-images>
 
 ## LazyTrivy (Community)
 A terminal native UI for Trivy

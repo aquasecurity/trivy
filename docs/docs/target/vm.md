@@ -234,7 +234,7 @@ Reference: [VMware Virtual Disk Format 1.1.pdf][vmdk]
 | ZFS               |         |
 
 
-[vmdk]: https://www.vmware.com/app/vmdk/?src=vmdk
+[vmdk]: https://docs.vmware.com/en
 [ebsapi-elements]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements
 [coldsnap]: https://github.com/awslabs/coldsnap
 

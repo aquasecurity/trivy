@@ -5,16 +5,16 @@ All binaries and container images are signed by [Cosign](https://github.com/sigs
 
 You need the following tool:
 
-- [Cosign](https://docs.sigstore.dev/cosign/installation/)
+- [Cosign](https://docs.sigstore.dev/cosign/system_config/installation/)
 
 ### Verifying signed container images
-1. Use the following command for keyless [verification](https://docs.sigstore.dev/cosign/verify/):
+1. Use the following command for keyless [verification](https://docs.sigstore.dev/cosign/verifying/verify/):
    ```shell
    cosign verify aquasec/trivy:<version> \
    --certificate-identity-regexp 'https://github\.com/aquasecurity/trivy/\.github/workflows/.+' \
    --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
    ```
-   
+
 2. You should get the following output
    ```shell
    Verification for index.docker.io/aquasec/trivy:latest --

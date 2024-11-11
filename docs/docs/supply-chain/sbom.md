@@ -762,7 +762,7 @@ It is enabled in the following targets.
 
 When scanning container images, Trivy can discover SBOM for those images. [See here](../target/container_image.md) for more details.
 
-[spdx]: https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf
+[spdx]: https://spdx.github.io/spdx-spec/v2.2.2/
 
 [cyclonedx]: https://cyclonedx.org/
 [sbom]: https://cyclonedx.org/capabilities/sbom/
