@@ -439,7 +439,7 @@ func (Docs) Pip() error {
 // Serve launches MkDocs development server to preview the documentation page
 func (Docs) Serve() error {
 	const (
-		mkdocsImage = "squidfunk/mkdocs-material:9.5.44"
+		mkdocsImage = "trivy-docs:dev"
 		mkdocsPort  = "8000"
 	)
 	if err := sh.Run("docker", "build", "-t", mkdocsImage, "docs/build"); err != nil {
