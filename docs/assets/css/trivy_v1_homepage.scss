@@ -48,6 +48,8 @@ body {
 }
 
 .trivy_v1_homepage_wrap {
+	position: relative;
+ 	z-index: 3;
 
 	* {
 		transition: all 0.2s ease !important;
