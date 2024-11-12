@@ -79,10 +79,7 @@ deny[res] {
 		Severity:       "CRITICAL",
 		Terraform:      &scan.EngineMetadata{},
 		CloudFormation: &scan.EngineMetadata{},
-		CustomChecks: scan.CustomChecks{
-			Terraform: (*scan.TerraformCustomCheck)(nil),
-		},
-		RegoPackage: "data.builtin.dockerfile.DS006",
+		RegoPackage:    "data.builtin.dockerfile.DS006",
 		Frameworks: map[framework.Framework][]string{
 			framework.Default: {},
 		},
