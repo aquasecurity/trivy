@@ -29,7 +29,7 @@ func BenchmarkCalculate(b *testing.B) {
 		if err != nil {
 			b.Fatal(err)
 		}
-		executor.New().Execute(modules)
+		executor.New().Execute(context.TODO(), modules, "project")
 	}
 }
 

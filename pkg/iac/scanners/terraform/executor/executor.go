@@ -1,8 +1,8 @@
 package executor
 
 import (
+	"context"
 	"fmt"
-	"runtime"
 	"sort"
 
 	"github.com/zclconf/go-cty/cty"
@@ -35,22 +35,16 @@ func New(options ...Option) *Executor {
 	return s
 }
 
-func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
+func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, basePath string) (scan.Results, error) {
 
 	e.logger.Debug("Adapting modules...")
 	infra := adapter.Adapt(modules)
 	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))
 
-	threads := runtime.NumCPU()
-	if threads > 1 {
-		threads--
-	}
-
-	e.logger.Debug("Using max routines", log.Int("count", threads))
-
-	pool := NewPool(threads, modules, infra, e.regoScanner)
-
-	results, err := pool.Run()
+	results, err := e.regoScanner.ScanInput(ctx, rego.Input{
+		Contents: infra.ToRego(),
+		Path:     basePath,
+	})
 	if err != nil {
 		return nil, err
 	}

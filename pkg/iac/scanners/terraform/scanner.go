@@ -150,7 +150,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 		s.execLock.RLock()
 		e := executor.New(s.executorOpt...)
 		s.execLock.RUnlock()
-		results, err := e.Execute(module.childs)
+		results, err := e.Execute(ctx, module.childs, module.rootPath)
 		if err != nil {
 			return nil, err
 		}
