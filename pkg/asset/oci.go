@@ -2,6 +2,7 @@ package asset
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
@@ -200,4 +202,13 @@ func (o *OCI) Digest(ctx context.Context) (string, error) {
 		return "", xerrors.Errorf("digest error: %w", err)
 	}
 	return digest.String(), nil
+}
+
+func (o *OCI) ShouldTryOtherRepo(err error) bool {
+	var terr *transport.Error
+	if !errors.As(err, &terr) {
+		return false
+	}
+
+	return shouldTryOtherRepo(terr)
 }
