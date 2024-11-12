@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/version/doc"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 type Options struct {
