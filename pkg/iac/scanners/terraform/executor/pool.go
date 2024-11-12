@@ -3,40 +3,34 @@ package executor
 import (
 	"context"
 	"fmt"
-	runtimeDebug "runtime/debug"
 	"sync"
 
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	types "github.com/aquasecurity/trivy/pkg/iac/types/rules"
 )
 
 type Pool struct {
-	size     int
-	modules  terraform.Modules
-	state    *state.State
-	rules    []types.RegisteredRule
-	rs       *rego.Scanner
-	regoOnly bool
+	size    int
+	modules terraform.Modules
+	state   *state.State
+	rs      *rego.Scanner
 }
 
-func NewPool(size int, rules []types.RegisteredRule, modules terraform.Modules, st *state.State, regoScanner *rego.Scanner, regoOnly bool) *Pool {
+func NewPool(size int, modules terraform.Modules, st *state.State, regoScanner *rego.Scanner) *Pool {
 	return &Pool{
-		size:     size,
-		rules:    rules,
-		state:    st,
-		modules:  modules,
-		rs:       regoScanner,
-		regoOnly: regoOnly,
+		size:    size,
+		state:   st,
+		modules: modules,
+		rs:      regoScanner,
 	}
 }
 
 // Run runs the job in the pool - this will only return an error if a job panics
 func (p *Pool) Run() (scan.Results, error) {
 
-	outgoing := make(chan Job, p.size*2)
+	outgoing := make(chan *regoJob, p.size*2)
 
 	var workers []*Worker
 	for i := 0; i < p.size; i++ {
@@ -57,15 +51,6 @@ func (p *Pool) Run() (scan.Results, error) {
 		}
 	}
 
-	if !p.regoOnly {
-		for _, r := range p.rules {
-			outgoing <- &infraRuleJob{
-				state: p.state,
-				rule:  r,
-			}
-		}
-	}
-
 	close(outgoing)
 
 	var results scan.Results
@@ -79,29 +64,10 @@ func (p *Pool) Run() (scan.Results, error) {
 	return results, nil
 }
 
-type Job interface {
-	Run() (scan.Results, error)
-}
-
-type infraRuleJob struct {
-	state *state.State
-	rule  types.RegisteredRule
-}
-
 type regoJob struct {
 	state    *state.State
 	scanner  *rego.Scanner
 	basePath string
-}
-
-func (h *infraRuleJob) Run() (_ scan.Results, err error) {
-	defer func() {
-		if panicErr := recover(); panicErr != nil {
-			err = fmt.Errorf("%s\n%s", panicErr, string(runtimeDebug.Stack()))
-		}
-	}()
-
-	return h.rule.Evaluate(h.state), err
 }
 
 func (h *regoJob) Run() (results scan.Results, err error) {
@@ -116,13 +82,13 @@ func (h *regoJob) Run() (results scan.Results, err error) {
 }
 
 type Worker struct {
-	incoming <-chan Job
+	incoming <-chan *regoJob
 	mu       sync.Mutex
 	results  scan.Results
 	panic    any
 }
 
-func NewWorker(incoming <-chan Job) *Worker {
+func NewWorker(incoming <-chan *regoJob) *Worker {
 	w := &Worker{
 		incoming: incoming,
 	}

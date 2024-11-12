@@ -58,7 +58,6 @@ type DisabledCheck struct {
 
 type ScannerOption struct {
 	Trace                    bool
-	RegoOnly                 bool
 	Namespaces               []string
 	PolicyPaths              []string
 	DataPaths                []string
@@ -256,10 +255,6 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 
 	if opt.Trace {
 		opts = append(opts, rego.WithPerResultTracing(true))
-	}
-
-	if opt.RegoOnly {
-		opts = append(opts, options.ScannerWithRegoOnly(true))
 	}
 
 	if len(policyPaths) > 0 {

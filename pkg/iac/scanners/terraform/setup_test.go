@@ -98,7 +98,6 @@ func scanFS(fsys fs.FS, target string, opts ...options.ScannerOption) (scan.Resu
 		[]options.ScannerOption{
 			rego.WithEmbeddedLibraries(true),
 			rego.WithRegoErrorLimits(0),
-			options.ScannerWithRegoOnly(true),
 			ScannerWithAllDirectories(true),
 			ScannerWithSkipCachedModules(true),
 			ScannerWithStopOnHCLError(true),

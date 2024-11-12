@@ -4,20 +4,15 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/state"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
@@ -262,7 +257,6 @@ deny[res] {
 
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(true),
 	)
 
@@ -346,7 +340,6 @@ deny[res] {
 
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(true),
 	)
 
@@ -520,7 +513,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyFilesystem(fs),
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -596,7 +588,6 @@ bucket_name = "test"
 		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -631,7 +622,6 @@ bucket_name = "test"
 		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -709,7 +699,6 @@ deny[res] {
 		rego.WithPolicyDirs("rules"),
 		rego.WithEmbeddedPolicies(false),
 		rego.WithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 	)
 
@@ -777,7 +766,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -846,7 +834,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -910,7 +897,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
@@ -931,55 +917,8 @@ deny[res] {
 	assert.Equal(t, "code/example/main.tf", occurrences[0].Filename)
 }
 
-func TestSkipDeprecatedGoChecks(t *testing.T) {
-
-	check := scan.Rule{
-		Provider:  providers.AWSProvider,
-		Service:   "service",
-		ShortCode: "abc",
-		Severity:  severity.High,
-		Check: func(s *state.State) (results scan.Results) {
-			results.Add("Deny", types.NewTestMetadata())
-			return
-		},
-	}
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"main.tf": `resource "foo" "bar" {}`,
-	})
-
-	scanner := New(
-		rego.WithPolicyFilesystem(fsys),
-		rego.WithEmbeddedLibraries(false),
-		rego.WithEmbeddedPolicies(false),
-		ScannerWithAllDirectories(true),
-	)
-
-	t.Run("deprecated", func(t *testing.T) {
-		check.Deprecated = true
-		reg := rules.Register(check)
-		defer rules.Deregister(reg)
-
-		results, err := scanner.ScanFS(context.TODO(), fsys, ".")
-		require.NoError(t, err)
-
-		require.Empty(t, results)
-	})
-
-	t.Run("not deprecated", func(t *testing.T) {
-		check.Deprecated = false
-		reg := rules.Register(check)
-		defer rules.Deregister(reg)
-
-		results, err := scanner.ScanFS(context.TODO(), fsys, ".")
-		require.NoError(t, err)
-
-		require.Len(t, results, 1)
-	})
-}
-
 func TestSkipDir(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"deployments/main.tf": `
 module "use_bad_configuration" {
   source = "../modules"
@@ -989,50 +928,23 @@ module "use_bad_configuration_2" {
   source = "../modules/modules2"
 }
 `,
-		"modules/misconfig.tf": `data "aws_iam_policy_document" "bad" {
-  statement {
-    actions = [
-      "apigateway:*",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "bad_configuration" {
-  name_prefix = local.setup_role_name
-  policy      = data.aws_iam_policy_document.bad.json
-}
+		"modules/misconfig.tf": `
+resource "aws_s3_bucket" "test" {}
 `,
-		"modules/modules2/misconfig.tf": `data "aws_iam_policy_document" "bad" {
-  statement {
-    actions = [
-      "apigateway:*",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "bad_configuration" {
-  name_prefix = local.setup_role_name
-  policy      = data.aws_iam_policy_document.bad.json
-}
+		"modules/modules2/misconfig.tf": `
+resource "aws_s3_bucket" "test" {}
 `,
 	})
 
 	t.Run("use skip-dir option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithSkipDirs([]string{"**/modules/**"}),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -1040,12 +952,13 @@ resource "aws_iam_policy" "bad_configuration" {
 
 	t.Run("use skip-files option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithSkipFiles([]string{"**/modules/**/*.tf"}),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -1053,26 +966,28 @@ resource "aws_iam_policy" "bad_configuration" {
 
 	t.Run("non existing value for skip-files option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithSkipFiles([]string{"foo/bar*.tf"}),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
-		assert.Len(t, results, 4)
+		assert.Len(t, results, 2)
 	})
 
 	t.Run("empty skip-files option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
-		assert.Len(t, results, 4)
+		assert.Len(t, results, 2)
 	})
 }

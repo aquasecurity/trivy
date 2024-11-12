@@ -38,17 +38,9 @@ type Scanner struct {
 	execLock     sync.RWMutex
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithIncludeDeprecatedChecks(b))
-}
-
-func (s *Scanner) SetRegoOnly(regoOnly bool) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoOnly(regoOnly))
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithFrameworks(frameworks...))
-}
+func (s *Scanner) SetIncludeDeprecatedChecks(b bool)              {}
+func (s *Scanner) SetRegoOnly(regoOnly bool)                      {}
+func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {}
 
 func (s *Scanner) Name() string {
 	return "Terraform"
