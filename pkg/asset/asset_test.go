@@ -141,10 +141,28 @@ func TestArtifact_Download(t *testing.T) {
 			},
 			layersReturns: layersReturns{
 				err: &transport.Error{
-					StatusCode: 500,
+					StatusCode: http.StatusInternalServerError,
 				},
 			},
 			want: "Hello, world",
+		},
+		{
+			name: "sad: OCI (unavailable) + http (unavailable)",
+			locations: []testLoc{
+				{
+					typ: testLocOCI,
+				},
+				{
+					typ:   testLocHttp,
+					value: "unavailable",
+				},
+			},
+			layersReturns: layersReturns{
+				err: &transport.Error{
+					StatusCode: http.StatusInternalServerError,
+				},
+			},
+			wantErr: "2 errors occurred:",
 		},
 		{
 			name: "sad: http with missed file",
