@@ -4,7 +4,7 @@
 
 Trivy is available in most common distribution channels. The complete list of installation options is available in the [Installation](./installation.md) page. Here are a few popular examples:
 
-- MacOS: `brew install trivy`
+- macOS: `brew install trivy`
 - Docker: `docker run aquasec/trivy`
 - Download binary from [GitHub Release](https://github.com/aquasecurity/trivy/releases/latest/)
 - See [Installation](./installation.md) for more

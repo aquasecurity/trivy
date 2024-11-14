@@ -87,7 +87,7 @@ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/inst
 
 ## Homebrew (Official)
 
-Homebrew for MacOS and Linux.
+Homebrew for macOS and Linux.
 
 ```bash
 brew install trivy
@@ -113,7 +113,7 @@ References:
 
 ## MacPorts (Community)
 
-[MacPorts](https://www.macports.org) for MacOS.
+[MacPorts](https://www.macports.org) for macOS.
 
 ```bash
 sudo port install trivy
@@ -124,7 +124,7 @@ References:
 
 ## Nix/NixOS (Community)
 
-Nix package manager for Linux and MacOS.
+Nix package manager for Linux and macOS.
 
 === "Command line"
     `nix-env --install -A nixpkgs.trivy`
