@@ -353,9 +353,12 @@ func clearURI(s string) string {
 		s = strings.ReplaceAll(s, "git::https:/", "")
 		s = strings.ReplaceAll(s, ".git", "")
 	} else if strings.HasPrefix(s, "git@github.com:") {
-		// cf. https://developer.hashicorp.com/terraform/language/modules/sources#github
+		// build GitHub url format
+		// e.g. `git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf` -> `github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf`
+		// cf. https://github.com/aquasecurity/trivy/issues/7897
 		s = strings.ReplaceAll(s, "git@github.com:", "github.com/")
 		s = strings.ReplaceAll(s, ".git", "")
+		s = strings.ReplaceAll(s, "?ref=", "/tree/")
 	}
 
 	return s

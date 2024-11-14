@@ -589,7 +589,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						},
 					},
 					{
-						Target: "git@github.com:rbs-path/terraform-modules.git/modules/compute/aws-lambda?ref=v3.8.0/.terraform/modules/cleanup/modules/compute/aws-lambda/cloudwatch.tf",
+						Target: "git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
 						Class:  types.ClassConfig,
 						Type:   ftypes.Terraform,
 						Misconfigurations: []types.DetectedMisconfiguration{
@@ -615,7 +615,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 									Occurrences: []ftypes.Occurrence{
 										{
 											Resource: "google_project_iam_member.workload_identity_sa_bindings[\"roles/storage.admin\"]",
-											Filename: "git@github.com:rbs-path/terraform-modules.git/modules/compute/aws-lambda?ref=v3.8.0/.terraform/modules/cleanup/modules/compute/aws-lambda/cloudwatch.tf",
+											Filename: "git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
 											Location: ftypes.Location{
 												StartLine: 87,
 												EndLine:   93,
@@ -697,13 +697,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("AVD-GCP-0007"),
 								RuleIndex: lo.ToPtr(uint(0)),
 								Level:     lo.ToPtr("error"),
-								Message:   *sarif.NewTextMessage("Artifact: github.com/rbs-path/terraform-modules/modules/compute/aws-lambda?ref=v3.8.0/.terraform/modules/cleanup/modules/compute/aws-lambda/cloudwatch.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
+								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
 								Locations: []*sarif.Location{
 									{
 										PhysicalLocation: sarif.NewPhysicalLocation().
 											WithArtifactLocation(
 												&sarif.ArtifactLocation{
-													URI:       lo.ToPtr("github.com/rbs-path/terraform-modules/modules/compute/aws-lambda?ref=v3.8.0/.terraform/modules/cleanup/modules/compute/aws-lambda/cloudwatch.tf"),
+													URI:       lo.ToPtr("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf"),
 													URIBaseId: lo.ToPtr("ROOTPATH"),
 												},
 											).
@@ -715,7 +715,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 													EndColumn:   lo.ToPtr(1),
 												},
 											),
-										Message: sarif.NewTextMessage("github.com/rbs-path/terraform-modules/modules/compute/aws-lambda?ref=v3.8.0/.terraform/modules/cleanup/modules/compute/aws-lambda/cloudwatch.tf"),
+										Message: sarif.NewTextMessage("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf"),
 									},
 								},
 							},
