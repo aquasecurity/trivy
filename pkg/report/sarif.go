@@ -358,6 +358,9 @@ func clearURI(s string) string {
 		s = strings.ReplaceAll(s, "git@github.com:", "github.com/")
 		s = strings.ReplaceAll(s, ".git", "")
 		s = strings.ReplaceAll(s, "?ref=", "/tree/")
+	case strings.HasPrefix(s, "git::https:/"):
+		s = strings.TrimPrefix(s, "git::https:/")
+		s = strings.ReplaceAll(s, ".git", "")
 	case strings.HasPrefix(s, "git::ssh://"):
 		// `"`git::ssh://username@example.com/storage.git` -> `example.com/storage.git`
 		if _, u, ok := strings.Cut(s, "@"); ok {
