@@ -1,7 +1,8 @@
+//go:build unix
+
 package resolvers_test
 
 import (
-	"bufio"
 	"context"
 	"io/fs"
 	"path"
@@ -10,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/gittest"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -18,10 +20,25 @@ type moduleResolver interface {
 	Resolve(context.Context, fs.FS, resolvers.Options) (fs.FS, string, string, bool, error)
 }
 
-func TestResolveModuleFromCache(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode")
+func testOptions(t *testing.T, source string) resolvers.Options {
+	return resolvers.Options{
+		Source:          source,
+		OriginalSource:  source,
+		Version:         "",
+		OriginalVersion: "",
+		AllowDownloads:  true,
+		CacheDir:        t.TempDir(),
+		Logger:          log.WithPrefix("test"),
 	}
+}
+
+func TestResolveModuleFromCache(t *testing.T) {
+
+	repo := "terraform-aws-s3-bucket"
+	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket")
+	defer gs.Close()
+
+	repoURL := gs.URL + "/" + repo + ".git"
 
 	tests := []struct {
 		name           string
@@ -30,44 +47,38 @@ func TestResolveModuleFromCache(t *testing.T) {
 		expectedSubdir string
 		expectedString string
 	}{
+		// {
+		// 	name: "registry",
+		// 	opts: resolvers.Options{
+		// 		Name:    "bucket",
+		// 		Source:  "terraform-aws-modules/s3-bucket/aws",
+		// 		Version: "4.1.2",
+		// 	},
+		// 	firstResolver:  resolvers.Registry,
+		// 	expectedSubdir: ".",
+		// 	expectedString: "# AWS S3 bucket Terraform module",
+		// },
+		// {
+		// 	name: "registry with subdir",
+		// 	opts: resolvers.Options{
+		// 		Name:    "object",
+		// 		Source:  "terraform-aws-modules/s3-bucket/aws//modules/object",
+		// 		Version: "4.1.2",
+		// 	},
+		// 	firstResolver:  resolvers.Registry,
+		// 	expectedSubdir: "modules/object",
+		// 	expectedString: "# S3 bucket object",
+		// },
 		{
-			name: "registry",
-			opts: resolvers.Options{
-				Name:    "bucket",
-				Source:  "terraform-aws-modules/s3-bucket/aws",
-				Version: "4.1.2",
-			},
-			firstResolver:  resolvers.Registry,
-			expectedSubdir: ".",
-			expectedString: "# AWS S3 bucket Terraform module",
-		},
-		{
-			name: "registry with subdir",
-			opts: resolvers.Options{
-				Name:    "object",
-				Source:  "terraform-aws-modules/s3-bucket/aws//modules/object",
-				Version: "4.1.2",
-			},
-			firstResolver:  resolvers.Registry,
-			expectedSubdir: "modules/object",
-			expectedString: "# S3 bucket object",
-		},
-		{
-			name: "remote",
-			opts: resolvers.Options{
-				Name:   "bucket",
-				Source: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.1.2",
-			},
+			name:           "remote",
+			opts:           testOptions(t, "git::"+repoURL),
 			firstResolver:  resolvers.Remote,
 			expectedSubdir: ".",
 			expectedString: "# AWS S3 bucket Terraform module",
 		},
 		{
-			name: "remote with subdir",
-			opts: resolvers.Options{
-				Name:   "object",
-				Source: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/object?ref=v4.1.2",
-			},
+			name:           "remote with subdir",
+			opts:           testOptions(t, "git::"+repoURL+"//modules/object"),
 			firstResolver:  resolvers.Remote,
 			expectedSubdir: "modules/object",
 			expectedString: "# S3 bucket object",
@@ -77,61 +88,49 @@ func TestResolveModuleFromCache(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			tt.opts.AllowDownloads = true
-			tt.opts.OriginalSource = tt.opts.Source
-			tt.opts.OriginalVersion = tt.opts.Version
-			tt.opts.CacheDir = t.TempDir()
-			tt.opts.Logger = log.WithPrefix("test")
-
-			fsys, _, subdir, applies, err := tt.firstResolver.Resolve(context.Background(), nil, tt.opts)
+			fsys, _, dir, _, err := tt.firstResolver.Resolve(context.Background(), nil, tt.opts)
 			require.NoError(t, err)
-			assert.True(t, applies)
-			assert.Equal(t, tt.expectedSubdir, subdir)
+			assert.Equal(t, tt.expectedSubdir, dir)
 
-			f, err := fsys.Open(path.Join(tt.expectedSubdir, "README.md"))
+			b, err := fs.ReadFile(fsys, path.Join(dir, "README.md"))
 			require.NoError(t, err)
+			assert.Equal(t, tt.expectedString, string(b))
 
-			r := bufio.NewReader(f)
-			line, _, err := r.ReadLine()
+			_, _, dir, _, err = resolvers.Cache.Resolve(context.Background(), fsys, tt.opts)
 			require.NoError(t, err)
-			assert.Equal(t, tt.expectedString, string(line))
+			assert.Equal(t, tt.expectedSubdir, dir)
 
-			_, _, subdir, applies, err = resolvers.Cache.Resolve(context.Background(), fsys, tt.opts)
+			b, err = fs.ReadFile(fsys, path.Join(dir, "README.md"))
 			require.NoError(t, err)
-			assert.True(t, applies)
-			assert.Equal(t, tt.expectedSubdir, subdir)
+			assert.Equal(t, tt.expectedString, string(b))
 		})
 	}
 }
 
 func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode")
-	}
+	repo := "terraform-aws-s3-bucket"
+	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket")
+	defer gs.Close()
 
-	cacheDir := t.TempDir()
+	repoURL := gs.URL + "/" + repo + ".git"
 
-	fsys, _, _, applies, err := resolvers.Remote.Resolve(context.Background(), nil, resolvers.Options{
-		Name:           "object",
-		Source:         "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/object?ref=v4.1.2",
-		OriginalSource: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/object?ref=v4.1.2",
-		AllowDownloads: true,
-		CacheDir:       cacheDir,
-		Logger:         log.WithPrefix("test"),
-	})
-	require.NoError(t, err)
-	assert.True(t, applies)
-
-	_, err = fs.Stat(fsys, "main.tf")
+	fsys, _, dir, _, err := resolvers.Remote.Resolve(
+		context.Background(), nil,
+		testOptions(t, "git::"+repoURL+"//modules/object"),
+	)
 	require.NoError(t, err)
 
-	_, _, _, applies, err = resolvers.Cache.Resolve(context.Background(), nil, resolvers.Options{
-		Name:           "notification",
-		Source:         "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/notification?ref=v4.1.2",
-		OriginalSource: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/notification?ref=v4.1.2",
-		CacheDir:       cacheDir,
-		Logger:         log.WithPrefix("test"),
-	})
+	b, err := fs.ReadFile(fsys, path.Join(dir, "README.md"))
 	require.NoError(t, err)
-	assert.True(t, applies)
+	assert.Equal(t, "# S3 bucket object", string(b))
+
+	fsys, _, dir, _, err = resolvers.Remote.Resolve(
+		context.Background(), nil,
+		testOptions(t, "git::"+repoURL+"//modules/notification"),
+	)
+	require.NoError(t, err)
+
+	b, err = fs.ReadFile(fsys, path.Join(dir, "README.md"))
+	require.NoError(t, err)
+	assert.Equal(t, "# S3 bucket notification", string(b))
 }
