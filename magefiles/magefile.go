@@ -425,7 +425,13 @@ func (Docs) Css() error {
 	const (
 		homepageSass = "docs/assets/css/trivy_v1_homepage.scss"
 	)
-	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, strings.TrimSuffix(homepageSass, ".scss")+".min.css")
+	homepageCss := strings.TrimSuffix(homepageSass, ".scss") + ".min.css"
+	if updated, err := target.Path(homepageCss, homepageSass); err != nil {
+		return err
+	} else if !updated {
+		return nil
+	}
+	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, homepageCss)
 }
 
 // Prepare python requirements
@@ -433,7 +439,13 @@ func (Docs) Pip() error {
 	const (
 		requirementsIn = "docs/build/requirements.in"
 	)
-	return sh.Run("pip-compile", requirementsIn, "--output-file", strings.TrimSuffix(requirementsIn, ".in")+".txt")
+	requirementsTxt := strings.TrimSuffix(requirementsIn, ".in") + ".txt"
+	if updated, err := target.Path(requirementsTxt, requirementsIn); err != nil {
+		return err
+	} else if !updated {
+		return nil
+	}
+	return sh.Run("pip-compile", requirementsIn, "--output-file", requirementsTxt)
 }
 
 // Serve launches MkDocs development server to preview the documentation page
