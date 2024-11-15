@@ -154,10 +154,14 @@ func authOptions(ctx context.Context, ref name.Reference, option types.RegistryO
 		}))
 	}
 
-	domain := ref.Context().RegistryStr()
-	token := registry.GetToken(ctx, domain, option)
-	if !lo.IsEmpty(token) {
-		opts = append(opts, remote.WithAuth(&token))
+	// The default trivy-db and trivy-java-db repositories are public.
+	// So we don't need to check their credential.
+	if ref.String() != "mirror.gcr.io/aquasec/trivy-java-db:1" && ref.String() != "mirror.gcr.io/aquasec/trivy-db:2" {
+		domain := ref.Context().RegistryStr()
+		token := registry.GetToken(ctx, domain, option)
+		if !lo.IsEmpty(token) {
+			opts = append(opts, remote.WithAuth(&token))
+		}
 	}
 
 	switch {
