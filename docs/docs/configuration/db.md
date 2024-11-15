@@ -93,7 +93,6 @@ You can reference the OCI manifest of [trivy-db].
 
 
 ### Rate limits
-
 Trivy hosts its databases on public OCI registries that are subject to their respective rate limits. While we strive to make the databases available to every
 Trivy user, there are certain recommendations that one can make in order to ensure rate limits are not hit.
 
@@ -104,7 +103,7 @@ For GitHub GHCR, the rate limits can be found [ghcr-limits]
 Please see more info on how to authenticate with ECR [auth-ecr] and GHCR [auth-ghcr].
 
 #### Caching DBs
-Trivy DB and Trivy Java DB are published every 24 hours. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
+Trivy DB and Trivy Java DB are published every 6 hours and 24 hours, respectively. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
 Once example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found [trivy-action-cache].
 
 ## Java Index Database
