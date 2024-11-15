@@ -105,8 +105,8 @@ db:
 
   # Same as '--java-db-repository'
   java-repository:
+   - mirror.gcr.io/aquasec/trivy-java-db:1
    - ghcr.io/aquasecurity/trivy-java-db:1
-   - public.ecr.aws/aquasecurity/trivy-db:1
 
   # Same as '--skip-java-db-update'
   java-skip-update: false
@@ -116,8 +116,8 @@ db:
 
   # Same as '--db-repository'
   repository:
+   - mirror.gcr.io/aquasec/trivy-db:2
    - ghcr.io/aquasecurity/trivy-db:2
-   - public.ecr.aws/aquasecurity/trivy-db:2
 
   # Same as '--skip-db-update'
   skip-update: false

@@ -24,7 +24,7 @@ trivy sbom [flags] SBOM_PATH
       --cache-ttl duration           cache TTL when using redis as cache backend
       --compliance string            compliance report to generate
       --custom-headers strings       custom headers in client mode
-      --db-repository strings        OCI repository(ies) to retrieve trivy-db in order of priority (default [ghcr.io/aquasecurity/trivy-db:2,public.ecr.aws/aquasecurity/trivy-db:2])
+      --db-repository strings        OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
       --detection-priority string    specify the detection priority:
                                        - "precise": Prioritizes precise by minimizing false positives.
                                        - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
@@ -41,7 +41,7 @@ trivy sbom [flags] SBOM_PATH
       --ignore-unfixed               display only fixed vulnerabilities
       --ignored-licenses strings     specify a list of license to ignore
       --ignorefile string            specify .trivyignore file (default ".trivyignore")
-      --java-db-repository strings   OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1,public.ecr.aws/aquasecurity/trivy-db:1])
+      --java-db-repository strings   OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --list-all-pkgs                output all packages in the JSON report regardless of vulnerability
       --no-progress                  suppress progress bar
       --offline-scan                 do not issue API requests to identify dependencies
