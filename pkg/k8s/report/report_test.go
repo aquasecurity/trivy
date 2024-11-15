@@ -14,12 +14,15 @@ var (
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
-		Metadata: types.Metadata{
-			RepoTags: []string{
-				"alpine:3.14",
-			},
-			RepoDigests: []string{
-				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
 			},
 		},
 		Results: types.Results{
@@ -69,12 +72,15 @@ var (
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
-		Metadata: types.Metadata{
-			RepoTags: []string{
-				"alpine:3.14",
-			},
-			RepoDigests: []string{
-				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
 			},
 		},
 		Results: types.Results{
@@ -113,16 +119,134 @@ var (
 		},
 	}
 
+	orionDeployWithAnotherMisconfig = Resource{
+		Namespace: "default",
+		Kind:      "Deploy",
+		Name:      "orion",
+		Results: types.Results{
+			{
+				Misconfigurations: []types.DetectedMisconfiguration{
+					{
+						ID:       "ID201",
+						Status:   types.MisconfStatusFailure,
+						Severity: "HIGH",
+					},
+				},
+			},
+		},
+	}
+
+	image1WithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image1",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+				},
+			},
+		},
+	}
+
+	image2WithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image2",
+				RepoTags: []string{
+					"alpine:3.17.3",
+				},
+				RepoDigests: []string{
+					"alpine@sha256:124c7d2707904eea7431fffe91522a01e5a861a624ee31d03372cc1d138a3126",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-2222",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
+
+	multiImagePodWithVulns = Resource{
+		Namespace: "default",
+		Kind:      "Pod",
+		Name:      "multi-image-pod",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "image1",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+			{
+				ImageID: "image2",
+				RepoTags: []string{
+					"alpine:3.17.3",
+				},
+				RepoDigests: []string{
+					"alpine@sha256:124c7d2707904eea7431fffe91522a01e5a861a624ee31d03372cc1d138a3126",
+				},
+			},
+		},
+		Results: types.Results{
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+				},
+			},
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-2222",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
+
 	deployOrionWithBothVulnsAndMisconfigs = Resource{
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
-		Metadata: types.Metadata{
-			RepoTags: []string{
-				"alpine:3.14",
-			},
-			RepoDigests: []string{
-				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
 			},
 		},
 		Results: types.Results{
@@ -204,12 +328,15 @@ var (
 		Namespace: "default",
 		Kind:      "Cronjob",
 		Name:      "hello",
-		Metadata: types.Metadata{
-			RepoTags: []string{
-				"alpine:3.14",
-			},
-			RepoDigests: []string{
-				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
 			},
 		},
 		Results: types.Results{
@@ -221,12 +348,15 @@ var (
 		Namespace: "default",
 		Kind:      "Pod",
 		Name:      "prometheus",
-		Metadata: types.Metadata{
-			RepoTags: []string{
-				"alpine:3.14",
-			},
-			RepoDigests: []string{
-				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
 			},
 		},
 		Results: types.Results{
@@ -311,6 +441,10 @@ var (
 )
 
 func TestReport_consolidate(t *testing.T) {
+	concatenatedResource := orionDeployWithAnotherMisconfig
+	concatenatedResource.Results[0].Misconfigurations = append(concatenatedResource.Results[0].Misconfigurations,
+		deployOrionWithMisconfigs.Results[0].Misconfigurations...)
+
 	tests := []struct {
 		name             string
 		report           Report
@@ -356,6 +490,30 @@ func TestReport_consolidate(t *testing.T) {
 			expectedFindings: map[string]Resource{
 				"default/deploy/orion":  deployOrionWithVulns,
 				"default/cronjob/hello": cronjobHelloWithVulns,
+			},
+		},
+		{
+			name: "report with misconfigs in image and pod",
+			report: Report{
+				Resources: []Resource{
+					deployOrionWithMisconfigs,
+					orionDeployWithAnotherMisconfig,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/deploy/orion": concatenatedResource,
+			},
+		},
+		{
+			name: "report with multi image pod containing vulnerabilities",
+			report: Report{
+				Resources: []Resource{
+					image1WithVulns,
+					image2WithVulns,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/pod/multi-image-pod": multiImagePodWithVulns,
 			},
 		},
 	}

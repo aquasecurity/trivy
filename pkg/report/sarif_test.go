@@ -588,6 +588,44 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
+						Class:  types.ClassConfig,
+						Type:   ftypes.Terraform,
+						Misconfigurations: []types.DetectedMisconfiguration{
+							{
+								Type:        "Terraform Security Check",
+								ID:          "AVD-GCP-0007",
+								AVDID:       "AVD-GCP-0007",
+								Title:       "Service accounts should not have roles assigned with excessive privileges",
+								Description: "Service accounts should have a minimal set of permissions assigned in order to do their job. They should never have excessive access as if compromised, an attacker can escalate privileges and take over the entire account.",
+								Message:     "Service account is granted a privileged role.",
+								Query:       "data..",
+								Resolution:  "Limit service account access to minimal required set",
+								Severity:    "HIGH",
+								PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-gcp-0007",
+								References: []string{
+									"https://cloud.google.com/iam/docs/understanding-roles",
+									"https://avd.aquasec.com/misconfig/avd-gcp-0007",
+								},
+								Status: "Fail",
+								CauseMetadata: ftypes.CauseMetadata{
+									StartLine: 91,
+									EndLine:   91,
+									Occurrences: []ftypes.Occurrence{
+										{
+											Resource: "google_project_iam_member.workload_identity_sa_bindings[\"roles/storage.admin\"]",
+											Filename: "git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
+											Location: ftypes.Location{
+												StartLine: 87,
+												EndLine:   93,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			want: &sarif.Report{
@@ -652,6 +690,32 @@ func TestReportWriter_Sarif(t *testing.T) {
 												},
 											),
 										Message: sarif.NewTextMessage("github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf"),
+									},
+								},
+							},
+							{
+								RuleID:    lo.ToPtr("AVD-GCP-0007"),
+								RuleIndex: lo.ToPtr(uint(0)),
+								Level:     lo.ToPtr("error"),
+								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
+								Locations: []*sarif.Location{
+									{
+										PhysicalLocation: sarif.NewPhysicalLocation().
+											WithArtifactLocation(
+												&sarif.ArtifactLocation{
+													URI:       lo.ToPtr("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf"),
+													URIBaseId: lo.ToPtr("ROOTPATH"),
+												},
+											).
+											WithRegion(
+												&sarif.Region{
+													StartLine:   lo.ToPtr(91),
+													StartColumn: lo.ToPtr(1),
+													EndLine:     lo.ToPtr(91),
+													EndColumn:   lo.ToPtr(1),
+												},
+											),
+										Message: sarif.NewTextMessage("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf"),
 									},
 								},
 							},

@@ -72,7 +72,7 @@ trivy image [flags] IMAGE_NAME
       --image-config-scanners strings     comma-separated list of what security issues to detect on container image configurations (misconfig,secret)
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-deprecated-checks         include deprecated checks
-      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
+      --include-non-failures              include successes, available with '--scanners misconfig'
       --input string                      input file path instead of image name
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1,public.ecr.aws/aquasecurity/trivy-db:1])
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
@@ -86,6 +86,7 @@ trivy image [flags] IMAGE_NAME
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --password-stdin                    password from stdin. Comma-separated passwords are not supported.
       --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
       --pkg-types strings                 list of package types (os,library) (default [os,library])
       --platform string                   set platform in the form os/arch if image is multi-platform capable

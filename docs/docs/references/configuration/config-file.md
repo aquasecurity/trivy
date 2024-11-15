@@ -463,6 +463,9 @@ registry:
   # Same as '--password'
   password: []
 
+  # Same as '--password-stdin'
+  password-stdin: false
+
   # Same as '--registry-token'
   token: ""
 

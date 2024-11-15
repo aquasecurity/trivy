@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
+	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -224,6 +225,7 @@ func NewArtifacts(repos []name.Reference, opt types.RegistryOptions, opts ...Opt
 // Download downloads artifacts until one of them succeeds.
 // Attempts to download next artifact if the first one fails due to a temporary error.
 func (a Artifacts) Download(ctx context.Context, dst string, opt DownloadOption) error {
+	var errs error
 	for i, art := range a {
 		log.InfoContext(ctx, "Downloading artifact...", log.String("repo", art.repository))
 		err := art.Download(ctx, dst, opt)
@@ -239,9 +241,10 @@ func (a Artifacts) Download(ctx context.Context, dst string, opt DownloadOption)
 		if i < len(a)-1 {
 			log.InfoContext(ctx, "Trying to download artifact from other repository...")
 		}
+		errs = multierror.Append(errs, err)
 	}
 
-	return xerrors.New("failed to download artifact from any source")
+	return xerrors.Errorf("failed to download artifact from any source: %w", errs)
 }
 
 func shouldTryOtherRepo(err error) bool {

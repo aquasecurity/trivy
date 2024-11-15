@@ -55,7 +55,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-deprecated-checks         include deprecated checks
       --include-dev-deps                  include development dependencies in the report (supported: npm, yarn)
-      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
+      --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1,public.ecr.aws/aquasecurity/trivy-db:1])
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
@@ -68,6 +68,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --password-stdin                    password from stdin. Comma-separated passwords are not supported.
       --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
       --pkg-types strings                 list of package types (os,library) (default [os,library])
       --redis-ca string                   redis ca file location, if using redis as cache backend

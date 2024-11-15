@@ -47,12 +47,15 @@ trivy sbom [flags] SBOM_PATH
       --offline-scan                 do not issue API requests to identify dependencies
   -o, --output string                output file name
       --output-plugin-arg string     [EXPERIMENTAL] output plugin arguments
+      --password strings             password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --password-stdin               password from stdin. Comma-separated passwords are not supported.
       --pkg-relationships strings    list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
       --pkg-types strings            list of package types (os,library) (default [os,library])
       --redis-ca string              redis ca file location, if using redis as cache backend
       --redis-cert string            redis certificate file location, if using redis as cache backend
       --redis-key string             redis key file location, if using redis as cache backend
       --redis-tls                    enable redis TLS with public certificates, if using redis as cache backend
+      --registry-token string        registry token
       --rekor-url string             [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --sbom-sources strings         [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings             comma-separated list of what security issues to detect (vuln,license) (default [vuln])
@@ -67,6 +70,7 @@ trivy sbom [flags] SBOM_PATH
   -t, --template string              output template
       --token string                 for authentication in client/server mode
       --token-header string          specify a header name for token in client/server mode (default "Trivy-Token")
+      --username strings             username. Comma-separated usernames allowed.
       --vex strings                  [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 

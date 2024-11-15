@@ -209,6 +209,13 @@ func TestNormalize(t *testing.T) {
 			normalized:    " The unmapped license ",
 			normalizedKey: " The unmapped license ",
 		},
+		{
+			licenses: []string{
+				"Universal Permissive License, Version 1.0",
+			},
+			normalized:    "UPL-1.0",
+			normalizedKey: "UPL-1.0",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.normalized, func(t *testing.T) {

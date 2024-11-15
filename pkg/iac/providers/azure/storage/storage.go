@@ -9,13 +9,14 @@ type Storage struct {
 }
 
 type Account struct {
-	Metadata          iacTypes.Metadata
-	NetworkRules      []NetworkRule
-	EnforceHTTPS      iacTypes.BoolValue
-	Containers        []Container
-	QueueProperties   QueueProperties
-	MinimumTLSVersion iacTypes.StringValue
-	Queues            []Queue
+	Metadata            iacTypes.Metadata
+	NetworkRules        []NetworkRule
+	EnforceHTTPS        iacTypes.BoolValue
+	Containers          []Container
+	QueueProperties     QueueProperties
+	MinimumTLSVersion   iacTypes.StringValue
+	Queues              []Queue
+	PublicNetworkAccess iacTypes.BoolValue
 }
 
 type Queue struct {

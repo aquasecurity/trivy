@@ -69,7 +69,7 @@ trivy kubernetes [flags] [CONTEXT]
       --include-deprecated-checks         include deprecated checks
       --include-kinds strings             indicate the kinds included in scanning (example: node)
       --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
-      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
+      --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1,public.ecr.aws/aquasecurity/trivy-db:1])
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
@@ -83,6 +83,7 @@ trivy kubernetes [flags] [CONTEXT]
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --password-stdin                    password from stdin. Comma-separated passwords are not supported.
       --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
       --pkg-types strings                 list of package types (os,library) (default [os,library])
       --qps float                         specify the maximum QPS to the master from this client (default 5)

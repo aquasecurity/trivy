@@ -324,6 +324,17 @@ func TestClientServerWithFormat(t *testing.T) {
 			golden: "testdata/alpine-310.gitlab.golden",
 		},
 		{
+			name: "scan package-lock.json with gitlab template (Unknown os and image)",
+			args: csArgs{
+				Command:         "fs",
+				Format:          "template",
+				TemplatePath:    "@../contrib/gitlab.tpl",
+				Target:          "testdata/fixtures/repo/npm/",
+				ListAllPackages: true,
+			},
+			golden: "testdata/npm.gitlab.golden",
+		},
+		{
 			name: "alpine 3.10 with gitlab-codequality template",
 			args: csArgs{
 				Format:       "template",
@@ -548,7 +559,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	})
 
 	// Terminate the Redis container
-	require.NoError(t, redisC.Terminate(ctx))
+	require.NoError(t, testcontainers.TerminateContainer(redisC))
 
 	t.Run("sad path", func(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir)

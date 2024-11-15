@@ -36,7 +36,7 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 							},
 							{
 								Name:         "stdlib",
-								Version:      "1.15.2",
+								Version:      "v1.15.2",
 								Relationship: types.RelationshipDirect,
 							},
 							{

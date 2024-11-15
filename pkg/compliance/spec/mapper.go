@@ -49,8 +49,6 @@ func misconfigSummary(misconfig types.DetectedMisconfiguration) *types.MisconfSu
 		rms.Successes = 1
 	case types.MisconfStatusFailure:
 		rms.Failures = 1
-	case types.MisconfStatusException:
-		rms.Exceptions = 1
 	}
 	return &rms
 }
