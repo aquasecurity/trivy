@@ -40,14 +40,18 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 		return nil, "", "", false, nil
 	}
 
-	src, subdir := splitPackageSubdirRaw(opt.OriginalSource)
+	src, subdir := splitPackageSubdirRaw(opt.Source)
 	key := cacheKey(src, opt.OriginalVersion)
 	opt.Logger.Debug("Caching module", log.String("key", key))
+
+	opt.OriginalSource = opt.Source
+	opt.Source = src
 
 	baseCacheDir, err := locateCacheDir(opt.CacheDir)
 	if err != nil {
 		return nil, "", "", true, fmt.Errorf("failed to locate cache directory: %w", err)
 	}
+
 	cacheDir := filepath.Join(baseCacheDir, key)
 	if err := r.download(ctx, opt, cacheDir); err != nil {
 		return nil, "", "", true, err
@@ -56,9 +60,9 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 	r.incrementCount(opt)
 	opt.Logger.Debug("Successfully resolve module via remote download",
 		log.String("name", opt.Name),
-		log.String("source", opt.Source),
+		log.String("source", opt.OriginalSource),
 	)
-	return os.DirFS(cacheDir), opt.Source, subdir, true, nil
+	return os.DirFS(cacheDir), opt.OriginalSource, subdir, true, nil
 }
 
 func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) error {

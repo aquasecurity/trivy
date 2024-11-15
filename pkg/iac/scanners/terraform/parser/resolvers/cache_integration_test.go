@@ -1,14 +1,17 @@
 package resolvers_test
 
 import (
+	"bufio"
 	"context"
 	"io/fs"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type moduleResolver interface {
@@ -25,6 +28,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 		opts           resolvers.Options
 		firstResolver  moduleResolver
 		expectedSubdir string
+		expectedString string
 	}{
 		{
 			name: "registry",
@@ -35,6 +39,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			},
 			firstResolver:  resolvers.Registry,
 			expectedSubdir: ".",
+			expectedString: "# AWS S3 bucket Terraform module",
 		},
 		{
 			name: "registry with subdir",
@@ -45,6 +50,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			},
 			firstResolver:  resolvers.Registry,
 			expectedSubdir: "modules/object",
+			expectedString: "# S3 bucket object",
 		},
 		{
 			name: "remote",
@@ -54,6 +60,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			},
 			firstResolver:  resolvers.Remote,
 			expectedSubdir: ".",
+			expectedString: "# AWS S3 bucket Terraform module",
 		},
 		{
 			name: "remote with subdir",
@@ -63,6 +70,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			},
 			firstResolver:  resolvers.Remote,
 			expectedSubdir: "modules/object",
+			expectedString: "# S3 bucket object",
 		},
 	}
 
@@ -73,17 +81,25 @@ func TestResolveModuleFromCache(t *testing.T) {
 			tt.opts.OriginalSource = tt.opts.Source
 			tt.opts.OriginalVersion = tt.opts.Version
 			tt.opts.CacheDir = t.TempDir()
+			tt.opts.Logger = log.WithPrefix("test")
 
-			fsys, _, _, applies, err := tt.firstResolver.Resolve(context.Background(), nil, tt.opts)
+			fsys, _, subdir, applies, err := tt.firstResolver.Resolve(context.Background(), nil, tt.opts)
 			require.NoError(t, err)
 			assert.True(t, applies)
+			assert.Equal(t, tt.expectedSubdir, subdir)
 
-			_, err = fs.Stat(fsys, "main.tf")
+			f, err := fsys.Open(path.Join(tt.expectedSubdir, "README.md"))
 			require.NoError(t, err)
 
-			_, _, _, applies, err = resolvers.Cache.Resolve(context.Background(), fsys, tt.opts)
+			r := bufio.NewReader(f)
+			line, _, err := r.ReadLine()
+			require.NoError(t, err)
+			assert.Equal(t, tt.expectedString, string(line))
+
+			_, _, subdir, applies, err = resolvers.Cache.Resolve(context.Background(), fsys, tt.opts)
 			require.NoError(t, err)
 			assert.True(t, applies)
+			assert.Equal(t, tt.expectedSubdir, subdir)
 		})
 	}
 }
@@ -101,6 +117,7 @@ func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
 		OriginalSource: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/object?ref=v4.1.2",
 		AllowDownloads: true,
 		CacheDir:       cacheDir,
+		Logger:         log.WithPrefix("test"),
 	})
 	require.NoError(t, err)
 	assert.True(t, applies)
@@ -113,6 +130,7 @@ func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
 		Source:         "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/notification?ref=v4.1.2",
 		OriginalSource: "git::https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git//modules/notification?ref=v4.1.2",
 		CacheDir:       cacheDir,
+		Logger:         log.WithPrefix("test"),
 	})
 	require.NoError(t, err)
 	assert.True(t, applies)
