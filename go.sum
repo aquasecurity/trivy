@@ -974,8 +974,8 @@ github.com/klauspost/compress v1.17.11/go.mod h1:pMDklpSncoRMuLFrf1W9Ss9KT+0rH90
 github.com/klauspost/cpuid v1.2.0/go.mod h1:Pj4uuM528wm8OyEC2QMXAi2YiTZ96dNQPGgoMS4s3ek=
 github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f h1:GvCU5GXhHq+7LeOzx/haG7HSIZokl3/0GkoUFzsRJjg=
 github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f/go.mod h1:q59u9px8b7UTj0nIjEjvmTWekazka6xIt6Uogz5Dm+8=
-github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422 h1:PPPlUUqPP6fLudIK4n0l0VU4KT2cQGnheW9x8pNiCHI=
-github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422/go.mod h1:ijAmSS4jErO6+KRzcK6ixsm3Vt96hMhJ+W+x+VmbrQA=
+github.com/knqyf263/go-deb-version v0.0.0-20241115131756-1eadde5a9b91 h1:KJ7cVkh5mm3PZtVWfzZ7wM/SjA9zxfB0JPeGmoWOiCw=
+github.com/knqyf263/go-deb-version v0.0.0-20241115131756-1eadde5a9b91/go.mod h1:lUaIXCWzf7BRKTY5iEcrYy1TfgbYLYVIS/B2vPkJzOc=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075 h1:aC6MEAs3PE3lWD7lqrJfDxHd6hcced9R4JTZu85cJwU=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075/go.mod h1:i4sF0l1fFnY1aiw08QQSwVAFxHEm311Me3WsU/X7nL0=
 github.com/knqyf263/go-rpmdb v0.1.1 h1:oh68mTCvp1XzxdU7EfafcWzzfstUZAEa3MW0IJye584=
