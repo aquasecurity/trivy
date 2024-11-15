@@ -75,6 +75,22 @@ func (Tool) Wire() error {
 	return sh.Run("go", "install", "github.com/google/wire/cmd/wire@v0.5.0")
 }
 
+// Sass installs saas if not installed. npm is assumed to be available
+func (Tool) Sass() error {
+	if installed("sass") {
+		return nil
+	}
+	return sh.Run("npm", "install", "-g", "saas")
+}
+
+// PipTools installs PipTools if not installed. python is assumed to be available and relevant environment to have been activated
+func (Tool) PipTools() error {
+	if installed("pip-compile") {
+		return nil
+	}
+	return sh.Run("python", "-m", "pip", "install", "pip-tools")
+}
+
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
 	const version = "v1.59.1"
