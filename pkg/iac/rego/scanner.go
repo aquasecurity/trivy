@@ -359,24 +359,6 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 	return results, nil
 }
 
-func (s *Scanner) applyRuleCombined(ctx context.Context, namespace, rule string, inputs []Input) (scan.Results, error) {
-	if len(inputs) == 0 {
-		return nil, nil
-	}
-
-	parsed, err := parseRawInput(inputs)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse input: %w", err)
-	}
-
-	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
-	set, traces, err := s.runQuery(ctx, qualified, parsed, false)
-	if err != nil {
-		return nil, err
-	}
-	return s.convertResults(set, inputs[0], namespace, rule, traces), nil
-}
-
 // severity is now set with metadata, so deny/warn/violation now behave the same way
 func isEnforcedRule(name string) bool {
 	switch {
