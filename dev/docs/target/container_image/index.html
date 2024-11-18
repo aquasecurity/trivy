@@ -8362,7 +8362,7 @@ $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </sp
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
 <p>Scan your image in Podman (&gt;=2.0) running locally. The remote Podman is not supported.
-Before performing Trivy commands, you must enable the podman.sock systemd service on your machine.
+If you prefer to keep the socket open at all times, then before performing Trivy commands, you can enable the podman.sock systemd service on your machine.
 For more details, see <a href="https://github.com/containers/podman/blob/master/docs/tutorials/remote_client.md#enable-the-podman-service-on-the-server-machine">here</a>.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>podman.socket
 </code></pre></div>
@@ -8375,6 +8375,12 @@ $<span class="w"> </span>podman<span class="w"> </span>images
 REPOSITORY<span class="w">                </span>TAG<span class="w">     </span>IMAGE<span class="w"> </span>ID<span class="w">      </span>CREATED<span class="w">      </span>SIZE
 localhost/test<span class="w">            </span>latest<span class="w">  </span>efc372d4e0de<span class="w">  </span>About<span class="w"> </span>a<span class="w"> </span>minute<span class="w"> </span>ago<span class="w">  </span><span class="m">7</span>.94<span class="w"> </span>MB
 $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+<p>If you prefer not to keep the socket open at all times, but to limit the socket opening for your trivy scanning duration only then you can scan your image with the following command:</p>
+<div class="highlight"><pre><span></span><code>podman<span class="w"> </span>system<span class="w"> </span>service<span class="w"> </span>--time<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">TMP_PODMAN_SOCKET</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">&amp;</span><span class="w">                                                                                                                                                             </span>
+<span class="nv">PODMAN_SYSTEM_SERVICE_PID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$!</span><span class="s2">&quot;</span><span class="w">                                                                                                                                                                                      </span>
+trivy<span class="w"> </span>image<span class="w"> </span>--podman-host<span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">TMP_PODMAN_SOCKET</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>--docker-host<span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">TMP_PODMAN_SOCKET</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="nb">test</span>
+<span class="nb">kill</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PODMAN_SYSTEM_SERVICE_PID</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div>
 <h3 id="container-registry">Container Registry<a class="headerlink" href="#container-registry" title="Permanent link">&para;</a></h3>
 <p>Trivy supports registries that comply with the following specifications.</p>
