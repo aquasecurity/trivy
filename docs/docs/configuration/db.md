@@ -98,9 +98,8 @@ Trivy user, there are certain recommendations that one can make in order to ensu
 
 #### Authenticated use of Registries
 By authenticating with the registries that Trivy hosts its DBs on can significantly increase the limit for users. For Amazon ECR, the details for rate limits can be found [ecr-limits].
-For GitHub GHCR, the rate limits can be found [ghcr-limits]
 
-Please see more info on how to authenticate with ECR [auth-ecr] and GHCR [auth-ghcr].
+Please see more info on how to authenticate with ECR [auth-ecr].
 
 #### Caching DBs
 Trivy DB and Trivy Java DB are published every 6 hours and 24 hours, respectively. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
@@ -138,8 +137,6 @@ $ trivy clean --vuln-db --java-db
 
 [trivy-db]: https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db
 [trivy-java-db]: https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
-[ghcr-limits]: https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28 
 [ecr-limits]: https://docs.aws.amazon.com/AmazonECR/latest/public/public-service-quotas.html
 [auth-ecr]: https://aws.amazon.com/blogs/compute/authenticating-amazon-ecr-repositories-for-docker-cli-with-credential-helper/
-[auth-ghcr]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry
 [trivy-action-cache]: https://github.com/aquasecurity/trivy-action?tab=readme-ov-file#cache
