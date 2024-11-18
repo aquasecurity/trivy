@@ -7821,7 +7821,7 @@ Trivy user, there are certain recommendations that one can make in order to ensu
 <p>Please see more info on how to authenticate with ECR <a href="https://aws.amazon.com/blogs/compute/authenticating-amazon-ecr-repositories-for-docker-cli-with-credential-helper/">auth-ecr</a>.</p>
 <h4 id="caching-dbs">Caching DBs<a class="headerlink" href="#caching-dbs" title="Permanent link">&para;</a></h4>
 <p>Trivy DB and Trivy Java DB are published every 6 hours and 24 hours, respectively. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
-Once example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found <a href="https://github.com/aquasecurity/trivy-action?tab=readme-ov-file#cache">trivy-action-cache</a>.</p>
+One example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found <a href="https://github.com/aquasecurity/trivy-action?tab=readme-ov-file#cache">trivy-action-cache</a>.</p>
 <h2 id="java-index-database">Java Index Database<a class="headerlink" href="#java-index-database" title="Permanent link">&para;</a></h2>
 <p>The same options are also available for the Java index DB, which is used for scanning Java applications.
 Skipping an update can be done by using the <code>--skip-java-db-update</code> option, while <code>--download-java-db-only</code> can be used to only download the Java index DB.</p>

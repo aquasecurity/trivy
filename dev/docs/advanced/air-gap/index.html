@@ -7903,11 +7903,9 @@ The following hosts are required in order to fetch it:</p>
 <h3 id="downloading-the-db-files">Downloading the DB files<a class="headerlink" href="#downloading-the-db-files" title="Permanent link">&para;</a></h3>
 <p>On a machine with internet access, pull the database container archive from the public registry into your local workspace:</p>
 <p>Note that these examples operate in the current working directory.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Using ORAS</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Using ORAS</label><label for="__tabbed_1_2">Using Trivy</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block"></div>
-</div>
-</div>
+<div class="tabbed-block">
 <p>This example uses <a href="https://oras.land">ORAS</a>, but you can use any other container registry manipulation tool.</p>
 <div class="highlight"><pre><span></span><code>oras<span class="w"> </span>pull<span class="w"> </span>ghcr.io/aquasecurity/trivy-db:2
 </code></pre></div>
@@ -7915,15 +7913,15 @@ The following hosts are required in order to fetch it:</p>
 <div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-xzf<span class="w"> </span>db.tar.gz
 </code></pre></div>
 <p>You should now have 2 new files, <code>metadata.json</code> and <code>trivy.db</code>. These are the Trivy DB files.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Using Trivy</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block"></div>
 </div>
-</div>
+<div class="tabbed-block">
 <p>This example uses Trivy to pull the database container archive. The <code>--cache-dir</code> flag makes Trivy download the database files into our current working directory. The <code>--download-db-only</code> flag tells Trivy to only download the database files, not to scan any images.</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--cache-dir<span class="w"> </span>.<span class="w"> </span>--download-db-only
 </code></pre></div>
 <p>You should now have 2 new files, <code>metadata.json</code> and <code>trivy.db</code>. These are the Trivy DB files, copy them over to the air-gapped environment.</p>
+</div>
+</div>
+</div>
 <h3 id="populating-the-trivy-cache">Populating the Trivy Cache<a class="headerlink" href="#populating-the-trivy-cache" title="Permanent link">&para;</a></h3>
 <p>In order to populate the cache, you need to identify the location of the cache directory. If it is under the default location, you can run the following command to find it:</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>-h<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>cache
