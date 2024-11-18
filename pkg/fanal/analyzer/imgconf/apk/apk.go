@@ -16,6 +16,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -134,6 +135,7 @@ func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.Con
 		pkgs = a.resolveDependencies(apkIndexArchive, pkgs)
 		results := a.guessVersion(apkIndexArchive, pkgs, history.Created.Time)
 		for _, result := range results {
+			result.Identifier.UID = dependency.UID("", result)
 			uniqPkgs[result.Name] = result
 		}
 	}
