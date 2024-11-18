@@ -1,8 +1,6 @@
 module github.com/aquasecurity/trivy
 
-go 1.22.0
-
-toolchain go1.22.4
+go 1.22.9
 
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
@@ -70,7 +68,7 @@ require (
 	github.com/hashicorp/terraform-exec v0.21.0
 	github.com/in-toto/in-toto-golang v0.9.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
-	github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422
+	github.com/knqyf263/go-deb-version v0.0.0-20241115132648-6f4aee6ccd23
 	github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075
 	github.com/knqyf263/go-rpmdb v0.1.1
 	github.com/knqyf263/nested v0.0.1
