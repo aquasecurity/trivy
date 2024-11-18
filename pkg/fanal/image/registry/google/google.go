@@ -32,6 +32,8 @@ const garURLSuffix = "-docker.pkg.dev"
 const gmrURLDomain = "mirror.gcr.io"
 
 func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {
+	// We assume there is no chance that `mirror.gcr.io` will require authentication.
+	// So we need to skip `mirror.gcr.io` to avoid errors confusing users when downloading DB's.
 	if domain == gmrURLDomain {
 		return nil, xerrors.Errorf("mirror.gcr.io doesn't require authentication")
 	}
