@@ -12,9 +12,9 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
+	"github.com/aquasecurity/trivy/pkg/asset"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
@@ -25,12 +25,12 @@ const (
 )
 
 type options struct {
-	artifact *oci.Artifact
+	artifact *asset.OCI
 	clock    clock.Clock
 }
 
 // WithOCIArtifact takes an OCI artifact
-func WithOCIArtifact(art *oci.Artifact) Option {
+func WithOCIArtifact(art *asset.OCI) Option {
 	return func(opts *options) {
 		opts.artifact = art
 	}
@@ -92,7 +92,11 @@ func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Opti
 func (c *Client) populateOCIArtifact(ctx context.Context, registryOpts types.RegistryOptions) {
 	if c.artifact == nil {
 		log.DebugContext(ctx, "Loading check bundle", log.String("repository", c.checkBundleRepo))
-		c.artifact = oci.NewArtifact(c.checkBundleRepo, registryOpts)
+		c.artifact = asset.NewOCI(c.checkBundleRepo, asset.Options{
+			MediaType:       policyMediaType,
+			Quiet:           c.quiet,
+			RegistryOptions: registryOpts,
+		})
 	}
 }
 
@@ -101,11 +105,7 @@ func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.R
 	c.populateOCIArtifact(ctx, registryOpts)
 
 	dst := c.contentDir()
-	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{
-		MediaType: policyMediaType,
-		Quiet:     c.quiet,
-	},
-	); err != nil {
+	if err := c.artifact.Download(ctx, dst); err != nil {
 		return xerrors.Errorf("download error: %w", err)
 	}
 

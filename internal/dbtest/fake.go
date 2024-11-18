@@ -13,8 +13,8 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/asset"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const defaultMediaType = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
@@ -38,7 +38,7 @@ type FakeDBOptions struct {
 	MediaType types.MediaType
 }
 
-func NewFakeDB(t *testing.T, dbPath string, opts FakeDBOptions) *oci.Artifact {
+func NewFakeDB(t *testing.T, dbPath string, opts FakeDBOptions) *asset.OCI {
 	mediaType := lo.Ternary(opts.MediaType != "", opts.MediaType, defaultMediaType)
 	img := new(fakei.FakeImage)
 	img.LayersReturns([]v1.Layer{NewFakeLayer(t, dbPath, mediaType)}, nil)
@@ -59,10 +59,13 @@ func NewFakeDB(t *testing.T, dbPath string, opts FakeDBOptions) *oci.Artifact {
 	}, nil)
 
 	// Mock OCI artifact
-	opt := ftypes.RegistryOptions{
-		Insecure: false,
+	assetOpts := asset.Options{
+		MediaType: defaultMediaType,
+		RegistryOptions: ftypes.RegistryOptions{
+			Insecure: false,
+		},
 	}
-	return oci.NewArtifact("dummy", opt, oci.WithImage(img))
+	return asset.NewOCI("dummy", assetOpts, asset.WithImage(img))
 }
 
 func ArchiveDir(t *testing.T, dir string) string {

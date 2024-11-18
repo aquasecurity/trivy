@@ -7,16 +7,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/asset"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
@@ -27,7 +25,6 @@ const (
 var (
 	// GitHub Container Registry
 	DefaultGHCRRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
-	defaultGHCRRepository = lo.Must(name.NewTag(DefaultGHCRRepository))
 
 	Init  = db.Init
 	Close = db.Close
@@ -35,24 +32,24 @@ var (
 )
 
 type options struct {
-	artifact       *oci.Artifact
-	dbRepositories []name.Reference
+	artifact    *asset.OCI
+	dbLocations []string
 }
 
 // Option is a functional option
 type Option func(*options)
 
 // WithOCIArtifact takes an OCI artifact
-func WithOCIArtifact(art *oci.Artifact) Option {
+func WithOCIArtifact(art *asset.OCI) Option {
 	return func(opts *options) {
 		opts.artifact = art
 	}
 }
 
 // WithDBRepository takes a dbRepository
-func WithDBRepository(dbRepository []name.Reference) Option {
+func WithDBRepository(dbLocations []string) Option {
 	return func(opts *options) {
-		opts.dbRepositories = dbRepository
+		opts.dbLocations = dbLocations
 	}
 }
 
@@ -72,8 +69,8 @@ func Dir(cacheDir string) string {
 // NewClient is the factory method for DB client
 func NewClient(dbDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
-		dbRepositories: []name.Reference{
-			defaultGHCRRepository,
+		dbLocations: []string{
+			DefaultGHCRRepository,
 		},
 	}
 
@@ -190,20 +187,21 @@ func (c *Client) updateDownloadedAt(ctx context.Context, dbDir string) error {
 	return nil
 }
 
-func (c *Client) initArtifacts(opt types.RegistryOptions) oci.Artifacts {
+func (c *Client) initArtifacts(opts types.RegistryOptions) asset.Assets {
 	if c.artifact != nil {
-		return oci.Artifacts{c.artifact}
+		return asset.Assets{c.artifact}
 	}
-	return oci.NewArtifacts(c.dbRepositories, opt)
+	return asset.NewAssets(c.dbLocations, asset.Options{
+		MediaType: dbMediaType,
+		Quiet:     c.quiet,
+
+		RegistryOptions: opts,
+	})
 }
 
 func (c *Client) downloadDB(ctx context.Context, opt types.RegistryOptions, dst string) error {
 	log.InfoContext(ctx, "Downloading vulnerability DB...")
-	downloadOpt := oci.DownloadOption{
-		MediaType: dbMediaType,
-		Quiet:     c.quiet,
-	}
-	if err := c.initArtifacts(opt).Download(ctx, dst, downloadOpt); err != nil {
+	if err := c.initArtifacts(opt).Download(ctx, dst); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 	return nil

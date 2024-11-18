@@ -3,7 +3,6 @@ package flag_test
 import (
 	"testing"
 
-	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,10 +35,10 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				JavaDBRepository: []string{"ghcr.io/aquasecurity/trivy-java-db"},
 			},
 			want: flag.DBOptions{
-				SkipDBUpdate:       true,
-				DownloadDBOnly:     false,
-				DBRepositories:     []name.Reference{name.Tag{}}, // All fields are unexported
-				JavaDBRepositories: []name.Reference{name.Tag{}}, // All fields are unexported
+				SkipDBUpdate:    true,
+				DownloadDBOnly:  false,
+				DBLocations:     []string{"ghcr.io/aquasecurity/trivy-db:2"},
+				JavaDBLocations: []string{"ghcr.io/aquasecurity/trivy-java-db:1"},
 			},
 			wantLogs: []string{
 				`Adding schema version to the DB repository for backward compatibility	repository="ghcr.io/aquasecurity/trivy-db:2"`,
@@ -61,21 +60,33 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				DownloadDBOnly: false,
 				DBRepository:   []string{"foo:bar:baz"},
 			},
-			wantErr: "invalid DB repository",
+			wantErr: "invalid DB location",
 		},
 		{
 			name: "multiple repos",
 			fields: fields{
-				SkipDBUpdate:     true,
-				DownloadDBOnly:   false,
-				DBRepository:     []string{"ghcr.io/aquasecurity/trivy-db:2", "gallery.ecr.aws/aquasecurity/trivy-db:2"},
-				JavaDBRepository: []string{"ghcr.io/aquasecurity/trivy-java-db:1", "gallery.ecr.aws/aquasecurity/trivy-java-db:1"},
+				SkipDBUpdate:   true,
+				DownloadDBOnly: false,
+				DBRepository: []string{
+					"ghcr.io/aquasecurity/trivy-db:2",
+					"gallery.ecr.aws/aquasecurity/trivy-db:2",
+				},
+				JavaDBRepository: []string{
+					"ghcr.io/aquasecurity/trivy-java-db:1",
+					"gallery.ecr.aws/aquasecurity/trivy-java-db:1",
+				},
 			},
 			want: flag.DBOptions{
-				SkipDBUpdate:       true,
-				DownloadDBOnly:     false,
-				DBRepositories:     []name.Reference{name.Tag{}, name.Tag{}}, // All fields are unexported
-				JavaDBRepositories: []name.Reference{name.Tag{}, name.Tag{}}, // All fields are unexported
+				SkipDBUpdate:   true,
+				DownloadDBOnly: false,
+				DBLocations: []string{
+					"ghcr.io/aquasecurity/trivy-db:2",
+					"gallery.ecr.aws/aquasecurity/trivy-db:2",
+				},
+				JavaDBLocations: []string{
+					"ghcr.io/aquasecurity/trivy-java-db:1",
+					"gallery.ecr.aws/aquasecurity/trivy-java-db:1",
+				},
 			},
 		},
 	}
@@ -97,12 +108,10 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 			}
 			got, err := f.ToOptions()
 			if tt.wantErr != "" {
-				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
-
 			assert.EqualExportedValues(t, tt.want, got)
 
 			// Assert log messages

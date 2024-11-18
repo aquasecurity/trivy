@@ -7,7 +7,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/semaphore"
@@ -623,9 +622,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			if tt.analyzerType == analyzer.TypeJar {
 				// init java-trivy-db with skip update
-				repo, err := name.NewTag(javadb.DefaultGHCRRepository)
-				require.NoError(t, err)
-				javadb.Init("./language/java/jar/testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
+				javadb.Init("./language/java/jar/testdata", []string{javadb.DefaultGHCRRepository}, true, false, types.RegistryOptions{Insecure: false})
 			}
 
 			ctx := context.Background()

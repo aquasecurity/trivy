@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -21,7 +20,7 @@ import (
 var mu sync.Mutex
 
 // DownloadDB downloads the DB
-func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories []name.Reference, quiet, skipUpdate bool,
+func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepositories []string, quiet, skipUpdate bool,
 	opt ftypes.RegistryOptions) error {
 	mu.Lock()
 	defer mu.Unlock()
@@ -97,7 +96,7 @@ func InitBuiltinChecks(ctx context.Context, cacheDir string, quiet, skipUpdate b
 
 	if needsUpdate {
 		log.InfoContext(ctx, "Need to update the built-in checks")
-		log.InfoContext(ctx, "Downloading the built-in checks...")
+		log.InfoContext(ctx, "Downloading the built-in checks...", log.String("repo", checkBundleRepository))
 		if err = client.DownloadBuiltinChecks(ctx, registryOpts); err != nil {
 			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
 		}

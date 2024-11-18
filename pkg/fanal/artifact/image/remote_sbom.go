@@ -13,12 +13,12 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/asset"
 	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -70,7 +70,7 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (artifact.Referenc
 	}
 	for _, m := range lo.FromPtr(manifest).Manifests {
 		// Unsupported artifact type
-		if !slices.Contains(oci.SupportedSBOMArtifactTypes, m.ArtifactType) {
+		if !slices.Contains(asset.SupportedSBOMArtifactTypes, m.ArtifactType) {
 			continue
 		}
 		res, err := a.parseReferrer(ctx, digest.Context().String(), m)
@@ -95,12 +95,13 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 	defer os.RemoveAll(tmpDir)
 
 	// Download SBOM to local filesystem
-	referrer := oci.NewArtifact(repoName, a.artifactOption.ImageOption.RegistryOptions)
-	if err = referrer.Download(ctx, tmpDir, oci.DownloadOption{
-		MediaType: desc.ArtifactType,
-		Filename:  fileName,
-		Quiet:     true,
-	}); err != nil {
+	referrer := asset.NewOCI(repoName, asset.Options{
+		MediaType:       desc.ArtifactType,
+		Filename:        fileName,
+		Quiet:           true,
+		RegistryOptions: a.artifactOption.ImageOption.RegistryOptions,
+	})
+	if err = referrer.Download(ctx, tmpDir); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("SBOM download error: %w", err)
 	}
 
