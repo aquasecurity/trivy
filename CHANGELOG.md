@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.58.0](https://github.com/aquasecurity/trivy/compare/v0.57.0...v0.57.1) (2024-11-18)
+## [0.57.1](https://github.com/aquasecurity/trivy/compare/v0.57.0...v0.57.1) (2024-11-18)
 
 ### Bug Fixes
 
