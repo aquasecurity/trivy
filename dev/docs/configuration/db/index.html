@@ -4181,6 +4181,45 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#rate-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate limits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rate limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authenticated-use-of-registries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authenticated use of Registries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching-dbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching DBs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7586,6 +7625,45 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#rate-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate limits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rate limits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authenticated-use-of-registries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authenticated use of Registries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching-dbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching DBs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7735,6 +7813,15 @@ You can reference the OCI manifest of <a href="https://github.com/aquasecurity/t
 <p>Trivy automatically adds the <code>trivy-db</code> schema version as a tag if the tag is not used:</p>
 <p><code>trivy-db-registry:latest</code> =&gt; <code>trivy-db-registry:latest</code>, but <code>trivy-db-registry</code> =&gt; <code>trivy-db-registry:2</code>.</p>
 </div>
+<h3 id="rate-limits">Rate limits<a class="headerlink" href="#rate-limits" title="Permanent link">&para;</a></h3>
+<p>Trivy hosts its databases on public OCI registries that are subject to their respective rate limits. While we strive to make the databases available to every
+Trivy user, there are certain recommendations that one can make in order to ensure rate limits are not hit.</p>
+<h4 id="authenticated-use-of-registries">Authenticated use of Registries<a class="headerlink" href="#authenticated-use-of-registries" title="Permanent link">&para;</a></h4>
+<p>By authenticating with the registries that Trivy hosts its DBs on can significantly increase the limit for users. For Amazon ECR, the details for rate limits can be found <a href="https://docs.aws.amazon.com/AmazonECR/latest/public/public-service-quotas.html">ecr-limits</a>.</p>
+<p>Please see more info on how to authenticate with ECR <a href="https://aws.amazon.com/blogs/compute/authenticating-amazon-ecr-repositories-for-docker-cli-with-credential-helper/">auth-ecr</a>.</p>
+<h4 id="caching-dbs">Caching DBs<a class="headerlink" href="#caching-dbs" title="Permanent link">&para;</a></h4>
+<p>Trivy DB and Trivy Java DB are published every 6 hours and 24 hours, respectively. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
+Once example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found <a href="https://github.com/aquasecurity/trivy-action?tab=readme-ov-file#cache">trivy-action-cache</a>.</p>
 <h2 id="java-index-database">Java Index Database<a class="headerlink" href="#java-index-database" title="Permanent link">&para;</a></h2>
 <p>The same options are also available for the Java index DB, which is used for scanning Java applications.
 Skipping an update can be done by using the <code>--skip-java-db-update</code> option, while <code>--download-java-db-only</code> can be used to only download the Java index DB.</p>

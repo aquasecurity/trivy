@@ -7895,7 +7895,7 @@ You're not viewing the latest version of the documentation.
 <h1 id="config-file">Config file<a class="headerlink" href="#config-file" title="Permanent link">&para;</a></h1>
 <p>Trivy can be customized by tweaking a <code>trivy.yaml</code> file.
 The config path can be overridden by the <code>--config</code> flag.</p>
-<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.57.0-18-ga5f0ef5e7/examples/trivy-conf/trivy.yaml">here</a>.</p>
+<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.57.0-24-g5ba9a83a4/examples/trivy-conf/trivy.yaml">here</a>.</p>
 <p>These samples contain default values for flags.</p>
 <h2 id="global-options">Global options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nt">cache</span><span class="p">:</span>
@@ -7982,6 +7982,7 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--java-db-repository&#39;</span>
 <span class="w">  </span><span class="nt">java-repository</span><span class="p">:</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mirror.gcr.io/aquasec/trivy-java-db:1</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-java-db:1</span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--skip-java-db-update&#39;</span>
@@ -7992,6 +7993,7 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--db-repository&#39;</span>
 <span class="w">  </span><span class="nt">repository</span><span class="p">:</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mirror.gcr.io/aquasec/trivy-db:2</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-db:2</span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--skip-db-update&#39;</span>
