@@ -4,8 +4,12 @@ package resolvers_test
 
 import (
 	"context"
+	"crypto/tls"
 	"io/fs"
+	"net/http"
+	"net/http/httptest"
 	"path"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,6 +36,18 @@ func testOptions(t *testing.T, source string) resolvers.Options {
 	}
 }
 
+func newRegistry(repoURL string) *httptest.Server {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/modules/terraform-aws-modules/s3-bucket/aws/download", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Terraform-Get", repoURL)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	return httptest.NewTLSServer(mux)
+}
+
+func buildGitSource(repoURL string) string { return "git::" + repoURL }
+
 func TestResolveModuleFromCache(t *testing.T) {
 
 	repo := "terraform-aws-s3-bucket"
@@ -40,6 +56,11 @@ func TestResolveModuleFromCache(t *testing.T) {
 
 	repoURL := gs.URL + "/" + repo + ".git"
 
+	registry := newRegistry(buildGitSource(repoURL))
+	defer registry.Close()
+
+	registryAddress := strings.TrimPrefix(registry.URL, "https://")
+
 	tests := []struct {
 		name           string
 		opts           resolvers.Options
@@ -47,38 +68,48 @@ func TestResolveModuleFromCache(t *testing.T) {
 		expectedSubdir string
 		expectedString string
 	}{
-		// {
-		// 	name: "registry",
-		// 	opts: resolvers.Options{
-		// 		Name:    "bucket",
-		// 		Source:  "terraform-aws-modules/s3-bucket/aws",
-		// 		Version: "4.1.2",
-		// 	},
-		// 	firstResolver:  resolvers.Registry,
-		// 	expectedSubdir: ".",
-		// 	expectedString: "# AWS S3 bucket Terraform module",
-		// },
-		// {
-		// 	name: "registry with subdir",
-		// 	opts: resolvers.Options{
-		// 		Name:    "object",
-		// 		Source:  "terraform-aws-modules/s3-bucket/aws//modules/object",
-		// 		Version: "4.1.2",
-		// 	},
-		// 	firstResolver:  resolvers.Registry,
-		// 	expectedSubdir: "modules/object",
-		// 	expectedString: "# S3 bucket object",
-		// },
 		{
-			name:           "remote",
-			opts:           testOptions(t, "git::"+repoURL),
+			name: "registry",
+			opts: resolvers.Options{
+				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws",
+				Client: &http.Client{
+					Transport: &http.Transport{
+						TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+					},
+				},
+			},
+			firstResolver:  resolvers.Registry,
+			expectedSubdir: ".",
+			expectedString: "# AWS S3 bucket Terraform module",
+		},
+		{
+			name: "registry with subdir",
+			opts: resolvers.Options{
+				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws//modules/object",
+				Client: &http.Client{
+					Transport: &http.Transport{
+						TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+					},
+				},
+			},
+			firstResolver:  resolvers.Registry,
+			expectedSubdir: "modules/object",
+			expectedString: "# S3 bucket object",
+		},
+		{
+			name: "remote",
+			opts: resolvers.Options{
+				Source: buildGitSource(repoURL),
+			},
 			firstResolver:  resolvers.Remote,
 			expectedSubdir: ".",
 			expectedString: "# AWS S3 bucket Terraform module",
 		},
 		{
-			name:           "remote with subdir",
-			opts:           testOptions(t, "git::"+repoURL+"//modules/object"),
+			name: "remote with subdir",
+			opts: resolvers.Options{
+				Source: buildGitSource(repoURL) + "//modules/object",
+			},
 			firstResolver:  resolvers.Remote,
 			expectedSubdir: "modules/object",
 			expectedString: "# S3 bucket object",
@@ -87,6 +118,11 @@ func TestResolveModuleFromCache(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+
+			tt.opts.OriginalSource = tt.opts.Source
+			tt.opts.AllowDownloads = true
+			tt.opts.CacheDir = t.TempDir()
+			tt.opts.Logger = log.WithPrefix("test")
 
 			fsys, _, dir, _, err := tt.firstResolver.Resolve(context.Background(), nil, tt.opts)
 			require.NoError(t, err)

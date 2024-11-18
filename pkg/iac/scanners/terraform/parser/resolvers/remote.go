@@ -40,12 +40,9 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 		return nil, "", "", false, nil
 	}
 
-	src, subdir := splitPackageSubdirRaw(opt.Source)
-	key := cacheKey(src, opt.OriginalVersion)
+	origSrc, subdir := splitPackageSubdirRaw(opt.OriginalSource)
+	key := cacheKey(origSrc, opt.OriginalVersion)
 	opt.Logger.Debug("Caching module", log.String("key", key))
-
-	opt.OriginalSource = opt.Source
-	opt.Source = src
 
 	baseCacheDir, err := locateCacheDir(opt.CacheDir)
 	if err != nil {
@@ -53,6 +50,10 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 	}
 
 	cacheDir := filepath.Join(baseCacheDir, key)
+
+	src, _ := splitPackageSubdirRaw(opt.Source)
+
+	opt.Source = src
 	if err := r.download(ctx, opt, cacheDir); err != nil {
 		return nil, "", "", true, err
 	}
