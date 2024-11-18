@@ -471,7 +471,7 @@ func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 
 	var val cty.Value
 
-	if override, exists := e.inputVars[b.Label()]; exists {
+	if override, exists := e.inputVars[b.Label()]; exists && override.Type() != cty.NilType {
 		val = override
 	} else if def, exists := attributes["default"]; exists {
 		val = def.NullableValue()
