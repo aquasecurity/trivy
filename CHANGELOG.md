@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.57.1](https://github.com/aquasecurity/trivy/compare/v0.57.0...v0.57.1) (2024-11-18)
+
+### Bug Fixes
+
+* Update registry fallbacks [backport: release/v0.57] ([#7944](https://github.com/aquasecurity/trivy/issues/7944)) ([cd0d128](https://github.com/aquasecurity/trivy/commit/cd0d1281bfd1e2804c2305fafde7831d3ec571df))
+* **redhat:** don't return error if `root/buildinfo/content_manifests/` contains files that are not `contentSets` files [backport: release/v0.57] ([#7939](https://github.com/aquasecurity/trivy/issues/7939)) ([7dd70dc](https://github.com/aquasecurity/trivy/commit/7dd70dcf3e3b0b49af7f375d1ca20777ef6e28e2))
+
 ## [0.57.0](https://github.com/aquasecurity/trivy/compare/v0.56.0...v0.57.0) (2024-10-31)
 
 
