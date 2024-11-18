@@ -103,7 +103,7 @@ Please see more info on how to authenticate with ECR [auth-ecr].
 
 #### Caching DBs
 Trivy DB and Trivy Java DB are published every 6 hours and 24 hours, respectively. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
-Once example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found [trivy-action-cache].
+One example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found [trivy-action-cache].
 
 ## Java Index Database
 The same options are also available for the Java index DB, which is used for scanning Java applications.
