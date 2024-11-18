@@ -1,14 +1,15 @@
 site_name: Trivy
 site_url: https://aquasecurity.github.io/trivy/
-site_description: A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI
+site_description: Trivy - All-in-one open source security scanner
 docs_dir: docs/
 repo_name: GitHub
 repo_url: https://github.com/aquasecurity/trivy
 edit_uri: "blob/main/docs/"
 
 nav:
-  - Getting Started: 
-      - Overview: index.md
+  - Home: index.md
+  - Getting Started:
+      - First steps: getting-started/index.md 
       - Installation: getting-started/installation.md
       - Signature Verification: getting-started/signature-verification.md
       - FAQ: getting-started/faq.md
@@ -218,6 +219,7 @@ nav:
           - Backporting: community/maintainer/backporting.md
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
+
 theme:
   name: material
   custom_dir: docs/overrides
@@ -232,24 +234,27 @@ theme:
     - content.tabs.link
     - content.code.annotate
     - content.code.copy
+  font:
+    text: Inter
 
 markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
   - pymdownx.highlight
+  - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - admonition
-  - footnotes
-  - attr_list
   - pymdownx.tabbed:
       alternate_style: true
-  - def_list
-  - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 extra:
   generator: false
