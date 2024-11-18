@@ -8167,7 +8167,7 @@ Note that XML format is not supported at the moment.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --scanners vuln --format cyclonedx --output result.json alpine:3.15
 </code></pre></div>
 <h4 id="spdx">SPDX<a class="headerlink" href="#spdx" title="Permanent link">&para;</a></h4>
-<p>Trivy can generate SBOM in the <a href="https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf">SPDX</a> format.</p>
+<p>Trivy can generate SBOM in the <a href="https://spdx.github.io/spdx-spec/v2.2.2/">SPDX</a> format.</p>
 <p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>spdx</code> with the <code>--format</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format spdx --output result.spdx alpine:3.15
 </code></pre></div>

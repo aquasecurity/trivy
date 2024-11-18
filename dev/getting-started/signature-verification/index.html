@@ -7598,8 +7598,8 @@ The following checks were performed on each of these signatures:
 <p>RPM and Deb packages are also signed by GPG.</p>
 <h3 id="verifying-rpm">Verifying RPM<a class="headerlink" href="#verifying-rpm" title="Permanent link">&para;</a></h3>
 <p>The public key is available at <a href="https://aquasecurity.github.io/trivy-repo/rpm/public.key">https://aquasecurity.github.io/trivy-repo/rpm/public.key</a>.</p>
-<p>First, download and import the key: </p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>https://aquasecurity.github.io/trivy-repo/rpm/public.key<span class="w"> </span><span class="se">\ </span>
+<p>First, download and import the key:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>https://aquasecurity.github.io/trivy-repo/rpm/public.key<span class="w"> </span><span class="se">\</span>
 --output<span class="w"> </span>pub.key
 rpm<span class="w"> </span>--import<span class="w"> </span>pub.key
 rpm<span class="w"> </span>-q<span class="w"> </span>--queryformat<span class="w"> </span><span class="s2">&quot;%{SUMMARY}\n&quot;</span><span class="w"> </span><span class="k">$(</span>rpm<span class="w"> </span>-q<span class="w"> </span>gpg-pubkey<span class="k">)</span>

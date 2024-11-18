@@ -7742,7 +7742,7 @@ You're not viewing the latest version of the documentation.
 If you want to avoid writing an OCI registry and only want to see an attestation, add the <code>--no-upload</code> option to the <code>cosign</code> command.</p>
 </div>
 <h3 id="sign-with-a-local-key-pair">Sign with a local key pair<a class="headerlink" href="#sign-with-a-local-key-pair" title="Permanent link">&para;</a></h3>
-<p>Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about <a href="https://docs.sigstore.dev/cosign/key-generation">how to generate key pairs</a>.</p>
+<p>Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about <a href="https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys">how to generate key pairs</a>.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>cosign<span class="w"> </span>generate-key-pair
 </code></pre></div>
 <p>In the following example, Trivy generates a cosign vulnerability scan record, and then Cosign attaches an attestation of it to a container image with a local key pair.</p>
