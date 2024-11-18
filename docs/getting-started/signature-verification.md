@@ -11,7 +11,7 @@ cosign verify aquasec/trivy:<version> \
 --certificate-identity-regexp 'https://github\.com/aquasecurity/trivy/\.github/workflows/.+' \
 --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
 ```
-   
+
 You should get the following output
 
 ```
@@ -52,10 +52,10 @@ RPM and Deb packages are also signed by GPG.
 
 The public key is available at <https://aquasecurity.github.io/trivy-repo/rpm/public.key>.
 
-First, download and import the key: 
+First, download and import the key:
 
 ```shell
-curl https://aquasecurity.github.io/trivy-repo/rpm/public.key \ 
+curl https://aquasecurity.github.io/trivy-repo/rpm/public.key \
 --output pub.key
 rpm --import pub.key
 rpm -q --queryformat "%{SUMMARY}\n" $(rpm -q gpg-pubkey)
@@ -66,7 +66,7 @@ You should get the following output:
 ```
 gpg(trivy)
 ```
-   
+
 Then you can verify the signature:
 
 ```shell
