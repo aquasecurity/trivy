@@ -28,7 +28,13 @@ const gcrURLSuffix = ".gcr.io"
 // Google artifact registry
 const garURLSuffix = "-docker.pkg.dev"
 
+// Google mirror registry
+const gmrURLDomain = "mirror.gcr.io"
+
 func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {
+	if domain == gmrURLDomain {
+		return nil, xerrors.Errorf("mirror.gcr.io doesn't require authentication")
+	}
 	if domain != gcrURLDomain && !strings.HasSuffix(domain, gcrURLSuffix) && !strings.HasSuffix(domain, garURLSuffix) {
 		return nil, xerrors.Errorf("Google registry: %w", types.InvalidURLPattern)
 	}
