@@ -375,7 +375,7 @@ license:
 ```yaml
 misconfiguration:
   # Same as '--checks-bundle-repository'
-  checks-bundle-repository: "mirror.gcr.io/aquasecurity/trivy-checks:1"
+  checks-bundle-repository: "mirror.gcr.io/aquasec/trivy-checks:1"
 
   cloudformation:
     # Same as '--cf-params'
