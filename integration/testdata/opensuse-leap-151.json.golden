@@ -5,7 +5,7 @@
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
-      "Family": "opensuse.leap",
+      "Family": "opensuse-leap",
       "Name": "15.1",
       "EOSL": true
     },
@@ -57,16 +57,16 @@
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
+      "Target": "testdata/fixtures/images/opensuse-leap-151.tar.gz (opensuse-leap 15.1)",
       "Class": "os-pkgs",
-      "Type": "opensuse.leap",
+      "Type": "opensuse-leap",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "openSUSE-SU-2020:0062-1",
           "PkgID": "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
           "PkgName": "libopenssl1_1",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/opensuse/libopenssl1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse.leap-15.1",
+            "PURL": "pkg:rpm/opensuse/libopenssl1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
             "UID": "898b73ddd0412f57"
           },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
@@ -99,7 +99,7 @@
           "PkgID": "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
           "PkgName": "openssl-1_1",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/opensuse/openssl-1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse.leap-15.1",
+            "PURL": "pkg:rpm/opensuse/openssl-1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
             "UID": "58980d005de43f54"
           },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
