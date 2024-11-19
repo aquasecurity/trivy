@@ -37,8 +37,8 @@ const (
 	Photon             OSType = "photon"
 	RedHat             OSType = "redhat"
 	Rocky              OSType = "rocky"
-	SLEMicro           OSType = "suse linux enterprise micro"
-	SLES               OSType = "suse linux enterprise server"
+	SLEMicro           OSType = "slem"
+	SLES               OSType = "sles"
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
 )
