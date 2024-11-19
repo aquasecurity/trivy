@@ -266,7 +266,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			name: "sles12.3",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "suse linux enterprise server",
+				osFamily: "sles",
 				osVer:    "12.3",
 			},
 			distribution: suse.SUSEEnterpriseLinux,
