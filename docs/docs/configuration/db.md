@@ -25,18 +25,21 @@ Trivy's databases are published to the following locations:
 | | `ghcr.io/aquasecurity/trivy-checks` | <https://ghcr.io/aquasecurity/trivy-checks>
 | Docker Hub | `aquasec/trivy-db` | <https://hub.docker.com/r/aquasec/trivy-db>
 | | `aquasec/trivy-java-db` | <https://hub.docker.com/r/aquasec/trivy-java-db>
+| | `aquasec/trivy-checks` | <https://hub.docker.com/r/aquasec/trivy-checks>
 | AWS ECR | `public.ecr.aws/aquasecurity/trivy-db` | <https://gallery.ecr.aws/aquasecurity/trivy-db>
 | | `public.ecr.aws/aquasecurity/trivy-java-db` | <https://gallery.ecr.aws/aquasecurity/trivy-java-db>
+| | `public.ecr.aws/aquasecurity/trivy-checks` | <https://gallery.ecr.aws/aquasecurity/trivy-checks>
 
-## Pulling and fallback
+In addition, images are also available via pull-through cache registries like [Google Container Registry Mirror](https://cloud.google.com/artifact-registry/docs/pull-cached-dockerhub-images).
 
-Trivy will attempt to pull images from the following registries in the order specified. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries.
+## Default Locations
 
-1. `ghcr.io/aquasecurity`
+Trivy will attempt to pull images from the following registries in the order specified.
 
-You can specify additional alternative repositories as explained in the [configuring database locations section](#locations).
+1. `mirror.gcr.io/aquasec`
+2. `ghcr.io/aquasecurity`
 
-Note that the Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the trivy-checks DB, Trivy will use the embedded checks as a fallback.
+You can specify additional alternative repositories as explained in the [configuring database locations section](#database-locations).
 
 ## DB Management Configuration
 
@@ -63,6 +66,8 @@ For example:
 ```
 trivy image --db-repository my.registry.local/trivy-db --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
+
+The Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the checks DB, Trivy will use the embedded checks as a fallback.
 
 !!! note 
     Setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
