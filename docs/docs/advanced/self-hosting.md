@@ -1,11 +1,6 @@
 # Self-Hosting Trivy's Databases
 
-When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations. These so called "databases" are fetched and maintained by Trivy automatically as needed.
-
-If you prefer, you can host Trivy's databases in your own infrastructure. This document explains how to do that.
-
-!!! note
-    Please familiarize yourself with the [Databases document](../configuration/db.md) that explains about the different databases used by Trivy and the different configuration options that control them. This guide assumes you are already familiar with the concepts explained there.
+This document explains how to host Trivy's databases in your own infrastructure. If you haven't already, please familiarize yourself with the [Databases document](../configuration/db.md) that explains about the different databases used by Trivy and the different configuration options that control them. This guide assumes you are already familiar with the concepts explained there.
 
 ## OCI databases
 
@@ -45,6 +40,71 @@ DB | Media Type | Reference
 `trivy-db` | `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip` | <https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db>
 `trivy-java-db` | `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip` | https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db
 `trivy-chekcs` | `application/vnd.oci.image.manifest.v1+json` | https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks
+
+## Manual cache population
+
+Trivy uses a local cache directory to store the database files, as described in the [cache](../configuration/cache.md) document.
+You can download the databases files and surgically populate the Trivy cache directory with them.
+
+### Downloading the DB files
+
+On a machine with internet access, pull the database container archive from the public registry into your local workspace:
+
+Note that these examples operate in the current working directory.
+
+=== "Using ORAS"
+    This example uses [ORAS](https://oras.land), but you can use any other container registry manipulation tool.
+
+    ```shell
+    oras pull ghcr.io/aquasecurity/trivy-db:2
+    ```
+    
+    You should now have a file called `db.tar.gz`. Next, extract it to reveal the db files:
+    
+    ```shell
+    tar -xzf db.tar.gz
+    ```
+    
+
+=== "Using Trivy"
+    This example uses Trivy to pull the database container archive. The `--cache-dir` flag makes Trivy download the database files into our current working directory. The `--download-db-only` flag tells Trivy to only download the database files, not to scan any images.
+    
+    ```shell
+    trivy image --cache-dir . --download-db-only
+    ```
+
+You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files, copy them over to the air-gapped environment.
+
+### Populating the Trivy Cache
+
+In order to populate the cache, you need to identify the location of the cache directory. If it is under the default location, you can run the following command to find it:
+
+```shell
+trivy -h | grep cache
+```
+
+For the example, we will assume the `TRIVY_CACHE_DIR` variable holds the cache location:
+
+```shell
+TRIVY_CACHE_DIR=/home/user/.cache/trivy
+```
+
+Put the Trivy DB files in the Trivy cache directory under a `db` subdirectory:
+
+```shell
+# ensure cache db directory exists
+mkdir -p ${TRIVY_CACHE_DIR}/db
+# copy the db files
+cp /path/to/trivy.db /path/to/metadata.json ${TRIVY_CACHE_DIR}/db/
+```
+
+### Java DB adaptations
+
+For Java DB the process is the same, except for the following:
+
+1. Image location is `ghcr.io/aquasecurity/trivy-java-db:1`
+2. Archive file name is `javadb.tar.gz`
+3. DB file name is `trivy-java.db`
 
 ## VEX Hub
 
