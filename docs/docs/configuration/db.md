@@ -89,7 +89,7 @@ You can configure Trivy to not attempt to download database at all using the fla
 For example:
 
 ```
-trivy image --skip-db-update --skip-java-db-update --offline-scan --skip-check-update myimage
+trivy image --skip-db-update --skip-java-db-update --skip-check-update alpine
 ```
 
 ### Only update
