@@ -13,7 +13,9 @@ Java DB | `trivy-java-db` | Index of Java artifacts and their hash digest | used
 Misconfiguration DB | `trivy-chekcs` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
 
 !!! note
-    This is not an exhaustive list of Trivy's external connectivity requirements. There are additional external resources that might be required by specific Trivy features. To learn about external connectivity requirements, refer to the [Network connectivity document](../advanced/air-gap.md).
+    This is not an exhaustive list of Trivy's external connectivity requirements.
+    There are additional external resources which may be required by specific Trivy features.
+    To learn about external connectivity requirements, see the [Advanced Network Scenarios](../advanced/air-gap.md).
 
 ## Locations
 
