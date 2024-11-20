@@ -39,7 +39,7 @@ Trivy detects the flavor for version of the found package and finds vulnerabilit
 
 
 For example Trivy finds [CVE-2021-33560](https://linux.oracle.com/cve/CVE-2021-33560.html) only for the `normal` and `fips` flavors. 
-For the `ksplice1` or `ksplice` flavors, [CVE-2021-33560](https://linux.oracle.com/cve/CVE-2021-33560.html) will be skipped.
+For the `ksplice` flavor, [CVE-2021-33560](https://linux.oracle.com/cve/CVE-2021-33560.html) will be skipped.
 
 ### Severity
 Trivy determines vulnerability severity based on the severity metric provided in [Oracle security advisories][alerts].
