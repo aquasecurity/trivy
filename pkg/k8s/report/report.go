@@ -280,7 +280,12 @@ func shouldAddToReport(scanners types.Scanners) bool {
 }
 
 func vulnerabilitiesOrSecretResource(resource Resource) bool {
-	return len(resource.Results) > 0 && (len(resource.Results[0].Vulnerabilities) > 0 || len(resource.Results[0].Secrets) > 0)
+	for _, result := range resource.Results {
+		if len(result.Vulnerabilities) > 0 || len(resource.Results[0].Secrets) > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func misconfigsResource(resource Resource) bool {
