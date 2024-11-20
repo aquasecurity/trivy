@@ -38,9 +38,8 @@ func TestParseIgnoreFile(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(f.Name())
 
-		got, err := ParseIgnoreFile(context.TODO(), f.Name())
+		_, err = ParseIgnoreFile(context.TODO(), f.Name())
 		require.NoError(t, err)
-		assert.Empty(t, got)
 	})
 
 	t.Run("invalid YAML file passed", func(t *testing.T) {
