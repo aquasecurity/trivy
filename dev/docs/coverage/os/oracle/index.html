@@ -2912,6 +2912,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fixed Version">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flavors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flavors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -7597,6 +7614,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fixed Version">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flavors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flavors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -7714,6 +7748,36 @@ You're not viewing the latest version of the documentation.
 <p>See <a href="../../../scanner/vulnerability/#data-sources">here</a>.</p>
 <h3 id="fixed-version">Fixed Version<a class="headerlink" href="#fixed-version" title="Permanent link">&para;</a></h3>
 <p>Trivy takes fixed versions from <a href="https://www.oracle.com/security-alerts/">Oracle security advisories</a>.</p>
+<h4 id="flavors">Flavors<a class="headerlink" href="#flavors" title="Permanent link">&para;</a></h4>
+<p>Trivy detects the flavor for version of the found package and finds vulnerabilities only for that flavor.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Flavor</th>
+<th style="text-align: center;">Format</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">normal</td>
+<td style="text-align: center;">version without <code>fips</code> and <code>ksplice</code></td>
+<td>3.6.16-4.el8</td>
+</tr>
+<tr>
+<td style="text-align: center;">fips</td>
+<td style="text-align: center;"><code>*_fips</code></td>
+<td>10:3.6.16-4.0.1.el8_fips</td>
+</tr>
+<tr>
+<td style="text-align: center;">ksplice</td>
+<td style="text-align: center;"><code>*.ksplice*.*</code></td>
+<td>2:2.34-60.0.3.ksplice1.el9_2.7, 151.0.1.ksplice2.el8</td>
+</tr>
+</tbody>
+</table>
+<p>For example Trivy finds <a href="https://linux.oracle.com/cve/CVE-2021-33560.html">CVE-2021-33560</a> only for the <code>normal</code> and <code>fips</code> flavors. 
+For the <code>ksplice</code> flavor, <a href="https://linux.oracle.com/cve/CVE-2021-33560.html">CVE-2021-33560</a> will be skipped.</p>
 <h3 id="severity">Severity<a class="headerlink" href="#severity" title="Permanent link">&para;</a></h3>
 <p>Trivy determines vulnerability severity based on the severity metric provided in <a href="https://www.oracle.com/security-alerts/">Oracle security advisories</a>.
 For example, the security patch for <a href="https://linux.oracle.com/cve/CVE-2023-0464.html">CVE-2023-0464</a> is provided as <a href="https://linux.oracle.com/errata/ELSA-2023-2645.html">ELSA-2023-2645</a>.
