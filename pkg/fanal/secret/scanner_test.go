@@ -668,6 +668,117 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingPrivatePackagistOrgReadToken := types.SecretFinding{
+		RuleID:    "private-packagist-token",
+		Category:  secret.CategoryPrivatePackagist,
+		Title:     "Private Packagist token",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "ORG_READ_TOKEN=**********************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "ORG_READ_TOKEN=**********************************************************************************",
+					Highlighted: "ORG_READ_TOKEN=**********************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "ORG_WRITE_TOKEN=**********************************************************************************",
+					Highlighted: "ORG_WRITE_TOKEN=**********************************************************************************",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+	}
+	wantFindingPrivatePackagistOrgUpdateToken := types.SecretFinding{
+		RuleID:    "private-packagist-token",
+		Category:  secret.CategoryPrivatePackagist,
+		Title:     "Private Packagist token",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "ORG_WRITE_TOKEN=**********************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "ORG_READ_TOKEN=**********************************************************************************",
+					Highlighted: "ORG_READ_TOKEN=**********************************************************************************",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      2,
+					Content:     "ORG_WRITE_TOKEN=**********************************************************************************",
+					Highlighted: "ORG_WRITE_TOKEN=**********************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "USER_TOKEN=**********************************************************************************",
+					Highlighted: "USER_TOKEN=**********************************************************************************",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+	}
+	wantFindingPrivatePackagistUserToken := types.SecretFinding{
+		RuleID:    "private-packagist-token",
+		Category:  secret.CategoryPrivatePackagist,
+		Title:     "Private Packagist token",
+		Severity:  "HIGH",
+		StartLine: 3,
+		EndLine:   3,
+		Match:     "USER_TOKEN=**********************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "ORG_READ_TOKEN=**********************************************************************************",
+					Highlighted: "ORG_READ_TOKEN=**********************************************************************************",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      2,
+					Content:     "ORG_WRITE_TOKEN=**********************************************************************************",
+					Highlighted: "ORG_WRITE_TOKEN=**********************************************************************************",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      3,
+					Content:     "USER_TOKEN=**********************************************************************************",
+					Highlighted: "USER_TOKEN=**********************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      4,
+					Content:     "",
+					Highlighted: "",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+	}
 	wantFindingHuggingFace := types.SecretFinding{
 		RuleID:    "hugging-face-access-token",
 		Category:  secret.CategoryHuggingFace,
@@ -939,6 +1050,19 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "jwt-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingJWT},
+			},
+		},
+		{
+			name:          "find Private Packagist tokens",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "private-packagist.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "private-packagist.txt"),
+				Findings: []types.SecretFinding{
+					wantFindingPrivatePackagistOrgReadToken,
+					wantFindingPrivatePackagistOrgUpdateToken,
+					wantFindingPrivatePackagistUserToken,
+				},
 			},
 		},
 		{
