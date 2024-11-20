@@ -361,6 +361,35 @@ resource "aws_s3_bucket" "test" {}`,
 resource "aws_s3_bucket" "test" {}`,
 			assertLength: 0,
 		},
+		{
+			name: "ignore for implied IAM resource",
+			source: `# %s:ignore:aws-iam-enforce-mfa
+resource "aws_iam_group" "this" {
+  name = "group-name" 
+}
+
+resource "aws_iam_policy" "this" {
+  name   = "test-policy"                                 
+  policy = data.aws_iam_policy_document.this.json 
+}
+
+
+resource "aws_iam_group_policy_attachment" "this" {
+  group      = aws_iam_group.this.name
+  policy_arn = aws_iam_policy.this.arn                         
+}
+
+data "aws_iam_policy_document" "this" {
+  statement {
+    sid = "PublishToCloudWatch" 
+    actions = [
+      "cloudwatch:PutMetricData", 
+    ]
+    resources = ["*"]
+  }
+}`,
+			assertLength: 0,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -370,7 +399,9 @@ resource "aws_s3_bucket" "test" {}`,
 				t.Run(prefix, func(t *testing.T) {
 					results := scanHCL(
 						t, formatWithSingleValue(tc.source, prefix),
-						rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+						rego.WithPolicyReader(
+							strings.NewReader(emptyBucketCheck),
+							strings.NewReader(enforceGroupMfaCheck)),
 						rego.WithPolicyNamespaces("user"),
 					)
 					assert.Len(t, results.GetFailed(), tc.assertLength)

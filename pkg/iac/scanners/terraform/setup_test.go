@@ -42,6 +42,41 @@ deny contains res if  {
 }
 `
 
+var enforceGroupMfaCheck = `# METADATA
+# schemas:
+#   - input: schema["cloud"]
+# custom:
+#   id: USER-TEST-0124
+#   aliases:
+#     - aws-iam-enforce-mfa
+#   provider: aws
+#   service: iam
+#   short_code: enforce-group-mfa
+#   input:
+#     selector:
+#       - type: cloud
+#         subtypes:
+#           - service: iam
+#             provider: aws
+package user.test124
+
+import rego.v1
+
+deny contains res if {
+	some group in input.aws.iam.groups
+	not is_group_mfa_enforced(group)
+	res := result.new("Multi-Factor authentication is not enforced for group", group)
+}
+
+is_group_mfa_enforced(group) if {
+	some policy in group.policies
+	value := json.unmarshal(policy.document.value)
+	some condition in value.Statement[_].Condition
+	some key, _ in condition
+	key == "aws:MultiFactorAuthPresent"
+}
+`
+
 func createModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
 	fs := testutil.CreateFS(t, map[string]string{
 		"source" + ext: source,
