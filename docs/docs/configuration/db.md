@@ -1,6 +1,7 @@
 # Trivy Databases
 
-When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations. These so called "databases" are fetched and maintained by Trivy automatically as needed, so normally you shouldn't notice or worry about them.   
+When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations.
+These so called "databases" are automatically fetched and maintained by Trivy as needed, so normally you shouldn't notice or worry about them.   
 This document elaborates on the database management mechanism and its configuration options.
 
 Trivy relies on the following databases:
