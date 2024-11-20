@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -46,7 +47,7 @@ type ChartFile struct {
 	ManifestContent  string
 }
 
-func New(path string, opts ...Option) (*Parser, error) {
+func New(src string, opts ...Option) (*Parser, error) {
 
 	client := action.NewInstall(&action.Configuration{})
 	client.DryRun = true     // don't do anything
@@ -55,7 +56,7 @@ func New(path string, opts ...Option) (*Parser, error) {
 
 	p := &Parser{
 		helmClient:  client,
-		ChartSource: path,
+		ChartSource: src,
 		logger:      log.WithPrefix("helm parser"),
 	}
 
@@ -79,10 +80,10 @@ func New(path string, opts ...Option) (*Parser, error) {
 	return p, nil
 }
 
-func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
-	p.workingFS = target
+func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, target string) error {
+	p.workingFS = fsys
 
-	if err := fs.WalkDir(p.workingFS, filepath.ToSlash(path), func(path string, entry fs.DirEntry, err error) error {
+	if err := fs.WalkDir(p.workingFS, filepath.ToSlash(target), func(filePath string, entry fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -95,16 +96,20 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
 			return nil
 		}
 
-		if detection.IsArchive(path) {
-			tarFS, err := p.addTarToFS(path)
+		if _, err := fs.Stat(p.workingFS, filePath); err != nil {
+			return nil
+		}
+
+		if detection.IsArchive(filePath) && !isDependencyChartArchive(p.workingFS, filePath) {
+			tarFS, err := p.addTarToFS(filePath)
 			if errors.Is(err, errSkipFS) {
 				// an unpacked Chart already exists
 				return nil
 			} else if err != nil {
-				return fmt.Errorf("failed to add tar %q to FS: %w", path, err)
+				return fmt.Errorf("failed to add tar %q to FS: %w", filePath, err)
 			}
 
-			targetPath := filepath.Dir(path)
+			targetPath := filepath.Dir(filePath)
 			if targetPath == "" {
 				targetPath = "."
 			}
@@ -114,7 +119,7 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
 			}
 			return nil
 		} else {
-			return p.addPaths(path)
+			return p.addPaths(filePath)
 		}
 	}); err != nil {
 		return fmt.Errorf("walk dir error: %w", err)
@@ -123,19 +128,29 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {
 	return nil
 }
 
+func isDependencyChartArchive(fsys fs.FS, archivePath string) bool {
+	parent := path.Dir(archivePath)
+	if path.Base(parent) != "charts" {
+		return false
+	}
+
+	_, err := fs.Stat(fsys, path.Join(parent, "..", "Chart.yaml"))
+	return err == nil
+}
+
 func (p *Parser) addPaths(paths ...string) error {
-	for _, path := range paths {
-		if _, err := fs.Stat(p.workingFS, path); err != nil {
+	for _, filePath := range paths {
+		if _, err := fs.Stat(p.workingFS, filePath); err != nil {
 			return err
 		}
 
-		if strings.HasSuffix(path, "Chart.yaml") && p.rootPath == "" {
-			if err := p.extractChartName(path); err != nil {
+		if strings.HasSuffix(filePath, "Chart.yaml") && p.rootPath == "" {
+			if err := p.extractChartName(filePath); err != nil {
 				return err
 			}
-			p.rootPath = filepath.Dir(path)
+			p.rootPath = filepath.Dir(filePath)
 		}
-		p.filepaths = append(p.filepaths, path)
+		p.filepaths = append(p.filepaths, filePath)
 	}
 	return nil
 }

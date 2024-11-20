@@ -461,7 +461,7 @@ func TestEncoder_Encode(t *testing.T) {
 										Type:      packageurl.TypeGolang,
 										Namespace: "github.com/org",
 										Name:      "direct",
-										Version:   "1.0.0",
+										Version:   "v1.0.0",
 									},
 								},
 								Relationship: ftypes.RelationshipDirect,
@@ -472,28 +472,28 @@ func TestEncoder_Encode(t *testing.T) {
 							{
 								ID:      "github.com/org/indirect@v2.0.0",
 								Name:    "github.com/org/indirect",
-								Version: "2.0.0",
+								Version: "v2.0.0",
 								Identifier: ftypes.PkgIdentifier{
 									UID: "955AB4E7E24AC085",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeGolang,
 										Namespace: "github.com/org",
 										Name:      "indirect",
-										Version:   "2.0.0",
+										Version:   "v2.0.0",
 									},
 								},
 								Relationship: ftypes.RelationshipIndirect,
 							},
 							{
-								ID:      "stdlib@1.22.1",
+								ID:      "stdlib@v1.22.1",
 								Name:    "stdlib",
-								Version: "1.22.1",
+								Version: "v1.22.1",
 								Identifier: ftypes.PkgIdentifier{
 									UID: "49728B9674E318A6",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGolang,
 										Name:    "stdlib",
-										Version: "1.22.1",
+										Version: "v1.22.1",
 									},
 								},
 								Relationship: ftypes.RelationshipDirect,
@@ -561,7 +561,7 @@ func TestEncoder_Encode(t *testing.T) {
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
 					Type:    core.TypeLibrary,
 					Name:    "github.com/org/direct",
-					Version: "1.0.0",
+					Version: "v1.0.0",
 					SrcFile: "test",
 					Properties: []core.Property{
 						{
@@ -579,15 +579,15 @@ func TestEncoder_Encode(t *testing.T) {
 							Type:      packageurl.TypeGolang,
 							Namespace: "github.com/org",
 							Name:      "direct",
-							Version:   "1.0.0",
+							Version:   "v1.0.0",
 						},
-						BOMRef: "pkg:golang/github.com/org/direct@1.0.0",
+						BOMRef: "pkg:golang/github.com/org/direct@v1.0.0",
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
 					Type:    core.TypeLibrary,
 					Name:    "github.com/org/indirect",
-					Version: "2.0.0",
+					Version: "v2.0.0",
 					SrcFile: "test",
 					Properties: []core.Property{
 						{
@@ -605,20 +605,20 @@ func TestEncoder_Encode(t *testing.T) {
 							Type:      packageurl.TypeGolang,
 							Namespace: "github.com/org",
 							Name:      "indirect",
-							Version:   "2.0.0",
+							Version:   "v2.0.0",
 						},
-						BOMRef: "pkg:golang/github.com/org/indirect@2.0.0",
+						BOMRef: "pkg:golang/github.com/org/indirect@v2.0.0",
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): {
 					Type:    core.TypeLibrary,
 					Name:    "stdlib",
-					Version: "1.22.1",
+					Version: "v1.22.1",
 					SrcFile: "test",
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "stdlib@1.22.1",
+							Value: "stdlib@v1.22.1",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -630,9 +630,9 @@ func TestEncoder_Encode(t *testing.T) {
 						PURL: &packageurl.PackageURL{
 							Type:    packageurl.TypeGolang,
 							Name:    "stdlib",
-							Version: "1.22.1",
+							Version: "v1.22.1",
 						},
-						BOMRef: "pkg:golang/stdlib@1.22.1",
+						BOMRef: "pkg:golang/stdlib@v1.22.1",
 					},
 				},
 			},

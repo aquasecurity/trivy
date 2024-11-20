@@ -69,6 +69,9 @@ The vulnerability database will be downloaded anyway.
 !!! Warning
     Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
 
+### supported scopes
+Trivy only scans `import`, `compile`, `runtime` and empty [maven scopes][maven-scopes]. Other scopes and `Optional` dependencies are not currently being analyzed.
+
 ### empty dependency version
 There are cases when Trivy cannot determine the version of dependencies:
 
@@ -128,6 +131,7 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
 [maven-central]: https://repo.maven.apache.org/maven2/
 [maven-pom-repos]: https://maven.apache.org/settings.html#repositories
+[maven-scopes]: https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
 [sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority
 [version-requirement]: https://maven.apache.org/pom.html#dependency-version-requirement-specification

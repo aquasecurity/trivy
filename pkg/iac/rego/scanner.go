@@ -345,16 +345,7 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 			s.logger.Error("Error occurred while parsing input", log.Err(err))
 			continue
 		}
-		if ignored, err := s.isIgnored(ctx, namespace, rule, parsedInput); err != nil {
-			return nil, err
-		} else if ignored {
-			var result regoResult
-			result.FS = input.FS
-			result.Filepath = input.Path
-			result.Managed = true
-			results.AddIgnored(result)
-			continue
-		}
+
 		set, traces, err := s.runQuery(ctx, qualified, parsedInput, false)
 		if err != nil {
 			return nil, err
@@ -385,20 +376,6 @@ func (s *Scanner) applyRuleCombined(ctx context.Context, namespace, rule string,
 		return nil, fmt.Errorf("failed to parse input: %w", err)
 	}
 
-	var results scan.Results
-
-	if ignored, err := s.isIgnored(ctx, namespace, rule, parsed); err != nil {
-		return nil, err
-	} else if ignored {
-		for _, input := range inputs {
-			var result regoResult
-			result.FS = input.FS
-			result.Filepath = input.Path
-			result.Managed = true
-			results.AddIgnored(result)
-		}
-		return results, nil
-	}
 	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
 	set, traces, err := s.runQuery(ctx, qualified, parsed, false)
 	if err != nil {

@@ -38,12 +38,12 @@ If the data source is correct and Trivy shows wrong results, please raise an iss
 Visit [here](https://github.com/advisories) and search CVE-ID.
 
 If you find a problem, it'll be nice to fix it: [How to contribute to a GitHub security advisory](https://github.blog/2022-02-22-github-advisory-database-now-open-to-community-contributions/)
- 
+
 ### GitLab Advisory Database
 Visit [here](https://advisories.gitlab.com/) and search CVE-ID.
 
-If you find a problem, it'll be nice to fix it: [Create an issue to GitLab Advisory Database](https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/issues/new)
- 
+If you find a problem, it'll be nice to fix it: [Create an issue to GitLab Advisory Database](https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/issues)
+
 ### Red Hat CVE Database
 Visit [here](https://access.redhat.com/security/security-updates/?cwe=476#/cve) and search CVE-ID.
 

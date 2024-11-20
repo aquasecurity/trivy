@@ -217,6 +217,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 				"Variable values was not found in the environment or variable files. Evaluating may not work correctly.",
 				log.String("variables", strings.Join(missingVars, ", ")),
 			)
+			setNullMissingVariableValues(inputVars, missingVars)
 		}
 	}
 
@@ -266,6 +267,14 @@ func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Val
 	}
 
 	return missing
+}
+
+// Set null values for missing variables, to allow expressions using them to be
+// still be possibly evaluated to a value different than null.
+func setNullMissingVariableValues(inputVars map[string]cty.Value, missingVars []string) {
+	for _, missingVar := range missingVars {
+		inputVars[missingVar] = cty.NullVal(cty.DynamicPseudoType)
+	}
 }
 
 func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {

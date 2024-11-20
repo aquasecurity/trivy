@@ -59,6 +59,7 @@ var (
 	CategoryNewRelic             = types.SecretRuleCategory("NewRelic")
 	CategoryNpm                  = types.SecretRuleCategory("Npm")
 	CategoryPlanetscale          = types.SecretRuleCategory("Planetscale")
+	CategoryPrivatePackagist     = types.SecretRuleCategory("Private Packagist")
 	CategoryPostman              = types.SecretRuleCategory("Postman")
 	CategoryPulumi               = types.SecretRuleCategory("Pulumi")
 	CategoryRubyGems             = types.SecretRuleCategory("RubyGems")
@@ -742,6 +743,15 @@ var builtinRules = []Rule{
 		Severity: "MEDIUM",
 		Regex:    MustCompile(`pscale_tkn_(?i)[a-z0-9\-_\.]{43}`),
 		Keywords: []string{"pscale_tkn_"},
+	},
+	{
+		ID:       "private-packagist-token",
+		Category: CategoryPrivatePackagist,
+		Title:    "Private Packagist token",
+		Severity: "HIGH",
+		// https://packagist.com/docs/composer-authentication#token-format
+		Regex:    MustCompile(`packagist_[ou][ru]t_(?i)[a-f0-9]{68}`),
+		Keywords: []string{"packagist_uut_", "packagist_ort_", "packagist_out_"},
 	},
 	{
 		ID:       "postman-api-token",

@@ -64,7 +64,7 @@ $ cat <<EOF > trivy.vex.cdx
       },
       "affects": [
         {
-          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@1.44.234"
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@v1.44.234"
         }
       ]
     }
@@ -115,7 +115,7 @@ Total: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 ┌───────────────────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
 │          Library          │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                           Title                            │
 ├───────────────────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
-│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ 1.44.234          │               │ aws-sdk-go: In-band key negotiation issue in AWS S3 Crypto │
+│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ v1.44.234         │               │ aws-sdk-go: In-band key negotiation issue in AWS S3 Crypto │
 │                           │               │          │                   │               │ SDK for golang...                                          │
 │                           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-8912                  │
 └───────────────────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
@@ -497,9 +497,9 @@ Now, suppose a VEX statement is issued for `Module B` as follows:
     "vulnerability": {"name": "CVE-XXXX-YYYY"},
     "products": [
       {
-        "@id": "pkg:golang/module-b@1.0.0",
+        "@id": "pkg:golang/module-b@v1.0.0",
         "subcomponents": [
-          { "@id": "pkg:golang/module-c@2.0.0" }
+          { "@id": "pkg:golang/module-c@v2.0.0" }
         ]
       }
     ],

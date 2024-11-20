@@ -132,7 +132,7 @@ func TestRegistry(t *testing.T) {
 	// set up auth server
 	authC, err := setupAuthServer(ctx, baseDir)
 	require.NoError(t, err)
-	defer authC.Terminate(ctx)
+	testcontainers.CleanupContainer(t, authC)
 
 	authURL, err := getURL(ctx, authC, authPort)
 	require.NoError(t, err)
@@ -140,7 +140,7 @@ func TestRegistry(t *testing.T) {
 	// set up registry
 	registryC, err := setupRegistry(ctx, baseDir, authURL)
 	require.NoError(t, err)
-	defer registryC.Terminate(ctx)
+	testcontainers.CleanupContainer(t, registryC)
 
 	registryURL, err := getURL(ctx, registryC, registryPort)
 	require.NoError(t, err)

@@ -32,7 +32,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 		// go.sum records and sorts all non-major versions
 		// with the latest version as last entry
-		uniquePkgs[s[0]] = strings.TrimSuffix(strings.TrimPrefix(s[1], "v"), "/go.mod")
+		uniquePkgs[s[0]] = strings.TrimSuffix(s[1], "/go.mod")
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, nil, xerrors.Errorf("scan error: %w", err)
