@@ -1,4 +1,4 @@
-# Programming Language
+# Others
 
 In this section we have placed images, package managers and files that we can't assign to existing sections.
 
