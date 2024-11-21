@@ -3826,6 +3826,33 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
+      <a href="../others/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../others/bitnami/" class="md-nav__link">
         
   
@@ -7539,10 +7566,10 @@ On the other hand, when the target is a post-build artifact, like a container im
 <tr>
 <th>Language</th>
 <th>File</th>
-<th style="text-align: center;">Image<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></th>
-<th style="text-align: center;">Rootfs<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup></th>
-<th style="text-align: center;">Filesystem<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup></th>
-<th style="text-align: center;">Repository<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup></th>
+<th style="text-align: center;">Image<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></th>
+<th style="text-align: center;">Rootfs<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></th>
+<th style="text-align: center;">Filesystem<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup></th>
+<th style="text-align: center;">Repository<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup></th>
 </tr>
 </thead>
 <tbody>
@@ -7597,14 +7624,6 @@ On the other hand, when the target is a post-build artifact, like a container im
 <tr>
 <td></td>
 <td>wheel package<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-</tr>
-<tr>
-<td></td>
-<td>conda package<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">-</td>
@@ -7684,7 +7703,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 </tr>
 <tr>
 <td></td>
-<td>*Packages.props<sup id="fnref:11"><a class="footnote-ref" href="#fn:11">11</a></sup></td>
+<td>*Packages.props<sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup></td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
@@ -7692,7 +7711,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 </tr>
 <tr>
 <td><a href="java/">Java</a></td>
-<td>JAR/WAR/PAR/EAR<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></td>
+<td>JAR/WAR/PAR/EAR<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">-</td>
@@ -7764,7 +7783,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 </tr>
 <tr>
 <td><a href="elixir/">Elixir</a></td>
-<td>mix.lock<sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup></td>
+<td>mix.lock<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">✅</td>
@@ -7816,31 +7835,28 @@ On the other hand, when the target is a post-build artifact, like a container im
 <p><code>.dist-info/META-DATA</code>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p><code>envs/*/conda-meta/*.json</code>&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p><code>*.jar</code>, <code>*.war</code>, <code>*.par</code> and <code>*.ear</code>&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p><code>*.jar</code>, <code>*.war</code>, <code>*.par</code> and <code>*.ear</code>&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p>✅ means "enabled" and <code>-</code> means "disabled" in the image scanning&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p>✅ means "enabled" and <code>-</code> means "disabled" in the image scanning&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p>✅ means "enabled" and <code>-</code> means "disabled" in the rootfs scanning&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p>✅ means "enabled" and <code>-</code> means "disabled" in the rootfs scanning&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p>✅ means "enabled" and <code>-</code> means "disabled" in the filesystem scanning&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p>✅ means "enabled" and <code>-</code> means "disabled" in the filesystem scanning&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p>✅ means "enabled" and <code>-</code> means "disabled" in the git repository scanning&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p>✅ means "enabled" and <code>-</code> means "disabled" in the git repository scanning&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p>✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in <a href="../../configuration/reporting/#json">json</a> and <a href="../../configuration/reporting/#sarif">sarif</a> formats. SARIF uses <code>startline == 1 and endline == 1</code> for unsupported file types&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:9">
-<p>✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in <a href="../../configuration/reporting/#json">json</a> and <a href="../../configuration/reporting/#sarif">sarif</a> formats. SARIF uses <code>startline == 1 and endline == 1</code> for unsupported file types&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+<p>To scan a filename other than the default filename use <a href="../../configuration/skipping/#file-patterns">file-patterns</a>&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 <li id="fn:10">
-<p>To scan a filename other than the default filename use <a href="../../configuration/skipping/#file-patterns">file-patterns</a>&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
-</li>
-<li id="fn:11">
-<p><code>Directory.Packages.props</code> and  legacy <code>Packages.props</code> file names are supported&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 11 in the text">&#8617;</a></p>
+<p><code>Directory.Packages.props</code> and  legacy <code>Packages.props</code> file names are supported&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
