@@ -35,10 +35,10 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:      "",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"stdlib@v1.15.2",
 									"github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
 									"github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
 									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+									"stdlib@v1.15.2",
 								},
 							},
 							{

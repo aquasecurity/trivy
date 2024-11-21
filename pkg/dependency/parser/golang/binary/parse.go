@@ -93,7 +93,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Relationship: ftypes.RelationshipUnknown,
 		})
 	}
-	sort.Sort(pkgs)
 
 	// There are times when gobinaries don't contain Main information.
 	// e.g. `Go` binaries (e.g. `go`, `gofmt`, etc.)
@@ -111,20 +110,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Version:      version,
 			Relationship: ftypes.RelationshipRoot,
 		}
+
+		depIDs := lo.Map(pkgs, func(pkg ftypes.Package, _ int) string {
+			return pkg.ID
+		})
+		sort.Strings(depIDs)
+
 		deps = []ftypes.Dependency{
 			{
-				ID: root.ID,
-				// Consider all packages as dependencies of the main module.
-				DependsOn: lo.Map(pkgs, func(pkg ftypes.Package, _ int) string {
-					return pkg.ID
-				}),
+				ID:        root.ID,
+				DependsOn: depIDs, // Consider all packages as dependencies of the main module.
 			},
 		}
 		// Add main module
 		pkgs = append(pkgs, root)
-		sort.Sort(pkgs)
 	}
 
+	sort.Sort(pkgs)
 	return pkgs, deps, nil
 }
 
