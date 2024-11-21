@@ -170,13 +170,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			return pkg.ID, pkg.Relationship == ftypes.RelationshipDirect
 		})
 
-		if len(dependsOn) > 0 {
-			sort.Strings(dependsOn)
-			deps = append(deps, ftypes.Dependency{
-				ID:        root.ID,
-				DependsOn: dependsOn,
-			})
-		}
+		sort.Strings(dependsOn)
+		deps = append(deps, ftypes.Dependency{
+			ID:        root.ID,
+			DependsOn: dependsOn,
+		})
 
 		pkgs[root.Name] = root
 	}
