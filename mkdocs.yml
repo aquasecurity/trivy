@@ -111,6 +111,7 @@ nav:
               - Kubernetes: docs/coverage/iac/kubernetes.md
               - Terraform: docs/coverage/iac/terraform.md
           - Others:
+              - Overview: docs/coverage/others/index.md
               - Bitnami Images: docs/coverage/others/bitnami.md
               - Conda: docs/coverage/others/conda.md
               - RPM Archives: docs/coverage/others/rpm.md
