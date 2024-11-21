@@ -14,111 +14,166 @@ import (
 func TestParse(t *testing.T) {
 	wantPkgs := []ftypes.Package{
 		{
+			ID:           "github.com/aquasecurity/test",
 			Name:         "github.com/aquasecurity/test",
 			Version:      "",
 			Relationship: ftypes.RelationshipRoot,
 		},
 		{
+			ID:           "stdlib@v1.15.2",
 			Name:         "stdlib",
 			Version:      "v1.15.2",
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
+			ID:      "github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
 			Name:    "github.com/aquasecurity/go-pep440-version",
 			Version: "v0.0.0-20210121094942-22b2f8951d46",
 		},
 		{
+			ID:      "github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
 			Name:    "github.com/aquasecurity/go-version",
 			Version: "v0.0.0-20210121072130-637058cfe492",
 		},
 		{
+			ID:      "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:    "golang.org/x/xerrors",
 			Version: "v0.0.0-20200804184101-5ec99f83aff1",
+		},
+	}
+	wantDeps := []ftypes.Dependency{
+		{
+			ID: "github.com/aquasecurity/test",
+			DependsOn: []string{
+				"github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+				"github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+				"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+				"stdlib@v1.15.2",
+			},
 		},
 	}
 
 	tests := []struct {
 		name      string
 		inputFile string
-		want      []ftypes.Package
+		wantPkgs  []ftypes.Package
+		wantDeps  []ftypes.Dependency
 		wantErr   string
 	}{
 		{
 			name:      "ELF",
 			inputFile: "testdata/test.elf",
-			want:      wantPkgs,
+			wantPkgs:  wantPkgs,
+			wantDeps:  wantDeps,
 		},
 		{
 			name:      "PE",
 			inputFile: "testdata/test.exe",
-			want:      wantPkgs,
+			wantPkgs:  wantPkgs,
+			wantDeps:  wantDeps,
 		},
 		{
 			name:      "Mach-O",
 			inputFile: "testdata/test.macho",
-			want:      wantPkgs,
+			wantPkgs:  wantPkgs,
+			wantDeps:  wantDeps,
 		},
 		{
 			name:      "with replace directive",
 			inputFile: "testdata/replace.elf",
-			want: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
+					ID:           "github.com/ebati/trivy-mod-parse",
 					Name:         "github.com/ebati/trivy-mod-parse",
 					Version:      "",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
+					ID:           "stdlib@v1.16.4",
 					Name:         "stdlib",
 					Version:      "v1.16.4",
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
+					ID:      "github.com/davecgh/go-spew@v1.1.1",
 					Name:    "github.com/davecgh/go-spew",
 					Version: "v1.1.1",
 				},
 				{
+					ID:      "github.com/go-sql-driver/mysql@v1.5.0",
 					Name:    "github.com/go-sql-driver/mysql",
 					Version: "v1.5.0",
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "github.com/ebati/trivy-mod-parse",
+					DependsOn: []string{
+						"github.com/davecgh/go-spew@v1.1.1",
+						"github.com/go-sql-driver/mysql@v1.5.0",
+						"stdlib@v1.16.4",
+					},
 				},
 			},
 		},
 		{
 			name:      "with semver main module version",
 			inputFile: "testdata/semver-main-module-version.macho",
-			want: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
+					ID:           "go.etcd.io/bbolt@v1.3.5",
 					Name:         "go.etcd.io/bbolt",
 					Version:      "v1.3.5",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
+					ID:           "stdlib@v1.20.6",
 					Name:         "stdlib",
 					Version:      "v1.20.6",
 					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "go.etcd.io/bbolt@v1.3.5",
+					DependsOn: []string{
+						"stdlib@v1.20.6",
+					},
 				},
 			},
 		},
 		{
 			name:      "with -ldflags=\"-X main.version=v1.0.0\"",
 			inputFile: "testdata/main-version-via-ldflags.elf",
-			want: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
+					ID:           "github.com/aquasecurity/test@v1.0.0",
 					Name:         "github.com/aquasecurity/test",
 					Version:      "v1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
+					ID:           "stdlib@v1.22.1",
 					Name:         "stdlib",
 					Version:      "v1.22.1",
 					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "github.com/aquasecurity/test@v1.0.0",
+					DependsOn: []string{
+						"stdlib@v1.22.1",
+					},
 				},
 			},
 		},
 		{
 			name:      "goexperiment",
 			inputFile: "testdata/goexperiment",
-			want: []ftypes.Package{
+			wantPkgs: []ftypes.Package{
 				{
+					ID:           "stdlib@v1.22.1",
 					Name:         "stdlib",
 					Version:      "v1.22.1",
 					Relationship: ftypes.RelationshipDirect,
@@ -137,15 +192,15 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, _, err := binary.NewParser().Parse(f)
+			gotPkgs, gotDeps, err := binary.NewParser().Parse(f)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.wantPkgs, gotPkgs)
+			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
 }
