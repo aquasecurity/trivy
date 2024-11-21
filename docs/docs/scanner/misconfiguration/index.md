@@ -20,7 +20,7 @@ $ trivy config [YOUR_IaC_DIRECTORY]
     
     Dockerfile (dockerfile)
     =======================
-    Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
+    Tests: 23 (SUCCESSES: 22, FAILURES: 1)
     Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
     
     MEDIUM: Specify a tag in the 'FROM' statement for image 'alpine'
@@ -75,7 +75,7 @@ You can specify `--scanners vuln,misconfig,secret` to enable vulnerability and s
     
     Dockerfile (dockerfile)
     =======================
-    Tests: 17 (SUCCESSES: 16, FAILURES: 1, EXCEPTIONS: 0)
+    Tests: 17 (SUCCESSES: 16, FAILURES: 1)
     Failures: 1 (HIGH: 1, CRITICAL: 0)
     
     HIGH: Last USER command in Dockerfile should not be 'root'
@@ -112,7 +112,7 @@ $ trivy config --severity HIGH,CRITICAL ./iac
 
 Dockerfile (dockerfile)
 
-Tests: 21 (SUCCESSES: 20, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 21 (SUCCESSES: 20, FAILURES: 1)
 Failures: 1 (MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 HIGH: Specify at least 1 USER command in Dockerfile with non-root user as argument
@@ -126,7 +126,7 @@ See https://avd.aquasec.com/misconfig/ds002
 
 deployment.yaml (kubernetes)
 
-Tests: 20 (SUCCESSES: 15, FAILURES: 5, EXCEPTIONS: 0)
+Tests: 20 (SUCCESSES: 15, FAILURES: 5)
 Failures: 5 (MEDIUM: 4, HIGH: 1, CRITICAL: 0)
 
 MEDIUM: Container 'hello-kubernetes' of Deployment 'hello-kubernetes' should set 'securityContext.allowPrivilegeEscalation' to false
@@ -225,7 +225,7 @@ See https://avd.aquasec.com/misconfig/ksv026
 
 mysql-8.8.26.tar:templates/primary/statefulset.yaml (helm)
 
-Tests: 20 (SUCCESSES: 18, FAILURES: 2, EXCEPTIONS: 0)
+Tests: 20 (SUCCESSES: 18, FAILURES: 2)
 Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 
 MEDIUM: Container 'mysql' of StatefulSet 'mysql' should set 'securityContext.allowPrivilegeEscalation' to false
@@ -279,35 +279,35 @@ You can see the config type next to each file name.
 ``` bash
 Dockerfile (dockerfile)
 =======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 23 (SUCCESSES: 22, FAILURES: 1)
 Failures: 1 (HIGH: 1, CRITICAL: 0)
 
 ...
 
 deployment.yaml (kubernetes)
 ============================
-Tests: 28 (SUCCESSES: 15, FAILURES: 13, EXCEPTIONS: 0)
+Tests: 28 (SUCCESSES: 15, FAILURES: 13)
 Failures: 13 (MEDIUM: 4, HIGH: 1, CRITICAL: 0)
 
 ...
 
 main.tf (terraform)
 ===================
-Tests: 23 (SUCCESSES: 14, FAILURES: 9, EXCEPTIONS: 0)
+Tests: 23 (SUCCESSES: 14, FAILURES: 9)
 Failures: 9 (HIGH: 6, CRITICAL: 1)
 
 ...
 
 bucket.yaml (cloudformation)
 ============================
-Tests: 9 (SUCCESSES: 3, FAILURES: 6, EXCEPTIONS: 0)
+Tests: 9 (SUCCESSES: 3, FAILURES: 6)
 Failures: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 4, CRITICAL: 0)
 
 ...
 
 mysql-8.8.26.tar:templates/primary/statefulset.yaml (helm)
 ==========================================================
-Tests: 20 (SUCCESSES: 18, FAILURES: 2, EXCEPTIONS: 0)
+Tests: 20 (SUCCESSES: 18, FAILURES: 2)
 Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ```
 
@@ -381,7 +381,7 @@ deny[res] {
 $ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user ./iac
 serverless.yaml (yaml)
 
-Tests: 4 (SUCCESSES: 3, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 4 (SUCCESSES: 3, FAILURES: 1)
 Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 LOW: Service name "serverless-rest-api-with-pynamodb" is not allowed
@@ -389,14 +389,26 @@ LOW: Service name "serverless-rest-api-with-pynamodb" is not allowed
 Ensure that Serverless Framework service names start with "aws-"
 ```
 
-You can also pass schemas using the `config-file-schemas` flag. Trivy will use these schemas for file filtering and type checking in Rego checks. If the file does not match any of the passed schemas, it will be ignored.
+!!! note
+    In the case above, the custom check specified has a metadata annotation for the input schema `input: schema["serverless-schema"]`. This allows Trivy to type check the input IaC files provided.
+
+Optionally, you can also pass schemas using the `config-file-schemas` flag. Trivy will use these schemas for file filtering and type checking in Rego checks.
 
 !!! example
 ```bash
 $ trivy config --misconfig-scanners=json,yaml --config-check ./serverless.rego --check-namespaces user --config-file-schemas ./serverless-schema.json ./iac
 ```
 
+If the `--config-file-schemas` flag is specified Trivy ensures that each input IaC config file being scanned is type-checked against the schema. If the input file does not match any of the passed schemas, it will be ignored. 
+
 If the schema is specified in the check metadata and is in the directory specified in the `--config-check` argument, it will be automatically loaded as specified [here](./custom/schema.md#custom-checks-with-custom-schemas), and will only be used for type checking in Rego.
+
+!!! note
+    If a user specifies the `--config-file-schemas` flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.
+
+!!! tip
+    It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma seperated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
+
 
 ### Passing custom data
 You can pass directories including your custom data through `--data` option.

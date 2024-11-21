@@ -221,6 +221,13 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/opensuse-tumbleweed.json.golden",
 		},
 		{
+			name: "sle micro rancher 5.4",
+			args: csArgs{
+				Input: "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+			},
+			golden: "testdata/sl-micro-rancher5.4.json.golden",
+		},
+		{
 			name: "photon 3.0",
 			args: csArgs{
 				Input: "testdata/fixtures/images/photon-30.tar.gz",
@@ -315,6 +322,17 @@ func TestClientServerWithFormat(t *testing.T) {
 				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.gitlab.golden",
+		},
+		{
+			name: "scan package-lock.json with gitlab template (Unknown os and image)",
+			args: csArgs{
+				Command:         "fs",
+				Format:          "template",
+				TemplatePath:    "@../contrib/gitlab.tpl",
+				Target:          "testdata/fixtures/repo/npm/",
+				ListAllPackages: true,
+			},
+			golden: "testdata/npm.gitlab.golden",
 		},
 		{
 			name: "alpine 3.10 with gitlab-codequality template",
@@ -541,7 +559,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	})
 
 	// Terminate the Redis container
-	require.NoError(t, redisC.Terminate(ctx))
+	require.NoError(t, testcontainers.TerminateContainer(redisC))
 
 	t.Run("sad path", func(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir)

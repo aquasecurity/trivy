@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
@@ -47,6 +48,7 @@ type Parser struct {
 	skipCachedModules bool
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
+	skipPaths         []string
 }
 
 // New creates a new Parser
@@ -78,6 +80,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.moduleName = moduleName
 	mp.logger = log.WithPrefix("terraform parser").With("module", moduleName)
 	mp.projectRoot = p.projectRoot
+	mp.skipPaths = p.skipPaths
 	p.children = append(p.children, mp)
 	for _, option := range p.options {
 		option(mp)
@@ -155,6 +158,10 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		if info.IsDir() {
 			continue
 		}
+		if utils.SkipPath(realPath, utils.CleanSkipPaths(p.skipPaths)) {
+			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", p.skipPaths))
+			continue
+		}
 		paths = append(paths, realPath)
 	}
 	sort.Strings(paths)
@@ -210,6 +217,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 				"Variable values was not found in the environment or variable files. Evaluating may not work correctly.",
 				log.String("variables", strings.Join(missingVars, ", ")),
 			)
+			setNullMissingVariableValues(inputVars, missingVars)
 		}
 	}
 
@@ -259,6 +267,14 @@ func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Val
 	}
 
 	return missing
+}
+
+// Set null values for missing variables, to allow expressions using them to be
+// still be possibly evaluated to a value different than null.
+func setNullMissingVariableValues(inputVars map[string]cty.Value, missingVars []string) {
+	for _, missingVar := range missingVars {
+		inputVars[missingVar] = cty.NullVal(cty.DynamicPseudoType)
+	}
 }
 
 func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {

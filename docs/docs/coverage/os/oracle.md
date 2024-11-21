@@ -28,6 +28,19 @@ See [here](../../scanner/vulnerability.md#data-sources).
 ### Fixed Version
 Trivy takes fixed versions from [Oracle security advisories][alerts].
 
+#### Flavors
+Trivy detects the flavor for version of the found package and finds vulnerabilities only for that flavor.
+
+| Flavor  |                Format                | Example                                              |
+|:-------:|:------------------------------------:|------------------------------------------------------|
+| normal  | version without `fips` and `ksplice` | 3.6.16-4.el8                                         |
+|  fips   |               `*_fips`               | 10:3.6.16-4.0.1.el8_fips                             |
+| ksplice |            `*.ksplice*.*`            | 2:2.34-60.0.3.ksplice1.el9_2.7, 151.0.1.ksplice2.el8 |
+
+
+For example Trivy finds [CVE-2021-33560](https://linux.oracle.com/cve/CVE-2021-33560.html) only for the `normal` and `fips` flavors. 
+For the `ksplice` flavor, [CVE-2021-33560](https://linux.oracle.com/cve/CVE-2021-33560.html) will be skipped.
+
 ### Severity
 Trivy determines vulnerability severity based on the severity metric provided in [Oracle security advisories][alerts].
 For example, the security patch for [CVE-2023-0464][CVE-2023-0464] is provided as [ELSA-2023-2645][ELSA-2023-2645].

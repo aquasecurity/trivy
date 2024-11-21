@@ -87,10 +87,6 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (artifact.Referenc
 func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descriptor) (artifact.Reference, error) {
 	const fileName string = "referrer.sbom"
 	repoName := fmt.Sprintf("%s@%s", repo, desc.Digest)
-	referrer, err := oci.NewArtifact(repoName, true, a.artifactOption.ImageOption.RegistryOptions)
-	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("OCI error: %w", err)
-	}
 
 	tmpDir, err := os.MkdirTemp("", "trivy-sbom-*")
 	if err != nil {
@@ -99,9 +95,11 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 	defer os.RemoveAll(tmpDir)
 
 	// Download SBOM to local filesystem
+	referrer := oci.NewArtifact(repoName, a.artifactOption.ImageOption.RegistryOptions)
 	if err = referrer.Download(ctx, tmpDir, oci.DownloadOption{
 		MediaType: desc.ArtifactType,
 		Filename:  fileName,
+		Quiet:     true,
 	}); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("SBOM download error: %w", err)
 	}

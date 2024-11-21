@@ -50,17 +50,17 @@ var (
 		ConfigName: "db.no-progress",
 		Usage:      "suppress progress bar",
 	}
-	DBRepositoryFlag = Flag[string]{
+	DBRepositoryFlag = Flag[[]string]{
 		Name:       "db-repository",
 		ConfigName: "db.repository",
-		Default:    db.DefaultRepository,
-		Usage:      "OCI repository to retrieve trivy-db from",
+		Default:    []string{db.DefaultGCRRepository, db.DefaultGHCRRepository},
+		Usage:      "OCI repository(ies) to retrieve trivy-db in order of priority",
 	}
-	JavaDBRepositoryFlag = Flag[string]{
+	JavaDBRepositoryFlag = Flag[[]string]{
 		Name:       "java-db-repository",
 		ConfigName: "db.java-repository",
-		Default:    javadb.DefaultRepository,
-		Usage:      "OCI repository to retrieve trivy-java-db from",
+		Default:    []string{javadb.DefaultGCRRepository, javadb.DefaultGHCRRepository},
+		Usage:      "OCI repository(ies) to retrieve trivy-java-db in order of priority",
 	}
 	LightFlag = Flag[bool]{
 		Name:       "light",
@@ -78,8 +78,8 @@ type DBFlagGroup struct {
 	DownloadJavaDBOnly *Flag[bool]
 	SkipJavaDBUpdate   *Flag[bool]
 	NoProgress         *Flag[bool]
-	DBRepository       *Flag[string]
-	JavaDBRepository   *Flag[string]
+	DBRepositories     *Flag[[]string]
+	JavaDBRepositories *Flag[[]string]
 	Light              *Flag[bool] // deprecated
 }
 
@@ -90,8 +90,8 @@ type DBOptions struct {
 	DownloadJavaDBOnly bool
 	SkipJavaDBUpdate   bool
 	NoProgress         bool
-	DBRepository       name.Reference
-	JavaDBRepository   name.Reference
+	DBRepositories     []name.Reference
+	JavaDBRepositories []name.Reference
 }
 
 // NewDBFlagGroup returns a default DBFlagGroup
@@ -104,8 +104,8 @@ func NewDBFlagGroup() *DBFlagGroup {
 		SkipJavaDBUpdate:   SkipJavaDBUpdateFlag.Clone(),
 		Light:              LightFlag.Clone(),
 		NoProgress:         NoProgressFlag.Clone(),
-		DBRepository:       DBRepositoryFlag.Clone(),
-		JavaDBRepository:   JavaDBRepositoryFlag.Clone(),
+		DBRepositories:     DBRepositoryFlag.Clone(),
+		JavaDBRepositories: JavaDBRepositoryFlag.Clone(),
 	}
 }
 
@@ -121,8 +121,8 @@ func (f *DBFlagGroup) Flags() []Flagger {
 		f.DownloadJavaDBOnly,
 		f.SkipJavaDBUpdate,
 		f.NoProgress,
-		f.DBRepository,
-		f.JavaDBRepository,
+		f.DBRepositories,
+		f.JavaDBRepositories,
 		f.Light,
 	}
 }
@@ -147,30 +147,21 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 
-	var dbRepository, javaDBRepository name.Reference
-	var err error
-	if f.DBRepository != nil {
-		if dbRepository, err = name.ParseReference(f.DBRepository.Value(), name.WithDefaultTag("")); err != nil {
-			return DBOptions{}, xerrors.Errorf("invalid db repository: %w", err)
+	var dbRepositories, javaDBRepositories []name.Reference
+	for _, repo := range f.DBRepositories.Value() {
+		ref, err := parseRepository(repo, db.SchemaVersion)
+		if err != nil {
+			return DBOptions{}, xerrors.Errorf("invalid DB repository: %w", err)
 		}
-		// Add the schema version if the tag is not specified for backward compatibility.
-		if t, ok := dbRepository.(name.Tag); ok && t.TagStr() == "" {
-			dbRepository = t.Tag(fmt.Sprint(db.SchemaVersion))
-			log.Info("Adding schema version to the DB repository for backward compatibility",
-				log.String("repository", dbRepository.String()))
-		}
+		dbRepositories = append(dbRepositories, ref)
 	}
 
-	if f.JavaDBRepository != nil {
-		if javaDBRepository, err = name.ParseReference(f.JavaDBRepository.Value(), name.WithDefaultTag("")); err != nil {
+	for _, repo := range f.JavaDBRepositories.Value() {
+		ref, err := parseRepository(repo, javadb.SchemaVersion)
+		if err != nil {
 			return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
 		}
-		// Add the schema version if the tag is not specified for backward compatibility.
-		if t, ok := javaDBRepository.(name.Tag); ok && t.TagStr() == "" {
-			javaDBRepository = t.Tag(fmt.Sprint(javadb.SchemaVersion))
-			log.Info("Adding schema version to the Java DB repository for backward compatibility",
-				log.String("repository", javaDBRepository.String()))
-		}
+		javaDBRepositories = append(javaDBRepositories, ref)
 	}
 
 	return DBOptions{
@@ -180,7 +171,26 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		DownloadJavaDBOnly: downloadJavaDBOnly,
 		SkipJavaDBUpdate:   skipJavaDBUpdate,
 		NoProgress:         f.NoProgress.Value(),
-		DBRepository:       dbRepository,
-		JavaDBRepository:   javaDBRepository,
+		DBRepositories:     dbRepositories,
+		JavaDBRepositories: javaDBRepositories,
 	}, nil
+}
+
+func parseRepository(repo string, dbSchemaVersion int) (name.Reference, error) {
+	dbRepository, err := name.ParseReference(repo, name.WithDefaultTag(""))
+	if err != nil {
+		return nil, err
+	}
+
+	// Add the schema version if the tag is not specified for backward compatibility.
+	t, ok := dbRepository.(name.Tag)
+	if !ok || t.TagStr() != "" {
+		return dbRepository, nil
+	}
+
+	dbRepository = t.Tag(fmt.Sprint(dbSchemaVersion))
+	log.Info("Adding schema version to the DB repository for backward compatibility",
+		log.String("repository", dbRepository.String()))
+
+	return dbRepository, nil
 }

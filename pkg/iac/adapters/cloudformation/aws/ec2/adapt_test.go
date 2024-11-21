@@ -338,6 +338,34 @@ Resources:
 				},
 			},
 		},
+		{
+			name: "empty",
+			source: `---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Godd example of excessive ports
+Resources: 
+  NetworkACL:
+    Type: AWS::EC2::NetworkAcl
+  Rule:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId:
+        Ref: NetworkACL`,
+			expected: ec2.EC2{
+				NetworkACLs: []ec2.NetworkACL{
+					{
+						Rules: []ec2.NetworkACLRule{
+							{
+								Action:   types.StringTest("allow"),
+								Type:     types.StringTest("ingress"),
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

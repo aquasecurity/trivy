@@ -14,6 +14,100 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
+var (
+	exampleNestedScopeCompile = func(start, end int) ftypes.Package {
+		var location ftypes.Locations
+		if start != 0 && end != 0 {
+			location = append(location, ftypes.Location{
+				StartLine: start,
+				EndLine:   end,
+			})
+		}
+		return ftypes.Package{
+			ID:           "org.example:example-nested-scope-compile:1.0.0",
+			Name:         "org.example:example-nested-scope-compile",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations:    location,
+		}
+	}
+
+	exampleNestedScopeEmpty = func(start, end int) ftypes.Package {
+		var location ftypes.Locations
+		if start != 0 && end != 0 {
+			location = append(location, ftypes.Location{
+				StartLine: start,
+				EndLine:   end,
+			})
+		}
+		return ftypes.Package{
+			ID:           "org.example:example-nested-scope-empty:1.0.0",
+			Name:         "org.example:example-nested-scope-empty",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations:    location,
+		}
+	}
+
+	exampleNestedScopeRuntime = func(start, end int) ftypes.Package {
+		var location ftypes.Locations
+		if start != 0 && end != 0 {
+			location = append(location, ftypes.Location{
+				StartLine: start,
+				EndLine:   end,
+			})
+		}
+		return ftypes.Package{
+			ID:           "org.example:example-nested-scope-runtime:1.0.0",
+			Name:         "org.example:example-nested-scope-runtime",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations:    location,
+		}
+	}
+
+	exampleScopeCompile = ftypes.Package{
+		ID:           "org.example:example-scope-compile:2.0.0",
+		Name:         "org.example:example-scope-compile",
+		Version:      "2.0.0",
+		Relationship: ftypes.RelationshipIndirect,
+	}
+
+	exampleScopeEmpty = ftypes.Package{
+		ID:           "org.example:example-scope-empty:2.0.0",
+		Name:         "org.example:example-scope-empty",
+		Version:      "2.0.0",
+		Relationship: ftypes.RelationshipIndirect,
+	}
+
+	exampleScopeRuntime = ftypes.Package{
+		ID:           "org.example:example-scope-runtime:2.0.0",
+		Name:         "org.example:example-scope-runtime",
+		Version:      "2.0.0",
+		Relationship: ftypes.RelationshipIndirect,
+	}
+	exampleApiCompile = ftypes.Package{
+		ID:           "org.example:example-api-compile:3.0.0",
+		Name:         "org.example:example-api-compile",
+		Version:      "3.0.0",
+		Relationship: ftypes.RelationshipIndirect,
+	}
+
+	exampleApiEmpty = ftypes.Package{
+		ID:           "org.example:example-api-empty:3.0.0",
+		Name:         "org.example:example-api-empty",
+		Version:      "3.0.0",
+		Relationship: ftypes.RelationshipIndirect,
+	}
+
+	exampleApiRuntime = ftypes.Package{
+		ID:           "org.example:example-api-runtime:3.0.0",
+		Name:         "org.example:example-api-runtime",
+		Version:      "3.0.0",
+		Relationship: ftypes.RelationshipIndirect,
+	}
+)
+
 func TestPom_Parse(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -809,6 +903,17 @@ func TestPom_Parse(t *testing.T) {
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
 				},
+				{
+					ID:           "org.example:example-api",
+					Name:         "org.example:example-api",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 28,
+							EndLine:   32,
+						},
+					},
+				},
 			},
 		},
 		{
@@ -1499,6 +1604,30 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:      "dependency without version",
+			inputFile: filepath.Join("testdata", "dep-without-version", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:dep-without-version:1.0.0",
+					Name:         "com.example:dep-without-version",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-api",
+					Name:         "org.example:example-api",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 19,
+							EndLine:   22,
+						},
+					},
+				},
+			},
+		},
 		// [INFO] com.example:root-depManagement-in-parent:jar:1.0.0
 		// [INFO] \- org.example:example-dependency:jar:2.0.0:compile
 		// [INFO]    \- org.example:example-api:jar:1.0.1:compile
@@ -1591,6 +1720,320 @@ func TestPom_Parse(t *testing.T) {
 					ID: "org.example:example-dependency:2.0.0",
 					DependsOn: []string{
 						"org.example:example-api:2.0.1",
+					},
+				},
+			},
+		},
+		// [INFO] com.example:child-depManagement-in-parent:jar:1.0.0
+		// [INFO] +- org.example:example-api2:jar:1.0.2:runtime
+		// [INFO] +- org.example:example-api3:jar:4.0.3:compile
+		// [INFO] \- org.example:example-api:jar:1.0.1:compile
+		{
+			name:      "dependency from parent uses version from child(scanned) pom depManagement",
+			inputFile: filepath.Join("testdata", "use-child-dep-management-in-parent", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:child-depManagement-in-parent:1.0.0",
+					Name:         "com.example:child-depManagement-in-parent",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-api:1.0.1",
+					Name:         "org.example:example-api",
+					Version:      "1.0.1",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "org.example:example-api2:1.0.2",
+					Name:         "org.example:example-api2",
+					Version:      "1.0.2",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "org.example:example-api3:4.0.3",
+					Name:         "org.example:example-api3",
+					Version:      "4.0.3",
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:child-depManagement-in-parent:1.0.0",
+					DependsOn: []string{
+						"org.example:example-api2:1.0.2",
+						"org.example:example-api3:4.0.3",
+						"org.example:example-api:1.0.1",
+					},
+				},
+			},
+		},
+		// [INFO] com.example:inherit-scopes-from-child-deps-and-their-parents:jar:0.0.1
+		// [INFO] +- org.example:example-nested-scope-runtime:jar:1.0.0:runtime
+		// [INFO] |  \- org.example:example-scope-runtime:jar:2.0.0:runtime
+		// [INFO] |     \- org.example:example-api-runtime:jar:3.0.0:runtime
+		// [INFO] +- org.example:example-nested-scope-compile:jar:1.0.0:compile
+		// [INFO] |  \- org.example:example-scope-compile:jar:2.0.0:compile
+		// [INFO] |     \- org.example:example-api-compile:jar:3.0.0:compile
+		// [INFO] \- org.example:example-nested-scope-empty:jar:1.0.0:compile
+		// [INFO]    \- org.example:example-scope-empty:jar:2.0.0:compile
+		// [INFO]       \- org.example:example-api-empty:jar:3.0.0:compile
+		//
+		// `example-nested-*" dependencies and their parents contain `dependencyManagement` with changed scopes
+		{
+			name:      "inherit scopes from child dependencies and their parents",
+			inputFile: filepath.Join("testdata", "inherit-scopes-from-child-deps-and-their-parents", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:inherit-scopes-from-child-deps-and-their-parents:0.0.1",
+					Name:         "com.example:inherit-scopes-from-child-deps-and-their-parents",
+					Version:      "0.0.1",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				exampleNestedScopeCompile(16, 21),
+				exampleNestedScopeEmpty(22, 26),
+				exampleNestedScopeRuntime(10, 15),
+				exampleApiCompile,
+				exampleApiEmpty,
+				exampleApiRuntime,
+				exampleScopeCompile,
+				exampleScopeEmpty,
+				exampleScopeRuntime,
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:inherit-scopes-from-child-deps-and-their-parents:0.0.1",
+					DependsOn: []string{
+						"org.example:example-nested-scope-compile:1.0.0",
+						"org.example:example-nested-scope-empty:1.0.0",
+						"org.example:example-nested-scope-runtime:1.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-compile:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-compile:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-empty:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-empty:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-runtime:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-runtime:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-scope-compile:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api-compile:3.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-scope-empty:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api-empty:3.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-scope-runtime:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api-runtime:3.0.0",
+					},
+				},
+			},
+		},
+		// [INFO] com.example:inherit-scopes-in-parents-from-root:jar:0.1.0
+		// [INFO] +- org.example:example-nested-scope-runtime:jar:1.0.0:runtime
+		// [INFO] |  \- org.example:example-scope-runtime:jar:2.0.0:compile
+		// [INFO] |     \- org.example:example-api-runtime:jar:3.0.0:runtime
+		// [INFO] +- org.example:example-nested-scope-compile:jar:1.0.0:compile
+		// [INFO] |  \- org.example:example-scope-compile:jar:2.0.0:runtime
+		// [INFO] |     \- org.example:example-api-compile:jar:3.0.0:test
+		// [INFO] \- org.example:example-nested-scope-empty:jar:1.0.0:compile
+		// [INFO]    \- org.example:example-scope-empty:jar:2.0.0:runtime
+		// [INFO]       \- org.example:example-api-empty:jar:3.0.0:test
+		//
+		// `example-nested-*" dependencies and their parents contain `dependencyManagement` with changed scopes
+		// scopes from `dependencyManagement` of root pom are used
+		{
+			name:      "inherit scopes in children from root pom",
+			inputFile: filepath.Join("testdata", "inherit-scopes-in-children-from-root", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:inherit-scopes-in-children-from-root:0.0.1",
+					Name:         "com.example:inherit-scopes-in-children-from-root",
+					Version:      "0.0.1",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				exampleNestedScopeCompile(51, 56),
+				exampleNestedScopeEmpty(57, 61),
+				exampleNestedScopeRuntime(45, 50),
+				exampleApiRuntime,
+				exampleScopeCompile,
+				exampleScopeEmpty,
+				exampleScopeRuntime,
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:inherit-scopes-in-children-from-root:0.0.1",
+					DependsOn: []string{
+						"org.example:example-nested-scope-compile:1.0.0",
+						"org.example:example-nested-scope-empty:1.0.0",
+						"org.example:example-nested-scope-runtime:1.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-compile:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-compile:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-empty:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-empty:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-runtime:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-runtime:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-scope-runtime:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api-runtime:3.0.0",
+					},
+				},
+			},
+		},
+		// [INFO] com.example:inherit-scopes-in-parents-from-root:jar:0.1.0
+		// [INFO] +- org.example:example-nested-scope-runtime:jar:1.0.0:runtime
+		// [INFO] |  \- org.example:example-scope-runtime:jar:2.0.0:compile
+		// [INFO] |     \- org.example:example-api-runtime:jar:3.0.0:runtime
+		// [INFO] +- org.example:example-nested-scope-compile:jar:1.0.0:compile
+		// [INFO] |  \- org.example:example-scope-compile:jar:2.0.0:runtime
+		// [INFO] |     \- org.example:example-api-compile:jar:3.0.0:test
+		// [INFO] \- org.example:example-nested-scope-empty:jar:1.0.0:test
+		// [INFO]    \- org.example:example-scope-empty:jar:2.0.0:test
+		// [INFO]       \- org.example:example-api-empty:jar:3.0.0:test
+		//
+		// `example-nested-*" dependencies and their parents contain `dependencyManagement` with changed scopes
+		// scopes from `dependencyManagement` of root pom are used in parent dependencies
+		{
+			name:      "inherit scopes in parent from root pom",
+			inputFile: filepath.Join("testdata", "inherit-scopes-in-parents-from-root", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:inherit-scopes-in-parents-from-root:0.1.0",
+					Name:         "com.example:inherit-scopes-in-parents-from-root",
+					Version:      "0.1.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				exampleNestedScopeCompile(0, 0),
+				exampleNestedScopeRuntime(0, 0),
+				exampleApiRuntime,
+				exampleScopeCompile,
+				exampleScopeRuntime,
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:inherit-scopes-in-parents-from-root:0.1.0",
+					DependsOn: []string{
+						"org.example:example-nested-scope-compile:1.0.0",
+						"org.example:example-nested-scope-runtime:1.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-compile:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-compile:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested-scope-runtime:1.0.0",
+					DependsOn: []string{
+						"org.example:example-scope-runtime:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-scope-runtime:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api-runtime:3.0.0",
+					},
+				},
+			},
+		},
+		//[INFO] com.example:root-pom-with-spaces:jar:1.0.0
+		//[INFO] \- org.example:example-nested:jar:3.3.3:compile
+		//[INFO]    \- org.example:example-dependency:jar:1.2.4:compile
+		//[INFO]       \- org.example:example-api:jar:2.0.0:compile
+		{
+			name:      "space at the start and/or end of the text nodes",
+			inputFile: filepath.Join("testdata", "with-spaces", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:root-pom-with-spaces:1.0.0",
+					Name:         "com.example:root-pom-with-spaces",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-nested:3.3.3",
+					Name:         "org.example:example-nested",
+					Version:      "3.3.3",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 24,
+							EndLine:   28,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipIndirect,
+				},
+				// dependency version is taken from `com.example:root-pom-with-spaces` from dependencyManagement
+				// not from `com.example:example-nested` from `com.example:example-nested`
+				{
+					ID:           "org.example:example-dependency:1.2.4",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.4",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:root-pom-with-spaces:1.0.0",
+					DependsOn: []string{
+						"org.example:example-nested:3.3.3",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:1.2.4",
+					DependsOn: []string{
+						"org.example:example-api:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-nested:3.3.3",
+					DependsOn: []string{
+						"org.example:example-dependency:1.2.4",
 					},
 				},
 			},

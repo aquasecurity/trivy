@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"slices"
 
 	"github.com/hashicorp/go-multierror"
@@ -291,7 +292,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.RegistryOpts()); err != nil {
+	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepositories, noProgress, opts.SkipDBUpdate, opts.RegistryOpts()); err != nil {
 		return err
 	}
 
@@ -321,7 +322,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// Update the Java DB
 	noProgress := opts.Quiet || opts.NoProgress
-	javadb.Init(opts.CacheDir, opts.JavaDBRepository, opts.SkipJavaDBUpdate, noProgress, opts.RegistryOpts())
+	javadb.Init(opts.CacheDir, opts.JavaDBRepositories, opts.SkipJavaDBUpdate, noProgress, opts.RegistryOpts())
 	if opts.DownloadJavaDBOnly {
 		if err := javadb.Update(); err != nil {
 			return xerrors.Errorf("Java DB error: %w", err)
@@ -457,6 +458,12 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeExecutable)
 	}
 
+	// Disable RPM archive analyzer unless the environment variable is set
+	// TODO: add '--enable-analyzers' and delete this environment variable
+	if os.Getenv("TRIVY_EXPERIMENTAL_RPM_ARCHIVE") == "" {
+		analyzers = append(analyzers, analyzer.TypeRpmArchive)
+	}
+
 	return analyzers
 }
 
@@ -470,7 +477,7 @@ func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, e
 	return lo.Without(all, included...), nil
 }
 
-func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
+func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
 	target := opts.Target
 	if opts.Input != "" {
 		target = opts.Input
@@ -505,7 +512,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		var err error
-		configScannerOptions, err = initMisconfScannerOption(opts)
+		configScannerOptions, err = initMisconfScannerOption(ctx, opts)
 		if err != nil {
 			return ScannerConfig{}, types.ScanOptions{}, err
 		}
@@ -531,9 +538,9 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 		}
 	}
 
-	// SPDX needs to calculate digests for package files
+	// SPDX and CycloneDX need to calculate digests for package files
 	var fileChecksum bool
-	if opts.Format == types.FormatSPDXJSON || opts.Format == types.FormatSPDX {
+	if opts.Format == types.FormatSPDXJSON || opts.Format == types.FormatSPDX || opts.Format == types.FormatCycloneDX {
 		fileChecksum = true
 	}
 
@@ -600,7 +607,7 @@ func (r *runner) initScannerConfig(opts flag.Options) (ScannerConfig, types.Scan
 }
 
 func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	scannerConfig, scanOptions, err := r.initScannerConfig(opts)
+	scannerConfig, scanOptions, err := r.initScannerConfig(ctx, opts)
 	if err != nil {
 		return types.Report{}, err
 	}
@@ -617,20 +624,20 @@ func (r *runner) scan(ctx context.Context, opts flag.Options, initializeScanner 
 	return report, nil
 }
 
-func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) {
-	logger := log.WithPrefix(log.PrefixMisconfiguration)
-	logger.Info("Misconfiguration scanning is enabled")
+func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.ScannerOption, error) {
+	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
+	log.InfoContext(ctx, "Misconfiguration scanning is enabled")
 
 	var downloadedPolicyPaths []string
 	var disableEmbedded bool
 
-	downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	downloadedPolicyPaths, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
-			logger.Error("Falling back to embedded checks", log.Err(err))
+			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
 		}
 	} else {
-		logger.Debug("Checks successfully loaded from disk")
+		log.DebugContext(ctx, "Checks successfully loaded from disk")
 		disableEmbedded = true
 	}
 
@@ -659,5 +666,7 @@ func initMisconfScannerOption(opts flag.Options) (misconf.ScannerOption, error) 
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		FilePatterns:             opts.FilePatterns,
 		ConfigFileSchemas:        configSchemas,
+		SkipFiles:                opts.SkipFiles,
+		SkipDirs:                 opts.SkipDirs,
 	}, nil
 }

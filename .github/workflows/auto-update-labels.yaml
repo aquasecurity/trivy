@@ -20,6 +20,7 @@ jobs:
         with:
           # cf. https://github.com/aquasecurity/trivy/pull/6711
           go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install aqua tools
         uses: aquaproj/aqua-installer@v3.0.1

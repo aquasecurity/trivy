@@ -2,7 +2,6 @@ package oracle
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
@@ -43,16 +42,6 @@ func NewScanner() *Scanner {
 	}
 }
 
-func extractKsplice(v string) string {
-	subs := strings.Split(strings.ToLower(v), ".")
-	for _, s := range subs {
-		if strings.HasPrefix(s, "ksplice") {
-			return s
-		}
-	}
-	return ""
-}
-
 // Detect scans and return vulnerability in Oracle scanner
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = osver.Major(osVer)
@@ -69,10 +58,9 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
-			// when one of them doesn't have ksplice, we'll also skip it
-			// extract kspliceX and compare it with kspliceY in advisories
-			// if kspliceX and kspliceY are different, we will skip the advisory
-			if extractKsplice(adv.FixedVersion) != extractKsplice(pkg.Release) {
+			// We need to use only advisories from the same flavor as the package flavors.
+			// See more in https://github.com/aquasecurity/trivy/issues/1967
+			if oracleoval.PackageFlavor(adv.FixedVersion) != oracleoval.PackageFlavor(pkg.Release) {
 				continue
 			}
 

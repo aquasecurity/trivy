@@ -101,28 +101,28 @@ On a machine with internet access, pull the database container archive from the 
 Note that these examples operate in the current working directory.
 
 === "Using ORAS"
-This example uses [ORAS](https://oras.land), but you can use any other container registry manipulation tool.
-
-```shell
-oras pull ghcr.io/aquasecurity/trivy-db:2
-```
-
-You should now have a file called `db.tar.gz`. Next, extract it to reveal the db files:
-
-```shell
-tar -xzf db.tar.gz
-```
-
-You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files.
+    This example uses [ORAS](https://oras.land), but you can use any other container registry manipulation tool.
+    
+    ```shell
+    oras pull ghcr.io/aquasecurity/trivy-db:2
+    ```
+    
+    You should now have a file called `db.tar.gz`. Next, extract it to reveal the db files:
+    
+    ```shell
+    tar -xzf db.tar.gz
+    ```
+    
+    You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files.
 
 === "Using Trivy"
-This example uses Trivy to pull the database container archive. The `--cache-dir` flag makes Trivy download the database files into our current working directory. The `--download-db-only` flag tells Trivy to only download the database files, not to scan any images.
-
-```shell
-trivy image --cache-dir . --download-db-only
-```
-
-You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files, copy them over to the air-gapped environment.
+    This example uses Trivy to pull the database container archive. The `--cache-dir` flag makes Trivy download the database files into our current working directory. The `--download-db-only` flag tells Trivy to only download the database files, not to scan any images.
+    
+    ```shell
+    trivy image --cache-dir . --download-db-only
+    ```
+    
+    You should now have 2 new files, `metadata.json` and `trivy.db`. These are the Trivy DB files, copy them over to the air-gapped environment.
 
 ### Populating the Trivy Cache
 
