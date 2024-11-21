@@ -44,7 +44,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Rust](rust.md)      | Cargo.lock                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | Binaries built with [cargo-auditable](https://github.com/rust-secure-code/cargo-auditable) |     ✅     |     ✅      |       -        |       -        |
 | [C/C++](c.md)        | conan.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
-| [Elixir](elixir.md)  | mix.lock[^9]                                                                              |     -     |     -      |       ✅        |       ✅        |
+| [Elixir](elixir.md)  | mix.lock[^9]                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
