@@ -182,6 +182,32 @@ func TestDriver_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Custom data for vulnerability",
+			fixtures: []string{
+				"testdata/fixtures/go-custom-data.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoBinary,
+			args: args{
+				pkgName: "github.com/docker/docker",
+				pkgVer:  "23.0.14",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "GHSA-v23v-6jw2-98fq",
+					PkgName:          "github.com/docker/docker",
+					InstalledVersion: "23.0.14",
+					FixedVersion:     "23.0.15, 26.1.5, 27.1.1, 25.0.6",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Go",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago",
+					},
+					Custom: map[string]any{"Severity": 2.0},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
