@@ -18,6 +18,8 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const modulePrefix = "module"
+
 type Block struct {
 	id           string
 	hclBlock     *hcl.Block
@@ -481,19 +483,12 @@ func (b *Block) FullName() string {
 }
 
 func (b *Block) ModuleName() string {
-	name := strings.TrimPrefix(b.LocalName(), "module.")
-	if b.moduleBlock != nil {
-		module := strings.TrimPrefix(b.moduleBlock.FullName(), "module.")
-		name = fmt.Sprintf(
-			"%s.%s",
-			module,
-			name,
-		)
-	}
 	var parts []string
-	for _, part := range strings.Split(name, ".") {
+	for _, part := range strings.Split(b.FullName(), ".") {
 		part = strings.Split(part, "[")[0]
-		parts = append(parts, part)
+		if part != modulePrefix {
+			parts = append(parts, part)
+		}
 	}
 	return strings.Join(parts, ".")
 }
