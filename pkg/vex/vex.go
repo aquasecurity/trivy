@@ -181,6 +181,11 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 			return false
 		} else if c.Root {
 			return true
+		} else if len(parents[c.ID()]) == 0 {
+			// Should never reach here as all components other than the root should have at least one parent.
+			// If it does, it means the component tree is not connected due to a bug in the SBOM generation.
+			// In this case, so as not to filter out all the vulnerabilities accidentally, return true for fail-safe.
+			return true
 		}
 
 		visited[c.ID()] = true
