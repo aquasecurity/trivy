@@ -184,7 +184,7 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
 	var conf IgnoreConfig
 	if _, err := os.Stat(ignoreFile); errors.Is(err, fs.ErrNotExist) {
-		// .trivyignore doesn't necessarily exist or maybe empty
+		// .trivyignore doesn't necessarily exist
 		log.Debug("Specified ignore file does not exist", log.String("file", ignoreFile))
 		return IgnoreConfig{}, nil
 	} else if filepath.Ext(ignoreFile) == ".yml" || filepath.Ext(ignoreFile) == ".yaml" {
