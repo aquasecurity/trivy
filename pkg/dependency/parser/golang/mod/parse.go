@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -101,17 +102,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 	}
 
-	// Main module
-	if m := modFileParsed.Module; m != nil {
-		pkgs[m.Mod.Path] = ftypes.Package{
-			ID:                 packageID(m.Mod.Path, m.Mod.Version),
-			Name:               m.Mod.Path,
-			Version:            m.Mod.Version,
-			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
-			Relationship:       ftypes.RelationshipRoot,
-		}
-	}
-
 	// Required modules
 	for _, require := range modFileParsed.Require {
 		// Skip indirect dependencies less than Go 1.17
@@ -163,7 +153,36 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 	}
 
-	return lo.Values(pkgs), nil, nil
+	var deps ftypes.Dependencies
+	// Main module
+	if m := modFileParsed.Module; m != nil {
+		root := ftypes.Package{
+			ID:                 packageID(m.Mod.Path, m.Mod.Version),
+			Name:               m.Mod.Path,
+			Version:            m.Mod.Version,
+			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
+			Relationship:       ftypes.RelationshipRoot,
+		}
+
+		// Store child dependencies for the root package (main module).
+		// We will build a dependency graph for Direct/Indirect in `fanal` using additional files.
+		dependsOn := lo.FilterMap(lo.Values(pkgs), func(pkg ftypes.Package, _ int) (string, bool) {
+			return pkg.ID, pkg.Relationship == ftypes.RelationshipDirect
+		})
+
+		sort.Strings(dependsOn)
+		deps = append(deps, ftypes.Dependency{
+			ID:        root.ID,
+			DependsOn: dependsOn,
+		})
+
+		pkgs[root.Name] = root
+	}
+
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+
+	return pkgSlice, deps, nil
 }
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`

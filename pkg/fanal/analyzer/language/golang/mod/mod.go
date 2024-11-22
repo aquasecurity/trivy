@@ -101,6 +101,9 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		a.logger.Warn("Unable to collect additional info", log.Err(err))
 	}
 
+	// Add orphan indirect dependencies under the main module
+	a.addOrphanIndirectDepsUnderRoot(apps)
+
 	return &analyzer.AnalysisResult{
 		Applications: apps,
 	}, nil
@@ -210,6 +213,40 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (types.Dependency, err
 		ID:        pkgID,
 		DependsOn: dependsOn,
 	}, nil
+}
+
+// addOrphanIndirectDepsUnderRoot handles indirect dependencies that have no identifiable parent packages in the dependency tree.
+// This situation can occur when:
+// - $GOPATH/pkg directory doesn't exist
+// - Module cache is incomplete
+// - etc.
+//
+// In such cases, indirect packages become "orphaned" - they exist in the dependency list
+// but have no connection to the dependency tree. This function resolves this issue by:
+// 1. Finding the root (main) module
+// 2. Identifying all indirect dependencies that have no parent packages
+// 3. Adding these orphaned indirect dependencies under the main module
+//
+// This ensures that all packages remain visible in the dependency tree, even when the complete
+// dependency chain cannot be determined.
+func (a *gomodAnalyzer) addOrphanIndirectDepsUnderRoot(apps []types.Application) {
+	for _, app := range apps {
+		// Find the main module
+		_, rootIdx, found := lo.FindIndexOf(app.Packages, func(pkg types.Package) bool {
+			return pkg.Relationship == types.RelationshipRoot
+		})
+		if !found {
+			continue
+		}
+
+		// Collect all orphan indirect dependencies that are unable to identify parents
+		parents := app.Packages.ParentDeps()
+		orphanDeps := lo.FilterMap(app.Packages, func(pkg types.Package, _ int) (string, bool) {
+			return pkg.ID, pkg.Relationship == types.RelationshipIndirect && len(parents[pkg.ID]) == 0
+		})
+		// Add orphan indirect dependencies under the main module
+		app.Packages[rootIdx].DependsOn = append(app.Packages[rootIdx].DependsOn, orphanDeps...)
+	}
 }
 
 func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
