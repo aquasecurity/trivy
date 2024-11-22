@@ -363,13 +363,14 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Layer:       layer,
 		Traces:      res.Traces,
 		CauseMetadata: ftypes.CauseMetadata{
-			Resource:    res.Resource,
-			Provider:    res.Provider,
-			Service:     res.Service,
-			StartLine:   res.StartLine,
-			EndLine:     res.EndLine,
-			Code:        res.Code,
-			Occurrences: res.Occurrences,
+			Resource:      res.Resource,
+			Provider:      res.Provider,
+			Service:       res.Service,
+			StartLine:     res.StartLine,
+			EndLine:       res.EndLine,
+			Code:          res.Code,
+			Occurrences:   res.Occurrences,
+			RenderedCause: res.RenderedCause,
 		},
 	}
 }

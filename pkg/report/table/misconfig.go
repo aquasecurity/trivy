@@ -107,6 +107,7 @@ func (r *misconfigRenderer) printSingleDivider() {
 func (r *misconfigRenderer) renderSingle(misconf types.DetectedMisconfiguration) {
 	r.renderSummary(misconf)
 	r.renderCode(misconf)
+	r.renderCause(misconf)
 	r.printf("\r\n\r\n")
 }
 
@@ -209,6 +210,23 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 		}
 		r.printSingleDivider()
 	}
+}
+
+func (r *misconfigRenderer) renderCause(misconf types.DetectedMisconfiguration) {
+	cause := misconf.CauseMetadata.RenderedCause
+	if cause.Raw == "" {
+		return
+	}
+
+	content := cause.Raw
+	if cause.Highlighted != "" {
+		content = cause.Highlighted
+	}
+
+	r.printf("<dim>%s\r\n", "Rendered cause:")
+	r.printSingleDivider()
+	r.println(content)
+	r.printSingleDivider()
 }
 
 func (r *misconfigRenderer) outputTrace() {
