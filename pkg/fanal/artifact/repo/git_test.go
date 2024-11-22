@@ -21,6 +21,7 @@ import (
 )
 
 func setupGitRepository(t *testing.T, repo, dir string) (*httptest.Server, *git.Repository) {
+	t.Helper()
 	gs := gittest.NewServer(t, repo, dir)
 
 	worktree := t.TempDir()

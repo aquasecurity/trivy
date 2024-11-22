@@ -311,6 +311,7 @@ type Server struct {
 }
 
 func NewServer(t *testing.T) *Server {
+	t.Helper()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/api/v1/index/retrieve":
