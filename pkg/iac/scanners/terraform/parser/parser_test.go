@@ -3,6 +3,7 @@ package parser
 import (
 	"bytes"
 	"context"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -2062,4 +2063,80 @@ func TestLoadChildModulesFromLocalCache(t *testing.T) {
 	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_2\"")
 	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
 	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
+}
+
+func Test_PassingNullToChildModule_DoesNotEraseType(t *testing.T) {
+	tests := []struct {
+		name string
+		fsys fs.FS
+	}{
+		{
+			name: "typed variable",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`module "test" {
+  source   = "./modules/test"
+  test_var = null
+}`)},
+				"modules/test/main.tf": &fstest.MapFile{Data: []byte(`variable "test_var" {
+  type    = number
+}
+
+resource "foo" "this" {
+  bar = var.test_var != null ? 1 : 2
+}`)},
+			},
+		},
+		{
+			name: "typed variable with default",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`module "test" {
+  source   = "./modules/test"
+  test_var = null
+}`)},
+				"modules/test/main.tf": &fstest.MapFile{Data: []byte(`variable "test_var" {
+  type    = number
+  default = null
+}
+
+resource "foo" "this" {
+  bar = var.test_var != null ? 1 : 2
+}`)},
+			},
+		},
+		{
+			name: "empty variable",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`module "test" {
+  source   = "./modules/test"
+  test_var = null
+}`)},
+				"modules/test/main.tf": &fstest.MapFile{Data: []byte(`variable "test_var" {}
+
+resource "foo" "this" {
+  bar = var.test_var != null ? 1 : 2
+}`)},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			parser := New(
+				tt.fsys, "",
+				OptionStopOnHCLError(true),
+			)
+			require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+			_, err := parser.Load(context.TODO())
+			require.NoError(t, err)
+
+			modules, _, err := parser.EvaluateAll(context.TODO())
+			require.NoError(t, err)
+
+			res := modules.GetResourcesByType("foo")[0]
+			attr := res.GetAttribute("bar")
+			val, _ := attr.Value().AsBigFloat().Int64()
+			assert.Equal(t, int64(2), val)
+		})
+	}
 }

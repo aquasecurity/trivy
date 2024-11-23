@@ -575,7 +575,7 @@ func (b *Block) Values() cty.Value {
 		if attribute.Name() == "for_each" {
 			continue
 		}
-		values[attribute.Name()] = attribute.Value()
+		values[attribute.Name()] = attribute.NullableValue()
 	}
 	return cty.ObjectVal(postProcessValues(b, values))
 }
@@ -633,7 +633,7 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 	)
 
 	forEachVal.ForEachElement(func(key, val cty.Value) (stop bool) {
-		if val.IsNull() {
+		if val.IsNull() || !val.IsKnown() {
 			return
 		}
 
