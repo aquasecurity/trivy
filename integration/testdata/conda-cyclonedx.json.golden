@@ -34,6 +34,12 @@
       "type": "library",
       "name": "openssl",
       "version": "1.1.1q",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "237db0da53131e4548cb1181337fa0f420299e1f"
+        }
+      ],
       "licenses": [
         {
           "license": {
@@ -58,6 +64,12 @@
       "type": "library",
       "name": "pip",
       "version": "22.2.2",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
+        }
+      ],
       "licenses": [
         {
           "license": {

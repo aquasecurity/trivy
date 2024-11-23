@@ -85,6 +85,7 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 		"ignore": attributeIgnorer(modules),
 	}
 
+	// ignore a result based on user input
 	results.Ignore(ignores, ignorers)
 
 	for _, ignored := range results.GetIgnored() {

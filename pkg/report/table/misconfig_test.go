@@ -24,10 +24,11 @@ func TestMisconfigRenderer(t *testing.T) {
 			name: "single result",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						ID:          "some-alias-for-a-check",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -41,10 +42,10 @@ func TestMisconfigRenderer(t *testing.T) {
 			want: `
 my-file ()
 ==========
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-HIGH: Oh no, a bad config.
+AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -58,10 +59,10 @@ See https://google.com/search?q=bad%20config
 			name: "single result with code",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -100,10 +101,10 @@ See https://google.com/search?q=bad%20config
 			want: `
 my-file ()
 ==========
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-HIGH: Oh no, a bad config.
+AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -123,10 +124,10 @@ See https://google.com/search?q=bad%20config
 			name: "multiple results",
 			input: types.Result{
 				Target:         "my-file",
-				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1, Exceptions: 0},
+				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "AVD-XYZ-0123",
+						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
@@ -157,7 +158,7 @@ See https://google.com/search?q=bad%20config
 						},
 					},
 					{
-						ID:          "AVD-XYZ-0456",
+						AVDID:       "AVD-XYZ-0456",
 						Title:       "Config file is bad again",
 						Description: "Your config file is still not good.",
 						Message:     "Oh no, a bad config AGAIN.",
@@ -171,10 +172,10 @@ See https://google.com/search?q=bad%20config
 			want: `
 my-file ()
 ==========
-Tests: 2 (SUCCESSES: 1, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 2 (SUCCESSES: 1, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-FAIL: HIGH: Oh no, a bad config.
+FAIL: AVD-XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -188,7 +189,7 @@ See https://google.com/search?q=bad%20config
 ────────────────────────────────────────
 
 
-PASS: MEDIUM: Oh no, a bad config AGAIN.
+PASS: AVD-XYZ-0456 (MEDIUM): Oh no, a bad config AGAIN.
 ════════════════════════════════════════
 Your config file is still not good.
 
@@ -205,15 +206,14 @@ See https://google.com/search?q=bad%20config
 				Class:  types.ClassConfig,
 				Type:   "terraform",
 				MisconfSummary: &types.MisconfSummary{
-					Successes:  5,
-					Failures:   1,
-					Exceptions: 0,
+					Successes: 5,
+					Failures:  1,
 				},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						Type:        "Terraform Security Check",
 						ID:          "AVD-AWS-0107",
-						AVDID:       "AVS-AWS-0107",
+						AVDID:       "AVD-AWS-0107",
 						Title:       "An ingress security group rule allows traffic from /0",
 						Description: "Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.",
 						Message:     "Security group rule allows ingress from public internet.",
@@ -309,10 +309,10 @@ See https://google.com/search?q=bad%20config
 			want: `
 terraform-aws-modules/security-group/aws/main.tf (terraform)
 ============================================================
-Tests: 6 (SUCCESSES: 5, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 6 (SUCCESSES: 5, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
-CRITICAL: Security group rule allows ingress from public internet.
+AVD-AWS-0107 (CRITICAL): Security group rule allows ingress from public internet.
 ════════════════════════════════════════
 Opening up ports to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that explicitly require it where possible.
 

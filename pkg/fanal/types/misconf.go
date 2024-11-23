@@ -8,13 +8,12 @@ import (
 )
 
 type Misconfiguration struct {
-	FileType   ConfigType     `json:",omitempty"`
-	FilePath   string         `json:",omitempty"`
-	Successes  MisconfResults `json:",omitempty"`
-	Warnings   MisconfResults `json:",omitempty"`
-	Failures   MisconfResults `json:",omitempty"`
-	Exceptions MisconfResults `json:",omitempty"`
-	Layer      Layer          `json:",omitempty"`
+	FileType  ConfigType     `json:",omitempty"`
+	FilePath  string         `json:",omitempty"`
+	Successes MisconfResults `json:",omitempty"`
+	Warnings  MisconfResults `json:",omitempty"`
+	Failures  MisconfResults `json:",omitempty"`
+	Layer     Layer          `json:",omitempty"`
 }
 
 type MisconfResult struct {
@@ -117,7 +116,6 @@ func ToMisconfigurations(misconfs map[string]Misconfiguration) []Misconfiguratio
 		sort.Sort(misconf.Successes)
 		sort.Sort(misconf.Warnings)
 		sort.Sort(misconf.Failures)
-		sort.Sort(misconf.Exceptions)
 
 		results = append(results, misconf)
 	}

@@ -1118,3 +1118,102 @@ func TestSkipDeprecatedGoChecks(t *testing.T) {
 		require.Len(t, results, 1)
 	})
 }
+
+func TestSkipDir(t *testing.T) {
+	fs := testutil.CreateFS(t, map[string]string{
+		"deployments/main.tf": `
+module "use_bad_configuration" {
+  source = "../modules"
+}
+
+module "use_bad_configuration_2" {
+  source = "../modules/modules2"
+}
+`,
+		"modules/misconfig.tf": `data "aws_iam_policy_document" "bad" {
+  statement {
+    actions = [
+      "apigateway:*",
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "bad_configuration" {
+  name_prefix = local.setup_role_name
+  policy      = data.aws_iam_policy_document.bad.json
+}
+`,
+		"modules/modules2/misconfig.tf": `data "aws_iam_policy_document" "bad" {
+  statement {
+    actions = [
+      "apigateway:*",
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "bad_configuration" {
+  name_prefix = local.setup_role_name
+  policy      = data.aws_iam_policy_document.bad.json
+}
+`,
+	})
+
+	t.Run("use skip-dir option", func(t *testing.T) {
+		scanner := New(
+			options.ScannerWithIncludeDeprecatedChecks(true),
+			ScannerWithSkipDirs([]string{"**/modules/**"}),
+			ScannerWithAllDirectories(true),
+		)
+
+		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		require.NoError(t, err)
+
+		assert.Empty(t, results)
+	})
+
+	t.Run("use skip-files option", func(t *testing.T) {
+		scanner := New(
+			options.ScannerWithIncludeDeprecatedChecks(true),
+			ScannerWithSkipFiles([]string{"**/modules/**/*.tf"}),
+			ScannerWithAllDirectories(true),
+		)
+
+		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		require.NoError(t, err)
+
+		assert.Empty(t, results)
+	})
+
+	t.Run("non existing value for skip-files option", func(t *testing.T) {
+		scanner := New(
+			options.ScannerWithIncludeDeprecatedChecks(true),
+			ScannerWithSkipFiles([]string{"foo/bar*.tf"}),
+			ScannerWithAllDirectories(true),
+		)
+
+		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		require.NoError(t, err)
+
+		assert.Len(t, results, 4)
+	})
+
+	t.Run("empty skip-files option", func(t *testing.T) {
+		scanner := New(
+			options.ScannerWithIncludeDeprecatedChecks(true),
+			ScannerWithAllDirectories(true),
+		)
+
+		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		require.NoError(t, err)
+
+		assert.Len(t, results, 4)
+	})
+}

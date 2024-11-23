@@ -16,6 +16,8 @@ import (
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
 
+	//mage:import rpm
+	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
 	// Trivy packages should not be imported in Mage (see https://github.com/aquasecurity/trivy/pull/4242),
 	// but this package doesn't have so many dependencies, and Mage is still fast.
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -73,9 +75,25 @@ func (Tool) Wire() error {
 	return sh.Run("go", "install", "github.com/google/wire/cmd/wire@v0.5.0")
 }
 
+// Sass installs saas if not installed. npm is assumed to be available
+func (Tool) Sass() error {
+	if installed("sass") {
+		return nil
+	}
+	return sh.Run("npm", "install", "-g", "saas")
+}
+
+// PipTools installs PipTools if not installed. python is assumed to be available and relevant environment to have been activated
+func (Tool) PipTools() error {
+	if installed("pip-compile") {
+		return nil
+	}
+	return sh.Run("python", "-m", "pip", "install", "pip-tools")
+}
+
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v1.59.1"
+	const version = "v1.61.0"
 	bin := filepath.Join(GOBIN, "golangci-lint")
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
@@ -268,7 +286,7 @@ func compileWasmModules(pattern string) error {
 
 // Unit runs unit tests
 func (t Test) Unit() error {
-	mg.Deps(t.GenerateModules)
+	mg.Deps(t.GenerateModules, rpm.Fixtures)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-short", "-coverprofile=coverage.txt", "-covermode=atomic", "./...")
 }
 
@@ -418,13 +436,41 @@ func Label() error {
 
 type Docs mg.Namespace
 
+// Prepare CSS
+func (Docs) Css() error {
+	const (
+		homepageSass = "docs/assets/css/trivy_v1_homepage.scss"
+	)
+	homepageCss := strings.TrimSuffix(homepageSass, ".scss") + ".min.css"
+	if updated, err := target.Path(homepageCss, homepageSass); err != nil {
+		return err
+	} else if !updated {
+		return nil
+	}
+	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, homepageCss)
+}
+
+// Prepare python requirements
+func (Docs) Pip() error {
+	const (
+		requirementsIn = "docs/build/requirements.in"
+	)
+	requirementsTxt := strings.TrimSuffix(requirementsIn, ".in") + ".txt"
+	if updated, err := target.Path(requirementsTxt, requirementsIn); err != nil {
+		return err
+	} else if !updated {
+		return nil
+	}
+	return sh.Run("pip-compile", requirementsIn, "--output-file", requirementsTxt)
+}
+
 // Serve launches MkDocs development server to preview the documentation page
 func (Docs) Serve() error {
 	const (
-		mkdocsImage = "aquasec/mkdocs-material:dev"
+		mkdocsImage = "trivy-docs:dev"
 		mkdocsPort  = "8000"
 	)
-	if err := sh.Run("docker", "build", "-t", mkdocsImage, "-f", "docs/build/Dockerfile", "docs/build"); err != nil {
+	if err := sh.Run("docker", "build", "-t", mkdocsImage, "docs/build"); err != nil {
 		return err
 	}
 	return sh.Run("docker", "run", "--name", "mkdocs-serve", "--rm", "-v", "${PWD}:/docs", "-p", mkdocsPort+":8000", mkdocsImage)
@@ -486,4 +532,11 @@ func (CloudActions) Generate() error {
 // VEX generates a VEX document for Trivy
 func VEX(_ context.Context, dir string) error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_vex", "./magefiles/vex.go", "--dir", dir)
+}
+
+type Helm mg.Namespace
+
+// UpdateVersion updates a version for Trivy Helm Chart and creates a PR
+func (Helm) UpdateVersion() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_helm", "./magefiles")
 }

@@ -3,7 +3,6 @@ package terraform
 import (
 	"bytes"
 	"fmt"
-	"regexp"
 	"strings"
 	"text/template"
 )
@@ -106,19 +105,14 @@ func renderPrimitive(val any) string {
 func parseStringPrimitive(input string) string {
 	// we must escape templating
 	// ref: https://developer.hashicorp.com/terraform/language/expressions/strings#escape-sequences-1
-	r := regexp.MustCompile(`((\$|\%)\{.+\})`)
-	ff := r.ReplaceAllStringFunc(input, func(s string) string {
-		s = strings.Replace(s, "$", "$$", 1)
-		s = strings.Replace(s, "%", "%%", 1)
-		return s
-	})
-	if strings.Contains(ff, "\n") {
+	input = escapeSpecialSequences(input)
+	if strings.Contains(input, "\n") {
 		return fmt.Sprintf(`<<EOF
 		%s
 		EOF
-		`, ff)
+		`, input)
 	}
-	return fmt.Sprintf("%q", ff)
+	return fmt.Sprintf("%q", input)
 }
 
 func isMapSlice(vars []any) bool {
@@ -170,4 +164,30 @@ func renderMap(val map[string]any) string {
 	}
 	result = fmt.Sprintf("%s}", result)
 	return result
+}
+
+func escapeSpecialSequences(input string) string {
+	var sb strings.Builder
+	sb.Grow(len(input))
+	for i, r := range input {
+		if r == '$' || r == '%' {
+			sb.WriteRune(r)
+			remain := input[i+1:]
+
+			// it's not a special sequence
+			if remain == "" || remain[0] != '{' {
+				continue
+			}
+
+			// sequence is already escaped
+			if i > 0 && rune(input[i-1]) == r {
+				continue
+			}
+
+			sb.WriteRune(r)
+		} else {
+			sb.WriteRune(r)
+		}
+	}
+	return sb.String()
 }

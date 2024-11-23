@@ -86,6 +86,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		r.flagOpts.ScanOptions.Scanners = scanners
 	}
 	var rpt report.Report
+	log.Info("Scanning K8s...", log.String("K8s", r.cluster))
 	rpt, err = s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)

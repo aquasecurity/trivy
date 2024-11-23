@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-getter"
+	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -256,7 +257,7 @@ func (r *Repository) download(ctx context.Context, ver Version, dst string, opts
 			etag = etags[loc.URL] // Keep the old ETag
 			// Update last updated time so that Trivy will not try to download the same URL soon
 		case err != nil:
-			errs = errors.Join(errs, err)
+			errs = multierror.Append(errs, err)
 			continue // Try the next location
 		default:
 			// Successfully downloaded

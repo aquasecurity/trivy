@@ -6,15 +6,22 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/samber/lo"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 var (
-	varRegexp = regexp.MustCompile(`\${(\S+?)}`)
+	varRegexp        = regexp.MustCompile(`\${(\S+?)}`)
+	emptyVersionWarn = sync.OnceFunc(func() {
+		log.WithPrefix("pom").Warn("Dependency version cannot be determined. Child dependencies will not be found.",
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/coverage/language/java/#empty-dependency-version
+			log.String("details", doc.URL("/docs/coverage/language/java/", "empty-dependency-version")))
+	})
 )
 
 type artifact struct {
@@ -42,7 +49,17 @@ func newArtifact(groupID, artifactID, version string, licenses []string, props m
 }
 
 func (a artifact) IsEmpty() bool {
-	return a.GroupID == "" || a.ArtifactID == "" || a.Version.String() == ""
+	if a.GroupID == "" || a.ArtifactID == "" {
+		return true
+	}
+	if a.Version.String() == "" {
+		emptyVersionWarn()
+		log.WithPrefix("pom").Debug("Dependency version cannot be determined.",
+			log.String("GroupID", a.GroupID),
+			log.String("ArtifactID", a.ArtifactID),
+		)
+	}
+	return false
 }
 
 func (a artifact) Equal(o artifact) bool {
@@ -146,7 +163,7 @@ func evaluateVariable(s string, props map[string]string, seenProps []string) str
 		}
 		s = strings.ReplaceAll(s, m[0], newValue)
 	}
-	return s
+	return strings.TrimSpace(s)
 }
 
 func printLoopedPropertiesStack(env string, usedProps []string) {

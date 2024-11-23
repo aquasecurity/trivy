@@ -116,11 +116,10 @@ func TestArtifact_Download(t *testing.T) {
 				},
 			}, nil)
 
-			artifact, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
-			require.NoError(t, err)
-
+			artifact := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
 			err = artifact.Download(context.Background(), tempDir, oci.DownloadOption{
 				MediaType: tt.mediaType,
+				Quiet:     true,
 			})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

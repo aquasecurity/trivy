@@ -87,7 +87,7 @@ You can also refer to [Trivy's example](https://github.com/aquasecurity/trivy/bl
 
 ### Step 2: Generate and Upload a VEX Attestation to an OCI Registry
 
-You can use the [Cosign command](https://docs.sigstore.dev/verifying/attestation/) to generate and upload the VEX attestation.
+You can use the [Cosign command](https://docs.sigstore.dev/cosign/verifying/attestation/) to generate and upload the VEX attestation.
 Cosign offers methods both with and without keys.
 For detailed instructions, please refer to the Cosign documentation.
 
