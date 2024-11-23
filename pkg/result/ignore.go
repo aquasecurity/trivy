@@ -226,6 +226,8 @@ func parseIgnoreYAML(ignoreFile string) (IgnoreConfig, error) {
 	log.Debug("Found an ignore yaml", log.FilePath(ignoreFile))
 
 	// Parse the YAML content
+	// We have to use Unmarshal() due to go-yaml returning an error with Decode()
+	// ref: https://github.com/go-yaml/yaml/issues/805
 	var ignoreConfig IgnoreConfig
 	if err = yaml.Unmarshal(b, &ignoreConfig); err != nil {
 		return IgnoreConfig{}, xerrors.Errorf("yaml decode error: %w", err)
