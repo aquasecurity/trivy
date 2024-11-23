@@ -161,28 +161,29 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	}
 	sort.Strings(paths)
 	for _, path := range paths {
-		if err := p.ParseFile(ctx, path); err != nil {
-			if p.stopOnHCLError {
-				return err
-			}
-			var diags hcl.Diagnostics
-			if errors.As(err, &diags) {
-				errc := p.showParseErrors(p.moduleFS, path, diags)
-				if errc == nil {
-					continue
-				}
-				p.logger.Error("Failed to get the causes of the parsing error", log.Err(errc))
-			}
-			p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
+		if err := p.ParseFile(ctx, path); err == nil {
 			continue
 		}
+
+		if p.stopOnHCLError {
+			return err
+		}
+		var diags hcl.Diagnostics
+		if errors.As(err, &diags) {
+			errc := p.showParseErrors(p.moduleFS, path, diags)
+			if errc == nil {
+				continue
+			}
+			p.logger.Error("Failed to get the causes of the parsing error", log.Err(errc))
+		}
+		p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
 	}
 
 	return nil
 }
 
-func (p *Parser) showParseErrors(fsys fs.FS, path string, diags hcl.Diagnostics) error {
-	file, err := fsys.Open(path)
+func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
+	file, err := fsys.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to read file: %w", err)
 	}
@@ -196,7 +197,7 @@ func (p *Parser) showParseErrors(fsys fs.FS, path string, diags hcl.Diagnostics)
 			}
 
 			cause := strings.Join(lines, "\n")
-			p.logger.Error("Error parsing file", log.FilePath(path),
+			p.logger.Error("Error parsing file", log.FilePath(filePath),
 				log.String("cause", cause), log.Err(diag))
 		}
 	}
