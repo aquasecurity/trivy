@@ -168,7 +168,8 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	}
 	sort.Strings(paths)
 	for _, path := range paths {
-		if err := p.ParseFile(ctx, path); err == nil {
+		var err error
+		if err = p.ParseFile(ctx, path); err == nil {
 			continue
 		}
 
@@ -184,6 +185,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 			p.logger.Error("Failed to get the causes of the parsing error", log.Err(errc))
 		}
 		p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
+		continue
 	}
 
 	return nil
