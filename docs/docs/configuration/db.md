@@ -105,6 +105,8 @@ For example:
 trivy image --download-db-only
 ```
 
+Note that currently there is no option to download only the Misconfigurations database.
+
 ### Remove Databases
 
 `trivy clean` command removes caches and databases.
