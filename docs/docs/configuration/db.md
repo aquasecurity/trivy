@@ -80,7 +80,7 @@ The Checks Database registry location option does not support fallback through m
 
 ### Skip updates
 
-You can configure Trivy to not attempt to download database at all using the flags:
+You can configure Trivy to not attempt to download any or all database(s), using the flags:
 
 - `--skip-db-update`
 - `--skip-java-db-update`
