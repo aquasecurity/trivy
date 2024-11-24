@@ -94,7 +94,7 @@ trivy image --skip-db-update --skip-java-db-update --skip-check-update alpine
 
 ### Only update
 
-You can ask `Trivy` to update the database without performing a scan using the flags:
+You can ask `Trivy` to only update the database without performing a scan. This action will ensure Trivy is up to date, and populate Trivy's database cache for subsequent scans.
 
 - `--download-db-only`
 - `--download-java-db-only`
