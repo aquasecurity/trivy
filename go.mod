@@ -41,7 +41,6 @@ require (
 	github.com/cheggaaa/pb/v3 v3.1.5
 	github.com/containerd/containerd/v2 v2.0.0
 	github.com/containerd/platforms v1.0.0-rc.0
-	github.com/csaf-poc/csaf_distribution/v3 v3.0.0
 	github.com/distribution/reference v0.6.0
 	github.com/docker/cli v27.3.1+incompatible
 	github.com/docker/docker v27.3.1+incompatible
@@ -51,6 +50,7 @@ require (
 	github.com/go-openapi/runtime v0.28.0 // indirect
 	github.com/go-openapi/strfmt v0.23.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/gocsaf/csaf/v3 v3.1.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/go-containerregistry v0.20.2
 	github.com/google/go-github/v62 v62.0.0
