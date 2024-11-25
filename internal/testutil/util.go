@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/liamg/memoryfs"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -34,6 +35,16 @@ func AssertRuleFound(t *testing.T, ruleID string, results scan.Results, message 
 func AssertRuleNotFound(t *testing.T, ruleID string, results scan.Results, message string, args ...any) {
 	found := ruleIDInResults(ruleID, results.GetFailed())
 	assert.False(t, found, append([]any{message}, args...)...)
+}
+
+func AssertRuleNotFailed(t *testing.T, ruleID string, results scan.Results, message string, args ...any) {
+	failedExists := ruleIDInResults(ruleID, results.GetFailed())
+	assert.False(t, failedExists, append([]any{message}, args...)...)
+	passedResults := lo.Filter(results, func(res scan.Result, _ int) bool {
+		return res.Status() == scan.StatusPassed || res.Status() == scan.StatusIgnored
+	})
+	passedExists := ruleIDInResults(ruleID, passedResults)
+	assert.True(t, passedExists, append([]any{message}, args...)...)
 }
 
 func ruleIDInResults(ruleID string, results scan.Results) bool {
