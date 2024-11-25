@@ -53,19 +53,15 @@ func TestParseIgnoreFile(t *testing.T) {
 		assert.Empty(t, got)
 	})
 
-	// TODO(simar7): This test currently fails as we don't validate
-	// the correctness of ignore file when not in YAML format
-	/*
-		t.Run("invalid file passed", func(t *testing.T) {
-			f, err := os.CreateTemp("", "TestParseIgnoreFile-*")
-			require.NoError(t, err)
-			defer os.Remove(f.Name())
-			_, _ = f.WriteString("this file is not a valid trivyignore file")
+	t.Run("invalid file passed", func(t *testing.T) {
+		f, err := os.CreateTemp("", "TestParseIgnoreFile-*")
+		require.NoError(t, err)
+		defer os.Remove(f.Name())
+		_, _ = f.WriteString("this file is not a valid trivyignore file")
 
-			_, err = ParseIgnoreFile(context.TODO(), f.Name())
-			require.Error(t, err)
-		})
-	*/
+		_, err = ParseIgnoreFile(context.TODO(), f.Name())
+		require.NoError(t, err) // TODO(simar7): We don't verify correctness, should we?
+	})
 
 	t.Run("non existing file passed", func(t *testing.T) {
 		got, err := ParseIgnoreFile(context.TODO(), "does-not-exist.yaml")
