@@ -1,6 +1,6 @@
 # Self-Hosting Trivy's Databases
 
-This document explains how to host Trivy's databases in your own infrastructure. If you haven't already, please familiarize yourself with the [Databases document](../configuration/db.md) that explains about the different databases used by Trivy and the different configuration options that control them. This guide assumes you are already familiar with the concepts explained there.
+This document explains how to host Trivy's [external dependencies](./air-gap.md) in your own infrastructure to prevent external network access. If you haven't already, please familiarize yourself with the [Databases document](../configuration/db.md) that explains about the different databases used by Trivy and the different configuration options that control them. This guide assumes you are already familiar with the concepts explained there.
 
 ## OCI databases
 
