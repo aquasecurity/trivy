@@ -32,8 +32,8 @@ The following hosts are known to be used by the default container registries:
 
 Registry | Hosts | Additional info
 --- | --- | ---
-Google Container Registry | <ul><li>`mirror.gcr.io`</li><li>`googlecode.l.googleusercontent.com`</li></ul> | [GitHub's IP addresses](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-githubs-ip-addresses)
-GitHub Container Registry | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul> | [Google's IP addresses](https://support.google.com/a/answer/10026322?hl=en)
+Google Artifact Registry | <ul><li>`mirror.gcr.io`</li><li>`googlecode.l.googleusercontent.com`</li></ul> | [Google's IP addresses](https://support.google.com/a/answer/10026322?hl=en)
+GitHub Container Registry | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubusercontent.com`</li></ul> | [GitHub's IP addresses](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-githubs-ip-addresses)
 
 ### Self-hosting
 
