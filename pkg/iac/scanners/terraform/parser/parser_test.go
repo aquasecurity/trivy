@@ -2010,6 +2010,27 @@ variable "baz" {}
 	assert.Contains(t, buf.String(), "variables=\"foo\"")
 }
 
+func TestLogParseErrors(t *testing.T) {
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
+
+	src := `resource "aws-s3-bucket" "name" {
+  bucket = <
+}`
+
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{
+			Data: []byte(src),
+		},
+	}
+
+	parser := New(fsys, "")
+	err := parser.ParseFS(context.TODO(), ".")
+	require.NoError(t, err)
+
+	assert.Contains(t, buf.String(), `cause="  bucket = <"`)
+}
+
 func Test_PassingNullToChildModule_DoesNotEraseType(t *testing.T) {
 	tests := []struct {
 		name string

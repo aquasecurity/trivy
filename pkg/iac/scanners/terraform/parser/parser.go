@@ -1,8 +1,10 @@
 package parser
 
 import (
+	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -166,16 +168,67 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	}
 	sort.Strings(paths)
 	for _, path := range paths {
-		if err := p.ParseFile(ctx, path); err != nil {
-			if p.stopOnHCLError {
+		var err error
+		if err = p.ParseFile(ctx, path); err == nil {
+			continue
+		}
+
+		if p.stopOnHCLError {
+			return err
+		}
+		var diags hcl.Diagnostics
+		if errors.As(err, &diags) {
+			errc := p.showParseErrors(p.moduleFS, path, diags)
+			if errc == nil {
+				continue
+			}
+			p.logger.Error("Failed to get the causes of the parsing error", log.Err(errc))
+		}
+		p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
+		continue
+	}
+
+	return nil
+}
+
+func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
+	file, err := fsys.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read file: %w", err)
+	}
+	defer file.Close()
+
+	for _, diag := range diags {
+		if subj := diag.Subject; subj != nil {
+			lines, err := readLinesFromFile(file, subj.Start.Line, subj.End.Line)
+			if err != nil {
 				return err
 			}
-			p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
-			continue
+
+			cause := strings.Join(lines, "\n")
+			p.logger.Error("Error parsing file", log.FilePath(filePath),
+				log.String("cause", cause), log.Err(diag))
 		}
 	}
 
 	return nil
+}
+
+func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
+	scanner := bufio.NewScanner(f)
+	rawLines := make([]string, 0, to-from+1)
+
+	for lineNum := 0; scanner.Scan() && lineNum < to; lineNum++ {
+		if lineNum >= from-1 {
+			rawLines = append(rawLines, scanner.Text())
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("failed to scan file: %w", err)
+	}
+
+	return rawLines, nil
 }
 
 var ErrNoFiles = errors.New("no files found")
