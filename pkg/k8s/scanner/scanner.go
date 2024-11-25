@@ -242,8 +242,9 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 			if err != nil {
 				return nil, err
 			}
+			cpcVersion := unifiedVersion(comp.Version)
 
-			lang := k8sNamespace(comp.Version, nodeName)
+			lang := k8sNamespace(cpcVersion, nodeName)
 			results, _, err := k8sScanner.Scan(ctx, types.ScanTarget{
 				Applications: []ftypes.Application{
 					{
@@ -252,7 +253,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 						Packages: []ftypes.Package{
 							{
 								Name:    comp.Name,
-								Version: comp.Version,
+								Version: cpcVersion,
 							},
 						},
 					},
@@ -277,7 +278,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 			if err != nil {
 				return nil, err
 			}
-			kubeletVersion := sanitizedVersion(nf.KubeletVersion)
+			kubeletVersion := unifiedVersion(nf.KubeletVersion)
 			lang := k8sNamespace(kubeletVersion, nodeName)
 			runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
 			results, _, err := k8sScanner.Scan(ctx, types.ScanTarget{
@@ -387,14 +388,15 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 			if err := ms.Decode(artifact.RawResource, &comp); err != nil {
 				return nil, err
 			}
+			cVersion := unifiedVersion(comp.Version)
 
 			controlPlane := &core.Component{
 				Name:       comp.Name,
-				Version:    comp.Version,
+				Version:    cVersion,
 				Type:       core.TypeApplication,
 				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
 				PkgIdentifier: ftypes.PkgIdentifier{
-					PURL: generatePURL(comp.Name, comp.Version, nodeName),
+					PURL: generatePURL(comp.Name, cVersion, nodeName),
 				},
 			}
 			coreComponents = append(coreComponents, controlPlane)
@@ -405,7 +407,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 				if !strings.Contains(c.Digest, string(digest.SHA256)) {
 					cDigest = fmt.Sprintf("%s:%s", string(digest.SHA256), cDigest)
 				}
-				ver := sanitizedVersion(c.Version)
+				ver := unifiedVersion(c.Version)
 
 				imagePURL, err := purl.New(purl.TypeOCI, types.Metadata{
 					RepoDigests: []string{
@@ -448,13 +450,15 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 			if err := ms.Decode(artifact.RawResource, &cf); err != nil {
 				return nil, err
 			}
+			cVersion := unifiedVersion(cf.Version)
+
 			rootComponent = &core.Component{
 				Type:       core.TypePlatform,
 				Name:       cf.Name,
-				Version:    cf.Version,
+				Version:    cVersion,
 				Properties: toProperties(cf.Properties, k8sCoreComponentNamespace),
 				PkgIdentifier: ftypes.PkgIdentifier{
-					PURL: generatePURL(cf.Name, cf.Version, nodeName),
+					PURL: generatePURL(cf.Name, cVersion, nodeName),
 				},
 				Root: true,
 			}
@@ -474,7 +478,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 	osName, osVersion := osNameVersion(nf.OsImage)
 	runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
-	kubeletVersion := sanitizedVersion(nf.KubeletVersion)
+	kubeletVersion := unifiedVersion(nf.KubeletVersion)
 	properties := toProperties(nf.Properties, "")
 	properties = append(properties, toProperties(map[string]string{
 		k8sComponentType: k8sComponentNode,
@@ -557,8 +561,11 @@ func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 	return nodeComponent
 }
 
-func sanitizedVersion(ver string) string {
-	return strings.TrimPrefix(ver, "v")
+func unifiedVersion(ver string) string {
+	if strings.HasPrefix(ver, "v") {
+		return ver
+	}
+	return "v" + ver
 }
 
 func osNameVersion(name string) (string, string) {
@@ -592,7 +599,7 @@ func runtimeNameVersion(name string) (string, string) {
 	case "cri-dockerd":
 		name = "github.com/Mirantis/cri-dockerd"
 	}
-	return name, ver
+	return name, unifiedVersion(ver)
 }
 
 func toProperties(props map[string]string, namespace string) []core.Property {
