@@ -562,7 +562,7 @@ func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
 }
 
 func unifiedVersion(ver string) string {
-	if strings.HasPrefix(ver, "v") {
+	if strings.HasPrefix(ver, "v") || ver == "" {
 		return ver
 	}
 	return "v" + ver
