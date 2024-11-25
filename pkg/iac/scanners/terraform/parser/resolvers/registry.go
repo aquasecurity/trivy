@@ -41,12 +41,17 @@ const registryHostname = "registry.terraform.io"
 // nolint
 func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error) {
 
+	client := r.client
+	if opt.Client != nil {
+		client = opt.Client
+	}
+
 	if !opt.AllowDownloads {
 		return
 	}
 
 	inputVersion := opt.Version
-	source, _ := splitPackageSubdirRaw(opt.Source)
+	source, _ := splitPackageSubdirRaw(opt.OriginalSource)
 	parts := strings.Split(source, "/")
 	if len(parts) < 3 || len(parts) > 4 {
 		return
@@ -81,7 +86,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		if token != "" {
 			req.Header.Set("Authorization", "Bearer "+token)
 		}
-		resp, err := r.client.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			return nil, "", "", true, err
 		}
@@ -122,7 +127,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		req.Header.Set("X-Terraform-Version", opt.Version)
 	}
 
-	resp, err := r.client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, "", "", true, err
 	}
