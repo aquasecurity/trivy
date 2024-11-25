@@ -2010,6 +2010,61 @@ variable "baz" {}
 	assert.Contains(t, buf.String(), "variables=\"foo\"")
 }
 
+func TestLoadChildModulesFromLocalCache(t *testing.T) {
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, &log.Options{Level: log.LevelDebug})))
+
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`module "level_1" {
+  source = "./modules/level_1"
+}`)},
+		"modules/level_1/main.tf": &fstest.MapFile{Data: []byte(`module "level_2" {
+  source  = "../level_2"
+}`)},
+		"modules/level_2/main.tf": &fstest.MapFile{Data: []byte(`module "level_3" {
+  count = 2
+  source  = "../level_3"
+}`)},
+		"modules/level_3/main.tf": &fstest.MapFile{Data: []byte(`resource "foo" "bar" {}`)},
+		".terraform/modules/modules.json": &fstest.MapFile{Data: []byte(`{
+    "Modules": [
+        { "Key": "", "Source": "", "Dir": "." },
+        {
+            "Key": "level_1",
+            "Source": "./modules/level_1",
+            "Dir": "modules/level_1"
+        },
+        {
+            "Key": "level_1.level_2",
+            "Source": "../level_2",
+            "Dir": "modules/level_2"
+        },
+        {
+            "Key": "level_1.level_2.level_3",
+            "Source": "../level_3",
+            "Dir": "modules/level_3"
+        }
+    ]
+}`)},
+	}
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	assert.Len(t, modules, 5)
+
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"./modules/level_1\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_2\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
+	assert.Contains(t, buf.String(), "Using module from Terraform cache .terraform/modules\tsource=\"../level_3\"")
+}
+
 func TestLogParseErrors(t *testing.T) {
 	var buf bytes.Buffer
 	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
