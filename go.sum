@@ -1078,8 +1078,8 @@ github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RR
 github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zxSIeXaQ=
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/mndrix/tap-go v0.0.0-20171203230836-629fa407e90b/go.mod h1:pzzDgJWZ34fGzaAZGFW22KVZDfyrYW+QABMrWnJBnSs=
-github.com/moby/buildkit v0.17.0 h1:ZA/4AxwBbve1f3ZaNNJQiCBtTV62R6YweWNwq4A+sTc=
-github.com/moby/buildkit v0.17.0/go.mod h1:ru8NFyDHD8HbuKaLXJIjK9nr3x6FZR+IWjtF07S+wdM=
+github.com/moby/buildkit v0.17.2 h1:/jgk/MuXbA7jeXMkknOpHYB+Ct4aNvQHkBB7SxD3D4U=
+github.com/moby/buildkit v0.17.2/go.mod h1:vr5vltV8wt4F2jThbNOChfbAklJ0DOW11w36v210hOg=
 github.com/moby/docker-image-spec v1.3.1 h1:jMKff3w6PgbfSa69GfNg+zN/XLhfXJGnEx3Nl2EsFP0=
 github.com/moby/docker-image-spec v1.3.1/go.mod h1:eKmb5VW8vQEh/BAr2yvVNvuiJuY6UIocYsFu/DxxRpo=
 github.com/moby/locker v1.0.1 h1:fOXqR41zeveg4fFODix+1Ch4mj/gT0NE1XJbp/epuBg=
