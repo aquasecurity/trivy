@@ -9,7 +9,7 @@ External Resource | Feature | Details
 --- | --- | ---
 Vulnerability Database | Vulnerability scanning | [Trivy DB](../scanner/vulnerability.md)
 Java Vulnerability Database | Java vulnerability scanning | [Trivy Java DB](../coverage/language/java.md)
-Misconfigurations Database | Misconfigurations scanning | [Trivy Checks](../scanner/misconfiguration/check/builtin.md)
+Checks Bundle | Misconfigurations scanning | [Trivy Checks](../scanner/misconfiguration/check/builtin.md)
 VEX Hub | VEX Hub | [VEX Hub](../supply-chain/vex/repo/#vex-hub)
 Maven Central / Remote Repositories | Java vulnerability scanning | [Java Scanner/Remote Repositories](../coverage/language/java.md#remote-repositories)
 
@@ -20,7 +20,7 @@ The rest of this document details each resource's connectivity requirements and 
 
 ## OCI Databases
 
-Trivy's Vulnerability, Java, and Misconfigurations databases are packaged as OCI images and stored in public container registries.
+Trivy's Vulnerability, Java, and Checks Bundle are packaged as OCI images and stored in public container registries.
 
 ### Connectivity requirements
 
@@ -39,9 +39,9 @@ GitHub Container Registry | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubuser
 
 You can host Trivy's databases in your own container registry. Please refer to [Self-hosting document](./self-hosting.md#oci-databases) for a detailed guide.
 
-## Embedded misconfiguration database
+## Embedded Checks
 
-Misconfigurations database is embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the database from the time of the Trivy release you are using.
+Checks Bundle is embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the database from the time of the Trivy release you are using.
 
 ## VEX Hub
 

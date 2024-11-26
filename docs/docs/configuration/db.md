@@ -10,7 +10,7 @@ DB | Artifact name | Contents | Purpose
 --- | --- | --- | ---
 Vulnerabilities DB | `trivy-db` | CVE information collected from various feeds | used only for [vulnerability scanning](../scanner/vulnerability.md)
 Java DB | `trivy-java-db` | Index of Java artifacts and their hash digest | used to identify Java artifacts only in [JAR scanning](../coverage/language/java.md)
-Misconfiguration DB | `trivy-chekcs` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
+Checks Bundle | `trivy-checks` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
 
 !!! note
     This is not an exhaustive list of Trivy's external connectivity requirements.
@@ -70,7 +70,7 @@ For example:
 trivy image --db-repository my.registry.local/trivy-db --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
 
-The Checks Database registry location option does not support fallback through multiple options. This is because in case of a failure pulling the checks DB, Trivy will use the embedded checks as a fallback.
+The Checks Bundle registry location option does not support fallback through multiple options. This is because in case of a failure pulling the Checks Bundle, Trivy will use the embedded checks as a fallback.
 
 !!! note 
     Setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
@@ -105,7 +105,7 @@ For example:
 trivy image --download-db-only
 ```
 
-Note that currently there is no option to download only the Misconfigurations database.
+Note that currently there is no option to download only the Checks Bundle.
 
 ### Remove Databases
 
