@@ -125,8 +125,8 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 						Metadata:   iacTypes.NewTestMetadata(),
 						Name:       iacTypes.String("my_service", iacTypes.NewTestMetadata()),
 						Image:      iacTypes.String("my_image", iacTypes.NewTestMetadata()),
-						CPU:        iacTypes.Int(2, iacTypes.NewTestMetadata()),
-						Memory:     iacTypes.Int(256, iacTypes.NewTestMetadata()),
+						CPU:        iacTypes.String("2", iacTypes.NewTestMetadata()),
+						Memory:     iacTypes.String("256", iacTypes.NewTestMetadata()),
 						Essential:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						Privileged: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						Environment: []ecs.EnvVar{

@@ -68,8 +68,8 @@ Resources:
 							{
 								Name:       types.StringTest("busybox"),
 								Image:      types.StringTest("busybox"),
-								CPU:        types.IntTest(256),
-								Memory:     types.IntTest(512),
+								CPU:        types.StringTest("256"),
+								Memory:     types.StringTest("512"),
 								Essential:  types.BoolTest(true),
 								Privileged: types.BoolTest(true),
 								Environment: []ecs.EnvVar{

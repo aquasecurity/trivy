@@ -284,7 +284,7 @@ resource "aws_ecs_task_definition" "test" {
 [
   {
 	"privileged": true,
-    "cpu": 10,
+    "cpu": "10",
     "command": ["sleep", "10"],
     "entryPoint": ["/"],
     "environment": [
@@ -292,7 +292,7 @@ resource "aws_ecs_task_definition" "test" {
     ],
     "essential": true,
     "image": "jenkins",
-    "memory": 128,
+    "memory": "128",
     "name": "jenkins",
     "portMappings": [
       {
