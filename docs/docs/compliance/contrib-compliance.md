@@ -3,7 +3,7 @@
 Trivy supports several different compliance specs. The details on compliance scanning with Trivy are provided in the [compliance documentation](../../docs/compliance/compliance.md).
 All of the Compliance Specs currently available in Trivy can be found in the `trivy-checks/pkg/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/pkg/specs/compliance)).
 
-New checks are based on the custom compliance report detailed in the [main documentation.](../../docs/compliance/compliance/#custom-compliance)
+New checks are based on the custom compliance report detailed in the [main documentation.](./compliance.md#custom-compliance)
 If you would like to create your custom compliance report, please reference the information in the main documentation. This section details how community members can contribute new Compliance Specs to Trivy.
 
 All compliance specs in Trivy are based on formal compliance reports such as CIS Benchmarks.
@@ -20,7 +20,7 @@ Create a new file under `trivy-checks/specs/compliance/` and name the file in th
 
 ### Minimum spec structure
 
-The structure of the compliance spec is detailed in the [main documentation](./compliance/#custom-compliance).
+The structure of the compliance spec is detailed in the [main documentation](./compliance.md#custom-compliance).
 
 The first section in the spec is focused on the metadata of the spec. Replace all the fields of the metadata with the information relevant to the compliance spec that will be added. This information can be taken from the official report e.g. the CIS Benchmark report.
 

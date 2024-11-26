@@ -34,7 +34,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [.NET](dotnet.md)    | packages.lock.json                                                                         |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | packages.config                                                                            |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | .deps.json                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
-|                      | *Packages.props[^10]                                                                       |     ✅     |     ✅      |       ✅        |       ✅        |
+|                      | *Packages.props[^9]                                                                        |     ✅     |     ✅      |       ✅        |       ✅        |
 | [Java](java.md)      | JAR/WAR/PAR/EAR[^3]                                                                        |     ✅     |     ✅      |       -        |       -        |
 |                      | pom.xml                                                                                    |     -     |     -      |       ✅        |       ✅        |
 |                      | *gradle.lockfile                                                                           |     -     |     -      |       ✅        |       ✅        |
@@ -44,7 +44,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Rust](rust.md)      | Cargo.lock                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | Binaries built with [cargo-auditable](https://github.com/rust-secure-code/cargo-auditable) |     ✅     |     ✅      |       -        |       -        |
 | [C/C++](c.md)        | conan.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
-| [Elixir](elixir.md)  | mix.lock[^9]                                                                               |     -     |     -      |       ✅        |       ✅        |
+| [Elixir](elixir.md)  | mix.lock[^8]                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
@@ -65,6 +65,5 @@ Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Do
 [^5]: ✅ means "enabled" and `-` means "disabled" in the rootfs scanning
 [^6]: ✅ means "enabled" and `-` means "disabled" in the filesystem scanning
 [^7]: ✅ means "enabled" and `-` means "disabled" in the git repository scanning
-[^8]: ✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in [json](../../configuration/reporting.md#json) and [sarif](../../configuration/reporting.md#sarif) formats. SARIF uses `startline == 1 and endline == 1` for unsupported file types
-[^9]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#file-patterns)
-[^10]: `Directory.Packages.props` and  legacy `Packages.props` file names are supported
+[^8]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#file-patterns)
+[^9]: `Directory.Packages.props` and  legacy `Packages.props` file names are supported

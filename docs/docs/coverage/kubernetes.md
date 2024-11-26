@@ -17,7 +17,7 @@ Container image is scanned for:
 
 Kubernetes resource definition is scanned for:
 
-- Vulnerabilities - partially supported through [KBOM scanning](#KBOM)
+- Vulnerabilities - partially supported through [KBOM scanning](../target/kubernetes.md#kbom)
 - Misconfigurations
 - Exposed secrets
 
