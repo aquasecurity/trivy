@@ -7863,7 +7863,7 @@ See <a href="../">here</a> for the detail.</p>
 <h3 id="pip">pip<a class="headerlink" href="#pip" title="Permanent link">&para;</a></h3>
 <h4 id="dependency-detection">Dependency detection<a class="headerlink" href="#dependency-detection" title="Permanent link">&para;</a></h4>
 <p>By default, Trivy only parses <a href="https://packaging.python.org/en/latest/specifications/version-specifiers/#id5">version specifiers</a> with <code>==</code> comparison operator and without <code>.*</code>.</p>
-<p>Using the <a href="#detection-priority">--detection-priority comprehensive</a> option ensures that the tool establishes a minimum version, which is particularly useful in scenarios where identifying the exact version is challenging. 
+<p>Using the <a href="../../../scanner/vulnerability/#detection-priority">--detection-priority comprehensive</a> option ensures that the tool establishes a minimum version, which is particularly useful in scenarios where identifying the exact version is challenging. 
 In such case Trivy parses specifiers <code>&gt;=</code>,<code>~=</code> and a trailing <code>.*</code>.</p>
 <p><div class="highlight"><pre><span></span><code>keyring &gt;= 4.1.1            # Minimum version 4.1.1
 Mopidy-Dirble ~= 1.1        # Minimum version 1.1

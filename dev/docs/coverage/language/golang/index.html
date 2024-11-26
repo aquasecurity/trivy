@@ -3286,7 +3286,7 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#main-module" class="md-nav__link">
+  <a href="#gomod-main" class="md-nav__link">
     <span class="md-ellipsis">
       
         Main Module
@@ -3297,7 +3297,7 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#standard-library" class="md-nav__link">
+  <a href="#gomod-stdlib" class="md-nav__link">
     <span class="md-ellipsis">
       
         Standard Library
@@ -3347,7 +3347,7 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#main-module_1" class="md-nav__link">
+  <a href="#main-module" class="md-nav__link">
     <span class="md-ellipsis">
       
         Main Module
@@ -3358,7 +3358,7 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#standard-library_1" class="md-nav__link">
+  <a href="#go-binary-stdlib" class="md-nav__link">
     <span class="md-ellipsis">
       
         Standard Library
@@ -7667,7 +7667,7 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#main-module" class="md-nav__link">
+  <a href="#gomod-main" class="md-nav__link">
     <span class="md-ellipsis">
       
         Main Module
@@ -7678,7 +7678,7 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#standard-library" class="md-nav__link">
+  <a href="#gomod-stdlib" class="md-nav__link">
     <span class="md-ellipsis">
       
         Standard Library
@@ -7728,7 +7728,7 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#main-module_1" class="md-nav__link">
+  <a href="#main-module" class="md-nav__link">
     <span class="md-ellipsis">
       
         Main Module
@@ -7739,7 +7739,7 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#standard-library_1" class="md-nav__link">
+  <a href="#go-binary-stdlib" class="md-nav__link">
     <span class="md-ellipsis">
       
         Standard Library
@@ -7864,15 +7864,15 @@ You're not viewing the latest version of the documentation.
 <td style="text-align: center;">✅</td>
 <td style="text-align: left;">Include</td>
 <td style="text-align: center;"><a href="#dependency-graph">✅</a></td>
-<td style="text-align: center;"><a href="#standard-library">✅</a></td>
-<td style="text-align: center;"><a href="#standard-library">✅</a></td>
+<td style="text-align: center;"><a href="#gomod-stdlib">✅</a></td>
+<td style="text-align: center;"><a href="#gomod-stdlib">✅</a></td>
 </tr>
 <tr>
 <td>Binaries</td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: left;">Exclude</td>
 <td style="text-align: center;">-</td>
-<td style="text-align: center;"><a href="#standard-library-1">✅</a></td>
+<td style="text-align: center;"><a href="#go-binary-stdlib">✅</a></td>
 <td style="text-align: center;">Not needed</td>
 </tr>
 </tbody>
@@ -7883,7 +7883,7 @@ You're not viewing the latest version of the documentation.
 For example, when scanning the Docker project (Docker's source code with go.mod or the Docker binary), Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find vulnerabilities of Docker itself. Moreover, when scanning the Trivy project, which happens to use Docker, Docker's vulnerabilities might be detected as dependencies of Trivy.</p>
 </div>
 <h2 id="data-sources">Data Sources<a class="headerlink" href="#data-sources" title="Permanent link">&para;</a></h2>
-<p>The data sources are listed <a href="../../../scanner/vulnerability/#data-sources-1">here</a>.
+<p>The data sources are listed <a href="../../../scanner/vulnerability/#langpkg-data-sources">here</a>.
 Trivy uses Go Vulnerability Database for <a href="https://pkg.go.dev/std">standard library</a> and uses GitHub Advisory Database for other Go modules.</p>
 <h2 id="go-module">Go Module<a class="headerlink" href="#go-module" title="Permanent link">&para;</a></h2>
 <p>Depending on Go versions, the required files are different.</p>
@@ -7929,11 +7929,11 @@ require (
 <div class="highlight"><pre><span></span><code>$ go mod tidy -go=1.18
 </code></pre></div>
 </div>
-<h3 id="main-module">Main Module<a class="headerlink" href="#main-module" title="Permanent link">&para;</a></h3>
+<h3 id="gomod-main">Main Module<a class="headerlink" href="#gomod-main" title="Permanent link">&para;</a></h3>
 <p>Trivy scans only dependencies of the project, and does not detect vulnerabilities of the main module. 
 For example, when scanning the Docker project (Docker's source code with go.mod), Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find vulnerabilities of Docker itself.
 Moreover, when scanning the Trivy project, which happens to use Docker, Docker's vulnerabilities might be detected as dependencies of Trivy.</p>
-<h3 id="standard-library">Standard Library<a class="headerlink" href="#standard-library" title="Permanent link">&para;</a></h3>
+<h3 id="gomod-stdlib">Standard Library<a class="headerlink" href="#gomod-stdlib" title="Permanent link">&para;</a></h3>
 <p>Detecting the version of Go used in the project can be tricky.
 The go.mod file include hints that allows Trivy to guess the Go version but it eventually depends on the Go tool version in the build environment.
 Since this strategy is not fully deterministic and accurate, it is enabled only in <a href="../../../scanner/vulnerability/#detection-priority">--detection-priority comprehensive</a> mode.
@@ -7961,12 +7961,12 @@ When scanning binaries built by Go, Trivy finds dependencies and Go version info
 <p class="admonition-title">Note</p>
 <p>It doesn't work with UPX-compressed binaries.</p>
 </div>
-<h3 id="main-module_1">Main Module<a class="headerlink" href="#main-module_1" title="Permanent link">&para;</a></h3>
+<h3 id="main-module">Main Module<a class="headerlink" href="#main-module" title="Permanent link">&para;</a></h3>
 <p>Go binaries installed using the <code>go install</code> command contains correct (semver) version for the main module and therefor are detected by Trivy.
 In other cases, Go uses the <code>(devel)</code> version<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.
 In this case, Trivy will attempt to parse any <code>-ldflags</code> as it's a common practice to pass versions this way.
 If unsuccessful, the version will be empty<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.</p>
-<h3 id="standard-library_1">Standard Library<a class="headerlink" href="#standard-library_1" title="Permanent link">&para;</a></h3>
+<h3 id="go-binary-stdlib">Standard Library<a class="headerlink" href="#go-binary-stdlib" title="Permanent link">&para;</a></h3>
 <p>Trivy detects the Go version used to compile the binary and detects its vulnerabilities in the standard libraries.
 It possibly produces false positives.
 See <a href="#stdlib-vulnerabilities">the caveat</a> for details.</p>
@@ -7979,7 +7979,7 @@ There are a few ways to mitigate this:</p>
 <li>Suppress non-applicable vulnerabilities using either <a href="../../../configuration/filtering/">ignore file</a> for self-use or <a href="../../../supply-chain/vex/repo/">VEX Hub</a> for public use.</li>
 </ol>
 <h3 id="empty-version">Empty Version<a class="headerlink" href="#empty-version" title="Permanent link">&para;</a></h3>
-<p>As described in the <a href="#main-module-1">Main Module</a> section, the main module of Go binaries might have an empty version.
+<p>As described in the <a href="#gomod-main">Main Module</a> section, the main module of Go binaries might have an empty version.
 Also, dependencies replaced with local ones will have an empty version.</p>
 <div class="footnote">
 <hr />

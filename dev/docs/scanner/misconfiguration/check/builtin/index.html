@@ -7606,7 +7606,7 @@ See <a href="../../../../coverage/iac/">here</a> for the list of supported confi
 <h2 id="checks-bundle">Checks Bundle<a class="headerlink" href="#checks-bundle" title="Permanent link">&para;</a></h2>
 <p>When performing a misconfiguration scan, Trivy will automatically download the relevant Checks bundle. The bundle is cached locally and Trivy will reuse it for subsequent scans on the same machine. Trivy takes care of updating the cache automatically, so normally users can be oblivious to it.</p>
 <h2 id="checks-distribution">Checks Distribution<a class="headerlink" href="#checks-distribution" title="Permanent link">&para;</a></h2>
-<p>Trivy checks are distributed as an <a href="opa-bundle">OPA bundle</a> hosted in the following GitHub Container Registry: <a href="https://ghcr.io/aquasecurity/trivy-checks">https://ghcr.io/aquasecurity/trivy-checks</a>.<br />
+<p>Trivy checks are distributed as an <a href="https://www.openpolicyagent.org/docs/latest/management-bundles/">OPA bundle</a> hosted in the following GitHub Container Registry: <a href="https://ghcr.io/aquasecurity/trivy-checks">https://ghcr.io/aquasecurity/trivy-checks</a>.<br />
 Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
 <h3 id="external-connectivity">External connectivity<a class="headerlink" href="#external-connectivity" title="Permanent link">&para;</a></h3>
 <p>Trivy needs to connect to the internet to download the bundle. If you are running Trivy in an air-gapped environment, or an tightly controlled network, please refer to the <a href="../../../../advanced/air-gap/">Advanced Network Scenarios document</a>.<br />

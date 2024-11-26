@@ -8457,11 +8457,13 @@ PackageLicenseDeclared: GPL-2.0-only
 <p>Trivy can take SBOM documents as input for scanning, e.g <code>trivy sbom ./sbom.spdx</code>.
 See <a href="../../target/sbom/">here</a> for more details.</p>
 <h3 id="sbom-detection-inside-targets">SBOM Detection inside Targets<a class="headerlink" href="#sbom-detection-inside-targets" title="Permanent link">&para;</a></h3>
-<p>Trivy searches for SBOM files in container images with the following extensions:
-- <code>.spdx</code>
-- <code>.spdx.json</code>
-- <code>.cdx</code>
-- <code>.cdx.json</code></p>
+<p>Trivy searches for SBOM files in container images with the following extensions:</p>
+<ul>
+<li><code>.spdx</code></li>
+<li><code>.spdx.json</code></li>
+<li><code>.cdx</code></li>
+<li><code>.cdx.json</code></li>
+</ul>
 <p>In addition, Trivy automatically detects SBOM files in <a href="https://github.com/bitnami/containers">Bitnami images</a>, <a href="../../coverage/others/bitnami/">see here</a> for more details.</p>
 <p>It is enabled in the following targets.</p>
 <table>

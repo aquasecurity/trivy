@@ -7676,7 +7676,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 </tr>
 <tr>
 <td></td>
-<td>*Packages.props<sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup></td>
+<td>*Packages.props<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
@@ -7756,7 +7756,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 </tr>
 <tr>
 <td><a href="elixir/">Elixir</a></td>
-<td>mix.lock<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></td>
+<td>mix.lock<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup></td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">✅</td>
@@ -7823,13 +7823,10 @@ On the other hand, when the target is a post-build artifact, like a container im
 <p>✅ means "enabled" and <code>-</code> means "disabled" in the git repository scanning&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p>✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in <a href="../../configuration/reporting/#json">json</a> and <a href="../../configuration/reporting/#sarif">sarif</a> formats. SARIF uses <code>startline == 1 and endline == 1</code> for unsupported file types&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p>To scan a filename other than the default filename use <a href="../../configuration/skipping/#file-patterns">file-patterns</a>&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:9">
-<p>To scan a filename other than the default filename use <a href="../../configuration/skipping/#file-patterns">file-patterns</a>&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
-</li>
-<li id="fn:10">
-<p><code>Directory.Packages.props</code> and  legacy <code>Packages.props</code> file names are supported&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+<p><code>Directory.Packages.props</code> and  legacy <code>Packages.props</code> file names are supported&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
