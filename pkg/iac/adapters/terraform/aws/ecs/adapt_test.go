@@ -91,8 +91,8 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 	"name": "my_service",
 	"image": "my_image",
 	"essential": true,
-	"memory": 256,
-	"cpu": 2,
+	"memory": "256",
+	"cpu": "2",
 	"environment": [
 		{ "name": "ENVIRONMENT", "value": "development" }
 	]

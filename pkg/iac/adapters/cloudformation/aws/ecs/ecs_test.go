@@ -32,8 +32,8 @@ Resources:
         - 
           Name: "busybox"
           Image: "busybox"
-          Cpu: 256
-          Memory: 512
+          Cpu: "256"
+          Memory: "512"
           Essential: true
           Privileged: true
           Environment:
