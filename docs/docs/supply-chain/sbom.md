@@ -738,6 +738,7 @@ See [here](../target/sbom.md) for more details.
 
 ### SBOM Detection inside Targets
 Trivy searches for SBOM files in container images with the following extensions:
+
 - `.spdx`
 - `.spdx.json`
 - `.cdx`

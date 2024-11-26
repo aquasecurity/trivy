@@ -450,8 +450,8 @@ $ trivy convert --format table --severity CRITICAL result.json
 [dotnet-packages-lock]: ../coverage/language/dotnet.md#packageslockjson
 [poetry-lock]: ../coverage/language/python.md#poetry
 [gemfile-lock]: ../coverage/language/ruby.md#bundler
-[go-mod]: ../coverage/language/golang.md#go-modules
-[composer-lock]: ../coverage/language/php.md#composer
+[go-mod]: ../coverage/language/golang.md#go-module
+[composer-lock]: ../coverage/language/php.md#composerlock
 [pom-xml]: ../coverage/language/java.md#pomxml
 [gradle-lockfile]: ../coverage/language/java.md#gradlelock
 [sbt-lockfile]: ../coverage/language/java.md#sbt
