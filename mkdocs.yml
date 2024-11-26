@@ -49,7 +49,6 @@ nav:
           - Code Repository: docs/target/repository.md
           - Virtual Machine Image: docs/target/vm.md
           - Kubernetes: docs/target/kubernetes.md
-          - AWS: docs/target/aws.md
           - SBOM: docs/target/sbom.md
       - Scanner:
           - Vulnerability: docs/scanner/vulnerability.md

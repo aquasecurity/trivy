@@ -428,7 +428,7 @@ $ trivy convert --format table --severity CRITICAL result.json
 ```
 
 !!! note
-    JSON reports from "trivy aws" and "trivy k8s" are not yet supported.
+    JSON reports from "trivy k8s" are not yet supported.
 
 [cargo-auditable]: https://github.com/rust-secure-code/cargo-auditable/
 [action]: https://github.com/aquasecurity/trivy-action
