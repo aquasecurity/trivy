@@ -51,6 +51,8 @@ Managed at:
 - etc.
 
 ## Misconfiguration Scanning
+When the context does not clearly indicate these terms are related to misconfiguration scanning, they may be prefixed with "Misconfiguration" for clarity.
+For example, "Check" may be referred to as "Misconfiguration Check", and "Checks Bundle" as "Misconfiguration Checks Bundle".
 
 ### Check
 A Rego file that defines rules for detecting misconfigurations in various types of IaC files.
