@@ -140,6 +140,14 @@ func (p *pom) repositories(servers []Server) ([]string, []string) {
 			continue
 		}
 
+		// remove all people.apache.org repositories
+		// this domain is used to fetch pom files in some cases, but it just nearly always times out and makes everything extremely slow
+		// so we just skip it
+		if strings.Contains(repoURL.Host, "people.apache.org") {
+			logger.Debug("Skipping people.apache.org repository", log.String("url", rep.URL))
+			continue
+		}
+
 		// Get the credentials from settings.xml based on matching server id
 		// with the repository id from pom.xml and use it for accessing the repository url
 		for _, server := range servers {
