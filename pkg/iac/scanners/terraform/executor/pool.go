@@ -59,7 +59,6 @@ func (p *Pool) Run() (scan.Results, error) {
 
 	if !p.regoOnly {
 		for _, r := range p.rules {
-			// run defsec rule
 			outgoing <- &infraRuleJob{
 				state: p.state,
 				rule:  r,
