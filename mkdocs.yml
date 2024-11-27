@@ -121,7 +121,7 @@ nav:
           - Skipping Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
-          - DB: docs/configuration/db.md
+          - Databases: docs/configuration/db.md
           - Others: docs/configuration/others.md
       - Supply Chain:
           - SBOM: docs/supply-chain/sbom.md
@@ -143,7 +143,8 @@ nav:
           - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Advanced Network Scenarios: docs/advanced/air-gap.md
+          - Connectivity and Network considerations: docs/advanced/air-gap.md
+          - Self-Hosting Trivy's Databases: docs/advanced/self-hosting.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
