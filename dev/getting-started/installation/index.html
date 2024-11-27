@@ -4249,7 +4249,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    DB
+    Databases
   
 
     
@@ -5029,7 +5029,34 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Advanced Network Scenarios
+    Connectivity and Network considerations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/advanced/self-hosting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Hosting Trivy's Databases
   
 
     
@@ -5062,10 +5089,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3" id="__nav_4_9_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4" id="__nav_4_9_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5082,8 +5109,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5166,10 +5193,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3_3" id="__nav_4_9_3_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4_3" id="__nav_4_9_4_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5186,8 +5213,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_3_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3_3">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -7772,17 +7799,17 @@ You're not viewing the latest version of the documentation.
 <p>For scanning container images with Trivy, mount the container engine socket from the host into the Trivy container.</p>
 </div>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/var/run/docker.sock:/var/run/docker.sock<span class="w"> </span>-v<span class="w"> </span><span class="nv">$HOME</span>/Library/Caches:/root/.cache/<span class="w"> </span>aquasec/trivy:0.57.0-53-gad0ff5dac<span class="w"> </span>image<span class="w"> </span>python:3.4-alpine
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/var/run/docker.sock:/var/run/docker.sock<span class="w"> </span>-v<span class="w"> </span><span class="nv">$HOME</span>/Library/Caches:/root/.cache/<span class="w"> </span>aquasec/trivy:0.57.0-55-g745be1aca<span class="w"> </span>image<span class="w"> </span>python:3.4-alpine
 </code></pre></div>
 <h2 id="github-release-official">GitHub Release (Official)<a class="headerlink" href="#github-release-official" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Download the file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.57.0-53-gad0ff5dac">GitHub Release assets</a>.  </li>
+<li>Download the file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.57.0-55-g745be1aca">GitHub Release assets</a>.  </li>
 <li>Unpack the downloaded archive (<code>tar -xzf ./trivy.tar.gz</code>).</li>
 <li>Make sure the binary has execution bit turned on (<code>chmod +x ./trivy</code>).</li>
 </ol>
 <h2 id="install-script-official">Install Script (Official)<a class="headerlink" href="#install-script-official" title="Permanent link">&para;</a></h2>
 <p>For convenience, you can use the install script to download and install Trivy from GitHub Release.</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sfL<span class="w"> </span>https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>-b<span class="w"> </span>/usr/local/bin<span class="w"> </span>v0.57.0-53-gad0ff5dac
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sfL<span class="w"> </span>https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>-b<span class="w"> </span>/usr/local/bin<span class="w"> </span>v0.57.0-55-g745be1aca
 </code></pre></div>
 <h2 id="rhelcentos-official">RHEL/CentOS (Official)<a class="headerlink" href="#rhelcentos-official" title="Permanent link">&para;</a></h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Repository</label><label for="__tabbed_1_2">RPM</label></div>
@@ -7802,7 +7829,7 @@ sudo<span class="w"> </span>yum<span class="w"> </span>-y<span class="w"> </span
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>rpm<span class="w"> </span>-ivh<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.57.0-53-gad0ff5dac/trivy_0.57.0-53-gad0ff5dac_Linux-64bit.rpm
+<div class="highlight"><pre><span></span><code>rpm<span class="w"> </span>-ivh<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.57.0-55-g745be1aca/trivy_0.57.0-55-g745be1aca_Linux-64bit.rpm
 </code></pre></div>
 </div>
 </div>
@@ -7820,8 +7847,8 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.57.0-53-gad0ff5dac/trivy_0.57.0-53-gad0ff5dac_Linux-64bit.deb
-sudo<span class="w"> </span>dpkg<span class="w"> </span>-i<span class="w"> </span>trivy_0.57.0-53-gad0ff5dac_Linux-64bit.deb
+<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://github.com/aquasecurity/trivy/releases/download/v0.57.0-55-g745be1aca/trivy_0.57.0-55-g745be1aca_Linux-64bit.deb
+sudo<span class="w"> </span>dpkg<span class="w"> </span>-i<span class="w"> </span>trivy_0.57.0-55-g745be1aca_Linux-64bit.deb
 </code></pre></div>
 </div>
 </div>

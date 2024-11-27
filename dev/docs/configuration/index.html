@@ -4164,7 +4164,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    DB
+    Databases
   
 
     
@@ -4956,7 +4956,34 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Advanced Network Scenarios
+    Connectivity and Network considerations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/self-hosting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Hosting Trivy's Databases
   
 
     
@@ -4989,10 +5016,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3" id="__nav_4_9_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4" id="__nav_4_9_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5009,8 +5036,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5093,10 +5120,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3_3" id="__nav_4_9_3_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4_3" id="__nav_4_9_4_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5113,8 +5140,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_3_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3_3">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -7561,24 +7588,22 @@ You're not viewing the latest version of the documentation.
 
 
 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
-<p>Trivy can be configured using the following ways. Each item takes precedence over the item below it:</p>
-<ul>
-<li>CLI flags</li>
-<li>Environment variables</li>
+<p>Trivy's settings can be configured in any of the following methods, which will apply in the following precedence:</p>
+<ol>
+<li>CLI flags (overrides all other settings)</li>
+<li>Environment variables (overrides config file settings)</li>
 <li>Configuration file</li>
-</ul>
+</ol>
 <h2 id="cli-flags">CLI Flags<a class="headerlink" href="#cli-flags" title="Permanent link">&para;</a></h2>
-<p>You can view the list of available flags using the <code>--help</code> option.
-For more details, please refer to <a href="../references/configuration/cli/trivy/">the CLI reference</a>.</p>
+<p>You can view the list of available flags by adding the <code>--help</code> flag to a Trivy command, or by exploring the <a href="../references/configuration/cli/trivy/">CLI reference</a>.</p>
 <h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
-<p>Trivy can be customized by environment variables.
-The environment variable key is the flag name converted by the following procedure.</p>
+<p>Any CLI option can be set as an environment variable. The environment variable name are similar to the CLI option name, with the following augmentations:</p>
 <ul>
 <li>Add <code>TRIVY_</code> prefix</li>
-<li>Make it all uppercase</li>
+<li>All uppercase letters</li>
 <li>Replace <code>-</code> with <code>_</code></li>
 </ul>
-<p>For example,</p>
+<p>For example:</p>
 <ul>
 <li><code>--debug</code> =&gt; <code>TRIVY_DEBUG</code></li>
 <li><code>--cache-dir</code> =&gt; <code>TRIVY_CACHE_DIR</code></li>
@@ -7586,8 +7611,8 @@ The environment variable key is the flag name converted by the following procedu
 <div class="highlight"><pre><span></span><code>$ TRIVY_DEBUG=true TRIVY_SEVERITY=CRITICAL trivy image alpine:3.15
 </code></pre></div>
 <h2 id="configuration-file">Configuration File<a class="headerlink" href="#configuration-file" title="Permanent link">&para;</a></h2>
-<p>By default, Trivy reads the <code>trivy.yaml</code> file.
-For more details, please refer to <a href="../references/configuration/config-file/">the page</a>.</p>
+<p>Any setting can be set in a YAML file. By default, config file named <code>trivy.yaml</code> is read from the current directory where Trivy is run. To load configuration from a different file, use the <code>--config</code> flag and specify the config path to load: <code>trivy --config /etc/trivy/myconfig.yaml</code>.</p>
+<p>The structure and settings of the YAML config file is documented in the <a href="../references/configuration/config-file/">Config file</a> document.</p>
 
 
 

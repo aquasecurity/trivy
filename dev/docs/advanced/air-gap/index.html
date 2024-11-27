@@ -16,7 +16,7 @@
         <link rel="prev" href="../modules/">
       
       
-        <link rel="next" href="../container/embed-in-dockerfile/">
+        <link rel="next" href="../self-hosting/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Advanced Network Scenarios - Trivy</title>
+        <title>Connectivity and Network considerations - Trivy</title>
       
     
     
@@ -65,7 +65,7 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - Advanced Network Scenarios" />
+<meta property="og:title" content="Trivy - Connectivity and Network considerations" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
 <meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/docs/advanced/air-gap/" />
 <meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
@@ -94,7 +94,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#advanced-network-scenarios" class="md-skip">
+        <a href="#connectivity-and-network-considerations" class="md-skip">
           Skip to content
         </a>
       
@@ -145,7 +145,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Advanced Network Scenarios
+              Connectivity and Network considerations
             
           </span>
         </div>
@@ -4083,7 +4083,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    DB
+    Databases
   
 
     
@@ -4886,7 +4886,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Advanced Network Scenarios
+    Connectivity and Network considerations
   
 
     
@@ -4903,7 +4903,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Advanced Network Scenarios
+    Connectivity and Network considerations
   
 
     
@@ -4929,51 +4929,6 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#network-requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network requirements
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-trivy-in-air-gapped-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running Trivy in air-gapped environment
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#offline-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Offline Mode
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#self-hosting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Self-Hosting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Self-Hosting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#oci-databases" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4986,10 +4941,21 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#authentication" class="md-nav__link">
+  <a href="#connectivity-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Authentication
+        Connectivity requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-hosting
       
     </span>
   </a>
@@ -5000,8 +4966,19 @@ You're not viewing the latest version of the documentation.
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
+  <a href="#embedded-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Embedded Checks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#vex-hub" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5014,18 +4991,24 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#authentication_1" class="md-nav__link">
+  <a href="#connectivity-requirements_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Authentication
+        Connectivity Requirements
       
     </span>
   </a>
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#self-hosting_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-hosting
+      
+    </span>
+  </a>
   
 </li>
         
@@ -5035,22 +5018,22 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#manual-cache-population" class="md-nav__link">
+  <a href="#maven-central-remote-repositories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual cache population
+        Maven Central / Remote Repositories
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Manual cache population">
+    <nav class="md-nav" aria-label="Maven Central / Remote Repositories">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#downloading-the-db-files" class="md-nav__link">
+  <a href="#connectivity-requirements_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Downloading the DB files
+        Connectivity requirements
       
     </span>
   </a>
@@ -5058,21 +5041,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#populating-the-trivy-cache" class="md-nav__link">
+  <a href="#offline-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Populating the Trivy Cache
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#java-db" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Java DB
+        Offline mode
       
     </span>
   </a>
@@ -5081,17 +5053,6 @@ You're not viewing the latest version of the documentation.
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#misconfigurations-scanning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Misconfigurations scanning
-      
-    </span>
-  </a>
   
 </li>
       
@@ -5099,6 +5060,33 @@ You're not viewing the latest version of the documentation.
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../self-hosting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Hosting Trivy's Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5123,10 +5111,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3" id="__nav_4_9_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4" id="__nav_4_9_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5143,8 +5131,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5227,10 +5215,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3_3" id="__nav_4_9_3_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4_3" id="__nav_4_9_4_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5247,8 +5235,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_3_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3_3">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -7637,51 +7625,6 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#network-requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Network requirements
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-trivy-in-air-gapped-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running Trivy in air-gapped environment
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#offline-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Offline Mode
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#self-hosting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Self-Hosting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Self-Hosting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#oci-databases" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7694,10 +7637,21 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#authentication" class="md-nav__link">
+  <a href="#connectivity-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Authentication
+        Connectivity requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-hosting
       
     </span>
   </a>
@@ -7708,8 +7662,19 @@ You're not viewing the latest version of the documentation.
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
+  <a href="#embedded-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Embedded Checks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#vex-hub" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7722,18 +7687,24 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#authentication_1" class="md-nav__link">
+  <a href="#connectivity-requirements_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Authentication
+        Connectivity Requirements
       
     </span>
   </a>
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#self-hosting_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-hosting
+      
+    </span>
+  </a>
   
 </li>
         
@@ -7743,22 +7714,22 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#manual-cache-population" class="md-nav__link">
+  <a href="#maven-central-remote-repositories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual cache population
+        Maven Central / Remote Repositories
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Manual cache population">
+    <nav class="md-nav" aria-label="Maven Central / Remote Repositories">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#downloading-the-db-files" class="md-nav__link">
+  <a href="#connectivity-requirements_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Downloading the DB files
+        Connectivity requirements
       
     </span>
   </a>
@@ -7766,21 +7737,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#populating-the-trivy-cache" class="md-nav__link">
+  <a href="#offline-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Populating the Trivy Cache
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#java-db" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Java DB
+        Offline mode
       
     </span>
   </a>
@@ -7789,17 +7749,6 @@ You're not viewing the latest version of the documentation.
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#misconfigurations-scanning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Misconfigurations scanning
-      
-    </span>
-  </a>
   
 </li>
       
@@ -7828,123 +7777,103 @@ You're not viewing the latest version of the documentation.
   
 
 
-<h1 id="advanced-network-scenarios">Advanced Network Scenarios<a class="headerlink" href="#advanced-network-scenarios" title="Permanent link">&para;</a></h1>
-<p>Trivy needs to connect to the internet occasionally in order to download relevant content. This document explains the network connectivity requirements of Trivy and setting up Trivy in particular scenarios.</p>
-<h2 id="network-requirements">Network requirements<a class="headerlink" href="#network-requirements" title="Permanent link">&para;</a></h2>
-<p>Trivy's databases are distributed as OCI images via GitHub Container registry (GHCR):</p>
-<ul>
-<li><a href="https://ghcr.io/aquasecurity/trivy-db">https://ghcr.io/aquasecurity/trivy-db</a></li>
-<li><a href="https://ghcr.io/aquasecurity/trivy-java-db">https://ghcr.io/aquasecurity/trivy-java-db</a></li>
-<li><a href="https://ghcr.io/aquasecurity/trivy-checks">https://ghcr.io/aquasecurity/trivy-checks</a></li>
-</ul>
-<p>The following hosts are required in order to fetch them:</p>
-<ul>
-<li><code>ghcr.io</code></li>
-<li><code>pkg-containers.githubusercontent.com</code></li>
-</ul>
-<p>The databases are pulled by Trivy using the <a href="https://github.com/opencontainers/distribution-spec">OCI Distribution</a> specification, which is a simple HTTPS-based protocol.</p>
-<p><a href="https://github.com/aquasecurity/vexhub">VEX Hub</a> is distributed from GitHub over HTTPS.
-The following hosts are required in order to fetch it:</p>
+<h1 id="connectivity-and-network-considerations">Connectivity and Network considerations<a class="headerlink" href="#connectivity-and-network-considerations" title="Permanent link">&para;</a></h1>
+<p>Trivy requires internet connectivity in order to function normally. If your organizations blocks or restricts network traffic, that could prevent Trivy from working correctly.
+This document explains Trivy's network connectivity requirements, and how to configure Trivy to work in restricted networks environments, including completely air-gapped environments.</p>
+<p>The following table lists all external resources that are required by Trivy:</p>
+<table>
+<thead>
+<tr>
+<th>External Resource</th>
+<th>Feature</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vulnerability Database</td>
+<td>Vulnerability scanning</td>
+<td><a href="../../scanner/vulnerability/">Trivy DB</a></td>
+</tr>
+<tr>
+<td>Java Vulnerability Database</td>
+<td>Java vulnerability scanning</td>
+<td><a href="../../coverage/language/java/">Trivy Java DB</a></td>
+</tr>
+<tr>
+<td>Checks Bundle</td>
+<td>Misconfigurations scanning</td>
+<td><a href="../../scanner/misconfiguration/check/builtin/">Trivy Checks</a></td>
+</tr>
+<tr>
+<td>VEX Hub</td>
+<td>VEX Hub</td>
+<td><a href="../supply-chain/vex/repo/#vex-hub">VEX Hub</a></td>
+</tr>
+<tr>
+<td>Maven Central / Remote Repositories</td>
+<td>Java vulnerability scanning</td>
+<td><a href="../../coverage/language/java/#remote-repositories">Java Scanner/Remote Repositories</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to connect to external resources.</p>
+</div>
+<p>The rest of this document details each resource's connectivity requirements and network related considerations.</p>
+<h2 id="oci-databases">OCI Databases<a class="headerlink" href="#oci-databases" title="Permanent link">&para;</a></h2>
+<p>Trivy's Vulnerability, Java, and Checks Bundle are packaged as OCI images and stored in public container registries.</p>
+<h3 id="connectivity-requirements">Connectivity requirements<a class="headerlink" href="#connectivity-requirements" title="Permanent link">&para;</a></h3>
+<p>The specific registries and locations are detailed in the <a href="../../configuration/db/">databases document</a>.</p>
+<p>Communication with OCI Registries follows the <a href="https://github.com/opencontainers/distribution-spec">OCI Distribution</a> spec.</p>
+<p>The following hosts are known to be used by the default container registries:</p>
+<table>
+<thead>
+<tr>
+<th>Registry</th>
+<th>Hosts</th>
+<th>Additional info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google Artifact Registry</td>
+<td><ul><li><code>mirror.gcr.io</code></li><li><code>googlecode.l.googleusercontent.com</code></li></ul></td>
+<td><a href="https://support.google.com/a/answer/10026322?hl=en">Google's IP addresses</a></td>
+</tr>
+<tr>
+<td>GitHub Container Registry</td>
+<td><ul><li><code>ghcr.io</code></li><li><code>pkg-containers.githubusercontent.com</code></li></ul></td>
+<td><a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-githubs-ip-addresses">GitHub's IP addresses</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="self-hosting">Self-hosting<a class="headerlink" href="#self-hosting" title="Permanent link">&para;</a></h3>
+<p>You can host Trivy's databases in your own container registry. Please refer to <a href="../self-hosting/#oci-databases">Self-hosting document</a> for a detailed guide.</p>
+<h2 id="embedded-checks">Embedded Checks<a class="headerlink" href="#embedded-checks" title="Permanent link">&para;</a></h2>
+<p>Checks Bundle is embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the database from the time of the Trivy release you are using.</p>
+<h2 id="vex-hub">VEX Hub<a class="headerlink" href="#vex-hub" title="Permanent link">&para;</a></h2>
+<h3 id="connectivity-requirements_1">Connectivity Requirements<a class="headerlink" href="#connectivity-requirements_1" title="Permanent link">&para;</a></h3>
+<p>VEX Hub is hosted as at <a href="https://github.com/aquasecurity/vexhub">https://github.com/aquasecurity/vexhub</a>.</p>
+<p>Trivy is fetching VEX Hub GitHub Repository directly using simple HTTPS requests.</p>
+<p>The following hosts are known to be used by GitHub's services:</p>
 <ul>
 <li><code>api.github.com</code></li>
 <li><code>codeload.github.com</code></li>
 </ul>
-<h2 id="running-trivy-in-air-gapped-environment">Running Trivy in air-gapped environment<a class="headerlink" href="#running-trivy-in-air-gapped-environment" title="Permanent link">&para;</a></h2>
-<p>An air-gapped environment refers to situations where the network connectivity from the machine Trivy runs on is blocked or restricted.</p>
-<p>In an air-gapped environment it is your responsibility to update the Trivy databases on a regular basis. </p>
-<h2 id="offline-mode">Offline Mode<a class="headerlink" href="#offline-mode" title="Permanent link">&para;</a></h2>
-<p>By default, Trivy will attempt to download latest databases. If it fails, the scan might fail. To avoid this behavior, you can tell Trivy to not attempt to download database files:</p>
+<p>For more information about GitHub connectivity (including specific IP addresses), please refer to <a href="https://docs.github.com/en/get-started/using-github/troubleshooting-connectivity-problems">GitHub's connectivity troubleshooting guide</a>.</p>
+<h3 id="self-hosting_1">Self-hosting<a class="headerlink" href="#self-hosting_1" title="Permanent link">&para;</a></h3>
+<p>You can host a copy of VEX Hub on your own internal server. Please refer to the <a href="../self-hosting/#vex-hub">self-hosting document</a> for a detailed guide.</p>
+<h2 id="maven-central-remote-repositories">Maven Central / Remote Repositories<a class="headerlink" href="#maven-central-remote-repositories" title="Permanent link">&para;</a></h2>
+<p>Trivy might call out to Maven central or other remote repositories to fetch in order to correctly identify Java packages during a vulnerability scan.</p>
+<h3 id="connectivity-requirements_2">Connectivity requirements<a class="headerlink" href="#connectivity-requirements_2" title="Permanent link">&para;</a></h3>
+<p>Trivy might attempt to connect (over HTTPS) to the following URLs:</p>
 <ul>
-<li><code>--skip-db-update</code> to skip updating the main vulnerability database.</li>
-<li><code>--skip-java-db-update</code> to skip updating the Java vulnerability database.</li>
-<li><code>--skip-check-update</code> to skip updating the misconfiguration database.</li>
+<li><code>https://repo.maven.apache.org/maven2</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--skip-db-update<span class="w"> </span>--skip-java-db-update<span class="w"> </span>--offline-scan<span class="w"> </span>--skip-check-update<span class="w"> </span>myimage
-</code></pre></div>
-<h2 id="self-hosting">Self-Hosting<a class="headerlink" href="#self-hosting" title="Permanent link">&para;</a></h2>
-<h3 id="oci-databases">OCI Databases<a class="headerlink" href="#oci-databases" title="Permanent link">&para;</a></h3>
-<p>You can host the databases on your own local OCI registry. </p>
-<p>First, make a copy of the databases in a container registry that is accessible to Trivy. The databases are in:</p>
-<ul>
-<li><code>ghcr.io/aquasecurity/trivy-db:2</code></li>
-<li><code>ghcr.io/aquasecurity/trivy-java-db:1</code></li>
-<li><code>ghcr.io/aquasecurity/trivy-checks:0</code></li>
-</ul>
-<p>Then, tell Trivy to use the local registry:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--db-repository<span class="w"> </span>myregistry.local/trivy-db<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--java-db-repository<span class="w"> </span>myregistry.local/trivy-java-db<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--checks-bundle-repository<span class="w"> </span>myregistry.local/trivy-checks<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>myimage
-</code></pre></div>
-<h4 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h4>
-<p>If the registry requires authentication, you can configure it as described in the <a href="../private-registries/">private registry authentication document</a>.</p>
-<h3 id="vex-hub">VEX Hub<a class="headerlink" href="#vex-hub" title="Permanent link">&para;</a></h3>
-<p>You can host a copy of VEX Hub on your own internal server.</p>
-<p>First, make a copy of VEX Hub in a location that is accessible to Trivy.</p>
-<ol>
-<li>Download the <a href="https://github.com/aquasecurity/vexhub">VEX Hub</a> archive from: <a href="https://github.com/aquasecurity/vexhub/archive/refs/heads/main.zip">https://github.com/aquasecurity/vexhub/archive/refs/heads/main.zip</a>.</li>
-<li>Download the <a href="https://github.com/aquasecurity/vex-repo-spec#2-repository-manifest">VEX Hub Repository Manifest</a> file from: <a href="https://github.com/aquasecurity/vexhub/blob/main/vex-repository.json">https://github.com/aquasecurity/vexhub/blob/main/vex-repository.json</a>.</li>
-<li>Create or identify an internal HTTP server that can serve the VEX Hub repository in your environment (e.g <code>https://server.local</code>).</li>
-<li>Make the downloaded archive file available for serving from your server (e.g <code>https://server.local/main.zip</code>).</li>
-<li>Modify the downloaded manifest file's <a href="https://github.com/aquasecurity/vex-repo-spec?tab=readme-ov-file#locations-subfields">Location URL</a> field to the URL of the archive file on your server (e.g <code>url: https://server.local/main.zip</code>).</li>
-<li>Make the manifest file available for serving from your server under the <code>/.well-known</code> path  (e.g <code>https://server.local/.well-known/vex-repository.json</code>).</li>
-</ol>
-<p>Then, tell Trivy to use the local VEX Repository:</p>
-<ol>
-<li>Locate your <a href="../supply-chain/vex/repo/#configuration-file">Trivy VEX configuration file</a> by running <code>trivy vex repo init</code>. Make the following changes to the file.</li>
-<li>Disable the default VEX Hub repo (<code>enabled: false</code>)</li>
-<li>Add your internal VEX Hub repository as a <a href="../supply-chain/vex/repo/#custom-repositories">custom repository</a> with the URL pointing to your local server (e.g <code>url: https://server.local</code>).</li>
-</ol>
-<h4 id="authentication_1">Authentication<a class="headerlink" href="#authentication_1" title="Permanent link">&para;</a></h4>
-<p>If your server requires authentication, you can configure it as described in the <a href="../supply-chain/vex/repo/#authentication">VEX Repository Authentication document</a>.</p>
-<h2 id="manual-cache-population">Manual cache population<a class="headerlink" href="#manual-cache-population" title="Permanent link">&para;</a></h2>
-<p>You can also download the databases files manually and surgically populate the Trivy cache directory with them.</p>
-<h3 id="downloading-the-db-files">Downloading the DB files<a class="headerlink" href="#downloading-the-db-files" title="Permanent link">&para;</a></h3>
-<p>On a machine with internet access, pull the database container archive from the public registry into your local workspace:</p>
-<p>Note that these examples operate in the current working directory.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Using ORAS</label><label for="__tabbed_1_2">Using Trivy</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p>This example uses <a href="https://oras.land">ORAS</a>, but you can use any other container registry manipulation tool.</p>
-<div class="highlight"><pre><span></span><code>oras<span class="w"> </span>pull<span class="w"> </span>ghcr.io/aquasecurity/trivy-db:2
-</code></pre></div>
-<p>You should now have a file called <code>db.tar.gz</code>. Next, extract it to reveal the db files:</p>
-<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-xzf<span class="w"> </span>db.tar.gz
-</code></pre></div>
-<p>You should now have 2 new files, <code>metadata.json</code> and <code>trivy.db</code>. These are the Trivy DB files.</p>
-</div>
-<div class="tabbed-block">
-<p>This example uses Trivy to pull the database container archive. The <code>--cache-dir</code> flag makes Trivy download the database files into our current working directory. The <code>--download-db-only</code> flag tells Trivy to only download the database files, not to scan any images.</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--cache-dir<span class="w"> </span>.<span class="w"> </span>--download-db-only
-</code></pre></div>
-<p>You should now have 2 new files, <code>metadata.json</code> and <code>trivy.db</code>. These are the Trivy DB files, copy them over to the air-gapped environment.</p>
-</div>
-</div>
-</div>
-<h3 id="populating-the-trivy-cache">Populating the Trivy Cache<a class="headerlink" href="#populating-the-trivy-cache" title="Permanent link">&para;</a></h3>
-<p>In order to populate the cache, you need to identify the location of the cache directory. If it is under the default location, you can run the following command to find it:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>-h<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>cache
-</code></pre></div>
-<p>For the example, we will assume the <code>TRIVY_CACHE_DIR</code> variable holds the cache location:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">TRIVY_CACHE_DIR</span><span class="o">=</span>/home/user/.cache/trivy
-</code></pre></div>
-<p>Put the Trivy DB files in the Trivy cache directory under a <code>db</code> subdirectory:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># ensure cache db directory exists</span>
-mkdir<span class="w"> </span>-p<span class="w"> </span><span class="si">${</span><span class="nv">TRIVY_CACHE_DIR</span><span class="si">}</span>/db
-<span class="c1"># copy the db files</span>
-cp<span class="w"> </span>/path/to/trivy.db<span class="w"> </span>/path/to/metadata.json<span class="w"> </span><span class="si">${</span><span class="nv">TRIVY_CACHE_DIR</span><span class="si">}</span>/db/
-</code></pre></div>
-<h3 id="java-db">Java DB<a class="headerlink" href="#java-db" title="Permanent link">&para;</a></h3>
-<p>For Java DB the process is the same, except for the following:</p>
-<ol>
-<li>Image location is <code>ghcr.io/aquasecurity/trivy-java-db:1</code></li>
-<li>Archive file name is <code>javadb.tar.gz</code></li>
-<li>DB file name is <code>trivy-java.db</code></li>
-</ol>
-<h2 id="misconfigurations-scanning">Misconfigurations scanning<a class="headerlink" href="#misconfigurations-scanning" title="Permanent link">&para;</a></h2>
-<p>Note that the misconfigurations checks bundle is also embedded in the Trivy binary (at build time), and will be used as a fallback if the external database is not available. This means that you can still scan for misconfigurations in an air-gapped environment using the Checks from the time of the Trivy release you are using.</p>
-<p>The misconfiguration scanner can be configured to load checks from a local directory, using the <code>--config-check</code> flag. In an air-gapped scenario you can copy the checks library from <a href="https://github.com/aquasecurity/trivy-checks">Trivy checks repository</a> into a local directory, and load it with this flag. See more in the <a href="../../scanner/misconfiguration/">Misconfiguration scanner documentation</a>.</p>
+<h3 id="offline-mode">Offline mode<a class="headerlink" href="#offline-mode" title="Permanent link">&para;</a></h3>
+<p>There's no way to leverage Maven Central in a network-restricted environment, but you can prevent Trivy from trying to connect to it by using the <code>--offline-scan</code> flag.</p>
 
 
 
@@ -7993,13 +7922,13 @@ cp<span class="w"> </span>/path/to/trivy.db<span class="w"> </span>/path/to/meta
         
         
           
-          <a href="../container/embed-in-dockerfile/" class="md-footer__link md-footer__link--next" aria-label="Next: Embed in Dockerfile">
+          <a href="../self-hosting/" class="md-footer__link md-footer__link--next" aria-label="Next: Self-Hosting Trivy&#39;s Databases">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Embed in Dockerfile
+                Self-Hosting Trivy's Databases
               </div>
             </div>
             <div class="md-footer__button md-icon">

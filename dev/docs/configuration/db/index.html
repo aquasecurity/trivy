@@ -27,7 +27,7 @@
     
     
       
-        <title>DB - Trivy</title>
+        <title>Databases - Trivy</title>
       
     
     
@@ -65,7 +65,7 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - DB" />
+<meta property="og:title" content="Trivy - Databases" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
 <meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/docs/configuration/db/" />
 <meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
@@ -94,7 +94,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#db" class="md-skip">
+        <a href="#trivy-databases" class="md-skip">
           Skip to content
         </a>
       
@@ -145,7 +145,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              DB
+              Databases
             
           </span>
         </div>
@@ -4094,7 +4094,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    DB
+    Databases
   
 
     
@@ -4111,7 +4111,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    DB
+    Databases
   
 
     
@@ -4137,22 +4137,44 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#vulnerability-database" class="md-nav__link">
+  <a href="#locations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Vulnerability Database
+        Locations
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Vulnerability Database">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Locations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#db-management-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DB Management Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DB Management Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#skip-update-of-vulnerability-db" class="md-nav__link">
+  <a href="#database-locations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip update of vulnerability DB
+        Database Locations
       
     </span>
   </a>
@@ -4160,10 +4182,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#only-download-vulnerability-database" class="md-nav__link">
+  <a href="#skip-updates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Only download vulnerability database
+        Skip updates
       
     </span>
   </a>
@@ -4171,10 +4193,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#db-repository" class="md-nav__link">
+  <a href="#only-update" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DB Repository
+        Only update
       
     </span>
   </a>
@@ -4182,33 +4204,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#rate-limits" class="md-nav__link">
+  <a href="#remove-databases" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rate limits
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Rate limits">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authenticated-use-of-registries" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authenticated use of Registries
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caching-dbs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Caching DBs
+        Remove Databases
       
     </span>
   </a>
@@ -4217,33 +4216,6 @@ You're not viewing the latest version of the documentation.
         
       </ul>
     </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#java-index-database" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Java Index Database
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#remove-dbs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Remove DBs
-      
-    </span>
-  </a>
   
 </li>
       
@@ -5034,7 +5006,34 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    Advanced Network Scenarios
+    Connectivity and Network considerations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/self-hosting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Hosting Trivy's Databases
   
 
     
@@ -5067,10 +5066,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3" id="__nav_4_9_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4" id="__nav_4_9_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5087,8 +5086,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5171,10 +5170,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_3_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_9_3_3" id="__nav_4_9_3_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_9_4_3" id="__nav_4_9_4_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -5191,8 +5190,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_3_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_9_3_3">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_9_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9_4_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -7581,22 +7580,44 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#vulnerability-database" class="md-nav__link">
+  <a href="#locations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Vulnerability Database
+        Locations
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Vulnerability Database">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Locations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#db-management-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DB Management Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DB Management Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#skip-update-of-vulnerability-db" class="md-nav__link">
+  <a href="#database-locations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip update of vulnerability DB
+        Database Locations
       
     </span>
   </a>
@@ -7604,10 +7625,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#only-download-vulnerability-database" class="md-nav__link">
+  <a href="#skip-updates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Only download vulnerability database
+        Skip updates
       
     </span>
   </a>
@@ -7615,10 +7636,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#db-repository" class="md-nav__link">
+  <a href="#only-update" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DB Repository
+        Only update
       
     </span>
   </a>
@@ -7626,33 +7647,10 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#rate-limits" class="md-nav__link">
+  <a href="#remove-databases" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rate limits
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Rate limits">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authenticated-use-of-registries" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authenticated use of Registries
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caching-dbs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Caching DBs
+        Remove Databases
       
     </span>
   </a>
@@ -7661,33 +7659,6 @@ You're not viewing the latest version of the documentation.
         
       </ul>
     </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#java-index-database" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Java Index Database
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#remove-dbs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Remove DBs
-      
-    </span>
-  </a>
   
 </li>
       
@@ -7716,131 +7687,192 @@ You're not viewing the latest version of the documentation.
   
 
 
-<h1 id="db">DB<a class="headerlink" href="#db" title="Permanent link">&para;</a></h1>
+<h1 id="trivy-databases">Trivy Databases<a class="headerlink" href="#trivy-databases" title="Permanent link">&para;</a></h1>
+<p>When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations.
+These so called "databases" are automatically fetched and maintained by Trivy as needed, so normally you shouldn't notice or worry about them. <br />
+This document elaborates on the database management mechanism and its configuration options.</p>
+<p>Trivy relies on the following databases:</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: center;">Scanner</th>
-<th style="text-align: center;">Supported</th>
+<th>DB</th>
+<th>Artifact name</th>
+<th>Contents</th>
+<th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;">Vulnerability</td>
-<td style="text-align: center;">✓</td>
+<td>Vulnerabilities DB</td>
+<td><code>trivy-db</code></td>
+<td>CVE information collected from various feeds</td>
+<td>used only for <a href="../../scanner/vulnerability/">vulnerability scanning</a></td>
 </tr>
 <tr>
-<td style="text-align: center;">Misconfiguration</td>
-<td style="text-align: center;"></td>
+<td>Java DB</td>
+<td><code>trivy-java-db</code></td>
+<td>Index of Java artifacts and their hash digest</td>
+<td>used to identify Java artifacts only in <a href="../../coverage/language/java/">JAR scanning</a></td>
 </tr>
 <tr>
-<td style="text-align: center;">Secret</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr>
-<td style="text-align: center;">License</td>
-<td style="text-align: center;"></td>
+<td>Checks Bundle</td>
+<td><code>trivy-checks</code></td>
+<td>Logic of misconfiguration checks</td>
+<td>used only in <a href="../../scanner/misconfiguration/check/builtin/">misconfiguration/IaC scanning</a></td>
 </tr>
 </tbody>
 </table>
-<p>The vulnerability database and the Java index database are needed only for vulnerability scanning.
-See <a href="../../scanner/vulnerability/">here</a> for the detail.</p>
-<h2 id="vulnerability-database">Vulnerability Database<a class="headerlink" href="#vulnerability-database" title="Permanent link">&para;</a></h2>
-<h3 id="skip-update-of-vulnerability-db">Skip update of vulnerability DB<a class="headerlink" href="#skip-update-of-vulnerability-db" title="Permanent link">&para;</a></h3>
-<p>If you want to skip downloading the vulnerability database, use the <code>--skip-db-update</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --skip-db-update python:3.4-alpine3.9
-</code></pre></div>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code>2019-05-16T12:48:08.703+0900    INFO    Detecting Alpine vulnerabilities...
-
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-</code></pre></div>
-
-</details>
-
-<h3 id="only-download-vulnerability-database">Only download vulnerability database<a class="headerlink" href="#only-download-vulnerability-database" title="Permanent link">&para;</a></h3>
-<p>You can also ask <code>Trivy</code> to simply retrieve the vulnerability database.
-This is useful to initialize workers in Continuous Integration systems.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --download-db-only
-</code></pre></div>
-<h3 id="db-repository">DB Repository<a class="headerlink" href="#db-repository" title="Permanent link">&para;</a></h3>
-<p><code>Trivy</code> could also download the vulnerability database from an external OCI registry by using <code>--db-repository</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
-</code></pre></div>
-<p>The media type of the OCI layer must be <code>application/vnd.aquasec.trivy.db.layer.v1.tar+gzip</code>.
-You can reference the OCI manifest of <a href="https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db">trivy-db</a>.</p>
-<details>
-<summary>Manifest</summary>
-
-<div class="highlight"><pre><span></span><code><span class="o">{</span>
-<span class="w">  </span><span class="s2">&quot;schemaVersion&quot;</span>:<span class="w"> </span><span class="m">2</span>,
-<span class="w">  </span><span class="s2">&quot;mediaType&quot;</span>:<span class="w"> </span><span class="s2">&quot;application/vnd.oci.image.manifest.v1+json&quot;</span>,
-<span class="w">  </span><span class="s2">&quot;config&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;mediaType&quot;</span>:<span class="w"> </span><span class="s2">&quot;application/vnd.aquasec.trivy.config.v1+json&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;digest&quot;</span>:<span class="w"> </span><span class="s2">&quot;sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;size&quot;</span>:<span class="w"> </span><span class="m">2</span>
-<span class="w">  </span><span class="o">}</span>,
-<span class="w">  </span><span class="s2">&quot;layers&quot;</span>:<span class="w"> </span><span class="o">[</span>
-<span class="w">    </span><span class="o">{</span>
-<span class="w">      </span><span class="s2">&quot;mediaType&quot;</span>:<span class="w"> </span><span class="s2">&quot;application/vnd.aquasec.trivy.db.layer.v1.tar+gzip&quot;</span>,
-<span class="w">      </span><span class="s2">&quot;digest&quot;</span>:<span class="w"> </span><span class="s2">&quot;sha256:29ad6505b8957c7cd4c367e7c705c641a9020d2be256812c5f4cc2fc099f4f02&quot;</span>,
-<span class="w">      </span><span class="s2">&quot;size&quot;</span>:<span class="w"> </span><span class="m">55474933</span>,
-<span class="w">      </span><span class="s2">&quot;annotations&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">        </span><span class="s2">&quot;org.opencontainers.image.title&quot;</span>:<span class="w"> </span><span class="s2">&quot;db.tar.gz&quot;</span>
-<span class="w">      </span><span class="o">}</span>
-<span class="w">    </span><span class="o">}</span>
-<span class="w">  </span><span class="o">]</span>,
-<span class="w">  </span><span class="s2">&quot;annotations&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;org.opencontainers.image.created&quot;</span>:<span class="w"> </span><span class="s2">&quot;2024-09-11T06:14:51Z&quot;</span>
-<span class="w">  </span><span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div>
-</details>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Trivy automatically adds the <code>trivy-db</code> schema version as a tag if the tag is not used:</p>
-<p><code>trivy-db-registry:latest</code> =&gt; <code>trivy-db-registry:latest</code>, but <code>trivy-db-registry</code> =&gt; <code>trivy-db-registry:2</code>.</p>
+<p>This is not an exhaustive list of Trivy's external connectivity requirements.
+There are additional external resources which may be required by specific Trivy features.
+To learn about external connectivity requirements, see the <a href="../../advanced/air-gap/">Advanced Network Scenarios</a>.</p>
 </div>
-<h3 id="rate-limits">Rate limits<a class="headerlink" href="#rate-limits" title="Permanent link">&para;</a></h3>
-<p>Trivy hosts its databases on public OCI registries that are subject to their respective rate limits. While we strive to make the databases available to every
-Trivy user, there are certain recommendations that one can make in order to ensure rate limits are not hit.</p>
-<h4 id="authenticated-use-of-registries">Authenticated use of Registries<a class="headerlink" href="#authenticated-use-of-registries" title="Permanent link">&para;</a></h4>
-<p>By authenticating with the registries that Trivy hosts its DBs on can significantly increase the limit for users. For Amazon ECR, the details for rate limits can be found <a href="https://docs.aws.amazon.com/AmazonECR/latest/public/public-service-quotas.html">ecr-limits</a>.</p>
-<p>Please see more info on how to authenticate with ECR <a href="https://aws.amazon.com/blogs/compute/authenticating-amazon-ecr-repositories-for-docker-cli-with-credential-helper/">auth-ecr</a>.</p>
-<h4 id="caching-dbs">Caching DBs<a class="headerlink" href="#caching-dbs" title="Permanent link">&para;</a></h4>
-<p>Trivy DB and Trivy Java DB are published every 6 hours and 24 hours, respectively. If you are running Trivy scans more often than this, you can significantly benefit from caching the DBs on each run and updating them as needed.
-One example of this can be seen in Trivy Action, where with caching multiple CI invocations can be performed with a single download of the DBs. More on info Trivy Action caching can be found <a href="https://github.com/aquasecurity/trivy-action?tab=readme-ov-file#cache">trivy-action-cache</a>.</p>
-<h2 id="java-index-database">Java Index Database<a class="headerlink" href="#java-index-database" title="Permanent link">&para;</a></h2>
-<p>The same options are also available for the Java index DB, which is used for scanning Java applications.
-Skipping an update can be done by using the <code>--skip-java-db-update</code> option, while <code>--download-java-db-only</code> can be used to only download the Java index DB.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In <a href="../../references/modes/client-server/">Client/Server</a> mode, <code>Java index DB</code> is currently only used on the <code>client</code> side.</p>
-</div>
-<p>Downloading the Java index DB from an external OCI registry can be done by using the <code>--java-db-repository</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
+<h2 id="locations">Locations<a class="headerlink" href="#locations" title="Permanent link">&para;</a></h2>
+<p>Trivy's databases are published to the following locations:</p>
+<table>
+<thead>
+<tr>
+<th>Registry</th>
+<th>Image Address</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GHCR</td>
+<td><code>ghcr.io/aquasecurity/trivy-db</code></td>
+<td><a href="https://ghcr.io/aquasecurity/trivy-db">https://ghcr.io/aquasecurity/trivy-db</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>ghcr.io/aquasecurity/trivy-java-db</code></td>
+<td><a href="https://ghcr.io/aquasecurity/trivy-java-db">https://ghcr.io/aquasecurity/trivy-java-db</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>ghcr.io/aquasecurity/trivy-checks</code></td>
+<td><a href="https://ghcr.io/aquasecurity/trivy-checks">https://ghcr.io/aquasecurity/trivy-checks</a></td>
+</tr>
+<tr>
+<td>Docker Hub</td>
+<td><code>aquasec/trivy-db</code></td>
+<td><a href="https://hub.docker.com/r/aquasec/trivy-db">https://hub.docker.com/r/aquasec/trivy-db</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>aquasec/trivy-java-db</code></td>
+<td><a href="https://hub.docker.com/r/aquasec/trivy-java-db">https://hub.docker.com/r/aquasec/trivy-java-db</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>aquasec/trivy-checks</code></td>
+<td><a href="https://hub.docker.com/r/aquasec/trivy-checks">https://hub.docker.com/r/aquasec/trivy-checks</a></td>
+</tr>
+<tr>
+<td>AWS ECR</td>
+<td><code>public.ecr.aws/aquasecurity/trivy-db</code></td>
+<td><a href="https://gallery.ecr.aws/aquasecurity/trivy-db">https://gallery.ecr.aws/aquasecurity/trivy-db</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>public.ecr.aws/aquasecurity/trivy-java-db</code></td>
+<td><a href="https://gallery.ecr.aws/aquasecurity/trivy-java-db">https://gallery.ecr.aws/aquasecurity/trivy-java-db</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>public.ecr.aws/aquasecurity/trivy-checks</code></td>
+<td><a href="https://gallery.ecr.aws/aquasecurity/trivy-checks">https://gallery.ecr.aws/aquasecurity/trivy-checks</a></td>
+</tr>
+</tbody>
+</table>
+<p>In addition, images are also available via pull-through cache registries like <a href="https://cloud.google.com/artifact-registry/docs/pull-cached-dockerhub-images">Google Container Registry Mirror</a>.</p>
+<h2 id="default-locations">Default Locations<a class="headerlink" href="#default-locations" title="Permanent link">&para;</a></h2>
+<p>Trivy will attempt to pull images from the following registries in the order specified.</p>
+<ol>
+<li><code>mirror.gcr.io/aquasec</code></li>
+<li><code>ghcr.io/aquasecurity</code></li>
+</ol>
+<p>You can specify additional alternative repositories as explained in the <a href="#database-locations">configuring database locations section</a>.</p>
+<h2 id="db-management-configuration">DB Management Configuration<a class="headerlink" href="#db-management-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="database-locations">Database Locations<a class="headerlink" href="#database-locations" title="Permanent link">&para;</a></h3>
+<p>You can configure Trivy to download databases from alternative locations by using the flags:</p>
+<ul>
+<li><code>--db-repository</code></li>
+<li><code>--java-db-repository</code></li>
+<li><code>--checks-bundle-repository</code></li>
+</ul>
+<p>The value should be an image address in a container registry.</p>
+<p>For example:</p>
+<div class="highlight"><pre><span></span><code>trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 </code></pre></div>
-<p>The media type of the OCI layer must be <code>application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip</code>.
-You can reference the OCI manifest of <a href="https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db">trivy-java-db</a>.</p>
+<p>The flags accepts multiple values, which can be used to specify multiple alternative repository locations. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries in the order specified.</p>
+<p>For example:</p>
+<div class="highlight"><pre><span></span><code>trivy image --db-repository my.registry.local/trivy-db --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
+</code></pre></div>
+<p>The Checks Bundle registry location option does not support fallback through multiple options. This is because in case of a failure pulling the Checks Bundle, Trivy will use the embedded checks as a fallback.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Trivy automatically adds the <code>trivy-java-db</code> schema version as a tag if the tag is not used:</p>
-<p><code>java-db-registry:latest</code> =&gt; <code>java-db-registry:latest</code>, but <code>java-db-registry</code> =&gt; <code>java-db-registry:1</code>.</p>
+<p>Setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.</p>
 </div>
-<h2 id="remove-dbs">Remove DBs<a class="headerlink" href="#remove-dbs" title="Permanent link">&para;</a></h2>
-<p>"trivy clean" command removes caches and databases.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When pulling <code>trivy-db</code> or <code>trivy-java-db</code>, if image tag is not specified, Trivy defaults to the db schema number instead of the <code>latest</code> tag.</p>
+</div>
+<h3 id="skip-updates">Skip updates<a class="headerlink" href="#skip-updates" title="Permanent link">&para;</a></h3>
+<p>You can configure Trivy to not attempt to download any or all database(s), using the flags:</p>
+<ul>
+<li><code>--skip-db-update</code></li>
+<li><code>--skip-java-db-update</code></li>
+<li><code>--skip-check-update</code></li>
+</ul>
+<p>For example:</p>
+<div class="highlight"><pre><span></span><code>trivy image --skip-db-update --skip-java-db-update --skip-check-update alpine
+</code></pre></div>
+<h3 id="only-update">Only update<a class="headerlink" href="#only-update" title="Permanent link">&para;</a></h3>
+<p>You can ask <code>Trivy</code> to only update the database without performing a scan. This action will ensure Trivy is up to date, and populate Trivy's database cache for subsequent scans.</p>
+<ul>
+<li><code>--download-db-only</code></li>
+<li><code>--download-java-db-only</code></li>
+</ul>
+<p>For example:</p>
+<div class="highlight"><pre><span></span><code>trivy image --download-db-only
+</code></pre></div>
+<p>Note that currently there is no option to download only the Checks Bundle.</p>
+<h3 id="remove-databases">Remove Databases<a class="headerlink" href="#remove-databases" title="Permanent link">&para;</a></h3>
+<p><code>trivy clean</code> command removes caches and databases.
+You can select which cache component to remove:</p>
+<table>
+<thead>
+<tr>
+<th>option</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-a</code>/<code>--all</code></td>
+<td>remove all caches</td>
+</tr>
+<tr>
+<td><code>--checks-bundle</code></td>
+<td>remove checks bundle</td>
+</tr>
+<tr>
+<td><code>--java-db</code></td>
+<td>remove Java database</td>
+</tr>
+<tr>
+<td><code>--scan-cache</code></td>
+<td>remove scan cache (container and VM image analysis results)</td>
+</tr>
+<tr>
+<td><code>--vuln-db</code></td>
+<td>remove vulnerability database</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
 <div class="highlight"><pre><span></span><code>$ trivy clean --vuln-db --java-db
 2024-06-24T11:42:31+06:00       INFO    Removing vulnerability database...
 2024-06-24T11:42:31+06:00       INFO    Removing Java database...
