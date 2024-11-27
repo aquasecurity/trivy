@@ -3,10 +3,7 @@ package executor
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
 	runtimeDebug "runtime/debug"
-	"strings"
 	"sync"
 
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
@@ -62,21 +59,9 @@ func (p *Pool) Run() (scan.Results, error) {
 
 	if !p.regoOnly {
 		for _, r := range p.rules {
-			if r.GetRule().CustomChecks.Terraform != nil && r.GetRule().CustomChecks.Terraform.Check != nil {
-				// run local hcl rule
-				for _, module := range p.modules {
-					mod := *module
-					outgoing <- &hclModuleRuleJob{
-						module: &mod,
-						rule:   r,
-					}
-				}
-			} else {
-				// run defsec rule
-				outgoing <- &infraRuleJob{
-					state: p.state,
-					rule:  r,
-				}
+			outgoing <- &infraRuleJob{
+				state: p.state,
+				rule:  r,
 			}
 		}
 	}
@@ -103,11 +88,6 @@ type infraRuleJob struct {
 	rule  types.RegisteredRule
 }
 
-type hclModuleRuleJob struct {
-	module *terraform.Module
-	rule   types.RegisteredRule
-}
-
 type regoJob struct {
 	state    *state.State
 	scanner  *rego.Scanner
@@ -124,23 +104,6 @@ func (h *infraRuleJob) Run() (_ scan.Results, err error) {
 	return h.rule.Evaluate(h.state), err
 }
 
-func (h *hclModuleRuleJob) Run() (results scan.Results, err error) {
-	defer func() {
-		if panicErr := recover(); panicErr != nil {
-			err = fmt.Errorf("%s\n%s", panicErr, string(runtimeDebug.Stack()))
-		}
-	}()
-	customCheck := h.rule.GetRule().CustomChecks.Terraform
-	for _, block := range h.module.GetBlocks() {
-		if !isCustomCheckRequiredForBlock(customCheck, block) {
-			continue
-		}
-		results = append(results, customCheck.Check(block, h.module)...)
-	}
-	results.SetRule(h.rule.GetRule())
-	return
-}
-
 func (h *regoJob) Run() (results scan.Results, err error) {
 	regoResults, err := h.scanner.ScanInput(context.TODO(), rego.Input{
 		Contents: h.state.ToRego(),
@@ -150,100 +113,6 @@ func (h *regoJob) Run() (results scan.Results, err error) {
 		return nil, fmt.Errorf("rego scan error: %w", err)
 	}
 	return regoResults, nil
-}
-
-// nolint
-func isCustomCheckRequiredForBlock(custom *scan.TerraformCustomCheck, b *terraform.Block) bool {
-
-	var found bool
-	for _, requiredType := range custom.RequiredTypes {
-		if b.Type() == requiredType {
-			found = true
-			break
-		}
-	}
-	if !found && len(custom.RequiredTypes) > 0 {
-		return false
-	}
-
-	found = false
-	for _, requiredLabel := range custom.RequiredLabels {
-		if requiredLabel == "*" || (len(b.Labels()) > 0 && wildcardMatch(requiredLabel, b.TypeLabel())) {
-			found = true
-			break
-		}
-	}
-	if !found && len(custom.RequiredLabels) > 0 {
-		return false
-	}
-
-	found = false
-	if len(custom.RequiredSources) > 0 && b.Type() == terraform.TypeModule.Name() {
-		if sourceAttr := b.GetAttribute("source"); sourceAttr.IsNotNil() {
-			values := sourceAttr.AsStringValues().AsStrings()
-			if len(values) == 0 {
-				return false
-			}
-			sourcePath := values[0]
-
-			// resolve module source path to path relative to cwd
-			if strings.HasPrefix(sourcePath, ".") {
-				sourcePath = cleanPathRelativeToWorkingDir(filepath.Dir(b.GetMetadata().Range().GetFilename()), sourcePath)
-			}
-
-			for _, requiredSource := range custom.RequiredSources {
-				if requiredSource == "*" || wildcardMatch(requiredSource, sourcePath) {
-					found = true
-					break
-				}
-			}
-		}
-		return found
-	}
-
-	return true
-}
-
-func cleanPathRelativeToWorkingDir(dir, path string) string {
-	absPath := filepath.Clean(filepath.Join(dir, path))
-	wDir, err := os.Getwd()
-	if err != nil {
-		return absPath
-	}
-	relPath, err := filepath.Rel(wDir, absPath)
-	if err != nil {
-		return absPath
-	}
-	return relPath
-}
-
-func wildcardMatch(pattern, subject string) bool {
-	if pattern == "" {
-		return false
-	}
-	parts := strings.Split(pattern, "*")
-	var lastIndex int
-	for i, part := range parts {
-		if part == "" {
-			continue
-		}
-		if i == 0 {
-			if !strings.HasPrefix(subject, part) {
-				return false
-			}
-		}
-		if i == len(parts)-1 {
-			if !strings.HasSuffix(subject, part) {
-				return false
-			}
-		}
-		newIndex := strings.Index(subject, part)
-		if newIndex < lastIndex {
-			return false
-		}
-		lastIndex = newIndex
-	}
-	return true
 }
 
 type Worker struct {
