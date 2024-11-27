@@ -73,16 +73,6 @@ type Scanner struct {
 	disabledCheckIDs map[string]struct{}
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
-	s.includeDeprecatedChecks = b
-}
-
-func (s *Scanner) SetRegoOnly(bool) {}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
-}
-
 func (s *Scanner) trace(heading string, input any) {
 	if s.traceWriter == nil {
 		return

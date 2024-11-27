@@ -10,7 +10,6 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_ScanRemoteModule(t *testing.T) {
@@ -32,7 +31,6 @@ module "s3_bucket" {
 		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedPolicies(false),
 		rego.WithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
 	)
@@ -71,7 +69,6 @@ module "s3_bucket" {
 		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedPolicies(false),
 		rego.WithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
 	)
@@ -114,7 +111,6 @@ deny[cause] {
 		scanner := New(
 			ScannerWithSkipCachedModules(true),
 			rego.WithPolicyDirs("rules"),
-			options.ScannerWithRegoOnly(true),
 			rego.WithEmbeddedPolicies(false),
 			rego.WithEmbeddedLibraries(true),
 		)
@@ -130,7 +126,6 @@ deny[cause] {
 			ScannerWithSkipDownloaded(true),
 			ScannerWithSkipCachedModules(true),
 			rego.WithPolicyDirs("rules"),
-			options.ScannerWithRegoOnly(true),
 			rego.WithEmbeddedPolicies(false),
 			rego.WithEmbeddedLibraries(true),
 		)
@@ -184,7 +179,6 @@ deny[res] {
 		ScannerWithSkipDownloaded(true),
 		ScannerWithSkipCachedModules(true),
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(true),
 		rego.WithEmbeddedPolicies(false),
 	)

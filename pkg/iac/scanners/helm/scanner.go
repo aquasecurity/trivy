@@ -12,7 +12,6 @@ import (
 	"github.com/liamg/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -33,10 +32,6 @@ type Scanner struct {
 	parserOptions []parser.Option
 	regoScanner   *rego.Scanner
 }
-
-func (s *Scanner) SetIncludeDeprecatedChecks(bool)                {}
-func (s *Scanner) SetRegoOnly(bool)                               {}
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {}
 
 // New creates a new Scanner
 func New(opts ...options.ScannerOption) *Scanner {
