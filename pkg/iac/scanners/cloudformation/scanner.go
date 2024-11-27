@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -53,10 +52,6 @@ type Scanner struct {
 	options       []options.ScannerOption
 	parserOptions []parser.Option
 }
-
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool)              {}
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {}
-func (s *Scanner) SetRegoOnly(regoOnly bool)                      {}
 
 func (s *Scanner) addParserOption(opt parser.Option) {
 	s.parserOptions = append(s.parserOptions, opt)

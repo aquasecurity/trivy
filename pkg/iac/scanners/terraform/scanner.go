@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -37,10 +36,6 @@ type Scanner struct {
 	regoScanner  *rego.Scanner
 	execLock     sync.RWMutex
 }
-
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool)              {}
-func (s *Scanner) SetRegoOnly(regoOnly bool)                      {}
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {}
 
 func (s *Scanner) Name() string {
 	return "Terraform"

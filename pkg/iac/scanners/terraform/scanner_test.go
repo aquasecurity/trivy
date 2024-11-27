@@ -161,46 +161,6 @@ cause := bucket.name
 
 }
 
-func Test_OptionWithRegoOnly(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"/code/main.tf": `
-resource "aws_s3_bucket" "my-bucket" {}
-`,
-		"/rules/test.rego": emptyBucketCheck,
-	})
-
-	results, err := scanFS(fsys, "code",
-		rego.WithPolicyDirs("rules"),
-		rego.WithPolicyNamespaces("user"),
-	)
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "USER-TEST-0123", results[0].Rule().AVDID)
-}
-
-func Test_OptionWithRegoOnly_CodeHighlighting(t *testing.T) {
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"/code/main.tf": `
-resource "aws_s3_bucket" "my-bucket" {}
-`,
-		"/rules/test.rego": emptyBucketCheck,
-	})
-
-	results, err := scanFS(fsys, "code",
-		rego.WithPolicyDirs("rules"),
-		rego.WithPolicyNamespaces("user"),
-	)
-
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "USER-TEST-0123", results[0].Rule().AVDID)
-	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-}
-
 func Test_IAMPolicyRego(t *testing.T) {
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf": `

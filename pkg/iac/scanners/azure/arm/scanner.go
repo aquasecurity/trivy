@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -28,10 +27,6 @@ type Scanner struct {
 	logger         *log.Logger
 	regoScanner    *rego.Scanner
 }
-
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool)              {}
-func (s *Scanner) SetRegoOnly(regoOnly bool)                      {}
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {}
 
 func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{

@@ -226,7 +226,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
-		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
+		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
 		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 	}
 
