@@ -1254,6 +1254,55 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "nested modules",
+			inputFile: filepath.Join("testdata", "nested-modules", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:root:1.0.0",
+					Name:         "com.example:root",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "com.example:module1:1.0.0",
+					Name:         "com.example:module1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+				},
+				{
+					ID:           "com.example:module2:2.0.0",
+					Name:         "com.example:module2",
+					Version:      "2.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+				},
+				{
+					ID:      "org.example:example-api:1.7.30",
+					Name:    "org.example:example-api",
+					Version: "1.7.30",
+					Licenses: []string{
+						"The Apache Software License, Version 2.0",
+					},
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:module2:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api:1.7.30",
+					},
+				},
+				{
+					ID: "com.example:root:1.0.0",
+					DependsOn: []string{
+						"com.example:module1:1.0.0",
+						"com.example:module2:2.0.0",
+					},
+				},
+			},
+		},
+		{
 			name:      "Infinity loop for modules",
 			inputFile: filepath.Join("testdata", "modules-infinity-loop", "pom.xml"),
 			local:     true,

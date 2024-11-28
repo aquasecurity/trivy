@@ -248,7 +248,8 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			return packageID(dependOnName, ver), ver != ""
 		})
 
-		// Add modules as dependencies of root package
+		// `mvn` shows modules separately from the root package and does not show module nesting.
+		// So we can add all modules as dependencies of root package.
 		if art.Relationship == ftypes.RelationshipRoot {
 			dependsOn = append(dependsOn, lo.Keys(uniqModules)...)
 		}
