@@ -2,6 +2,28 @@
 
 This page explains the terminology system used in Trivy, helping users understand the specific terms and concepts unique to the Trivy ecosystem.
 
+**Inclusion Criteria**
+
+1. Core Components of Trivy
+    - Primary features such as Scanner, Target
+    - Essential components such as Scan Assets (trivy-db, trivy-java-db)
+    - Components that users directly interact with
+
+2. Trivy-specific Terms
+    - Terms unique to Trivy (e.g., VEX Hub)
+    - Terms that have special meaning in Trivy's context (e.g., Plugin, Module)
+
+**Exclusion Criteria**
+
+1. General Terms
+    - Common security/technical terms (e.g., CVE, CVSS, Container, Registry)
+    - Standard industry terminology
+
+2. Implementation Details
+    - Internal workings of components
+    - Usage instructions (these belong in feature documentation)
+
+
 ## Core Concepts
 
 ### Target
