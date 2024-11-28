@@ -247,6 +247,11 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			return packageID(dependOnName, ver), ver != ""
 		})
 
+		// Add modules as dependencies of root package
+		if art.Relationship == ftypes.RelationshipRoot {
+			dependsOn = append(dependsOn, lo.Keys(uniqModules)...)
+		}
+
 		sort.Strings(dependsOn)
 		if len(dependsOn) > 0 {
 			deps = append(deps, ftypes.Dependency{

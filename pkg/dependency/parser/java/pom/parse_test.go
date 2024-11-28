@@ -1230,24 +1230,15 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
-			// maven doesn't include modules in dep tree of root pom
-			// for modules uses separate graph:
-			// ➜ mvn dependency:tree
-			// [INFO] --------------------------------[ jar ]---------------------------------
-			// [INFO]
-			// [INFO] --- dependency:3.6.0:tree (default-cli) @ module ---
-			// [INFO] com.example:module:jar:1.1.1
-			// [INFO] \- org.example:example-dependency:jar:1.2.3:compile
-			// [INFO]    \- org.example:example-api:jar:2.0.0:compile
-			// [INFO]
-			// [INFO] ----------------------< com.example:aggregation >-----------------------
-			// [INFO] Building aggregation 1.0.0                                         [2/2]
-			// [INFO]   from pom.xml
-			// [INFO] --------------------------------[ pom ]---------------------------------
-			// [INFO]
-			// [INFO] --- dependency:3.6.0:tree (default-cli) @ aggregation ---
-			// [INFO] com.example:aggregation:pom:1.0.0
+			// `mvn` doesn't include modules in dep tree of root pom and builds separate graphs.
+			// But we have `root` and `workspace` relationships, so we can merge these graphs.
 			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:aggregation:1.0.0",
+					DependsOn: []string{
+						"com.example:module:1.1.1",
+					},
+				},
 				{
 					ID: "com.example:module:1.1.1",
 					DependsOn: []string{
@@ -1301,6 +1292,13 @@ func TestPom_Parse(t *testing.T) {
 						"org.example:module-1:2.0.0",
 					},
 				},
+				{
+					ID: "org.example:root:1.0.0",
+					DependsOn: []string{
+						"org.example:module-1:2.0.0",
+						"org.example:module-2:3.0.0",
+					},
+				},
 			},
 		},
 		{
@@ -1342,6 +1340,13 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:aggregation:1.0.0",
+					DependsOn: []string{
+						"com.example:module1:1.1.1",
+						"com.example:module2:1.1.1",
+					},
+				},
 				{
 					ID: "com.example:module1:1.1.1",
 					DependsOn: []string{
