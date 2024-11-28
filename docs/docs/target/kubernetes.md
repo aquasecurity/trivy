@@ -29,7 +29,7 @@ Kubernetes resource definition is scanned for:
 ## Required roles
 To successfully scan a Kubernetes cluster, `trivy kubernetes` subcommand must be executed under a role that has some specific permissions.
 
-Without `node collecor` (with flag `--disable-node-collector`) the role must have `list` verb for all resources ("*") inside next API groups: core (""), "apps", "batch","networking.k8s.io", "rbac.authorization.k8s.io":
+Without `node collector` (with flag `--disable-node-collector`) the role must have `list` verb for all resources ("*") inside next API groups: core (""), "apps", "batch","networking.k8s.io", "rbac.authorization.k8s.io":
 ```yaml
 - apiGroups: [""]
   resources: ["*"]
