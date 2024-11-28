@@ -47,7 +47,9 @@ func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Parse package-lock.json
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == types.NpmPkgLock
+		base := filepath.Base(path)
+		// https://docs.npmjs.com/cli/v10/configuring-npm/npm-shrinkwrap-json
+		return base == types.NpmShrinkWrap || base == types.NpmPkgLock
 	}
 
 	var apps []types.Application
@@ -88,7 +90,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
 	// Don't save package-lock.json from the `node_modules` directory to avoid duplication and mistakes.
-	if fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules") {
+	if fileName == types.NpmShrinkWrap || (fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules")) {
 		return true
 	}
 
