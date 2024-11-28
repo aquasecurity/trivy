@@ -449,6 +449,7 @@ func TestEncoder_Encode(t *testing.T) {
 								Relationship: ftypes.RelationshipRoot,
 								DependsOn: []string{
 									"github.com/org/direct@v1.0.0",
+									"stdlib@v1.22.1",
 								},
 							},
 							{
