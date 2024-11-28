@@ -250,6 +250,7 @@ markdown_extensions:
       permalink: true
   - pymdownx.highlight
   - pymdownx.details
+  - pymdownx.magiclink
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

@@ -30,13 +30,13 @@ The core vulnerability database required for vulnerability detection.
 Contains comprehensive vulnerability information for multiple ecosystems.
 Distributed via OCI registry.
 
-Managed at [the GitHub repository](https://github.com/aquasecurity/trivy-db).
+Managed at https://github.com/aquasecurity/trivy-db.
 
 ### Java Index Database (Trivy Java DB, trivy-java-db)
 Specialized database used for identifying Java libraries and their components during JAR/WAR/PAR/EAR scanning.
 Distributed via OCI registry.
 
-Managed at [the GitHub repository](https://github.com/aquasecurity/trivy-java-db).
+Managed at https://github.com/aquasecurity/trivy-java-db.
 
 ### vuln-list
 A GitHub repository that collects and stores vulnerability information from various data sources.
