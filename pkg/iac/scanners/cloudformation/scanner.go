@@ -8,9 +8,7 @@ import (
 	"sync"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
@@ -47,31 +45,16 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu                      sync.Mutex
-	logger                  *log.Logger
-	parser                  *parser.Parser
-	regoScanner             *rego.Scanner
-	regoOnly                bool
-	options                 []options.ScannerOption
-	parserOptions           []parser.Option
-	frameworks              []framework.Framework
-	includeDeprecatedChecks bool
-}
-
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
-	s.includeDeprecatedChecks = b
+	mu            sync.Mutex
+	logger        *log.Logger
+	parser        *parser.Parser
+	regoScanner   *rego.Scanner
+	options       []options.ScannerOption
+	parserOptions []parser.Option
 }
 
 func (s *Scanner) addParserOption(opt parser.Option) {
 	s.parserOptions = append(s.parserOptions, opt)
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
-}
-
-func (s *Scanner) SetRegoOnly(regoOnly bool) {
-	s.regoOnly = regoOnly
 }
 
 func (s *Scanner) Name() string {
@@ -161,41 +144,13 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.R
 	return results, nil
 }
 
-func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner, cfCtx *parser.FileContext, fsys fs.FS) (results scan.Results, err error) {
+func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner, cfCtx *parser.FileContext, fsys fs.FS) (scan.Results, error) {
 	state := adapter.Adapt(*cfCtx)
 	if state == nil {
 		return nil, nil
 	}
-	if !s.regoOnly {
-		for _, rule := range rules.GetRegistered(s.frameworks...) {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-			}
 
-			if !s.includeDeprecatedChecks && rule.Deprecated {
-				continue // skip deprecated checks
-			}
-
-			evalResult := rule.Evaluate(state)
-			if len(evalResult) > 0 {
-				for _, scanResult := range evalResult {
-
-					ref := scanResult.Metadata().Reference()
-
-					if ref == "" && scanResult.Metadata().Parent() != nil {
-						ref = scanResult.Metadata().Parent().Reference()
-					}
-
-					description := getDescription(scanResult, ref)
-					scanResult.OverrideDescription(description)
-					results = append(results, scanResult)
-				}
-			}
-		}
-	}
-	regoResults, err := regoScanner.ScanInput(ctx, rego.Input{
+	results, err := regoScanner.ScanInput(ctx, rego.Input{
 		Path:     cfCtx.Metadata().Range().GetFilename(),
 		FS:       fsys,
 		Contents: state.ToRego(),
@@ -203,7 +158,6 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 	if err != nil {
 		return nil, fmt.Errorf("rego scan error: %w", err)
 	}
-	results = append(results, regoResults...)
 
 	// ignore a result based on user input
 	results.Ignore(cfCtx.Ignores, nil)
@@ -216,15 +170,4 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 	}
 
 	return results, nil
-}
-
-func getDescription(scanResult scan.Result, ref string) string {
-	switch scanResult.Status() {
-	case scan.StatusPassed:
-		return fmt.Sprintf("Resource '%s' passed check: %s", ref, scanResult.Rule().Summary)
-	case scan.StatusIgnored:
-		return fmt.Sprintf("Resource '%s' had check ignored: %s", ref, scanResult.Rule().Summary)
-	default:
-		return scanResult.Description()
-	}
 }

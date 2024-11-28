@@ -918,7 +918,6 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 					types.SystemFileFilteringPostHandler,
 				},
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: false,
 					Namespaces:               []string{"user"},
@@ -956,7 +955,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/single-failure/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1017,7 +1015,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/multiple-failures/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1100,7 +1097,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/no-results/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1131,7 +1127,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/params/code/rego"},
 					CloudFormationParamVars:  []string{"./testdata/misconfig/cloudformation/params/cfparams.json"},
@@ -1188,7 +1183,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/passed/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1275,7 +1269,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/dockerfile/single-failure/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1332,7 +1325,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/dockerfile/multiple-failures/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1389,7 +1381,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/dockerfile/no-results/rego"},
 				},
@@ -1419,7 +1410,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/dockerfile/passed/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1508,7 +1498,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/kubernetes/single-failure/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1570,7 +1559,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/kubernetes/multiple-failures/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1655,7 +1643,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/kubernetes/no-results/rego"},
 				},
@@ -1685,7 +1672,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/kubernetes/passed/rego"},
 					DisableEmbeddedLibraries: true,
@@ -1774,7 +1760,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/azurearm/single-failure/rego"},
 				},
@@ -1834,7 +1819,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/azurearm/multiple-failures/rego"},
 				},
@@ -1916,7 +1900,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/azurearm/no-results/rego"},
 				},
@@ -1946,7 +1929,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/azurearm/passed/rego"},
 				},
@@ -2032,7 +2014,6 @@ func TestMixedConfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/mixed/rego"},
 					DisableEmbeddedLibraries: true,
@@ -2153,7 +2134,6 @@ func TestJSONConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/json/passed/checks"},
 				},
@@ -2226,7 +2206,6 @@ func TestJSONConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/json/with-schema/checks"},
 				},
@@ -2316,7 +2295,6 @@ func TestYAMLConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/yaml/passed/checks"},
 				},
@@ -2389,7 +2367,6 @@ func TestYAMLConfigScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
 					Namespaces:  []string{"user"},
 					PolicyPaths: []string{"./testdata/misconfig/yaml/with-schema/checks"},
 				},

@@ -32,6 +32,11 @@ func Test_contentManifestAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:  "happy path for non-contentSets file",
+			input: "testdata/content_manifests/sbom-purl.json",
+			want:  nil,
+		},
+		{
 			name:    "broken json",
 			input:   "testdata/content_manifests/broken.json",
 			wantErr: "invalid content manifest",

@@ -21,7 +21,6 @@ Targets (what Trivy can scan):
 - Git Repository (remote)
 - Virtual Machine Image
 - Kubernetes
-- AWS
 
 Scanners (what Trivy can find there):
 

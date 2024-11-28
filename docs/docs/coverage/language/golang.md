@@ -12,17 +12,17 @@ The following scanners are supported.
 
 The table below provides an outline of the features Trivy offers.
 
-| Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] |          Stdlib          | [Detection Priority][detection-priority] |
-|----------|:-----------:|:-----------------|:------------------------------------:|:------------------------:|:----------------------------------------:|
-| Modules  |      ✅      | Include          |        [✅](#dependency-graph)        |  [✅](#standard-library)  |          [✅](#standard-library)          |
-| Binaries |      ✅      | Exclude          |                  -                   | [✅](#standard-library-1) |                Not needed                |
+| Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] |         Stdlib         | [Detection Priority][detection-priority] |
+|----------|:-----------:|:-----------------|:------------------------------------:|:----------------------:|:----------------------------------------:|
+| Modules  |      ✅      | Include          |        [✅](#dependency-graph)        |   [✅](#gomod-stdlib)   |            [✅](#gomod-stdlib)            |
+| Binaries |      ✅      | Exclude          |                  -                   | [✅](#go-binary-stdlib) |                Not needed                |
 
 !!! note
     When scanning Go projects (go.mod or binaries built with Go), Trivy scans only dependencies of the project, and does not detect vulnerabilities of application itself. 
     For example, when scanning the Docker project (Docker's source code with go.mod or the Docker binary), Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find vulnerabilities of Docker itself. Moreover, when scanning the Trivy project, which happens to use Docker, Docker's vulnerabilities might be detected as dependencies of Trivy.
 
 ## Data Sources
-The data sources are listed [here](../../scanner/vulnerability.md#data-sources-1).
+The data sources are listed [here](../../scanner/vulnerability.md#langpkg-data-sources).
 Trivy uses Go Vulnerability Database for [standard library](https://pkg.go.dev/std) and uses GitHub Advisory Database for other Go modules.
 
 ## Go Module
@@ -60,12 +60,12 @@ If you want to have better detection, please consider updating the Go version in
     $ go mod tidy -go=1.18
     ```
 
-### Main Module
+### Main Module { #gomod-main }
 Trivy scans only dependencies of the project, and does not detect vulnerabilities of the main module. 
 For example, when scanning the Docker project (Docker's source code with go.mod), Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find vulnerabilities of Docker itself.
 Moreover, when scanning the Trivy project, which happens to use Docker, Docker's vulnerabilities might be detected as dependencies of Trivy.
 
-### Standard Library
+### Standard Library { #gomod-stdlib }
 Detecting the version of Go used in the project can be tricky.
 The go.mod file include hints that allows Trivy to guess the Go version but it eventually depends on the Go tool version in the build environment.
 Since this strategy is not fully deterministic and accurate, it is enabled only in [--detection-priority comprehensive][detection-priority] mode.
@@ -105,7 +105,7 @@ In other cases, Go uses the `(devel)` version[^2].
 In this case, Trivy will attempt to parse any `-ldflags` as it's a common practice to pass versions this way.
 If unsuccessful, the version will be empty[^3].
 
-### Standard Library
+### Standard Library { #go-binary-stdlib }
 Trivy detects the Go version used to compile the binary and detects its vulnerabilities in the standard libraries.
 It possibly produces false positives.
 See [the caveat](#stdlib-vulnerabilities) for details.
@@ -120,7 +120,7 @@ There are a few ways to mitigate this:
 2. Suppress non-applicable vulnerabilities using either [ignore file](../../configuration/filtering.md) for self-use or [VEX Hub](../../supply-chain/vex/repo.md) for public use.
 
 ### Empty Version
-As described in the [Main Module](#main-module-1) section, the main module of Go binaries might have an empty version.
+As described in the [Main Module](#gomod-main) section, the main module of Go binaries might have an empty version.
 Also, dependencies replaced with local ones will have an empty version.
 
 [^1]: It doesn't require the Internet access.

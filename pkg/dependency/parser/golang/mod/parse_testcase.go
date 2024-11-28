@@ -21,12 +21,6 @@ var (
 			},
 		},
 		{
-			ID:           "stdlib@v1.22.5",
-			Name:         "stdlib",
-			Version:      "v1.22.5",
-			Relationship: ftypes.RelationshipDirect,
-		},
-		{
 			ID:           "github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
 			Name:         "github.com/aquasecurity/go-version",
 			Version:      "v0.0.0-20240603093900-cf8a8d29271d",
@@ -37,6 +31,12 @@ var (
 					URL:  "https://github.com/aquasecurity/go-version",
 				},
 			},
+		},
+		{
+			ID:           "stdlib@v1.22.5",
+			Name:         "stdlib",
+			Version:      "v1.22.5",
+			Relationship: ftypes.RelationshipDirect,
 		},
 		{
 			ID:           "github.com/davecgh/go-spew@v1.1.2-0.20180830191138-d8f796af33cc",
@@ -82,9 +82,28 @@ var (
 		},
 	}
 
+	GoModNormalDeps = ftypes.Dependencies{
+		{
+			ID: "github.com/org/repo",
+			DependsOn: []string{
+				"github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
+				"stdlib@v1.22.5",
+			},
+		},
+	}
+
 	GoModNormalWithoutStdlib = slices.DeleteFunc(slices.Clone(GoModNormal), func(f ftypes.Package) bool {
 		return f.Name == "stdlib"
 	})
+
+	GoModNormalWithoutStdlibDeps = ftypes.Dependencies{
+		{
+			ID: "github.com/org/repo",
+			DependsOn: []string{
+				"github.com/aquasecurity/go-version@v0.0.0-20240603093900-cf8a8d29271d",
+			},
+		},
+	}
 
 	// execute go mod tidy in replaced folder
 	GoModReplaced = []ftypes.Package{
@@ -116,6 +135,14 @@ var (
 			Name:         "golang.org/x/xerrors",
 			Version:      "v0.0.0-20200804184101-5ec99f83aff1",
 			Relationship: ftypes.RelationshipIndirect,
+		},
+	}
+	GoModReplacedDeps = ftypes.Dependencies{
+		{
+			ID: "github.com/org/repo",
+			DependsOn: []string{
+				"github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+			},
 		},
 	}
 
@@ -152,6 +179,15 @@ var (
 		},
 	}
 
+	GoModUnreplacedDeps = ftypes.Dependencies{
+		{
+			ID: "github.com/org/repo",
+			DependsOn: []string{
+				"github.com/aquasecurity/go-dep-parser@v0.0.0-20211110174639-8257534ffed3",
+			},
+		},
+	}
+
 	// execute go mod tidy in replaced-with-version folder
 	GoModReplacedWithVersion = []ftypes.Package{
 		{
@@ -182,6 +218,15 @@ var (
 			Name:         "golang.org/x/xerrors",
 			Version:      "v0.0.0-20200804184101-5ec99f83aff1",
 			Relationship: ftypes.RelationshipIndirect,
+		},
+	}
+
+	GoModReplacedWithVersionDeps = ftypes.Dependencies{
+		{
+			ID: "github.com/org/repo",
+			DependsOn: []string{
+				"github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+			},
 		},
 	}
 
@@ -226,6 +271,15 @@ var (
 					Type: ftypes.RefVCS,
 					URL:  "https://github.com/go-yaml/yaml",
 				},
+			},
+		},
+	}
+
+	defaultGoDepParserDeps = ftypes.Dependencies{
+		{
+			ID: "github.com/org/repo",
+			DependsOn: []string{
+				"github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			},
 		},
 	}

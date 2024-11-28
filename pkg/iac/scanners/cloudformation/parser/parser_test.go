@@ -440,3 +440,52 @@ Conditions:
 	require.NoError(t, err)
 	require.Len(t, files, 1)
 }
+
+func Test_TemplateWithNullProperty(t *testing.T) {
+	src := `AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName:`
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.yaml": src,
+	})
+
+	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+
+	file := files[0]
+
+	res := file.GetResourceByLogicalID("TestBucket")
+
+	assert.True(t, res.GetProperty("BucketName").IsNil())
+}
+
+func Test_TemplateWithNullNestedProperty(t *testing.T) {
+	src := `AWSTemplateFormatVersion: "2010-09-09"
+Description: "BAD"
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: test
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: null`
+
+	fsys := testutil.CreateFS(t, map[string]string{
+		"main.yaml": src,
+	})
+
+	files, err := New().ParseFS(context.TODO(), fsys, ".")
+	require.NoError(t, err)
+	require.Len(t, files, 1)
+
+	file := files[0]
+
+	res := file.GetResourceByLogicalID("TestBucket")
+
+	assert.True(t, res.GetProperty("PublicAccessBlockConfiguration.BlockPublicAcls").IsNil())
+}

@@ -12,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_BasicScan(t *testing.T) {
@@ -58,7 +57,7 @@ deny[res] {
 `,
 	})
 
-	scanner := New(rego.WithPolicyDirs("rules"), options.ScannerWithRegoOnly(true))
+	scanner := New(rego.WithPolicyDirs("rules"))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -79,10 +78,7 @@ deny[res] {
 		Severity:       "CRITICAL",
 		Terraform:      &scan.EngineMetadata{},
 		CloudFormation: &scan.EngineMetadata{},
-		CustomChecks: scan.CustomChecks{
-			Terraform: (*scan.TerraformCustomCheck)(nil),
-		},
-		RegoPackage: "data.builtin.dockerfile.DS006",
+		RegoPackage:    "data.builtin.dockerfile.DS006",
 		Frameworks: map[framework.Framework][]string{
 			framework.Default: {},
 		},
@@ -215,7 +211,6 @@ Resources:
 			})
 
 			scanner := New(
-				options.ScannerWithRegoOnly(true),
 				rego.WithEmbeddedPolicies(false),
 				rego.WithPolicyReader(strings.NewReader(bucketNameCheck)),
 				rego.WithPolicyNamespaces("user"),

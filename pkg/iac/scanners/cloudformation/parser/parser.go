@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -83,7 +84,7 @@ func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, dir string) (FileConte
 	return contexts, nil
 }
 
-func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *FileContext, err error) {
+func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fctx *FileContext, err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = fmt.Errorf("panic during parse: %s", e)
@@ -105,15 +106,15 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 	}
 
 	sourceFmt := YamlSourceFormat
-	if strings.HasSuffix(strings.ToLower(path), ".json") {
+	if path.Ext(filePath) == ".json" {
 		sourceFmt = JsonSourceFormat
 	}
 
-	f, err := fsys.Open(filepath.ToSlash(path))
+	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = f.Close() }()
+	defer f.Close()
 
 	content, err := io.ReadAll(f)
 	if err != nil {
@@ -123,7 +124,7 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 	lines := strings.Split(string(content), "\n")
 
 	fctx = &FileContext{
-		filepath:     path,
+		filepath:     filePath,
 		lines:        lines,
 		SourceFormat: sourceFmt,
 	}
@@ -131,26 +132,28 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 	switch sourceFmt {
 	case YamlSourceFormat:
 		if err := yaml.Unmarshal(content, fctx); err != nil {
-			return nil, NewErrInvalidContent(path, err)
+			return nil, NewErrInvalidContent(filePath, err)
 		}
-		fctx.Ignores = ignore.Parse(string(content), path, "")
+		fctx.Ignores = ignore.Parse(string(content), filePath, "")
 	case JsonSourceFormat:
 		if err := jfather.Unmarshal(content, fctx); err != nil {
-			return nil, NewErrInvalidContent(path, err)
+			return nil, NewErrInvalidContent(filePath, err)
 		}
 	}
+
+	fctx.stripNullProperties()
 
 	fctx.overrideParameters(p.overridedParameters)
 
 	if params := fctx.missingParameterValues(); len(params) > 0 {
-		p.logger.Warn("Missing parameter values", log.FilePath(path), log.String("parameters", strings.Join(params, ", ")))
+		p.logger.Warn("Missing parameter values", log.FilePath(filePath), log.String("parameters", strings.Join(params, ", ")))
 	}
 
 	fctx.lines = lines
 	fctx.SourceFormat = sourceFmt
-	fctx.filepath = path
+	fctx.filepath = filePath
 
-	p.logger.Debug("Context loaded from source", log.FilePath(path))
+	p.logger.Debug("Context loaded from source", log.FilePath(filePath))
 
 	// the context must be set to conditions before resources
 	for _, c := range fctx.Conditions {
@@ -158,7 +161,7 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 	}
 
 	for name, r := range fctx.Resources {
-		r.configureResource(name, fsys, path, fctx)
+		r.configureResource(name, fsys, filePath, fctx)
 	}
 
 	return fctx, nil
@@ -190,10 +193,10 @@ func (p *Parser) parseParams() error {
 	return nil
 }
 
-func (p *Parser) parseParametersFile(path string) (Parameters, error) {
-	f, err := p.configsFS.Open(path)
+func (p *Parser) parseParametersFile(filePath string) (Parameters, error) {
+	f, err := p.configsFS.Open(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("parameters file %q open error: %w", path, err)
+		return nil, fmt.Errorf("parameters file %q open error: %w", filePath, err)
 	}
 
 	var parameters Parameters

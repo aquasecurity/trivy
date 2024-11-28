@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/gocsaf/csaf/v3/csaf"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/sirupsen/logrus"

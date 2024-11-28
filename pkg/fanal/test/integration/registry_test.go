@@ -73,7 +73,7 @@ func TestTLSRegistry(t *testing.T) {
 		Started:          true,
 	})
 	require.NoError(t, err)
-	defer registryC.Terminate(ctx)
+	testcontainers.CleanupContainer(t, registryC)
 
 	registryURL, err := getRegistryURL(ctx, registryC, registryPort)
 	require.NoError(t, err)

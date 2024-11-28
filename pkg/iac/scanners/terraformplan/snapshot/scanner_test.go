@@ -24,7 +24,6 @@ func initScanner(opts ...options.ScannerOption) *Scanner {
 		rego.WithEmbeddedLibraries(true),
 		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("."),
-		options.ScannerWithRegoOnly(true),
 		rego.WithRegoErrorLimits(0),
 		tfscanner.ScannerWithSkipCachedModules(true),
 	}
@@ -111,7 +110,6 @@ func Test_ScanFS(t *testing.T) {
 			scanner := New(
 				rego.WithPolicyDirs(path.Join(tc.dir, "checks")),
 				rego.WithPolicyFilesystem(fs),
-				options.ScannerWithRegoOnly(true),
 				rego.WithPolicyNamespaces("user"),
 				rego.WithEmbeddedLibraries(false),
 				rego.WithEmbeddedPolicies(false),
