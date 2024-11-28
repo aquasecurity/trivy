@@ -140,6 +140,9 @@ The cache directory contains several distinct types of data:
 - [VEX Repositories](#vex-repository)
 - [Scan Cache](#scan-cache)
 
+### Asset Cache
+Downloaded assets like vulnerability databases and Java index databases.
+
 ### Scan Cache
 A caching mechanism that stores analysis results from previous scans to speed up subsequent scans.
 For container image scanning, the scan cache stores analysis results including package names and versions per layer.
