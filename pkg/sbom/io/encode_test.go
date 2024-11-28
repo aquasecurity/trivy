@@ -790,6 +790,10 @@ func TestEncoder_Encode(t *testing.T) {
 									},
 								},
 								Relationship: ftypes.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:module1:1.0.0",
+									"com.example:module2:2.0.0",
+								},
 							},
 							{
 								ID:      "com.example:module1:1.0.0",
