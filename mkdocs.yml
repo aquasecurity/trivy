@@ -200,6 +200,7 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
+          - Terminology: docs/references/terminology.md
   - Ecosystem: 
     - Overview: ecosystem/index.md
     - CI/CD: ecosystem/cicd.md
@@ -249,6 +250,7 @@ markdown_extensions:
       permalink: true
   - pymdownx.highlight
   - pymdownx.details
+  - pymdownx.magiclink
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
