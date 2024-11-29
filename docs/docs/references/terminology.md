@@ -38,7 +38,7 @@ Trivy's built-in security scanning engines. Trivy has four main scanners:
 - [License Scanner](../scanner/license.md)
 
 ### Scan Assets
-External data that Trivy downloads and uses during scanning:
+External data that Trivy downloads (if needed for scanner) and uses during scanning:
 
 - [Vulnerability Database (Trivy DB, trivy-db)](#vulnerability-database-trivy-db-trivy-db): Database containing vulnerability information
 - [Java Index Database (Trivy Java DB, trivy-java-db)](#java-index-database-trivy-java-db-trivy-java-db): Database for Java artifact identification
