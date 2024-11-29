@@ -37,6 +37,9 @@ Trivy's built-in security scanning engines. Trivy has four main scanners:
 - [Secret Scanner](../scanner/secret.md)
 - [License Scanner](../scanner/license.md)
 
+!!! note
+   SBOM is not a scanner but an output format option.
+
 ### Scan Assets
 External data that Trivy downloads (if needed for scanner) and uses during scanning:
 
