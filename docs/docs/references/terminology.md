@@ -67,7 +67,7 @@ Managed at:
 - https://github.com/aquasecurity/vuln-list-redhat
 - https://github.com/aquasecurity/vuln-list-debian
 - etc.
-- 
+
 ### Java Index Database (Trivy Java DB, trivy-java-db)
 Specialized database used for identifying Java libraries and their components during JAR/WAR/PAR/EAR scanning.
 Distributed via OCI registry.
