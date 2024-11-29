@@ -63,7 +63,6 @@ deny {
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
-	assert.False(t, results.GetFailed()[0].IsWarning())
 }
 
 func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
@@ -98,40 +97,6 @@ deny {
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
-	assert.False(t, results.GetFailed()[0].IsWarning())
-}
-
-func Test_RegoScanning_Warn(t *testing.T) {
-
-	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
-package defsec.test
-
-warn {
-    input.evil
-}
-`,
-	})
-
-	scanner := rego.NewScanner(
-		types.SourceJSON,
-		rego.WithPolicyDirs("policies"),
-	)
-	require.NoError(t, scanner.LoadPolicies(srcFS))
-
-	results, err := scanner.ScanInput(context.TODO(), rego.Input{
-		Path: "/evil.lol",
-		Contents: map[string]any{
-			"evil": true,
-		},
-	})
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-	require.Empty(t, results.GetPassed())
-	require.Empty(t, results.GetIgnored())
-
-	assert.True(t, results.GetFailed()[0].IsWarning())
 }
 
 func Test_RegoScanning_Allow(t *testing.T) {

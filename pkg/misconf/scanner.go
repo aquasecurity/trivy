@@ -477,16 +477,13 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			}
 		}
 
-		if flattened.Warning {
-			misconf.Warnings = append(misconf.Warnings, misconfResult)
-		} else {
-			switch flattened.Status {
-			case scan.StatusPassed:
-				misconf.Successes = append(misconf.Successes, misconfResult)
-			case scan.StatusFailed:
-				misconf.Failures = append(misconf.Failures, misconfResult)
-			}
+		switch flattened.Status {
+		case scan.StatusPassed:
+			misconf.Successes = append(misconf.Successes, misconfResult)
+		case scan.StatusFailed:
+			misconf.Failures = append(misconf.Failures, misconfResult)
 		}
+
 		misconfs[filePath] = misconf
 	}
 
