@@ -10,7 +10,16 @@ The cache directory includes
 The cache option is common to all scanners.
 
 ## Clear Caches
-`trivy clean` subcommand removes caches.
+`trivy clean` command removes caches. You can select which cache component to remove:
+
+| option	         | description                                                 |
+|-----------------|-------------------------------------------------------------|
+| -a/--all        | remove all caches                                           |
+| --checks-bundle | remove checks bundle                                        |
+| --java-db       | remove Java database                                        |
+| --scan-cache    | remove scan cache (container and VM image analysis results) |
+| --vex-repo      | remove VEX repositories                                     |
+| --vuln-db       | remove vulnerability database                               |
 
 ```bash
 $ trivy clean --scan-cache
@@ -25,8 +34,6 @@ $ trivy clean --scan-cache
 
 </details>
 
-If you want to delete cached vulnerability databases, use `--vuln-db`.
-You can also delete all caches with `--all`.
 See `trivy clean --help` for details.
 
 ## Cache Directory

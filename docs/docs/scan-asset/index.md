@@ -13,7 +13,7 @@ Trivy relies on the following assets:
 | Vulnerabilities DB | `trivy-db`      | CVE information collected from various feeds                        | used only for vulnerability scanning                 |
 | Java Index DB      | `trivy-java-db` | Index of Java artifacts and their hash digest                       | used to identify Java artifacts only in JAR scanning |
 | Checks Bundle      | `trivy-checks`  | Logic of misconfiguration checks                                    | used only in misconfiguration/IaC scanning           |
-| VEX Hub            | -               | Repository of Vulnerability Exploitability Exchange (VEX) documents | used for VEX processing                              |
+| VEX Hub            | `vexhub`        | Repository of Vulnerability Exploitability Exchange (VEX) documents | used for VEX processing                              |
 
 !!! note
     This is not an exhaustive list of Trivy's external connectivity requirements.
@@ -24,12 +24,12 @@ Trivy relies on the following assets:
 Each scanner in Trivy may require different scan assets.
 Assets are downloaded only when needed by the enabled scanners:
 
-| Asset            | SBOM[^1] | Vulnerability | Misconfiguration | Secret | License |
-|------------------|----------|---------------|------------------|--------|---------|
-| Vulnerability DB | -        | ✅             | -                | -      | -       |
-| Java DB          | ✅[^2]    | ✅[^2]         | -                | -      | -       |
-| Checks Bundle    | -        | -             | ✅                | -      | -       |
-| VEX Hub          | -        | ✅[^3]         | -                | -      | -       |
+| Asset            | [SBOM][sbom][^1] | [Vulnerability][vuln] | [Misconfiguration][misconfig] | [Secret][secret] | [License][license] |
+|------------------|------------------|-----------------------|-------------------------------|------------------|--------------------|
+| Vulnerability DB | -                | ✅                     | -                             | -                | -                  |
+| Java DB          | ✅[^2]            | ✅[^2]                 | -                             | -                | -                  |
+| Checks Bundle    | -                | -                     | ✅                             | -                | -                  |
+| VEX Hub          | -                | ✅[^3]                 | -                             | -                | -                  |
 
 ## Development
 
@@ -107,6 +107,12 @@ The vulnerability database is hosted on the following locations:
 | Checks Bundle    | GitHub Actions | As needed       | Every 24 hours             |
 | VEX Hub          | Git Repository | As needed       | Every 24 hours             |
 
+
+[sbom]: ../supply-chain/sbom.md
+[vuln]: ../scanner/vulnerability.md
+[misconfig]: ../scanner/misconfiguration/index.md
+[secret]: ../scanner/secret.md
+[license]: ../scanner/license.md
 
 [trivy-db]: https://github.com/aquasecurity/trivy-db
 [distribution-spec]: https://github.com/opencontainers/distribution-spec

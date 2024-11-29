@@ -37,7 +37,7 @@ GitHub Container Registry | <ul><li>`ghcr.io`</li><li>`pkg-containers.githubuser
 
 ### Self-hosting
 
-You can host Trivy's databases in your own container registry. Please refer to [Self-hosting document](./self-hosting.md#oci-databases) for a detailed guide.
+You can host Trivy's databases in your own container registry. Please refer to [Self-hosting document](../scan-asset/self-hosting.md#oci-databases) for a detailed guide.
 
 ## Embedded Checks
 
@@ -60,7 +60,7 @@ For more information about GitHub connectivity (including specific IP addresses)
 
 ### Self-hosting
 
-You can host a copy of VEX Hub on your own internal server. Please refer to the [self-hosting document](./self-hosting.md#vex-hub) for a detailed guide.
+You can host a copy of VEX Hub on your own internal server. Please refer to the [self-hosting document](../scan-asset/self-hosting.md#vex-hub) for a detailed guide.
 
 ## Maven Central / Remote Repositories
 
