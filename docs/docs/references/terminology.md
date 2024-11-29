@@ -54,7 +54,7 @@ Distributed via OCI registry.
 
 Managed at https://github.com/aquasecurity/trivy-db.
 
-The vulnerability database is built from A GitHub repository that collects and stores vulnerability information from various data sources.
+The vulnerability database is built from a GitHub repository that collects and stores vulnerability information from various data sources.
 This repository serves as the foundation for building the Trivy DB.
 
 Managed at:
