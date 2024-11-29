@@ -447,6 +447,7 @@ pkg:
   relationships:
    - unknown
    - root
+   - workspace
    - direct
    - indirect
 
