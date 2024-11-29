@@ -123,6 +123,8 @@ nav:
           - Cache: docs/configuration/cache.md
           - Databases: docs/configuration/db.md
           - Others: docs/configuration/others.md
+      - Scan Asset:
+          - Overview: docs/scan-asset/index.md
       - Supply Chain:
           - SBOM: docs/supply-chain/sbom.md
           - Attestation:
