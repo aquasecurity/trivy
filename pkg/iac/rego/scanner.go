@@ -362,9 +362,7 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 // severity is now set with metadata, so deny/warn/violation now behave the same way
 func isEnforcedRule(name string) bool {
 	switch {
-	case name == "deny", strings.HasPrefix(name, "deny_"),
-		name == "warn", strings.HasPrefix(name, "warn_"),
-		name == "violation", strings.HasPrefix(name, "violation_"):
+	case name == "deny", strings.HasPrefix(name, "deny_"):
 		return true
 	}
 	return false
