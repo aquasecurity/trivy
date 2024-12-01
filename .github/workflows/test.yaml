@@ -53,7 +53,7 @@ jobs:
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.0
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
@@ -84,7 +84,7 @@ jobs:
           cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.0
         with:
           aqua_version: v1.25.0
 
@@ -121,7 +121,7 @@ jobs:
           cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.0
         with:
           aqua_version: v1.25.0
 
@@ -142,7 +142,7 @@ jobs:
           cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.0
         with:
           aqua_version: v1.25.0
 
@@ -181,7 +181,7 @@ jobs:
           cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.0
         with:
           aqua_version: v1.25.0
 
