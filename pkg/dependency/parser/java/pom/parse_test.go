@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 var (
@@ -1356,25 +1356,25 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "com.example:root:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "com.example:module1:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
-					ID:           "com.example:module2:2.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
-					ID:      "org.example:example-api:1.7.30",
+					ID:      "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					Licenses: []string{
@@ -1385,16 +1385,16 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:module2:2.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "com.example:root:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"com.example:module1:1.0.0",
-						"com.example:module2:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
