@@ -220,7 +220,9 @@ nav:
           - Backporting: community/maintainer/backporting.md
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
-
+  - Enterprise:
+      - Comparison: commercial/compare.md
+      - Contact Us: commercial/contact.md
 theme:
   name: material
   custom_dir: docs/overrides
