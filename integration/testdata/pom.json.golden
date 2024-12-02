@@ -27,7 +27,7 @@
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
-            "UID": "d0a262c16975e41d"
+            "UID": "fd7dbd1e62564ea0"
           },
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.4",
@@ -93,7 +93,7 @@
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
-            "UID": "d0a262c16975e41d"
+            "UID": "fd7dbd1e62564ea0"
           },
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.7",

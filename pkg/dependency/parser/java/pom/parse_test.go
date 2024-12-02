@@ -1255,13 +1255,13 @@ func TestPom_Parse(t *testing.T) {
 			// But we have `root` and `workspace` relationships, so we can merge these graphs.
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:aggregation:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"com.example:module:1.1.1",
+						"3ff14136-e09f-4df9-80ea-000000000002",
 					},
 				},
 				{
-					ID: "com.example:module:1.1.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
 						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
@@ -1280,22 +1280,22 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
+					Name:         "com.example:root",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
-					Relationship: ftypes.RelationshipRoot,
-				},
-				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
-					Name:         "com.example:root",
-					Version:      "1.0.0",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
@@ -1329,6 +1329,13 @@ func TestPom_Parse(t *testing.T) {
 			//[INFO] com.example:root:pom:1.0.0
 			//[INFO] ------------------------------------------------------------------------
 			wantDeps: []ftypes.Dependency{
+				{
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
+					DependsOn: []string{
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000004",
+					},
+				},
 				{
 					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
@@ -1398,7 +1405,7 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "org.example:root:1.0.0",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
 					Name:         "org.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
@@ -1416,12 +1423,6 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
 				},
-				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
-					Name:         "org.example:root",
-					Version:      "1.0.0",
-					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
-				},
 				// as dependency
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
@@ -1432,16 +1433,16 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "3ff14136-e09f-4df9-80ea-000000000003",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"org.example:module-1:2.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
-					ID: "org.example:root:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"org.example:module-1:2.0.0",
-						"org.example:module-2:3.0.0",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -1486,16 +1487,16 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "com.example:aggregation:1.0.0",
+					ID: "3ff14136-e09f-4df9-80ea-000000000001",
 					DependsOn: []string{
-						"com.example:module1:1.1.1",
-						"com.example:module2:1.1.1",
+						"3ff14136-e09f-4df9-80ea-000000000002",
+						"3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 				{
-					ID: "com.example:module1:1.1.1",
+					ID: "3ff14136-e09f-4df9-80ea-000000000002",
 					DependsOn: []string{
-						"org.example:example-api:1.7.30",
+						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
 				},
 				{
