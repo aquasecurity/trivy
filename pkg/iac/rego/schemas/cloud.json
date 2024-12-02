@@ -1859,7 +1859,7 @@
         },
         "cpu": {
           "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
         "environment": {
           "type": "array",
@@ -1878,7 +1878,7 @@
         },
         "memory": {
           "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
         "name": {
           "type": "object",

@@ -69,10 +69,7 @@ deny[res] {
 		Severity:       "CRITICAL",
 		Terraform:      &scan.EngineMetadata{},
 		CloudFormation: &scan.EngineMetadata{},
-		CustomChecks: scan.CustomChecks{
-			Terraform: (*scan.TerraformCustomCheck)(nil),
-		},
-		RegoPackage: "data.builtin.json.lol",
+		RegoPackage:    "data.builtin.json.lol",
 		Frameworks: map[framework.Framework][]string{
 			framework.Default: {},
 		},
@@ -141,9 +138,7 @@ deny[res] {
 		Severity:       "CRITICAL",
 		Terraform:      &scan.EngineMetadata{},
 		CloudFormation: &scan.EngineMetadata{},
-		CustomChecks: scan.CustomChecks{
-			Terraform: (*scan.TerraformCustomCheck)(nil)},
-		RegoPackage: "data.builtin.yaml.lol",
+		RegoPackage:    "data.builtin.yaml.lol",
 		Frameworks: map[framework.Framework][]string{
 			framework.Default: {},
 		},
@@ -211,9 +206,7 @@ deny[res] {
 		Severity:       "CRITICAL",
 		Terraform:      &scan.EngineMetadata{},
 		CloudFormation: &scan.EngineMetadata{},
-		CustomChecks: scan.CustomChecks{
-			Terraform: (*scan.TerraformCustomCheck)(nil)},
-		RegoPackage: "data.builtin.toml.lol",
+		RegoPackage:    "data.builtin.toml.lol",
 		Frameworks: map[framework.Framework][]string{
 			framework.Default: {},
 		},

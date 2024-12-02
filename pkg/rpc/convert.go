@@ -71,6 +71,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			DependsOn:  pkg.DependsOn,
 			Digest:     pkg.Digest.String(),
 			Indirect:   pkg.Indirect,
+			Maintainer: pkg.Maintainer,
 		})
 	}
 	return rpcPkgs
@@ -226,6 +227,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			DependsOn:  pkg.DependsOn,
 			Digest:     digest.Digest(pkg.Digest),
 			Indirect:   pkg.Indirect,
+			Maintainer: pkg.Maintainer,
 		})
 	}
 	return pkgs
@@ -274,15 +276,17 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 		cvssMap := make(map[string]*common.CVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.CVSS {
 			cvssMap[string(vendor)] = &common.CVSS{
-				V2Vector: vendorSeverity.V2Vector,
-				V3Vector: vendorSeverity.V3Vector,
-				V2Score:  vendorSeverity.V2Score,
-				V3Score:  vendorSeverity.V3Score,
+				V2Vector:  vendorSeverity.V2Vector,
+				V3Vector:  vendorSeverity.V3Vector,
+				V40Vector: vendorSeverity.V40Vector,
+				V2Score:   vendorSeverity.V2Score,
+				V3Score:   vendorSeverity.V3Score,
+				V40Score:  vendorSeverity.V40Score,
 			}
 		}
-		vensorSeverityMap := make(map[string]common.Severity)
+		vendorSeverityMap := make(map[string]common.Severity)
 		for vendor, vendorSeverity := range vuln.VendorSeverity {
-			vensorSeverityMap[string(vendor)] = common.Severity(vendorSeverity)
+			vendorSeverityMap[string(vendor)] = common.Severity(vendorSeverity)
 		}
 
 		var lastModifiedDate, publishedDate *timestamppb.Timestamp
@@ -315,7 +319,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Title:              vuln.Title,
 			Description:        vuln.Description,
 			Severity:           common.Severity(severity),
-			VendorSeverity:     vensorSeverityMap,
+			VendorSeverity:     vendorSeverityMap,
 			References:         vuln.References,
 			Layer:              ConvertToRPCLayer(vuln.Layer),
 			Cvss:               cvssMap,
@@ -569,15 +573,17 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 		cvssMap := make(dbTypes.VendorCVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.Cvss {
 			cvssMap[dbTypes.SourceID(vendor)] = dbTypes.CVSS{
-				V2Vector: vendorSeverity.V2Vector,
-				V3Vector: vendorSeverity.V3Vector,
-				V2Score:  vendorSeverity.V2Score,
-				V3Score:  vendorSeverity.V3Score,
+				V2Vector:  vendorSeverity.V2Vector,
+				V3Vector:  vendorSeverity.V3Vector,
+				V40Vector: vendorSeverity.V40Vector,
+				V2Score:   vendorSeverity.V2Score,
+				V3Score:   vendorSeverity.V3Score,
+				V40Score:  vendorSeverity.V40Score,
 			}
 		}
-		vensorSeverityMap := make(dbTypes.VendorSeverity)
+		vendorSeverityMap := make(dbTypes.VendorSeverity)
 		for vendor, vendorSeverity := range vuln.VendorSeverity {
-			vensorSeverityMap[dbTypes.SourceID(vendor)] = dbTypes.Severity(vendorSeverity)
+			vendorSeverityMap[dbTypes.SourceID(vendor)] = dbTypes.Severity(vendorSeverity)
 		}
 
 		var lastModifiedDate, publishedDate *time.Time
@@ -608,7 +614,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
 				Custom:           vuln.CustomVulnData.AsInterface(),
-				VendorSeverity:   vensorSeverityMap,
+				VendorSeverity:   vendorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),

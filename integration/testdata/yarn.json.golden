@@ -26,7 +26,7 @@
           "Name": "jquery",
           "Identifier": {
             "PURL": "pkg:npm/jquery@3.2.1",
-            "UID": "c7da6fd622178ea0"
+            "UID": "eab2410537cf8504"
           },
           "Version": "3.2.1",
           "Licenses": [
@@ -49,7 +49,7 @@
           "PkgName": "jquery",
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.2.1",
-            "UID": "c7da6fd622178ea0"
+            "UID": "eab2410537cf8504"
           },
           "InstalledVersion": "3.2.1",
           "FixedVersion": "3.4.0",

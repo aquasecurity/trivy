@@ -1235,7 +1235,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:module",
 					Version:      "1.1.1",
 					Licenses:     []string{"Apache 2.0"},
-					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
@@ -1251,26 +1251,17 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
-			// maven doesn't include modules in dep tree of root pom
-			// for modules uses separate graph:
-			// ➜ mvn dependency:tree
-			// [INFO] --------------------------------[ jar ]---------------------------------
-			// [INFO]
-			// [INFO] --- dependency:3.6.0:tree (default-cli) @ module ---
-			// [INFO] com.example:module:jar:1.1.1
-			// [INFO] \- org.example:example-dependency:jar:1.2.3:compile
-			// [INFO]    \- org.example:example-api:jar:2.0.0:compile
-			// [INFO]
-			// [INFO] ----------------------< com.example:aggregation >-----------------------
-			// [INFO] Building aggregation 1.0.0                                         [2/2]
-			// [INFO]   from pom.xml
-			// [INFO] --------------------------------[ pom ]---------------------------------
-			// [INFO]
-			// [INFO] --- dependency:3.6.0:tree (default-cli) @ aggregation ---
-			// [INFO] com.example:aggregation:pom:1.0.0
+			// `mvn` doesn't include modules in dep tree of root pom and builds separate graphs.
+			// But we have `root` and `workspace` relationships, so we can merge these graphs.
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "3ff14136-e09f-4df9-80ea-000000000002",
+					ID: "com.example:aggregation:1.0.0",
+					DependsOn: []string{
+						"com.example:module:1.1.1",
+					},
+				},
+				{
+					ID: "com.example:module:1.1.1",
 					DependsOn: []string{
 						"3ff14136-e09f-4df9-80ea-000000000003",
 					},
@@ -1353,22 +1344,77 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "nested modules",
+			inputFile: filepath.Join("testdata", "nested-modules", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:root:1.0.0",
+					Name:         "com.example:root",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "com.example:module1:1.0.0",
+					Name:         "com.example:module1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+				},
+				{
+					ID:           "com.example:module2:2.0.0",
+					Name:         "com.example:module2",
+					Version:      "2.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+				},
+				{
+					ID:      "org.example:example-api:1.7.30",
+					Name:    "org.example:example-api",
+					Version: "1.7.30",
+					Licenses: []string{
+						"The Apache Software License, Version 2.0",
+					},
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:module2:2.0.0",
+					DependsOn: []string{
+						"org.example:example-api:1.7.30",
+					},
+				},
+				{
+					ID: "com.example:root:1.0.0",
+					DependsOn: []string{
+						"com.example:module1:1.0.0",
+						"com.example:module2:2.0.0",
+					},
+				},
+			},
+		},
+		{
 			name:      "Infinity loop for modules",
 			inputFile: filepath.Join("testdata", "modules-infinity-loop", "pom.xml"),
 			local:     true,
 			want: []ftypes.Package{
+				{
+					ID:           "org.example:root:1.0.0",
+					Name:         "org.example:root",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
 				// as module
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:module-1",
 					Version:      "2.0.0",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
 					Name:         "org.example:module-2",
 					Version:      "3.0.0",
-					Relationship: ftypes.RelationshipRoot, // TODO: Several root modules break SBOM relationships
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
@@ -1388,7 +1434,14 @@ func TestPom_Parse(t *testing.T) {
 				{
 					ID: "3ff14136-e09f-4df9-80ea-000000000003",
 					DependsOn: []string{
-						"3ff14136-e09f-4df9-80ea-000000000004",
+						"org.example:module-1:2.0.0",
+					},
+				},
+				{
+					ID: "org.example:root:1.0.0",
+					DependsOn: []string{
+						"org.example:module-1:2.0.0",
+						"org.example:module-2:3.0.0",
 					},
 				},
 			},
@@ -1408,13 +1461,13 @@ func TestPom_Parse(t *testing.T) {
 					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "com.example:module1",
 					Version:      "1.1.1",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
 					Name:         "com.example:module2",
 					Version:      "1.1.1",
-					Relationship: ftypes.RelationshipRoot,
+					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
 					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
@@ -1433,9 +1486,16 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "3ff14136-e09f-4df9-80ea-000000000002",
+					ID: "com.example:aggregation:1.0.0",
 					DependsOn: []string{
-						"3ff14136-e09f-4df9-80ea-000000000003",
+						"com.example:module1:1.1.1",
+						"com.example:module2:1.1.1",
+					},
+				},
+				{
+					ID: "com.example:module1:1.1.1",
+					DependsOn: []string{
+						"org.example:example-api:1.7.30",
 					},
 				},
 				{

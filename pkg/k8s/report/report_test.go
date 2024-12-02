@@ -118,6 +118,58 @@ var (
 			},
 		},
 	}
+	deployOrionWithThirdVulns = Resource{
+		Namespace: "default",
+		Kind:      "Deploy",
+		Name:      "orion",
+		Metadata: []types.Metadata{
+			{
+				ImageID: "123",
+				RepoTags: []string{
+					"alpine:3.14",
+				},
+				RepoDigests: []string{
+					"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+			},
+		},
+		Results: types.Results{
+			{},
+			{},
+			{
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2022-1111",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "LOW"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-2222",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-3333",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "HIGH"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-4444",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "CRITICAL"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-5555",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "UNKNOWN"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-6666",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "CRITICAL"},
+					},
+					{
+						VulnerabilityID: "CVE-2022-7777",
+						Vulnerability:   dbTypes.Vulnerability{Severity: "MEDIUM"},
+					},
+				},
+			},
+		},
+	}
 
 	orionDeployWithAnotherMisconfig = Resource{
 		Namespace: "default",
@@ -493,6 +545,17 @@ func TestReport_consolidate(t *testing.T) {
 			},
 		},
 		{
+			name: "report with vulnerabilities in the third result",
+			report: Report{
+				Resources: []Resource{
+					deployOrionWithThirdVulns,
+				},
+			},
+			expectedFindings: map[string]Resource{
+				"default/deploy/orion": deployOrionWithThirdVulns,
+			},
+		},
+		{
 			name: "report with misconfigs in image and pod",
 			report: Report{
 				Resources: []Resource{
@@ -521,6 +584,11 @@ func TestReport_consolidate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			consolidateReport := tt.report.consolidate()
+
+			if len(consolidateReport.Findings) != len(tt.expectedFindings) {
+				t.Errorf("expected %d findings, got %d", len(tt.expectedFindings), len(consolidateReport.Findings))
+			}
+
 			for _, f := range consolidateReport.Findings {
 				key := f.fullname()
 

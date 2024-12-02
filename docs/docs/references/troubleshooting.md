@@ -269,4 +269,4 @@ $ trivy clean --all
 
 [air-gapped]: ../advanced/air-gap.md
 [network]: ../advanced/air-gap.md#network-requirements
-[redis-cache]: ../../vulnerability/examples/cache/#cache-backend
+[redis-cache]: ../configuration/cache.md#redis

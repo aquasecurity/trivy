@@ -66,10 +66,16 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "multiple repos",
 			fields: fields{
-				SkipDBUpdate:     true,
-				DownloadDBOnly:   false,
-				DBRepository:     []string{"ghcr.io/aquasecurity/trivy-db:2", "gallery.ecr.aws/aquasecurity/trivy-db:2"},
-				JavaDBRepository: []string{"ghcr.io/aquasecurity/trivy-java-db:1", "gallery.ecr.aws/aquasecurity/trivy-java-db:1"},
+				SkipDBUpdate:   true,
+				DownloadDBOnly: false,
+				DBRepository: []string{
+					"mirror.gcr.io/aquasec/trivy-db:2",
+					"ghcr.io/aquasecurity/trivy-db:2",
+				},
+				JavaDBRepository: []string{
+					"mirror.gcr.io/aquasec/trivy-java-db:1",
+					"ghcr.io/aquasecurity/trivy-java-db:1",
+				},
 			},
 			want: flag.DBOptions{
 				SkipDBUpdate:       true,

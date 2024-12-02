@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 func Test_ScanRemoteModule(t *testing.T) {
@@ -24,32 +24,13 @@ module "s3_bucket" {
   bucket = "my-s3-bucket"
 }
 `,
-		"/rules/bucket_name.rego": `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}`,
 	})
 
 	scanner := New(
-		rego.WithPolicyFilesystem(fs),
-		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedPolicies(false),
 		rego.WithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
 	)
@@ -81,32 +62,13 @@ module "s3_bucket" {
   bucket = var.bucket
 }
 `,
-		"rules/bucket_name.rego": `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}`,
 	})
 
 	scanner := New(
-		rego.WithPolicyFilesystem(fs),
-		rego.WithPolicyDirs("rules"),
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedPolicies(false),
 		rego.WithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
 	)
@@ -149,7 +111,6 @@ deny[cause] {
 		scanner := New(
 			ScannerWithSkipCachedModules(true),
 			rego.WithPolicyDirs("rules"),
-			options.ScannerWithRegoOnly(true),
 			rego.WithEmbeddedPolicies(false),
 			rego.WithEmbeddedLibraries(true),
 		)
@@ -165,7 +126,6 @@ deny[cause] {
 			ScannerWithSkipDownloaded(true),
 			ScannerWithSkipCachedModules(true),
 			rego.WithPolicyDirs("rules"),
-			options.ScannerWithRegoOnly(true),
 			rego.WithEmbeddedPolicies(false),
 			rego.WithEmbeddedLibraries(true),
 		)
@@ -219,7 +179,6 @@ deny[res] {
 		ScannerWithSkipDownloaded(true),
 		ScannerWithSkipCachedModules(true),
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(true),
 		rego.WithEmbeddedPolicies(false),
 	)

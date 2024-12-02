@@ -1,41 +1,33 @@
 package executor
 
 import (
+	"context"
 	"fmt"
-	"runtime"
 	"sort"
 
-	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 
 	adapter "github.com/aquasecurity/trivy/pkg/iac/adapters/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	ruleTypes "github.com/aquasecurity/trivy/pkg/iac/types/rules"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Executor scans HCL blocks by running all registered rules against them
 type Executor struct {
-	workspaceName           string
-	logger                  *log.Logger
-	resultsFilters          []func(scan.Results) scan.Results
-	regoScanner             *rego.Scanner
-	regoOnly                bool
-	includeDeprecatedChecks bool
-	frameworks              []framework.Framework
+	workspaceName  string
+	logger         *log.Logger
+	resultsFilters []func(scan.Results) scan.Results
+	regoScanner    *rego.Scanner
 }
 
 // New creates a new Executor
 func New(options ...Option) *Executor {
 	s := &Executor{
-		regoOnly: false,
-		logger:   log.WithPrefix("terraform executor"),
+		logger: log.WithPrefix("terraform executor"),
 	}
 	for _, option := range options {
 		option(s)
@@ -43,31 +35,16 @@ func New(options ...Option) *Executor {
 	return s
 }
 
-func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
+func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, basePath string) (scan.Results, error) {
 
 	e.logger.Debug("Adapting modules...")
 	infra := adapter.Adapt(modules)
 	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))
 
-	threads := runtime.NumCPU()
-	if threads > 1 {
-		threads--
-	}
-
-	e.logger.Debug("Using max routines", log.Int("count", threads))
-
-	registeredRules := lo.Filter(rules.GetRegistered(e.frameworks...), func(r ruleTypes.RegisteredRule, _ int) bool {
-		if !e.includeDeprecatedChecks && r.Deprecated {
-			return false // skip deprecated checks
-		}
-
-		return true
+	results, err := e.regoScanner.ScanInput(ctx, rego.Input{
+		Contents: infra.ToRego(),
+		Path:     basePath,
 	})
-	e.logger.Debug("Initialized Go check(s).", log.Int("count", len(registeredRules)))
-
-	pool := NewPool(threads, registeredRules, modules, infra, e.regoScanner, e.regoOnly)
-
-	results, err := pool.Run()
 	if err != nil {
 		return nil, err
 	}

@@ -266,7 +266,7 @@ func (e *evaluator) expandBlocks(blocks terraform.Blocks) terraform.Blocks {
 func (e *evaluator) expandDynamicBlocks(blocks ...*terraform.Block) terraform.Blocks {
 	for _, b := range blocks {
 		if err := b.ExpandBlock(); err != nil {
-			e.logger.Error(`Failed to expand dynamic block.`,
+			e.logger.Debug(`Failed to expand dynamic block.`,
 				log.String("block", b.FullName()), log.Err(err))
 		}
 	}
@@ -297,7 +297,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 		forEachVal := forEachAttr.Value()
 
 		if forEachVal.IsNull() || !forEachVal.IsKnown() || !forEachAttr.IsIterable() {
-			e.logger.Error(`Failed to expand block. Invalid "for-each" argument. Must be known and iterable.`,
+			e.logger.Debug(`Failed to expand block. Invalid "for-each" argument. Must be known and iterable.`,
 				log.String("block", block.FullName()),
 				log.String("value", forEachVal.GoString()),
 			)
@@ -314,7 +314,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 			// instances are identified by a map key (or set member) from the value provided to for_each
 			idx, err := convert.Convert(key, cty.String)
 			if err != nil {
-				e.logger.Error(
+				e.logger.Debug(
 					`Failed to expand block. Invalid "for-each" argument: map key (or set value) is not a string`,
 					log.String("block", block.FullName()),
 					log.String("key", key.GoString()),
@@ -331,7 +331,7 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 				!forEachVal.Type().IsMapType() {
 				stringVal, err := convert.Convert(val, cty.String)
 				if err != nil {
-					e.logger.Error(
+					e.logger.Debug(
 						"Failed to expand block. Invalid 'for-each' argument: value is not a string",
 						log.String("block", block.FullName()),
 						log.String("key", idx.AsString()),
@@ -471,7 +471,7 @@ func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 
 	var val cty.Value
 
-	if override, exists := e.inputVars[b.Label()]; exists {
+	if override, exists := e.inputVars[b.Label()]; exists && override.Type() != cty.NilType {
 		val = override
 	} else if def, exists := attributes["default"]; exists {
 		val = def.NullableValue()

@@ -15,13 +15,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/samber/lo"
-
-	"github.com/containerd/containerd"
-	"github.com/containerd/containerd/images"
-	"github.com/containerd/containerd/namespaces"
+	"github.com/containerd/containerd/v2/client"
+	"github.com/containerd/containerd/v2/core/images"
+	"github.com/containerd/containerd/v2/pkg/namespaces"
 	dockercontainer "github.com/docker/docker/api/types/container"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -37,7 +36,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func setupContainerd(t *testing.T, ctx context.Context, namespace string) *containerd.Client {
+func setupContainerd(t *testing.T, ctx context.Context, namespace string) *client.Client {
 	t.Helper()
 	tmpDir := t.TempDir()
 
@@ -54,9 +53,9 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 	startContainerd(t, ctx, tmpDir)
 
 	// Retry up to 3 times until containerd is ready
-	var client *containerd.Client
+	var c *client.Client
 	iteration, _, err := lo.AttemptWhileWithDelay(3, 1*time.Second, func(int, time.Duration) (error, bool) {
-		client, err = containerd.New(socketPath)
+		c, err = client.New(socketPath)
 		if err != nil {
 			if !errors.Is(err, os.ErrPermission) {
 				return err, false // unexpected error
@@ -64,13 +63,13 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 			return err, true
 		}
 		t.Cleanup(func() {
-			require.NoError(t, client.Close())
+			require.NoError(t, c.Close())
 		})
 		return nil, false
 	})
 	require.NoErrorf(t, err, "attempted %d times ", iteration)
 
-	return client
+	return c
 }
 
 func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
@@ -102,6 +101,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 		Started:          true,
 	})
 	require.NoError(t, err)
+	testcontainers.CleanupContainer(t, containerdC)
 
 	_, _, err = containerdC.Exec(ctx, []string{
 		"chmod",
@@ -109,10 +109,6 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 		"/run/containerd/containerd.sock",
 	})
 	require.NoError(t, err)
-
-	t.Cleanup(func() {
-		require.NoError(t, containerdC.Terminate(ctx))
-	})
 }
 
 // Each of these tests imports an image and tags it with the name found in the

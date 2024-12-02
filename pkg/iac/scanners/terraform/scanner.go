@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -36,18 +35,6 @@ type Scanner struct {
 	forceAllDirs bool
 	regoScanner  *rego.Scanner
 	execLock     sync.RWMutex
-}
-
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithIncludeDeprecatedChecks(b))
-}
-
-func (s *Scanner) SetRegoOnly(regoOnly bool) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoOnly(regoOnly))
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.executorOpt = append(s.executorOpt, executor.OptionWithFrameworks(frameworks...))
 }
 
 func (s *Scanner) Name() string {
@@ -158,7 +145,7 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 		s.execLock.RLock()
 		e := executor.New(s.executorOpt...)
 		s.execLock.RUnlock()
-		results, err := e.Execute(module.childs)
+		results, err := e.Execute(ctx, module.childs, module.rootPath)
 		if err != nil {
 			return nil, err
 		}
