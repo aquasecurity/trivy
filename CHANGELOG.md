@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.58.0](https://github.com/aquasecurity/trivy/compare/v0.57.0...v0.58.0) (2024-12-02)
+
+
+### Features
+
+* add `workspaceRelationship` ([#7889](https://github.com/aquasecurity/trivy/issues/7889)) ([d622ca2](https://github.com/aquasecurity/trivy/commit/d622ca2b1fe40a0eb588478ba9e15d3bd8471a78))
+* add cvss v4 score and vector in scan response ([#7968](https://github.com/aquasecurity/trivy/issues/7968)) ([e0f2054](https://github.com/aquasecurity/trivy/commit/e0f2054f9d12dce87e8a0226350f6317f7167195))
+* **go:** construct dependencies in the parser ([#7973](https://github.com/aquasecurity/trivy/issues/7973)) ([bcdc0bb](https://github.com/aquasecurity/trivy/commit/bcdc0bbf1f63777ff79d3ecadb8d4f916f376b7d))
+* **go:** construct dependencies of `go.mod` main module in the parser ([#7977](https://github.com/aquasecurity/trivy/issues/7977)) ([5448ba2](https://github.com/aquasecurity/trivy/commit/5448ba2a5c1ee36cbcf74ee1c2e83409092c5715))
+* **k8s:** add default commands for unknown platform ([#7863](https://github.com/aquasecurity/trivy/issues/7863)) ([b1c7f55](https://github.com/aquasecurity/trivy/commit/b1c7f5516fc39c6cbb76cbeae5c8677ccc9ce5dd))
+* **misconf:** log causes of HCL file parsing errors ([#7634](https://github.com/aquasecurity/trivy/issues/7634)) ([e9a899a](https://github.com/aquasecurity/trivy/commit/e9a899a3cfe41a622202808a0241b7f40b54d338))
+* **oracle:** add `flavors` support ([#7858](https://github.com/aquasecurity/trivy/issues/7858)) ([b9b383e](https://github.com/aquasecurity/trivy/commit/b9b383eb2714e88357af75900c856db2900b83ec))
+* **secret:** Add built-in secrets rules for Private Packagist ([#7826](https://github.com/aquasecurity/trivy/issues/7826)) ([132d9df](https://github.com/aquasecurity/trivy/commit/132d9dfa19a8835c94f332c6939ab7f64641ee5f))
+* **suse:** Align SUSE/OpenSUSE OS Identifiers ([#7965](https://github.com/aquasecurity/trivy/issues/7965)) ([45d3b40](https://github.com/aquasecurity/trivy/commit/45d3b40044202dec91384847ce2b50a7271f5977))
+* Update registry fallbacks ([#7679](https://github.com/aquasecurity/trivy/issues/7679)) ([5ba9a83](https://github.com/aquasecurity/trivy/commit/5ba9a83a447c4f9e577ae6235c315df71f50b452))
+
+
+### Bug Fixes
+
+* **alpine:** add `UID` for removed packages ([#7887](https://github.com/aquasecurity/trivy/issues/7887)) ([07915da](https://github.com/aquasecurity/trivy/commit/07915da4816d4d9ec8a6c5e4cba17be2a0f4ad65))
+* **aws:** change CPU and Memory type of ContainerDefinition to a string ([#7995](https://github.com/aquasecurity/trivy/issues/7995)) ([aeeba70](https://github.com/aquasecurity/trivy/commit/aeeba70d15c11443d9fe7c26f90fc7d9dcc7f92c))
+* **cli:** Handle empty ignore files more gracefully ([#7962](https://github.com/aquasecurity/trivy/issues/7962)) ([4cfb2a9](https://github.com/aquasecurity/trivy/commit/4cfb2a97b27923182ab45c178544542ec65981d4))
+* **debian:** infinite loop ([#7928](https://github.com/aquasecurity/trivy/issues/7928)) ([d982e6a](https://github.com/aquasecurity/trivy/commit/d982e6ab89967629f71ec09100cdc61e30a27c63))
+* **fs:** add missing defered Cleanup() call to post analyzer fs ([#7882](https://github.com/aquasecurity/trivy/issues/7882)) ([ab32297](https://github.com/aquasecurity/trivy/commit/ab32297e0a8220a427fa330025f8625281e02275))
+* Improve version comparisons when build identifiers are present ([#7873](https://github.com/aquasecurity/trivy/issues/7873)) ([eda4d76](https://github.com/aquasecurity/trivy/commit/eda4d7660d8908705bc08a6edc55d8144d02806a))
+* **k8s:** check all results for vulnerabilities ([#7946](https://github.com/aquasecurity/trivy/issues/7946)) ([797b36f](https://github.com/aquasecurity/trivy/commit/797b36fbad90b8e7f04e16e2cf08d6bdc0255ac7))
+* **misconf:** do not erase variable type for child modules ([#7941](https://github.com/aquasecurity/trivy/issues/7941)) ([de3b7ea](https://github.com/aquasecurity/trivy/commit/de3b7ea24c282bce22ce9cacb49a43d8d90e2bde))
+* **misconf:** handle null properties in CloudFormation templates ([#7813](https://github.com/aquasecurity/trivy/issues/7813)) ([99b2db3](https://github.com/aquasecurity/trivy/commit/99b2db3978562689cef956a71281abb84ff0ce47))
+* **misconf:** load full Terraform module ([#7925](https://github.com/aquasecurity/trivy/issues/7925)) ([fbc42a0](https://github.com/aquasecurity/trivy/commit/fbc42a04ea24e2246f81491434a965846d55ed69))
+* **misconf:** properly resolve local Terraform cache ([#7983](https://github.com/aquasecurity/trivy/issues/7983)) ([fe3a897](https://github.com/aquasecurity/trivy/commit/fe3a8971b6697d896c1ec30b5326a10c20349d14))
+* **misconf:** Update trivy-checks default repo to `mirror.gcr.io` ([#7953](https://github.com/aquasecurity/trivy/issues/7953)) ([9988147](https://github.com/aquasecurity/trivy/commit/9988147b8b0e463464fe494122bfcc66ccdf04e0))
+* **misconf:** wrap AWS EnvVar to iac types ([#7407](https://github.com/aquasecurity/trivy/issues/7407)) ([54130dc](https://github.com/aquasecurity/trivy/commit/54130dcc1d775506d34b83a558952176fc549914))
+* **redhat:** don't return error if `root/buildinfo/content_manifests/` contains files that are not `contentSets` files ([#7912](https://github.com/aquasecurity/trivy/issues/7912)) ([38775a5](https://github.com/aquasecurity/trivy/commit/38775a5ed985eefe2b410e72407c454cdad3d075))
+* **report:** handle `git@github.com` schema for misconfigs in `sarif` report ([#7898](https://github.com/aquasecurity/trivy/issues/7898)) ([19aea4b](https://github.com/aquasecurity/trivy/commit/19aea4b01f3ce5a3cd05d5a1091da5b0b3ba4af6))
+* **sbom:** Fixes for Programming Language Vulnerabilities and SBOM Package Maintainer Details ([#7871](https://github.com/aquasecurity/trivy/issues/7871)) ([461a68a](https://github.com/aquasecurity/trivy/commit/461a68afd60b77dd67e91047b3b4d558fa5bd2ec))
+* **terraform:** set null value as fallback for missing variables ([#7669](https://github.com/aquasecurity/trivy/issues/7669)) ([611558e](https://github.com/aquasecurity/trivy/commit/611558e4ce61818330118684274534f26b1fda99))
+
 ## [0.57.0](https://github.com/aquasecurity/trivy/compare/v0.56.0...v0.57.0) (2024-10-31)
 
 
