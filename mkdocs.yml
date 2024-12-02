@@ -271,6 +271,9 @@ extra:
       link: https://github.com/aquasecurity/trivy
     - icon: fontawesome/brands/slack
       link: https://github.com/aquasecurity/trivy
+  analytics:
+    provider: google
+    property: G-V9LJGFH7GX
 
 plugins:
   - search
