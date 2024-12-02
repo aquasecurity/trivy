@@ -249,7 +249,7 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
 		{
-			name: "scan pox.xml with repo command in client/server mode",
+			name: "scan pom.xml with repo command in client/server mode",
 			args: csArgs{
 				Command:          "repo",
 				RemoteAddrOption: "--server",
@@ -302,6 +302,7 @@ func TestClientServer(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: overrideFuncs(overrideUID, tt.override),
 			})
 		})
