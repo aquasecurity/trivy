@@ -1,0 +1,109 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: 'Release version without the "v" prefix (e.g., 0.51.0)'
+        type: string
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.event.head_commit.message, 'release:') && !github.event.inputs.version }}
+    steps:
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.ORG_REPO_TOKEN }}
+          target-branch: ${{ github.ref_name }}
+
+  manual-release-please:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.version }}
+    steps:
+      - name: Install Release Please CLI
+        run: npm install release-please -g
+
+      - name: Release Please
+        run: |
+          release-please release-pr --repo-url=${{ github.server_url }}/${{ github.repository }} \
+            --token=${{ secrets.ORG_REPO_TOKEN }} \
+            --release-as=${{ github.event.inputs.version }} \
+            --target-branch=${{ github.ref_name }}
+
+  release-tag:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
+    steps:
+      # Since skip-github-release is specified, the outputs of googleapis/release-please-action cannot be used.
+      # Therefore, we need to parse the version ourselves.
+      - name: Extract version and PR number from commit message
+        id: extract_info
+        shell: bash
+        run: |
+          echo "version=$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "pr_number=$( echo "${{ github.event.head_commit.message }}" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "release_branch=release/v$( echo "${{ github.event.head_commit.message }}" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+
+      - name: Tag release
+        if: ${{ steps.extract_info.outputs.version }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_REPO_TOKEN }} # To trigger another workflow
+          script: |
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/v${{ steps.extract_info.outputs.version }}`,
+              sha: context.sha
+            });
+
+      # When v0.50.0 is released, a release branch "release/v0.50" is created.
+      - name: Create release branch for patch versions
+        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
+          script: |
+            const releaseBranch = '${{ steps.extract_info.outputs.release_branch }}';
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/heads/${releaseBranch}`,
+              sha: context.sha
+            });
+      
+
+      # Add release branch to rulesets to enable merge queue
+      - name: Add release branch to rulesets
+        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        shell: bash
+        run: |
+          RULESET_ID=$(gh api /repos/${{ github.repository }}/rulesets --jq '.[] | select(.name=="release") | .id')
+          gh api /repos/${{ github.repository }}/rulesets/$RULESET_ID | jq '{conditions}' | jq '.conditions.ref_name.include += ["refs/heads/${{ steps.extract_info.outputs.release_branch }}"]' | gh api --method put --input - /repos/${{ github.repository }}/rulesets/$RULESET_ID
+
+      # Since skip-github-release is specified, googleapis/release-please-action doesn't delete the label from PR.
+      # This label prevents the subsequent PRs from being created. Therefore, we need to delete it ourselves.
+      # cf. https://github.com/googleapis/release-please?tab=readme-ov-file#release-please-bot-does-not-create-a-release-pr-why
+      - name: Remove the label from PR
+        if: ${{ steps.extract_info.outputs.pr_number }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = parseInt('${{ steps.extract_info.outputs.pr_number }}', 10);
+            github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              name: 'autorelease: pending'
+            });

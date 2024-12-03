@@ -3,6 +3,7 @@ package remote
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
+	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	v1types "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -19,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
 type Descriptor = remote.Descriptor
@@ -26,7 +29,7 @@ type Descriptor = remote.Descriptor
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
-	transport, err := httpTransport(option)
+	tr, err := httpTransport(option)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
@@ -35,7 +38,7 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, ref, option) {
 		remoteOpts := []remote.Option{
-			remote.WithTransport(transport),
+			remote.WithTransport(tr),
 			authOpt,
 		}
 
@@ -71,7 +74,7 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 // Image is a wrapper of google/go-containerregistry/pkg/v1/remote.Image
 // so that it can try multiple authentication methods.
 func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
-	transport, err := httpTransport(option)
+	tr, err := httpTransport(option)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
@@ -80,7 +83,7 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, ref, option) {
 		remoteOpts := []remote.Option{
-			remote.WithTransport(transport),
+			remote.WithTransport(tr),
 			authOpt,
 		}
 		index, err := remote.Image(ref, remoteOpts...)
@@ -98,7 +101,7 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 // Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
 // so that it can try multiple authentication methods.
 func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (v1.ImageIndex, error) {
-	transport, err := httpTransport(option)
+	tr, err := httpTransport(option)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
@@ -107,7 +110,7 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, d, option) {
 		remoteOpts := []remote.Option{
-			remote.WithTransport(transport),
+			remote.WithTransport(tr),
 			authOpt,
 		}
 		index, err := remote.Referrers(d, remoteOpts...)
@@ -122,7 +125,7 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 	return nil, errs
 }
 
-func httpTransport(option types.RegistryOptions) (*http.Transport, error) {
+func httpTransport(option types.RegistryOptions) (http.RoundTripper, error) {
 	d := &net.Dialer{
 		Timeout: 10 * time.Minute,
 	}
@@ -138,7 +141,8 @@ func httpTransport(option types.RegistryOptions) (*http.Transport, error) {
 		tr.TLSClientConfig.Certificates = []tls.Certificate{cert}
 	}
 
-	return tr, nil
+	tripper := transport.NewUserAgent(tr, fmt.Sprintf("trivy/%s", app.Version()))
+	return tripper, nil
 }
 
 func authOptions(ctx context.Context, ref name.Reference, option types.RegistryOptions) []remote.Option {
@@ -185,7 +189,7 @@ func resolvePlatform(ref name.Reference, p types.Platform, options []remote.Opti
 	switch d.MediaType {
 	case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
 		// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
-		log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+		log.Debug("Ignore `--platform` as the image is not multi-arch")
 		return types.Platform{}, nil
 	case v1types.OCIImageIndex, v1types.DockerManifestList:
 		// These are expected.
@@ -201,7 +205,7 @@ func resolvePlatform(ref name.Reference, p types.Platform, options []remote.Opti
 		return types.Platform{}, xerrors.Errorf("remote index manifest error: %w", err)
 	}
 	if len(m.Manifests) == 0 {
-		log.Logger.Debug("Ignore '--platform' as the image is not multi-arch")
+		log.Debug("Ignore '--platform' as the image is not multi-arch")
 		return types.Platform{}, nil
 	}
 	if m.Manifests[0].Platform != nil {

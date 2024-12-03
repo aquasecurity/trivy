@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/dockerfile_file_pattern",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/dockerfile_file_pattern",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -20,9 +21,8 @@
       "Class": "config",
       "Type": "dockerfile",
       "MisconfSummary": {
-        "Successes": 25,
-        "Failures": 1,
-        "Exceptions": 0
+        "Successes": 27,
+        "Failures": 1
       },
       "Misconfigurations": [
         {

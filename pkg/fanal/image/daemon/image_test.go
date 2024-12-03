@@ -9,11 +9,10 @@ import (
 	"time"
 
 	dimage "github.com/docker/docker/api/types/image"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/testdocker/engine"
 )
@@ -26,7 +25,7 @@ var imagePaths = map[string]string{
 
 // for Docker
 var opt = engine.Option{
-	APIVersion: "1.38",
+	APIVersion: "1.45",
 	ImagePaths: imagePaths,
 }
 
@@ -113,7 +112,47 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 		Algorithm: "sha256",
 		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 	}, conf)
-	assert.Nil(t, err)
+	require.NoError(t, err)
+}
+
+func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("podman.sock is not available for Windows CI")
+	}
+
+	ref, err := name.ParseReference("alpine:3.11")
+	require.NoError(t, err)
+
+	eo := engine.Option{
+		APIVersion: opt.APIVersion,
+		ImagePaths: map[string]string{
+			"index.docker.io/library/alpine:3.11": "../../test/testdata/alpine-311.tar.gz",
+		},
+	}
+
+	runtimeDir, err := os.MkdirTemp("", "daemon")
+	require.NoError(t, err)
+
+	dir := filepath.Join(runtimeDir, "image")
+	err = os.MkdirAll(dir, os.ModePerm)
+	require.NoError(t, err)
+
+	podmanSocket := filepath.Join(dir, "image-test-podman-socket.sock")
+	eo.UnixDomainSocket = podmanSocket
+
+	te := engine.NewDockerEngine(eo)
+	defer te.Close()
+
+	img, cleanup, err := PodmanImage(ref.Name(), podmanSocket)
+	require.NoError(t, err)
+	defer cleanup()
+
+	conf, err := img.ConfigName()
+	assert.Equal(t, v1.Hash{
+		Algorithm: "sha256",
+		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+	}, conf)
+	require.NoError(t, err)
 }
 
 func Test_image_ConfigFile(t *testing.T) {
@@ -128,7 +167,6 @@ func Test_image_ConfigFile(t *testing.T) {
 			imageName: "alpine:3.11",
 			want: &v1.ConfigFile{
 				Architecture:  "amd64",
-				Container:     "fb71ddde5f6411a82eb056a9190f0cc1c80d7f77a8509ee90a2054428edb0024",
 				OS:            "linux",
 				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				DockerVersion: "18.09.7",

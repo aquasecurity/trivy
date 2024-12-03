@@ -1,6 +1,7 @@
 package langpkg
 
 import (
+	"context"
 	"sort"
 
 	"golang.org/x/xerrors"
@@ -12,18 +13,18 @@ import (
 )
 
 var (
-	PkgTargets = map[string]string{
-		ftypes.PythonPkg: "Python",
-		ftypes.CondaPkg:  "Conda",
-		ftypes.GemSpec:   "Ruby",
-		ftypes.NodePkg:   "Node.js",
-		ftypes.Jar:       "Java",
+	PkgTargets = map[ftypes.LangType]string{
+		ftypes.PythonPkg:   "Python",
+		ftypes.CondaPkg:    "Conda",
+		ftypes.GemSpec:     "Ruby",
+		ftypes.NodePkg:     "Node.js",
+		ftypes.Jar:         "Java",
+		ftypes.K8sUpstream: "Kubernetes",
 	}
 )
 
 type Scanner interface {
-	Packages(detail ftypes.ArtifactDetail, options types.ScanOptions) types.Results
-	Scan(detail ftypes.ArtifactDetail, options types.ScanOptions) (types.Results, error)
+	Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, error)
 }
 
 type scanner struct{}
@@ -32,71 +33,70 @@ func NewScanner() Scanner {
 	return &scanner{}
 }
 
-func (s *scanner) Packages(detail ftypes.ArtifactDetail, _ types.ScanOptions) types.Results {
-	var results types.Results
-	for _, app := range detail.Applications {
-		if len(app.Libraries) == 0 {
-			continue
-		}
-		target := app.FilePath
-		if t, ok := PkgTargets[app.Type]; ok && target == "" {
-			// When the file path is empty, we will overwrite it with the pre-defined value.
-			target = t
-		}
-
-		results = append(results, types.Result{
-			Target:   target,
-			Class:    types.ClassLangPkg,
-			Type:     app.Type,
-			Packages: app.Libraries,
-		})
-	}
-	return results
-}
-
-func (s *scanner) Scan(detail ftypes.ArtifactDetail, _ types.ScanOptions) (types.Results, error) {
-	apps := detail.Applications
-	log.Logger.Infof("Number of language-specific files: %d", len(apps))
+func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.ScanOptions) (types.Results, error) {
+	apps := target.Applications
+	log.Info("Number of language-specific files", log.Int("num", len(apps)))
 	if len(apps) == 0 {
 		return nil, nil
 	}
 
 	var results types.Results
-	printedTypes := map[string]struct{}{}
+	printedTypes := make(map[ftypes.LangType]struct{})
 	for _, app := range apps {
-		if len(app.Libraries) == 0 {
+		if len(app.Packages) == 0 {
 			continue
 		}
 
-		// Prevent the same log messages from being displayed many times for the same type.
-		if _, ok := printedTypes[app.Type]; !ok {
-			log.Logger.Infof("Detecting %s vulnerabilities...", app.Type)
-			printedTypes[app.Type] = struct{}{}
+		ctx = log.WithContextPrefix(ctx, string(app.Type))
+		result := types.Result{
+			Target: targetName(app.Type, app.FilePath),
+			Class:  types.ClassLangPkg,
+			Type:   app.Type,
 		}
 
-		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
-		vulns, err := library.Detect(app.Type, app.Libraries)
-		if err != nil {
-			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
-		} else if len(vulns) == 0 {
+		sort.Sort(app.Packages)
+		result.Packages = app.Packages
+
+		if opts.Scanners.Enabled(types.VulnerabilityScanner) {
+			var err error
+			result.Vulnerabilities, err = s.scanVulnerabilities(ctx, app, printedTypes)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if len(result.Packages) == 0 && len(result.Vulnerabilities) == 0 {
 			continue
 		}
-
-		target := app.FilePath
-		if t, ok := PkgTargets[app.Type]; ok && target == "" {
-			// When the file path is empty, we will overwrite it with the pre-defined value.
-			target = t
-		}
-
-		results = append(results, types.Result{
-			Target:          target,
-			Vulnerabilities: vulns,
-			Class:           types.ClassLangPkg,
-			Type:            app.Type,
-		})
+		results = append(results, result)
 	}
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func (s *scanner) scanVulnerabilities(ctx context.Context, app ftypes.Application, printedTypes map[ftypes.LangType]struct{}) (
+	[]types.DetectedVulnerability, error) {
+
+	// Prevent the same log messages from being displayed many times for the same type.
+	if _, ok := printedTypes[app.Type]; !ok {
+		log.InfoContext(ctx, "Detecting vulnerabilities...")
+		printedTypes[app.Type] = struct{}{}
+	}
+
+	log.DebugContext(ctx, "Scanning packages for vulnerabilities", log.FilePath(app.FilePath))
+	vulns, err := library.Detect(ctx, app.Type, app.Packages)
+	if err != nil {
+		return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
+	}
+	return vulns, err
+}
+
+func targetName(appType ftypes.LangType, filePath string) string {
+	if t, ok := PkgTargets[appType]; ok && filePath == "" {
+		// When the file path is empty, we will overwrite it with the pre-defined value.
+		return t
+	}
+	return filePath
 }

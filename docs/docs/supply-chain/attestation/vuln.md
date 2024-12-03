@@ -30,6 +30,7 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
     },
     "result": {
       "SchemaVersion": 2,
+      "CreatedAt": 1629894030,
       "ArtifactName": "alpine:3.10",
       "ArtifactType": "container_image",
       "Metadata": {
@@ -153,7 +154,7 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
 
 ### Sign with a local key pair
 
-Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
+Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys).
 
 ```bash
 $ cosign generate-key-pair
@@ -178,13 +179,14 @@ You can use Cosign to sign without keys by authenticating with an OpenID Connect
 
 ```
 $ trivy image --format cosign-vuln -o vuln.json <IMAGE>
-$ COSIGN_EXPERIMENTAL=1 cosign attest --type vuln --predicate vuln.json <IMAGE>
+$ cosign attest --type vuln --predicate vuln.json <IMAGE>
 ```
+This will provide a certificate in the output section.
 
-You can verify attestations.
+You can verify attestations:
 
 ```
-$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type vuln <IMAGE>
+$ cosign verify-attestation --certificate=path-to-the-certificate --type vuln --certificate-identity Email-used-to-sign  --certificate-oidc-issuer='the-issuer-used' <IMAGE>
 ```
 
 [vuln-attest-spec]: https://github.com/sigstore/cosign/blob/95b74db89941e8ec85e768f639efd4d948db06cd/specs/COSIGN_VULN_ATTESTATION_SPEC.md

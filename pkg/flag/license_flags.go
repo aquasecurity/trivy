@@ -2,79 +2,77 @@ package flag
 
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
 
 var (
-	LicenseFull = Flag{
+	LicenseFull = Flag[bool]{
 		Name:       "license-full",
 		ConfigName: "license.full",
-		Value:      false,
 		Usage:      "eagerly look for licenses in source code headers and license files",
 	}
-	IgnoredLicenses = Flag{
+	IgnoredLicenses = Flag[[]string]{
 		Name:       "ignored-licenses",
 		ConfigName: "license.ignored",
-		Value:      []string{},
 		Usage:      "specify a list of license to ignore",
 	}
-	LicenseConfidenceLevel = Flag{
+	LicenseConfidenceLevel = Flag[float64]{
 		Name:       "license-confidence-level",
 		ConfigName: "license.confidenceLevel",
-		Value:      0.9,
+		Default:    0.9,
 		Usage:      "specify license classifier's confidence level",
 	}
 
 	// LicenseForbidden is an option only in a config file
-	LicenseForbidden = Flag{
+	LicenseForbidden = Flag[[]string]{
 		ConfigName: "license.forbidden",
-		Value:      licensing.ForbiddenLicenses,
+		Default:    expression.ForbiddenLicenses,
 		Usage:      "forbidden licenses",
 	}
 	// LicenseRestricted is an option only in a config file
-	LicenseRestricted = Flag{
+	LicenseRestricted = Flag[[]string]{
 		ConfigName: "license.restricted",
-		Value:      licensing.RestrictedLicenses,
+		Default:    expression.RestrictedLicenses,
 		Usage:      "restricted licenses",
 	}
 	// LicenseReciprocal is an option only in a config file
-	LicenseReciprocal = Flag{
+	LicenseReciprocal = Flag[[]string]{
 		ConfigName: "license.reciprocal",
-		Value:      licensing.ReciprocalLicenses,
+		Default:    expression.ReciprocalLicenses,
 		Usage:      "reciprocal licenses",
 	}
 	// LicenseNotice is an option only in a config file
-	LicenseNotice = Flag{
+	LicenseNotice = Flag[[]string]{
 		ConfigName: "license.notice",
-		Value:      licensing.NoticeLicenses,
+		Default:    expression.NoticeLicenses,
 		Usage:      "notice licenses",
 	}
 	// LicensePermissive is an option only in a config file
-	LicensePermissive = Flag{
+	LicensePermissive = Flag[[]string]{
 		ConfigName: "license.permissive",
-		Value:      licensing.PermissiveLicenses,
+		Default:    expression.PermissiveLicenses,
 		Usage:      "permissive licenses",
 	}
 	// LicenseUnencumbered is an option only in a config file
-	LicenseUnencumbered = Flag{
+	LicenseUnencumbered = Flag[[]string]{
 		ConfigName: "license.unencumbered",
-		Value:      licensing.UnencumberedLicenses,
+		Default:    expression.UnencumberedLicenses,
 		Usage:      "unencumbered licenses",
 	}
 )
 
 type LicenseFlagGroup struct {
-	LicenseFull            *Flag
-	IgnoredLicenses        *Flag
-	LicenseConfidenceLevel *Flag
+	LicenseFull            *Flag[bool]
+	IgnoredLicenses        *Flag[[]string]
+	LicenseConfidenceLevel *Flag[float64]
 
 	// License Categories
-	LicenseForbidden    *Flag // mapped to CRITICAL
-	LicenseRestricted   *Flag // mapped to HIGH
-	LicenseReciprocal   *Flag // mapped to MEDIUM
-	LicenseNotice       *Flag // mapped to LOW
-	LicensePermissive   *Flag // mapped to LOW
-	LicenseUnencumbered *Flag // mapped to LOW
+	LicenseForbidden    *Flag[[]string] // mapped to CRITICAL
+	LicenseRestricted   *Flag[[]string] // mapped to HIGH
+	LicenseReciprocal   *Flag[[]string] // mapped to MEDIUM
+	LicenseNotice       *Flag[[]string] // mapped to LOW
+	LicensePermissive   *Flag[[]string] // mapped to LOW
+	LicenseUnencumbered *Flag[[]string] // mapped to LOW
 }
 
 type LicenseOptions struct {
@@ -87,15 +85,15 @@ type LicenseOptions struct {
 
 func NewLicenseFlagGroup() *LicenseFlagGroup {
 	return &LicenseFlagGroup{
-		LicenseFull:            &LicenseFull,
-		IgnoredLicenses:        &IgnoredLicenses,
-		LicenseConfidenceLevel: &LicenseConfidenceLevel,
-		LicenseForbidden:       &LicenseForbidden,
-		LicenseRestricted:      &LicenseRestricted,
-		LicenseReciprocal:      &LicenseReciprocal,
-		LicenseNotice:          &LicenseNotice,
-		LicensePermissive:      &LicensePermissive,
-		LicenseUnencumbered:    &LicenseUnencumbered,
+		LicenseFull:            LicenseFull.Clone(),
+		IgnoredLicenses:        IgnoredLicenses.Clone(),
+		LicenseConfidenceLevel: LicenseConfidenceLevel.Clone(),
+		LicenseForbidden:       LicenseForbidden.Clone(),
+		LicenseRestricted:      LicenseRestricted.Clone(),
+		LicenseReciprocal:      LicenseReciprocal.Clone(),
+		LicenseNotice:          LicenseNotice.Clone(),
+		LicensePermissive:      LicensePermissive.Clone(),
+		LicenseUnencumbered:    LicenseUnencumbered.Clone(),
 	}
 }
 
@@ -103,24 +101,37 @@ func (f *LicenseFlagGroup) Name() string {
 	return "License"
 }
 
-func (f *LicenseFlagGroup) Flags() []*Flag {
-	return []*Flag{f.LicenseFull, f.IgnoredLicenses, f.LicenseForbidden, f.LicenseRestricted, f.LicenseReciprocal,
-		f.LicenseNotice, f.LicensePermissive, f.LicenseUnencumbered, f.LicenseConfidenceLevel}
+func (f *LicenseFlagGroup) Flags() []Flagger {
+	return []Flagger{
+		f.LicenseFull,
+		f.IgnoredLicenses,
+		f.LicenseForbidden,
+		f.LicenseRestricted,
+		f.LicenseReciprocal,
+		f.LicenseNotice,
+		f.LicensePermissive,
+		f.LicenseUnencumbered,
+		f.LicenseConfidenceLevel,
+	}
 }
 
-func (f *LicenseFlagGroup) ToOptions() LicenseOptions {
-	licenseCategories := map[types.LicenseCategory][]string{}
-	licenseCategories[types.CategoryForbidden] = getStringSlice(f.LicenseForbidden)
-	licenseCategories[types.CategoryRestricted] = getStringSlice(f.LicenseRestricted)
-	licenseCategories[types.CategoryReciprocal] = getStringSlice(f.LicenseReciprocal)
-	licenseCategories[types.CategoryNotice] = getStringSlice(f.LicenseNotice)
-	licenseCategories[types.CategoryPermissive] = getStringSlice(f.LicensePermissive)
-	licenseCategories[types.CategoryUnencumbered] = getStringSlice(f.LicenseUnencumbered)
+func (f *LicenseFlagGroup) ToOptions() (LicenseOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return LicenseOptions{}, err
+	}
+
+	licenseCategories := make(map[types.LicenseCategory][]string)
+	licenseCategories[types.CategoryForbidden] = f.LicenseForbidden.Value()
+	licenseCategories[types.CategoryRestricted] = f.LicenseRestricted.Value()
+	licenseCategories[types.CategoryReciprocal] = f.LicenseReciprocal.Value()
+	licenseCategories[types.CategoryNotice] = f.LicenseNotice.Value()
+	licenseCategories[types.CategoryPermissive] = f.LicensePermissive.Value()
+	licenseCategories[types.CategoryUnencumbered] = f.LicenseUnencumbered.Value()
 
 	return LicenseOptions{
-		LicenseFull:            getBool(f.LicenseFull),
-		IgnoredLicenses:        getStringSlice(f.IgnoredLicenses),
-		LicenseConfidenceLevel: getFloat(f.LicenseConfidenceLevel),
+		LicenseFull:            f.LicenseFull.Value(),
+		IgnoredLicenses:        f.IgnoredLicenses.Value(),
+		LicenseConfidenceLevel: f.LicenseConfidenceLevel.Value(),
 		LicenseCategories:      licenseCategories,
-	}
+	}, nil
 }

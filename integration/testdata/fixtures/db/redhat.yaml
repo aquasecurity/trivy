@@ -18,6 +18,7 @@
                   - Severity: 1.0
                 Arches:
                   - x86_64
+                Status: 5
     - bucket: openssl
       pairs:
         - key: RHSA-2019:2304
@@ -73,3 +74,4 @@
                   - 858
                 Cves:
                   - Severity: 2.0
+                Status: 7

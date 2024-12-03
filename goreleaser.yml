@@ -1,17 +1,21 @@
+version: 2
+
 project_name: trivy
 builds:
   - id: build-linux
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
       - linux
     goarch:
+      - 386
+      - arm
       - amd64
       - arm64
       - s390x
@@ -19,26 +23,27 @@ builds:
     goarm:
       - 7
   - id: build-bsd
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
       - freebsd
     goarch:
       # modernc.org/sqlite doesn't support freebsd/arm64, etc.
+      - 386
       - amd64
   - id: build-macos
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -49,17 +54,18 @@ builds:
     goarm:
       - 7
   - id: build-windows
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
       - windows
     goarch:
+      # modernc.org/sqlite doesn't support windows/386 and windows/arm, etc.
       - amd64
     goarm:
       - 7
@@ -88,6 +94,7 @@ nfpms:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- title .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
@@ -112,6 +119,7 @@ archives:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
@@ -127,7 +135,7 @@ archives:
 
 brews:
   -
-    tap:
+    repository:
       owner: aquasecurity
       name: homebrew-trivy
     homepage: "https://github.com/aquasecurity/trivy"

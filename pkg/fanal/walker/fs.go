@@ -1,118 +1,161 @@
 package walker
 
 import (
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
-	swalker "github.com/saracen/walker"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type ErrorCallback func(pathname string, err error) error
+// FS is the filesystem walker
+type FS struct{}
 
-type FS struct {
-	walker
-	errCallback ErrorCallback
+func NewFS() *FS {
+	return &FS{}
 }
 
-func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) FS {
-	if errCallback == nil {
-		errCallback = func(pathname string, err error) error {
-			// ignore permission errors
-			if os.IsPermission(err) {
-				return nil
-			}
-			// halt traversal on any other error
-			return xerrors.Errorf("unknown error with %s: %w", pathname, err)
+// Walk walks the filesystem rooted at root, calling fn for each unfiltered file.
+func (w *FS) Walk(root string, opt Option, fn WalkFunc) error {
+	opt.SkipFiles = w.BuildSkipPaths(root, opt.SkipFiles)
+	opt.SkipDirs = w.BuildSkipPaths(root, opt.SkipDirs)
+	opt.SkipDirs = append(opt.SkipDirs, defaultSkipDirs...)
+
+	walkDirFunc := w.WalkDirFunc(root, fn, opt)
+	walkDirFunc = w.onError(walkDirFunc)
+
+	// Walk the filesystem
+	if err := filepath.WalkDir(root, walkDirFunc); err != nil {
+		return xerrors.Errorf("walk dir error: %w", err)
+	}
+
+	return nil
+}
+
+func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
+	return func(filePath string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
 		}
-	}
-
-	return FS{
-		walker:      newWalker(skipFiles, skipDirs, slow),
-		errCallback: errCallback,
-	}
-}
-
-// Walk walks the file tree rooted at root, calling WalkFunc for each file or
-// directory in the tree, including root, but a directory to be ignored will be skipped.
-func (w FS) Walk(root string, fn WalkFunc) error {
-	// walk function called for every path found
-	walkFn := func(pathname string, fi os.FileInfo) error {
-		pathname = filepath.Clean(pathname)
 
 		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
-		relPath, err := filepath.Rel(root, pathname)
+		relPath, err := filepath.Rel(root, filePath)
 		if err != nil {
 			return xerrors.Errorf("filepath rel (%s): %w", relPath, err)
 		}
 		relPath = filepath.ToSlash(relPath)
 
-		if fi.IsDir() {
-			if w.shouldSkipDir(relPath) {
+		// Skip unnecessary files
+		switch {
+		case d.IsDir():
+			if utils.SkipPath(relPath, opt.SkipDirs) {
 				return filepath.SkipDir
 			}
 			return nil
-		} else if !fi.Mode().IsRegular() {
+		case !d.Type().IsRegular():
 			return nil
-		} else if w.shouldSkipFile(relPath) {
+		case utils.SkipPath(relPath, opt.SkipFiles):
 			return nil
 		}
 
-		if err = fn(relPath, fi, w.fileOpener(pathname)); err != nil {
-			return xerrors.Errorf("failed to analyze file: %w", err)
-		}
-		return nil
-	}
-
-	if w.slow {
-		// In series: fast, with higher CPU/memory
-		return w.walkSlow(root, walkFn)
-	}
-
-	// In parallel: slow, with lower CPU/memory
-	return w.walkFast(root, walkFn)
-}
-
-type fastWalkFunc func(pathname string, fi os.FileInfo) error
-
-func (w FS) walkFast(root string, walkFn fastWalkFunc) error {
-	// error function called for every error encountered
-	errorCallbackOption := swalker.WithErrorCallback(w.errCallback)
-
-	// Multiple goroutines stat the filesystem concurrently. The provided
-	// walkFn must be safe for concurrent use.
-	log.Logger.Debugf("Walk the file tree rooted at '%s' in parallel", root)
-	if err := swalker.Walk(root, walkFn, errorCallbackOption); err != nil {
-		return xerrors.Errorf("walk error: %w", err)
-	}
-	return nil
-}
-
-func (w FS) walkSlow(root string, walkFn fastWalkFunc) error {
-	log.Logger.Debugf("Walk the file tree rooted at '%s' in series", root)
-	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return w.errCallback(path, err)
-		}
 		info, err := d.Info()
 		if err != nil {
 			return xerrors.Errorf("file info error: %w", err)
 		}
-		return walkFn(path, info)
-	})
-	if err != nil {
-		return xerrors.Errorf("walk dir error: %w", err)
+
+		if err = fn(relPath, info, fileOpener(filePath)); err != nil {
+			return xerrors.Errorf("failed to analyze file: %w", err)
+		}
+
+		return nil
 	}
-	return nil
+}
+
+func (w *FS) onError(wrapped fs.WalkDirFunc) fs.WalkDirFunc {
+	return func(filePath string, d fs.DirEntry, err error) error {
+		err = wrapped(filePath, d, err)
+		switch {
+		// Unwrap fs.SkipDir error
+		case errors.Is(err, fs.SkipDir):
+			return fs.SkipDir
+		// Ignore permission errors
+		case os.IsPermission(err):
+			return nil
+		case err != nil:
+			// halt traversal on any other error
+			return xerrors.Errorf("unknown error with %s: %w", filePath, err)
+		}
+		return nil
+	}
+}
+
+// BuildSkipPaths builds correct patch for defaultSkipDirs and skipFiles
+func (w *FS) BuildSkipPaths(base string, paths []string) []string {
+	var relativePaths []string
+	absBase, err := filepath.Abs(base)
+	if err != nil {
+		log.Warn("Failed to get an absolute path", log.String("base", base), log.Err(err))
+		return nil
+	}
+	for _, path := range paths {
+		// Supports three types of flag specification.
+		// All of them are converted into the relative path from the root directory.
+		// 1. Relative skip dirs/files from the root directory
+		//     The specified dirs and files will be used as is.
+		//       e.g. $ trivy fs --skip-dirs bar ./foo
+		//     The skip dir from the root directory will be `bar/`.
+		// 2. Relative skip dirs/files from the working directory
+		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
+		//     The skip dir will be converted to `bar/`.
+		// 3. Absolute skip dirs/files
+		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//       e.g. $ trivy fs --skip-dirs /bar/foo/baz ./foo
+		//     When the working directory is
+		//       3.1 /bar: the skip dir will be converted to `baz/`.
+		//       3.2 /hoge : the skip dir will be converted to `../../bar/foo/baz/`.
+
+		absSkipPath, err := filepath.Abs(path)
+		if err != nil {
+			log.Warn("Failed to get an absolute path", log.String("base", base), log.Err(err))
+			continue
+		}
+		rel, err := filepath.Rel(absBase, absSkipPath)
+		if err != nil {
+			log.Warn("Failed to get a relative path", log.String("from", base),
+				log.String("to", path), log.Err(err))
+			continue
+		}
+
+		var relPath string
+		switch {
+		case !filepath.IsAbs(path) && strings.HasPrefix(rel, ".."):
+			// #1: Use the path as is
+			relPath = path
+		case !filepath.IsAbs(path) && !strings.HasPrefix(rel, ".."):
+			// #2: Use the relative path from the root directory
+			relPath = rel
+		case filepath.IsAbs(path):
+			// #3: Use the relative path from the root directory
+			relPath = rel
+		}
+		relPath = filepath.ToSlash(relPath)
+		relativePaths = append(relativePaths, relPath)
+	}
+
+	relativePaths = utils.CleanSkipPaths(relativePaths)
+	return relativePaths
 }
 
 // fileOpener returns a function opening a file.
-func (w *walker) fileOpener(pathname string) func() (dio.ReadSeekCloserAt, error) {
-	return func() (dio.ReadSeekCloserAt, error) {
-		return os.Open(pathname)
+func fileOpener(filePath string) func() (xio.ReadSeekCloserAt, error) {
+	return func() (xio.ReadSeekCloserAt, error) {
+		return os.Open(filePath)
 	}
 }

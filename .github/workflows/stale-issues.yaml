@@ -1,4 +1,4 @@
-name: "Stale issues"
+name: "Stale PR's"
 on:
   schedule:
     - cron: '0 0 * * *'
@@ -7,14 +7,13 @@ jobs:
     timeout-minutes: 1
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/stale@v8
+    - uses: actions/stale@v9
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'This issue is stale because it has been labeled with inactivity.'
         stale-pr-message: 'This PR is stale because it has been labeled with inactivity.'
-        exempt-issue-labels: 'lifecycle/frozen,lifecycle/active,priority/critical-urgent,priority/important-soon,priority/important-longterm,priority/backlog,priority/awaiting-more-evidence'
         exempt-pr-labels: 'lifecycle/active'
         stale-pr-label: 'lifecycle/stale'
-        stale-issue-label: 'lifecycle/stale'
         days-before-stale: 60
+        days-before-issue-stale: '-1'
         days-before-close: 20
+        days-before-issue-close: '-1'

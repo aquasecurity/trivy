@@ -3,18 +3,18 @@ package module
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sync"
 
-	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -45,7 +45,7 @@ func logDebug(_ context.Context, mod api.Module, params []uint64) {
 
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Debug(string(buf))
+		log.Debug(string(buf))
 	}
 
 	return
@@ -57,7 +57,7 @@ func logInfo(_ context.Context, mod api.Module, params []uint64) {
 
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Info(string(buf))
+		log.Info(string(buf))
 	}
 
 	return
@@ -69,7 +69,7 @@ func logWarn(_ context.Context, mod api.Module, params []uint64) {
 
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Warn(string(buf))
+		log.Warn(string(buf))
 	}
 
 	return
@@ -81,7 +81,7 @@ func logError(_ context.Context, mod api.Module, params []uint64) {
 
 	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
-		log.Logger.Error(string(buf))
+		log.Error(string(buf))
 	}
 
 	return
@@ -90,7 +90,8 @@ func logError(_ context.Context, mod api.Module, params []uint64) {
 func readMemory(mem api.Memory, offset, size uint32) []byte {
 	buf, ok := mem.Read(offset, size)
 	if !ok {
-		log.Logger.Errorf("Memory.Read(%d, %d) out of range", offset, size)
+		log.Error("Memory.Read() out of range",
+			log.Int("offset", int(offset)), log.Int("size", int(size)))
 		return nil
 	}
 	return buf
@@ -130,7 +131,7 @@ func (m *Manager) loadModules(ctx context.Context) error {
 	if os.IsNotExist(err) {
 		return nil
 	}
-	log.Logger.Debugf("Module dir: %s", m.dir)
+	log.Debug("Module dir", log.String("dir", m.dir))
 
 	err = filepath.Walk(m.dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -144,7 +145,7 @@ func (m *Manager) loadModules(ctx context.Context) error {
 			return xerrors.Errorf("failed to get a relative path: %w", err)
 		}
 
-		log.Logger.Infof("Reading %s...", rel)
+		log.Info("Reading a module...", log.String("path", rel))
 		wasmCode, err := os.ReadFile(path)
 		if err != nil {
 			return xerrors.Errorf("file read error: %w", err)
@@ -160,7 +161,7 @@ func (m *Manager) loadModules(ctx context.Context) error {
 			return nil
 		}
 
-		log.Logger.Infof("%s loaded", rel)
+		log.Info("Module loaded", log.String("path", rel))
 		m.modules = append(m.modules, p)
 
 		return nil
@@ -235,8 +236,8 @@ func unmarshal(mem api.Memory, ptrSize uint64, v any) error {
 	return nil
 }
 
-func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.Marshaler) (uint64, uint64, error) {
-	b, err := easyjson.Marshal(v)
+func marshal(ctx context.Context, m api.Module, malloc api.Function, v any) (uint64, uint64, error) {
+	b, err := json.Marshal(v)
 	if err != nil {
 		return 0, 0, xerrors.Errorf("marshal error: %w", err)
 	}
@@ -342,8 +343,9 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 	}
 
 	if apiVersion != tapi.Version {
-		log.Logger.Infof("Ignore %s@v%d module due to API version mismatch, got: %d, want: %d",
-			name, version, apiVersion, tapi.Version)
+		log.Info("Ignore the module due to API version mismatch",
+			log.String("module", fmt.Sprintf("%s@v%d", name, version)),
+			log.Int("got", apiVersion), log.Int("want", tapi.Version))
 		return nil, nil
 	}
 
@@ -404,13 +406,14 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 }
 
 func (m *wasmModule) Register() {
-	log.Logger.Infof("Registering WASM module: %s@v%d", m.name, m.version)
+	logger := log.With(log.String("name", m.name), log.Int("version", m.version))
+	logger.Info("Registering WASM module")
 	if m.isAnalyzer {
-		log.Logger.Debugf("Registering custom analyzer in %s@v%d", m.name, m.version)
+		logger.Debug("Registering custom analyzer")
 		analyzer.RegisterAnalyzer(m)
 	}
 	if m.isPostScanner {
-		log.Logger.Debugf("Registering custom post scanner in %s@v%d", m.name, m.version)
+		logger.Debug("Registering custom post scanner")
 		post.RegisterPostScanner(m)
 	}
 }
@@ -442,7 +445,7 @@ func (m *wasmModule) Required(filePath string, _ os.FileInfo) bool {
 
 func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := "/" + filepath.ToSlash(input.FilePath)
-	log.Logger.Debugf("Module %s: analyzing %s...", m.name, filePath)
+	log.Debug("Module analyzing...", log.String("module", m.name), log.FilePath(filePath))
 
 	// Wasm module instances are not Goroutine safe, so we take look here since Analyze might be called concurrently.
 	// TODO: This is temporary solution and we could improve the Analyze performance by having module instance pool.
@@ -478,15 +481,15 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 // e.g. Remove a vulnerability, change severity, etc.
 func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
 	// Find custom resources
-	var custom serialize.Result
+	var custom types.Result
 	for _, result := range results {
 		if result.Class == types.ClassCustom {
-			custom = serialize.Result(result)
+			custom = result
 			break
 		}
 	}
 
-	arg := serialize.Results{custom}
+	arg := types.Results{custom}
 	switch m.postScanSpec.Action {
 	case tapi.ActionUpdate, tapi.ActionDelete:
 		// Pass the relevant results to the module
@@ -526,8 +529,8 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 	return results, nil
 }
 
-func findIDs(ids []string, results types.Results) serialize.Results {
-	var filtered serialize.Results
+func findIDs(ids []string, results types.Results) types.Results {
+	var filtered types.Results
 	for _, result := range results {
 		if result.Class == types.ClassCustom {
 			continue
@@ -539,7 +542,7 @@ func findIDs(ids []string, results types.Results) serialize.Results {
 			return slices.Contains(ids, m.ID)
 		})
 		if len(vulns) > 0 || len(misconfs) > 0 {
-			filtered = append(filtered, serialize.Result{
+			filtered = append(filtered, types.Result{
 				Target:            result.Target,
 				Class:             result.Class,
 				Type:              result.Type,

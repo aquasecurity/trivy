@@ -27,11 +27,17 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.DotNetCore,
 						FilePath: "testdata/datacollector.deps.json",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								Name:      "Newtonsoft.Json",
-								Version:   "9.0.1",
-								Locations: []types.Location{{StartLine: 8, EndLine: 14}},
+								ID:      "Newtonsoft.Json/9.0.1",
+								Name:    "Newtonsoft.Json",
+								Version: "9.0.1",
+								Locations: []types.Location{
+									{
+										StartLine: 8,
+										EndLine:   14,
+									},
+								},
 							},
 						},
 					},
@@ -58,12 +64,12 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

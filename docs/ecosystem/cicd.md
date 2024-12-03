@@ -1,5 +1,12 @@
 # CI/CD Integrations
 
+## Azure DevOps (Official)
+[Azure Devops](https://azure.microsoft.com/en-us/products/devops/#overview) is Microsoft Azure cloud native CI/CD service.
+
+Trivy has a "Azure Devops Pipelines Task" for Trivy, that lets you easily introduce security scanning into your workflow, with an integrated Azure Devops UI.
+
+👉 Get it at: <https://github.com/aquasecurity/trivy-azure-pipelines-task>
+
 ## GitHub Actions
 [GitHub Actions](https://github.com/features/actions) is GitHub's native CI/CD and job orchestration service.
 
@@ -21,12 +28,19 @@ In this action, Trivy scans the dependency files such as package-lock.json and g
 
 👉 Get it at: <https://github.com/marketplace/actions/trivy-github-issues>
 
-## Azure DevOps (Official)
-[Azure Devops](https://azure.microsoft.com/en-us/products/devops/#overview) is Microsoft Azure cloud native CI/CD service.
+## Buildkite Plugin (Community)
 
-Trivy has a "Azure Devops Pipelines Task" for Trivy, that lets you easily introduce security scanning into your workflow, with an integrated Azure Devops UI.
+The trivy buildkite plugin provides a convenient mechanism for running the open-source trivy static analysis tool on your project. 
 
-👉 Get it at: <https://github.com/aquasecurity/trivy-azure-pipelines-task>
+👉 Get it at: https://github.com/equinixmetal-buildkite/trivy-buildkite-plugin
+
+## Dagger (Community)
+[Dagger](https://dagger.io/) is CI/CD as code that runs anywhere.
+
+The Dagger module for Trivy provides functions for scanning container images from registries as well as Dagger Container objects from any Dagger SDK (e.g. Go, Python, Node.js, etc).
+
+👉 Get it at: <https://daggerverse.dev/mod/github.com/jpadams/daggerverse/trivy>
+
 
 ## Semaphore (Community)
 [Semaphore](https://semaphoreci.com/) is a CI/CD service.
@@ -65,3 +79,11 @@ You can use Trivy Resource in Concourse for scanning containers and introducing 
 It has capabilities to fail the pipeline, create issues, alert communication channels (using respective resources) based on Trivy scan output.
 
 👉 Get it at: <https://github.com/Comcast/trivy-resource/>
+
+
+## SecObserve GitHub actions and GitLab templates (Community)
+[SecObserve GitHub actions and GitLab templates](https://github.com/MaibornWolff/secobserve_actions_templates) run various vulnerability scanners, providing uniform methods and parameters for launching the tools.
+
+The Trivy integration supports scanning Docker images and local filesystems for vulnerabilities as well as scanning IaC files for misconfigurations.
+
+👉 Get it at: <https://github.com/MaibornWolff/secobserve_actions_templates>

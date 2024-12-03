@@ -1,0 +1,23 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "aquasecurity/trivy:613fd55abbc2857b5ca28b07a26f3cd4c8b0ddc4c8a97c57497a2d4c4880d7fc",
+  "author": "Aqua Security",
+  "timestamp": "2024-07-09T11:38:00.115697+04:00",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": { "@id": "CVE-2022-23628" },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/testdata/testdata",
+          "subcomponents": [
+            { "@id": "pkg:golang/github.com/open-policy-agent/opa@v0.35.0" }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The vulnerable code isn't called"
+    }
+  ]
+}

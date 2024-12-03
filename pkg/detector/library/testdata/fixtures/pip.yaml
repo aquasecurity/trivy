@@ -1,0 +1,18 @@
+- bucket: "pip::GitHub Security Advisory Pip"
+  pairs:
+    - bucket: Django
+      pairs:
+        - key: CVE-2023-36053
+          value:
+            PatchedVersions:
+              - 4.2.3
+            VulnerableVersions:
+              - < 4.2.3
+    - bucket: django
+      pairs:
+        - key: CVE-2023-36053
+          value:
+            PatchedVersions:
+              - 4.2.3
+            VulnerableVersions:
+              - < 4.2.3

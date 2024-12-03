@@ -39,7 +39,7 @@ func (r *Rekor) RetrieveSBOM(ctx context.Context, digest string) ([]byte, error)
 		return nil, ErrNoSBOMAttestation
 	}
 
-	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
+	log.Debug("Found matching Rekor entries", log.Any("entry_ids", entryIDs))
 
 	for _, ids := range lo.Chunk[rekor.EntryID](entryIDs, rekor.MaxGetEntriesLimit) {
 		entries, err := r.client.GetEntries(ctx, ids)

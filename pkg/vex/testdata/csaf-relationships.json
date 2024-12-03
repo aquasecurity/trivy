@@ -1,0 +1,126 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "vendor",
+      "name": "VMWare, Inc.",
+      "namespace": "https://tanzu.vmware.com/application-catalog"
+    },
+    "title": "ArgoCD 2.9.3-2 Amd64 Debian12 Advisory",
+    "tracking": {
+      "current_release_date": "2024-01-04T17:17:25+01:00",
+      "generator": {
+        "engine": {
+          "name": "Bitnami VEX CLI",
+          "version": "1.0.0"
+        }
+      },
+      "id": "fcf5bd33-41c3-45f9-885a-c2ee812f49c9",
+      "initial_release_date": "2024-01-04T17:17:25+01:00",
+      "revision_history": [
+        {
+          "date": "2024-01-04T17:17:25+01:00",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "2.0.0",
+                "product": {
+                  "name": "go-direct1 v2.0.0",
+                  "product_id": "go-direct1-v2.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "go-direct1"
+          }
+        ],
+        "category": "vendor",
+        "name": "bar"
+      },
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v4.0.0",
+                "product": {
+                  "name": "go-transitive v4.0.0",
+                  "product_id": "go-transitive-v4.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "go-transitive"
+          }
+        ],
+        "category": "vendor",
+        "name": "foo"
+      }
+    ],
+    "relationships": [
+      {
+        "product_reference": "go-transitive-v4.0.0",
+        "category": "default_component_of",
+        "relates_to_product_reference": "go-direct1-v2.0.0",
+        "full_product_name": {
+          "product_id": "go-direct1-v2.0.0-go-transitive-v4.0.0",
+          "name": "go-direct1 uses go-transitive"
+        }
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2024-0001",
+      "flags": [
+        {
+          "date": "2024-01-04T17:17:25+01:00",
+          "label": "vulnerable_code_cannot_be_controlled_by_adversary",
+          "product_ids": [
+            "go-direct1-v2.0.0-go-transitive-v4.0.0"
+          ]
+        }
+      ],
+      "notes": [
+        {
+          "category": "description",
+          "text": "Users may be able to launch containers using images that are restricted by ImagePolicyWebhook when using ephemeral containers. Kubernetes clusters are only affected if the ImagePolicyWebhook admission plugin is used together with ephemeral containers.",
+          "title": "CVE description"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "go-direct1-v2.0.0-go-transitive-v4.0.0"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "date": "2024-01-04T17:17:25+01:00",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    }
+  ]
+}

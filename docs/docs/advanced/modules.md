@@ -328,7 +328,7 @@ Put the built binary to the module directory that is under the home directory by
 
 ```bash
 $ mkdir -p ~/.trivy/modules
-$ cp spring4shell.wasm ~/.trivy/modules
+$ cp wordpress.wasm ~/.trivy/modules
 ```
 
 ## Distribute Your Module

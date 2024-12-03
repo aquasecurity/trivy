@@ -4,6 +4,11 @@ name: Publish Helm chart
 on:
   workflow_dispatch:
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
     branches:
       - main
     paths:
@@ -18,26 +23,29 @@ env:
   KIND_VERSION: "v0.14.0"
   KIND_IMAGE: "kindest/node:v1.23.6@sha256:b1fa224cc6c7ff32455e0b1fd9cbfd3d3bc87ecaa8fcb06961ed1afb3db0f9ae"
 jobs:
+  # `test-chart` job starts if a PR with Helm Chart is created, merged etc.
   test-chart:
-    runs-on: ubuntu-20.04
+    if: github.event_name != 'push'
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 0
       - name: Install Helm
-        uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78
+        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814
         with:
-          version: v3.5.0
+          version: v3.14.4
       - name: Set up python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.7
+          python-version: '3.x'
+          check-latest: true
       - name: Setup Chart Linting
         id: lint
-        uses: helm/chart-testing-action@e8788873172cb653a90ca2e819d79d65a66d4e76
+        uses: helm/chart-testing-action@e6669bcd63d7cb57cb4380c33043eebe5d111992
       - name: Setup Kubernetes cluster (KIND)
-        uses: helm/kind-action@fa81e57adff234b2908110485695db0f181f3c67
+        uses: helm/kind-action@0025e74a8c7512023d06dc019c617aa3cf561fde
         with:
           version: ${{ env.KIND_VERSION }}
           image: ${{ env.KIND_IMAGE }}
@@ -48,14 +56,42 @@ jobs:
           sed -i -e '136s,false,'true',g' ./helm/trivy/values.yaml
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
 
-  publish-chart:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    needs:
-      - test-chart
-    runs-on: ubuntu-20.04
+  # `update-chart-version` job starts if a new tag is pushed
+  update-chart-version:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 0
+      - name: Set up Git user
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v1.25.0
+          aqua_opts: ""
+
+      - name: Create a PR with Trivy version
+        run: mage helm:updateVersion
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows the created PR to trigger tests and other workflows
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+
+  # `publish-chart` job starts if a PR with a new Helm Chart is merged or manually
+  publish-chart:
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    needs:
+      - test-chart
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 0
       - name: Install chart-releaser

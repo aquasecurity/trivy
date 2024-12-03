@@ -1,0 +1,94 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "opensuse-tumbleweed",
+      "Name": "20240607"
+    },
+    "ImageID": "sha256:580e73f5c823232e6587136e9f5428a89afdf77a123bb8575d08208e0cc34b12",
+    "DiffIDs": [
+      "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "author": "Fabian Vogt \u003cfvogt@suse.com\u003e",
+      "created": "2024-06-07T17:19:44Z",
+      "history": [
+        {
+          "author": "Fabian Vogt \u003cfvogt@suse.com\u003e",
+          "created": "2024-06-07T17:19:44Z",
+          "created_by": "KIWI 10.0.19",
+          "comment": "openSUSE Tumbleweed 20240607 Base Container"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Labels": {
+          "org.openbuildservice.disturl": "obs://build.opensuse.org/openSUSE:Factory/images/b068e2522114e1c009e9bfa1b5cb1146-opensuse-tumbleweed-image:docker",
+          "org.opencontainers.image.created": "2024-06-07T17:19:38.229693664Z",
+          "org.opencontainers.image.description": "Image containing a minimal environment for containers based on openSUSE Tumbleweed.",
+          "org.opencontainers.image.source": "https://build.opensuse.org/package/show/openSUSE:Factory/opensuse-tumbleweed-image?rev=b068e2522114e1c009e9bfa1b5cb1146",
+          "org.opencontainers.image.title": "openSUSE Tumbleweed Base Container",
+          "org.opencontainers.image.url": "https://www.opensuse.org/",
+          "org.opencontainers.image.vendor": "openSUSE Project",
+          "org.opencontainers.image.version": "20240607.30.45",
+          "org.opensuse.base.created": "2024-06-07T17:19:38.229693664Z",
+          "org.opensuse.base.description": "Image containing a minimal environment for containers based on openSUSE Tumbleweed.",
+          "org.opensuse.base.disturl": "obs://build.opensuse.org/openSUSE:Factory/images/b068e2522114e1c009e9bfa1b5cb1146-opensuse-tumbleweed-image:docker",
+          "org.opensuse.base.reference": "registry.opensuse.org/opensuse/tumbleweed:20240607.30.45",
+          "org.opensuse.base.source": "https://build.opensuse.org/package/show/openSUSE:Factory/opensuse-tumbleweed-image?rev=b068e2522114e1c009e9bfa1b5cb1146",
+          "org.opensuse.base.title": "openSUSE Tumbleweed Base Container",
+          "org.opensuse.base.url": "https://www.opensuse.org/",
+          "org.opensuse.base.vendor": "openSUSE Project",
+          "org.opensuse.base.version": "20240607.30.45",
+          "org.opensuse.reference": "registry.opensuse.org/opensuse/tumbleweed:20240607.30.45"
+        }
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz (opensuse-tumbleweed 20240607)",
+      "Class": "os-pkgs",
+      "Type": "opensuse-tumbleweed",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "openSUSE-SU-2024:13065-1",
+          "PkgID": "libopenssl3@3.1.4-9.1.x86_64",
+          "PkgName": "libopenssl3",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/opensuse/libopenssl3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607",
+            "UID": "f051425f385d2b99"
+          },
+          "InstalledVersion": "3.1.4-9.1",
+          "FixedVersion": "3.1.5-9.1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:427d16a14c45614f51357aeebee0dfe209a1cebfc044b3b724b6ea35663b3111",
+            "DiffID": "sha256:7a335bdf2d91d6d158da360054aa7e477d708187d43fe9d0ac20144cdf90f763"
+          },
+          "Title": "libopenssl-3-devel-3.1.1-3.1 on GA media",
+          "Description": "These are all security issues fixed in the libopenssl-3-devel-3.1.1-3.1 package on the GA media of openSUSE Tumbleweed.",
+          "Severity": "MEDIUM",
+          "References": [
+            "https://www.suse.com/security/cve/CVE-2023-2975/",
+            "https://www.suse.com/security/cve/CVE-2023-3446/",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        }
+      ]
+    }
+  ]
+}

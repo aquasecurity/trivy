@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+    spec:
+      containers:
+        - name: metadata-service
+          env:
+            - name: METADATASERVICE_UPSTREAM_API_URL
+              value: '{{ .Values.upstreamAPI }}'
+            - name: METADATASERVICE_OIDC_AUDIENCE
+              value: "{{ .Values.oidc.audience }}"
+            - name: METADATASERVICE_OIDC_ISSUER
+              value: "{{ .Values.oidc.issuer }}"
+            - name: METADATASERVICE_OIDC_JWKSURI
+              value: "{{ .Values.oidc.jwksuri }}"
+            - name: METADATASERVICE_OIDC_CLAIMS_ROLES
+              value: "{{ .Values.oidc.rolesClaim }}"
+            - name: METADATASERVICE_OIDC_CLAIMS_USERNAME
+              value: "{{ .Values.oidc.userClaim }}"
+            - name: METADATASERVICE_DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "common.names.fullname" . }}-dbconn
+                  key: uri
+          image: "{{ .Values.metadataservice.image.repository }}:{{ .Values.metadataservice.image.tag }}"
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: dbcerts
+              mountPath: "/dbcerts"
+              readOnly: true
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz/liveness
+              port: http
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: http
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: dbcerts
+          secret:
+            secretName: {{ template "common.names.fullname" . }}-crdb-ca
+            defaultMode: 0400

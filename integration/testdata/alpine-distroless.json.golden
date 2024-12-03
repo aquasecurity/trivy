@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/alpine-distroless.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -52,8 +53,13 @@
           "VulnerabilityID": "CVE-2022-24765",
           "PkgID": "git@2.35.1-r2",
           "PkgName": "git",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/git@2.35.1-r2?arch=x86_64\u0026distro=3.16",
+            "UID": "2999d822f6cae40c"
+          },
           "InstalledVersion": "2.35.1-r2",
           "FixedVersion": "2.35.2-r0",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:6c6f69aa25501b090c54c62a9c17e978064c2f1328f67a7ef88c81ce5f2d7983",
             "DiffID": "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
@@ -65,6 +71,9 @@
           "CweIDs": [
             "CWE-427"
           ],
+          "VendorSeverity": {
+            "ubuntu": 2
+          },
           "References": [
             "http://www.openwall.com/lists/oss-security/2022/04/12/7",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-24765",

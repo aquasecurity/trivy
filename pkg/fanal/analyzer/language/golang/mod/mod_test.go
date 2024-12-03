@@ -3,11 +3,11 @@ package mod
 import (
 	"context"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -31,23 +31,43 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
-								Name:    "github.com/aquasecurity/go-dep-parser",
-								Version: "0.0.0-20220406074731-71021a481237",
-								Licenses: []string{
-									"MIT",
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v0.0.0-20220406074731-71021a481237",
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
 								},
 								DependsOn: []string{
 									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 								},
 							},
 							{
-								ID:       "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
-								Name:     "golang.org/x/xerrors",
-								Version:  "0.0.0-20200804184101-5ec99f83aff1",
-								Indirect: true,
+								ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								Name:         "golang.org/x/xerrors",
+								Version:      "v0.0.0-20200804184101-5ec99f83aff1",
+								Relationship: types.RelationshipIndirect,
+								Indirect:     true,
 							},
 						},
 					},
@@ -64,11 +84,95 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								ID:      "github.com/sad/sad@v0.0.1",
-								Name:    "github.com/sad/sad",
-								Version: "0.0.1",
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/sad/sad@v0.0.1",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/sad/sad@v0.0.1",
+								Name:         "github.com/sad/sad",
+								Version:      "v0.0.1",
+								Relationship: types.RelationshipDirect,
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/sad/sad",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "no pkg dir found",
+			files: []string{
+				"testdata/no-pkg-found/mod",
+			},
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-dep-parser@v1.0.0",
+									"github.com/aquasecurity/go-version@v1.0.1",
+									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1", // No parent found, so it's added here.
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-dep-parser@v1.0.0",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v1.0.0",
+								Relationship: types.RelationshipDirect,
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-version@v1.0.1",
+								Name:         "github.com/aquasecurity/go-version",
+								Version:      "v1.0.1",
+								Relationship: types.RelationshipDirect,
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-version",
+									},
+								},
+							},
+							{
+								ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								Name:         "golang.org/x/xerrors",
+								Version:      "v0.0.0-20200804184101-5ec99f83aff1",
+								Relationship: types.RelationshipIndirect,
+								Indirect:     true,
 							},
 						},
 					},
@@ -86,20 +190,42 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
-								Name:    "github.com/aquasecurity/go-dep-parser",
-								Version: "0.0.0-20230219131432-590b1dfb6edd",
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
-									"github.com/BurntSushi/toml@v0.3.1",
+									"github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
 								},
 							},
 							{
-								ID:       "github.com/BurntSushi/toml@v0.3.1",
-								Name:     "github.com/BurntSushi/toml",
-								Version:  "0.3.1",
-								Indirect: true,
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v0.0.0-20230219131432-590b1dfb6edd",
+								Relationship: types.RelationshipDirect,
+								DependsOn: []string{
+									"github.com/BurntSushi/toml@v0.3.1",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
+								},
+							},
+							{
+								ID:           "github.com/BurntSushi/toml@v0.3.1",
+								Name:         "github.com/BurntSushi/toml",
+								Version:      "v0.3.1",
+								Relationship: types.RelationshipIndirect,
+								Indirect:     true,
 								Licenses: []string{
 									"MIT",
 								},
@@ -119,12 +245,33 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								ID:        "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
-								Name:      "github.com/aquasecurity/go-dep-parser",
-								Version:   "0.0.0-20230219131432-590b1dfb6edd",
-								DependsOn: []string{},
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v0.0.0-20230219131432-590b1dfb6edd",
+								Relationship: types.RelationshipDirect,
+								DependsOn:    []string{},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
+								},
 							},
 						},
 					},
@@ -159,17 +306,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS: mfs,
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			if len(got.Applications) > 0 {
-				slices.SortFunc(got.Applications[0].Libraries, func(a, b types.Package) bool {
-					return a.Name < b.Name
-				})
-				slices.SortFunc(tt.want.Applications[0].Libraries, func(a, b types.Package) bool {
-					return a.Name < b.Name
-				})
+				sort.Sort(got.Applications[0].Packages)
+				sort.Sort(tt.want.Applications[0].Packages)
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

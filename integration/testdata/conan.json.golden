@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/conan",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/conan",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -21,41 +22,14 @@
       "Type": "conan",
       "Packages": [
         {
-          "ID": "bzip2/1.0.8",
-          "Name": "bzip2",
-          "Version": "1.0.8",
-          "Indirect": true,
-          "Layer": {}
-        },
-        {
-          "ID": "expat/2.4.8",
-          "Name": "expat",
-          "Version": "2.4.8",
-          "Indirect": true,
-          "Layer": {}
-        },
-        {
-          "ID": "openssl/1.1.1q",
-          "Name": "openssl",
-          "Version": "1.1.1q",
-          "Indirect": true,
-          "Layer": {}
-        },
-        {
-          "ID": "pcre/8.43",
-          "Name": "pcre",
-          "Version": "8.43",
-          "Indirect": true,
-          "DependsOn": [
-            "bzip2/1.0.8",
-            "zlib/1.2.12"
-          ],
-          "Layer": {}
-        },
-        {
           "ID": "poco/1.9.4",
           "Name": "poco",
+          "Identifier": {
+            "PURL": "pkg:conan/poco@1.9.4",
+            "UID": "1c5e3b385e0d9c68"
+          },
           "Version": "1.9.4",
+          "Relationship": "direct",
           "DependsOn": [
             "pcre/8.43",
             "zlib/1.2.12",
@@ -63,21 +37,125 @@
             "sqlite3/3.39.2",
             "openssl/1.1.1q"
           ],
-          "Layer": {}
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 25
+            }
+          ]
+        },
+        {
+          "ID": "bzip2/1.0.8",
+          "Name": "bzip2",
+          "Identifier": {
+            "PURL": "pkg:conan/bzip2@1.0.8",
+            "UID": "fcee910413ab7575"
+          },
+          "Version": "1.0.8",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 37,
+              "EndLine": 43
+            }
+          ]
+        },
+        {
+          "ID": "expat/2.4.8",
+          "Name": "expat",
+          "Identifier": {
+            "PURL": "pkg:conan/expat@2.4.8",
+            "UID": "1a3fe92a43620875"
+          },
+          "Version": "2.4.8",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 51,
+              "EndLine": 57
+            }
+          ]
+        },
+        {
+          "ID": "openssl/1.1.1q",
+          "Name": "openssl",
+          "Identifier": {
+            "PURL": "pkg:conan/openssl@1.1.1q",
+            "UID": "d009c32d2d560ed1"
+          },
+          "Version": "1.1.1q",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 65,
+              "EndLine": 71
+            }
+          ]
+        },
+        {
+          "ID": "pcre/8.43",
+          "Name": "pcre",
+          "Identifier": {
+            "PURL": "pkg:conan/pcre@8.43",
+            "UID": "452827dd216c920e"
+          },
+          "Version": "8.43",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "bzip2/1.0.8",
+            "zlib/1.2.12"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 26,
+              "EndLine": 36
+            }
+          ]
         },
         {
           "ID": "sqlite3/3.39.2",
           "Name": "sqlite3",
+          "Identifier": {
+            "PURL": "pkg:conan/sqlite3@3.39.2",
+            "UID": "8e926335e2fce900"
+          },
           "Version": "3.39.2",
           "Indirect": true,
-          "Layer": {}
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 58,
+              "EndLine": 64
+            }
+          ]
         },
         {
           "ID": "zlib/1.2.12",
           "Name": "zlib",
+          "Identifier": {
+            "PURL": "pkg:conan/zlib@1.2.12",
+            "UID": "dfef9b967a82df9f"
+          },
           "Version": "1.2.12",
           "Indirect": true,
-          "Layer": {}
+          "Relationship": "indirect",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 44,
+              "EndLine": 50
+            }
+          ]
         }
       ],
       "Vulnerabilities": [
@@ -85,10 +163,44 @@
           "VulnerabilityID": "CVE-2020-14155",
           "PkgID": "pcre/8.43",
           "PkgName": "pcre",
+          "PkgIdentifier": {
+            "PURL": "pkg:conan/pcre@8.43",
+            "UID": "452827dd216c920e"
+          },
           "InstalledVersion": "8.43",
           "FixedVersion": "8.45",
+          "Status": "fixed",
           "Layer": {},
-          "Severity": "UNKNOWN"
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-14155",
+          "Title": "pcre: Integer overflow when parsing callout numeric arguments",
+          "Description": "libpcre in PCRE before 8.44 allows an integer overflow via a large number after a (?C substring.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-190"
+          ],
+          "VendorSeverity": {
+            "alma": 1,
+            "nvd": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V2Score": 5,
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-14155",
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-14155"
+          ],
+          "PublishedDate": "2020-06-15T17:15:00Z",
+          "LastModifiedDate": "2022-04-28T15:06:00Z"
         }
       ]
     }

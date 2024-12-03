@@ -1,5 +1,4 @@
 //go:build integration
-// +build integration
 
 package integration
 
@@ -18,14 +17,16 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/types"
+
+	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
@@ -58,9 +59,13 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 		Mounts: testcontainers.Mounts(
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
 		),
-		SkipReaper: true,
-		AutoRemove: true,
-		WaitingFor: wait.ForLog("listening on [::]:5443"),
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
+		WaitingFor: wait.ForHTTP("v2").WithTLS(true).WithAllowInsecure(true).
+			WithStatusCodeMatcher(func(status int) bool {
+				return status == http.StatusUnauthorized
+			}),
 	}
 
 	registryC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -79,9 +84,10 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "auth_config"), "/config"),
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
 		),
-		SkipReaper: true,
-		AutoRemove: true,
-		Cmd:        []string{"/config/config.yml"},
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
+		Cmd: []string{"/config/config.yml"},
 	}
 
 	authC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -111,6 +117,7 @@ type registryOption struct {
 	Username      string
 	Password      string
 	RegistryToken bool
+	AuthLogin     bool
 }
 
 func TestRegistry(t *testing.T) {
@@ -119,10 +126,13 @@ func TestRegistry(t *testing.T) {
 	baseDir, err := filepath.Abs(".")
 	require.NoError(t, err)
 
+	// disable Reaper for auth server and registry containers
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
+
 	// set up auth server
 	authC, err := setupAuthServer(ctx, baseDir)
 	require.NoError(t, err)
-	defer authC.Terminate(ctx)
+	testcontainers.CleanupContainer(t, authC)
 
 	authURL, err := getURL(ctx, authC, authPort)
 	require.NoError(t, err)
@@ -130,7 +140,7 @@ func TestRegistry(t *testing.T) {
 	// set up registry
 	registryC, err := setupRegistry(ctx, baseDir, authURL)
 	require.NoError(t, err)
-	defer registryC.Terminate(ctx)
+	testcontainers.CleanupContainer(t, registryC)
 
 	registryURL, err := getURL(ctx, registryC, registryPort)
 	require.NoError(t, err)
@@ -144,32 +154,68 @@ func TestRegistry(t *testing.T) {
 		name      string
 		imageName string
 		imageFile string
+		os        string
 		option    registryOption
 		golden    string
 		wantErr   string
 	}{
 		{
-			name:      "happy path with username/password",
+			name:      "authenticate with username/password",
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
+			os:        "alpine 3.10.2",
 			option: registryOption{
-				AuthURL:  authURL,
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/alpine-310-registry.json.golden",
+			golden: "testdata/alpine-310.json.golden",
 		},
 		{
-			name:      "happy path with registry token",
+			name:      "authenticate with registry token",
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
+			os:        "alpine 3.10.2",
 			option: registryOption{
 				AuthURL:       authURL,
 				Username:      authUsername,
 				Password:      authPassword,
 				RegistryToken: true,
 			},
-			golden: "testdata/alpine-310-registry.json.golden",
+			golden: "testdata/alpine-310.json.golden",
+		},
+		{
+			name:      "authenticate with 'trivy registry login'",
+			imageName: "alpine:3.10",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
+			os:        "alpine 3.10.2",
+			option: registryOption{
+				Username:  authUsername,
+				Password:  authPassword,
+				AuthLogin: true,
+			},
+			golden: "testdata/alpine-310.json.golden",
+		},
+		{
+			name:      "amazonlinux 2",
+			imageName: "amazonlinux:2",
+			imageFile: "testdata/fixtures/images/amazon-2.tar.gz",
+			os:        "amazon 2 (Karoo)",
+			option: registryOption{
+				Username: authUsername,
+				Password: authPassword,
+			},
+			golden: "testdata/amazon-2.json.golden",
+		},
+		{
+			name:      "debian buster",
+			imageName: "debian:buster",
+			imageFile: "testdata/fixtures/images/debian-buster.tar.gz",
+			os:        "debian 10.1",
+			option: registryOption{
+				Username: authUsername,
+				Password: authPassword,
+			},
+			golden: "testdata/debian-buster.json.golden",
 		},
 		{
 			name:      "sad path",
@@ -179,82 +225,89 @@ func TestRegistry(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			s := fmt.Sprintf("%s/%s", registryURL.Host, tc.imageName)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := fmt.Sprintf("%s/%s", registryURL.Host, tt.imageName)
 			imageRef, err := name.ParseReference(s)
 			require.NoError(t, err)
 
-			// 1. Load a test image from the tar file, tag it and push to the test registry.
-			err = replicateImage(imageRef, tc.imageFile, auth)
+			// Load a test image from the tar file, tag it and push to the test registry.
+			err = replicateImage(imageRef, tt.imageFile, auth)
 			require.NoError(t, err)
 
-			// 2. Scan it
-			resultFile, err := scan(t, imageRef, baseDir, tc.golden, tc.option)
-
-			if tc.wantErr != "" {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.wantErr, err)
-				return
-			}
+			osArgs, err := scan(t, imageRef, baseDir, tt.option)
 			require.NoError(t, err)
 
-			// 3. Read want and got
-			want := readReport(t, tc.golden)
-			got := readReport(t, resultFile)
-
-			// 4 Update some dynamic fields
-			want.ArtifactName = s
-			for i := range want.Results {
-				want.Results[i].Target = fmt.Sprintf("%s (alpine 3.10.2)", s)
-			}
-
-			// 5. Compare want and got
-			assert.Equal(t, want, got)
+			// Run Trivy
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				wantErr: tt.wantErr,
+				override: overrideFuncs(overrideUID, func(t *testing.T, want, got *types.Report) {
+					want.ArtifactName = s
+					for i := range want.Results {
+						want.Results[i].Target = fmt.Sprintf("%s (%s)", s, tt.os)
+					}
+				}),
+			})
 		})
 	}
 }
 
-func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, error) {
+func scan(t *testing.T, imageRef name.Reference, baseDir string, opt registryOption) ([]string, error) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
 	// Set a temp dir so that modules will not be loaded
 	t.Setenv("XDG_DATA_HOME", cacheDir)
 
-	// Setup the output file
-	outputFile := filepath.Join(t.TempDir(), "output.json")
-	if *update {
-		outputFile = goldenFile
-	}
-
 	// Setup env
 	if err := setupEnv(t, imageRef, baseDir, opt); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	osArgs := []string{"-q", "--cache-dir", cacheDir, "image", "--format", "json", "--skip-update",
-		"--output", outputFile, imageRef.Name()}
-
-	// Run Trivy
-	if err := execute(osArgs); err != nil {
-		return "", err
+	osArgs := []string{
+		"-q",
+		"--cache-dir",
+		cacheDir,
+		"image",
+		"--format",
+		"json",
+		"--image-src",
+		"remote",
+		"--skip-db-update",
+		imageRef.Name(),
 	}
-	return outputFile, nil
+
+	return osArgs, nil
 }
 
 func setupEnv(t *testing.T, imageRef name.Reference, baseDir string, opt registryOption) error {
 	t.Setenv("TRIVY_INSECURE", "true")
 
 	if opt.Username != "" && opt.Password != "" {
-		if opt.RegistryToken {
+		switch {
+		case opt.RegistryToken:
 			// Get a registry token in advance
 			token, err := requestRegistryToken(imageRef, baseDir, opt)
 			if err != nil {
 				return err
 			}
 			t.Setenv("TRIVY_REGISTRY_TOKEN", token)
-		} else {
+		case opt.AuthLogin:
+			t.Setenv("DOCKER_CONFIG", t.TempDir())
+			err := execute([]string{
+				"registry",
+				"login",
+				"--username",
+				opt.Username,
+				"--password",
+				opt.Password,
+				"--insecure",
+				imageRef.Context().RegistryStr(),
+			})
+			if err != nil {
+				return err
+			}
+		default:
 			t.Setenv("TRIVY_USERNAME", opt.Username)
 			t.Setenv("TRIVY_PASSWORD", opt.Password)
 		}
@@ -281,7 +334,7 @@ func requestRegistryToken(imageRef name.Reference, baseDir string, opt registryO
 	}
 
 	// Get a registry token
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/auth", opt.AuthURL), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/auth", opt.AuthURL), nil)
 	if err != nil {
 		return "", err
 	}

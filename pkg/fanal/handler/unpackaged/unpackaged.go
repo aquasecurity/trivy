@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"slices"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
@@ -24,6 +24,7 @@ func init() {
 const version = 1
 
 type unpackagedHook struct {
+	logger *log.Logger
 	client sbomatt.Rekor
 }
 
@@ -33,6 +34,7 @@ func NewUnpackagedHandler(opt artifact.Option) (handler.PostHandler, error) {
 		return nil, xerrors.Errorf("rekor client error: %w", err)
 	}
 	return unpackagedHook{
+		logger: log.WithPrefix("unpackaged"),
 		client: c,
 	}, nil
 }
@@ -62,13 +64,14 @@ func (h unpackagedHook) Handle(ctx context.Context, res *analyzer.AnalysisResult
 		}
 
 		// Parse the fetched SBOM
-		bom, err := sbom.Decode(bytes.NewReader(raw), format)
+		ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
+		bom, err := sbom.Decode(ctx, bytes.NewReader(raw), format)
 		if err != nil {
 			return err
 		}
 
 		if len(bom.Applications) > 0 {
-			log.Logger.Infof("Found SBOM attestation in Rekor: %s", filePath)
+			h.logger.Info("Found SBOM attestation in Rekor", log.FilePath(filePath))
 			// Take the first app since this SBOM should contain a single application.
 			app := bom.Applications[0]
 			app.FilePath = filePath // Use the original file path rather than the one in the SBOM.

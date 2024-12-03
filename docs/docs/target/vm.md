@@ -12,7 +12,7 @@ The following targets are currently supported:
 - AWS EC2
     - Amazon Machine Image (AMI)
     - Amazon Elastic Block Store (EBS) Snapshot
- 
+
 ### Local file
 Pass the path to your local VM image file.
 
@@ -58,7 +58,7 @@ Total: 802 (UNKNOWN: 0, LOW: 17, MEDIUM: 554, HIGH: 221, CRITICAL: 10)
 │                            │                │          │                               │                               │ cause named to terminate...                                  │
 │                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25214                   │
 ├────────────────────────────┼────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
-... 
+...
 ```
 
 </details>
@@ -144,7 +144,7 @@ Trivy supports VM image scanning for
 It is enabled by default.
 You can simply specify your VM image location.
 It detects known vulnerabilities in your VM image.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy vm [YOUR_VM_IMAGE]
@@ -153,10 +153,10 @@ $ trivy vm [YOUR_VM_IMAGE]
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
 As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
-If your VM image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
+If your VM image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners misconfig`.
 
 ```
-$ trivy vm --scanners config [YOUR_VM_IMAGE]
+$ trivy vm --scanners misconfig [YOUR_VM_IMAGE]
 ```
 
 ### Secrets
@@ -230,11 +230,11 @@ Reference: [VMware Virtual Disk Format 1.1.pdf][vmdk]
 |-------------------|:-------:|
 | XFS               |    ✔    |
 | EXT4              |    ✔    |
-| EXT2/3            |         |
+| EXT2/3            |    ✔    |
 | ZFS               |         |
 
 
-[vmdk]: https://www.vmware.com/app/vmdk/?src=vmdk
+[vmdk]: https://github.com/libyal/libvmdk/blob/main/documentation/VMWare%20Virtual%20Disk%20Format%20(VMDK).asciidoc
 [ebsapi-elements]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements
 [coldsnap]: https://github.com/awslabs/coldsnap
 

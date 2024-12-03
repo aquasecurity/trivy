@@ -1,0 +1,90 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "notes": [
+      {
+        "category": "summary",
+        "text": "Example Company VEX document. Unofficial content for demonstration purposes only.",
+        "title": "Author comment"
+      }
+    ],
+    "publisher": {
+      "category": "vendor",
+      "name": "Example Company ProductCERT",
+      "namespace": "https://psirt.example.com"
+    },
+    "title": "Aqua Security example VEX document",
+    "tracking": {
+      "current_release_date": "2022-03-03T11:00:00.000Z",
+      "generator": {
+        "date": "2022-03-03T11:00:00.000Z",
+        "engine": {
+          "name": "Secvisogram",
+          "version": "1.11.0"
+        }
+      },
+      "id": "2022-EVD-UC-01-A-001",
+      "initial_release_date": "2022-03-03T11:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2022-03-03T11:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v4.0.0",
+                "product": {
+                  "name": "go-transitive v4.0.0",
+                  "product_id": "go-transitive-v4.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "go-transitive"
+          }
+        ],
+        "category": "vendor",
+        "name": "foo"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2024-0001",
+      "notes": [
+        {
+          "category": "description",
+          "text": "Users may be able to launch containers using images that are restricted by ImagePolicyWebhook when using ephemeral containers. Kubernetes clusters are only affected if the ImagePolicyWebhook admission plugin is used together with ephemeral containers.",
+          "title": "CVE description"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "go-transitive-v4.0.0"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    }
+  ]
+}

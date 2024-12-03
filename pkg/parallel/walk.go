@@ -4,19 +4,23 @@ import (
 	"context"
 	"io/fs"
 
-	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)
+const defaultParallel = 5
+
+type onFile[T any] func(string, fs.FileInfo, xio.ReadSeekerAt) (T, error)
 type onWalkResult[T any] func(T) error
 
-func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
+func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 	onFile onFile[T], onResult onWalkResult[T]) error {
+	if parallel == 0 {
+		parallel = defaultParallel // Set the default value
+	}
 
 	g, ctx := errgroup.WithContext(ctx)
 	paths := make(chan string)
@@ -35,7 +39,7 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
 			if err != nil {
 				return err
 			} else if info.Size() == 0 {
-				log.Logger.Debugf("%s is empty, skip this file", path)
+				log.Debug("Skip the empty file", log.FilePath(path))
 				return nil
 			}
 
@@ -54,11 +58,7 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
 
 	// Start a fixed number of goroutines to read and digest files.
 	c := make(chan T)
-	limit := 10
-	if slow {
-		limit = 1
-	}
-	for i := 0; i < limit; i++ {
+	for i := 0; i < parallel; i++ {
 		g.Go(func() error {
 			for path := range paths {
 				if err := walk(ctx, fsys, path, c, onFile); err != nil {
@@ -99,13 +99,13 @@ func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile 
 		return xerrors.Errorf("stat error: %w", err)
 	}
 
-	rsa, ok := f.(dio.ReadSeekerAt)
+	rsa, ok := f.(xio.ReadSeekerAt)
 	if !ok {
 		return xerrors.New("type assertion failed")
 	}
 	res, err := onFile(path, info, rsa)
 	if err != nil {
-		log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
+		log.Debug("Walk error", log.FilePath(path), log.Err(err))
 		return nil
 	}
 

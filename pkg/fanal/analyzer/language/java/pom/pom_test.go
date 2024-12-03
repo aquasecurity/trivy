@@ -8,9 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_pomAnalyzer_Analyze(t *testing.T) {
@@ -29,11 +28,28 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pom,
 						FilePath: "testdata/happy/pom.xml",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								Name:     "com.example:example",
-								Version:  "1.0.0",
-								Licenses: []string{"Apache-2.0"},
+								ID:           "com.example:example:1.0.0",
+								Name:         "com.example:example",
+								Version:      "1.0.0",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:example-api:2.0.0",
+								},
+							},
+							{
+								ID:           "com.example:example-api:2.0.0",
+								Name:         "com.example:example-api",
+								Version:      "2.0.0",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   32,
+									},
+								},
 							},
 						},
 					},
@@ -49,11 +65,66 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pom,
 						FilePath: "pom.xml",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								Name:     "com.example:example",
-								Version:  "1.0.0",
-								Licenses: []string{"Apache-2.0"},
+								ID:           "com.example:example:1.0.0",
+								Name:         "com.example:example",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								Licenses:     []string{"Apache-2.0"},
+								DependsOn: []string{
+									"com.example:example-api:2.0.0",
+								},
+							},
+							{
+								ID:           "com.example:example-api:2.0.0",
+								Name:         "com.example:example-api",
+								Version:      "2.0.0",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   32,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path for maven-invoker-plugin integration tests",
+			inputFile: "testdata/mark-as-dev/src/it/example/pom.xml",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Pom,
+						FilePath: "testdata/mark-as-dev/src/it/example/pom.xml",
+						Packages: types.Packages{
+							{
+								ID:           "com.example:example:1.0.0",
+								Name:         "com.example:example",
+								Version:      "1.0.0",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:example-api:@example.version@",
+								},
+								Dev: true,
+							},
+							{
+								ID:           "com.example:example-api:@example.version@",
+								Name:         "com.example:example-api",
+								Version:      "@example.version@",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   32,
+									},
+								},
+								Dev: true,
 							},
 						},
 					},
@@ -68,11 +139,24 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pom,
 						FilePath: "testdata/requirements/pom.xml",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
-								Name:     "com.example:example",
-								Version:  "2.0.0",
-								Licenses: []string{"Apache-2.0"},
+								ID:           "com.example:example:2.0.0",
+								Name:         "com.example:example",
+								Version:      "2.0.0",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipRoot,
+							},
+							{
+								ID:           "org.example:example-api",
+								Name:         "org.example:example-api",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 21,
+										EndLine:   25,
+									},
+								},
 							},
 						},
 					},
@@ -102,13 +186,16 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 				Dir:      tt.inputDir,
 				FilePath: tt.inputFile,
 				Content:  f,
+				Options: analyzer.AnalysisOptions{
+					Offline: true,
+				},
 			})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

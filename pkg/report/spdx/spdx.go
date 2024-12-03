@@ -1,6 +1,7 @@
 package spdx
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 
@@ -15,11 +16,11 @@ import (
 type Writer struct {
 	output    io.Writer
 	version   string
-	format    string
+	format    types.Format
 	marshaler *spdx.Marshaler
 }
 
-func NewWriter(output io.Writer, version string, spdxFormat string) Writer {
+func NewWriter(output io.Writer, version string, spdxFormat types.Format) Writer {
 	return Writer{
 		output:    output,
 		version:   version,
@@ -28,8 +29,8 @@ func NewWriter(output io.Writer, version string, spdxFormat string) Writer {
 	}
 }
 
-func (w Writer) Write(report types.Report) error {
-	spdxDoc, err := w.marshaler.Marshal(report)
+func (w Writer) Write(ctx context.Context, report types.Report) error {
+	spdxDoc, err := w.marshaler.MarshalReport(ctx, report)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal spdx: %w", err)
 	}

@@ -10,26 +10,24 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/mapfs"
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	"github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 // CompositeFS contains multiple filesystems for post-analyzers
 type CompositeFS struct {
-	group AnalyzerGroup
 	dir   string
-	files *syncx.Map[Type, *mapfs.FS]
+	files *sync.Map[Type, *mapfs.FS]
 }
 
-func NewCompositeFS(group AnalyzerGroup) (*CompositeFS, error) {
+func NewCompositeFS() (*CompositeFS, error) {
 	tmpDir, err := os.MkdirTemp("", "analyzer-fs-*")
 	if err != nil {
 		return nil, xerrors.Errorf("unable to create temporary directory: %w", err)
 	}
 
 	return &CompositeFS{
-		group: group,
 		dir:   tmpDir,
-		files: new(syncx.Map[Type, *mapfs.FS]),
+		files: new(sync.Map[Type, *mapfs.FS]),
 	}, nil
 }
 
@@ -55,7 +53,8 @@ func (c *CompositeFS) CopyFileToTemp(opener Opener, info os.FileInfo) (string, e
 		return "", xerrors.Errorf("copy error: %w", err)
 	}
 
-	if err = os.Chmod(f.Name(), info.Mode()); err != nil {
+	// Use 0600 instead of file permissions to avoid errors when a file uses incorrect permissions (e.g. 0044).
+	if err = os.Chmod(f.Name(), 0600); err != nil {
 		return "", xerrors.Errorf("chmod error: %w", err)
 	}
 
@@ -87,8 +86,8 @@ func (c *CompositeFS) CreateLink(analyzerTypes []Type, rootDir, virtualPath, rea
 }
 
 // Set sets the fs.FS for the specified post-analyzer
-func (c *CompositeFS) Set(t Type, fs *mapfs.FS) {
-	c.files.Store(t, fs)
+func (c *CompositeFS) Set(t Type, mfs *mapfs.FS) {
+	c.files.Store(t, mfs)
 }
 
 // Get returns the fs.FS for the specified post-analyzer

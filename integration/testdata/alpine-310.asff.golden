@@ -7,8 +7,8 @@
             "GeneratorId": "Trivy/CVE-2019-1549",
             "AwsAccountId": "123456789012",
             "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+            "UpdatedAt": "2021-08-25T12:20:30.000000005Z",
             "Severity": {
                 "Label": "MEDIUM"
             },
@@ -52,8 +52,8 @@
             "GeneratorId": "Trivy/CVE-2019-1551",
             "AwsAccountId": "123456789012",
             "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+            "UpdatedAt": "2021-08-25T12:20:30.000000005Z",
             "Severity": {
                 "Label": "MEDIUM"
             },
@@ -97,8 +97,8 @@
             "GeneratorId": "Trivy/CVE-2019-1549",
             "AwsAccountId": "123456789012",
             "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+            "UpdatedAt": "2021-08-25T12:20:30.000000005Z",
             "Severity": {
                 "Label": "MEDIUM"
             },
@@ -142,8 +142,8 @@
             "GeneratorId": "Trivy/CVE-2019-1551",
             "AwsAccountId": "123456789012",
             "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+            "UpdatedAt": "2021-08-25T12:20:30.000000005Z",
             "Severity": {
                 "Label": "MEDIUM"
             },

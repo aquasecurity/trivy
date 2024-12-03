@@ -3,7 +3,9 @@
 Trivy scans any container image, filesystem and git repository to detect exposed secrets like passwords, api keys, and tokens.
 Secret scanning is enabled by default.
 
-Trivy will scan every plaintext file, according to builtin rules or configuration. There are plenty of builtin rules:
+Trivy will scan every plaintext file, according to builtin rules or configuration. Also, Trivy can detect secrets in compiled Python files (`.pyc`).
+
+There are plenty of builtin rules:
 
 - AWS access key
 - GCP service account
@@ -96,7 +98,7 @@ If the file doesn't exist, only built-in rules are used.
 You can customize the config file path via the `--secret-config` flag.
 
 !!! warning
-    Trivy uses [Golang regexp package](https://pkg.go.dev/regexp/syntax#hdr-Syntax). To use `^` and `$` as simbols of begin and end of line use multi-line mode -`(?m)`.
+    Trivy uses [Golang regexp package](https://pkg.go.dev/regexp/syntax#hdr-Syntax). To use `^` and `$` as symbols of begin and end of line use multi-line mode -`(?m)`.
 
 ### Custom Rules
 Trivy allows defining custom rules.

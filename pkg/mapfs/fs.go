@@ -1,17 +1,18 @@
 package mapfs
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 type allFS interface {
@@ -55,7 +56,7 @@ func New(opts ...Option) *FS {
 				modTime: time.Now(),
 				mode:    0o0700 | fs.ModeDir,
 			},
-			files: syncx.Map[string, *file]{},
+			files: xsync.Map[string, *file]{},
 		},
 	}
 	for _, opt := range opts {
@@ -122,7 +123,7 @@ func (m *FS) CopyFilesUnder(dir string) error {
 
 // Stat returns a FileInfo describing the file.
 func (m *FS) Stat(name string) (fs.FileInfo, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.Stat(filepath.Join(m.underlyingRoot, name))
 	}
 
@@ -144,7 +145,7 @@ func (m *FS) Stat(name string) (fs.FileInfo, error) {
 // ReadDir reads the named directory
 // and returns a list of directory entries sorted by filename.
 func (m *FS) ReadDir(name string) ([]fs.DirEntry, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.ReadDir(filepath.Join(m.underlyingRoot, name))
 	}
 	return m.root.ReadDir(cleanPath(name))
@@ -152,7 +153,7 @@ func (m *FS) ReadDir(name string) ([]fs.DirEntry, error) {
 
 // Open opens the named file for reading.
 func (m *FS) Open(name string) (fs.File, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.Open(filepath.Join(m.underlyingRoot, name))
 	}
 	return m.root.Open(cleanPath(name))
@@ -187,7 +188,7 @@ func (m *FS) MkdirAll(path string, perm fs.FileMode) error {
 // The caller is permitted to modify the returned byte slice.
 // This method should return a copy of the underlying data.
 func (m *FS) ReadFile(name string) ([]byte, error) {
-	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+	if m.isPathAboveRoot(name) {
 		return os.ReadFile(filepath.Join(m.underlyingRoot, name))
 	}
 
@@ -233,14 +234,18 @@ func (m *FS) RemoveAll(path string) error {
 }
 
 func cleanPath(path string) string {
-	// Return if the file path is a volume name only.
-	// Otherwise, `filepath.Clean` changes "C:" to "C:." and
-	// it will no longer match the pathname held by mapfs.
-	if path == filepath.VolumeName(path) {
-		return path
+	// Convert the volume name like 'C:' into dir like 'C\'
+	if vol := filepath.VolumeName(path); vol != "" {
+		newVol := strings.TrimSuffix(vol, ":")
+		newVol = fmt.Sprintf("%s%c", newVol, filepath.Separator)
+		path = strings.Replace(path, vol, newVol, 1)
 	}
 	path = filepath.Clean(path)
 	path = filepath.ToSlash(path)
 	path = strings.TrimLeft(path, "/") // Remove the leading slash
 	return path
+}
+
+func (m *FS) isPathAboveRoot(name string) bool {
+	return (name == ".." || strings.HasPrefix(name, "../")) && m.underlyingRoot != ""
 }

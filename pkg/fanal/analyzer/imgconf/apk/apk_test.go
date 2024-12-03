@@ -11,14 +11,14 @@ import (
 	"testing"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/kylelemons/godebug/pretty"
 	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/kylelemons/godebug/pretty"
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -202,7 +202,7 @@ var (
 			},
 			{
 				Created: v1.Time{
-					time.Date(2018, time.October, 15, 21, 28, 51, 35012363, time.UTC),
+					Time: time.Date(2018, time.October, 15, 21, 28, 51, 35012363, time.UTC),
 				},
 				CreatedBy:  "/bin/sh -c #(nop)  ENV COMPOSER_VERSION=1.7.2",
 				EmptyLayer: true,
@@ -234,7 +234,7 @@ var (
 			},
 			{
 				Created: v1.Time{
-					time.Date(2018, time.October, 15, 21, 28, 53, 798628678, time.UTC),
+					Time: time.Date(2018, time.October, 15, 21, 28, 53, 798628678, time.UTC),
 				},
 				CreatedBy:  "/bin/sh -c #(nop)  CMD [\"composer\"]",
 				EmptyLayer: true,
@@ -570,454 +570,793 @@ var (
 		{
 			Name:    "acl",
 			Version: "2.2.52-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "784f131cd326111",
+			},
 		},
 		{
 			Name:    "apr",
 			Version: "1.6.5-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "1e7a6d0bda73a74f",
+			},
 		},
 		{
 			Name:    "apr-util",
 			Version: "1.6.1-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "a2c929c03d9ad61a",
+			},
 		},
 		{
 			Name:    "argon2",
 			Version: "20171227-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "f1f015346e9d54db",
+			},
 		},
 		{
 			Name:    "argon2-dev",
 			Version: "20171227-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "dd027c90469eaea2",
+			},
 		},
 		{
 			Name:    "argon2-libs",
 			Version: "20171227-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "c18902624988b224",
+			},
 		},
 		{
 			Name:    "attr",
 			Version: "2.4.47-r7",
+			Identifier: types.PkgIdentifier{
+				UID: "88e3c95b0bd83fe",
+			},
 		},
 		{
 			Name:    "autoconf",
 			Version: "2.69-r2",
+			Identifier: types.PkgIdentifier{
+				UID: "9282eebaa2edb18e",
+			},
 		},
 		{
 			Name:    "bash",
 			Version: "4.4.19-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "b9623518df2580d7",
+			},
 		},
 		{
 			Name:    "binutils",
 			Version: "2.31.1-r2",
+			Identifier: types.PkgIdentifier{
+				UID: "6eb2b9ef787d20e5",
+			},
 		},
 		{
 			Name:    "busybox",
 			Version: "1.29.3-r10",
+			Identifier: types.PkgIdentifier{
+				UID: "6d4fece8eb9aed1b",
+			},
 		},
 		{
 			Name:    "bzip2",
 			Version: "1.0.6-r6",
+			Identifier: types.PkgIdentifier{
+				UID: "f10a7652e98de81",
+			},
 		},
 		{
 			Name:    "ca-certificates",
 			Version: "20190108-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "78b6dea410b11547",
+			},
 		},
 		{
 			Name:    "coreutils",
 			Version: "8.30-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "a65f04a5f1682ef3",
+			},
 		},
 		{
 			Name:    "curl",
 			Version: "7.64.0-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "653b9f8ab041d5ac",
+			},
 		},
 		{
 			Name:    "curl-dev",
 			Version: "7.64.0-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "cdaa10b4d0045df",
+			},
 		},
 		{
 			Name:    "cyrus-sasl",
 			Version: "2.1.27-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "11f463e17f11fc11",
+			},
 		},
 		{
 			Name:    "db",
 			Version: "5.3.28-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "3c96ed610406070f",
+			},
 		},
 		{
 			Name:    "dpkg",
 			Version: "1.19.2-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "291cdf92161b7a35",
+			},
 		},
 		{
 			Name:    "dpkg-dev",
 			Version: "1.19.2-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "c87dd7f90913b9c0",
+			},
 		},
 		{
 			Name:    "expat",
 			Version: "2.2.6-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "c17cef592b4cd1ac",
+			},
 		},
 		{
 			Name:    "file",
 			Version: "5.36-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "e9eac8d2344654b6",
+			},
 		},
 		{
 			Name:    "g++",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "b5a17a376ce78648",
+			},
 		},
 		{
 			Name:    "gcc",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "e0028b3f4edb10d0",
+			},
 		},
 		{
 			Name:    "gdbm",
 			Version: "1.13-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "ddf8257d2b4ffc7b",
+			},
 		},
 		{
 			Name:    "git",
 			Version: "2.20.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "7df769c499baac3e",
+			},
 		},
 		{
 			Name:    "gmp",
 			Version: "6.1.2-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "9543ab8b3ef71c6b",
+			},
 		},
 		{
 			Name:    "gnupg",
 			Version: "2.2.12-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "af5a8477a7bb8a39",
+			},
 		},
 		{
 			Name:    "gnutls",
 			Version: "3.6.7-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "7b8292fb2158b405",
+			},
 		},
 		{
 			Name:    "isl",
 			Version: "0.18-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "ff5808fa3be09223",
+			},
 		},
 		{
 			Name:    "libacl",
 			Version: "2.2.52-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "e1110bb9fa71e9b6",
+			},
 		},
 		{
 			Name:    "libassuan",
 			Version: "2.5.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "5c27356bfc0c8063",
+			},
 		},
 		{
 			Name:    "libatomic",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "9c448437636ec536",
+			},
 		},
 		{
 			Name:    "libattr",
 			Version: "2.4.47-r7",
+			Identifier: types.PkgIdentifier{
+				UID: "58d4cb13b94c427c",
+			},
 		},
 		{
 			Name:    "libbz2",
 			Version: "1.0.6-r6",
+			Identifier: types.PkgIdentifier{
+				UID: "b88167f64940af66",
+			},
 		},
 		{
 			Name:    "libc-dev",
 			Version: "0.7.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "804732077a4c662b",
+			},
 		},
 		{
 			Name:    "libcap",
 			Version: "2.26-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "9fe6eb7eda727396",
+			},
 		},
 		{
 			Name:    "libcrypto1.1",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "68da5e7990c8780c",
+			},
 		},
 		{
 			Name:    "libcurl",
 			Version: "7.64.0-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "49e0a68f77f67462",
+			},
 		},
 		{
 			Name:    "libedit",
 			Version: "20181209.3.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "cb42283699ac3423",
+			},
 		},
 		{
 			Name:    "libedit-dev",
 			Version: "20181209.3.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "e02c3a224e18a6b2",
+			},
 		},
 		{
 			Name:    "libffi",
 			Version: "3.2.1-r6",
+			Identifier: types.PkgIdentifier{
+				UID: "68833f89f34bd7ec",
+			},
 		},
 		{
 			Name:    "libgcc",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "27519ea7a3464bc0",
+			},
 		},
 		{
 			Name:    "libgcrypt",
 			Version: "1.8.4-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "f05eadedb8dc0151",
+			},
 		},
 		{
 			Name:    "libgomp",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "543d8918635c52d6",
+			},
 		},
 		{
 			Name:    "libgpg-error",
 			Version: "1.33-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "db991adc17654512",
+			},
 		},
 		{
 			Name:    "libksba",
 			Version: "1.3.5-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "2bdff3fcdb38fcc9",
+			},
 		},
 		{
 			Name:    "libldap",
 			Version: "2.4.47-r2",
+			Identifier: types.PkgIdentifier{
+				UID: "7d1e18d46af8e64d",
+			},
 		},
 		{
 			Name:    "libmagic",
 			Version: "5.36-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "8de0dc2316c7f08c",
+			},
 		},
 		{
 			Name:    "libsasl",
 			Version: "2.1.27-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "32ade945216e13cb",
+			},
 		},
 		{
 			Name:    "libsodium",
 			Version: "1.0.16-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "7510915bba932b1b",
+			},
 		},
 		{
 			Name:    "libsodium-dev",
 			Version: "1.0.16-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "df3b47abf3f1411f",
+			},
 		},
 		{
 			Name:    "libssh2",
 			Version: "1.8.2-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "7cf64ca05155ca9c",
+			},
 		},
 		{
 			Name:    "libssh2-dev",
 			Version: "1.8.2-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "8afd5b832f1d474c",
+			},
 		},
 		{
 			Name:    "libssl1.1",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "b35faf606cddd965",
+			},
 		},
 		{
 			Name:    "libstdc++",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "e56259710bdc7ded",
+			},
 		},
 		{
 			Name:    "libtasn1",
 			Version: "4.13-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "d78c8e47a85a4185",
+			},
 		},
 		{
 			Name:    "libunistring",
 			Version: "0.9.10-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "5f31755a4db496df",
+			},
 		},
 		{
 			Name:    "libuuid",
 			Version: "2.33-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "af33ae09a75e4ee2",
+			},
 		},
 		{
 			Name:    "libxml2",
 			Version: "2.9.9-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "f772ed5552f4248f",
+			},
 		},
 		{
 			Name:    "libxml2-dev",
 			Version: "2.9.9-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "3aa56b4d41995ecc",
+			},
 		},
 		{
 			Name:    "lz4",
 			Version: "1.8.3-r2",
+			Identifier: types.PkgIdentifier{
+				UID: "16fe8f309f000a",
+			},
 		},
 		{
 			Name:    "lz4-libs",
 			Version: "1.8.3-r2",
+			Identifier: types.PkgIdentifier{
+				UID: "f1cc72d3a4f0e3fa",
+			},
 		},
 		{
 			Name:    "m4",
 			Version: "1.4.18-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "279041efb6311a55",
+			},
 		},
 		{
 			Name:    "make",
 			Version: "4.2.1-r2",
+			Identifier: types.PkgIdentifier{
+				UID: "aedc2f116a0a656",
+			},
 		},
 		{
 			Name:    "mercurial",
 			Version: "4.9.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "dd8db352af0fe45d",
+			},
 		},
 		{
 			Name:    "mpc1",
 			Version: "1.0.3-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "4ac00bb3c9d7b863",
+			},
 		},
 		{
 			Name:    "mpfr3",
 			Version: "3.1.5-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "7351997d7d25f69a",
+			},
 		},
 		{
 			Name:    "musl",
 			Version: "1.1.20-r4",
+			Identifier: types.PkgIdentifier{
+				UID: "8e5756f96b3b5f6",
+			},
 		},
 		{
 			Name:    "musl-dev",
 			Version: "1.1.20-r4",
+			Identifier: types.PkgIdentifier{
+				UID: "2232888b0c99c2d",
+			},
 		},
 		{
 			Name:    "ncurses",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "df982c6c8f287e6a",
+			},
 		},
 		{
 			Name:    "ncurses-dev",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "80932f0ecaf2d5f8",
+			},
 		},
 		{
 			Name:    "ncurses-libs",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "d8410f98ecc55ce4",
+			},
 		},
 		{
 			Name:    "ncurses-terminfo",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "c60fc6e5a37d8a95",
+			},
 		},
 		{
 			Name:    "ncurses-terminfo-base",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "c2beca25e6a5371f",
+			},
 		},
 		{
 			Name:    "nettle",
 			Version: "3.4.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "96dcec63030bedbb",
+			},
 		},
 		{
 			Name:    "nghttp2",
 			Version: "1.35.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "ba6c36de650ae267",
+			},
 		},
 		{
 			Name:    "nghttp2-dev",
 			Version: "1.35.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "db9600175e13927",
+			},
 		},
 		{
 			Name:    "nghttp2-libs",
 			Version: "1.35.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "66cd303081642354",
+			},
 		},
 		{
 			Name:    "npth",
 			Version: "1.6-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "4a8c2366f7da081d",
+			},
 		},
 		{
 			Name:    "openldap",
 			Version: "2.4.47-r2",
+			Identifier: types.PkgIdentifier{
+				UID: "4e116d327ed660e7",
+			},
 		},
 		{
 			Name:    "openssh",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "27574c5b357bd209",
+			},
 		},
 		{
 			Name:    "openssh-client",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "4d095f61f69debef",
+			},
 		},
 		{
 			Name:    "openssh-keygen",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "12cb2bcb1f6c2295",
+			},
 		},
 		{
 			Name:    "openssh-server",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "dee48c5c90bff0d6",
+			},
 		},
 		{
 			Name:    "openssh-server-common",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "ad06b8d442f8a162",
+			},
 		},
 		{
 			Name:    "openssh-sftp-server",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "e0bc3d8e794f06c8",
+			},
 		},
 		{
 			Name:    "openssl",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "1c8ae81a9b60513c",
+			},
 		},
 		{
 			Name:    "openssl-dev",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "c6549ade045edac",
+			},
 		},
 		{
 			Name:    "p11-kit",
 			Version: "0.23.14-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "4f77fc5f062368fc",
+			},
 		},
 		{
 			Name:    "patch",
 			Version: "2.7.6-r4",
+			Identifier: types.PkgIdentifier{
+				UID: "49b5c14cbee185b7",
+			},
 		},
 		{
 			Name:    "pcre2",
 			Version: "10.32-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "c3733a676cf271ba",
+			},
 		},
 		{
 			Name:    "perl",
 			Version: "5.26.3-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "10e2893a9ea288e",
+			},
 		},
 		{
 			Name:    "pinentry",
 			Version: "1.1.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "783866fca9a015bd",
+			},
 		},
 		{
 			Name:    "pkgconf",
 			Version: "1.6.0-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "33d19ebaf35432b0",
+			},
 		},
 		{
 			Name:    "python2",
 			Version: "2.7.16-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "a839b2c9a5f9ba73",
+			},
 		},
 		{
 			Name:    "re2c",
 			Version: "1.1.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "ec7d28a39ed7dfb6",
+			},
 		},
 		{
 			Name:    "readline",
 			Version: "7.0.003-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "7d4d5810d005452c",
+			},
 		},
 		{
 			Name:    "serf",
 			Version: "1.3.9-r5",
+			Identifier: types.PkgIdentifier{
+				UID: "7f23c377c19eff2f",
+			},
 		},
 		{
 			Name:    "sqlite",
 			Version: "3.26.0-r3",
+			Identifier: types.PkgIdentifier{
+				UID: "1eab4ef4d3ea8c3c",
+			},
 		},
 		{
 			Name:    "sqlite-dev",
 			Version: "3.26.0-r3",
+			Identifier: types.PkgIdentifier{
+				UID: "4dcddd5956410d59",
+			},
 		},
 		{
 			Name:    "sqlite-libs",
 			Version: "3.26.0-r3",
+			Identifier: types.PkgIdentifier{
+				UID: "9790a2922ebbad67",
+			},
 		},
 		{
 			Name:    "subversion",
 			Version: "1.11.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "9de851271909a16",
+			},
 		},
 		{
 			Name:    "subversion-libs",
 			Version: "1.11.1-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "f55079ee39f32296",
+			},
 		},
 		{
 			Name:    "tar",
 			Version: "1.32-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "ee612e956fb56928",
+			},
 		},
 		{
 			Name:    "unzip",
 			Version: "6.0-r4",
+			Identifier: types.PkgIdentifier{
+				UID: "a0da1ecf3082e04",
+			},
 		},
 		{
 			Name:    "util-linux",
 			Version: "2.33-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "1405b9526350c651",
+			},
 		},
 		{
 			Name:    "wget",
 			Version: "1.20.3-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "a5b83a24d7129300",
+			},
 		},
 		{
 			Name:    "xz",
 			Version: "5.2.4-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "253d1bd8b99d6062",
+			},
 		},
 		{
 			Name:    "xz-libs",
 			Version: "5.2.4-r0",
+			Identifier: types.PkgIdentifier{
+				UID: "a42777c05ddb55f3",
+			},
 		},
 		{
 			Name:    "zip",
 			Version: "3.0-r7",
+			Identifier: types.PkgIdentifier{
+				UID: "2039aba6424806a4",
+			},
 		},
 		{
 			Name:    "zlib",
 			Version: "1.2.11-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "b742ac29b1f34e",
+			},
 		},
 		{
 			Name:    "zlib-dev",
 			Version: "1.2.11-r1",
+			Identifier: types.PkgIdentifier{
+				UID: "e9a8669a86602c9d",
+			},
 		},
 	}
 )
@@ -1070,11 +1409,11 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				targetOS: types.OS{
 					Family: "alpine",
-					Name:   "",
+					Name:   "3.9.1",
 				},
 				config: alpineConfig,
 			},
-			apkIndexArchivePath: testServer.URL + "%v",
+			apkIndexArchivePath: testServer.URL + "/%v",
 			want:                wantPkgs,
 		},
 	}
@@ -1261,9 +1600,9 @@ func TestResolveDependency(t *testing.T) {
 		if err = json.NewDecoder(f).Decode(&apkIndexArchive); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
-		circularDependencyCheck := map[string]struct{}{}
+		circularDependencyCheck := make(map[string]struct{})
 		pkgs := analyzer.resolveDependency(apkIndexArchive, v.pkgName, circularDependencyCheck)
-		actual := map[string]struct{}{}
+		actual := make(map[string]struct{})
 		for _, pkg := range pkgs {
 			actual[pkg] = struct{}{}
 		}

@@ -49,7 +49,6 @@ trivy completion zsh > "${fpath[1]}/_trivy"
 
 ```bash
 $ trivy [tab]
-aws         -- scan aws account
 completion  -- Generate the autocompletion script for the specified shell
 config      -- Scan config files for misconfigurations
 filesystem  -- Scan local filesystem
@@ -58,7 +57,7 @@ image       -- Scan a container image
 kubernetes  -- scan kubernetes cluster
 module      -- Manage modules
 plugin      -- Manage plugins
-repository  -- Scan a remote repository
+repository  -- Scan a repository
 rootfs      -- Scan rootfs
 sbom        -- Scan SBOM for vulnerabilities
 server      -- Server mode

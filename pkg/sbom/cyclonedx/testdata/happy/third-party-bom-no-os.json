@@ -19,7 +19,9 @@
       "version": "1.2.3-r0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0"

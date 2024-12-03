@@ -1,0 +1,88 @@
+name: Cache test images
+on:
+  schedule:
+    - cron: "0 0 * * *" # Run this workflow every day at 00:00 to avoid cache deletion.
+  workflow_dispatch:
+
+jobs:
+  test-images:
+    name: Cache test images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        if: github.ref_name == 'main'
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      ## We need to work with test image cache only for main branch
+      - name: Restore and save test images cache
+        if: github.ref_name == 'main'
+        uses: actions/cache@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
+
+      - name: Download test images
+        if: github.ref_name == 'main'
+        run: mage test:fixtureContainerImages
+
+  test-vm-images:
+    name: Cache test VM images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        if: github.ref_name == 'main'
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      ## We need to work with test VM image cache only for main branch
+      - name: Restore and save test VM images cache
+        if: github.ref_name == 'main'
+        uses: actions/cache@v4
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-vm-images-
+
+      - name: Download test VM images
+        if: github.ref_name == 'main'
+        run: mage test:fixtureVMImages

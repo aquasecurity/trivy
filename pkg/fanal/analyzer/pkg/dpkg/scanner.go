@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"io"
 	"net/textproto"
-	"strings"
 )
 
 type dpkgScanner struct {
@@ -15,6 +14,11 @@ type dpkgScanner struct {
 // NewScanner returns a new scanner that splits on empty lines.
 func NewScanner(r io.Reader) *dpkgScanner {
 	s := bufio.NewScanner(r)
+	// Package data may exceed default buffer size
+	// Increase the buffer default size by 2 times
+	buf := make([]byte, 0, 128*1024)
+	s.Buffer(buf, 128*1024)
+
 	s.Split(emptyLineSplit)
 	return &dpkgScanner{Scanner: s}
 }
@@ -37,7 +41,7 @@ func emptyLineSplit(data []byte, atEOF bool) (advance int, token []byte, err err
 		return 0, nil, nil
 	}
 
-	if i := strings.Index(string(data), "\n\n"); i >= 0 {
+	if i := bytes.Index(data, []byte("\n\n")); i >= 0 {
 		// We have a full empty line terminated block.
 		return i + 2, data[0:i], nil
 	}

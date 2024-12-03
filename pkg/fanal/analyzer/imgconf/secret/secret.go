@@ -52,7 +52,7 @@ func (a *secretAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnalysi
 	})
 
 	if len(result.Findings) == 0 {
-		log.Logger.Debug("No secrets found in container image config")
+		log.Debug("No secrets found in container image config")
 		return nil, nil
 	}
 

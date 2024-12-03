@@ -1,0 +1,11 @@
+name: "test_plugin"
+repository: testdata/test_plugin
+version: "0.2.0"
+summary: test
+description: test
+platforms:
+  - selector:
+      os: linux
+      arch: amd64
+    uri: ./test.sh
+    bin: ./test.sh

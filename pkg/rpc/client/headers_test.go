@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/twitchtv/twirp"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/twitchtv/twirp"
 )
 
 func TestWithCustomHeaders(t *testing.T) {

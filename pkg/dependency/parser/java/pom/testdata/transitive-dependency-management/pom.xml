@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>transitive-dependency-management</artifactId>
+    <version>2.0.0</version>
+
+    <packaging>jar</packaging>
+    <name>Example</name>
+    <description>Example</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-dependency-management3</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+    </dependencies>
+
+</project>

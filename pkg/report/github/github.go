@@ -1,6 +1,7 @@
 package github
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,6 +12,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -35,7 +37,7 @@ type File struct {
 	SrcLocation string `json:"source_location,omitempty"`
 }
 
-type Metadata map[string]interface{}
+type Metadata map[string]any
 
 type Manifest struct {
 	Name     string             `json:"name,omitempty"`
@@ -71,11 +73,11 @@ type Writer struct {
 	Version string
 }
 
-func (w Writer) Write(report types.Report) error {
+func (w Writer) Write(ctx context.Context, report types.Report) error {
 	snapshot := &DependencySnapshot{}
 
-	//use now() method that can be overwritten while integration tests run
-	snapshot.Scanned = clock.Now().Format(time.RFC3339)
+	// use now() method that can be overwritten while integration tests run
+	snapshot.Scanned = clock.Now(ctx).Format(time.RFC3339)
 	snapshot.Detector = Detector{
 		Name:    "trivy",
 		Version: w.Version,
@@ -101,11 +103,28 @@ func (w Writer) Write(report types.Report) error {
 		}
 
 		manifest := Manifest{}
-		manifest.Name = result.Type
+		manifest.Name = string(result.Type)
 		// show path for language-specific packages only
 		if result.Class == types.ClassLangPkg {
-			manifest.File = &File{
-				SrcLocation: result.Target,
+			if report.ArtifactType == artifact.TypeContainerImage {
+				// `RepoDigests` ~= <registry>/<image_name>@sha256:<image_hash>
+				// `RepoTag` ~= <registry>/<image_name>:<image_tag>
+				// By concatenating the hash from `RepoDigests` at the end of `RepoTag` we get all the information
+				imageReference := strings.Join(report.Metadata.RepoTags, ", ")
+				imageWithHash := strings.Join(report.Metadata.RepoDigests, ", ")
+				_, imageHash, found := strings.Cut(imageWithHash, "@")
+				if found {
+					imageReference += "@" + imageHash
+				}
+				// Replacing `source_location` in manifest by the image name, tag and hash
+				manifest.File = &File{
+					SrcLocation: imageReference,
+				}
+
+			} else {
+				manifest.File = &File{
+					SrcLocation: result.Target,
+				}
 			}
 		}
 
@@ -117,9 +136,13 @@ func (w Writer) Write(report types.Report) error {
 			githubPkg.Scope = RuntimeScope
 			githubPkg.Relationship = getPkgRelationshipType(pkg)
 			githubPkg.Dependencies = pkg.DependsOn // TODO: replace with PURL
-			githubPkg.PackageUrl, err = buildPurl(result.Type, pkg)
+			githubPkg.PackageUrl, err = buildPurl(result.Type, report.Metadata, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
+			}
+
+			if pkg.FilePath != "" {
+				githubPkg.Metadata = Metadata{"source_location": pkg.FilePath}
 			}
 
 			resolved[pkg.Name] = githubPkg
@@ -154,16 +177,19 @@ func getMetadata(report types.Report) Metadata {
 }
 
 func getPkgRelationshipType(pkg ftypes.Package) string {
-	if pkg.Indirect {
+	if pkg.Relationship == ftypes.RelationshipIndirect {
 		return IndirectRelationship
 	}
 	return DirectRelationship
 }
 
-func buildPurl(t string, pkg ftypes.Package) (string, error) {
-	packageUrl, err := purl.NewPackageURL(t, types.Metadata{}, pkg)
+func buildPurl(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (string, error) {
+	packageUrl, err := purl.New(t, metadata, pkg)
 	if err != nil {
 		return "", xerrors.Errorf("purl error: %w", err)
 	}
-	return packageUrl.ToString(), nil
+	if packageUrl == nil {
+		return "", nil
+	}
+	return packageUrl.String(), nil
 }

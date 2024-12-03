@@ -41,6 +41,7 @@ message BlobInfo {
   string                           diff_id           = 8;
   repeated common.CustomResource custom_resources    = 10;
   repeated common.Secret secrets                     = 12;
+  repeated common.LicenseFile licenses               = 13;
 }
 
 message PutBlobRequest {

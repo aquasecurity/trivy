@@ -1,0 +1,24 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+  - blas=1.0=openblas
+  - _openmp_mutex
+  - ca-certificates=2024.2
+  - ld_impl_linux-aarch64=2.40.*
+  - libblas>=3.9
+  - libcblas<=3.9.0=22_linuxaarch64_openblas
+  - libexpat==2.6.2
+  - libffi==3.4.2=h3557bc0_5
+  - libgcc-ng 13.2|13.3
+  - libgfortran-ng >13.2.0,<=13.3
+  - libgfortran5 =>13.2.0,<13.3|13.4
+  - libgomp 13.2.0 hf8544c7_5
+  - liblapack=3.9.*=22_linuxaarch64_openblas
+  - libnsl=2.0.1=h31becfc_0
+  - bzip2=1.0.8=h998d150_5
+  - pip:
+      - asgiref==3.8.1
+      - django==5.0.6
+
+prefix: /opt/conda/envs/test-env

@@ -1,0 +1,69 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "slem",
+      "Name": "5.4"
+    },
+    "ImageID": "sha256:c45ec974938acac29c893b5d273d73e4ebdd7e6a97b6fa861dfbd8dd430b9016",
+    "DiffIDs": [
+      "sha256:7cdd3aec849d122d63dc83a5e1e2fb89b341c67b03e25979131ca335a463bb57"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "author": "SUSE LLC (https://www.suse.com/)",
+      "created": "2024-09-03T17:54:39Z",
+      "history": [
+        {
+          "author": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+          "created": "2024-09-03T17:54:39Z",
+          "created_by": "KIWI 9.24.43"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:7cdd3aec849d122d63dc83a5e1e2fb89b341c67b03e25979131ca335a463bb57"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Labels": {
+          "com.suse.eula": "sle-eula",
+          "com.suse.image-type": "sle-micro",
+          "com.suse.release-stage": "released",
+          "com.suse.sle.micro.rancher.created": "2024-09-03T17:53:32.129328086Z",
+          "com.suse.sle.micro.rancher.description": "Image containing a micro environment for containers based on the SLE Micro for Rancher.",
+          "com.suse.sle.micro.rancher.disturl": "obs://build.suse.de/SUSE:SLE-15-SP4:Update:Products:Micro54:Update:CR/images/fcaa3a91b132f1955fa900b902aef7f2-SLE-Micro-Rancher",
+          "com.suse.sle.micro.rancher.reference": "registry.suse.com/suse/sle-micro-rancher/5.4:%PKG_VERSION%-%RELEASE",
+          "com.suse.sle.micro.rancher.title": "SLE Micro for Rancher Base Container",
+          "com.suse.sle.micro.rancher.url": "https://www.suse.com/products/micro/",
+          "com.suse.sle.micro.rancher.vendor": "SUSE LLC",
+          "com.suse.sle.micro.rancher.version": "5.4",
+          "com.suse.supportlevel": "l3",
+          "org.openbuildservice.disturl": "obs://build.suse.de/SUSE:SLE-15-SP4:Update:Products:Micro54:Update:CR/images/fcaa3a91b132f1955fa900b902aef7f2-SLE-Micro-Rancher",
+          "org.opencontainers.image.created": "2024-09-03T17:53:32.129328086Z",
+          "org.opencontainers.image.description": "Image containing a micro environment for containers based on the SLE Micro for Rancher.",
+          "org.opencontainers.image.title": "SLE Micro for Rancher Base Container",
+          "org.opencontainers.image.url": "https://www.suse.com/products/micro/",
+          "org.opencontainers.image.vendor": "SUSE LLC",
+          "org.opencontainers.image.version": "5.4",
+          "org.suse.reference": "registry.suse.com/suse/sle-micro-rancher/5.4:%PKG_VERSION%-%RELEASE"
+        }
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz (slem 5.4)",
+      "Class": "os-pkgs",
+      "Type": "slem"
+    }
+  ]
+}

@@ -4,12 +4,13 @@ var builtinAllowRules = []AllowRule{
 	{
 		ID:          "tests",
 		Description: "Avoid test files and paths",
-		Path:        MustCompile(`(^test|\/test|-test|_test|\.test)`),
+		Path:        MustCompile(`(^(?i)test|\/test|-test|_test|\.test)`),
 	},
 	{
 		ID:          "examples",
 		Description: "Avoid example files and paths", // e.g. https://github.com/boto/botocore/blob/develop/botocore/data/organizations/2016-11-28/examples-1.json
 		Path:        MustCompile(`example`),
+		Regex:       MustCompile("(?i)example"),
 	},
 	{
 		ID:          "vendor",

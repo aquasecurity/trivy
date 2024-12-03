@@ -4,12 +4,12 @@ import (
 	"context"
 	"os"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/swift/cocoapods"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"golang.org/x/xerrors"
 )
 
 func init() {

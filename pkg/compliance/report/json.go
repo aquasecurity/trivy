@@ -18,7 +18,7 @@ func (jw JSONWriter) Write(report *ComplianceReport) error {
 	var output []byte
 	var err error
 
-	var v interface{}
+	var v any
 	switch jw.Report {
 	case allReport:
 		v = report

@@ -185,18 +185,6 @@ Trivy supports the following packages.
 - [OS packages][os_packages]
 - [Language-specific packages][language_packages]
 
-In addition to the above packages, Trivy also supports the following packages for generating SBOM.
-
-!!! note
-    These packages are not supported for vulnerability scanning.
-
-| Language | File              | Dependency location[^1] |
-|----------|-------------------|:-----------------------:|
-| Python   | conda package[^2] |            -            |
-| Swift    | Podfile.lock      |            -            |
-
-[^1]: Use `startline == 1 and endline == 1` for unsupported file types
-[^2]: `envs/*/conda-meta/*.json`
 
 ### Formats
 #### CycloneDX
@@ -229,13 +217,16 @@ $ cat result.json | jq .
   "version": 1,
   "metadata": {
     "timestamp": "2022-02-22T15:11:40.270597Z",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "dev"
-      }
-    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
     "component": {
       "bom-ref": "pkg:oci/alpine@sha256:21a3deaa0d32a8057914f36584b5288d2e5ecc984380bc0118285c70fa8c9300?repository_url=index.docker.io%2Flibrary%2Falpine&arch=amd64",
       "type": "container",
@@ -740,21 +731,25 @@ $ cat result.spdx.json | jq .
 </details>
 
 ## Scanning
-Trivy can take SBOM documents as input for scanning.
+
+### SBOM as Target
+Trivy can take SBOM documents as input for scanning, e.g `trivy sbom ./sbom.spdx`.
 See [here](../target/sbom.md) for more details.
 
-Also, Trivy searches for SBOM files in container images.
+### SBOM Detection inside Targets
+Trivy searches for SBOM files in container images with the following extensions:
 
-```bash
-$ trivy image bitnami/elasticsearch:8.7.1
-```
+- `.spdx`
+- `.spdx.json`
+- `.cdx`
+- `.cdx.json`
 
-For example, [Bitnami images](https://github.com/bitnami/containers) contain SBOM files in `/opt/bitnami` directory.
-Trivy automatically detects the SBOM files and uses them for scanning.
+In addition, Trivy automatically detects SBOM files in [Bitnami images](https://github.com/bitnami/containers), [see here](../coverage/others/bitnami.md) for more details.
+
 It is enabled in the following targets.
 
 |     Target      | Enabled |
-|:---------------:|:-------:|
+| :-------------: | :-----: |
 | Container Image |    ✓    |
 |   Filesystem    |         |
 |     Rootfs      |    ✓    |
@@ -764,12 +759,15 @@ It is enabled in the following targets.
 |       AWS       |         |
 |      SBOM       |         |
 
+### SBOM Discovery for Container Images
 
-[spdx]: https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf
+When scanning container images, Trivy can discover SBOM for those images. [See here](../target/container_image.md) for more details.
+
+[spdx]: https://spdx.github.io/spdx-spec/v2.2.2/
 
 [cyclonedx]: https://cyclonedx.org/
 [sbom]: https://cyclonedx.org/capabilities/sbom/
 [bov]: https://cyclonedx.org/capabilities/bov/
 
-[os_packages]: ../scanner/vulnerability/os.md
-[language_packages]: ../scanner/vulnerability/language/index.md
+[os_packages]: ../scanner/vulnerability.md#os-packages
+[language_packages]: ../scanner/vulnerability.md#language-specific-packages

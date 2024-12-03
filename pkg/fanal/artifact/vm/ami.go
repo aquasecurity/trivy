@@ -3,13 +3,12 @@ package vm
 import (
 	"context"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -19,15 +18,12 @@ type AMI struct {
 	imageID string
 }
 
-func newAMI(imageID string, storage Storage, region string) (*AMI, error) {
+func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, error) {
 	// TODO: propagate context
 	ctx := context.TODO()
-	cfg, err := config.LoadDefaultConfig(ctx)
+	cfg, err := config.LoadDefaultAWSConfig(ctx, region, endpoint)
 	if err != nil {
-		return nil, xerrors.Errorf("aws config load error: %w", err)
-	}
-	if region != "" {
-		cfg.Region = region
+		return nil, err
 	}
 	client := ec2.NewFromConfig(cfg)
 	output, err := client.DescribeImages(ctx, &ec2.DescribeImagesInput{
@@ -45,8 +41,8 @@ func newAMI(imageID string, storage Storage, region string) (*AMI, error) {
 		if snapshotID == "" {
 			continue
 		}
-		log.Logger.Infof("Snapshot %s found", snapshotID)
-		ebs, err := newEBS(snapshotID, storage, region)
+		log.WithPrefix("ami").Info("Snapshot found", log.String("snapshot_id", snapshotID))
+		ebs, err := newEBS(snapshotID, storage, region, endpoint)
 		if err != nil {
 			return nil, xerrors.Errorf("new EBS error: %w", err)
 		}
@@ -59,10 +55,10 @@ func newAMI(imageID string, storage Storage, region string) (*AMI, error) {
 	return nil, xerrors.New("no snapshot found")
 }
 
-func (a *AMI) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+func (a *AMI) Inspect(ctx context.Context) (artifact.Reference, error) {
 	ref, err := a.EBS.Inspect(ctx)
 	if err != nil {
-		return types.ArtifactReference{}, err
+		return artifact.Reference{}, err
 	}
 	ref.Name = a.imageID
 	return ref, nil

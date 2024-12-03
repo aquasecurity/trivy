@@ -3,24 +3,26 @@ package secret
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var lineSep = []byte{'\n'}
 
 type Scanner struct {
+	logger *log.Logger
 	*Global
 }
 
@@ -59,6 +61,10 @@ func (g Global) AllowPath(path string) bool {
 // Regexp adds unmarshalling from YAML for regexp.Regexp
 type Regexp struct {
 	*regexp.Regexp
+}
+
+func MustCompileWithoutWordPrefix(str string) *Regexp {
+	return MustCompile(fmt.Sprintf("%s(%s)", startWord, str))
 }
 
 func MustCompile(str string) *Regexp {
@@ -123,7 +129,8 @@ func (s *Scanner) FindSubmatchLocations(r Rule, content []byte) []Location {
 	var submatchLocations []Location
 	matchsIndices := r.Regex.FindAllSubmatchIndex(content, -1)
 	for _, matchIndices := range matchsIndices {
-		matchLocation := Location{ // first two indexes are always start and end of the whole match
+		matchLocation := Location{
+			// first two indexes are always start and end of the whole match
 			Start: matchIndices[0],
 			End:   matchIndices[1],
 		}
@@ -151,7 +158,10 @@ func (r *Rule) getMatchSubgroupsLocations(matchLocs []int) []Location {
 		if name == r.SecretGroupName {
 			startLocIndex := 2 * i
 			endLocIndex := startLocIndex + 1
-			locations = append(locations, Location{Start: matchLocs[startLocIndex], End: matchLocs[endLocIndex]})
+			locations = append(locations, Location{
+				Start: matchLocs[startLocIndex],
+				End:   matchLocs[endLocIndex],
+			})
 		}
 	}
 	return locations
@@ -165,9 +175,9 @@ func (r *Rule) MatchKeywords(content []byte) bool {
 	if len(r.Keywords) == 0 {
 		return true
 	}
-
+	var contentLower = bytes.ToLower(content)
 	for _, kw := range r.Keywords {
-		if bytes.Contains(bytes.ToLower(content), []byte(strings.ToLower(kw))) {
+		if bytes.Contains(contentLower, []byte(strings.ToLower(kw))) {
 			return true
 		}
 	}
@@ -270,33 +280,55 @@ func ParseConfig(configPath string) (*Config, error) {
 		return nil, nil
 	}
 
+	logger := log.WithPrefix("secret").With("config_path", configPath)
 	f, err := os.Open(configPath)
 	if errors.Is(err, os.ErrNotExist) {
 		// If the specified file doesn't exist, it just uses built-in rules and allow rules.
-		log.Logger.Debugf("No secret config detected: %s", configPath)
+		logger.Debug("No secret config detected")
 		return nil, nil
 	} else if err != nil {
 		return nil, xerrors.Errorf("file open error %s: %w", configPath, err)
 	}
 	defer f.Close()
 
-	log.Logger.Infof("Loading %s for secret scanning...", configPath)
+	logger.Info("Loading the config file for secret scanning...")
 
 	var config Config
 	if err = yaml.NewDecoder(f).Decode(&config); err != nil {
 		return nil, xerrors.Errorf("secrets config decode error: %w", err)
 	}
 
+	// Update severity for custom rules
+	for i := range config.CustomRules {
+		config.CustomRules[i].Severity = convertSeverity(logger, config.CustomRules[i].Severity)
+	}
+
 	return &config, nil
 }
 
+// convertSeverity checks the severity and converts it to uppercase or uses "UNKNOWN" for the wrong severity.
+func convertSeverity(logger *log.Logger, severity string) string {
+	switch strings.ToLower(severity) {
+	case "low", "medium", "high", "critical", "unknown":
+		return strings.ToUpper(severity)
+	default:
+		logger.Warn("Incorrect severity", log.String("severity", severity))
+		return "UNKNOWN"
+	}
+}
+
 func NewScanner(config *Config) Scanner {
+	logger := log.WithPrefix("secret")
+
 	// Use the default rules
 	if config == nil {
-		return Scanner{Global: &Global{
-			Rules:      builtinRules,
-			AllowRules: builtinAllowRules,
-		}}
+		return Scanner{
+			logger: logger,
+			Global: &Global{
+				Rules:      builtinRules,
+				AllowRules: builtinAllowRules,
+			},
+		}
 	}
 
 	enabledRules := builtinRules
@@ -321,16 +353,20 @@ func NewScanner(config *Config) Scanner {
 		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)
 	})
 
-	return Scanner{Global: &Global{
-		Rules:        rules,
-		AllowRules:   allowRules,
-		ExcludeBlock: config.ExcludeBlock,
-	}}
+	return Scanner{
+		logger: logger,
+		Global: &Global{
+			Rules:        rules,
+			AllowRules:   allowRules,
+			ExcludeBlock: config.ExcludeBlock,
+		},
+	}
 }
 
 type ScanArgs struct {
 	FilePath string
 	Content  []byte
+	Binary   bool
 }
 
 type Match struct {
@@ -339,9 +375,11 @@ type Match struct {
 }
 
 func (s *Scanner) Scan(args ScanArgs) types.Secret {
+	logger := s.logger.With("file_path", args.FilePath)
+
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
-		log.Logger.Debugf("Skipped secret scanning on %q matching allowed paths", args.FilePath)
+		logger.Debug("Skipped secret scanning matching allowed paths")
 		return types.Secret{
 			FilePath: args.FilePath,
 		}
@@ -354,15 +392,16 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	var findings []types.SecretFinding
 	globalExcludedBlocks := newBlocks(args.Content, s.ExcludeBlock.Regexes)
 	for _, rule := range s.Rules {
+		ruleLogger := logger.With("rule_id", rule.ID)
 		// Check if the file path should be scanned by this rule
 		if !rule.MatchPath(args.FilePath) {
-			log.Logger.Debugf("Skipped secret scanning on %q as non-compliant to the rule %q", args.FilePath, rule.ID)
+			ruleLogger.Debug("Skipped secret scanning as non-compliant to the rule")
 			continue
 		}
 
 		// Check if the file path should be allowed
 		if rule.AllowPath(args.FilePath) {
-			log.Logger.Debugf("Skipped secret scanning on %q as allowed", args.FilePath)
+			ruleLogger.Debug("Skipped secret scanning as allowed")
 			continue
 		}
 
@@ -396,9 +435,14 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 			censored = censorLocation(loc, censored)
 		}
 	}
-
 	for _, match := range matched {
-		findings = append(findings, toFinding(match.Rule, match.Location, censored))
+		finding := toFinding(match.Rule, match.Location, censored)
+		// Rewrite unreadable fields for binary files
+		if args.Binary {
+			finding.Match = fmt.Sprintf("Binary file %q matches a rule %q", args.FilePath, match.Rule.Title)
+			finding.Code = types.Code{}
+		}
+		findings = append(findings, finding)
 	}
 
 	if len(findings) == 0 {
@@ -443,7 +487,10 @@ func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
 	}
 }
 
-const secretHighlightRadius = 2 // number of lines above + below each secret to include in code output
+const (
+	secretHighlightRadius = 2   // number of lines above + below each secret to include in code output
+	maxLineLength         = 100 // all lines longer will be cut off
+)
 
 func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
 	startLineNum := bytes.Count(content[:start], lineSep)
@@ -463,8 +510,8 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	}
 
 	if lineEnd-lineStart > 100 {
-		lineStart = lo.Ternary(start-30 < 0, 0, start-30)
-		lineEnd = lo.Ternary(end+20 > len(content), len(content), end+20)
+		lineStart = lo.Ternary(start-lineStart-30 < 0, lineStart, start-30)
+		lineEnd = lo.Ternary(end+20 > lineEnd, lineEnd, end+20)
 	}
 	matchLine := string(content[lineStart:lineEnd])
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
@@ -478,9 +525,16 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	rawLines := lines[codeStart:codeEnd]
 	var foundFirst bool
 	for i, rawLine := range rawLines {
-		strRawLine := string(rawLine)
 		realLine := codeStart + i
 		inCause := realLine >= startLineNum && realLine <= endLineNum
+
+		var strRawLine string
+		if len(rawLine) > maxLineLength {
+			strRawLine = lo.Ternary(inCause, matchLine, string(rawLine[:maxLineLength]))
+		} else {
+			strRawLine = string(rawLine)
+		}
+
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
 			Content:     strRawLine,

@@ -1,0 +1,229 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
+  "ArtifactType": "cyclonedx",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "10.2"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json (debian 10.2)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@5.0-4",
+          "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+            "UID": "8ca99d0ea2f4b0a3",
+            "BOMRef": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2"
+          },
+          "InstalledVersion": "5.0-4",
+          "Status": "affected",
+          "Layer": {},
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
+          "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-273"
+          ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "debian": 1,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.2,
+              "V3Score": 7.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            }
+          },
+          "References": [
+            "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
+            "https://access.redhat.com/security/cve/CVE-2019-18276",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
+            "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
+            "https://linux.oracle.com/cve/CVE-2019-18276.html",
+            "https://linux.oracle.com/errata/ELSA-2021-1679.html",
+            "https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-18276",
+            "https://security.gentoo.org/glsa/202105-34",
+            "https://security.netapp.com/advisory/ntap-20200430-0003/",
+            "https://www.youtube.com/watch?v=-wGtxJ8opa8"
+          ],
+          "PublishedDate": "2019-11-28T01:15:00Z",
+          "LastModifiedDate": "2021-05-26T12:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-18224",
+          "VendorIDs": [
+            "DSA-4613-1"
+          ],
+          "PkgID": "libidn2-0@2.0.5-1",
+          "PkgName": "libidn2-0",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
+            "UID": "bd31ad93af9a5d2",
+            "BOMRef": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2"
+          },
+          "InstalledVersion": "2.0.5-1",
+          "FixedVersion": "2.0.5-1+deb10u1",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
+          "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
+          "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.6
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
+            "https://access.redhat.com/security/cve/CVE-2019-18224",
+            "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
+            "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
+            "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
+            "https://seclists.org/bugtraq/2020/Feb/4",
+            "https://security.gentoo.org/glsa/202003-63",
+            "https://ubuntu.com/security/notices/USN-4168-1",
+            "https://usn.ubuntu.com/4168-1/",
+            "https://www.debian.org/security/2020/dsa-4613"
+          ],
+          "PublishedDate": "2019-10-21T17:15:00Z",
+          "LastModifiedDate": "2019-10-29T19:15:00Z"
+        }
+      ]
+    },
+    {
+      "Target": "Ruby",
+      "Class": "lang-pkgs",
+      "Type": "gemspec",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2020-8165",
+          "PkgID": "activesupport@6.0.2.1",
+          "PkgName": "activesupport",
+          "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
+          "PkgIdentifier": {
+            "PURL": "pkg:gem/activesupport@6.0.2.1",
+            "UID": "66a6de64809697cd",
+            "BOMRef": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec"
+          },
+          "InstalledVersion": "6.0.2.1",
+          "FixedVersion": "6.0.3.1, 5.2.4.3",
+          "Status": "fixed",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8165",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory RubyGems",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
+          },
+          "Title": "rubygem-activesupport: potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
+          "Description": "A deserialization of untrusted data vulnerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-502"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 4,
+            "redhat": 3
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-10/msg00031.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2020-10/msg00034.html",
+            "https://access.redhat.com/security/cve/CVE-2020-8165",
+            "https://github.com/advisories/GHSA-2p68-f74v-9wc6",
+            "https://github.com/rubysec/ruby-advisory-db/blob/master/gems/activesupport/CVE-2020-8165.yml",
+            "https://groups.google.com/forum/#!msg/rubyonrails-security/bv6fW4S0Y1c/KnkEqM7AAQAJ",
+            "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c",
+            "https://groups.google.com/g/rubyonrails-security/c/bv6fW4S0Y1c",
+            "https://hackerone.com/reports/413388",
+            "https://lists.debian.org/debian-lts-announce/2020/06/msg00022.html",
+            "https://lists.debian.org/debian-lts-announce/2020/07/msg00013.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-8165",
+            "https://weblog.rubyonrails.org/2020/5/18/Rails-5-2-4-3-and-6-0-3-1-have-been-released/",
+            "https://www.debian.org/security/2020/dsa-4766"
+          ],
+          "PublishedDate": "2020-06-19T18:15:00Z",
+          "LastModifiedDate": "2020-10-17T12:15:00Z"
+        }
+      ]
+    }
+  ]
+}

@@ -5,13 +5,16 @@
   "version": 1,
   "metadata": {
     "timestamp": "2023-04-06T05:41:44+00:00",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "dev"
-      }
-    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
     "component": {
       "bom-ref": "pkg:oci/ubuntu@sha256:67211c14fa74f070d27cc59d69a7fa9aeff8e28ea118ef3babc295a0428a6d21?repository_url=index.docker.io%2Flibrary%2Fubuntu\u0026arch=amd64",
       "type": "container",
@@ -49,13 +52,19 @@
       "version": "2.35-0ubuntu3.1",
       "licenses": [
         {
-          "expression": "LGPL-2.1"
+          "license": {
+            "name": "LGPL-2.1"
+          }
         },
         {
-          "expression": "GPL-2.0"
+          "license": {
+            "name": "GPL-2.0"
+          }
         },
         {
-          "expression": "GFDL-1.3"
+          "license": {
+            "name": "GFDL-1.3"
+          }
         }
       ],
       "purl": "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",

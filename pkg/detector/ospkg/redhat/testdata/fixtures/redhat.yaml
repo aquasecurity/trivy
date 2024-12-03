@@ -23,6 +23,7 @@
           value:
             Entries:
               - FixedVersion: ""
+                Status: 5
                 Affected:
                   - 0
                   - 1

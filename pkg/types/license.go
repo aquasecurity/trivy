@@ -22,6 +22,9 @@ type DetectedLicense struct {
 	// Name holds a detected license name
 	Name string
 
+	// Text holds a long license text if Trivy detects a license name as a license text
+	Text string
+
 	// Confidence is level of the match. The confidence level is between 0.0 and 1.0, with 1.0 indicating an
 	// exact match and 0.0 indicating a complete mismatch
 	Confidence float64
@@ -29,3 +32,5 @@ type DetectedLicense struct {
 	// Link is a SPDX link of the license
 	Link string
 }
+
+func (DetectedLicense) findingType() FindingType { return FindingTypeLicense }

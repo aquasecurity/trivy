@@ -1,0 +1,9 @@
+<Project>
+
+  <ItemGroup>
+
+    <PackageVersion Include="Package1" Version="22.1.4" />
+    <PackageVersion Include="Package2" Version="2.3.0" />
+
+  </ItemGroup>
+</Project>

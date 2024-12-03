@@ -12,35 +12,38 @@ const (
 )
 
 var (
-	ServerTokenFlag = Flag{
+	ServerTokenFlag = Flag[string]{
 		Name:       "token",
 		ConfigName: "server.token",
-		Value:      "",
 		Usage:      "for authentication in client/server mode",
 	}
-	ServerTokenHeaderFlag = Flag{
+	ServerTokenHeaderFlag = Flag[string]{
 		Name:       "token-header",
 		ConfigName: "server.token-header",
-		Value:      DefaultTokenHeader,
+		Default:    DefaultTokenHeader,
 		Usage:      "specify a header name for token in client/server mode",
 	}
-	ServerAddrFlag = Flag{
+	ServerAddrFlag = Flag[string]{
 		Name:       "server",
 		ConfigName: "server.addr",
-		Value:      "",
 		Usage:      "server address in client mode",
 	}
-	ServerCustomHeadersFlag = Flag{
+	ServerCustomHeadersFlag = Flag[[]string]{
 		Name:       "custom-headers",
 		ConfigName: "server.custom-headers",
-		Value:      []string{},
 		Usage:      "custom headers in client mode",
 	}
-	ServerListenFlag = Flag{
+	ServerListenFlag = Flag[string]{
 		Name:       "listen",
 		ConfigName: "server.listen",
-		Value:      "localhost:4954",
+		Default:    "localhost:4954",
 		Usage:      "listen address in server mode",
+	}
+	ServerPathPrefixFlag = Flag[string]{
+		Name:       "path-prefix",
+		ConfigName: "server.path-prefix",
+		Usage:      "prefix for the server endpoint",
+		Internal:   true, // Internal use
 	}
 )
 
@@ -48,15 +51,16 @@ var (
 // used for commands requiring reporting logic.
 type RemoteFlagGroup struct {
 	// for client/server
-	Token       *Flag
-	TokenHeader *Flag
+	Token       *Flag[string]
+	TokenHeader *Flag[string]
+	PathPrefix  *Flag[string]
 
 	// for client
-	ServerAddr    *Flag
-	CustomHeaders *Flag
+	ServerAddr    *Flag[string]
+	CustomHeaders *Flag[[]string]
 
 	// for server
-	Listen *Flag
+	Listen *Flag[string]
 }
 
 type RemoteOptions struct {
@@ -66,22 +70,28 @@ type RemoteOptions struct {
 	ServerAddr    string
 	Listen        string
 	CustomHeaders http.Header
+
+	// Server endpoint: <baseURL>[<prefix>]/<package>.<Service>/<Method> (default prefix: /twirp)
+	// e.g., http://localhost:4954/twirp/trivy.scanner.v1.Scanner/Scan
+	PathPrefix string
 }
 
 func NewClientFlags() *RemoteFlagGroup {
 	return &RemoteFlagGroup{
-		Token:         &ServerTokenFlag,
-		TokenHeader:   &ServerTokenHeaderFlag,
-		ServerAddr:    &ServerAddrFlag,
-		CustomHeaders: &ServerCustomHeadersFlag,
+		Token:         ServerTokenFlag.Clone(),
+		TokenHeader:   ServerTokenHeaderFlag.Clone(),
+		PathPrefix:    ServerPathPrefixFlag.Clone(),
+		ServerAddr:    ServerAddrFlag.Clone(),
+		CustomHeaders: ServerCustomHeadersFlag.Clone(),
 	}
 }
 
 func NewServerFlags() *RemoteFlagGroup {
 	return &RemoteFlagGroup{
-		Token:       &ServerTokenFlag,
-		TokenHeader: &ServerTokenHeaderFlag,
-		Listen:      &ServerListenFlag,
+		Token:       ServerTokenFlag.Clone(),
+		TokenHeader: ServerTokenHeaderFlag.Clone(),
+		PathPrefix:  ServerPathPrefixFlag.Clone(),
+		Listen:      ServerListenFlag.Clone(),
 	}
 }
 
@@ -89,30 +99,41 @@ func (f *RemoteFlagGroup) Name() string {
 	return "Client/Server"
 }
 
-func (f *RemoteFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Token, f.TokenHeader, f.ServerAddr, f.CustomHeaders, f.Listen}
+func (f *RemoteFlagGroup) Flags() []Flagger {
+	return []Flagger{
+		f.Token,
+		f.TokenHeader,
+		f.PathPrefix,
+		f.ServerAddr,
+		f.CustomHeaders,
+		f.Listen,
+	}
 }
 
-func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
-	serverAddr := getString(f.ServerAddr)
-	customHeaders := splitCustomHeaders(getStringSlice(f.CustomHeaders))
-	listen := getString(f.Listen)
-	token := getString(f.Token)
-	tokenHeader := getString(f.TokenHeader)
+func (f *RemoteFlagGroup) ToOptions() (RemoteOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return RemoteOptions{}, err
+	}
+
+	serverAddr := f.ServerAddr.Value()
+	customHeaders := splitCustomHeaders(f.CustomHeaders.Value())
+	listen := f.Listen.Value()
+	token := f.Token.Value()
+	tokenHeader := f.TokenHeader.Value()
 
 	if serverAddr == "" && listen == "" {
 		switch {
 		case len(customHeaders) > 0:
-			log.Logger.Warn(`"--custom-header" can be used only with "--server"`)
+			log.Warn(`"--custom-header" can be used only with "--server"`)
 		case token != "":
-			log.Logger.Warn(`"--token" can be used only with "--server"`)
+			log.Warn(`"--token" can be used only with "--server"`)
 		case tokenHeader != "" && tokenHeader != DefaultTokenHeader:
-			log.Logger.Warn(`"--token-header" can be used only with "--server"`)
+			log.Warn(`"--token-header" can be used only with "--server"`)
 		}
 	}
 
 	if token == "" && tokenHeader != DefaultTokenHeader {
-		log.Logger.Warn(`"--token-header" should be used with "--token"`)
+		log.Warn(`"--token-header" should be used with "--token"`)
 	}
 
 	if token != "" && tokenHeader != "" {
@@ -122,10 +143,11 @@ func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
 	return RemoteOptions{
 		Token:         token,
 		TokenHeader:   tokenHeader,
+		PathPrefix:    f.PathPrefix.Value(),
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
 		Listen:        listen,
-	}
+	}, nil
 }
 
 func splitCustomHeaders(headers []string) http.Header {

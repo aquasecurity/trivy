@@ -14,8 +14,12 @@
         </testcase>
     {{- end }}
     </testsuite>
-{{- $failures := len .Misconfigurations }}
-    <testsuite tests="{{ $failures }}" failures="{{ $failures }}" name="{{  .Target }}" errors="0" skipped="0" time="">
+
+{{- if .MisconfSummary }}
+    <testsuite tests="{{ add .MisconfSummary.Successes .MisconfSummary.Failures }}" failures="{{ .MisconfSummary.Failures }}" name="{{  .Target }}" errors="0" time="">
+{{- else }}
+    <testsuite tests="0" failures="0" name="{{  .Target }}" errors="0" skipped="0" time="">
+{{- end }}
     {{- if not (eq .Type "") }}
         <properties>
             <property name="type" value="{{ .Type }}"></property>
@@ -23,9 +27,22 @@
         {{- end -}}
         {{ range .Misconfigurations }}
         <testcase classname="{{ .Type }}" name="[{{ .Severity }}] {{ .ID }}" time="">
+        {{- if (eq .Status "FAIL") }}
             <failure message="{{ escapeXML .Title }}" type="description">{{ escapeXML .Description }}</failure>
+        {{- end }}
         </testcase>
     {{- end }}
     </testsuite>
+
+{{- if .Licenses }}
+    {{- $licenses := len .Licenses }}
+    <testsuite tests="{{ $licenses }}" failures="{{ $licenses }}" name="{{ .Target }}" time="0">{{ range .Licenses }}
+        <testcase classname="{{ .PkgName }}" name="[{{ .Severity }}] {{ .Name }}">
+            <failure/>
+        </testcase>
+    {{- end }}
+    </testsuite>
+{{- end }}
+
 {{- end }}
 </testsuites>

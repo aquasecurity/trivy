@@ -1,16 +1,16 @@
 package flag
 
 var (
-	SecretConfigFlag = Flag{
+	SecretConfigFlag = Flag[string]{
 		Name:       "secret-config",
 		ConfigName: "secret.config",
-		Value:      "trivy-secret.yaml",
+		Default:    "trivy-secret.yaml",
 		Usage:      "specify a path to config file for secret scanning",
 	}
 )
 
 type SecretFlagGroup struct {
-	SecretConfig *Flag
+	SecretConfig *Flag[string]
 }
 
 type SecretOptions struct {
@@ -19,7 +19,7 @@ type SecretOptions struct {
 
 func NewSecretFlagGroup() *SecretFlagGroup {
 	return &SecretFlagGroup{
-		SecretConfig: &SecretConfigFlag,
+		SecretConfig: SecretConfigFlag.Clone(),
 	}
 }
 
@@ -27,12 +27,16 @@ func (f *SecretFlagGroup) Name() string {
 	return "Secret"
 }
 
-func (f *SecretFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SecretConfig}
+func (f *SecretFlagGroup) Flags() []Flagger {
+	return []Flagger{f.SecretConfig}
 }
 
-func (f *SecretFlagGroup) ToOptions() SecretOptions {
-	return SecretOptions{
-		SecretConfigPath: getString(f.SecretConfig),
+func (f *SecretFlagGroup) ToOptions() (SecretOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return SecretOptions{}, err
 	}
+
+	return SecretOptions{
+		SecretConfigPath: f.SecretConfig.Value(),
+	}, nil
 }

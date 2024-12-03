@@ -4,12 +4,10 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
-	"golang.org/x/exp/slices"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -47,27 +45,39 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			continue
 		}
 
-		var family string
+		var family types.OSType
 		switch id {
 		case "alpine":
-			family = aos.Alpine
+			family = types.Alpine
 		case "opensuse-tumbleweed":
-			family = aos.OpenSUSETumbleweed
+			family = types.OpenSUSETumbleweed
 		case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
-			family = aos.OpenSUSELeap
+			family = types.OpenSUSELeap
 		case "sles":
-			family = aos.SLES
+			family = types.SLES
+		// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
+		// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
+		// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
+		case "sle-micro", "sl-micro", "sle-micro-rancher":
+			family = types.SLEMicro
 		case "photon":
-			family = aos.Photon
+			family = types.Photon
 		case "wolfi":
-			family = aos.Wolfi
+			family = types.Wolfi
 		case "chainguard":
-			family = aos.Chainguard
+			family = types.Chainguard
+		case "azurelinux":
+			family = types.Azure
+		case "mariner":
+			family = types.CBLMariner
 		}
 
 		if family != "" && versionID != "" {
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: family, Name: versionID},
+				OS: types.OS{
+					Family: family,
+					Name:   versionID,
+				},
 			}, nil
 		}
 	}

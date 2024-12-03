@@ -1,6 +1,7 @@
 package ospkg
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"time"
@@ -8,14 +9,12 @@ import (
 	"golang.org/x/xerrors"
 
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Scanner interface {
-	Packages(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) types.Result
-	Scan(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (types.Result, bool, error)
+	Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Result, bool, error)
 }
 
 type scanner struct{}
@@ -24,68 +23,40 @@ func NewScanner() Scanner {
 	return &scanner{}
 }
 
-func (s *scanner) Packages(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) types.Result {
-	if len(detail.Packages) == 0 || !detail.OS.Detected() {
-		return types.Result{}
-	}
-
-	pkgs := detail.Packages
-	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
-	}
-	sort.Sort(pkgs)
-	return types.Result{
-		Target:   fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
-		Class:    types.ClassOSPkg,
-		Type:     detail.OS.Family,
-		Packages: pkgs,
-	}
-}
-
-func (s *scanner) Scan(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (types.Result, bool, error) {
-	if !detail.OS.Detected() {
-		log.Logger.Debug("Detected OS: unknown")
+func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.ScanOptions) (types.Result, bool, error) {
+	if !target.OS.Detected() {
+		log.Debug("Detected OS: unknown")
 		return types.Result{}, false, nil
 	}
-	log.Logger.Infof("Detected OS: %s", detail.OS.Family)
+	log.Info("Detected OS", log.String("family",
+		string(target.OS.Family)), log.String("version", target.OS.Name))
 
-	pkgs := detail.Packages
-	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
-	}
-
-	if detail.OS.Extended {
+	if target.OS.Extended {
 		// TODO: move the logic to each detector
-		detail.OS.Name += "-ESM"
+		target.OS.Name += "-ESM"
 	}
 
-	vulns, eosl, err := ospkgDetector.Detect("", detail.OS.Family, detail.OS.Name, detail.Repository, time.Time{}, pkgs)
-	if err == ospkgDetector.ErrUnsupportedOS {
-		return types.Result{}, false, nil
-	} else if err != nil {
-		return types.Result{}, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
+	result := types.Result{
+		Target: fmt.Sprintf("%s (%s %s)", target.Name, target.OS.Family, target.OS.Name),
+		Class:  types.ClassOSPkg,
+		Type:   target.OS.Family,
 	}
 
-	artifactDetail := fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name)
-	return types.Result{
-		Target:          artifactDetail,
-		Vulnerabilities: vulns,
-		Class:           types.ClassOSPkg,
-		Type:            detail.OS.Family,
-	}, eosl, nil
-}
+	sort.Sort(target.Packages)
+	result.Packages = target.Packages
 
-func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
-	// pkg has priority over pkgsFromCommands
-	uniqPkgs := map[string]struct{}{}
-	for _, pkg := range pkgs {
-		uniqPkgs[pkg.Name] = struct{}{}
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) {
+		// Return packages only
+		return result, false, nil
 	}
-	for _, pkg := range pkgsFromCommands {
-		if _, ok := uniqPkgs[pkg.Name]; ok {
-			continue
-		}
-		pkgs = append(pkgs, pkg)
+
+	vulns, eosl, err := ospkgDetector.Detect(ctx, "", target.OS.Family, target.OS.Name, target.Repository, time.Time{},
+		target.Packages)
+	if err != nil {
+		// Return a result for those who want to override the error handling.
+		return result, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
 	}
-	return pkgs
+	result.Vulnerabilities = vulns
+
+	return result, eosl, nil
 }

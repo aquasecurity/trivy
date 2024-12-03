@@ -7,11 +7,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
@@ -30,18 +31,69 @@ const (
 	TypeFile Type = "file"
 )
 
+var (
+	ArtifactSet = wire.NewSet(
+		walker.NewVM,
+		wire.Bind(new(Walker), new(*walker.VM)),
+		NewArtifact,
+	)
+
+	_ Walker = (*walker.VM)(nil)
+)
+
+type Walker interface {
+	Walk(*io.SectionReader, string, walker.Option, walker.WalkFunc) error
+}
+
+func NewArtifact(target string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
+	handlerManager, err := handler.NewManager(opt)
+	if err != nil {
+		return nil, xerrors.Errorf("handler init error: %w", err)
+	}
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
+	if err != nil {
+		return nil, xerrors.Errorf("analyzer group error: %w", err)
+	}
+
+	storage := Storage{
+		cache:          c,
+		analyzer:       a,
+		handlerManager: handlerManager,
+		walker:         w,
+		artifactOption: opt,
+	}
+
+	targetType := detectType(target)
+	switch targetType {
+	case TypeAMI:
+		target = strings.TrimPrefix(target, TypeAMI.Prefix())
+		return newAMI(target, storage, opt.AWSRegion, opt.AWSEndpoint)
+	case TypeEBS:
+		target = strings.TrimPrefix(target, TypeEBS.Prefix())
+		e, err := newEBS(target, storage, opt.AWSRegion, opt.AWSEndpoint)
+		if err != nil {
+			return nil, xerrors.Errorf("new EBS error: %w", err)
+		}
+		return e, nil
+	case TypeFile:
+		target = strings.TrimPrefix(target, TypeFile.Prefix())
+		return newFile(target, storage)
+	}
+	return nil, xerrors.Errorf("unsupported format")
+}
+
 type Storage struct {
 	cache          cache.ArtifactCache
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
-	walker         walker.VM
+	walker         Walker
 
 	artifactOption artifact.Option
 }
 
 func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
 	var wg sync.WaitGroup
-	limit := semaphore.New(a.artifactOption.Slow)
+	limit := semaphore.New(a.artifactOption.Parallel)
 	result := analyzer.NewAnalysisResult()
 
 	opts := analyzer.AnalysisOptions{
@@ -57,7 +109,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	defer composite.Cleanup()
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err = a.walker.Walk(r, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
 		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
@@ -112,50 +164,6 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	}
 
 	return blobInfo, nil
-}
-
-func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	handlerManager, err := handler.NewManager(opt)
-	if err != nil {
-		return nil, xerrors.Errorf("handler init error: %w", err)
-	}
-	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:                opt.AnalyzerGroup,
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		MisconfScannerOption: opt.MisconfScannerOption,
-		SecretScannerOption:  opt.SecretScannerOption,
-		LicenseScannerOption: opt.LicenseScannerOption,
-	})
-	if err != nil {
-		return nil, xerrors.Errorf("analyzer group error: %w", err)
-	}
-
-	storage := Storage{
-		cache:          c,
-		analyzer:       a,
-		handlerManager: handlerManager,
-		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
-		artifactOption: opt,
-	}
-
-	targetType := detectType(target)
-	switch targetType {
-	case TypeAMI:
-		target = strings.TrimPrefix(target, TypeAMI.Prefix())
-		return newAMI(target, storage, opt.AWSRegion)
-	case TypeEBS:
-		target = strings.TrimPrefix(target, TypeEBS.Prefix())
-		e, err := newEBS(target, storage, opt.AWSRegion)
-		if err != nil {
-			return nil, xerrors.Errorf("new EBS error: %w", err)
-		}
-		return e, nil
-	case TypeFile:
-		target = strings.TrimPrefix(target, TypeFile.Prefix())
-		return newFile(target, storage)
-	}
-	return nil, xerrors.Errorf("unsupported format")
 }
 
 func detectType(target string) Type {

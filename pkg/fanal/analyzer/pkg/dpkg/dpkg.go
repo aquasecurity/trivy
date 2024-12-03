@@ -11,15 +11,14 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 
 	debVersion "github.com/knqyf263/go-deb-version"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -31,10 +30,14 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeDpkg, newDpkgAnalyzer)
 }
 
-type dpkgAnalyzer struct{}
+type dpkgAnalyzer struct {
+	logger *log.Logger
+}
 
 func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	return &dpkgAnalyzer{}, nil
+	return &dpkgAnalyzer{
+		logger: log.WithPrefix("dpkg"),
+	}, nil
 }
 
 const (
@@ -58,15 +61,17 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	// parse `available` file to get digest for packages
 	digests, err := a.parseDpkgAvailable(input.FS)
 	if err != nil {
-		log.Logger.Debugf("Unable to parse %q file: %s", availableFile, err)
+		a.logger.Debug("Unable to parse the available file", log.FilePath(availableFile), log.Err(err))
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
 		return path != availableFile
 	}
 
+	packageFiles := make(map[string][]string)
+
 	// parse other files
-	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// parse list files
 		if a.isListFile(filepath.Split(path)) {
 			scanner := bufio.NewScanner(r)
@@ -74,6 +79,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 			if err != nil {
 				return err
 			}
+			packageFiles[strings.TrimSuffix(filepath.Base(path), ".list")] = systemFiles
 			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
 			return nil
 		}
@@ -89,6 +95,17 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
 
+	// map the packages to their respective files
+	for i, pkgInfo := range packageInfos {
+		for j, pkg := range pkgInfo.Packages {
+			installedFiles, found := packageFiles[pkg.Name]
+			if !found {
+				installedFiles = packageFiles[pkg.Name+":"+pkg.Arch]
+			}
+			packageInfos[i].Packages[j].InstalledFiles = installedFiles
+		}
+	}
+
 	return &analyzer.AnalysisResult{
 		PackageInfos:         packageInfos,
 		SystemInstalledFiles: systemInstalledFiles,
@@ -98,31 +115,42 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 // parseDpkgInfoList parses /var/lib/dpkg/info/*.list
 func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error) {
-	var installedFiles []string
-	var previous string
+	var (
+		allLines       []string
+		installedFiles []string
+		previous       string
+	)
+
 	for scanner.Scan() {
 		current := scanner.Text()
 		if current == "/." {
 			continue
 		}
+		allLines = append(allLines, current)
+	}
 
-		// Add the file if it is not directory.
-		// e.g.
-		//  /usr/sbin
-		//  /usr/sbin/tarcat
-		//
-		// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
+	if err := scanner.Err(); err != nil {
+		return nil, xerrors.Errorf("scan error: %w", err)
+	}
+
+	// Add the file if it is not directory.
+	// e.g.
+	//  /usr/sbin
+	//  /usr/sbin/tarcat
+	//
+	// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
+	// sort first,see here:https://github.com/aquasecurity/trivy/discussions/6543
+	sort.Strings(allLines)
+	for _, current := range allLines {
 		if !strings.HasPrefix(current, previous+"/") {
 			installedFiles = append(installedFiles, previous)
 		}
 		previous = current
 	}
 
-	// Add the last file
-	installedFiles = append(installedFiles, previous)
-
-	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+	// // Add the last file
+	if previous != "" && !strings.HasSuffix(previous, "/") {
+		installedFiles = append(installedFiles, previous)
 	}
 
 	return installedFiles, nil
@@ -136,12 +164,12 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 	}
 	defer f.Close()
 
-	pkgs := map[string]digest.Digest{}
+	pkgs := make(map[string]digest.Digest)
 	scanner := NewScanner(f)
 	for scanner.Scan() {
 		header, err := scanner.Header()
 		if !errors.Is(err, io.EOF) && err != nil {
-			log.Logger.Warnw("Parse error", zap.String("file", availableFile), zap.Error(err))
+			a.logger.Warn("Parse error", log.FilePath(availableFile), log.Err(err))
 			continue
 		}
 		name, version, checksum := header.Get("Package"), header.Get("Version"), header.Get("SHA256")
@@ -158,16 +186,16 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 }
 
 // parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status/*
-func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r dio.ReadSeekerAt, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
+func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
 	var pkg *types.Package
-	pkgs := map[string]*types.Package{}
-	pkgIDs := map[string]string{}
+	pkgs := make(map[string]*types.Package)
+	pkgIDs := make(map[string]string)
 
 	scanner := NewScanner(r)
 	for scanner.Scan() {
 		header, err := scanner.Header()
 		if !errors.Is(err, io.EOF) && err != nil {
-			log.Logger.Warnw("Parse error", zap.String("file", filePath), zap.Error(err))
+			a.logger.Warn("Parse error", log.FilePath(filePath), log.Err(err))
 			continue
 		}
 
@@ -216,7 +244,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 	// May also specifies a version
 	if src := header.Get("Source"); src != "" {
 		srcCapture := dpkgSrcCaptureRegexp.FindAllStringSubmatch(src, -1)[0]
-		md := map[string]string{}
+		md := make(map[string]string)
 		for i, n := range srcCapture {
 			md[dpkgSrcCaptureRegexpNames[i]] = strings.TrimSpace(n)
 		}
@@ -237,8 +265,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 	}
 
 	if v, err := debVersion.NewVersion(pkg.Version); err != nil {
-		log.Logger.Warnw("Invalid version", zap.String("OS", "debian"),
-			zap.String("package", pkg.Name), zap.String("version", pkg.Version))
+		a.logger.Warn("Invalid version", log.String("OS", "debian"),
+			log.String("package", pkg.Name), log.String("version", pkg.Version))
 		return nil
 	} else {
 		pkg.ID = a.pkgID(pkg.Name, pkg.Version)
@@ -248,8 +276,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 	}
 
 	if v, err := debVersion.NewVersion(pkg.SrcVersion); err != nil {
-		log.Logger.Warnw("Invalid source version", zap.String("OS", "debian"),
-			zap.String("package", pkg.Name), zap.String("version", pkg.SrcVersion))
+		a.logger.Warn("Invalid source version", log.String("OS", "debian"),
+			log.String("package", pkg.Name), log.String("version", pkg.SrcVersion))
 		return nil
 	} else {
 		pkg.SrcVersion = v.Version()
@@ -266,7 +294,8 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return true
 	}
 
-	if dir == statusDir {
+	// skip `*.md5sums` files from `status.d` directory
+	if dir == statusDir && filepath.Ext(fileName) != ".md5sums" {
 		return true
 	}
 	return false
@@ -294,8 +323,11 @@ func (a dpkgAnalyzer) parseDepends(s string) []string {
 		for _, d := range strings.Split(dep, "|") {
 			d = a.trimVersionRequirement(d)
 
-			// Store only package names here
-			dependencies = append(dependencies, strings.TrimSpace(d))
+			// Store only uniq package names here
+			d = strings.TrimSpace(d)
+			if !slices.Contains(dependencies, d) {
+				dependencies = append(dependencies, d)
+			}
 		}
 	}
 	return dependencies
@@ -305,9 +337,7 @@ func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
 	// e.g.
 	//	libapt-pkg6.0 (>= 2.2.4) => libapt-pkg6.0
 	//	adduser => adduser
-	if strings.Contains(s, "(") {
-		s = s[:strings.Index(s, "(")]
-	}
+	s, _, _ = strings.Cut(s, "(")
 	return s
 }
 

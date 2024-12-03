@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/alpine-310.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -57,8 +58,13 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "c6c116a4441ec6de"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
@@ -76,6 +82,14 @@
           "CweIDs": [
             "CWE-330"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -117,8 +131,13 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "c6c116a4441ec6de"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
@@ -136,6 +155,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -187,8 +214,13 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "e132dcfcc51772ef"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
@@ -206,6 +238,14 @@
           "CweIDs": [
             "CWE-330"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -247,8 +287,13 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+            "UID": "e132dcfcc51772ef"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
@@ -266,6 +311,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",

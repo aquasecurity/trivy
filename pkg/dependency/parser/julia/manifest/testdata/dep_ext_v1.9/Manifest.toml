@@ -1,0 +1,16 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.9.0"
+manifest_format = "2.0"
+project_hash = "f0a796fb78285c02ad123fec6e14c8bac09a2ccc"
+
+[[deps.AbstractFFTs]]
+git-tree-sha1 = "16b6dbc4cf7caee4e1e75c49485ec67b667098a0"
+uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
+version = "1.3.1"
+
+    [deps.AbstractFFTs.extensions]
+    AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
+
+    [deps.AbstractFFTs.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"

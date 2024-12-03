@@ -1,109 +1,173 @@
 package packaging
 
 import (
-	"archive/zip"
-	"bytes"
 	"context"
+	"errors"
 	"io"
+	"io/fs"
 	"os"
+	"path"
+	"path/filepath"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/python/packaging"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&packagingAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzer.TypePythonPkg, newPackagingAnalyzer)
 }
 
-const version = 1
+const version = 2
+
+func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	return &packagingAnalyzer{
+		logger:                           log.WithPrefix("python"),
+		pkgParser:                        packaging.NewParser(),
+		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
+	}, nil
+}
 
 var (
-	requiredFiles = []string{
+	eggFiles = []string{
 		// .egg format
 		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
-		".egg", // zip format
+		// ".egg" is zip format. We check it in `eggAnalyzer`.
 		"EGG-INFO/PKG-INFO",
 
 		// .egg-info format: .egg-info can be a file or directory
 		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
 		".egg-info",
 		".egg-info/PKG-INFO",
-
-		// wheel
-		".dist-info/METADATA",
 	}
 )
 
-type packagingAnalyzer struct{}
+type packagingAnalyzer struct {
+	logger                           *log.Logger
+	pkgParser                        language.Parser
+	licenseClassifierConfidenceLevel float64
+}
 
-// Analyze analyzes egg and wheel files.
-func (a packagingAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	r := input.Content
+// PostAnalyze analyzes egg and wheel files.
+func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 
-	// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
-	if strings.HasSuffix(input.FilePath, ".egg") {
-		pkginfoInZip, err := a.analyzeEggZip(input.Content, input.Info.Size())
+	var apps []types.Application
+
+	required := func(path string, _ fs.DirEntry) bool {
+		return filepath.Base(path) == "METADATA" || isEggFile(path)
+	}
+
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
+		rsa, ok := r.(xio.ReadSeekerAt)
+		if !ok {
+			return xerrors.New("invalid reader")
+		}
+
+		app, err := a.parse(filePath, rsa, input.Options.FileChecksum)
 		if err != nil {
-			return nil, xerrors.Errorf("egg analysis error: %w", err)
+			return xerrors.Errorf("parse error: %w", err)
+		} else if app == nil {
+			return nil
 		}
 
-		// Egg archive may not contain required files, then we will get nil. Skip this archives
-		if pkginfoInZip == nil {
-			return nil, nil
+		opener := func(licPath string) (io.ReadCloser, error) {
+			// Note that fs.FS is always slashed regardless of the platform,
+			// and path.Join should be used rather than filepath.Join.
+			f, err := input.FS.Open(path.Join(path.Dir(filePath), licPath))
+			if errors.Is(err, fs.ErrNotExist) {
+				return nil, nil
+			} else if err != nil {
+				return nil, xerrors.Errorf("file open error: %w", err)
+			}
+			return f, nil
 		}
 
-		r = pkginfoInZip
+		if err = fillAdditionalData(opener, app, a.licenseClassifierConfidenceLevel); err != nil {
+			a.logger.Warn("Unable to collect additional info", log.Err(err))
+		}
+
+		apps = append(apps, *app)
+		return nil
+	})
+
+	if err != nil {
+		return nil, xerrors.Errorf("python package walk error: %w", err)
 	}
-
-	p := packaging.NewParser()
-	return language.AnalyzePackage(types.PythonPkg, input.FilePath, r, p, input.Options.FileChecksum)
+	return &analyzer.AnalysisResult{
+		Applications: apps,
+	}, nil
 }
 
-func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {
-	zr, err := zip.NewReader(r, size)
-	if err != nil {
-		return nil, xerrors.Errorf("zip reader error: %w", err)
-	}
+type fileOpener func(filePath string) (io.ReadCloser, error)
 
-	for _, file := range zr.File {
-		if !a.Required(file.Name, nil) {
-			continue
+func fillAdditionalData(opener fileOpener, app *types.Application, licenseClassifierConfidenceLevel float64) error {
+	for i, pkg := range app.Packages {
+		var licenses []string
+		for _, lic := range pkg.Licenses {
+			// Parser adds `file://` prefix to filepath from `License-File` field
+			// We need to read this file to find licenses
+			// Otherwise, this is the name of the license
+			if !strings.HasPrefix(lic, licensing.LicenseFilePrefix) {
+				licenses = append(licenses, lic)
+				continue
+			}
+			licensePath := path.Base(strings.TrimPrefix(lic, licensing.LicenseFilePrefix))
+
+			foundLicenses, err := classifyLicenses(opener, licensePath, licenseClassifierConfidenceLevel)
+			if err != nil {
+				return xerrors.Errorf("unable to classify licenses: %w", err)
+			}
+			licenses = append(licenses, foundLicenses...)
 		}
-
-		return a.open(file)
+		app.Packages[i].Licenses = licenses
 	}
 
-	return nil, nil
+	return nil
 }
 
-func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
-	f, err := file.Open()
+func classifyLicenses(opener fileOpener, licPath string, licenseClassifierConfidenceLevel float64) ([]string, error) {
+	f, err := opener(licPath)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("unable to open license file: %w", err)
+	} else if f == nil { // File doesn't exist
+		return nil, nil
 	}
 	defer f.Close()
 
-	b, err := io.ReadAll(f)
+	l, err := licensing.Classify("", f, licenseClassifierConfidenceLevel)
 	if err != nil {
-		return nil, xerrors.Errorf("file %s open error: %w", file.Name, err)
+		return nil, xerrors.Errorf("license classify error: %w", err)
+	} else if l == nil { // No licenses found
+		return nil, nil
 	}
 
-	return bytes.NewReader(b), nil
+	// License found
+	return lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
+		return finding.Name
+	}), nil
+}
+
+func (a packagingAnalyzer) parse(filePath string, r xio.ReadSeekerAt, checksum bool) (*types.Application, error) {
+	return language.ParsePackage(types.PythonPkg, filePath, r, a.pkgParser, checksum)
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	for _, r := range requiredFiles {
-		if strings.HasSuffix(filePath, r) {
-			return true
-		}
-	}
-	return false
+	return strings.Contains(filePath, ".dist-info") || isEggFile(filePath)
+}
+
+func isEggFile(filePath string) bool {
+	return lo.SomeBy(eggFiles, func(fileName string) bool {
+		return strings.HasSuffix(filePath, fileName)
+	})
 }
 
 func (a packagingAnalyzer) Type() analyzer.Type {

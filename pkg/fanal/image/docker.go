@@ -35,6 +35,7 @@ func fileOpener(fileName string) func() (io.ReadCloser, error) {
 		if utils.IsGzip(br) {
 			r, err = gzip.NewReader(br)
 			if err != nil {
+				_ = f.Close()
 				return nil, xerrors.Errorf("failed to open gzip: %w", err)
 			}
 		}

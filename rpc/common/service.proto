@@ -27,63 +27,93 @@ message PackageInfo {
 message Application {
   string           type      = 1;
   string           file_path = 2;
-  repeated Package libraries = 3;
+  repeated Package packages  = 3;
 }
 
 message Package {
   // binary package
   // e.g. bind-utils
-  string id      = 13;
-  string name    = 1;
-  string version = 2;
-  string release = 3;
-  int32  epoch   = 4;
-  string arch    = 5;
+  string        id         = 13;
+  string        name       = 1;
+  string        version    = 2;
+  string        release    = 3;
+  int32         epoch      = 4;
+  PkgIdentifier identifier = 19;
+  string        arch       = 5;
   // src package containing some binary packages
   // e.g. bind
-  string          src_name    = 6;
-  string          src_version = 7;
-  string          src_release = 8;
-  int32           src_epoch   = 9;
-  repeated string licenses    = 15;
-  Layer           layer       = 11;
-  string          file_path   = 12;
-  repeated string depends_on  = 14;
-  string          digest      = 16;
-  bool            dev         = 17;
+  string            src_name    = 6;
+  string            src_version = 7;
+  string            src_release = 8;
+  int32             src_epoch   = 9;
+  repeated string   licenses    = 15;
+  repeated Location locations   = 20;
+  Layer             layer       = 11;
+  string            file_path   = 12;
+  repeated string   depends_on  = 14;
+  string            digest      = 16;
+  bool              dev         = 17;
+  bool              indirect    = 18;
+  string            maintainer  = 21;
+}
+
+message PkgIdentifier {
+  string purl    = 1;
+  string bom_ref = 2;
+  string uid     = 3;
+}
+
+message Location {
+  int32 start_line = 1;
+  int32 end_line   = 2;
 }
 
 message Misconfiguration {
-  string                 file_type  = 1;
-  string                 file_path  = 2;
-  repeated MisconfResult successes  = 3;
-  repeated MisconfResult warnings   = 4;
-  repeated MisconfResult failures   = 5;
-  repeated MisconfResult exceptions = 6;
+  string                 file_type = 1;
+  string                 file_path = 2;
+  repeated MisconfResult successes = 3;
+  repeated MisconfResult warnings  = 4;
+  repeated MisconfResult failures  = 5;
+
+  reserved 6;  // deprecated 'exceptions'
 }
 
 message MisconfResult {
   string namespace = 1;
   string message   = 2;
-  string type      = 3;
-  string id        = 4;
-  string title     = 5;
-  string severity  = 6;
+  reserved 3 to 6;
+  reserved "type", "id", "title", "severity";
+  PolicyMetadata policy_metadata = 7;
+  CauseMetadata  cause_metadata  = 8;
+}
+
+message PolicyMetadata {
+  string          id                  = 1;
+  string          adv_id              = 2;
+  string          type                = 3;
+  string          title               = 4;
+  string          description         = 5;
+  string          severity            = 6;
+  string          recommended_actions = 7;
+  repeated string references          = 8;
 }
 
 message DetectedMisconfiguration {
-  string type                 = 1;
-  string id                   = 2;
-  string title                = 3;
-  string description          = 4;
-  string message              = 5;
-  string namespace            = 6;
-  string          resolution  = 7;
-  Severity        severity    = 8;
-  string          primary_url = 9;
-  repeated string references  = 10;
-  string          status      = 11;
-  Layer           layer       = 12;
+  string type                    = 1;
+  string id                      = 2;
+  string title                   = 3;
+  string description             = 4;
+  string message                 = 5;
+  string namespace               = 6;
+  string          resolution     = 7;
+  Severity        severity       = 8;
+  string          primary_url    = 9;
+  repeated string references     = 10;
+  string          status         = 11;
+  Layer           layer          = 12;
+  CauseMetadata   cause_metadata = 13;
+  string          avd_id         = 14;
+  string          query          = 15;
 }
 
 message Vulnerability {
@@ -95,6 +125,7 @@ message Vulnerability {
   string                    description          = 6;
   Severity                  severity             = 7;
   repeated string           references           = 8;
+  PkgIdentifier             pkg_identifier       = 25;
   Layer                     layer                = 10;
   string                    severity_source      = 11;
   map<string, CVSS>         cvss                 = 12;
@@ -109,6 +140,7 @@ message Vulnerability {
   map<string, Severity>     vendor_severity      = 21;
   string                    pkg_path             = 22;
   string                    pkg_id               = 23;
+  int32                     status               = 24;
 }
 
 message DataSource {
@@ -121,6 +153,15 @@ message Layer {
   string digest     = 1;
   string diff_id    = 2;
   string created_by = 3;
+}
+
+message CauseMetadata {
+  string resource   = 1;
+  string provider   = 2;
+  string service    = 3;
+  int32  start_line = 4;
+  int32  end_line   = 5;
+  Code   code       = 6;
 }
 
 enum Severity {
@@ -136,6 +177,8 @@ message CVSS {
   string v3_vector = 2;
   double v2_score  = 3;
   double v3_score  = 4;
+  string v40_vector = 5;
+  double v40_score  = 6;
 }
 
 message CustomResource {
@@ -177,4 +220,55 @@ message SecretFinding {
 message Secret {
   string                 filepath = 1;
   repeated SecretFinding findings = 2;
+}
+
+message DetectedLicense {
+  Severity             severity   = 1;
+  LicenseCategory.Enum category   = 2;
+  string               pkg_name   = 3;
+  string               file_path  = 4;
+  string               name       = 5;
+  float                confidence = 6;
+  string               link       = 7;
+  string               text       = 8;
+}
+
+message LicenseFile {
+  LicenseType.Enum        license_type = 1;
+  string                  file_path    = 2;
+  string                  pkg_name     = 3;
+  repeated LicenseFinding fingings     = 4;
+  Layer                   layer        = 5;
+}
+
+message LicenseFinding {
+  LicenseCategory.Enum category   = 1;
+  string               name       = 2;
+  float                confidence = 3;
+  string               link       = 4;
+}
+
+// Enumerations are wrapped with a message to improve the readability of
+// enumerations in generated code and avoid name conflicts.
+// https://github.com/golang/protobuf/issues/513
+message LicenseCategory {
+  enum Enum {
+    UNSPECIFIED  = 0;
+    FORBIDDEN    = 1;
+    RESTRICTED   = 2;
+    RECIPROCAL   = 3;
+    NOTICE       = 4;
+    PERMISSIVE   = 5;
+    UNENCUMBERED = 6;
+    UNKNOWN      = 7;
+  }
+}
+
+message LicenseType {
+  enum Enum {
+    UNSPECIFIED  = 0;
+    DPKG         = 1;
+    HEADER       = 2;
+    LICENSE_FILE = 3;
+  }
 }

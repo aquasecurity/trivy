@@ -2,6 +2,7 @@ package sbom
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"io"
@@ -11,7 +12,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -166,7 +169,7 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 		return "", false
 	}
 
-	m, ok := s.Predicate.(map[string]interface{})
+	m, ok := s.Predicate.(map[string]any)
 	if !ok {
 		return "", false
 	}
@@ -178,23 +181,23 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 	return FormatAttestCycloneDXJSON, true
 }
 
-func Decode(f io.Reader, format Format) (types.SBOM, error) {
+func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error) {
 	var (
-		v       interface{}
-		bom     types.SBOM
+		v       any
+		bom     = core.NewBOM(core.Options{})
 		decoder interface{ Decode(any) error }
 	)
 
 	switch format {
 	case FormatCycloneDXJSON:
-		v = &cyclonedx.BOM{SBOM: &bom}
+		v = &cyclonedx.BOM{BOM: bom}
 		decoder = json.NewDecoder(f)
 	case FormatAttestCycloneDXJSON:
 		// dsse envelope
 		//   => in-toto attestation
 		//     => CycloneDX JSON
 		v = &attestation.Statement{
-			Predicate: &cyclonedx.BOM{SBOM: &bom},
+			Predicate: &cyclonedx.BOM{BOM: bom},
 		}
 		decoder = json.NewDecoder(f)
 	case FormatLegacyCosignAttestCycloneDXJSON:
@@ -204,26 +207,30 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		//       => CycloneDX JSON
 		v = &attestation.Statement{
 			Predicate: &attestation.CosignPredicate{
-				Data: &cyclonedx.BOM{SBOM: &bom},
+				Data: &cyclonedx.BOM{BOM: bom},
 			},
 		}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXJSON:
-		v = &spdx.SPDX{SBOM: &bom}
+		v = &spdx.SPDX{BOM: bom}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXTV:
-		v = &spdx.SPDX{SBOM: &bom}
+		v = &spdx.SPDX{BOM: bom}
 		decoder = spdx.NewTVDecoder(f)
-
 	default:
 		return types.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
 
 	}
 
-	// Decode a file content into sbom.SBOM
+	// Decode a file content into core.BOM
 	if err := decoder.Decode(v); err != nil {
 		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
 	}
 
-	return bom, nil
+	var sbom types.SBOM
+	if err := sbomio.NewDecoder(bom).Decode(ctx, &sbom); err != nil {
+		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
+	}
+
+	return sbom, nil
 }

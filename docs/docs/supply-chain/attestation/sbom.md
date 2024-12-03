@@ -9,7 +9,7 @@ And, Trivy can take an SBOM attestation as input and scan for vulnerabilities
 
 ## Sign with a local key pair
 
-Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
+Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys).
 
 ```bash
 $ cosign generate-key-pair

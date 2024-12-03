@@ -2,9 +2,9 @@ package analyzer
 
 import (
 	"context"
+	"slices"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
-var configAnalyzerConstructors = map[Type]configAnalyzerConstructor{}
+var configAnalyzerConstructors = make(map[Type]configAnalyzerConstructor)
 
 type configAnalyzerConstructor func(ConfigAnalyzerOptions) (ConfigAnalyzer, error)
 
@@ -53,18 +53,18 @@ type ConfigAnalysisResult struct {
 	HistoryPackages  types.Packages
 }
 
-func (r *ConfigAnalysisResult) Merge(new *ConfigAnalysisResult) {
-	if new == nil {
+func (r *ConfigAnalysisResult) Merge(newResult *ConfigAnalysisResult) {
+	if newResult == nil {
 		return
 	}
-	if new.Misconfiguration != nil {
-		r.Misconfiguration = new.Misconfiguration
+	if newResult.Misconfiguration != nil {
+		r.Misconfiguration = newResult.Misconfiguration
 	}
-	if new.Secret != nil {
-		r.Secret = new.Secret
+	if newResult.Secret != nil {
+		r.Secret = newResult.Secret
 	}
-	if new.HistoryPackages != nil {
-		r.HistoryPackages = new.HistoryPackages
+	if newResult.HistoryPackages != nil {
+		r.HistoryPackages = newResult.HistoryPackages
 	}
 }
 
@@ -92,7 +92,7 @@ func NewConfigAnalyzerGroup(opts ConfigAnalyzerOptions) (ConfigAnalyzerGroup, er
 
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
 func (ag *ConfigAnalyzerGroup) AnalyzerVersions() Versions {
-	versions := map[string]int{}
+	versions := make(map[string]int)
 	for _, ca := range ag.configAnalyzers {
 		versions[string(ca.Type())] = ca.Version()
 	}
@@ -114,7 +114,7 @@ func (ag *ConfigAnalyzerGroup) AnalyzeImageConfig(ctx context.Context, targetOS 
 
 		r, err := a.Analyze(ctx, input)
 		if err != nil {
-			log.Logger.Debugf("Image config analysis error: %s", err)
+			log.Debug("Image config analysis error", log.Err(err))
 			continue
 		}
 

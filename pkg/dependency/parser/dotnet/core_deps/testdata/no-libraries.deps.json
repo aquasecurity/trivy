@@ -1,0 +1,27 @@
+{
+    "runtimeTarget": {
+      "name": ".NETCoreApp,Version=v5.0",
+      "signature": ""
+    },
+    "compilationOptions": {},
+    "targets": {
+      ".NETCoreApp,Version=v5.0": {
+        "ExampleApp1/1.0.0": {
+          "dependencies": {
+            "Newtonsoft.Json": "13.0.1"
+          },
+          "runtime": {
+            "ExampleApp1.dll": {}
+          }
+        },
+        "Newtonsoft.Json/13.0.1": {
+          "runtime": {
+            "lib/netstandard2.0/Newtonsoft.Json.dll": {
+              "assemblyVersion": "13.0.0.0",
+              "fileVersion": "13.0.1.25517"
+            }
+          }
+        }
+      }
+    }
+}

@@ -1,998 +1,666 @@
 [
   {
-    "Name": "m4",
-    "Version": "1.4.18-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "binutils-libs",
-    "Version": "2.30-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "ncurses-dev",
-    "Version": "6.0_p20171125-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "python2",
-    "Version": "2.7.15-r2",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libressl2.6-libcrypto",
-    "Version": "2.6.5-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "cyrus-sasl",
-    "Version": "2.1.26-r11",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libgcc",
-    "Version": "6.4.0-r5",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "dpkg-dev",
-    "Version": "1.18.24-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "mpc1",
-    "Version": "1.0.3-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "dpkg",
-    "Version": "1.18.24-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libacl",
+    "Name": "acl",
+    "Identifier": {
+      "UID": "181b417cffad616f"
+    },
     "Version": "2.2.52-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "musl-dev",
-    "Version": "1.1.18-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "ncurses-terminfo",
-    "Version": "6.0_p20171125-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libunistring",
-    "Version": "0.9.7-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "db",
-    "Version": "5.3.28-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libressl-dev",
-    "Version": "2.6.5-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "npth",
-    "Version": "1.5-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "pcre2",
-    "Version": "10.30-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "zlib",
-    "Version": "1.2.11-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "busybox",
-    "Version": "1.27.2-r11",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "nettle",
-    "Version": "3.3-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libtasn1",
-    "Version": "4.12-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libstdc++",
-    "Version": "6.4.0-r5",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libressl2.6-libssl",
-    "Version": "2.6.5-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "xz",
-    "Version": "5.2.3-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "gnutls",
-    "Version": "3.6.1-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "file",
-    "Version": "5.32-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libffi",
-    "Version": "3.2.1-r4",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "ncurses-libs",
-    "Version": "6.0_p20171125-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "gdbm",
-    "Version": "1.13-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libgcrypt",
-    "Version": "1.8.3-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "g++",
-    "Version": "6.4.0-r5",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "mercurial",
-    "Version": "4.5.2-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "zlib-dev",
-    "Version": "1.2.11-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "pkgconf",
-    "Version": "1.3.10-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "isl",
-    "Version": "0.18-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libmagic",
-    "Version": "5.32-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "xz-libs",
-    "Version": "5.2.3-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "ncurses",
-    "Version": "6.0_p20171125-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "ncurses-terminfo-base",
-    "Version": "6.0_p20171125-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libassuan",
-    "Version": "2.4.4-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "subversion-libs",
-    "Version": "1.9.7-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libressl2.6-libtls",
-    "Version": "2.6.5-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libldap",
-    "Version": "2.4.45-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "gmp",
-    "Version": "6.1.2-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libbz2",
-    "Version": "1.0.6-r6",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libc-dev",
-    "Version": "0.7.1-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "binutils",
-    "Version": "2.30-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libsodium-dev",
-    "Version": "1.0.15-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "musl",
-    "Version": "1.1.18-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "pinentry",
-    "Version": "1.0.0-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "openldap",
-    "Version": "2.4.45-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libedit-dev",
-    "Version": "20170329.3.1-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "bash",
-    "Version": "4.4.19-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
+    "Layer": {}
   },
   {
     "Name": "apr",
+    "Identifier": {
+      "UID": "5083f2ffc2b7a814"
+    },
     "Version": "1.6.3-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "ca-certificates",
-    "Version": "20171114-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libcap",
-    "Version": "2.25-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libedit",
-    "Version": "20170329.3.1-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "acl",
-    "Version": "2.2.52-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libsasl",
-    "Version": "2.1.26-r11",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "gnupg",
-    "Version": "2.2.3-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "readline",
-    "Version": "7.0.003-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
+    "Layer": {}
   },
   {
     "Name": "apr-util",
+    "Identifier": {
+      "UID": "1e0af1c3510210ba"
+    },
     "Version": "1.6.1-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "patch",
-    "Version": "2.7.5-r2",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libsodium",
-    "Version": "1.0.15-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "mpfr3",
-    "Version": "3.1.5-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libattr",
-    "Version": "2.4.47-r6",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
+    "Layer": {}
   },
   {
     "Name": "attr",
+    "Identifier": {
+      "UID": "a47bcc9298df6cb9"
+    },
     "Version": "2.4.47-r6",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "make",
-    "Version": "4.2.1-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "serf",
-    "Version": "1.3.9-r3",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libressl",
-    "Version": "2.6.5-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libksba",
-    "Version": "1.3.5-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "bzip2",
-    "Version": "1.0.6-r6",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libgomp",
-    "Version": "6.4.0-r5",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libatomic",
-    "Version": "6.4.0-r5",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "re2c",
-    "Version": "1.0.2-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "coreutils",
-    "Version": "8.28-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "expat",
-    "Version": "2.2.5-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "libgpg-error",
-    "Version": "1.27-r1",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "p11-kit",
-    "Version": "0.23.2-r2",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
-  },
-  {
-    "Name": "gcc",
-    "Version": "6.4.0-r5",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
+    "Layer": {}
   },
   {
     "Name": "autoconf",
+    "Identifier": {
+      "UID": "3c70caeaed9a6ff9"
+    },
     "Version": "2.69-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
+    "Layer": {}
+  },
+  {
+    "Name": "bash",
+    "Identifier": {
+      "UID": "b9623518df2580d7"
+    },
+    "Version": "4.4.19-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "binutils",
+    "Identifier": {
+      "UID": "9c6d3cbf28294d8c"
+    },
+    "Version": "2.30-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "binutils-libs",
+    "Identifier": {
+      "UID": "bd787142d4ac226b"
+    },
+    "Version": "2.30-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "busybox",
+    "Identifier": {
+      "UID": "7d2e7c1078ba7eb"
+    },
+    "Version": "1.27.2-r11",
+    "Layer": {}
+  },
+  {
+    "Name": "bzip2",
+    "Identifier": {
+      "UID": "f10a7652e98de81"
+    },
+    "Version": "1.0.6-r6",
+    "Layer": {}
+  },
+  {
+    "Name": "ca-certificates",
+    "Identifier": {
+      "UID": "15130b963760c251"
+    },
+    "Version": "20171114-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "coreutils",
+    "Identifier": {
+      "UID": "62b3a9f524fb42ae"
+    },
+    "Version": "8.28-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "cyrus-sasl",
+    "Identifier": {
+      "UID": "3d54d810df71de08"
+    },
+    "Version": "2.1.26-r11",
+    "Layer": {}
+  },
+  {
+    "Name": "db",
+    "Identifier": {
+      "UID": "c516bbf8a0460592"
+    },
+    "Version": "5.3.28-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "dpkg",
+    "Identifier": {
+      "UID": "48abb525a6e6484c"
+    },
+    "Version": "1.18.24-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "dpkg-dev",
+    "Identifier": {
+      "UID": "751199098a59e38a"
+    },
+    "Version": "1.18.24-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "expat",
+    "Identifier": {
+      "UID": "39fb7474be7cbbd1"
+    },
+    "Version": "2.2.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "file",
+    "Identifier": {
+      "UID": "fce3c3b5b4ca8c61"
+    },
+    "Version": "5.32-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "g++",
+    "Identifier": {
+      "UID": "e38d4fbb4801e54"
+    },
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "gcc",
+    "Identifier": {
+      "UID": "7e7a1343cbee2437"
+    },
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "gdbm",
+    "Identifier": {
+      "UID": "ddf8257d2b4ffc7b"
+    },
+    "Version": "1.13-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "gmp",
+    "Identifier": {
+      "UID": "9543ab8b3ef71c6b"
+    },
+    "Version": "6.1.2-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "gnupg",
+    "Identifier": {
+      "UID": "dc05954810cd6512"
+    },
+    "Version": "2.2.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "gnutls",
+    "Identifier": {
+      "UID": "3895e3c8d3c4eec5"
+    },
+    "Version": "3.6.1-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "isl",
+    "Identifier": {
+      "UID": "ff5808fa3be09223"
+    },
+    "Version": "0.18-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libacl",
+    "Identifier": {
+      "UID": "8496f22e32d90dd9"
+    },
+    "Version": "2.2.52-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libassuan",
+    "Identifier": {
+      "UID": "7c44d43ad91014bb"
+    },
+    "Version": "2.4.4-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libatomic",
+    "Identifier": {
+      "UID": "cc7cbb7bdeaceb7a"
+    },
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libattr",
+    "Identifier": {
+      "UID": "6ab5fd8ad7ea3579"
+    },
+    "Version": "2.4.47-r6",
+    "Layer": {}
+  },
+  {
+    "Name": "libbz2",
+    "Identifier": {
+      "UID": "b88167f64940af66"
+    },
+    "Version": "1.0.6-r6",
+    "Layer": {}
+  },
+  {
+    "Name": "libc-dev",
+    "Identifier": {
+      "UID": "804732077a4c662b"
+    },
+    "Version": "0.7.1-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libcap",
+    "Identifier": {
+      "UID": "d0374637d7ee148"
+    },
+    "Version": "2.25-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "libedit",
+    "Identifier": {
+      "UID": "a9e7bdfc780a5205"
+    },
+    "Version": "20170329.3.1-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libedit-dev",
+    "Identifier": {
+      "UID": "cc15a0075f19fb29"
+    },
+    "Version": "20170329.3.1-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libffi",
+    "Identifier": {
+      "UID": "2e7d2428b7208794"
+    },
+    "Version": "3.2.1-r4",
+    "Layer": {}
+  },
+  {
+    "Name": "libgcc",
+    "Identifier": {
+      "UID": "337db1c98d7a2b24"
+    },
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libgcrypt",
+    "Identifier": {
+      "UID": "607b2546f0faa0dd"
+    },
+    "Version": "1.8.3-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libgomp",
+    "Identifier": {
+      "UID": "6405f9ce160ce36"
+    },
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libgpg-error",
+    "Identifier": {
+      "UID": "2e7c4543143270ba"
+    },
+    "Version": "1.27-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "libksba",
+    "Identifier": {
+      "UID": "2bdff3fcdb38fcc9"
+    },
+    "Version": "1.3.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libldap",
+    "Identifier": {
+      "UID": "9a1c31386d4c51d1"
+    },
+    "Version": "2.4.45-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libmagic",
+    "Identifier": {
+      "UID": "ce8c19b21901c2ec"
+    },
+    "Version": "5.32-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl",
+    "Identifier": {
+      "UID": "e0990fc64593fc34"
+    },
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl-dev",
+    "Identifier": {
+      "UID": "2fc58a084fad510b"
+    },
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl2.6-libcrypto",
+    "Identifier": {
+      "UID": "b9b01ba0fd3c2f96"
+    },
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl2.6-libssl",
+    "Identifier": {
+      "UID": "7450166187e3c122"
+    },
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libressl2.6-libtls",
+    "Identifier": {
+      "UID": "31e6fafea5aee605"
+    },
+    "Version": "2.6.5-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libsasl",
+    "Identifier": {
+      "UID": "a5d9eed6b200ec9e"
+    },
+    "Version": "2.1.26-r11",
+    "Layer": {}
+  },
+  {
+    "Name": "libsodium",
+    "Identifier": {
+      "UID": "d37655d3df6e7f60"
+    },
+    "Version": "1.0.15-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libsodium-dev",
+    "Identifier": {
+      "UID": "9ad59860b74f3bc9"
+    },
+    "Version": "1.0.15-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "libstdc++",
+    "Identifier": {
+      "UID": "3cb038e2e3f8f2d3"
+    },
+    "Version": "6.4.0-r5",
+    "Layer": {}
+  },
+  {
+    "Name": "libtasn1",
+    "Identifier": {
+      "UID": "d64e086f11523544"
+    },
+    "Version": "4.12-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "libunistring",
+    "Identifier": {
+      "UID": "f011d575a1de2df6"
+    },
+    "Version": "0.9.7-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "m4",
+    "Identifier": {
+      "UID": "9a0327634e852d10"
+    },
+    "Version": "1.4.18-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "make",
+    "Identifier": {
+      "UID": "5563a4c45ccc0ca6"
+    },
+    "Version": "4.2.1-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "mercurial",
+    "Identifier": {
+      "UID": "5b844daeeb0ae32c"
+    },
+    "Version": "4.5.2-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "mpc1",
+    "Identifier": {
+      "UID": "4ac00bb3c9d7b863"
+    },
+    "Version": "1.0.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "mpfr3",
+    "Identifier": {
+      "UID": "7351997d7d25f69a"
+    },
+    "Version": "3.1.5-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "musl",
+    "Identifier": {
+      "UID": "61c9bbf17ebf0ec5"
+    },
+    "Version": "1.1.18-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "musl-dev",
+    "Identifier": {
+      "UID": "bddc3ce8e670295c"
+    },
+    "Version": "1.1.18-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses",
+    "Identifier": {
+      "UID": "268c30a59b31f30f"
+    },
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-dev",
+    "Identifier": {
+      "UID": "35e387a2169b6c35"
+    },
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-libs",
+    "Identifier": {
+      "UID": "a698bd167c8edb63"
+    },
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-terminfo",
+    "Identifier": {
+      "UID": "1d756cb96659dfe8"
+    },
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "ncurses-terminfo-base",
+    "Identifier": {
+      "UID": "70b90293a1ffd5c"
+    },
+    "Version": "6.0_p20171125-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "nettle",
+    "Identifier": {
+      "UID": "2279fda8e0f37088"
+    },
+    "Version": "3.3-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "npth",
+    "Identifier": {
+      "UID": "5d5e661f25ccd3bb"
+    },
+    "Version": "1.5-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "openldap",
+    "Identifier": {
+      "UID": "f951698c7542567d"
+    },
+    "Version": "2.4.45-r3",
+    "Layer": {}
+  },
+  {
+    "Name": "p11-kit",
+    "Identifier": {
+      "UID": "f9a3b6ef16728be3"
+    },
+    "Version": "0.23.2-r2",
+    "Layer": {}
+  },
+  {
+    "Name": "patch",
+    "Identifier": {
+      "UID": "59097ece63a1532"
+    },
+    "Version": "2.7.5-r2",
+    "Layer": {}
+  },
+  {
+    "Name": "pcre2",
+    "Identifier": {
+      "UID": "46c51355357283bd"
+    },
+    "Version": "10.30-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "pinentry",
+    "Identifier": {
+      "UID": "e0aa8991cc0d7ea9"
+    },
+    "Version": "1.0.0-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "pkgconf",
+    "Identifier": {
+      "UID": "558f6d8317744a54"
+    },
+    "Version": "1.3.10-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "python2",
+    "Identifier": {
+      "UID": "7e33eccd3ce9ae3f"
+    },
+    "Version": "2.7.15-r2",
+    "Layer": {}
+  },
+  {
+    "Name": "re2c",
+    "Identifier": {
+      "UID": "6dbcd72a6ade1945"
+    },
+    "Version": "1.0.2-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "readline",
+    "Identifier": {
+      "UID": "c1cfb597544b76a5"
+    },
+    "Version": "7.0.003-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "serf",
+    "Identifier": {
+      "UID": "94872f984b4a0583"
+    },
+    "Version": "1.3.9-r3",
+    "Layer": {}
   },
   {
     "Name": "subversion",
+    "Identifier": {
+      "UID": "8fa2da2cba41429c"
+    },
     "Version": "1.9.7-r0",
-    "Release": "",
-    "Epoch": 0,
-    "Arch": "",
-    "SrcName": "",
-    "SrcVersion": "",
-    "SrcRelease": "",
-    "SrcEpoch":0,
-    "LayerID":""
+    "Layer": {}
+  },
+  {
+    "Name": "subversion-libs",
+    "Identifier": {
+      "UID": "2591b779b8cc1ec5"
+    },
+    "Version": "1.9.7-r0",
+    "Layer": {}
+  },
+  {
+    "Name": "xz",
+    "Identifier": {
+      "UID": "74d9b4a853a25311"
+    },
+    "Version": "5.2.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "xz-libs",
+    "Identifier": {
+      "UID": "e6072b890db87763"
+    },
+    "Version": "5.2.3-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "zlib",
+    "Identifier": {
+      "UID": "b742ac29b1f34e"
+    },
+    "Version": "1.2.11-r1",
+    "Layer": {}
+  },
+  {
+    "Name": "zlib-dev",
+    "Identifier": {
+      "UID": "e9a8669a86602c9d"
+    },
+    "Version": "1.2.11-r1",
+    "Layer": {}
   }
 ]

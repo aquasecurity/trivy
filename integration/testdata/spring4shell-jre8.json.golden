@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -197,8 +198,13 @@
           "VulnerabilityID": "CVE-2022-22965",
           "PkgName": "org.springframework:spring-beans",
           "PkgPath": "usr/local/tomcat/webapps/helloworld.war/WEB-INF/lib/spring-beans-5.3.15.jar",
+          "PkgIdentifier": {
+            "PURL": "pkg:maven/org.springframework/spring-beans@5.3.15",
+            "UID": "9d9e0a303e263760"
+          },
           "InstalledVersion": "5.3.15",
           "FixedVersion": "5.3.18",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:cc44af318e91e6f9f9bf73793fa4f0639487613f46aa1f819b02b6e8fb5c6c07",
             "DiffID": "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
@@ -216,6 +222,11 @@
           "CweIDs": [
             "CWE-94"
           ],
+          "VendorSeverity": {
+            "ghsa": 4,
+            "nvd": 4,
+            "redhat": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
@@ -234,7 +245,9 @@
           },
           "References": [
             "https://github.com/advisories/GHSA-36p3-wjmg-h94x"
-          ]
+          ],
+          "PublishedDate": "2022-04-01T23:15:00Z",
+          "LastModifiedDate": "2022-05-19T14:21:00Z"
         }
       ]
     },

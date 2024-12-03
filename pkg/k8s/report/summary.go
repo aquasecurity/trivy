@@ -3,11 +3,11 @@ package report
 import (
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
@@ -35,24 +35,19 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnH
 	}
 }
 
-func ColumnHeading(scanners types.Scanners, components, availableColumns []string) []string {
+func ColumnHeading(scanners types.Scanners, availableColumns []string) []string {
 	columns := []string{
 		NamespaceColumn,
 		ResourceColumn,
 	}
-	securityOptions := make(map[string]interface{}, 0)
-	//maintain column order (vuln,config,secret)
+	securityOptions := make(map[string]any, 0)
+	// maintain column order (vuln,config,secret)
 	for _, check := range scanners {
 		switch check {
 		case types.VulnerabilityScanner:
 			securityOptions[VulnerabilitiesColumn] = nil
 		case types.MisconfigScanner:
-			if slices.Contains(components, workloadComponent) {
-				securityOptions[MisconfigurationsColumn] = nil
-			}
-			if slices.Contains(components, infraComponent) {
-				securityOptions[InfraAssessmentColumn] = nil
-			}
+			securityOptions[MisconfigurationsColumn] = nil
 		case types.SecretScanner:
 			securityOptions[SecretsColumn] = nil
 		case types.RBACScanner:
@@ -107,8 +102,7 @@ func (s SummaryWriter) Write(report Report) error {
 		}
 
 		if slices.Contains(s.ColumnsHeading, MisconfigurationsColumn) ||
-			slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) ||
-			slices.Contains(s.ColumnsHeading, InfraAssessmentColumn) {
+			slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) {
 			rowParts = append(rowParts, s.generateSummary(mCount)...)
 		}
 
@@ -173,13 +167,13 @@ func accumulateSeverityCounts(finding Resource) (map[string]int, map[string]int,
 	sCount := make(map[string]int)
 	for _, r := range finding.Results {
 		for _, rv := range r.Vulnerabilities {
-			vCount[rv.Severity] = vCount[rv.Severity] + 1
+			vCount[rv.Severity]++
 		}
 		for _, rv := range r.Misconfigurations {
-			mCount[rv.Severity] = mCount[rv.Severity] + 1
+			mCount[rv.Severity]++
 		}
 		for _, rv := range r.Secrets {
-			sCount[rv.Severity] = sCount[rv.Severity] + 1
+			sCount[rv.Severity]++
 		}
 	}
 	return vCount, mCount, sCount

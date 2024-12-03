@@ -4,7 +4,6 @@ import (
 	"github.com/samber/lo"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -63,8 +62,8 @@ func filterHighSecrets(result types.Result) types.Result {
 }
 
 func filterSecrets(result types.Result, severity dbTypes.Severity) types.Result {
-	filtered := lo.Filter(result.Secrets, func(vuln ftypes.SecretFinding, _ int) bool {
-		return vuln.Severity == severity.String()
+	filtered := lo.Filter(result.Secrets, func(secret types.DetectedSecret, _ int) bool {
+		return secret.Severity == severity.String()
 	})
 	return types.Result{
 		Target:  result.Target,

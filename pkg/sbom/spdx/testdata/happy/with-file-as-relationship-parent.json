@@ -1,0 +1,54 @@
+{
+  "files": [
+    {
+      "fileName": "./Modules/Microsoft.PowerShell.PSResourceGet/_manifest/spdx_2.2/manifest.spdx.json",
+      "SPDXID": "SPDXRef-File--Modules-Microsoft.PowerShell.PSResourceGet--manifest-spdx-2.2-manifest.spdx.json-2B9FB98F5CA97DC84FD382A8F8E68F663C003362",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4201b0989938842ef8c11a006184e0b1466bd7f9bb2af61d89a4c8318d43466e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2b9fb98f5ca97dc84fd382a8f8e68f663c003362"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION",
+      "fileTypes": [
+        "SPDX"
+      ]
+    }
+  ],
+  "externalDocumentRefs": [],
+  "relationships": [
+    {
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-RootPackage",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relationshipType": "DESCRIBED_BY",
+      "relatedSpdxElement": "SPDXRef-DOCUMENT",
+      "spdxElementId": "SPDXRef-File--Modules-Microsoft.PowerShell.PSResourceGet--manifest-spdx-2.2-manifest.spdx.json-2B9FB98F5CA97DC84FD382A8F8E68F663C003362"
+    }
+  ],
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "PowerShell Linux Arm32 7.5.0-preview.2",
+  "documentNamespace": "https://sbom.microsoft/1:2QSF7qZlbE-F7QrUJlEo7g:pHp_nUFvDUijZ4LrJ4RhoQ/696:458654/PowerShell%20Linux%20Arm32:7.5.0-preview.2:pDkyTHXmgUOdzSXIq9CiqA",
+  "creationInfo": {
+    "created": "2024-02-22T00:43:53Z",
+    "creators": [
+      "Organization: Microsoft",
+      "Tool: Microsoft.SBOMTool-2.2.3"
+    ]
+  },
+  "documentDescribes": [
+    "SPDXRef-RootPackage"
+  ]
+}

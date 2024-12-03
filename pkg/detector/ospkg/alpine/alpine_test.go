@@ -1,20 +1,19 @@
 package alpine_test
 
 import (
+	"context"
 	"sort"
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -34,8 +33,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -88,8 +90,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain rc",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -116,8 +121,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain pre",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -150,12 +158,15 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "repository is newer than OS version",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "repository is newer than OS version",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.9.3",
 				repo: &ftypes.Repository{
-					Family:  os.Alpine,
+					Family:  ftypes.Alpine,
 					Release: "3.10",
 				},
 				pkgs: []ftypes.Package{
@@ -182,8 +193,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -198,12 +212,15 @@ func TestScanner_Detect(t *testing.T) {
 			wantErr: "failed to get alpine advisories",
 		},
 		{
-			name:     "No src name",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "No src name",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.9.3",
 				repo: &ftypes.Repository{
-					Family:  os.Alpine,
+					Family:  ftypes.Alpine,
 					Release: "3.10",
 				},
 				pkgs: []ftypes.Package{
@@ -235,7 +252,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := alpine.NewScanner()
-			got, err := s.Detect(tt.args.osVer, tt.args.repo, tt.args.pkgs)
+			got, err := s.Detect(nil, tt.args.osVer, tt.args.repo, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -245,7 +262,7 @@ func TestScanner_Detect(t *testing.T) {
 			sort.Slice(got, func(i, j int) bool {
 				return got[i].VulnerabilityID < got[j].VulnerabilityID
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -253,7 +270,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -310,8 +327,9 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := alpine.NewScanner(alpine.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(context.Background(), tt.now)
+			s := alpine.NewScanner()
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

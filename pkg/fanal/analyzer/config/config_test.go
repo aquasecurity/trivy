@@ -8,19 +8,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/defsec/pkg/detection"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
 func TestAnalyzer_PostAnalyze(t *testing.T) {
 	type fields struct {
-		typ        analyzer.Type
-		newScanner config.NewScanner
-		opts       analyzer.AnalyzerOptions
+		typ      analyzer.Type
+		fileType detection.FileType
+		opts     analyzer.AnalyzerOptions
 	}
 	tests := []struct {
 		name    string
@@ -32,8 +32,8 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 		{
 			name: "dockerfile",
 			fields: fields{
-				typ:        analyzer.TypeDockerfile,
-				newScanner: misconf.NewDockerfileScanner,
+				typ:      analyzer.TypeDockerfile,
+				fileType: detection.FileTypeDockerfile,
 				opts: analyzer.AnalyzerOptions{
 					MisconfScannerOption: misconf.ScannerOption{
 						Namespaces:              []string{"user"},
@@ -46,7 +46,7 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Misconfigurations: []types.Misconfiguration{
 					{
-						FileType: string(detection.FileTypeDockerfile),
+						FileType: types.Dockerfile,
 						FilePath: "Dockerfile",
 						Successes: types.MisconfResults{
 							types.MisconfResult{
@@ -75,8 +75,8 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 		{
 			name: "non-existent dir",
 			fields: fields{
-				typ:        analyzer.TypeDockerfile,
-				newScanner: misconf.NewDockerfileScanner,
+				typ:      analyzer.TypeDockerfile,
+				fileType: detection.FileTypeDockerfile,
 				opts: analyzer.AnalyzerOptions{
 					MisconfScannerOption: misconf.ScannerOption{
 						Namespaces:              []string{"user"},
@@ -91,7 +91,7 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := config.NewAnalyzer(tt.fields.typ, 0, tt.fields.newScanner, tt.fields.opts)
+			a, err := config.NewAnalyzer(tt.fields.typ, 0, tt.fields.fileType, tt.fields.opts)
 			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{

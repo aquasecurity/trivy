@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
+
+    <PackageReference Update="Microsoft.Extensions.Configuration" Version="2.1.1" />
+    <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.1" />
+    <PackageReference Update="Microsoft.Extensions.Http" Version="3.2.1" />
+    <PackageReference WrongAttribute="Package1" Version="3.2.1" />
+    <WrongEntry Update="Package2" Version="3.2.1" />
+    <PackageReference Update="Package3" />
+
+</Project>

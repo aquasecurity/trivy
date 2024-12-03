@@ -7,16 +7,16 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -27,7 +27,6 @@ var (
 	dpkgLicenseAnalyzerVersion = 1
 
 	commonLicenseReferenceRegexp = regexp.MustCompile(`/?usr/share/common-licenses/([0-9A-Za-z_.+-]+[0-9A-Za-z+])`)
-	licenseSplitRegexp           = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
 )
 
 // dpkgLicenseAnalyzer parses copyright files and detect licenses
@@ -76,7 +75,7 @@ func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 }
 
 // parseCopyright parses /usr/share/doc/*/copyright files
-func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.LicenseFinding, error) {
+func (a *dpkgLicenseAnalyzer) parseCopyright(r xio.ReadSeekerAt) ([]types.LicenseFinding, error) {
 	scanner := bufio.NewScanner(r)
 	var licenses []string
 	for scanner.Scan() {
@@ -89,15 +88,8 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 			l := strings.TrimSpace(line[8:])
 
 			l = normalizeLicense(l)
-			if len(l) > 0 {
-				// Split licenses without considering "and"/"or"
-				// examples:
-				// 'GPL-1+,GPL-2' => {"GPL-1", "GPL-2"}
-				// 'GPL-1+ or Artistic or Artistic-dist' => {"GPL-1", "Artistic", "Artistic-dist"}
-				// 'LGPLv3+_or_GPLv2+' => {"LGPLv3", "GPLv2"}
-				// 'BSD-3-CLAUSE and GPL-2' => {"BSD-3-CLAUSE", "GPL-2"}
-				// 'GPL-1+ or Artistic, and BSD-4-clause-POWERDOG' => {"GPL-1+", "Artistic", "BSD-4-clause-POWERDOG"}
-				for _, lic := range licenseSplitRegexp.Split(l, -1) {
+			if l != "" {
+				for _, lic := range licensing.SplitLicenses(l) {
 					lic = licensing.Normalize(lic)
 					if !slices.Contains(licenses, lic) {
 						licenses = append(licenses, lic)

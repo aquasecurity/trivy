@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>NuGet.Frameworks</id>
+    <version>5.7.0+b804bf4ba62c0b47c77bbf3e22e196b57cd7a556</version>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">LICENSE.txt</license>
+    <projectUrl>https://aka.ms/nugetprj</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/NuGet/Media/master/Images/MainLogo/256x256/nuget_256.png</iconUrl>
+    <description>NuGet's understanding of target frameworks.</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>nuget</tags>
+    <serviceable>true</serviceable>
+    <repository type="git" url="https://github.com/NuGet/NuGet.Client" commit="b804bf4ba62c0b47c77bbf3e22e196b57cd7a556" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.0" />
+      <group targetFramework=".NETFramework4.7.2" />
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
+  </metadata>
+</package>

@@ -4,10 +4,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/disk"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/vm/disk"
 )
 
 func TestVMDK_NewReader(t *testing.T) {

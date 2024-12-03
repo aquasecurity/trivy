@@ -41,7 +41,7 @@ trivy:
     # Build image
     - docker build -t $IMAGE .
     # Build report
-    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
+    - ./trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
     # Print report
     - ./trivy image --exit-code 0 --severity HIGH $IMAGE
     # Fail on severe vulnerabilities
@@ -49,7 +49,7 @@ trivy:
   cache:
     paths:
       - .trivycache/
-  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab Ultimate)
   artifacts:
     reports:
       container_scanning: gl-container-scanning-report.json
@@ -74,8 +74,8 @@ container_scanning:
     name: docker.io/aquasec/trivy:latest
     entrypoint: [""]
   variables:
-    # No need to clone the repo, we exclusively work on artifacts.  See
-    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    # No need to clone the repo, we exclusively work on artifacts. See
+    # https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy
     GIT_STRATEGY: none
     TRIVY_USERNAME: "$CI_REGISTRY_USER"
     TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
@@ -85,8 +85,6 @@ container_scanning:
     FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   script:
     - trivy --version
-    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
-    - time trivy image --clear-cache
     # update vulnerabilities db
     - time trivy image --download-db-only
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
@@ -116,7 +114,7 @@ container_scanning:
 Depending on the edition of gitlab you have or your desired workflow, the
 container scanning template may not meet your needs. As an addition to the
 above container scanning template, a template for
-[code climate](https://docs.gitlab.com/ee/user/project/merge_requests/code_quality.html)
+[code climate](https://docs.gitlab.com/ee/ci/testing/code_quality.html)
 has been included. The key things to update from the above examples are
 the `template` and `report` type. An updated example is below.
 
@@ -148,9 +146,9 @@ trivy:
     # Build image
     - docker build -t $IMAGE .
     # Image report
-    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-image.json $IMAGE
+    - ./trivy image --exit-code 0 --format template --template "@/contrib/gitlab-codequality.tpl" -o gl-codeclimate-image.json $IMAGE
     # Filesystem report
-    - ./trivy filesystem --scanners config,vuln --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-fs.json .
+    - ./trivy filesystem --scanners misconfig,vuln --exit-code 0 --format template --template "@/contrib/gitlab-codequality.tpl" -o gl-codeclimate-fs.json .
     # Combine report
     - apk update && apk add jq
     - jq -s 'add' gl-codeclimate-image.json gl-codeclimate-fs.json > gl-codeclimate.json

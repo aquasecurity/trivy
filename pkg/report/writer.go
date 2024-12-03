@@ -1,15 +1,16 @@
 package report
 
 import (
+	"context"
 	"io"
 	"strings"
-	"sync"
 
+	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/report/github"
@@ -21,138 +22,104 @@ import (
 
 const (
 	SchemaVersion = 2
-
-	FormatTable      = "table"
-	FormatJSON       = "json"
-	FormatTemplate   = "template"
-	FormatSarif      = "sarif"
-	FormatCycloneDX  = "cyclonedx"
-	FormatSPDX       = "spdx"
-	FormatSPDXJSON   = "spdx-json"
-	FormatGitHub     = "github"
-	FormatCosignVuln = "cosign-vuln"
 )
-
-var (
-	SupportedFormats = []string{
-		FormatTable,
-		FormatJSON,
-		FormatTemplate,
-		FormatSarif,
-		FormatCycloneDX,
-		FormatSPDX,
-		FormatSPDXJSON,
-		FormatGitHub,
-		FormatCosignVuln,
-	}
-)
-
-var (
-	SupportedSBOMFormats = []string{
-		FormatCycloneDX,
-		FormatSPDX,
-		FormatSPDXJSON,
-		FormatGitHub,
-	}
-)
-
-type Option struct {
-	AppVersion string
-
-	Format         string
-	Report         string
-	Output         io.Writer
-	Tree           bool
-	Severities     []dbTypes.Severity
-	OutputTemplate string
-	Compliance     spec.ComplianceSpec
-
-	// For misconfigurations
-	IncludeNonFailures bool
-	Trace              bool
-
-	// For licenses
-	LicenseRiskThreshold int
-	IgnoredLicenses      []string
-}
 
 // Write writes the result to output, format as passed in argument
-func Write(report types.Report, option Option) error {
+func Write(ctx context.Context, report types.Report, option flag.Options) (err error) {
+	output, cleanup, err := option.OutputWriter(ctx)
+	if err != nil {
+		return xerrors.Errorf("failed to create a file: %w", err)
+	}
+	defer func() {
+		if cerr := cleanup(); cerr != nil {
+			err = multierror.Append(err, cerr)
+		}
+	}()
+
 	// Compliance report
 	if option.Compliance.Spec.ID != "" {
-		return complianceWrite(report, option)
+		return complianceWrite(ctx, report, option, output)
 	}
 
 	var writer Writer
 	switch option.Format {
-	case FormatTable:
+	case types.FormatTable:
 		writer = &table.Writer{
-			Output:               option.Output,
+			Output:               output,
 			Severities:           option.Severities,
-			Tree:                 option.Tree,
-			ShowMessageOnce:      &sync.Once{},
+			Tree:                 option.DependencyTree,
+			ShowSuppressed:       option.ShowSuppressed,
 			IncludeNonFailures:   option.IncludeNonFailures,
 			Trace:                option.Trace,
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
 		}
-	case FormatJSON:
-		writer = &JSONWriter{Output: option.Output}
-	case FormatGitHub:
+	case types.FormatJSON:
+		writer = &JSONWriter{
+			Output:         output,
+			ListAllPkgs:    option.ListAllPkgs,
+			ShowSuppressed: option.ShowSuppressed,
+		}
+	case types.FormatGitHub:
 		writer = &github.Writer{
-			Output:  option.Output,
+			Output:  output,
 			Version: option.AppVersion,
 		}
-	case FormatCycloneDX:
+	case types.FormatCycloneDX:
 		// TODO: support xml format option with cyclonedx writer
-		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)
-	case FormatSPDX, FormatSPDXJSON:
-		writer = spdx.NewWriter(option.Output, option.AppVersion, option.Format)
-	case FormatTemplate:
+		writer = cyclonedx.NewWriter(output, option.AppVersion)
+	case types.FormatSPDX, types.FormatSPDXJSON:
+		writer = spdx.NewWriter(output, option.AppVersion, option.Format)
+	case types.FormatTemplate:
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
-		if strings.HasPrefix(option.OutputTemplate, "@") && strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
-			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
+		if strings.HasPrefix(option.Template, "@") && strings.HasSuffix(option.Template, "sarif.tpl") {
+			log.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = &SarifWriter{
-				Output:  option.Output,
+				Output:  output,
 				Version: option.AppVersion,
 			}
 			break
 		}
-		var err error
-		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
+		if writer, err = NewTemplateWriter(output, option.Template, option.AppVersion); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
-	case FormatSarif:
-		writer = &SarifWriter{
-			Output:  option.Output,
-			Version: option.AppVersion,
+	case types.FormatSarif:
+		target := ""
+		if report.ArtifactType == artifact.TypeFilesystem {
+			target = option.Target
 		}
-	case FormatCosignVuln:
-		writer = predicate.NewVulnWriter(option.Output, option.AppVersion)
+		writer = &SarifWriter{
+			Output:  output,
+			Version: option.AppVersion,
+			Target:  target,
+		}
+	case types.FormatCosignVuln:
+		writer = predicate.NewVulnWriter(output, option.AppVersion)
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
 
-	if err := writer.Write(report); err != nil {
+	if err = writer.Write(ctx, report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
+
 	return nil
 }
 
-func complianceWrite(report types.Report, opt Option) error {
+func complianceWrite(ctx context.Context, report types.Report, opt flag.Options, output io.Writer) error {
 	complianceReport, err := cr.BuildComplianceReport([]types.Results{report.Results}, opt.Compliance)
 	if err != nil {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}
-	return cr.Write(complianceReport, cr.Option{
+	return cr.Write(ctx, complianceReport, cr.Option{
 		Format:     opt.Format,
-		Report:     opt.Report,
-		Output:     opt.Output,
+		Report:     opt.ReportFormat,
+		Output:     output,
 		Severities: opt.Severities,
 	})
 }
 
 // Writer defines the result write operation
 type Writer interface {
-	Write(types.Report) error
+	Write(context.Context, types.Report) error
 }

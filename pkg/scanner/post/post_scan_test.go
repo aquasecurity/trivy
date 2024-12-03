@@ -6,13 +6,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"github.com/stretchr/testify/require"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
-
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -99,8 +96,8 @@ func TestScan(t *testing.T) {
 			}()
 
 			results, err := post.Scan(context.Background(), tt.results)
-			require.Equal(t, err != nil, tt.wantErr)
-			assert.Equal(t, results, tt.want)
+			require.Equal(t, tt.wantErr, err != nil)
+			assert.Equal(t, tt.want, results)
 		})
 	}
 }

@@ -1,0 +1,33 @@
+name: Auto-update labels
+on:
+  push:
+    paths:
+      - 'misc/triage/labels.yaml'
+    branches:
+      - main
+env:
+  GO_VERSION: '1.22'
+jobs:
+  deploy:
+    name: Auto-update labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          # cf. https://github.com/aquasecurity/trivy/pull/6711
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Install aqua tools
+        uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v1.25.0
+
+      - name: update labels
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mage label

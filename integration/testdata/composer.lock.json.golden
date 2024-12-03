@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/composer",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/composer",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -23,10 +24,15 @@
         {
           "ID": "guzzlehttp/guzzle@7.4.4",
           "Name": "guzzlehttp/guzzle",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/guzzle@7.4.4",
+            "UID": "b08c57e1706dce2d"
+          },
           "Version": "7.4.4",
           "Licenses": [
             "MIT"
           ],
+          "Relationship": "direct",
           "DependsOn": [
             "guzzlehttp/psr7@1.8.3"
           ],
@@ -41,11 +47,16 @@
         {
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "75a904f2b589910f"
+          },
           "Version": "1.8.3",
           "Licenses": [
             "MIT"
           ],
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -60,8 +71,13 @@
           "VulnerabilityID": "CVE-2022-24775",
           "PkgID": "guzzlehttp/psr7@1.8.3",
           "PkgName": "guzzlehttp/psr7",
+          "PkgIdentifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "75a904f2b589910f"
+          },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
@@ -76,6 +92,9 @@
           "CweIDs": [
             "CWE-20"
           ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",

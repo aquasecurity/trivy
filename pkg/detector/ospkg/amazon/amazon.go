@@ -1,16 +1,15 @@
 package amazon
 
 import (
+	"context"
 	"strings"
 	"time"
 
-	"k8s.io/utils/clock"
-
 	version "github.com/knqyf263/go-deb-version"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
+	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -28,51 +27,29 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-	l     *zap.SugaredLogger
-}
-
-type option func(*options)
-
-func WithClock(clock clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = clock
-	}
-}
-
 // Scanner to scan amazon vulnerabilities
 type Scanner struct {
 	ac amazon.VulnSrc
-	options
 }
 
 // NewScanner is the factory method to return Amazon scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		l:     log.Logger,
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		ac:      amazon.NewVulnSrc(),
-		options: *o,
+		ac: amazon.NewVulnSrc(),
 	}
 }
 
 // Detect scans the packages using amazon scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = strings.Fields(osVer)[0]
+	// The format `2023.xxx.xxxx` can be used.
+	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
-	log.Logger.Debugf("amazon: os version: %s", osVer)
-	log.Logger.Debugf("amazon: the number of packages: %d", len(pkgs))
+
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
@@ -88,14 +65,16 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
-			log.Logger.Debugf("failed to parse Amazon Linux installed package version: %s", err)
+			log.DebugContext(ctx, "Failed to parse the installed package version",
+				log.String("version", installed), log.Err(err))
 			continue
 		}
 
 		for _, adv := range advisories {
 			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
-				log.Logger.Debugf("failed to parse Amazon Linux package version: %s", err)
+				log.DebugContext(ctx, "Failed to parse the fixed version",
+					log.String("version", adv.FixedVersion), log.Err(err))
 				continue
 			}
 
@@ -106,7 +85,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     adv.FixedVersion,
-					PkgRef:           pkg.Ref,
+					PkgIdentifier:    pkg.Identifier,
 					Layer:            pkg.Layer,
 					Custom:           adv.Custom,
 					DataSource:       adv.DataSource,
@@ -118,17 +97,14 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	return vulns, nil
 }
 
-// IsSupportedVersion checks if os can be scanned using amazon scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	osVer = strings.Fields(osVer)[0]
+	// The format `2023.xxx.xxxx` can be used.
+	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
-	}
 
-	return s.clock.Now().Before(eol)
+	return osver.Supported(ctx, eolDates, osFamily, osVer)
 }

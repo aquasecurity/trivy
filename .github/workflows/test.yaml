@@ -1,21 +1,18 @@
 name: Test
 on:
-  push:
-    branches-ignore:
-      - 'main'
-      - 'gh-readonly-queue/**'
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - 'LICENSE'
   pull_request:
       paths-ignore:
       - '**.md'
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+      - '.release-please-manifest.json' ## don't run tests for release-please PRs
+      - 'helm/trivy/Chart.yaml'
   merge_group:
+  workflow_dispatch:
+
+env:
+  GO_VERSION: '1.22'
 jobs:
   test:
     name: Test
@@ -24,12 +21,13 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: oldstable
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: go mod tidy
         run: |
@@ -41,15 +39,21 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.6.0
+        id: lint
+        uses: golangci/golangci-lint-action@v6.1.1
         with:
-          version: v1.52
-          args: --deadline=30m
-          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
+          version: v1.61
+          args: --verbose --out-format=line-number
         if: matrix.operating-system == 'ubuntu-latest'
 
+      - name: Check if linter failed
+        run: |
+          echo "Linter failed, running 'mage lint:fix' might help to correct some errors"
+          exit 1
+        if: ${{ failure() && steps.lint.conclusion == 'failure' }}
+
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
@@ -71,17 +75,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
 
       - name: Run integration tests
         run: mage test:integration
@@ -91,15 +112,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
 
@@ -111,17 +133,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
 
       - name: Run module integration tests
         shell: bash
@@ -133,16 +172,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test VM images from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-vm-images-
+
       - name: Run vm integration tests
         run: |
           mage test:vm
@@ -157,12 +215,13 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.5.3
+      uses: actions/checkout@v4.1.6
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version-file: go.mod
+        go-version: ${{ env.GO_VERSION }}
+        cache: false
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
@@ -177,7 +236,7 @@ jobs:
         fi
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v4
+      uses: goreleaser/goreleaser-action@v6
       with:
-        version: v1.16.2
+        version: v2.1.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}

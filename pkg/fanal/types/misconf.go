@@ -8,13 +8,12 @@ import (
 )
 
 type Misconfiguration struct {
-	FileType   string         `json:",omitempty"`
-	FilePath   string         `json:",omitempty"`
-	Successes  MisconfResults `json:",omitempty"`
-	Warnings   MisconfResults `json:",omitempty"`
-	Failures   MisconfResults `json:",omitempty"`
-	Exceptions MisconfResults `json:",omitempty"`
-	Layer      Layer          `json:",omitempty"`
+	FileType  ConfigType     `json:",omitempty"`
+	FilePath  string         `json:",omitempty"`
+	Successes MisconfResults `json:",omitempty"`
+	Warnings  MisconfResults `json:",omitempty"`
+	Failures  MisconfResults `json:",omitempty"`
+	Layer     Layer          `json:",omitempty"`
 }
 
 type MisconfResult struct {
@@ -31,12 +30,19 @@ type MisconfResult struct {
 type MisconfResults []MisconfResult
 
 type CauseMetadata struct {
-	Resource  string `json:",omitempty"`
-	Provider  string `json:",omitempty"`
-	Service   string `json:",omitempty"`
-	StartLine int    `json:",omitempty"`
-	EndLine   int    `json:",omitempty"`
-	Code      Code   `json:",omitempty"`
+	Resource    string       `json:",omitempty"`
+	Provider    string       `json:",omitempty"`
+	Service     string       `json:",omitempty"`
+	StartLine   int          `json:",omitempty"`
+	EndLine     int          `json:",omitempty"`
+	Code        Code         `json:",omitempty"`
+	Occurrences []Occurrence `json:",omitempty"`
+}
+
+type Occurrence struct {
+	Resource string `json:",omitempty"`
+	Filename string `json:",omitempty"`
+	Location Location
 }
 
 type Code struct {
@@ -110,7 +116,6 @@ func ToMisconfigurations(misconfs map[string]Misconfiguration) []Misconfiguratio
 		sort.Sort(misconf.Successes)
 		sort.Sort(misconf.Warnings)
 		sort.Sort(misconf.Failures)
-		sort.Sort(misconf.Exceptions)
 
 		results = append(results, misconf)
 	}

@@ -21,7 +21,6 @@ Targets (what Trivy can scan):
 - Git Repository (remote)
 - Virtual Machine Image
 - Kubernetes
-- AWS
 
 Scanners (what Trivy can find there):
 
@@ -78,7 +77,7 @@ https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-a
 </details>
 
 ```bash
-trivy fs --scanners vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,misconfig myproject/
 ```
 
 <details>
@@ -139,7 +138,7 @@ Please ensure to abide by our [Code of Conduct][code-of-conduct] during all inte
 
 [Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [Ecosystem]: https://aquasecurity.github.io/trivy/latest/ecosystem/
-[Scanning Coverage]: https://aquasecurity.github.io/trivy/latest/getting-started/coverage/
+[Scanning Coverage]: https://aquasecurity.github.io/trivy/latest/docs/coverage/
 
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego

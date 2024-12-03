@@ -1,0 +1,9 @@
+NAME="Common Base Linux Mariner"
+VERSION="1.0.20230713"
+ID=mariner
+VERSION_ID="1.0"
+PRETTY_NAME="CBL-Mariner/Linux"
+ANSI_COLOR="1;34"
+HOME_URL="https://aka.ms/cbl-mariner"
+BUG_REPORT_URL="https://aka.ms/cbl-mariner"
+SUPPORT_URL="https://aka.ms/cbl-mariner"

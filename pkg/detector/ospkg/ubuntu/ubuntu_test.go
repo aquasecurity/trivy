@@ -1,18 +1,19 @@
 package ubuntu_test
 
 import (
+	"context"
 	"sort"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -21,7 +22,6 @@ import (
 func TestScanner_Detect(t *testing.T) {
 	type args struct {
 		osVer string
-		now   time.Time
 		pkgs  []ftypes.Package
 	}
 	tests := []struct {
@@ -32,11 +32,13 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/ubuntu.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/ubuntu.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "20.04",
-				now:   time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
 				pkgs: []ftypes.Package{
 					{
 						Name:       "wpa",
@@ -81,11 +83,13 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "ubuntu 20.04-ESM. 20.04 is not outdated",
-			fixtures: []string{"testdata/fixtures/ubuntu.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "ubuntu 20.04-ESM. 20.04 is not outdated",
+			fixtures: []string{
+				"testdata/fixtures/ubuntu.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "20.04-ESM",
-				now:   time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
 				pkgs: []ftypes.Package{
 					{
 						Name:       "wpa",
@@ -130,11 +134,13 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "ubuntu 20.04-ESM. 20.04 is outdated",
-			fixtures: []string{"testdata/fixtures/ubuntu.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "ubuntu 19.04-ESM, 19.04 is outdated", // Use 19.04-ESM for testing, although it doesn't exist
+			fixtures: []string{
+				"testdata/fixtures/ubuntu.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
-				osVer: "20.04-ESM",
-				now:   time.Date(2031, 3, 31, 23, 59, 59, 0, time.UTC),
+				osVer: "19.04-ESM",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "wpa",
@@ -149,11 +155,13 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "broken bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "broken bucket",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "21.04",
-				now:   time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
 				pkgs: []ftypes.Package{
 					{
 						Name:       "jq",
@@ -171,8 +179,8 @@ func TestScanner_Detect(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			s := ubuntu.NewScanner(ubuntu.WithClock(fake.NewFakeClock(tt.args.now)))
-			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
+			s := ubuntu.NewScanner()
+			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -181,7 +189,7 @@ func TestScanner_Detect(t *testing.T) {
 			sort.Slice(got, func(i, j int) bool {
 				return got[i].VulnerabilityID < got[j].VulnerabilityID
 			})
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -189,7 +197,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -235,19 +243,20 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "unknown",
+			name: "latest",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "ubuntu",
-				osVer:    "unknown",
+				osVer:    "99.04",
 			},
-			want: false,
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := ubuntu.NewScanner(ubuntu.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(context.Background(), tt.now)
+			s := ubuntu.NewScanner()
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 'kind/feature' AND 'priority/backlog' labels -> 'Backlog' column
-      - uses: actions/add-to-project@v0.4.1 # add new issue to project
+      - uses: actions/add-to-project@v1.0.2 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
           field-values: Backlog
 
       # 'kind/feature' AND 'priority/important-longterm' labels -> 'Important (long-term)' column
-      - uses: actions/add-to-project@v0.4.1 # add new issue to project
+      - uses: actions/add-to-project@v1.0.2 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
           field-values: Important (long-term)
 
       # 'kind/feature' AND 'priority/important-soon' labels -> 'Important (soon)' column
-      - uses: actions/add-to-project@v0.4.1 # add new issue to project
+      - uses: actions/add-to-project@v1.0.2 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
@@ -62,7 +62,7 @@ jobs:
           field-values: Important (soon)
 
       # 'kind/feature' AND 'priority/critical-urgent' labels -> 'Urgent' column
-      - uses: actions/add-to-project@v0.4.1 # add new issue to project
+      - uses: actions/add-to-project@v1.0.2 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
