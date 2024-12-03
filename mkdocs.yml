@@ -12,6 +12,7 @@ nav:
       - First steps: getting-started/index.md 
       - Installation: getting-started/installation.md
       - Signature Verification: getting-started/signature-verification.md
+      - FAQ: getting-started/faq.md
   - Tutorials:
       - Overview: tutorials/overview.md   
       - CI/CD:
