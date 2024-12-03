@@ -140,11 +140,6 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "without ksplice",
-			fixtures: []string{
-				"testdata/fixtures/oracle7.yaml",
-				"testdata/fixtures/data-source.yaml",
-			},
 			name:     "different fixed versions for different arches",
 			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
