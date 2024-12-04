@@ -374,6 +374,65 @@ The following example shows use of default HTML template when Trivy is installed
 ```
 $ trivy image --format template --template "@/usr/local/share/trivy/templates/html.tpl" -o report.html golang:1.12-alpine
 ```
+##### Markdown
+Export the details of scan as markdown content
+
+* use the options to export the report to a file 
+```
+trivy image  --output somefile.md --format template --template @/contrib/markdown.tpl [more options] [registry/project/container]
+```
+* on your github actions pipeline, send the content of the markdown file to your  GITHUB_STEP_SUMMARY variable
+```
+steps:
+  - name: Adding markdown
+    run: cat somfile.md >> $GITHUB_STEP_SUMMARY
+```
+
+
+Example outcomes:
+```
+#  Trivy Report:
+**Target:**internal-registry.local/staging/application-container-a@sha256:f46dc423bdebe2f7f629a3c70ddbee0395dc3f323a4256432af9ec889255568a (debian 12.7)
+**Date:**2024-10-29 16:32:46.960177992 +0000 UTC m=+3.779711774
+***
+## debian
+### Vulnerabilities:
+| Severity | Package Name | VulnerabilityID | InstalledVersion | FixedVersion |
+| --- | --- | --- | --- | --- |
+| HIGH| libsqlite3-0| CVE-2023-7104| 3.40.1-2| |
+| HIGH| perl-base| CVE-2023-31484| 5.36.0-7+deb12u1| |
+| CRITICAL| zlib1g| CVE-2023-45853| 1:1.2.13.dfsg-1| |
+### Misconfigurations:
+      No Misconfigurations found.
+
+```
+Sample report
+```
+#  Trivy Report:
+**Target:**internal-registry.local/staging/application-container-z@sha256:be6d570ebae3564e28ddf8b58ac0a0c385f04745688e469971e3a25f8b0f370a (debian 12.7)
+**Date:**2024-10-29 16:32:50.668899445 +0000 UTC m=+3.691869697
+***
+## debian
+### Vulnerabilities:
+| Severity | Package Name | VulnerabilityID | InstalledVersion | FixedVersion |
+| --- | --- | --- | --- | --- |
+| HIGH| libexpat1| CVE-2023-52425| 2.5.0-1+deb12u1| |
+| HIGH| libgssapi-krb5-2| CVE-2024-26462| 1.20.1-2+deb12u2| |
+| HIGH| libk5crypto3| CVE-2024-26462| 1.20.1-2+deb12u2| |
+| HIGH| libkrb5-3| CVE-2024-26462| 1.20.1-2+deb12u2| |
+| HIGH| libkrb5support0| CVE-2024-26462| 1.20.1-2+deb12u2| |
+| HIGH| libldap-2.5-0| CVE-2023-2953| 2.5.13+dfsg-5| |
+| HIGH| libsqlite3-0| CVE-2023-7104| 3.40.1-2| |
+| HIGH| perl-base| CVE-2023-31484| 5.36.0-7+deb12u1| |
+| CRITICAL| zlib1g| CVE-2023-45853| 1:1.2.13.dfsg-1| |
+### Misconfigurations:
+      No Misconfigurations found.
+## python-pkg
+### Vulnerabilities:
+      No Vulnerabilities found.
+### Misconfigurations:
+      No Misconfigurations found.
+```
 
 ### SBOM
 See [here](../supply-chain/sbom.md) for details.
