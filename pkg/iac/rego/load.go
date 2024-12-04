@@ -295,15 +295,24 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 			continue
 		}
 
+		if IsBuiltinNamespace(getModuleNamespace(module)) {
+			if _, disabled := s.disabledCheckIDs[meta.ID]; disabled { // ignore builtin disabled checks
+				continue
+			}
+		}
+
 		if len(meta.InputOptions.Selectors) == 0 {
-			s.logger.Warn(
-				"Module has no input selectors - it will be loaded for all inputs!",
-				log.FilePath(module.Package.Location.File),
-				log.String("module", name),
-			)
+			if !meta.Library {
+				s.logger.Warn(
+					"Module has no input selectors - it will be loaded for all inputs!",
+					log.FilePath(module.Package.Location.File),
+					log.String("module", name),
+				)
+			}
 			filtered[name] = module
 			continue
 		}
+
 		for _, selector := range meta.InputOptions.Selectors {
 			if selector.Type == string(s.sourceType) {
 				filtered[name] = module

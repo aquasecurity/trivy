@@ -7,7 +7,10 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
       - '.release-please-manifest.json' ## don't run tests for release-please PRs
+      - 'helm/trivy/Chart.yaml'
   merge_group:
+  workflow_dispatch:
+
 env:
   GO_VERSION: '1.22'
 jobs:
@@ -24,6 +27,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
+
       - name: go mod tidy
         run: |
           go mod tidy
@@ -35,9 +40,9 @@ jobs:
 
       - name: Lint
         id: lint
-        uses: golangci/golangci-lint-action@v6.0.1
+        uses: golangci/golangci-lint-action@v6.1.1
         with:
-          version: v1.59
+          version: v1.61
           args: --verbose --out-format=line-number
         if: matrix.operating-system == 'ubuntu-latest'
 
@@ -76,11 +81,28 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
 
       - name: Run integration tests
         run: mage test:integration
@@ -98,6 +120,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
@@ -120,11 +143,28 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-images-
 
       - name: Run module integration tests
         shell: bash
@@ -144,10 +184,29 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache: false
+
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.0.1
         with:
           aqua_version: v1.25.0
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags | sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test VM images from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
+          restore-keys:
+            cache-test-vm-images-
+
       - name: Run vm integration tests
         run: |
           mage test:vm
@@ -170,6 +229,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
+        cache: false
 
     - name: Determine GoReleaser ID
       id: goreleaser_id

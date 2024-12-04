@@ -1,14 +1,15 @@
 site_name: Trivy
 site_url: https://aquasecurity.github.io/trivy/
-site_description: A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI
+site_description: Trivy - All-in-one open source security scanner
 docs_dir: docs/
 repo_name: GitHub
 repo_url: https://github.com/aquasecurity/trivy
 edit_uri: "blob/main/docs/"
 
 nav:
-  - Getting Started: 
-      - Overview: index.md
+  - Home: index.md
+  - Getting Started:
+      - First steps: getting-started/index.md 
       - Installation: getting-started/installation.md
       - Signature Verification: getting-started/signature-verification.md
       - FAQ: getting-started/faq.md
@@ -48,7 +49,6 @@ nav:
           - Code Repository: docs/target/repository.md
           - Virtual Machine Image: docs/target/vm.md
           - Kubernetes: docs/target/kubernetes.md
-          - AWS: docs/target/aws.md
           - SBOM: docs/target/sbom.md
       - Scanner:
           - Vulnerability: docs/scanner/vulnerability.md
@@ -56,7 +56,6 @@ nav:
               - Overview: docs/scanner/misconfiguration/index.md
               - Policy:
                   - Built-in Checks: docs/scanner/misconfiguration/check/builtin.md
-                  - Exceptions: docs/scanner/misconfiguration/check/exceptions.md
               - Custom Checks:
                   - Overview: docs/scanner/misconfiguration/custom/index.md
                   - Data: docs/scanner/misconfiguration/custom/data.md
@@ -78,7 +77,6 @@ nav:
               - Azure Linux (CBL-Mariner): docs/coverage/os/azure.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
-              - Conda: docs/coverage/os/conda.md
               - Debian: docs/coverage/os/debian.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
@@ -88,7 +86,6 @@ nav:
               - Ubuntu: docs/coverage/os/ubuntu.md
               - Wolfi: docs/coverage/os/wolfi.md
               - Google Distroless (Images): docs/coverage/os/google-distroless.md
-              - Bitnami (Images): docs/coverage/os/bitnami.md
           - Language:
               - Overview: docs/coverage/language/index.md
               - C/C++: docs/coverage/language/c.md
@@ -112,6 +109,11 @@ nav:
               - Helm: docs/coverage/iac/helm.md
               - Kubernetes: docs/coverage/iac/kubernetes.md
               - Terraform: docs/coverage/iac/terraform.md
+          - Others:
+              - Overview: docs/coverage/others/index.md
+              - Bitnami Images: docs/coverage/others/bitnami.md
+              - Conda: docs/coverage/others/conda.md
+              - RPM Archives: docs/coverage/others/rpm.md
           - Kubernetes: docs/coverage/kubernetes.md
       - Configuration:
           - Overview: docs/configuration/index.md
@@ -119,7 +121,7 @@ nav:
           - Skipping Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
-          - DB: docs/configuration/db.md
+          - Databases: docs/configuration/db.md
           - Others: docs/configuration/others.md
       - Supply Chain:
           - SBOM: docs/supply-chain/sbom.md
@@ -141,7 +143,8 @@ nav:
           - Developer guide: docs/plugin/developer-guide.md
       - Advanced:
           - Modules: docs/advanced/modules.md
-          - Advanced Network Scenarios: docs/advanced/air-gap.md
+          - Connectivity and Network considerations: docs/advanced/air-gap.md
+          - Self-Hosting Trivy's Databases: docs/advanced/self-hosting.md
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
@@ -176,6 +179,10 @@ nav:
                       - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
                       - Plugin Upgrade: docs/references/configuration/cli/trivy_plugin_upgrade.md
                       - Plugin Search: docs/references/configuration/cli/trivy_plugin_search.md
+                  - Registry:
+                        - Registry: docs/references/configuration/cli/trivy_registry.md
+                        - Registry Login: docs/references/configuration/cli/trivy_registry_login.md
+                        - Registry Logout: docs/references/configuration/cli/trivy_registry_logout.md
                   - Repository: docs/references/configuration/cli/trivy_repository.md
                   - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
                   - SBOM: docs/references/configuration/cli/trivy_sbom.md
@@ -193,6 +200,7 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
+          - Terminology: docs/references/terminology.md
   - Ecosystem: 
     - Overview: ecosystem/index.md
     - CI/CD: ecosystem/cicd.md
@@ -213,6 +221,9 @@ nav:
           - Backporting: community/maintainer/backporting.md
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
+  - Enterprise:
+      - Comparison: commercial/compare.md
+      - Contact Us: commercial/contact.md
 theme:
   name: material
   custom_dir: docs/overrides
@@ -227,24 +238,28 @@ theme:
     - content.tabs.link
     - content.code.annotate
     - content.code.copy
+  font:
+    text: Inter
 
 markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
   - pymdownx.highlight
+  - pymdownx.details
+  - pymdownx.magiclink
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - admonition
-  - footnotes
-  - attr_list
   - pymdownx.tabbed:
       alternate_style: true
-  - def_list
-  - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 extra:
   generator: false
@@ -259,6 +274,9 @@ extra:
       link: https://github.com/aquasecurity/trivy
     - icon: fontawesome/brands/slack
       link: https://github.com/aquasecurity/trivy
+  analytics:
+    provider: google
+    property: G-V9LJGFH7GX
 
 plugins:
   - search

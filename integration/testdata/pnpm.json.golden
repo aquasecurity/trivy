@@ -26,7 +26,7 @@
           "Name": "jquery",
           "Identifier": {
             "PURL": "pkg:npm/jquery@3.3.9",
-            "UID": "53ca18565a4b6a47"
+            "UID": "2a8ffed0b32cf950"
           },
           "Version": "3.3.9",
           "Licenses": [
@@ -40,7 +40,7 @@
           "Name": "lodash",
           "Identifier": {
             "PURL": "pkg:npm/lodash@4.17.4",
-            "UID": "31eadfcf58a6b128"
+            "UID": "29795971f23e7bf6"
           },
           "Version": "4.17.4",
           "Licenses": [
@@ -57,7 +57,7 @@
           "PkgName": "jquery",
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.3.9",
-            "UID": "53ca18565a4b6a47"
+            "UID": "2a8ffed0b32cf950"
           },
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
@@ -190,7 +190,7 @@
           "PkgName": "lodash",
           "PkgIdentifier": {
             "PURL": "pkg:npm/lodash@4.17.4",
-            "UID": "31eadfcf58a6b128"
+            "UID": "29795971f23e7bf6"
           },
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",

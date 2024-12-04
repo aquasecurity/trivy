@@ -194,9 +194,21 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 		}
 	}
 
-	// Attributions
-	for _, attr := range spdxPkg.PackageAttributionTexts {
-		k, v, ok := strings.Cut(attr, ": ")
+	// Trivy stores properties in Annotations
+	// But previous versions stored properties in AttributionTexts
+	// So we need to check both cases to maintain backward compatibility
+	var props []string
+	if len(spdxPkg.Annotations) > 0 {
+		for _, annotation := range spdxPkg.Annotations {
+			props = append(props, annotation.AnnotationComment)
+		}
+	} else if len(spdxPkg.PackageAttributionTexts) > 0 {
+		for _, attr := range spdxPkg.PackageAttributionTexts {
+			props = append(props, attr)
+		}
+	}
+	for _, prop := range props {
+		k, v, ok := strings.Cut(prop, ": ")
 		if !ok {
 			continue
 		}

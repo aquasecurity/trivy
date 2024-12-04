@@ -63,7 +63,6 @@ deny {
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
-	assert.False(t, results.GetFailed()[0].IsWarning())
 }
 
 func Test_RegoScanning_AbsolutePolicyPath_Deny(t *testing.T) {
@@ -98,40 +97,6 @@ deny {
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetFailed()[0].Metadata().Range().GetFilename())
-	assert.False(t, results.GetFailed()[0].IsWarning())
-}
-
-func Test_RegoScanning_Warn(t *testing.T) {
-
-	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
-package defsec.test
-
-warn {
-    input.evil
-}
-`,
-	})
-
-	scanner := rego.NewScanner(
-		types.SourceJSON,
-		rego.WithPolicyDirs("policies"),
-	)
-	require.NoError(t, scanner.LoadPolicies(srcFS))
-
-	results, err := scanner.ScanInput(context.TODO(), rego.Input{
-		Path: "/evil.lol",
-		Contents: map[string]any{
-			"evil": true,
-		},
-	})
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-	require.Empty(t, results.GetPassed())
-	require.Empty(t, results.GetIgnored())
-
-	assert.True(t, results.GetFailed()[0].IsWarning())
 }
 
 func Test_RegoScanning_Allow(t *testing.T) {
@@ -164,168 +129,6 @@ deny {
 	assert.Empty(t, results.GetIgnored())
 
 	assert.Equal(t, "/evil.lol", results.GetPassed()[0].Metadata().Range().GetFilename())
-}
-
-func Test_RegoScanning_Namespace_Exception(t *testing.T) {
-
-	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
-package defsec.test
-
-deny {
-    input.evil
-}
-`,
-		"policies/exceptions.rego": `
-package namespace.exceptions
-
-import data.namespaces
-
-exception[ns] {
-    ns := data.namespaces[_]
-    startswith(ns, "defsec")
-}
-`,
-	})
-
-	scanner := rego.NewScanner(
-		types.SourceJSON,
-		rego.WithPolicyDirs("policies"),
-	)
-	require.NoError(t, scanner.LoadPolicies(srcFS))
-
-	results, err := scanner.ScanInput(context.TODO(), rego.Input{
-		Path: "/evil.lol",
-		Contents: map[string]any{
-			"evil": true,
-		},
-	})
-	require.NoError(t, err)
-
-	assert.Empty(t, results.GetFailed())
-	assert.Empty(t, results.GetPassed())
-	assert.Len(t, results.GetIgnored(), 1)
-
-}
-
-func Test_RegoScanning_Namespace_Exception_WithoutMatch(t *testing.T) {
-
-	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
-package defsec.test
-
-deny {
-    input.evil
-}
-`, "policies/something.rego": `
-package builtin.test
-
-deny_something {
-    input.something
-}
-`,
-		"policies/exceptions.rego": `
-package namespace.exceptions
-
-import data.namespaces
-
-exception[ns] {
-    ns := data.namespaces[_]
-    startswith(ns, "builtin")
-}
-`,
-	})
-
-	scanner := rego.NewScanner(
-		types.SourceJSON,
-		rego.WithPolicyDirs("policies"),
-	)
-	require.NoError(t, scanner.LoadPolicies(srcFS))
-
-	results, err := scanner.ScanInput(context.TODO(), rego.Input{
-		Path: "/evil.lol",
-		Contents: map[string]any{
-			"evil": true,
-		},
-	})
-	require.NoError(t, err)
-
-	assert.Len(t, results.GetFailed(), 1)
-	assert.Empty(t, results.GetPassed())
-	assert.Len(t, results.GetIgnored(), 1)
-
-}
-
-func Test_RegoScanning_Rule_Exception(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
-package defsec.test
-deny_evil {
-    input.evil
-}
-`,
-		"policies/exceptions.rego": `
-package defsec.test
-
-exception[rules] {
-    rules := ["evil"]
-}
-`,
-	})
-
-	scanner := rego.NewScanner(
-		types.SourceJSON,
-		rego.WithPolicyDirs("policies"),
-	)
-	require.NoError(t, scanner.LoadPolicies(srcFS))
-
-	results, err := scanner.ScanInput(context.TODO(), rego.Input{
-		Path: "/evil.lol",
-		Contents: map[string]any{
-			"evil": true,
-		},
-	})
-	require.NoError(t, err)
-
-	assert.Empty(t, results.GetFailed())
-	assert.Empty(t, results.GetPassed())
-	assert.Len(t, results.GetIgnored(), 1)
-}
-
-func Test_RegoScanning_Rule_Exception_WithoutMatch(t *testing.T) {
-	srcFS := CreateFS(t, map[string]string{
-		"policies/test.rego": `
-package defsec.test
-deny_evil {
-    input.evil
-}
-`,
-		"policies/exceptions.rego": `
-package defsec.test
-
-exception[rules] {
-    rules := ["good"]
-}
-`,
-	})
-
-	scanner := rego.NewScanner(
-		types.SourceJSON,
-		rego.WithPolicyDirs("policies"),
-	)
-	require.NoError(t, scanner.LoadPolicies(srcFS))
-
-	results, err := scanner.ScanInput(context.TODO(), rego.Input{
-		Path: "/evil.lol",
-		Contents: map[string]any{
-			"evil": true,
-		},
-	})
-	require.NoError(t, err)
-
-	assert.Len(t, results.GetFailed(), 1)
-	assert.Empty(t, results.GetPassed())
-	assert.Empty(t, results.GetIgnored())
 }
 
 func Test_RegoScanning_WithRuntimeValues(t *testing.T) {
@@ -1150,6 +953,90 @@ deny {
 			})
 			require.NoError(t, err)
 			require.Len(t, results, tc.expectedResults, tc.name)
+		})
+	}
+}
+
+func Test_RegoScanner_WithDisabledCheckIDs(t *testing.T) {
+
+	check := `# METADATA
+# custom:
+#   id: TEST-001
+#   avd_id: AVD-TEST-001
+#   severity: LOW
+#   provider: aws
+#   service: s3
+#   short_code: test
+package builtin.test
+
+deny {
+  true
+}
+`
+
+	tests := []struct {
+		name           string
+		disabledChecks []string
+		inputCheck     string
+		expected       bool
+	}{
+		{
+			name:       "no disabled checks",
+			expected:   true,
+			inputCheck: check,
+		},
+		{
+			name:           "disable check by ID",
+			disabledChecks: []string{"TEST-001"},
+			inputCheck:     check,
+		},
+		{
+			name:           "disabling a non-existent check",
+			disabledChecks: []string{"FOO"},
+			expected:       true,
+			inputCheck:     check,
+		},
+		{
+			name:           "one of the identifiers does not exist",
+			disabledChecks: []string{"FOO", "TEST-001"},
+			inputCheck:     check,
+		},
+		{
+			name: "do not disable user checks with builtin IDs",
+			inputCheck: `# METADATA
+# custom:
+#   id: TEST-001
+#   avd_id: AVD-TEST-001
+#   severity: LOW
+#   provider: aws
+#   service: s3
+#   short_code: test
+package user.test
+
+deny {
+  true
+}
+`,
+			disabledChecks: []string{"TEST-001"},
+			expected:       true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			scanner := rego.NewScanner(
+				types.SourceYAML,
+				rego.WithPolicyReader(strings.NewReader(tt.inputCheck)),
+				rego.WithDisabledCheckIDs(tt.disabledChecks...),
+				rego.WithPolicyNamespaces("user"),
+			)
+
+			require.NoError(t, scanner.LoadPolicies(nil))
+			results, err := scanner.ScanInput(context.TODO(), rego.Input{})
+			require.NoError(t, err)
+
+			require.Equal(t, tt.expected, len(results.GetFailed()) > 0)
 		})
 	}
 }

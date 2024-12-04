@@ -2,7 +2,6 @@ package rego
 
 import (
 	"testing"
-	"testing/fstest"
 
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/stretchr/testify/assert"
@@ -11,7 +10,6 @@ import (
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 
 func Test_EmbeddedLoading(t *testing.T) {
@@ -206,50 +204,4 @@ deny[res]{
 			}
 		})
 	}
-}
-
-func Test_IgnoreDuplicateChecks(t *testing.T) {
-	rules.Reset()
-
-	r := scan.Rule{
-		AVDID: "TEST001",
-		Check: func(s *state.State) (results scan.Results) {
-			for _, bucket := range s.AWS.S3.Buckets {
-				if bucket.Name.Value() == "evil" {
-					results.Add("Bucket name should not be evil", bucket.Name)
-				}
-			}
-			return
-		},
-	}
-	reg := rules.Register(r)
-	defer rules.Deregister(reg)
-
-	fsys := fstest.MapFS{
-		"test.rego": &fstest.MapFile{
-			Data: []byte(`
-# METADATA
-# title: "Test rego"
-# scope: package
-# schemas:
-# - input: schema["cloud"]
-# custom:
-#   avd_id: TEST001
-#   severity: LOW
-package user.test001
-
-deny[res] {
-	res := result.new("test", {})
-}
-`),
-		},
-	}
-
-	modules, err := LoadPoliciesFromDirs(fsys, ".")
-	require.NoError(t, err)
-
-	RegisterRegoRules(modules)
-	registered := rules.GetRegistered()
-	assert.Len(t, registered, 1)
-	assert.Equal(t, "TEST001", registered[0].AVDID)
 }

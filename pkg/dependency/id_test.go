@@ -34,7 +34,7 @@ func TestID(t *testing.T) {
 			args: args{
 				ltype:   types.GoModule,
 				name:    "test",
-				version: "1.0.0",
+				version: "v1.0.0",
 			},
 			want: "test@v1.0.0",
 		},

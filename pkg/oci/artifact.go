@@ -2,6 +2,7 @@ package oci
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -10,11 +11,16 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
+	"github.com/hashicorp/go-multierror"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/remote"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 const (
@@ -48,7 +54,6 @@ func WithImage(img v1.Image) Option {
 type Artifact struct {
 	m          sync.Mutex
 	repository string
-	quiet      bool
 
 	// For OCI registries
 	types.RegistryOptions
@@ -57,17 +62,16 @@ type Artifact struct {
 }
 
 // NewArtifact returns a new artifact
-func NewArtifact(repo string, quiet bool, registryOpt types.RegistryOptions, opts ...Option) (*Artifact, error) {
+func NewArtifact(repo string, registryOpt types.RegistryOptions, opts ...Option) *Artifact {
 	art := &Artifact{
 		repository:      repo,
-		quiet:           quiet,
 		RegistryOptions: registryOpt,
 	}
 
 	for _, o := range opts {
 		o(art)
 	}
-	return art, nil
+	return art
 }
 
 func (a *Artifact) populate(ctx context.Context, opt types.RegistryOptions) error {
@@ -98,6 +102,7 @@ func (a *Artifact) populate(ctx context.Context, opt types.RegistryOptions) erro
 type DownloadOption struct {
 	MediaType string // Accept any media type if not specified
 	Filename  string // Use the annotation if not specified
+	Quiet     bool
 }
 
 func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption) error {
@@ -140,14 +145,14 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 		return xerrors.Errorf("unacceptable media type: %s", string(layerMediaType))
 	}
 
-	if err = a.download(ctx, layer, fileName, dir); err != nil {
+	if err = a.download(ctx, layer, fileName, dir, opt.Quiet); err != nil {
 		return xerrors.Errorf("oci download error: %w", err)
 	}
 
 	return nil
 }
 
-func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir string) error {
+func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir string, quiet bool) error {
 	size, err := layer.Size()
 	if err != nil {
 		return xerrors.Errorf("size error: %w", err)
@@ -161,7 +166,7 @@ func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir s
 
 	// Show progress bar
 	bar := pb.Full.Start64(size)
-	if a.quiet {
+	if quiet {
 		bar.SetWriter(io.Discard)
 	}
 	pr := bar.NewProxyReader(rc)
@@ -206,4 +211,57 @@ func (a *Artifact) Digest(ctx context.Context) (string, error) {
 		return "", xerrors.Errorf("digest error: %w", err)
 	}
 	return digest.String(), nil
+}
+
+type Artifacts []*Artifact
+
+// NewArtifacts returns a slice of artifacts.
+func NewArtifacts(repos []name.Reference, opt types.RegistryOptions, opts ...Option) Artifacts {
+	return lo.Map(repos, func(r name.Reference, _ int) *Artifact {
+		return NewArtifact(r.String(), opt, opts...)
+	})
+}
+
+// Download downloads artifacts until one of them succeeds.
+// Attempts to download next artifact if the first one fails due to a temporary error.
+func (a Artifacts) Download(ctx context.Context, dst string, opt DownloadOption) error {
+	var errs error
+	for i, art := range a {
+		log.InfoContext(ctx, "Downloading artifact...", log.String("repo", art.repository))
+		err := art.Download(ctx, dst, opt)
+		if err == nil {
+			log.InfoContext(ctx, "Artifact successfully downloaded", log.String("repo", art.repository))
+			return nil
+		}
+
+		if !shouldTryOtherRepo(err) {
+			return xerrors.Errorf("failed to download artifact from %s: %w", art.repository, err)
+		}
+		log.ErrorContext(ctx, "Failed to download artifact", log.String("repo", art.repository), log.Err(err))
+		if i < len(a)-1 {
+			log.InfoContext(ctx, "Trying to download artifact from other repository...")
+		}
+		errs = multierror.Append(errs, err)
+	}
+
+	return xerrors.Errorf("failed to download artifact from any source: %w", errs)
+}
+
+func shouldTryOtherRepo(err error) bool {
+	var terr *transport.Error
+	if !errors.As(err, &terr) {
+		return false
+	}
+
+	for _, diagnostic := range terr.Errors {
+		// For better user experience
+		if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
+			// e.g. https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db
+			log.Warnf("See %s", doc.URL("/docs/references/troubleshooting/", "db"))
+			break
+		}
+	}
+
+	// try the following artifact only if a temporary error occurs
+	return terr.Temporary()
 }

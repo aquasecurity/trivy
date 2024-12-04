@@ -84,21 +84,6 @@ func (r Rule) ShortCodeDisplayName() string {
 	return nicify(r.ShortCode)
 }
 
-func (r Rule) CanCheck() bool {
-	return r.Check != nil
-}
-
-func (r Rule) Evaluate(s *state.State) Results {
-	if !r.CanCheck() {
-		return nil
-	}
-	results := r.Check(s)
-	for i := range results {
-		results[i].SetRule(r)
-	}
-	return results
-}
-
 var acronyms = []string{
 	"acl",
 	"alb",

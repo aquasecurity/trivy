@@ -34,7 +34,7 @@ var (
 	IncludeNonFailuresFlag = Flag[bool]{
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
-		Usage:      "include successes and exceptions, available with '--scanners misconfig'",
+		Usage:      "include successes, available with '--scanners misconfig'",
 	}
 	HelmValuesFileFlag = Flag[[]string]{
 		Name:       "helm-values",

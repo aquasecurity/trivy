@@ -11,7 +11,7 @@
         {
           "@id": "pkg:golang/github.com/testdata/testdata",
           "subcomponents": [
-            { "@id": "pkg:golang/github.com/open-policy-agent/opa@0.35.0" }
+            { "@id": "pkg:golang/github.com/open-policy-agent/opa@v0.35.0" }
           ]
         }
       ],

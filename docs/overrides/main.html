@@ -1,7 +1,35 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+
+{% set title = config.site_name %}
+{% if page and page.title and not page.is_homepage %}
+  {% set title = config.site_name ~ " - " ~ page.title | striptags %}
+{% endif %}
+
+{% set image = config.site_url ~ 'assets/images/illustrations/banner.png' %}
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="{{ title }}" />
+<meta property="og:description" content="{{ config.site_description }}" />
+<meta property="og:url" content="{{ page.canonical_url }}" />
+<meta property="og:image" content="{{ image }}" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1080" />
+<meta property="og:image:height" content="568" />
+
+<style>
+  :root{
+    --md-primary-fg-color:#0a0b23;
+  }
+  .md-typeset a{
+    color:#10147e;
+  }
+</style>
+{% endblock %}
+
 {% block outdated %}
-You're not viewing the latest version.
+You're not viewing the latest version of the documentation.
 <a href="{{ '../' ~ base_url }}">
     <strong>Click here to go to latest.</strong>
 </a>

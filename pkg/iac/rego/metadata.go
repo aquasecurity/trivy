@@ -222,7 +222,6 @@ func NewEngineMetadata(schema string, meta map[string]any) (*scan.EngineMetadata
 }
 
 type InputOptions struct {
-	Combined  bool
 	Selectors []Selector
 }
 
@@ -352,7 +351,6 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.Module) InputOptions {
 
 	options := InputOptions{
-		Combined:  false,
 		Selectors: nil,
 	}
 
@@ -393,12 +391,6 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 			return options
 		}
 		metadata = meta
-	}
-
-	if raw, ok := metadata["combine"]; ok {
-		if combine, ok := raw.(bool); ok {
-			options.Combined = combine
-		}
 	}
 
 	if raw, ok := metadata["selector"]; ok {

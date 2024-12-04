@@ -220,7 +220,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Packages[i].InstalledFiles = installedFiles
 		}
 
-		if mergedLayer.OS.Family != "" {
+		if mergedLayer.OS.Family != "" && pkg.Identifier.PURL == nil {
 			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
 		}
 		mergedLayer.Packages[i].Identifier.UID = dependency.UID("", pkg)

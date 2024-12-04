@@ -1,8 +1,10 @@
 package parser
 
 import (
+	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -15,6 +17,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
@@ -47,6 +50,7 @@ type Parser struct {
 	skipCachedModules bool
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
+	skipPaths         []string
 }
 
 // New creates a new Parser
@@ -78,6 +82,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.moduleName = moduleName
 	mp.logger = log.WithPrefix("terraform parser").With("module", moduleName)
 	mp.projectRoot = p.projectRoot
+	mp.skipPaths = p.skipPaths
 	p.children = append(p.children, mp)
 	for _, option := range p.options {
 		option(mp)
@@ -155,20 +160,75 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		if info.IsDir() {
 			continue
 		}
+		if utils.SkipPath(realPath, utils.CleanSkipPaths(p.skipPaths)) {
+			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", p.skipPaths))
+			continue
+		}
 		paths = append(paths, realPath)
 	}
 	sort.Strings(paths)
 	for _, path := range paths {
-		if err := p.ParseFile(ctx, path); err != nil {
-			if p.stopOnHCLError {
+		var err error
+		if err = p.ParseFile(ctx, path); err == nil {
+			continue
+		}
+
+		if p.stopOnHCLError {
+			return err
+		}
+		var diags hcl.Diagnostics
+		if errors.As(err, &diags) {
+			errc := p.showParseErrors(p.moduleFS, path, diags)
+			if errc == nil {
+				continue
+			}
+			p.logger.Error("Failed to get the causes of the parsing error", log.Err(errc))
+		}
+		p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
+		continue
+	}
+
+	return nil
+}
+
+func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
+	file, err := fsys.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read file: %w", err)
+	}
+	defer file.Close()
+
+	for _, diag := range diags {
+		if subj := diag.Subject; subj != nil {
+			lines, err := readLinesFromFile(file, subj.Start.Line, subj.End.Line)
+			if err != nil {
 				return err
 			}
-			p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
-			continue
+
+			cause := strings.Join(lines, "\n")
+			p.logger.Error("Error parsing file", log.FilePath(filePath),
+				log.String("cause", cause), log.Err(diag))
 		}
 	}
 
 	return nil
+}
+
+func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
+	scanner := bufio.NewScanner(f)
+	rawLines := make([]string, 0, to-from+1)
+
+	for lineNum := 0; scanner.Scan() && lineNum < to; lineNum++ {
+		if lineNum >= from-1 {
+			rawLines = append(rawLines, scanner.Text())
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("failed to scan file: %w", err)
+	}
+
+	return rawLines, nil
 }
 
 var ErrNoFiles = errors.New("no files found")
@@ -210,6 +270,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 				"Variable values was not found in the environment or variable files. Evaluating may not work correctly.",
 				log.String("variables", strings.Join(missingVars, ", ")),
 			)
+			setNullMissingVariableValues(inputVars, missingVars)
 		}
 	}
 
@@ -259,6 +320,14 @@ func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Val
 	}
 
 	return missing
+}
+
+// Set null values for missing variables, to allow expressions using them to be
+// still be possibly evaluated to a value different than null.
+func setNullMissingVariableValues(inputVars map[string]cty.Value, missingVars []string) {
+	for _, missingVar := range missingVars {
+		inputVars[missingVar] = cty.NullVal(cty.DynamicPseudoType)
+	}
 }
 
 func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {

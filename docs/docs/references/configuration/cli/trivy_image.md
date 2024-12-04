@@ -37,13 +37,13 @@ trivy image [flags] IMAGE_NAME
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
-      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:1")
       --compliance string                 compliance report to generate (docker-cis-1.6.0)
       --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
       --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --config-file-schemas strings       specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking
       --custom-headers strings            custom headers in client mode
-      --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
+      --db-repository strings             OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --detection-priority string         specify the detection priority:
                                             - "precise": Prioritizes precise by minimizing false positives.
@@ -71,10 +71,10 @@ trivy image [flags] IMAGE_NAME
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-config-scanners strings     comma-separated list of what security issues to detect on container image configurations (misconfig,secret)
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
-      --include-deprecated-checks         include deprecated checks (default true)
-      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
+      --include-deprecated-checks         include deprecated checks
+      --include-non-failures              include successes, available with '--scanners misconfig'
       --input string                      input file path instead of image name
-      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
+      --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability
@@ -86,7 +86,8 @@ trivy image [flags] IMAGE_NAME
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --pkg-relationships strings         list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
+      --password-stdin                    password from stdin. Comma-separated passwords are not supported.
+      --pkg-relationships strings         list of package relationships (unknown,root,workspace,direct,indirect) (default [unknown,root,workspace,direct,indirect])
       --pkg-types strings                 list of package types (os,library) (default [os,library])
       --platform string                   set platform in the form os/arch if image is multi-platform capable
       --podman-host string                unix podman socket path to use for podman scanning

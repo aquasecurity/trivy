@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"net/url"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -61,9 +63,9 @@ type sarifData struct {
 	helpMarkdown     string
 	resourceClass    types.ResultClass
 	severity         string
-	url              string
+	url              *url.URL
 	resultIndex      int
-	artifactLocation string
+	artifactLocation *url.URL
 	locationMessage  string
 	message          string
 	cvssScore        string
@@ -97,8 +99,8 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			"precision":         "very-high",
 			"security-severity": data.cvssScore,
 		})
-	if data.url != "" {
-		r.WithHelpURI(data.url)
+	if data.url != nil && data.url.String() != "" {
+		r.WithHelpURI(data.url.String())
 	}
 }
 
@@ -109,7 +111,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations(toSarifLocations(data.locations, data.artifactLocation, data.locationMessage))
+		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
 	sw.run.AddResult(result)
 }
 
@@ -163,9 +165,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
 				cvssScore:        getCVSSScore(vuln),
-				url:              vuln.PrimaryURL,
+				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
-				artifactLocation: path,
+				artifactLocation: toUri(path),
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
 				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
@@ -186,9 +188,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  misconf.ID,
 				severity:         misconf.Severity,
 				cvssScore:        severityToScore(misconf.Severity),
-				url:              misconf.PrimaryURL,
+				url:              toUri(misconf.PrimaryURL),
 				resourceClass:    res.Class,
-				artifactLocation: locationURI,
+				artifactLocation: toUri(locationURI),
 				locationMessage:  locationURI,
 				locations: []location{
 					{
@@ -213,9 +215,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  secret.RuleID,
 				severity:         secret.Severity,
 				cvssScore:        severityToScore(secret.Severity),
-				url:              builtinRulesUrl,
+				url:              toUri(builtinRulesUrl),
 				resourceClass:    res.Class,
-				artifactLocation: target,
+				artifactLocation: toUri(target),
 				locationMessage:  target,
 				locations: []location{
 					{
@@ -242,9 +244,9 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				vulnerabilityId:  id,
 				severity:         license.Severity,
 				cvssScore:        severityToScore(license.Severity),
-				url:              license.Link,
+				url:              toUri(license.Link),
 				resourceClass:    res.Class,
-				artifactLocation: target,
+				artifactLocation: toUri(target),
 				resultIndex:      getRuleIndex(id, ruleIndexes),
 				shortDescription: desc,
 				fullDescription:  desc,
@@ -344,8 +346,53 @@ func ToPathUri(input string, resultClass types.ResultClass) string {
 	return clearURI(input)
 }
 
+// clearURI clears URI for misconfigs
 func clearURI(s string) string {
-	return strings.ReplaceAll(strings.ReplaceAll(s, "\\", "/"), "git::https:/", "")
+	s = strings.ReplaceAll(s, "\\", "/")
+	// cf. https://developer.hashicorp.com/terraform/language/modules/sources
+	switch {
+	case strings.HasPrefix(s, "git@github.com:"):
+		// build GitHub url format
+		// e.g. `git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf` -> `github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf`
+		// cf. https://github.com/aquasecurity/trivy/issues/7897
+		s = strings.ReplaceAll(s, "git@github.com:", "github.com/")
+		s = strings.ReplaceAll(s, ".git", "")
+		s = strings.ReplaceAll(s, "?ref=", "/tree/")
+	case strings.HasPrefix(s, "git::https:/") && !strings.HasPrefix(s, "git::https://"):
+		s = strings.TrimPrefix(s, "git::https:/")
+		s = strings.ReplaceAll(s, ".git", "")
+	case strings.HasPrefix(s, "git::ssh://"):
+		// `"`git::ssh://username@example.com/storage.git` -> `example.com/storage.git`
+		if _, u, ok := strings.Cut(s, "@"); ok {
+			s = u
+		}
+		s = strings.ReplaceAll(s, ".git", "")
+	case strings.HasPrefix(s, "git::"):
+		// `git::https://example.com/vpc.git` -> `https://example.com/vpc`
+		s = strings.TrimPrefix(s, "git::")
+		s = strings.ReplaceAll(s, ".git", "")
+	case strings.HasPrefix(s, "hg::"):
+		// `hg::http://example.com/vpc.hg` -> `http://example.com/vpc`
+		s = strings.TrimPrefix(s, "hg::")
+		s = strings.ReplaceAll(s, ".hg", "")
+	case strings.HasPrefix(s, "s3::"):
+		// `s3::https://s3-eu-west-1.amazonaws.com/examplecorp-terraform-modules/vpc.zip` -> `https://s3-eu-west-1.amazonaws.com/examplecorp-terraform-modules/vpc.zip`
+		s = strings.TrimPrefix(s, "s3::")
+	case strings.HasPrefix(s, "gcs::"):
+		// `gcs::https://www.googleapis.com/storage/v1/modules/foomodule.zipp` -> `https://www.googleapis.com/storage/v1/modules/foomodule.zip`
+		s = strings.TrimPrefix(s, "gcs::")
+	}
+
+	return s
+}
+
+func toUri(str string) *url.URL {
+	uri, err := url.Parse(str)
+	if err != nil {
+		logger := log.WithPrefix("sarif")
+		logger.Error("Unable to parse URI", log.String("URI", str), log.Err(err))
+	}
+	return uri
 }
 
 func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {

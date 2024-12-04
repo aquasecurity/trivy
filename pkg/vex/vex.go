@@ -177,9 +177,15 @@ func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, p
 	var dfs func(c *core.Component) bool
 	dfs = func(c *core.Component) bool {
 		// Call the function with the current component and the leaf component
-		if notAffected(c, leaf) {
+		switch {
+		case notAffected(c, leaf):
 			return false
-		} else if c.Root {
+		case c.Root:
+			return true
+		case len(parents[c.ID()]) == 0:
+			// Should never reach here as all components other than the root should have at least one parent.
+			// If it does, it means the component tree is not connected due to a bug in the SBOM generation.
+			// In this case, so as not to filter out all the vulnerabilities accidentally, return true for fail-safe.
 			return true
 		}
 

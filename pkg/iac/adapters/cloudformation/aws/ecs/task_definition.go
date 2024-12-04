@@ -36,8 +36,8 @@ func getContainerDefinitions(r *parser.Resource) ([]ecs.ContainerDefinition, err
 		if envVarsList.IsNotNil() && envVarsList.IsList() {
 			for _, envVar := range envVarsList.AsList() {
 				envVars = append(envVars, ecs.EnvVar{
-					Name:  envVar.GetStringProperty("Name").Value(),
-					Value: envVar.GetStringProperty("Value").Value(),
+					Name:  envVar.GetStringProperty("Name"),
+					Value: envVar.GetStringProperty("Value"),
 				})
 			}
 		}
@@ -45,8 +45,8 @@ func getContainerDefinitions(r *parser.Resource) ([]ecs.ContainerDefinition, err
 			Metadata:     containerDef.Metadata(),
 			Name:         containerDef.GetStringProperty("Name"),
 			Image:        containerDef.GetStringProperty("Image"),
-			CPU:          containerDef.GetIntProperty("Cpu"),
-			Memory:       containerDef.GetIntProperty("Memory"),
+			CPU:          containerDef.GetStringProperty("Cpu"),
+			Memory:       containerDef.GetStringProperty("Memory"),
 			Essential:    containerDef.GetBoolProperty("Essential"),
 			Privileged:   containerDef.GetBoolProperty("Privileged"),
 			Environment:  envVars,
