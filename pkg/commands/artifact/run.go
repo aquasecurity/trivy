@@ -358,7 +358,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		log.Info("Writing the default config to trivy-default.yaml...")
 
 		hiddenFlags := flag.HiddenFlags()
-		allFlags := map[string]any{}
+		allFlags := make(map[string]any)
 		// Viper does not have the ability to remove flags.
 		// So we only save the necessary flags and set these flags after viper.Reset
 		for _, k := range viper.AllKeys() {
