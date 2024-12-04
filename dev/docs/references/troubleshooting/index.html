@@ -8371,17 +8371,22 @@ analyze<span class="w"> </span>error:<span class="w"> </span>timeout:<span class
 <div class="highlight"><pre><span></span><code>$ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 </code></pre></div>
 <h3 id="github-rate-limiting">GitHub Rate limiting<a class="headerlink" href="#github-rate-limiting" title="Permanent link">&para;</a></h3>
+<p>Trivy uses GitHub API for <a href="../../supply-chain/vex/repo/">VEX repositories</a>.</p>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>...
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--vex<span class="w"> </span>repo<span class="w"> </span>...
 ...
 API<span class="w"> </span>rate<span class="w"> </span>limit<span class="w"> </span>exceeded<span class="w"> </span><span class="k">for</span><span class="w"> </span>xxx.xxx.xxx.xxx.
 </code></pre></div>
 </div>
-<p>Specify GITHUB_TOKEN for authentication
-<a href="https://developer.github.com/v3/#rate-limiting">https://developer.github.com/v3/#rate-limiting</a></p>
-<div class="highlight"><pre><span></span><code>$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
+<p>Specify GITHUB_TOKEN for <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">authentication</a></p>
+<div class="highlight"><pre><span></span><code>$ GITHUB_TOKEN=XXXXXXXXXX trivy image --vex repo [YOUR_IMAGE]
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>GITHUB_TOKEN</code> doesn't help with the rate limit for the vulnerability database and other assets.
+See <a href="https://github.com/aquasecurity/trivy/discussions/8009">https://github.com/aquasecurity/trivy/discussions/8009</a></p>
+</div>
 <h3 id="unable-to-open-jar-files">Unable to open JAR files<a class="headerlink" href="#unable-to-open-jar-files" title="Permanent link">&para;</a></h3>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
@@ -8483,6 +8488,9 @@ For more details, please refer to <a href="../../configuration/skipping/">this d
 <p>Your local GHCR (GitHub Container Registry) token might be expired.
 Please remove the token and try downloading the DB again.</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">logout</span><span class="w"> </span>ghcr.io
+</code></pre></div>
+<p>or</p>
+<div class="highlight"><pre><span></span><code><span class="nb">unset</span><span class="w"> </span>GITHUB_TOKEN
 </code></pre></div>
 <h2 id="homebrew">Homebrew<a class="headerlink" href="#homebrew" title="Permanent link">&para;</a></h2>
 <h3 id="scope-error">Scope error<a class="headerlink" href="#scope-error" title="Permanent link">&para;</a></h3>
