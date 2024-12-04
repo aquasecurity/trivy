@@ -79,10 +79,11 @@ $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 ```
 
 ### GitHub Rate limiting
+Trivy uses GitHub API for [VEX repositories](../supply-chain/vex/repo.md).
 
 !!! error
     ``` bash
-    $ trivy image ...
+    $ trivy image --vex repo ...
     ...
     API rate limit exceeded for xxx.xxx.xxx.xxx.
     ```
@@ -90,15 +91,12 @@ $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
 Specify GITHUB_TOKEN for [authentication](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28)
 
 ```
-$ GITHUB_TOKEN=XXXXXXXXXX trivy image [YOUR_IMAGE]
+$ GITHUB_TOKEN=XXXXXXXXXX trivy image --vex repo [YOUR_IMAGE]
 ```
 
-or [log in ghcr.io](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
-
-```
-$ docker login ghcr.io
-$ trivy image [YOUR_IMAGE]
-```
+!!! note
+    `GITHUB_TOKEN` doesn't help with the rate limit for the vulnerability database and other assets.
+    See https://github.com/aquasecurity/trivy/discussions/8009
 
 ### Unable to open JAR files
 
