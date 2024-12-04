@@ -100,7 +100,7 @@ $ trivy server --cache-backend redis://localhost:6379 \
 [trivy-java-db]: ./db.md#java-index-database
 [misconf-checks]: ../scanner/misconfiguration/check/builtin.md
 [boltdb]: https://github.com/etcd-io/bbolt
-[parallel-run]: https://aquasecurity.github.io/trivy/v0.52/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run
+[parallel-run]: https://trivy.dev/v0.52/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run
 
 [^1]: Downloaded when scanning for vulnerabilities
 [^2]: Downloaded when scanning `jar/war/par/ear` files
