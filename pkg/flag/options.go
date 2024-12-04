@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"slices"
 	"strings"
 	"sync"
@@ -855,4 +856,38 @@ func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.Normaliz
 		}
 		return pflag.NormalizedName(name)
 	}
+}
+
+func HiddenFlags() []string {
+	var allFlagGroups = []FlagGroup{
+		NewGlobalFlagGroup(),
+		NewCacheFlagGroup(),
+		NewCleanFlagGroup(),
+		NewClientFlags(),
+		NewDBFlagGroup(),
+		NewImageFlagGroup(),
+		NewK8sFlagGroup(),
+		NewLicenseFlagGroup(),
+		NewMisconfFlagGroup(),
+		NewModuleFlagGroup(),
+		NewPackageFlagGroup(),
+		NewRegistryFlagGroup(),
+		NewRegoFlagGroup(),
+		NewReportFlagGroup(),
+		NewRepoFlagGroup(),
+		NewScanFlagGroup(),
+		NewSecretFlagGroup(),
+		NewServerFlags(),
+		NewVulnerabilityFlagGroup(),
+	}
+
+	var hiddenFlags []string
+	for _, flagGroup := range allFlagGroups {
+		for _, flag := range flagGroup.Flags() {
+			if !reflect.ValueOf(flag).IsNil() && flag.Hidden() {
+				hiddenFlags = append(hiddenFlags, flag.GetConfigName())
+			}
+		}
+	}
+	return hiddenFlags
 }
