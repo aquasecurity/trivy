@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -63,7 +64,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == "METADATA" || isEggFile(path)
+		return filepath.Base(path) == "METADATA" || isEggFile(path) || slices.Contains(input.FilePathsMatchedFromPatterns, path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
