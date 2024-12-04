@@ -362,7 +362,8 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		// Viper does not have the ability to remove flags.
 		// So we only save the necessary flags and set these flags after viper.Reset
 		for _, k := range viper.AllKeys() {
-			// Skip the `GenerateDefaultConfigFlag` and `ComplianceFlag` flags to avoid errors with default config file.
+			// Skip the `GenerateDefaultConfigFlag` flags to avoid errors with default config file.
+			// Users often use "normal" formats instead of compliance. So we'll skip ComplianceFlag
 			// Also don't keep removed or deprecated flags to avoid confusing users.
 			if k == flag.GenerateDefaultConfigFlag.ConfigName || k == flag.ComplianceFlag.ConfigName || slices.Contains(hiddenFlags, k) {
 				continue
