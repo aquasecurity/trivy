@@ -1,6 +1,7 @@
 package armjson
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -54,19 +55,19 @@ func (n *node) decodeObjectToMap(v reflect.Value) error {
 
 func (n *node) objectAsMap() (map[string]Node, error) {
 	if n.kind != KindObject {
-		return nil, fmt.Errorf("not an object")
+		return nil, errors.New("not an object")
 	}
 	properties := make(map[string]Node)
 	contents := n.content
 	for i := 0; i < len(contents); i += 2 {
 		key := contents[i]
 		if key.Kind() != KindString {
-			return nil, fmt.Errorf("invalid object key - please report this bug")
+			return nil, errors.New("invalid object key - please report this bug")
 		}
 		keyStr := key.(*node).raw.(string)
 
 		if i+1 >= len(contents) {
-			return nil, fmt.Errorf("missing object value - please report this bug")
+			return nil, errors.New("missing object value - please report this bug")
 		}
 		properties[keyStr] = contents[i+1]
 	}

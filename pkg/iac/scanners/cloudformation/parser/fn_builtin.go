@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"fmt"
+	"errors"
 	"net"
 
 	"github.com/apparentlymart/go-cidr/cidr"
@@ -55,7 +55,7 @@ func calculateCidrs(ipaddress string, count, bit int, original *Property) ([]*Pr
 	for i := 0; i < count; i++ {
 		next, err := cidr.Subnet(network, bit, i)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create cidr blocks")
+			return nil, errors.New("failed to create cidr blocks")
 		}
 
 		cidrProperties = append(cidrProperties, original.deriveResolved(cftypes.String, next.String()))

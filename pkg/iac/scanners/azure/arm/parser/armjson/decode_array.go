@@ -1,7 +1,7 @@
 package armjson
 
 import (
-	"fmt"
+	"errors"
 	"reflect"
 )
 
@@ -14,7 +14,7 @@ func (n *node) decodeArray(v reflect.Value) error {
 	switch v.Kind() {
 	case reflect.Array:
 		if v.Len() != length {
-			return fmt.Errorf("invalid length")
+			return errors.New("invalid length")
 		}
 	case reflect.Slice:
 		v.Set(reflect.MakeSlice(v.Type(), length, length))
@@ -24,7 +24,7 @@ func (n *node) decodeArray(v reflect.Value) error {
 		v = reflect.New(slice.Type()).Elem()
 		v.Set(slice)
 	default:
-		return fmt.Errorf("invalid target type")
+		return errors.New("invalid target type")
 	}
 
 	elementType := v.Type().Elem()

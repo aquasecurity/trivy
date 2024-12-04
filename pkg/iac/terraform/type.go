@@ -1,6 +1,6 @@
 package terraform
 
-import "fmt"
+import "errors"
 
 type Type struct {
 	name                  string
@@ -104,5 +104,5 @@ func TypeFromRefName(name string) (*Type, error) {
 			return &valid, nil
 		}
 	}
-	return nil, fmt.Errorf("block type not found")
+	return nil, errors.New("block type not found")
 }

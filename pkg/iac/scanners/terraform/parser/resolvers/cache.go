@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/md5" // #nosec
 	"encoding/hex"
-	"fmt"
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -37,7 +37,7 @@ func locateCacheDir(cacheDir string) (string, error) {
 		return "", err
 	}
 	if !isWritable(cacheDir) {
-		return "", fmt.Errorf("cache directory is not writable")
+		return "", errors.New("cache directory is not writable")
 	}
 	return cacheDir, nil
 }

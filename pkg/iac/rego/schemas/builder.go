@@ -1,6 +1,7 @@
 package schemas
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -56,7 +57,7 @@ func (b *builder) fromInput(inputValue reflect.Value) error {
 		return err
 	}
 	if prop == nil {
-		return fmt.Errorf("property is nil")
+		return errors.New("property is nil")
 	}
 	b.schema.Properties = prop.Properties
 	b.schema.Type = prop.Type

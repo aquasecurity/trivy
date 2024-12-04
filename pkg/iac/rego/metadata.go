@@ -2,6 +2,7 @@ package rego
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -329,15 +330,15 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 	}
 
 	if len(set) != 1 {
-		return nil, fmt.Errorf("failed to parse metadata: unexpected set length")
+		return nil, errors.New("failed to parse metadata: unexpected set length")
 	}
 	if len(set[0].Expressions) != 1 {
-		return nil, fmt.Errorf("failed to parse metadata: unexpected expression length")
+		return nil, errors.New("failed to parse metadata: unexpected expression length")
 	}
 	expression := set[0].Expressions[0]
 	meta, ok := expression.Value.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("failed to parse metadata: not an object")
+		return nil, errors.New("failed to parse metadata: not an object")
 	}
 
 	if err := metadata.update(meta); err != nil {

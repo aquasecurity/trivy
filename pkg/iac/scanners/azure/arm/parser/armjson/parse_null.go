@@ -1,7 +1,7 @@
 package armjson
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -14,7 +14,7 @@ func (p *parser) parseNull(parentMetadata *types.Metadata) (Node, error) {
 
 	for _, expected := range nullRunes {
 		if !p.swallowIfEqual(expected) {
-			return nil, fmt.Errorf("unexpected character")
+			return nil, errors.New("unexpected character")
 		}
 	}
 	n.raw = nil
