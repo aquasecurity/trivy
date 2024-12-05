@@ -5,14 +5,14 @@
   "requires": true,
   "packages": {
     "": {
-      "name": "npm install --save-peer winston-mail@2.0.0",
+      "name": "node_v3_with_peer",
       "version": "1.0.0",
       "license": "ISC",
       "dependencies": {
         "winston-mail": "^2.0.0"
       },
       "peerDependencies": {
-        "lodash": "^4.17/21"
+        "lodash": "^4.17.21"
       }
     },
     "node_modules/mustache": {
