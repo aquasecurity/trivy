@@ -358,9 +358,9 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		log.Info("Writing the default config to trivy-default.yaml...")
 
 		hiddenFlags := flag.HiddenFlags()
-		allFlags := make(map[string]any)
 		// Viper does not have the ability to remove flags.
 		// So we only save the necessary flags and set these flags after viper.Reset
+		v := viper.New()
 		for _, k := range viper.AllKeys() {
 			// Skip the `GenerateDefaultConfigFlag` flags to avoid errors with default config file.
 			// Users often use "normal" formats instead of compliance. So we'll skip ComplianceFlag
@@ -368,15 +368,10 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 			if k == flag.GenerateDefaultConfigFlag.ConfigName || k == flag.ComplianceFlag.ConfigName || slices.Contains(hiddenFlags, k) {
 				continue
 			}
-			allFlags[k] = viper.Get(k)
+			v.Set(k, viper.Get(k))
 		}
 
-		viper.Reset()
-		for k, v := range allFlags {
-			viper.Set(k, v)
-		}
-
-		return viper.SafeWriteConfigAs("trivy-default.yaml")
+		return v.SafeWriteConfigAs("trivy-default.yaml")
 	}
 
 	r, err := NewRunner(ctx, opts)
