@@ -157,6 +157,54 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path: CVE-ID and RHSA-ID for same vulnerability",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "8.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "expat",
+						Version:    "2.2.5",
+						Release:    "16.el8_10",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "expat",
+						SrcVersion: "2.2.5",
+						SrcRelease: "16.el8_10",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2024-45490",
+					VendorIDs: []string{
+						"RHSA-2024:6989-2",
+						"RHSA-2024:6989-3",
+					},
+					PkgName:          "expat",
+					InstalledVersion: "2.2.5-16.el8_10",
+					FixedVersion:     "2.2.5-18.el8_10",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
 			name: "happy path: package without architecture",
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
