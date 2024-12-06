@@ -18,10 +18,16 @@ import (
 )
 
 const (
-	BundleVersion    = 1 // Latest released MAJOR version for trivy-checks
-	BundleRepository = "mirror.gcr.io/aquasec/trivy-checks"
-	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
-	updateInterval   = 24 * time.Hour
+	BundleVersion   = 1 // Latest released MAJOR version for trivy-checks
+	policyMediaType = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
+	updateInterval  = 24 * time.Hour
+)
+
+var (
+	BundleRepositories = []string{
+		fmt.Sprintf("%s:%d", "mirror.gcr.io/aquasec/trivy-checks", BundleVersion), // primary
+		fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-checks", BundleVersion),  // secondary
+	}
 )
 
 type options struct {
@@ -49,9 +55,9 @@ type Option func(*options)
 // Client implements check operations
 type Client struct {
 	*options
-	policyDir       string
-	checkBundleRepo string
-	quiet           bool
+	policyDir        string
+	checkBundleRepos []string
+	quiet            bool
 }
 
 // Metadata holds default check metadata
@@ -68,7 +74,7 @@ func (m Metadata) String() string {
 }
 
 // NewClient is the factory method for check client
-func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Option) (*Client, error) {
+func NewClient(cacheDir string, quiet bool, checkBundleRepos []string, opts ...Option) (*Client, error) {
 	o := &options{
 		clock: clock.RealClock{},
 	}
@@ -77,47 +83,72 @@ func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Opti
 		opt(o)
 	}
 
-	if checkBundleRepo == "" {
-		checkBundleRepo = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
+	if len(checkBundleRepos) == 0 {
+		checkBundleRepos = BundleRepositories
 	}
 
 	return &Client{
-		options:         o,
-		policyDir:       filepath.Join(cacheDir, "policy"),
-		checkBundleRepo: checkBundleRepo,
-		quiet:           quiet,
+		options:          o,
+		policyDir:        filepath.Join(cacheDir, "policy"),
+		checkBundleRepos: checkBundleRepos,
+		quiet:            quiet,
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact(ctx context.Context, registryOpts types.RegistryOptions) {
+func (c *Client) populateOCIArtifact(ctx context.Context, repo string, registryOpts types.RegistryOptions) {
 	if c.artifact == nil {
-		log.DebugContext(ctx, "Loading check bundle", log.String("repository", c.checkBundleRepo))
-		c.artifact = oci.NewArtifact(c.checkBundleRepo, registryOpts)
+		if repo == "" {
+			repo = c.checkBundleRepos[0]
+		}
+		log.DebugContext(ctx, "Loading check bundle", log.String("repo", repo))
+		c.artifact = oci.NewArtifact(repo, registryOpts)
 	}
 }
 
-// DownloadBuiltinChecks download default policies from GitHub Pages
+// DownloadBuiltinChecks download default policies from OCI registry
 func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.RegistryOptions) error {
-	c.populateOCIArtifact(ctx, registryOpts)
+	oldart := c.artifact
 
-	dst := c.contentDir()
-	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{
-		MediaType: policyMediaType,
-		Quiet:     c.quiet,
-	},
-	); err != nil {
-		return xerrors.Errorf("download error: %w", err)
-	}
+	for i, repo := range c.checkBundleRepos {
+		c.populateOCIArtifact(ctx, repo, registryOpts)
 
-	digest, err := c.artifact.Digest(ctx)
-	if err != nil {
-		return xerrors.Errorf("digest error: %w", err)
-	}
-	log.DebugContext(ctx, "Digest of the built-in checks", log.String("digest", digest))
+		dst := c.contentDir()
+		if err := c.artifact.Download(ctx, dst, oci.DownloadOption{
+			MediaType: policyMediaType,
+			Quiet:     c.quiet,
+		},
+		); err != nil {
+			if i == len(c.checkBundleRepos)-1 {
+				return xerrors.Errorf("download error: %w", err)
+			}
+			log.ErrorContext(ctx, "Failed to download checks bundle", log.String("repo", repo), log.Err(err))
+			c.artifact = oldart
+			continue
+		}
 
-	// Update metadata.json with the new digest and the current date
-	if err = c.updateMetadata(digest, c.clock.Now()); err != nil {
-		return xerrors.Errorf("unable to update the check metadata: %w", err)
+		digest, err := c.artifact.Digest(ctx)
+		if err != nil {
+			if i == len(c.checkBundleRepos)-1 {
+				return xerrors.Errorf("digest error: %w", err)
+			}
+			log.ErrorContext(ctx, "Failed to get digest for check bundle", log.String("repo", repo), log.Err(err))
+			c.artifact = oldart
+			continue
+		}
+		log.DebugContext(ctx, "Digest of the built-in checks", log.String("digest", digest))
+
+		// Update metadata.json with the new digest and the current date
+		if err = c.updateMetadata(digest, c.clock.Now()); err != nil {
+			if i == len(c.checkBundleRepos)-1 {
+				return xerrors.Errorf("unable to update the check metadata: %w", err)
+			}
+			log.ErrorContext(ctx, "Failed to update metadata", log.String("digest", digest), log.Err(err))
+			c.artifact = oldart
+			continue
+		}
+
+		log.DebugContext(ctx, "Successfully loaded check bundle", log.String("repo", repo), log.String("digest", digest))
+		break
 	}
 
 	return nil
@@ -162,7 +193,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOpt
 		return false, nil
 	}
 
-	c.populateOCIArtifact(ctx, registryOpts)
+	c.populateOCIArtifact(ctx, "", registryOpts)
 	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
 		return false, xerrors.Errorf("digest error: %w", err)

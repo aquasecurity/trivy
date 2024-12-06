@@ -78,11 +78,11 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 }
 
 // InitBuiltinChecks downloads the built-in policies and loads them
-func InitBuiltinChecks(ctx context.Context, cacheDir string, quiet, skipUpdate bool, checkBundleRepository string, registryOpts ftypes.RegistryOptions) ([]string, error) {
+func InitBuiltinChecks(ctx context.Context, cacheDir string, quiet, skipUpdate bool, checkBundleRepositories []string, registryOpts ftypes.RegistryOptions) ([]string, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	client, err := policy.NewClient(cacheDir, quiet, checkBundleRepository)
+	client, err := policy.NewClient(cacheDir, quiet, checkBundleRepositories)
 	if err != nil {
 		return nil, xerrors.Errorf("check client error: %w", err)
 	}

@@ -117,7 +117,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 
 			// Mock OCI artifact
 			art := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
-			c, err := policy.NewClient(tt.cacheDir, true, "", policy.WithOCIArtifact(art))
+			c, err := policy.NewClient(tt.cacheDir, true, nil, policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
 			got, err := c.LoadBuiltinChecks()
@@ -256,7 +256,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			}
 
 			art := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
-			c, err := policy.NewClient(tmpDir, true, "", policy.WithOCIArtifact(art), policy.WithClock(tt.clock))
+			c, err := policy.NewClient(tmpDir, true, nil, policy.WithOCIArtifact(art), policy.WithClock(tt.clock))
 			require.NoError(t, err)
 
 			// Assert results
@@ -272,17 +272,23 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 		h   v1.Hash
 		err error
 	}
+	type digestReturnsOnCall map[int]struct {
+		h   v1.Hash
+		err error
+	}
 	type layersReturns struct {
 		layers []v1.Layer
 		err    error
 	}
 	tests := []struct {
-		name          string
-		clock         clock.Clock
-		layersReturns layersReturns
-		digestReturns digestReturns
-		want          *policy.Metadata
-		wantErr       string
+		name                string
+		clock               clock.Clock
+		repos               []string
+		layersReturns       layersReturns
+		digestReturns       digestReturns
+		digestReturnsOnCall digestReturnsOnCall
+		want                *policy.Metadata
+		wantErr             string
 	}{
 		{
 			name:  "happy path",
@@ -290,11 +296,37 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			layersReturns: layersReturns{
 				layers: []v1.Layer{newFakeLayer(t)},
 			},
+			repos: []string{"repo0"},
 			digestReturns: digestReturns{
 				h: v1.Hash{
 					Algorithm: "sha256",
 					Hex:       "01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				},
+			},
+			want: &policy.Metadata{
+				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
+				DownloadedAt: time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC),
+			},
+		},
+		{
+			name:  "mixed path, first repo fails, second succeeds",
+			clock: fake.NewFakeClock(time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC)),
+			layersReturns: layersReturns{
+				layers: []v1.Layer{newFakeLayer(t)},
+			},
+			repos: []string{"repo0", "repo1"},
+			digestReturnsOnCall: digestReturnsOnCall{
+				0: struct {
+					h   v1.Hash
+					err error
+				}{err: fmt.Errorf("error")},
+				1: struct {
+					h   v1.Hash
+					err error
+				}{h: v1.Hash{
+					Algorithm: "sha256",
+					Hex:       "01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
+				}},
 			},
 			want: &policy.Metadata{
 				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
@@ -340,6 +372,12 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			img := new(fakei.FakeImage)
 			img.DigestReturns(tt.digestReturns.h, tt.digestReturns.err)
 			img.LayersReturns(tt.layersReturns.layers, tt.layersReturns.err)
+
+			if len(tt.digestReturnsOnCall) > 0 {
+				img.DigestReturnsOnCall(0, tt.digestReturnsOnCall[0].h, tt.digestReturnsOnCall[0].err)
+				img.DigestReturnsOnCall(1, tt.digestReturnsOnCall[1].h, tt.digestReturnsOnCall[1].err)
+			}
+
 			img.ManifestReturns(&v1.Manifest{
 				Layers: []v1.Descriptor{
 					{
@@ -358,7 +396,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 
 			// Mock OCI artifact
 			art := oci.NewArtifact("repo", ftypes.RegistryOptions{}, oci.WithImage(img))
-			c, err := policy.NewClient(tempDir, true, "", policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
+			c, err := policy.NewClient(tempDir, true, tt.repos, policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
 			err = c.DownloadBuiltinChecks(context.Background(), ftypes.RegistryOptions{})
@@ -388,7 +426,7 @@ func TestClient_Clear(t *testing.T) {
 	err := os.MkdirAll(filepath.Join(cacheDir, "policy"), 0755)
 	require.NoError(t, err)
 
-	c, err := policy.NewClient(cacheDir, true, "")
+	c, err := policy.NewClient(cacheDir, true, nil)
 	require.NoError(t, err)
 	require.NoError(t, c.Clear())
 }

@@ -96,7 +96,7 @@ func cleanJavaDB(ctx context.Context, opts flag.Options) error {
 
 func cleanCheckBundle(opts flag.Options) error {
 	log.Info("Removing check bundle...")
-	c, err := policy.NewClient(opts.CacheDir, true, opts.MisconfOptions.ChecksBundleRepository)
+	c, err := policy.NewClient(opts.CacheDir, true, opts.MisconfOptions.ChecksBundleRepositories)
 	if err != nil {
 		return xerrors.Errorf("failed to instantiate check client: %w", err)
 	}
