@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.59.0](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.59.0) (2024-12-06)
+
+
+### Features
+
+* **misconf:** generate placeholders for random provider resources ([#8051](https://github.com/aquasecurity/trivy/issues/8051)) ([ffe24e1](https://github.com/aquasecurity/trivy/commit/ffe24e18dc3dca816ec9ce5ccf66d5d7b5ea70d6))
+* **nodejs:** respect peer dependencies for dependency tree ([#7989](https://github.com/aquasecurity/trivy/issues/7989)) ([7389961](https://github.com/aquasecurity/trivy/commit/73899610e8eece670d2e5ddc1478fcc0a2a5760d))
+
+
+### Bug Fixes
+
+* **flag:** skip hidden flags for `--generate-default-config` command ([#8046](https://github.com/aquasecurity/trivy/issues/8046)) ([5e68bdc](https://github.com/aquasecurity/trivy/commit/5e68bdc9d08f96d22451d7b5dd93e79ca576eeb7))
+* handle `BLOW_UNKNOWN` error to download DBs ([#8060](https://github.com/aquasecurity/trivy/issues/8060)) ([51f2123](https://github.com/aquasecurity/trivy/commit/51f2123c5ccc4f7a37d1068830b6670b4ccf9ac8))
+* **java:** correctly overwrite version from depManagement if dependency uses `project.*` props ([#8050](https://github.com/aquasecurity/trivy/issues/8050)) ([9d9f80d](https://github.com/aquasecurity/trivy/commit/9d9f80d9791f38a0b4c727152166ae4d237a83a9))
+* **misconf:** use log instead of fmt for logging ([#8033](https://github.com/aquasecurity/trivy/issues/8033)) ([07b2d7f](https://github.com/aquasecurity/trivy/commit/07b2d7fbd7f8ef5473c2438c560fffc8bdadf913))
+* respect GITHUB_TOKEN to download artifacts from GHCR ([#7580](https://github.com/aquasecurity/trivy/issues/7580)) ([21b68e1](https://github.com/aquasecurity/trivy/commit/21b68e18188f91935ac1055a78ee97a7f35a110d))
+* **sbom:** fix wrong overwriting of applications obtained from different sbom files but having same app type ([#8052](https://github.com/aquasecurity/trivy/issues/8052)) ([fd07074](https://github.com/aquasecurity/trivy/commit/fd07074e8033530eee2732193b00e59f27c73096))
+
 ## [0.58.0](https://github.com/aquasecurity/trivy/compare/v0.57.0...v0.58.0) (2024-12-02)
 
 
