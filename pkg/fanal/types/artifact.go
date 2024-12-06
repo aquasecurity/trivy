@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 type OS struct {
@@ -13,6 +15,10 @@ type OS struct {
 
 	// This field is used for enhanced security maintenance programs such as Ubuntu ESM, Debian Extended LTS.
 	Extended bool `json:"extended,omitempty"`
+
+	// ComponentID is used for internal representation of the SBOM component.
+	// It is not exported to the JSON output.
+	ComponentID uuid.UUID `json:"-"`
 }
 
 func (o *OS) Detected() bool {
@@ -72,6 +78,10 @@ type Application struct {
 
 	// Packages is a list of lang-specific packages
 	Packages Packages
+
+	// ComponentID is used for internal representation of the SBOM component.
+	// It is not exported to the JSON output.
+	ComponentID uuid.UUID `json:"-"`
 }
 
 type File struct {
