@@ -12,6 +12,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
@@ -25,6 +26,7 @@ var (
 )
 
 type artifact struct {
+	ID         uuid.UUID // UUID is required to build correctly dep tree when multiple modules contain dependencies with same GAV
 	GroupID    string
 	ArtifactID string
 	Version    version

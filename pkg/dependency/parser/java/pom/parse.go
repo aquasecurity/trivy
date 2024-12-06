@@ -18,10 +18,10 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -118,11 +118,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	rootArt := root.artifact()
 	rootArt.Relationship = ftypes.RelationshipRoot
 
-	return p.parseRoot(rootArt, make(map[string]struct{}))
+	return p.parseRoot(rootArt, make(map[string]uuid.UUID))
 }
 
 // nolint: gocyclo
-func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
@@ -135,7 +135,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 		deps              ftypes.Dependencies
 		rootDepManagement []pomDependency
 		uniqArtifacts     = make(map[string]artifact)
-		uniqDeps          = make(map[string][]string)
+		uniqDeps          = make(map[uuid.UUID][]string)
 	)
 
 	// Iterate direct and transitive dependencies
@@ -148,7 +148,8 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			if _, ok := uniqModules[art.String()]; ok {
 				continue
 			}
-			uniqModules[art.String()] = struct{}{}
+			art.ID = uuid.New()
+			uniqModules[art.String()] = art.ID
 
 			modulePkgs, moduleDeps, err := p.parseRoot(art, uniqModules)
 			if err != nil {
@@ -213,27 +214,33 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 
 		// Offline mode may be missing some fields.
 		if !art.IsEmpty() {
+			// Modules already have uuid
+			if art.ID == uuid.Nil {
+				art.ID = uuid.New()
+			}
 			// Override the version
-			uniqArtifacts[art.Name()] = artifact{
+			newArt := artifact{
+				ID:           art.ID,
 				Version:      art.Version,
 				Licenses:     result.artifact.Licenses,
 				Relationship: art.Relationship,
 				Locations:    art.Locations,
 			}
+			uniqArtifacts[art.Name()] = newArt
 
 			// save only dependency names
 			// version will be determined later
 			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
 				return a.Name()
 			})
-			uniqDeps[packageID(art.Name(), art.Version.String())] = dependsOn
+			uniqDeps[newArt.ID] = dependsOn
 		}
 	}
 
 	// Convert to []ftypes.Package and []ftypes.Dependency
 	for name, art := range uniqArtifacts {
 		pkg := ftypes.Package{
-			ID:           packageID(name, art.Version.String()),
+			ID:           art.ID.String(),
 			Name:         name,
 			Version:      art.Version.String(),
 			Licenses:     art.Licenses,
@@ -243,15 +250,18 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 		pkgs = append(pkgs, pkg)
 
 		// Convert dependency names into dependency IDs
-		dependsOn := lo.FilterMap(uniqDeps[pkg.ID], func(dependOnName string, _ int) (string, bool) {
-			ver := depVersion(dependOnName, uniqArtifacts)
-			return packageID(dependOnName, ver), ver != ""
+		dependsOn := lo.FilterMap(uniqDeps[art.ID], func(dependOnName string, _ int) (string, bool) {
+			id := depID(dependOnName, uniqArtifacts)
+			return id, id != ""
 		})
 
 		// `mvn` shows modules separately from the root package and does not show module nesting.
 		// So we can add all modules as dependencies of root package.
 		if art.Relationship == ftypes.RelationshipRoot {
-			dependsOn = append(dependsOn, lo.Keys(uniqModules)...)
+			uuids := lo.Map(lo.Values(uniqModules), func(id uuid.UUID, _ int) string {
+				return id.String()
+			})
+			dependsOn = append(dependsOn, uuids...)
 		}
 
 		sort.Strings(dependsOn)
@@ -269,10 +279,10 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 	return pkgs, deps, nil
 }
 
-// depVersion finds dependency in uniqArtifacts and return its version
-func depVersion(depName string, uniqArtifacts map[string]artifact) string {
+// depID finds dependency in uniqArtifacts and return its ID
+func depID(depName string, uniqArtifacts map[string]artifact) string {
 	if art, ok := uniqArtifacts[depName]; ok {
-		return art.Version.String()
+		return art.ID.String()
 	}
 	return ""
 }
@@ -819,10 +829,6 @@ func parseMavenMetadata(r io.Reader) (*Metadata, error) {
 		return nil, xerrors.Errorf("xml decode error: %w", err)
 	}
 	return parsed, nil
-}
-
-func packageID(name, version string) string {
-	return dependency.ID(ftypes.Pom, name, version)
 }
 
 // cf. https://github.com/apache/maven/blob/259404701402230299fe05ee889ecdf1c9dae816/maven-artifact/src/main/java/org/apache/maven/artifact/DefaultArtifact.java#L482-L486

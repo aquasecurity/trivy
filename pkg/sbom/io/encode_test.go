@@ -778,7 +778,7 @@ func TestEncoder_Encode(t *testing.T) {
 						Class:  types.ClassLangPkg,
 						Packages: []ftypes.Package{
 							{
-								ID:      "com.example:root:1.0.0",
+								ID:      "2ff14136-e09f-4df9-80ea-000000000001",
 								Name:    "com.example:root",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -792,12 +792,12 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipRoot,
 								DependsOn: []string{
-									"com.example:module1:1.0.0",
-									"com.example:module2:2.0.0",
+									"2ff14136-e09f-4df9-80ea-000000000002",
+									"2ff14136-e09f-4df9-80ea-000000000004",
 								},
 							},
 							{
-								ID:      "com.example:module1:1.0.0",
+								ID:      "2ff14136-e09f-4df9-80ea-000000000002",
 								Name:    "com.example:module1",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -811,11 +811,11 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipWorkspace,
 								DependsOn: []string{
-									"org.example:example-api:1.1.1",
+									"2ff14136-e09f-4df9-80ea-000000000003",
 								},
 							},
 							{
-								ID:      "com.example:module2:2.0.0",
+								ID:      "2ff14136-e09f-4df9-80ea-000000000004",
 								Name:    "com.example:module2",
 								Version: "2.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -829,26 +829,26 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipWorkspace,
 								DependsOn: []string{
-									"org.example:example-dependency:1.2.3",
+									"2ff14136-e09f-4df9-80ea-000000000005",
 								},
 							},
 							{
-								ID:      "org.example:example-api:1.1.1",
+								ID:      "2ff14136-e09f-4df9-80ea-000000000003",
 								Name:    "org.example:example-api",
-								Version: "1.1.1",
+								Version: "2.0.0",
 								Identifier: ftypes.PkgIdentifier{
 									UID: "45cdc62618708bb7",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.example",
 										Name:      "example-api",
-										Version:   "1.1.1",
+										Version:   "2.0.0",
 									},
 								},
 								Relationship: ftypes.RelationshipDirect,
 							},
 							{
-								ID:      "org.example:example-dependency:1.2.3",
+								ID:      "2ff14136-e09f-4df9-80ea-000000000005",
 								Name:    "org.example:example-dependency",
 								Version: "1.2.3",
 								Identifier: ftypes.PkgIdentifier{
@@ -862,11 +862,11 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipDirect,
 								DependsOn: []string{
-									"org.example:example-api:2.0.0",
+									"2ff14136-e09f-4df9-80ea-000000000006",
 								},
 							},
 							{
-								ID:      "org.example:example-api:2.0.0",
+								ID:      "2ff14136-e09f-4df9-80ea-000000000006",
 								Name:    "org.example:example-api",
 								Version: "2.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -925,7 +925,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "com.example:root:1.0.0",
+							Value: "2ff14136-e09f-4df9-80ea-000000000001",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -952,7 +952,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "com.example:module1:1.0.0",
+							Value: "2ff14136-e09f-4df9-80ea-000000000002",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -979,7 +979,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "com.example:module2:2.0.0",
+							Value: "2ff14136-e09f-4df9-80ea-000000000004",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1001,12 +1001,12 @@ func TestEncoder_Encode(t *testing.T) {
 					Type:    core.TypeLibrary,
 					Group:   "org.example",
 					Name:    "example-api",
-					Version: "1.1.1",
+					Version: "2.0.0",
 					SrcFile: "pom.xml",
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "org.example:example-api:1.1.1",
+							Value: "2ff14136-e09f-4df9-80ea-000000000003",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1019,9 +1019,9 @@ func TestEncoder_Encode(t *testing.T) {
 							Type:      packageurl.TypeMaven,
 							Namespace: "org.example",
 							Name:      "example-api",
-							Version:   "1.1.1",
+							Version:   "2.0.0",
 						},
-						BOMRef: "pkg:maven/org.example/example-api@1.1.1",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000006",
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"): {
@@ -1033,7 +1033,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "org.example:example-dependency:1.2.3",
+							Value: "2ff14136-e09f-4df9-80ea-000000000005",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1060,7 +1060,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "org.example:example-api:2.0.0",
+							Value: "2ff14136-e09f-4df9-80ea-000000000006",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1075,7 +1075,7 @@ func TestEncoder_Encode(t *testing.T) {
 							Name:      "example-api",
 							Version:   "2.0.0",
 						},
-						BOMRef: "pkg:maven/org.example/example-api@2.0.0",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000008",
 					},
 				},
 			},
