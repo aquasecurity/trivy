@@ -31,9 +31,10 @@ type History struct {
 }
 
 func findPackage(e ftypes.Package, s []ftypes.Package) *ftypes.Package {
-	for _, a := range s {
+	for i := range s {
+		a := &s[i] // do not range by value to avoid heap allocations
 		if a.Name == e.Name && a.Version == e.Version && a.Release == e.Release {
-			return &a
+			return a
 		}
 	}
 	return nil
