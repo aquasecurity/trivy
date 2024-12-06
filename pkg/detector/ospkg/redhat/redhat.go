@@ -116,6 +116,11 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 	}
 
+	// Sort advosiries by FixedVersion to avoid incorrectly overwriting vulnerabilities
+	sort.Slice(advisories, func(i, j int) bool {
+		return version.NewVersion(advisories[i].FixedVersion).LessThan(version.NewVersion(advisories[j].FixedVersion))
+	})
+
 	installed := utils.FormatVersion(pkg)
 	installedVersion := version.NewVersion(installed)
 
@@ -146,33 +151,39 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 		// unpatched vulnerabilities
 		if adv.FixedVersion == "" {
-			// Red Hat may contain several advisories for the same vulnerability (RHSA advisories).
-			// To avoid overwriting the fixed version by mistake, we should skip unpatched vulnerabilities if they were added earlier
-			if _, ok := uniqVulns[vulnID]; !ok {
-				uniqVulns[vulnID] = vuln
-			}
+			// Advisories are sorted and unpatched advisories always go before patched ones.
+			// So we just save unpatched advisories and will overwrite
+			uniqVulns[vulnID] = vuln
 			continue
 		}
 
 		// patched vulnerabilities
 		fixedVersion := version.NewVersion(adv.FixedVersion)
-		if installedVersion.LessThan(fixedVersion) {
-			vuln.VendorIDs = adv.VendorIDs
-			vuln.FixedVersion = fixedVersion.String()
+		if !installedVersion.LessThan(fixedVersion) {
+			// The advisories are sorted by fixedVersion, so the following cases are possible:
+			// 1. uniqVulns doesn't contain this vulnID -> just move on to checking the next advisory.
+			// 2. uniqVulns contains this vuln without fixedVersion.
+			// 3. uniqVulns contains this vuln with fixedVersion.
+			// For cases 2 and 3, we should remove this vulnerability from uniqVulns, since in both cases this package is not vulnerable.
+			delete(uniqVulns, vulnID)
+			continue
+		}
 
-			if v, ok := uniqVulns[vulnID]; ok {
-				// In case two advisories resolve the same CVE-ID.
-				// e.g. The first fix might be incomplete.
-				v.VendorIDs = ustrings.Unique(append(v.VendorIDs, vuln.VendorIDs...))
+		vuln.VendorIDs = adv.VendorIDs
+		vuln.FixedVersion = fixedVersion.String()
 
-				// The newer fixed version should be taken.
-				if version.NewVersion(v.FixedVersion).LessThan(fixedVersion) {
-					v.FixedVersion = vuln.FixedVersion
-				}
-				uniqVulns[vulnID] = v
-			} else {
-				uniqVulns[vulnID] = vuln
+		if v, ok := uniqVulns[vulnID]; ok {
+			// In case two advisories resolve the same CVE-ID.
+			// e.g. The first fix might be incomplete.
+			v.VendorIDs = ustrings.Unique(append(v.VendorIDs, vuln.VendorIDs...))
+
+			// The newer fixed version should be taken.
+			if version.NewVersion(v.FixedVersion).LessThan(fixedVersion) {
+				v.FixedVersion = vuln.FixedVersion
 			}
+			uniqVulns[vulnID] = v
+		} else {
+			uniqVulns[vulnID] = vuln
 		}
 	}
 
