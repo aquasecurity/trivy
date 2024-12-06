@@ -262,6 +262,19 @@ func shouldTryOtherRepo(err error) bool {
 		}
 	}
 
-	// try the following artifact only if a temporary error occurs
-	return terr.Temporary()
+	// try the following artifact if a temporary error occurs
+	if terr.Temporary() {
+		return true
+	}
+
+	// `GCR` periodically returns `BLOB_UNKNOWN` error.
+	// cf. https://github.com/aquasecurity/trivy/discussions/8020
+	// In this case we need to check other repositories.
+	for _, e := range terr.Errors {
+		if e.Code == transport.BlobUnknownErrorCode {
+			return true
+		}
+	}
+
+	return false
 }
