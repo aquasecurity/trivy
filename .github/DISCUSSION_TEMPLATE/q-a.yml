@@ -9,7 +9,7 @@ body:
         
         **Do not open a GitHub issue, please.** Maintainers triage discussions and then create issues.
         
-        Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
+        Please also check [our contribution guidelines](https://trivy.dev/latest/community/contribute/discussion/).
   - type: textarea
     attributes:
       label: Question
