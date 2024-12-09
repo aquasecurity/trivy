@@ -87,13 +87,37 @@ const (
 	OCP         LangType = "ocp" // Red Hat OpenShift Container Platform
 )
 
-var AggregatingTypes = []LangType{
-	PythonPkg,
-	CondaPkg,
-	GemSpec,
-	NodePkg,
-	Jar,
-}
+var (
+	OSTypes = []OSType{
+		Alma,
+		Alpine,
+		Amazon,
+		Azure,
+		CBLMariner,
+		CentOS,
+		Chainguard,
+		Debian,
+		Fedora,
+		OpenSUSE,
+		OpenSUSELeap,
+		OpenSUSETumbleweed,
+		Oracle,
+		Photon,
+		RedHat,
+		Rocky,
+		SLEMicro,
+		SLES,
+		Ubuntu,
+		Wolfi,
+	}
+	AggregatingTypes = []LangType{
+		PythonPkg,
+		CondaPkg,
+		GemSpec,
+		NodePkg,
+		Jar,
+	}
+)
 
 // Config files
 const (
