@@ -17,6 +17,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		skipFiles   []string
 		offlineScan bool
 		scanners    string
+		distro      string
 	}
 	tests := []struct {
 		name      string
@@ -105,6 +106,13 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.NoError,
 		},
+		{
+			name: "sad distro flag",
+			fields: fields{
+				distro: "sad",
+			},
+			assertion: require.Error,
+		},
 	}
 
 	for _, tt := range tests {
@@ -114,6 +122,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			setSliceValue(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
+			setValue(flag.DistroFlag.ConfigName, tt.fields.distro)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
@@ -121,6 +130,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SkipFiles:   flag.SkipFilesFlag.Clone(),
 				OfflineScan: flag.OfflineScanFlag.Clone(),
 				Scanners:    flag.ScannersFlag.Clone(),
+				DistroFlag:  flag.DistroFlag.Clone(),
 			}
 
 			got, err := f.ToOptions(tt.args)
