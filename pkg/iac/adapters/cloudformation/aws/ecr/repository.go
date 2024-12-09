@@ -1,7 +1,7 @@
 package ecr
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/liamg/iamgo"
 
@@ -60,7 +60,7 @@ func getRepositories(ctx parser.FileContext) (repositories []ecr.Repository) {
 func getPolicy(r *parser.Resource) (*iam.Policy, error) {
 	policyProp := r.GetProperty("RepositoryPolicyText")
 	if policyProp.IsNil() {
-		return nil, fmt.Errorf("missing policy")
+		return nil, errors.New("missing policy")
 	}
 
 	parsed, err := iamgo.Parse(policyProp.GetJsonBytes())

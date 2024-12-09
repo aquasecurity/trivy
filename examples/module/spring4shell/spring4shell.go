@@ -5,6 +5,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -112,7 +113,7 @@ func (Spring4Shell) parseTomcatReleaseNotes(f *os.File, filePath string) (*seria
 
 	m := tomcatVersionRegex.FindStringSubmatch(string(b))
 	if len(m) != 2 {
-		return nil, fmt.Errorf("unknown tomcat release notes format")
+		return nil, errors.New("unknown tomcat release notes format")
 	}
 
 	return &serialize.AnalysisResult{

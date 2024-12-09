@@ -1,7 +1,7 @@
 package terraform
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -65,7 +65,7 @@ func (m Modules) GetReferencedBlock(referringAttr *Attribute, parentBlock *Block
 	if bestMatch != nil {
 		return bestMatch, nil
 	}
-	return nil, fmt.Errorf("block not found")
+	return nil, errors.New("block not found")
 }
 
 func (m Modules) GetReferencingResources(originalBlock *Block, referencingLabel, referencingAttributeName string) Blocks {
@@ -92,7 +92,7 @@ func (m Modules) GetBlockById(id string) (*Block, error) {
 		}
 
 	}
-	return nil, fmt.Errorf("block not found")
+	return nil, errors.New("block not found")
 }
 
 func (m Modules) GetResourceByIDs(id ...string) Blocks {

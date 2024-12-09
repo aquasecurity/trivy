@@ -2,7 +2,7 @@ package oci_test
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -71,7 +71,7 @@ func TestArtifact_Download(t *testing.T) {
 			name:      "sad: Layers returns an error",
 			mediaType: "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip",
 			layersReturns: layersReturns{
-				err: fmt.Errorf("error"),
+				err: errors.New("error"),
 			},
 			wantErr: "OCI layer error",
 		},

@@ -1,7 +1,7 @@
 package sqs
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/liamg/iamgo"
 
@@ -59,5 +59,5 @@ func getPolicy(id string, ctx parser.FileContext) (*iam.Policy, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("no matching policy found")
+	return nil, errors.New("no matching policy found")
 }

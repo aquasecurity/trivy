@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -192,10 +193,10 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		exludeNodeLabels[excludeNodeParts[0]] = excludeNodeParts[1]
 	}
 	if len(f.ExcludeNamespaces.Value()) > 0 && len(f.IncludeNamespaces.Value()) > 0 {
-		return K8sOptions{}, fmt.Errorf("include-namespaces and exclude-namespaces flags cannot be used together")
+		return K8sOptions{}, errors.New("include-namespaces and exclude-namespaces flags cannot be used together")
 	}
 	if len(f.ExcludeKinds.Value()) > 0 && len(f.IncludeKinds.Value()) > 0 {
-		return K8sOptions{}, fmt.Errorf("include-kinds and exclude-kinds flags cannot be used together")
+		return K8sOptions{}, errors.New("include-kinds and exclude-kinds flags cannot be used together")
 	}
 
 	return K8sOptions{
@@ -222,12 +223,12 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 	for _, toleration := range tolerationsOptions {
 		tolerationParts := strings.Split(toleration, ":")
 		if len(tolerationParts) < 2 {
-			return []corev1.Toleration{}, fmt.Errorf("toleration must include key and effect")
+			return []corev1.Toleration{}, errors.New("toleration must include key and effect")
 		}
 		if corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectNoSchedule &&
 			corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectPreferNoSchedule &&
 			corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectNoExecute {
-			return []corev1.Toleration{}, fmt.Errorf("toleration effect must be a valid value")
+			return []corev1.Toleration{}, errors.New("toleration effect must be a valid value")
 		}
 		keyValue := strings.Split(tolerationParts[0], "=")
 		operator := corev1.TolerationOpEqual
@@ -245,7 +246,7 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 		if len(tolerationParts) == 3 {
 			tolerationSec, err = strconv.Atoi(tolerationParts[2])
 			if err != nil {
-				return nil, fmt.Errorf("TolerationSeconds must must be a number")
+				return nil, errors.New("TolerationSeconds must must be a number")
 			}
 			toleration.TolerationSeconds = lo.ToPtr(int64(tolerationSec))
 		}

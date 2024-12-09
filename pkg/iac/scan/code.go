@@ -2,6 +2,7 @@ package scan
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -141,7 +142,7 @@ func (r *Result) GetCode(opts ...CodeOption) (*Code, error) {
 
 	fsys := r.Metadata().Range().GetFS()
 	if fsys == nil {
-		return nil, fmt.Errorf("code unavailable: result was not mapped to a known filesystem")
+		return nil, errors.New("code unavailable: result was not mapped to a known filesystem")
 	}
 
 	innerRange := r.metadata.Range()
