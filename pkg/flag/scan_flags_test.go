@@ -3,11 +3,11 @@ package flag_test
 import (
 	"testing"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
