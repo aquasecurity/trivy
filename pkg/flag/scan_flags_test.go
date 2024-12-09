@@ -3,6 +3,7 @@ package flag_test
 import (
 	"testing"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -103,6 +104,19 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ScanOptions{
 				OfflineScan: true,
+			},
+			assertion: require.NoError,
+		},
+		{
+			name: "happy path `distro` flag",
+			fields: fields{
+				distro: "alpine/3.20",
+			},
+			want: flag.ScanOptions{
+				Distro: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.20",
+				},
 			},
 			assertion: require.NoError,
 		},
