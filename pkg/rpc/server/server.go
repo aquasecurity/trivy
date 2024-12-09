@@ -75,12 +75,19 @@ func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
 			return ftypes.LicenseCategory(k), v.Names
 		})
 
+	var distro ftypes.OS
+	if in.Distro != nil {
+		distro.Family = ftypes.OSType(in.Distro.Family)
+		distro.Name = in.Distro.Name
+	}
+
 	return types.ScanOptions{
 		PkgTypes:          in.PkgTypes,
 		PkgRelationships:  pkgRelationships,
 		Scanners:          scanners,
 		IncludeDevDeps:    in.IncludeDevDeps,
 		LicenseCategories: licenseCategories,
+		Distro:            distro,
 	}
 }
 
