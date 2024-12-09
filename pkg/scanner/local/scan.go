@@ -90,10 +90,16 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
+	if !lo.IsEmpty(options.Distro) && !lo.IsEmpty(detail.OS) {
+		log.Info("Overriding detected OS with provided distro", log.String("detected", detail.OS.String()),
+			log.String("provided", options.Distro.String()))
+		detail.OS = options.Distro
+	}
+
 	target := types.ScanTarget{
 		Name:              targetName,
 		OS:                detail.OS,
-		Repository:        detail.Repository,
+		Repository:        lo.Ternary(lo.IsEmpty(options.Distro), detail.Repository, nil),
 		Packages:          mergePkgs(detail.Packages, detail.ImageConfig.Packages, options),
 		Applications:      detail.Applications,
 		Misconfigurations: mergeMisconfigurations(targetName, detail),
@@ -209,9 +215,6 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 		}
 		for _, w := range misconf.Successes {
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusPassed, misconf.Layer))
-		}
-		for _, w := range misconf.Exceptions {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusException, misconf.Layer))
 		}
 
 		results = append(results, types.Result{

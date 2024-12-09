@@ -49,7 +49,6 @@ trivy completion zsh > "${fpath[1]}/_trivy"
 
 ```bash
 $ trivy [tab]
-aws         -- scan aws account
 completion  -- Generate the autocompletion script for the specified shell
 config      -- Scan config files for misconfigurations
 filesystem  -- Scan local filesystem

@@ -31,14 +31,14 @@ const (
 	Debian             OSType = "debian"
 	Fedora             OSType = "fedora"
 	OpenSUSE           OSType = "opensuse"
-	OpenSUSELeap       OSType = "opensuse.leap"
-	OpenSUSETumbleweed OSType = "opensuse.tumbleweed"
+	OpenSUSELeap       OSType = "opensuse-leap"
+	OpenSUSETumbleweed OSType = "opensuse-tumbleweed"
 	Oracle             OSType = "oracle"
 	Photon             OSType = "photon"
 	RedHat             OSType = "redhat"
 	Rocky              OSType = "rocky"
-	SLEMicro           OSType = "suse linux enterprise micro"
-	SLES               OSType = "suse linux enterprise server"
+	SLEMicro           OSType = "slem"
+	SLES               OSType = "sles"
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
 )
@@ -87,13 +87,37 @@ const (
 	OCP         LangType = "ocp" // Red Hat OpenShift Container Platform
 )
 
-var AggregatingTypes = []LangType{
-	PythonPkg,
-	CondaPkg,
-	GemSpec,
-	NodePkg,
-	Jar,
-}
+var (
+	OSTypes = []OSType{
+		Alma,
+		Alpine,
+		Amazon,
+		Azure,
+		CBLMariner,
+		CentOS,
+		Chainguard,
+		Debian,
+		Fedora,
+		OpenSUSE,
+		OpenSUSELeap,
+		OpenSUSETumbleweed,
+		Oracle,
+		Photon,
+		RedHat,
+		Rocky,
+		SLEMicro,
+		SLES,
+		Ubuntu,
+		Wolfi,
+	}
+	AggregatingTypes = []LangType{
+		PythonPkg,
+		CondaPkg,
+		GemSpec,
+		NodePkg,
+		Jar,
+	}
+)
 
 // Config files
 const (

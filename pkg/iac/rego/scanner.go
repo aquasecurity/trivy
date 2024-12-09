@@ -73,16 +73,6 @@ type Scanner struct {
 	disabledCheckIDs map[string]struct{}
 }
 
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
-	s.includeDeprecatedChecks = b
-}
-
-func (s *Scanner) SetRegoOnly(bool) {}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
-}
-
 func (s *Scanner) trace(heading string, input any) {
 	if s.traceWriter == nil {
 		return
@@ -247,7 +237,7 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			}
 			usedRules[ruleName] = struct{}{}
 			if isEnforcedRule(ruleName) {
-				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs, staticMeta.InputOptions.Combined)
+				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs)
 				if err != nil {
 					s.logger.Error(
 						"Error occurred while applying rule from check",
@@ -328,14 +318,7 @@ func parseRawInput(input any) (ast.Value, error) {
 	return ast.InterfaceToValue(input)
 }
 
-func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input, combined bool) (scan.Results, error) {
-
-	// handle combined evaluations if possible
-	if combined {
-		s.trace("INPUT", inputs)
-		return s.applyRuleCombined(ctx, namespace, rule, inputs)
-	}
-
+func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input) (scan.Results, error) {
 	var results scan.Results
 	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
 	for _, input := range inputs {
@@ -345,16 +328,7 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 			s.logger.Error("Error occurred while parsing input", log.Err(err))
 			continue
 		}
-		if ignored, err := s.isIgnored(ctx, namespace, rule, parsedInput); err != nil {
-			return nil, err
-		} else if ignored {
-			var result regoResult
-			result.FS = input.FS
-			result.Filepath = input.Path
-			result.Managed = true
-			results.AddIgnored(result)
-			continue
-		}
+
 		set, traces, err := s.runQuery(ctx, qualified, parsedInput, false)
 		if err != nil {
 			return nil, err
@@ -375,44 +349,10 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 	return results, nil
 }
 
-func (s *Scanner) applyRuleCombined(ctx context.Context, namespace, rule string, inputs []Input) (scan.Results, error) {
-	if len(inputs) == 0 {
-		return nil, nil
-	}
-
-	parsed, err := parseRawInput(inputs)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse input: %w", err)
-	}
-
-	var results scan.Results
-
-	if ignored, err := s.isIgnored(ctx, namespace, rule, parsed); err != nil {
-		return nil, err
-	} else if ignored {
-		for _, input := range inputs {
-			var result regoResult
-			result.FS = input.FS
-			result.Filepath = input.Path
-			result.Managed = true
-			results.AddIgnored(result)
-		}
-		return results, nil
-	}
-	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
-	set, traces, err := s.runQuery(ctx, qualified, parsed, false)
-	if err != nil {
-		return nil, err
-	}
-	return s.convertResults(set, inputs[0], namespace, rule, traces), nil
-}
-
 // severity is now set with metadata, so deny/warn/violation now behave the same way
 func isEnforcedRule(name string) bool {
 	switch {
-	case name == "deny", strings.HasPrefix(name, "deny_"),
-		name == "warn", strings.HasPrefix(name, "warn_"),
-		name == "violation", strings.HasPrefix(name, "violation_"):
+	case name == "deny", strings.HasPrefix(name, "deny_"):
 		return true
 	}
 	return false

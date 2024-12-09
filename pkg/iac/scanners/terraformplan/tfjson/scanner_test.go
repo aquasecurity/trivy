@@ -53,7 +53,6 @@ func Test_TerraformScanner(t *testing.T) {
 			check:     defaultCheck,
 			options: []options.ScannerOption{
 				rego.WithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
 			},
 		},
 		{
@@ -62,7 +61,6 @@ func Test_TerraformScanner(t *testing.T) {
 			check:     defaultCheck,
 			options: []options.ScannerOption{
 				rego.WithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
 				rego.WithPolicyNamespaces("user"),
 			},
 		},
@@ -92,7 +90,6 @@ deny[cause] {
 `,
 			options: []options.ScannerOption{
 				rego.WithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
 				rego.WithPolicyNamespaces("user"),
 			},
 		},
@@ -102,7 +99,6 @@ deny[cause] {
 			check:     defaultCheck,
 			options: []options.ScannerOption{
 				rego.WithPolicyDirs("rules"),
-				options.ScannerWithRegoOnly(true),
 				rego.WithPolicyNamespaces("user"),
 			},
 		},

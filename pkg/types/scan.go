@@ -121,4 +121,5 @@ type ScanOptions struct {
 	LicenseCategories   map[types.LicenseCategory][]string
 	FilePatterns        []string
 	IncludeDevDeps      bool
+	Distro              types.OS // Forced OS
 }

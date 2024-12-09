@@ -91,7 +91,7 @@ var tests = []testCase{
 		imageFile: "../../../../integration/testdata/fixtures/images/opensuse-leap-151.tar.gz",
 		wantOS: types.OS{
 			Name:   "15.1",
-			Family: "opensuse.leap",
+			Family: "opensuse-leap",
 		},
 	},
 	{
@@ -100,7 +100,7 @@ var tests = []testCase{
 		imageFile: "../../../../integration/testdata/fixtures/images/opensuse-tumbleweed.tar.gz",
 		wantOS: types.OS{
 			Name:   "20240607",
-			Family: "opensuse.tumbleweed",
+			Family: "opensuse-tumbleweed",
 		},
 	},
 	{
@@ -110,7 +110,7 @@ var tests = []testCase{
 		imageFile: "../../../../integration/testdata/fixtures/images/suse-15.3_ndb.tar.gz",
 		wantOS: types.OS{
 			Name:   "15.3",
-			Family: "suse linux enterprise server",
+			Family: "sles",
 		},
 	},
 	{

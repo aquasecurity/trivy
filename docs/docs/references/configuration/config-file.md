@@ -105,6 +105,7 @@ db:
 
   # Same as '--java-db-repository'
   java-repository:
+   - mirror.gcr.io/aquasec/trivy-java-db:1
    - ghcr.io/aquasecurity/trivy-java-db:1
 
   # Same as '--skip-java-db-update'
@@ -115,6 +116,7 @@ db:
 
   # Same as '--db-repository'
   repository:
+   - mirror.gcr.io/aquasec/trivy-db:2
    - ghcr.io/aquasecurity/trivy-db:2
 
   # Same as '--skip-db-update'
@@ -373,7 +375,7 @@ license:
 ```yaml
 misconfiguration:
   # Same as '--checks-bundle-repository'
-  checks-bundle-repository: "ghcr.io/aquasecurity/trivy-checks:1"
+  checks-bundle-repository: "mirror.gcr.io/aquasec/trivy-checks:1"
 
   cloudformation:
     # Same as '--cf-params'
@@ -445,6 +447,7 @@ pkg:
   relationships:
    - unknown
    - root
+   - workspace
    - direct
    - indirect
 
@@ -566,6 +569,9 @@ repository:
 scan:
   # Same as '--detection-priority'
   detection-priority: "precise"
+
+  # Same as '--distro'
+  distro: ""
 
   # Same as '--file-patterns'
   file-patterns: []

@@ -1,126 +1,129 @@
-# DB
+# Trivy Databases
 
-|     Scanner      | Supported |
-|:----------------:|:---------:|
-|  Vulnerability   |     ✓     |
-| Misconfiguration |           |
-|      Secret      |           |
-|     License      |           |
+When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations.
+These so called "databases" are automatically fetched and maintained by Trivy as needed, so normally you shouldn't notice or worry about them.   
+This document elaborates on the database management mechanism and its configuration options.
 
-The vulnerability database and the Java index database are needed only for vulnerability scanning.
-See [here](../scanner/vulnerability.md) for the detail.
+Trivy relies on the following databases:
 
-## Vulnerability Database
+DB | Artifact name | Contents | Purpose
+--- | --- | --- | ---
+Vulnerabilities DB | `trivy-db` | CVE information collected from various feeds | used only for [vulnerability scanning](../scanner/vulnerability.md)
+Java DB | `trivy-java-db` | Index of Java artifacts and their hash digest | used to identify Java artifacts only in [JAR scanning](../coverage/language/java.md)
+Checks Bundle | `trivy-checks` | Logic of misconfiguration checks | used only in [misconfiguration/IaC scanning](../scanner/misconfiguration/check/builtin.md)
 
-### Skip update of vulnerability DB
-If you want to skip downloading the vulnerability database, use the `--skip-db-update` option.
+!!! note
+    This is not an exhaustive list of Trivy's external connectivity requirements.
+    There are additional external resources which may be required by specific Trivy features.
+    To learn about external connectivity requirements, see the [Advanced Network Scenarios](../advanced/air-gap.md).
+
+## Locations
+
+Trivy's databases are published to the following locations:
+
+| Registry | Image Address | Link
+| --- | --- | ---
+| GHCR | `ghcr.io/aquasecurity/trivy-db` | <https://ghcr.io/aquasecurity/trivy-db>
+| | `ghcr.io/aquasecurity/trivy-java-db` | <https://ghcr.io/aquasecurity/trivy-java-db>
+| | `ghcr.io/aquasecurity/trivy-checks` | <https://ghcr.io/aquasecurity/trivy-checks>
+| Docker Hub | `aquasec/trivy-db` | <https://hub.docker.com/r/aquasec/trivy-db>
+| | `aquasec/trivy-java-db` | <https://hub.docker.com/r/aquasec/trivy-java-db>
+| | `aquasec/trivy-checks` | <https://hub.docker.com/r/aquasec/trivy-checks>
+| AWS ECR | `public.ecr.aws/aquasecurity/trivy-db` | <https://gallery.ecr.aws/aquasecurity/trivy-db>
+| | `public.ecr.aws/aquasecurity/trivy-java-db` | <https://gallery.ecr.aws/aquasecurity/trivy-java-db>
+| | `public.ecr.aws/aquasecurity/trivy-checks` | <https://gallery.ecr.aws/aquasecurity/trivy-checks>
+
+In addition, images are also available via pull-through cache registries like [Google Container Registry Mirror](https://cloud.google.com/artifact-registry/docs/pull-cached-dockerhub-images).
+
+## Default Locations
+
+Trivy will attempt to pull images from the following registries in the order specified.
+
+1. `mirror.gcr.io/aquasec`
+2. `ghcr.io/aquasecurity`
+
+You can specify additional alternative repositories as explained in the [configuring database locations section](#database-locations).
+
+## DB Management Configuration
+
+### Database Locations
+
+You can configure Trivy to download databases from alternative locations by using the flags:
+
+- `--db-repository`
+- `--java-db-repository`
+- `--checks-bundle-repository`
+
+The value should be an image address in a container registry.
+
+For example:
 
 ```
-$ trivy image --skip-db-update python:3.4-alpine3.9
+trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
 
-<details>
-<summary>Result</summary>
+The flags accepts multiple values, which can be used to specify multiple alternative repository locations. In case of a transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries in the order specified.
+
+For example:
 
 ```
-2019-05-16T12:48:08.703+0900    INFO    Detecting Alpine vulnerabilities...
-
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
+trivy image --db-repository my.registry.local/trivy-db --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
 ```
 
-</details>
+The Checks Bundle registry location option does not support fallback through multiple options. This is because in case of a failure pulling the Checks Bundle, Trivy will use the embedded checks as a fallback.
 
-### Only download vulnerability database
-You can also ask `Trivy` to simply retrieve the vulnerability database.
-This is useful to initialize workers in Continuous Integration systems.
-
-```
-$ trivy image --download-db-only
-```
-
-### DB Repository
-`Trivy` could also download the vulnerability database from an external OCI registry by using `--db-repository` option.
-
-```
-$ trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db
-```
-
-The media type of the OCI layer must be `application/vnd.aquasec.trivy.db.layer.v1.tar+gzip`.
-You can reference the OCI manifest of [trivy-db].
-
-<details>
-<summary>Manifest</summary>
-
-```shell
-{
-  "schemaVersion": 2,
-  "mediaType": "application/vnd.oci.image.manifest.v1+json",
-  "config": {
-    "mediaType": "application/vnd.aquasec.trivy.config.v1+json",
-    "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "size": 2
-  },
-  "layers": [
-    {
-      "mediaType": "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip",
-      "digest": "sha256:29ad6505b8957c7cd4c367e7c705c641a9020d2be256812c5f4cc2fc099f4f02",
-      "size": 55474933,
-      "annotations": {
-        "org.opencontainers.image.title": "db.tar.gz"
-      }
-    }
-  ],
-  "annotations": {
-    "org.opencontainers.image.created": "2024-09-11T06:14:51Z"
-  }
-}
-```
-</details>
+!!! note 
+    Setting the repository location flags override the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list the you set as repository locations.
 
 !!!note
-    Trivy automatically adds the `trivy-db` schema version as a tag if the tag is not used:
+    When pulling `trivy-db` or `trivy-java-db`, if image tag is not specified, Trivy defaults to the db schema number instead of the `latest` tag.
 
-    `trivy-db-registry:latest` => `trivy-db-registry:latest`, but `trivy-db-registry` => `trivy-db-registry:2`.
+### Skip updates
 
+You can configure Trivy to not attempt to download any or all database(s), using the flags:
 
-## Java Index Database
-The same options are also available for the Java index DB, which is used for scanning Java applications.
-Skipping an update can be done by using the `--skip-java-db-update` option, while `--download-java-db-only` can be used to only download the Java index DB.
+- `--skip-db-update`
+- `--skip-java-db-update`
+- `--skip-check-update`
 
-!!! Note
-    In [Client/Server](../references/modes/client-server.md) mode, `Java index DB` is currently only used on the `client` side.
-
-Downloading the Java index DB from an external OCI registry can be done by using the `--java-db-repository` option.
+For example:
 
 ```
-$ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
+trivy image --skip-db-update --skip-java-db-update --skip-check-update alpine
 ```
 
-The media type of the OCI layer must be `application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip`.
-You can reference the OCI manifest of [trivy-java-db].
+### Only update
 
-!!!note
-    Trivy automatically adds the `trivy-java-db` schema version as a tag if the tag is not used:
+You can ask `Trivy` to only update the database without performing a scan. This action will ensure Trivy is up to date, and populate Trivy's database cache for subsequent scans.
 
-    `java-db-registry:latest` => `java-db-registry:latest`, but `java-db-registry` => `java-db-registry:1`.
+- `--download-db-only`
+- `--download-java-db-only`
 
-## Remove DBs
-"trivy clean" command removes caches and databases.
+For example:
+
+```
+trivy image --download-db-only
+```
+
+Note that currently there is no option to download only the Checks Bundle.
+
+### Remove Databases
+
+`trivy clean` command removes caches and databases.
+You can select which cache component to remove:
+
+option | description
+--- | ---
+`-a`/`--all` | remove all caches
+`--checks-bundle` | remove checks bundle
+`--java-db` | remove Java database
+`--scan-cache` | remove scan cache (container and VM image analysis results)
+`--vuln-db` | remove vulnerability database
+
+Example:
 
 ```
 $ trivy clean --vuln-db --java-db
 2024-06-24T11:42:31+06:00       INFO    Removing vulnerability database...
 2024-06-24T11:42:31+06:00       INFO    Removing Java database...
 ```
-
-[trivy-db]: https://github.com/aquasecurity/trivy-db/pkgs/container/trivy-db
-[trivy-java-db]: https://github.com/aquasecurity/trivy-java-db/pkgs/container/trivy-java-db

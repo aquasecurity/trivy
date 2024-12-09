@@ -32,8 +32,8 @@ Resources:
         - 
           Name: "busybox"
           Image: "busybox"
-          Cpu: 256
-          Memory: 512
+          Cpu: "256"
+          Memory: "512"
           Essential: true
           Privileged: true
           Environment:
@@ -68,14 +68,14 @@ Resources:
 							{
 								Name:       types.StringTest("busybox"),
 								Image:      types.StringTest("busybox"),
-								CPU:        types.IntTest(256),
-								Memory:     types.IntTest(512),
+								CPU:        types.StringTest("256"),
+								Memory:     types.StringTest("512"),
 								Essential:  types.BoolTest(true),
 								Privileged: types.BoolTest(true),
 								Environment: []ecs.EnvVar{
 									{
-										Name:  "entryPoint",
-										Value: "sh, -c",
+										Name:  types.StringTest("entryPoint"),
+										Value: types.StringTest("sh, -c"),
 									},
 								},
 							},

@@ -14,7 +14,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
@@ -173,10 +172,6 @@ func (s *GenericScanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	s.regoScanner = regoScanner
 	return regoScanner, nil
 }
-
-func (*GenericScanner) SetRegoOnly(bool)                    {}
-func (*GenericScanner) SetIncludeDeprecatedChecks(bool)     {}
-func (*GenericScanner) SetFrameworks([]framework.Framework) {}
 
 func parseJson(ctx context.Context, r io.Reader, _ string) (any, error) {
 	var target any

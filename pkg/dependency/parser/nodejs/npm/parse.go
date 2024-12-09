@@ -43,6 +43,7 @@ type Package struct {
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
+	PeerDependencies     map[string]string `json:"peerDependencies"`
 	Resolved             string            `json:"resolved"`
 	Dev                  bool              `json:"dev"`
 	Link                 bool              `json:"link"`
@@ -91,7 +92,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 	p.resolveLinks(packages)
 
 	directDeps := make(map[string]struct{})
-	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies) {
+	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies, packages[""].PeerDependencies) {
 		pkgPath := joinPaths(nodeModulesDir, name)
 		if _, ok := packages[pkgPath]; !ok {
 			p.logger.Debug("Unable to find the direct dependency",
@@ -165,7 +166,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		// └─┬ watchpack@1.7.5
 		// ├─┬ chokidar@3.5.3 - optional dependency
 		// │ └── glob-parent@5.1.
-		dependencies := lo.Assign(pkg.Dependencies, pkg.OptionalDependencies)
+		dependencies := lo.Assign(pkg.Dependencies, pkg.OptionalDependencies, pkg.PeerDependencies)
 		dependsOn := make([]string, 0, len(dependencies))
 		for depName, depVersion := range dependencies {
 			depID, err := findDependsOn(pkgPath, depName, packages)

@@ -90,9 +90,9 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 	var modulePath string
 	if e.moduleMetadata != nil {
 		// if we have module metadata we can parse all the modules as they'll be cached locally!
-		name := b.ModuleName()
+		moduleKey := b.ModuleKey()
 		for _, module := range e.moduleMetadata.Modules {
-			if module.Key == name {
+			if module.Key == moduleKey {
 				modulePath = path.Clean(path.Join(e.projectRootPath, module.Dir))
 				break
 			}

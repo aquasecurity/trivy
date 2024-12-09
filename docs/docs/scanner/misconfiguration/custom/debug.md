@@ -12,7 +12,7 @@ $ trivy config --trace configs/
 
 Dockerfile (dockerfile)
 =======================
-Tests: 23 (SUCCESSES: 21, FAILURES: 2, EXCEPTIONS: 0)
+Tests: 23 (SUCCESSES: 21, FAILURES: 2)
 Failures: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 1, CRITICAL: 0)
 
 MEDIUM: Specify a tag in the 'FROM' statement for image 'alpine'
