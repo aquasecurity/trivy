@@ -15,6 +15,14 @@ type OS struct {
 	Extended bool `json:"extended,omitempty"`
 }
 
+func (o *OS) String() string {
+	s := string(o.Family)
+	if o.Name != "" {
+		s += "/" + o.Name
+	}
+	return s
+}
+
 func (o *OS) Detected() bool {
 	return o.Family != ""
 }

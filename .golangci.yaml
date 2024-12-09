@@ -68,6 +68,7 @@ linters-settings:
     excludes:
       - G101
       - G114
+      - G115
       - G204
       - G304
       - G402
@@ -106,6 +107,7 @@ linters:
     - typecheck
     - unconvert
     - unused
+    - usestdlibvars
 
 run:
   go: '1.22'

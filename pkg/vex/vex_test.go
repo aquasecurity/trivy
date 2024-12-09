@@ -58,9 +58,9 @@ var (
 		},
 	}
 	goModulePackage = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-module@1.0.0",
+		ID:           "github.com/aquasecurity/go-module@v1.0.0",
 		Name:         "github.com/aquasecurity/go-module",
-		Version:      "1.0.0",
+		Version:      "v1.0.0",
 		Relationship: ftypes.RelationshipRoot,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "03",
@@ -68,14 +68,14 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-module",
-				Version:   "1.0.0",
+				Version:   "v1.0.0",
 			},
 		},
 	}
 	goDirectPackage1 = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-direct1@2.0.0",
+		ID:           "github.com/aquasecurity/go-direct1@v2.0.0",
 		Name:         "github.com/aquasecurity/go-direct1",
-		Version:      "2.0.0",
+		Version:      "v2.0.0",
 		Relationship: ftypes.RelationshipDirect,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "04",
@@ -83,14 +83,14 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-direct1",
-				Version:   "2.0.0",
+				Version:   "v2.0.0",
 			},
 		},
 	}
 	goDirectPackage2 = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-direct2@3.0.0",
+		ID:           "github.com/aquasecurity/go-direct2@v3.0.0",
 		Name:         "github.com/aquasecurity/go-direct2",
-		Version:      "3.0.0",
+		Version:      "v3.0.0",
 		Relationship: ftypes.RelationshipDirect,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "05",
@@ -98,14 +98,14 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-direct2",
-				Version:   "3.0.0",
+				Version:   "v3.0.0",
 			},
 		},
 	}
 	goTransitivePackage = ftypes.Package{
-		ID:           "github.com/aquasecurity/go-transitive@4.0.0",
+		ID:           "github.com/aquasecurity/go-transitive@v4.0.0",
 		Name:         "github.com/aquasecurity/go-transitive",
-		Version:      "4.0.0",
+		Version:      "v4.0.0",
 		Relationship: ftypes.RelationshipIndirect,
 		Identifier: ftypes.PkgIdentifier{
 			UID: "06",
@@ -113,7 +113,7 @@ var (
 				Type:      packageurl.TypeGolang,
 				Namespace: "github.com/aquasecurity",
 				Name:      "go-transitive",
-				Version:   "4.0.0",
+				Version:   "v4.0.0",
 			},
 		},
 	}
@@ -647,9 +647,9 @@ func goSinglePathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
 
-	// - pkg:golang/github.com/aquasecurity/go-module@1.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct1@2.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@4.0.0
+	// - pkg:golang/github.com/aquasecurity/go-module@v1.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
 	goModule := clonePackage(goModulePackage)
 	goDirect1 := clonePackage(goDirectPackage1)
 	goTransitive := clonePackage(goTransitivePackage)
@@ -668,11 +668,11 @@ func goMultiPathResult(result types.Result) types.Result {
 	result.Type = ftypes.GoModule
 	result.Class = types.ClassLangPkg
 
-	// - pkg:golang/github.com/aquasecurity/go-module@2.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct1@3.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@5.0.0
-	//     - pkg:golang/github.com/aquasecurity/go-direct2@4.0.0
-	//         - pkg:golang/github.com/aquasecurity/go-transitive@5.0.0
+	// - pkg:golang/github.com/aquasecurity/go-module@v2.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct1@v3.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-direct2@v4.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-transitive@v5.0.0
 	goModule := clonePackage(goModulePackage)
 	goDirect1 := clonePackage(goDirectPackage1)
 	goDirect2 := clonePackage(goDirectPackage2)

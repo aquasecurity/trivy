@@ -36,6 +36,7 @@ type csArgs struct {
 	ListAllPackages   bool
 	Target            string
 	secretConfig      string
+	Distro            string
 }
 
 func TestClientServer(t *testing.T) {
@@ -49,6 +50,18 @@ func TestClientServer(t *testing.T) {
 			name: "alpine 3.9",
 			args: csArgs{
 				Input: "testdata/fixtures/images/alpine-39.tar.gz",
+			},
+			golden: "testdata/alpine-39.json.golden",
+		},
+		{
+			name: "alpine 3.9 as alpine 3.10",
+			args: csArgs{
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+				Distro: "alpine/3.10",
+			},
+			override: func(t *testing.T, want, got *types.Report) {
+				want.Metadata.OS.Name = "3.10"
+				want.Results[0].Target = "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.10)"
 			},
 			golden: "testdata/alpine-39.json.golden",
 		},
@@ -324,6 +337,17 @@ func TestClientServerWithFormat(t *testing.T) {
 			golden: "testdata/alpine-310.gitlab.golden",
 		},
 		{
+			name: "scan package-lock.json with gitlab template (Unknown os and image)",
+			args: csArgs{
+				Command:         "fs",
+				Format:          "template",
+				TemplatePath:    "@../contrib/gitlab.tpl",
+				Target:          "testdata/fixtures/repo/npm/",
+				ListAllPackages: true,
+			},
+			golden: "testdata/npm.gitlab.golden",
+		},
+		{
 			name: "alpine 3.10 with gitlab-codequality template",
 			args: csArgs{
 				Format:       "template",
@@ -548,7 +572,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	})
 
 	// Terminate the Redis container
-	require.NoError(t, redisC.Terminate(ctx))
+	require.NoError(t, testcontainers.TerminateContainer(redisC))
 
 	t.Run("sad path", func(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir)
@@ -671,6 +695,10 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string 
 
 	if c.Target != "" {
 		osArgs = append(osArgs, c.Target)
+	}
+
+	if c.Distro != "" {
+		osArgs = append(osArgs, "--distro", c.Distro)
 	}
 
 	return osArgs

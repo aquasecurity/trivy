@@ -4,6 +4,7 @@ import (
 	"io"
 	"io/fs"
 
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -114,6 +115,22 @@ func WithDisabledCheckIDs(ids ...string) options.ScannerOption {
 			for _, id := range ids {
 				ss.disabledCheckIDs[id] = struct{}{}
 			}
+		}
+	}
+}
+
+func WithIncludeDeprecatedChecks(enabled bool) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			ss.includeDeprecatedChecks = true
+		}
+	}
+}
+
+func WithFrameworks(frameworks ...framework.Framework) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			ss.frameworks = frameworks
 		}
 	}
 }

@@ -4,92 +4,37 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/state"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
-
-const emptyBucketRule = `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}
-`
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
-		"/code/main.tf": `
-resource "aws_s3_bucket" "my-bucket" {
-	bucket = "evil"
-}
-`,
-		"/rules/test.rego": `
-package defsec.abcdefg
-
-__rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
-	"title": "Buckets should not be evil",
-	"short_code": "no-evil-buckets",
-	"severity": "CRITICAL",
-	"type": "DefSec Security Check",
-	"description": "You should not allow buckets to be evil",
-	"recommended_actions": "Use a good bucket instead",
-	"url": "https://google.com/search?q=is+my+bucket+evil",
-}
-
-__rego_input__ := {
-	"combine": false,
-	"selector": [{"type": "defsec", "subtypes": [{"service": "s3", "provider": "aws"}]}],
-}
-
-deny[cause] {
-	bucket := input.aws.s3.buckets[_]
-	bucket.name.value == "evil"
-	cause := bucket.name
-}
-`,
+	fsys := testutil.CreateFS(t, map[string]string{
+		"/code/main.tf":    `resource "aws_s3_bucket" "my-bucket" {}`,
+		"/rules/test.rego": emptyBucketCheck,
 	})
 
-	scanner := New(
-		rego.WithPolicyFilesystem(fs),
+	results, err := scanFS(fsys, "code",
+		rego.WithPolicyFilesystem(fsys),
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
+		rego.WithPolicyNamespaces("user"),
 	)
-
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
 
 	failure := results.GetFailed()[0]
 
-	assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
+	assert.Equal(t, "USER-TEST-0123", failure.Rule().AVDID)
 
 	actualCode, err := failure.GetCode()
 	require.NoError(t, err)
@@ -98,28 +43,11 @@ deny[cause] {
 	}
 	assert.Equal(t, []scan.Line{
 		{
-			Number:     2,
-			Content:    "resource \"aws_s3_bucket\" \"my-bucket\" {",
-			IsCause:    false,
-			FirstCause: false,
-			LastCause:  false,
-			Annotation: "",
-		},
-		{
-			Number:     3,
-			Content:    "\tbucket = \"evil\"",
+			Number:     1,
+			Content:    "resource \"aws_s3_bucket\" \"my-bucket\" {}",
 			IsCause:    true,
 			FirstCause: true,
 			LastCause:  true,
-			Annotation: "",
-		},
-		{
-			Number:     4,
-			Content:    "}",
-			IsCause:    false,
-			FirstCause: false,
-			LastCause:  false,
-			Annotation: "",
 		},
 	}, actualCode.Lines)
 
@@ -234,104 +162,6 @@ cause := bucket.name
 
 }
 
-func Test_OptionWithRegoOnly(t *testing.T) {
-
-	fs := testutil.CreateFS(t, map[string]string{
-		"/code/main.tf": `
-resource "aws_s3_bucket" "my-bucket" {
-	bucket = "evil"
-}
-`,
-		"/rules/test.rego": `
-package defsec.abcdefg
-
-__rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
-	"title": "Buckets should not be evil",
-	"short_code": "no-evil-buckets",
-	"severity": "CRITICAL",
-	"type": "DefSec Security Check",
-	"description": "You should not allow buckets to be evil",
-	"recommended_actions": "Use a good bucket instead",
-	"url": "https://google.com/search?q=is+my+bucket+evil",
-}
-
-__rego_input__ := {
-	"combine": false,
-	"selector": [{"type": "defsec", "subtypes": [{"service": "s3", "provider": "aws"}]}],
-}
-
-deny[cause] {
-	bucket := input.aws.s3.buckets[_]
-	bucket.name.value == "evil"
-	cause := bucket.name
-}
-`,
-	})
-
-	scanner := New(
-		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
-	)
-
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
-}
-
-func Test_OptionWithRegoOnly_CodeHighlighting(t *testing.T) {
-
-	fs := testutil.CreateFS(t, map[string]string{
-		"/code/main.tf": `
-resource "aws_s3_bucket" "my-bucket" {
-	bucket = "evil"
-}
-`,
-		"/rules/test.rego": `
-package defsec.abcdefg
-
-__rego_metadata__ := {
-	"id": "TEST123",
-	"avd_id": "AVD-TEST-0123",
-	"title": "Buckets should not be evil",
-	"short_code": "no-evil-buckets",
-	"severity": "CRITICAL",
-	"type": "DefSec Security Check",
-	"description": "You should not allow buckets to be evil",
-	"recommended_actions": "Use a good bucket instead",
-	"url": "https://google.com/search?q=is+my+bucket+evil",
-}
-
-__rego_input__ := {
-	"combine": false,
-	"selector": [{"type": "defsec", "subtypes": [{"service": "s3", "provider": "aws"}]}],
-}
-
-deny[res] {
-	bucket := input.aws.s3.buckets[_]
-	bucket.name.value == "evil"
-	res := result.new("oh no", bucket.name)
-}
-`,
-	})
-
-	scanner := New(
-		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
-		rego.WithEmbeddedLibraries(true),
-	)
-
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, "AVD-TEST-0123", results[0].Rule().AVDID)
-	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-}
-
 func Test_IAMPolicyRego(t *testing.T) {
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tf": `
@@ -388,7 +218,6 @@ deny[res] {
 
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(true),
 	)
 
@@ -410,7 +239,7 @@ resource "aws_ecs_task_definition" "test" {
 [
   {
 	"privileged": true,
-    "cpu": 10,
+    "cpu": "10",
     "command": ["sleep", "10"],
     "entryPoint": ["/"],
     "environment": [
@@ -418,7 +247,7 @@ resource "aws_ecs_task_definition" "test" {
     ],
     "essential": true,
     "image": "jenkins",
-    "memory": 128,
+    "memory": "128",
     "name": "jenkins",
     "portMappings": [
       {
@@ -472,7 +301,6 @@ deny[res] {
 
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(true),
 	)
 
@@ -646,7 +474,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyFilesystem(fs),
 		rego.WithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
 	)
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
@@ -709,7 +536,7 @@ resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 }
 `,
-		"rules/bucket_name.rego": emptyBucketRule,
+		"rules/bucket_name.rego": emptyBucketCheck,
 	})
 
 	configsFS := testutil.CreateFS(t, map[string]string{
@@ -719,9 +546,9 @@ bucket_name = "test"
 	})
 
 	scanner := New(
+		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -746,16 +573,16 @@ resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 }
 `,
-		"rules/bucket_name.rego": emptyBucketRule,
+		"rules/bucket_name.rego": emptyBucketCheck,
 		"main.tfvars": `
 bucket_name = "test"
 `,
 	})
 
 	scanner := New(
+		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -805,25 +632,7 @@ resource "aws_security_group" "main" {
 	description = var.security_group_description
 }
 `,
-		"/rules/bucket_name.rego": `
-# METADATA
-# schemas:
-# - input: schema.input
-# custom:
-#   avd_id: AVD-AWS-0001
-#   input:
-#     selector:
-#     - type: cloud
-#       subtypes:
-#         - service: s3
-#           provider: aws
-package defsec.test.aws1
-deny[res] {
-  bucket := input.aws.s3.buckets[_]
-  bucket.name.value == ""
-  res := result.new("The name of the bucket must not be empty", bucket)
-}
-`,
+		"/rules/bucket_name.rego": emptyBucketCheck,
 		"/rules/sec_group_description.rego": `
 # METADATA
 # schemas:
@@ -846,11 +655,11 @@ deny[res] {
 	})
 
 	scanner := New(
+		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithPolicyDirs("rules"),
 		rego.WithEmbeddedPolicies(false),
 		rego.WithEmbeddedLibraries(false),
-		options.ScannerWithRegoOnly(true),
 		ScannerWithAllDirectories(true),
 	)
 
@@ -918,7 +727,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -987,7 +795,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
 		ScannerWithAllDirectories(true),
@@ -1051,7 +858,6 @@ deny[res] {
 	scanner := New(
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
-		options.ScannerWithRegoOnly(true),
 		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
@@ -1072,55 +878,8 @@ deny[res] {
 	assert.Equal(t, "code/example/main.tf", occurrences[0].Filename)
 }
 
-func TestSkipDeprecatedGoChecks(t *testing.T) {
-
-	check := scan.Rule{
-		Provider:  providers.AWSProvider,
-		Service:   "service",
-		ShortCode: "abc",
-		Severity:  severity.High,
-		Check: func(s *state.State) (results scan.Results) {
-			results.Add("Deny", types.NewTestMetadata())
-			return
-		},
-	}
-
-	fsys := testutil.CreateFS(t, map[string]string{
-		"main.tf": `resource "foo" "bar" {}`,
-	})
-
-	scanner := New(
-		rego.WithPolicyFilesystem(fsys),
-		rego.WithEmbeddedLibraries(false),
-		rego.WithEmbeddedPolicies(false),
-		ScannerWithAllDirectories(true),
-	)
-
-	t.Run("deprecated", func(t *testing.T) {
-		check.Deprecated = true
-		reg := rules.Register(check)
-		defer rules.Deregister(reg)
-
-		results, err := scanner.ScanFS(context.TODO(), fsys, ".")
-		require.NoError(t, err)
-
-		require.Empty(t, results)
-	})
-
-	t.Run("not deprecated", func(t *testing.T) {
-		check.Deprecated = false
-		reg := rules.Register(check)
-		defer rules.Deregister(reg)
-
-		results, err := scanner.ScanFS(context.TODO(), fsys, ".")
-		require.NoError(t, err)
-
-		require.Len(t, results, 1)
-	})
-}
-
 func TestSkipDir(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(t, map[string]string{
 		"deployments/main.tf": `
 module "use_bad_configuration" {
   source = "../modules"
@@ -1130,50 +889,23 @@ module "use_bad_configuration_2" {
   source = "../modules/modules2"
 }
 `,
-		"modules/misconfig.tf": `data "aws_iam_policy_document" "bad" {
-  statement {
-    actions = [
-      "apigateway:*",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "bad_configuration" {
-  name_prefix = local.setup_role_name
-  policy      = data.aws_iam_policy_document.bad.json
-}
+		"modules/misconfig.tf": `
+resource "aws_s3_bucket" "test" {}
 `,
-		"modules/modules2/misconfig.tf": `data "aws_iam_policy_document" "bad" {
-  statement {
-    actions = [
-      "apigateway:*",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "bad_configuration" {
-  name_prefix = local.setup_role_name
-  policy      = data.aws_iam_policy_document.bad.json
-}
+		"modules/modules2/misconfig.tf": `
+resource "aws_s3_bucket" "test" {}
 `,
 	})
 
 	t.Run("use skip-dir option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithSkipDirs([]string{"**/modules/**"}),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -1181,12 +913,13 @@ resource "aws_iam_policy" "bad_configuration" {
 
 	t.Run("use skip-files option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithSkipFiles([]string{"**/modules/**/*.tf"}),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -1194,26 +927,71 @@ resource "aws_iam_policy" "bad_configuration" {
 
 	t.Run("non existing value for skip-files option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithSkipFiles([]string{"foo/bar*.tf"}),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
-		assert.Len(t, results, 4)
+		assert.Len(t, results, 2)
 	})
 
 	t.Run("empty skip-files option", func(t *testing.T) {
 		scanner := New(
-			options.ScannerWithIncludeDeprecatedChecks(true),
 			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fs, "deployments")
+		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
 		require.NoError(t, err)
 
-		assert.Len(t, results, 4)
+		assert.Len(t, results, 2)
 	})
+}
+
+func TestUseRandomProvider(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`resource "random_id" "suffix" {}
+
+locals {
+  bucket = "test-${random_id.suffix.hex}"
+}
+
+resource "aws_s3_bucket" "test" {
+  bucket = local.bucket
+}
+
+resource "aws_s3_bucket_versioning" "test" {
+  bucket = local.bucket
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+`)},
+	}
+
+	check := `package test
+import rego.v1
+
+deny contains res if {
+  some bucket in input.aws.s3.buckets
+  bucket.versioning.enabled.value
+  res := result.new("Bucket versioning is enabled", bucket)
+}
+`
+
+	scanner := New(
+		ScannerWithAllDirectories(true),
+		rego.WithPolicyReader(strings.NewReader(check)),
+		rego.WithPolicyNamespaces("test"),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+	require.NoError(t, err)
+
+	assert.Len(t, results.GetFailed(), 1)
 }

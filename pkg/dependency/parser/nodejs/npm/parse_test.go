@@ -42,6 +42,12 @@ func TestParse(t *testing.T) {
 			wantDeps: npmV3WithWorkspaceDeps,
 		},
 		{
+			name:     "lock version v3 with peer dependencies",
+			file:     "testdata/package-lock_v3_with_peer.json",
+			want:     npmV3WithPeerDependenciesPkgs,
+			wantDeps: npmV3WithPeerDependenciesDeps,
+		},
+		{
 			name:     "lock file v3 contains same dev and non-dev dependencies",
 			file:     "testdata/package-lock_v3_with-same-dev-and-non-dev.json",
 			want:     npmV3WithSameDevAndNonDevPkgs,
