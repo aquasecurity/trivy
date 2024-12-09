@@ -45,6 +45,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
                                            (precise,comprehensive) (default "precise")
       --disable-node-collector            When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
+      --distro string                     specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
       --exclude-kinds strings             indicate the kinds exclude from scanning (example: node)
