@@ -42,8 +42,8 @@ require (
 	github.com/containerd/containerd/v2 v2.0.0
 	github.com/containerd/platforms v1.0.0-rc.0
 	github.com/distribution/reference v0.6.0
-	github.com/docker/cli v27.4.0-rc.2+incompatible
-	github.com/docker/docker v27.4.0-rc.2+incompatible
+	github.com/docker/cli v27.4.0-rc.4+incompatible
+	github.com/docker/docker v27.4.0-rc.4+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/fatih/color v1.18.0
 	github.com/go-git/go-git/v5 v5.12.0
@@ -88,7 +88,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/moby/buildkit v0.18.0
+	github.com/moby/buildkit v0.18.1
 	github.com/open-policy-agent/opa v0.70.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0
