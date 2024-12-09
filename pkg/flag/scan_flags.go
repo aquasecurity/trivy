@@ -116,7 +116,7 @@ var (
 	DistroFlag = Flag[string]{
 		Name:       "distro",
 		ConfigName: "scan.distro",
-		Usage:      "specify a distribution, <family>/<version>",
+		Usage:      "[EXPERIMENTAL] specify a distribution, <family>/<version>",
 	}
 )
 
