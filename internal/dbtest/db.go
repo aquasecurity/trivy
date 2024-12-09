@@ -16,6 +16,7 @@ import (
 
 // InitDB initializes testing database.
 func InitDB(t *testing.T, fixtureFiles []string) string {
+	t.Helper()
 	// Create a temp dir
 	cacheDir := t.TempDir()
 
@@ -41,6 +42,7 @@ func Close() error {
 }
 
 func InitJavaDB(t *testing.T, cacheDir string) {
+	t.Helper()
 	dbDir := filepath.Join(cacheDir, "java-db")
 	javaDB, err := jdb.New(dbDir)
 	require.NoError(t, err)

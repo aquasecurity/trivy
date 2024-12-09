@@ -25,6 +25,7 @@ func TestManager_Config(t *testing.T) {
 		{
 			name: "config file exists",
 			setup: func(t *testing.T, dir string) {
+				t.Helper()
 				config := repo.Config{
 					Repositories: []repo.Repository{
 						{
@@ -48,8 +49,10 @@ func TestManager_Config(t *testing.T) {
 			},
 		},
 		{
-			name:  "config file does not exist",
-			setup: func(t *testing.T, dir string) {},
+			name: "config file does not exist",
+			setup: func(t *testing.T, dir string) {
+				t.Helper()
+			},
 			want: repo.Config{
 				Repositories: []repo.Repository{
 					{
@@ -89,8 +92,10 @@ func TestManager_Init(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name:  "successful init",
-			setup: func(t *testing.T, dir string) {},
+			name: "successful init",
+			setup: func(t *testing.T, dir string) {
+				t.Helper()
+			},
 			want: repo.Config{
 				Repositories: []repo.Repository{
 					{
@@ -104,6 +109,7 @@ func TestManager_Init(t *testing.T) {
 		{
 			name: "config already exists",
 			setup: func(t *testing.T, dir string) {
+				t.Helper()
 				configPath := filepath.Join(dir, ".trivy", "vex", "repository.yaml")
 				testutil.MustWriteYAML(t, configPath, repo.Config{})
 			},

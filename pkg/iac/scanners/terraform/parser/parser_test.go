@@ -1649,6 +1649,7 @@ func TestNestedDynamicBlock(t *testing.T) {
 }
 
 func parse(t *testing.T, files map[string]string) terraform.Modules {
+	t.Helper()
 	fs := testutil.CreateFS(t, files)
 	parser := New(fs, "", OptionStopOnHCLError(true))
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))

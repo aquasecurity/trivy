@@ -78,6 +78,7 @@ is_group_mfa_enforced(group) if {
 `
 
 func createModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
+	t.Helper()
 	fs := testutil.CreateFS(t, map[string]string{
 		"source" + ext: source,
 	})
@@ -110,6 +111,7 @@ func scanFS(fsys fs.FS, target string, opts ...options.ScannerOption) (scan.Resu
 }
 
 func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
+	t.Helper()
 
 	fsys := testutil.CreateFS(t, map[string]string{
 		"main.tf": source,
@@ -120,6 +122,7 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 }
 
 func scanJSON(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
+	t.Helper()
 
 	fsys := testutil.CreateFS(t, map[string]string{
 		"main.tf.json": source,

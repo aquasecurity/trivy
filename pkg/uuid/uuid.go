@@ -21,6 +21,7 @@ var (
 // The 'format' is used to generate a fake UUID and
 // must contain a single '%d' which will be replaced with a counter.
 func SetFakeUUID(t *testing.T, format string) {
+	t.Helper()
 	var count int
 	newUUID = func() uuid.UUID {
 		count++

@@ -16,6 +16,7 @@ const (
 )
 
 func DecompressGzip(t *testing.T, src, dst string) {
+	t.Helper()
 	w, err := os.Create(dst)
 	require.NoError(t, err)
 	defer w.Close()
@@ -33,6 +34,7 @@ func DecompressGzip(t *testing.T, src, dst string) {
 
 // DecompressSparseGzip decompresses a sparse gzip file for virtual machine image.
 func DecompressSparseGzip(t *testing.T, src, dst string) {
+	t.Helper()
 	w, err := os.Create(dst)
 	require.NoError(t, err)
 	defer w.Close()

@@ -103,6 +103,7 @@ linters:
     - revive
     - tenv
     - testifylint
+    - thelper
     - typecheck
     - unconvert
     - unused

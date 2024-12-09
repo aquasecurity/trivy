@@ -33,6 +33,7 @@ func (f fakeLayer) MediaType() (types.MediaType, error) {
 }
 
 func newFakeLayer(t *testing.T) v1.Layer {
+	t.Helper()
 	layer, err := tarball.LayerFromFile("testdata/bundle.tar.gz")
 	require.NoError(t, err)
 	require.NotNil(t, layer)
@@ -53,6 +54,7 @@ func (b brokenLayer) Compressed() (io.ReadCloser, error) {
 }
 
 func newBrokenLayer(t *testing.T) v1.Layer {
+	t.Helper()
 	layer, err := tarball.LayerFromFile("testdata/bundle.tar.gz")
 	require.NoError(t, err)
 

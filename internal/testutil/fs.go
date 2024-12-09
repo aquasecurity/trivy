@@ -13,6 +13,7 @@ import (
 )
 
 func CopyFile(t *testing.T, src, dst string) {
+	t.Helper()
 	MustMkdirAll(t, filepath.Dir(dst))
 
 	_, err := fsutils.CopyFile(src, dst)
@@ -22,6 +23,7 @@ func CopyFile(t *testing.T, src, dst string) {
 // CopyDir copies the directory content from src to dst.
 // It supports only simple cases for testing.
 func CopyDir(t *testing.T, src, dst string) {
+	t.Helper()
 	srcInfo, err := os.Stat(src)
 	require.NoError(t, err)
 
@@ -65,11 +67,13 @@ func MustReadYAML(t *testing.T, path string, out any) {
 }
 
 func MustMkdirAll(t *testing.T, dir string) {
+	t.Helper()
 	err := os.MkdirAll(dir, 0750)
 	require.NoError(t, err)
 }
 
 func MustReadJSON(t *testing.T, filePath string, v any) {
+	t.Helper()
 	b, err := os.ReadFile(filePath)
 	require.NoError(t, err)
 	err = json.Unmarshal(b, v)
@@ -77,6 +81,7 @@ func MustReadJSON(t *testing.T, filePath string, v any) {
 }
 
 func MustWriteJSON(t *testing.T, filePath string, v any) {
+	t.Helper()
 	data, err := json.Marshal(v)
 	require.NoError(t, err)
 
@@ -84,6 +89,7 @@ func MustWriteJSON(t *testing.T, filePath string, v any) {
 }
 
 func MustWriteFile(t *testing.T, filePath string, content []byte) {
+	t.Helper()
 	dir := filepath.Dir(filePath)
 	MustMkdirAll(t, dir)
 

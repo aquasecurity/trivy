@@ -49,6 +49,7 @@ var (
 )
 
 func initFS(t *testing.T) *mapfs.FS {
+	t.Helper()
 	fsys := mapfs.New()
 	require.NoError(t, fsys.MkdirAll("a/b/c", 0700))
 	require.NoError(t, fsys.MkdirAll("a/b/empty", 0700))
@@ -61,6 +62,7 @@ func initFS(t *testing.T) *mapfs.FS {
 }
 
 func assertFileInfo(t *testing.T, want fileInfo, got fs.FileInfo) {
+	t.Helper()
 	if got == nil {
 		return
 	}
