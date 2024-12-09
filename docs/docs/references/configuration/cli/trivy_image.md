@@ -49,6 +49,7 @@ trivy image [flags] IMAGE_NAME
                                             - "precise": Prioritizes precise by minimizing false positives.
                                             - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
                                            (precise,comprehensive) (default "precise")
+      --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --docker-host string                unix domain socket path to use for docker scanning
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan

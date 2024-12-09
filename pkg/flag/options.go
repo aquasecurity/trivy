@@ -449,6 +449,21 @@ func (o *Options) enableSBOM() {
 	}
 }
 
+// ScanOpts returns options for scanning
+func (o *Options) ScanOpts() types.ScanOptions {
+	return types.ScanOptions{
+		PkgTypes:            o.PkgTypes,
+		PkgRelationships:    o.PkgRelationships,
+		Scanners:            o.Scanners,
+		ImageConfigScanners: o.ImageConfigScanners, // this is valid only for 'image' subcommand
+		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
+		LicenseCategories:   o.LicenseCategories,
+		FilePatterns:        o.FilePatterns,
+		IncludeDevDeps:      o.IncludeDevDeps,
+		Distro:              o.Distro,
+	}
+}
+
 // RegistryOpts returns options for OCI registries
 func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
