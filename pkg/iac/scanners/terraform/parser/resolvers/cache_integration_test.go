@@ -25,6 +25,7 @@ type moduleResolver interface {
 }
 
 func testOptions(t *testing.T, source string) resolvers.Options {
+	t.Helper()
 	return resolvers.Options{
 		Source:          source,
 		OriginalSource:  source,

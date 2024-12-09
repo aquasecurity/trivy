@@ -40,6 +40,7 @@ func AssertRuleNotFound(t *testing.T, ruleID string, results scan.Results, messa
 }
 
 func AssertRuleNotFailed(t *testing.T, ruleID string, results scan.Results, message string, args ...any) {
+	t.Helper()
 	failedExists := ruleIDInResults(ruleID, results.GetFailed())
 	assert.False(t, failedExists, append([]any{message}, args...)...)
 	passedResults := lo.Filter(results, func(res scan.Result, _ int) bool {
