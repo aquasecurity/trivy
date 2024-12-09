@@ -178,11 +178,6 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ptros = nil
 	}
 
-	// Layer makes sense only when scanning container images
-	if artifactInfo.Type != artifact.TypeContainerImage {
-		removeLayer(results)
-	}
-
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
 		CreatedAt:     clock.Now(ctx),
@@ -201,20 +196,4 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		Results: results,
 		BOM:     artifactInfo.BOM,
 	}, nil
-}
-
-func removeLayer(results types.Results) {
-	for i := range results {
-		result := results[i]
-
-		for j := range result.Packages {
-			result.Packages[j].Layer = ftypes.Layer{}
-		}
-		for j := range result.Vulnerabilities {
-			result.Vulnerabilities[j].Layer = ftypes.Layer{}
-		}
-		for j := range result.Misconfigurations {
-			result.Misconfigurations[j].Layer = ftypes.Layer{}
-		}
-	}
 }

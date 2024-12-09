@@ -186,11 +186,6 @@ func overrideSBOMReport(t *testing.T, want, got *types.Report) {
 	want.Metadata.ImageID = ""
 	want.Metadata.ImageConfig = v1.ConfigFile{}
 	want.Metadata.DiffIDs = nil
-	for i, result := range want.Results {
-		for j := range result.Vulnerabilities {
-			want.Results[i].Vulnerabilities[j].Layer.DiffID = ""
-		}
-	}
 
 	// when running on Windows FS
 	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))
