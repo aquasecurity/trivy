@@ -356,7 +356,22 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
-		return viper.SafeWriteConfigAs("trivy-default.yaml")
+
+		hiddenFlags := flag.HiddenFlags()
+		// Viper does not have the ability to remove flags.
+		// So we only save the necessary flags and set these flags after viper.Reset
+		v := viper.New()
+		for _, k := range viper.AllKeys() {
+			// Skip the `GenerateDefaultConfigFlag` flags to avoid errors with default config file.
+			// Users often use "normal" formats instead of compliance. So we'll skip ComplianceFlag
+			// Also don't keep removed or deprecated flags to avoid confusing users.
+			if k == flag.GenerateDefaultConfigFlag.ConfigName || k == flag.ComplianceFlag.ConfigName || slices.Contains(hiddenFlags, k) {
+				continue
+			}
+			v.Set(k, viper.Get(k))
+		}
+
+		return v.SafeWriteConfigAs("trivy-default.yaml")
 	}
 
 	r, err := NewRunner(ctx, opts)
@@ -483,16 +498,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 		target = opts.Input
 	}
 
-	scanOptions := types.ScanOptions{
-		PkgTypes:            opts.PkgTypes,
-		PkgRelationships:    opts.PkgRelationships,
-		Scanners:            opts.Scanners,
-		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
-		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		LicenseCategories:   opts.LicenseCategories,
-		FilePatterns:        opts.FilePatterns,
-		IncludeDevDeps:      opts.IncludeDevDeps,
-	}
+	scanOptions := opts.ScanOpts()
 
 	if len(opts.ImageConfigScanners) != 0 {
 		log.WithPrefix(log.PrefixContainerImage).Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))

@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -49,6 +50,14 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 	// ref: https://github.com/bitnami/vulndb#how-to-consume-this-cve-feed
 	if strings.HasPrefix(input.FilePath, "opt/bitnami/") {
 		handleBitnamiImages(path.Dir(input.FilePath), bom)
+	}
+
+	// FilePath for apps with aggregatingTypes is empty.
+	// Set the SBOM file path as Application.FilePath to correctly overwrite applications when merging layers.
+	for i, app := range bom.Applications {
+		if slices.Contains(ftypes.AggregatingTypes, app.Type) && app.FilePath == "" {
+			bom.Applications[i].FilePath = input.FilePath
+		}
 	}
 
 	return &analyzer.AnalysisResult{

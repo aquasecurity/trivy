@@ -5,7 +5,7 @@
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
-      "Family": "suse linux enterprise micro",
+      "Family": "slem",
       "Name": "5.4"
     },
     "ImageID": "sha256:c45ec974938acac29c893b5d273d73e4ebdd7e6a97b6fa861dfbd8dd430b9016",
@@ -61,9 +61,9 @@
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz (suse linux enterprise micro 5.4)",
+      "Target": "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz (slem 5.4)",
       "Class": "os-pkgs",
-      "Type": "suse linux enterprise micro"
+      "Type": "slem"
     }
   ]
 }

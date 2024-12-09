@@ -58,7 +58,6 @@ type DisabledCheck struct {
 
 type ScannerOption struct {
 	Trace                    bool
-	RegoOnly                 bool
 	Namespaces               []string
 	PolicyPaths              []string
 	DataPaths                []string
@@ -227,7 +226,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
-		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
+		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
 		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 	}
 
@@ -256,10 +255,6 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 
 	if opt.Trace {
 		opts = append(opts, rego.WithPerResultTracing(true))
-	}
-
-	if opt.RegoOnly {
-		opts = append(opts, options.ScannerWithRegoOnly(true))
 	}
 
 	if len(policyPaths) > 0 {
@@ -482,16 +477,13 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			}
 		}
 
-		if flattened.Warning {
-			misconf.Warnings = append(misconf.Warnings, misconfResult)
-		} else {
-			switch flattened.Status {
-			case scan.StatusPassed:
-				misconf.Successes = append(misconf.Successes, misconfResult)
-			case scan.StatusFailed:
-				misconf.Failures = append(misconf.Failures, misconfResult)
-			}
+		switch flattened.Status {
+		case scan.StatusPassed:
+			misconf.Successes = append(misconf.Successes, misconfResult)
+		case scan.StatusFailed:
+			misconf.Failures = append(misconf.Failures, misconfResult)
 		}
+
 		misconfs[filePath] = misconf
 	}
 

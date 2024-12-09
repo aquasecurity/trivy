@@ -48,6 +48,6 @@ As mentioned in [the Core Principles](#detecting-unintended-states), detection o
 ### User Interface
 Trivy primarily operates via CLI for displaying results, with a richer UI available in [the commercial version][aqua].
 
-[trivy-aqua]: https://github.com/aquasecurity/resources/blob/main/trivy-aqua.md
+[trivy-aqua]: ../commercial/compare.md
 [tracee]: https://github.com/aquasecurity/tracee
 [aqua]: https://www.aquasec.com/

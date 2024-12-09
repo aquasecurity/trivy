@@ -60,7 +60,7 @@ Trivy reproduces Maven's repository selection and priority:
 
 !!! Note
     Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the `maven repository`.
-    Information about data sources for Java you can see [here](../../scanner/vulnerability.md#data-sources-1).
+    Information about data sources for Java you can see [here](../../scanner/vulnerability.md#langpkg-data-sources).
 
 You can disable connecting to the maven repository with the `--offline-scan` flag.
 The `--offline-scan` flag does not affect the Trivy database.

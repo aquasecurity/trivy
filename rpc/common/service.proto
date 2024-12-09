@@ -54,6 +54,7 @@ message Package {
   string            digest      = 16;
   bool              dev         = 17;
   bool              indirect    = 18;
+  string            maintainer  = 21;
 }
 
 message PkgIdentifier {
@@ -68,11 +69,11 @@ message Location {
 }
 
 message Misconfiguration {
-  string                 file_type  = 1;
-  string                 file_path  = 2;
-  repeated MisconfResult successes  = 3;
-  repeated MisconfResult warnings   = 4;
-  repeated MisconfResult failures   = 5;
+  string                 file_type = 1;
+  string                 file_path = 2;
+  repeated MisconfResult successes = 3;
+  repeated MisconfResult warnings  = 4;
+  repeated MisconfResult failures  = 5;
 
   reserved 6;  // deprecated 'exceptions'
 }
@@ -172,10 +173,12 @@ enum Severity {
 }
 
 message CVSS {
-  string v2_vector = 1;
-  string v3_vector = 2;
-  double v2_score  = 3;
-  double v3_score  = 4;
+  string v2_vector  = 1;
+  string v3_vector  = 2;
+  double v2_score   = 3;
+  double v3_score   = 4;
+  string v40_vector = 5;
+  double v40_score  = 6;
 }
 
 message CustomResource {

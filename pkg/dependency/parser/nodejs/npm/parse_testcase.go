@@ -1442,6 +1442,120 @@ var (
 			DependsOn: []string{"debug@2.6.9"},
 		},
 	}
+	// docker run --name node --rm -it node@sha256:51dd437f31812df71108b81385e2945071ec813d5815fa3403855669c8f3432b sh
+	// mkdir node_v3_with_peer && cd node_v3_with_peer
+	// npm init --force
+	// npm install --save winston-mail@2.0.0
+	// npm install --save-peer lodash@4.17.21
+	// npm update
+	//
+	// Delete unnecessary packages from package-lock.json
+	// Packages are filled manually
+	npmV3WithPeerDependenciesPkgs = []ftypes.Package{
+		{
+			ID:           "lodash@4.17.21",
+			Name:         "lodash",
+			Version:      "4.17.21",
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 30,
+					EndLine:   36,
+				},
+			},
+		},
+		{
+			ID:           "winston-mail@2.0.0",
+			Name:         "winston-mail",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/winston-mail/-/winston-mail-2.0.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 60,
+					EndLine:   74,
+				},
+			},
+		},
+		{
+			ID:           "mustache@2.3.2",
+			Name:         "mustache",
+			Version:      "2.3.2",
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/mustache/-/mustache-2.3.2.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 18,
+					EndLine:   29,
+				},
+			},
+		},
+		{
+			ID:           "triple-beam@1.4.1",
+			Name:         "triple-beam",
+			Version:      "1.4.1",
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/triple-beam/-/triple-beam-1.4.1.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 37,
+					EndLine:   46,
+				},
+			},
+		},
+		{
+			ID:           "winston@3.17.0",
+			Name:         "winston",
+			Version:      "3.17.0",
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/winston/-/winston-3.17.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 47,
+					EndLine:   59,
+				},
+			},
+		},
+	}
+	npmV3WithPeerDependenciesDeps = []ftypes.Dependency{
+		{
+			ID: "winston-mail@2.0.0",
+			DependsOn: []string{
+				"mustache@2.3.2",
+				"winston@3.17.0",
+			},
+		},
+		{
+			ID:        "winston@3.17.0",
+			DependsOn: []string{"triple-beam@1.4.1"},
+		},
+	}
 
 	// docker run --name node --rm -it node@sha256:51dd437f31812df71108b81385e2945071ec813d5815fa3403855669c8f3432b sh
 	// mkdir node_v3_without_direct_deps && cd node_v3_without_direct_deps

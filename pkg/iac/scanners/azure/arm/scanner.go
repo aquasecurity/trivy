@@ -7,9 +7,7 @@ import (
 	"sync"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm"
-	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
@@ -24,21 +22,10 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu                      sync.Mutex
-	scannerOptions          []options.ScannerOption
-	logger                  *log.Logger
-	frameworks              []framework.Framework
-	regoOnly                bool
-	regoScanner             *rego.Scanner
-	includeDeprecatedChecks bool
-}
-
-func (s *Scanner) SetIncludeDeprecatedChecks(b bool) {
-	s.includeDeprecatedChecks = b
-}
-
-func (s *Scanner) SetRegoOnly(regoOnly bool) {
-	s.regoOnly = regoOnly
+	mu             sync.Mutex
+	scannerOptions []options.ScannerOption
+	logger         *log.Logger
+	regoScanner    *rego.Scanner
 }
 
 func New(opts ...options.ScannerOption) *Scanner {
@@ -54,10 +41,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 
 func (s *Scanner) Name() string {
 	return "Azure ARM"
-}
-
-func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
-	s.frameworks = frameworks
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
@@ -104,28 +87,9 @@ func (s *Scanner) scanDeployments(ctx context.Context, deployments []azure.Deplo
 }
 
 func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deployment, fsys fs.FS) (scan.Results, error) {
-	var results scan.Results
 	deploymentState := s.adaptDeployment(ctx, deployment)
-	if !s.regoOnly {
-		for _, rule := range rules.GetRegistered(s.frameworks...) {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-			}
 
-			if !s.includeDeprecatedChecks && rule.Deprecated {
-				continue // skip deprecated checks
-			}
-
-			ruleResults := rule.Evaluate(deploymentState)
-			if len(ruleResults) > 0 {
-				results = append(results, ruleResults...)
-			}
-		}
-	}
-
-	regoResults, err := s.regoScanner.ScanInput(ctx, rego.Input{
+	results, err := s.regoScanner.ScanInput(ctx, rego.Input{
 		Path:     deployment.Metadata.Range().GetFilename(),
 		FS:       fsys,
 		Contents: deploymentState.ToRego(),
@@ -134,7 +98,7 @@ func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deploymen
 		return nil, fmt.Errorf("rego scan error: %w", err)
 	}
 
-	return append(results, regoResults...), nil
+	return results, nil
 }
 
 func (s *Scanner) adaptDeployment(ctx context.Context, deployment azure.Deployment) *state.State {

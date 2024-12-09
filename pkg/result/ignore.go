@@ -185,6 +185,7 @@ func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, erro
 	var conf IgnoreConfig
 	if _, err := os.Stat(ignoreFile); errors.Is(err, fs.ErrNotExist) {
 		// .trivyignore doesn't necessarily exist
+		log.Debug("Specified ignore file does not exist", log.String("file", ignoreFile))
 		return IgnoreConfig{}, nil
 	} else if filepath.Ext(ignoreFile) == ".yml" || filepath.Ext(ignoreFile) == ".yaml" {
 		conf, err = parseIgnoreYAML(ignoreFile)
@@ -218,16 +219,17 @@ func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, erro
 
 func parseIgnoreYAML(ignoreFile string) (IgnoreConfig, error) {
 	// Read .trivyignore.yaml
-	f, err := os.Open(ignoreFile)
+	b, err := os.ReadFile(ignoreFile)
 	if err != nil {
 		return IgnoreConfig{}, xerrors.Errorf("file open error: %w", err)
 	}
-	defer f.Close()
 	log.Debug("Found an ignore yaml", log.FilePath(ignoreFile))
 
 	// Parse the YAML content
+	// We have to use Unmarshal() due to go-yaml returning an error with Decode()
+	// ref: https://github.com/go-yaml/yaml/issues/805
 	var ignoreConfig IgnoreConfig
-	if err = yaml.NewDecoder(f).Decode(&ignoreConfig); err != nil {
+	if err = yaml.Unmarshal(b, &ignoreConfig); err != nil {
 		return IgnoreConfig{}, xerrors.Errorf("yaml decode error: %w", err)
 	}
 	return ignoreConfig, nil

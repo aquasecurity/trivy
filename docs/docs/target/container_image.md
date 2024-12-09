@@ -272,7 +272,7 @@ $ trivy image aquasec/nginx
     This feature might change without preserving backwards compatibility.
 
 Scan your image in Podman (>=2.0) running locally. The remote Podman is not supported.
-Before performing Trivy commands, you must enable the podman.sock systemd service on your machine.
+If you prefer to keep the socket open at all times, then before performing Trivy commands, you can enable the podman.sock systemd service on your machine.
 For more details, see [here](https://github.com/containers/podman/blob/master/docs/tutorials/remote_client.md#enable-the-podman-service-on-the-server-machine).
 
 
@@ -291,6 +291,15 @@ $ podman images
 REPOSITORY                TAG     IMAGE ID      CREATED      SIZE
 localhost/test            latest  efc372d4e0de  About a minute ago  7.94 MB
 $ trivy image test
+```
+
+If you prefer not to keep the socket open at all times, but to limit the socket opening for your trivy scanning duration only then you can scan your image with the following command:
+
+```bash
+podman system service --time=0 "${TMP_PODMAN_SOCKET}" &                                                                                                                                                             
+PODMAN_SYSTEM_SERVICE_PID="$!"                                                                                                                                                                                      
+trivy image --podman-host="${TMP_PODMAN_SOCKET}" --docker-host="${TMP_PODMAN_SOCKET}" test
+kill "${PODMAN_SYSTEM_SERVICE_PID}"
 ```
 
 ### Container Registry

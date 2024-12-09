@@ -103,7 +103,6 @@ VERSION:
    dev
 
 Scanning Commands
-  aws         [EXPERIMENTAL] Scan AWS account
   config      Scan config files for misconfigurations
   filesystem  Scan local filesystem
   image       Scan a container image

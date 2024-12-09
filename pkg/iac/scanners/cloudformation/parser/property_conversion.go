@@ -2,11 +2,11 @@ package parser
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func (p *Property) IsConvertableTo(conversionType cftypes.CfType) bool {
@@ -75,7 +75,11 @@ func (p *Property) ConvertTo(conversionType cftypes.CfType) *Property {
 	}
 
 	if !p.IsConvertableTo(conversionType) {
-		_, _ = fmt.Fprintf(os.Stderr, "property of type %s cannot be converted to %s\n", p.Type(), conversionType)
+		log.Debug("Failed to convert property",
+			log.String("from", string(p.Type())),
+			log.String("to", string(conversionType)),
+			log.Any("range", p.Range().String()),
+		)
 		return p
 	}
 	switch conversionType {

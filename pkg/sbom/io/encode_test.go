@@ -449,6 +449,7 @@ func TestEncoder_Encode(t *testing.T) {
 								Relationship: ftypes.RelationshipRoot,
 								DependsOn: []string{
 									"github.com/org/direct@v1.0.0",
+									"stdlib@v1.22.1",
 								},
 							},
 							{
@@ -761,6 +762,366 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
+			name: "multimodule maven project",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "pom.xml",
+				ArtifactType:  artifact.TypeFilesystem,
+				Results: []types.Result{
+					{
+						Target: "pom.xml",
+						Type:   ftypes.Pom,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "com.example:root:1.0.0",
+								Name:    "com.example:root",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "f684ec661900abbf",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "root",
+										Version:   "1.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:module1:1.0.0",
+									"com.example:module2:2.0.0",
+								},
+							},
+							{
+								ID:      "com.example:module1:1.0.0",
+								Name:    "com.example:module1",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "ce0d29336874c431",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "module1",
+										Version:   "1.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipWorkspace,
+								DependsOn: []string{
+									"org.example:example-api:1.1.1",
+								},
+							},
+							{
+								ID:      "com.example:module2:2.0.0",
+								Name:    "com.example:module2",
+								Version: "2.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "387238ffef6dfa9d",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "module2",
+										Version:   "2.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipWorkspace,
+								DependsOn: []string{
+									"org.example:example-dependency:1.2.3",
+								},
+							},
+							{
+								ID:      "org.example:example-api:1.1.1",
+								Name:    "org.example:example-api",
+								Version: "1.1.1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "45cdc62618708bb7",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.example",
+										Name:      "example-api",
+										Version:   "1.1.1",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+							},
+							{
+								ID:      "org.example:example-dependency:1.2.3",
+								Name:    "org.example:example-dependency",
+								Version: "1.2.3",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "52fbe353a46651",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.example",
+										Name:      "example-dependency",
+										Version:   "1.2.3",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+								DependsOn: []string{
+									"org.example:example-api:2.0.0",
+								},
+							},
+							{
+								ID:      "org.example:example-api:2.0.0",
+								Name:    "org.example:example-api",
+								Version: "2.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "f71d14b6d2bd8810",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.example",
+										Name:      "example-api",
+										Version:   "2.0.0",
+									},
+								},
+								Relationship: ftypes.RelationshipIndirect,
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeFilesystem,
+					Name: "pom.xml",
+					Root: true,
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type: core.TypeApplication,
+					Name: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "root",
+					Version: "1.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:root:1.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "f684ec661900abbf",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "root",
+							Version:   "1.0.0",
+						},
+						BOMRef: "pkg:maven/com.example/root@1.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "module1",
+					Version: "1.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:module1:1.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "ce0d29336874c431",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "module1",
+							Version:   "1.0.0",
+						},
+						BOMRef: "pkg:maven/com.example/module1@1.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					Type:    core.TypeLibrary,
+					Group:   "com.example",
+					Name:    "module2",
+					Version: "2.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "com.example:module2:2.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "387238ffef6dfa9d",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "com.example",
+							Name:      "module2",
+							Version:   "2.0.0",
+						},
+						BOMRef: "pkg:maven/com.example/module2@2.0.0",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): {
+					Type:    core.TypeLibrary,
+					Group:   "org.example",
+					Name:    "example-api",
+					Version: "1.1.1",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "org.example:example-api:1.1.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "45cdc62618708bb7",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "org.example",
+							Name:      "example-api",
+							Version:   "1.1.1",
+						},
+						BOMRef: "pkg:maven/org.example/example-api@1.1.1",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"): {
+					Type:    core.TypeLibrary,
+					Group:   "org.example",
+					Name:    "example-dependency",
+					Version: "1.2.3",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "org.example:example-dependency:1.2.3",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "52fbe353a46651",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "org.example",
+							Name:      "example-dependency",
+							Version:   "1.2.3",
+						},
+						BOMRef: "pkg:maven/org.example/example-dependency@1.2.3",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"): {
+					Type:    core.TypeLibrary,
+					Group:   "org.example",
+					Name:    "example-api",
+					Version: "2.0.0",
+					SrcFile: "pom.xml",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "org.example:example-api:2.0.0",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "pom",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "f71d14b6d2bd8810",
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "org.example",
+							Name:      "example-api",
+							Version:   "2.0.0",
+						},
+						BOMRef: "pkg:maven/org.example/example-api@2.0.0",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipDependsOn,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000007"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000008"): nil,
 			},
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},

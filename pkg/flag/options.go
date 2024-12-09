@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"slices"
 	"strings"
 	"sync"
@@ -448,6 +449,21 @@ func (o *Options) enableSBOM() {
 	}
 }
 
+// ScanOpts returns options for scanning
+func (o *Options) ScanOpts() types.ScanOptions {
+	return types.ScanOptions{
+		PkgTypes:            o.PkgTypes,
+		PkgRelationships:    o.PkgRelationships,
+		Scanners:            o.Scanners,
+		ImageConfigScanners: o.ImageConfigScanners, // this is valid only for 'image' subcommand
+		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
+		LicenseCategories:   o.LicenseCategories,
+		FilePatterns:        o.FilePatterns,
+		IncludeDevDeps:      o.IncludeDevDeps,
+		Distro:              o.Distro,
+	}
+}
+
 // RegistryOpts returns options for OCI registries
 func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
@@ -855,4 +871,38 @@ func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.Normaliz
 		}
 		return pflag.NormalizedName(name)
 	}
+}
+
+func HiddenFlags() []string {
+	var allFlagGroups = []FlagGroup{
+		NewGlobalFlagGroup(),
+		NewCacheFlagGroup(),
+		NewCleanFlagGroup(),
+		NewClientFlags(),
+		NewDBFlagGroup(),
+		NewImageFlagGroup(),
+		NewK8sFlagGroup(),
+		NewLicenseFlagGroup(),
+		NewMisconfFlagGroup(),
+		NewModuleFlagGroup(),
+		NewPackageFlagGroup(),
+		NewRegistryFlagGroup(),
+		NewRegoFlagGroup(),
+		NewReportFlagGroup(),
+		NewRepoFlagGroup(),
+		NewScanFlagGroup(),
+		NewSecretFlagGroup(),
+		NewServerFlags(),
+		NewVulnerabilityFlagGroup(),
+	}
+
+	var hiddenFlags []string
+	for _, flagGroup := range allFlagGroups {
+		for _, flag := range flagGroup.Flags() {
+			if !reflect.ValueOf(flag).IsNil() && flag.Hidden() {
+				hiddenFlags = append(hiddenFlags, flag.GetConfigName())
+			}
+		}
+	}
+	return hiddenFlags
 }

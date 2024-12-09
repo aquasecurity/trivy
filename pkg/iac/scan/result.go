@@ -29,7 +29,6 @@ type Result struct {
 	severityOverride *severity.Severity
 	regoNamespace    string
 	regoRule         string
-	warning          bool
 	traces           []string
 	fsPath           string
 }
@@ -47,10 +46,6 @@ func (r Result) Severity() severity.Severity {
 		return *r.severityOverride
 	}
 	return r.Rule().Severity
-}
-
-func (r *Result) IsWarning() bool {
-	return r.warning
 }
 
 func (r *Result) OverrideSeverity(s severity.Severity) {
@@ -195,7 +190,6 @@ func (r *Results) AddRego(description, namespace, rule string, traces []string, 
 		description:   description,
 		regoNamespace: namespace,
 		regoRule:      rule,
-		warning:       rule == "warn" || strings.HasPrefix(rule, "warn_"),
 		traces:        traces,
 	}
 	result.metadata = getMetadataFromSource(source)

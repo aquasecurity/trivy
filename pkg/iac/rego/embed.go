@@ -71,15 +71,6 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 
 		rules.Register(metadata.ToRule())
 	}
-
-	for _, check := range rules.GetRegistered() {
-		if !check.Deprecated && check.CanCheck() {
-			if _, exists := regoCheckIDs[check.AVDID]; exists {
-				log.Warn("Ignore duplicate Go check", log.String("avdid", check.AVDID))
-				rules.Deregister(check)
-			}
-		}
-	}
 }
 
 func LoadEmbeddedPolicies() (map[string]*ast.Module, error) {

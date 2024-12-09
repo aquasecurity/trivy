@@ -115,15 +115,18 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	// Cache root POM
 	p.cache.put(result.artifact, result)
 
-	return p.parseRoot(root.artifact(), make(map[string]struct{}))
+	rootArt := root.artifact()
+	rootArt.Relationship = ftypes.RelationshipRoot
+
+	return p.parseRoot(rootArt, make(map[string]struct{}))
 }
 
+// nolint: gocyclo
 func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
 	// Enqueue root POM
-	root.Relationship = ftypes.RelationshipRoot
 	root.Module = false
 	queue.enqueue(root)
 
@@ -166,7 +169,9 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			}
 			// mark artifact as Direct, if saved artifact is Direct
 			// take a look `hard requirement for the specified version` test
-			if uniqueArt.Relationship == ftypes.RelationshipRoot || uniqueArt.Relationship == ftypes.RelationshipDirect {
+			if uniqueArt.Relationship == ftypes.RelationshipRoot ||
+				uniqueArt.Relationship == ftypes.RelationshipWorkspace ||
+				uniqueArt.Relationship == ftypes.RelationshipDirect {
 				art.Relationship = uniqueArt.Relationship
 			}
 			// We don't need to overwrite dependency location for hard links
@@ -180,7 +185,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
 		}
 
-		if art.Relationship == ftypes.RelationshipRoot {
+		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
 			// Managed dependencies in the root POM affect transitive dependencies
 			rootDepManagement = p.resolveDepManagement(result.properties, result.dependencyManagement)
 
@@ -243,6 +248,12 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 			return packageID(dependOnName, ver), ver != ""
 		})
 
+		// `mvn` shows modules separately from the root package and does not show module nesting.
+		// So we can add all modules as dependencies of root package.
+		if art.Relationship == ftypes.RelationshipRoot {
+			dependsOn = append(dependsOn, lo.Keys(uniqModules)...)
+		}
+
 		sort.Strings(dependsOn)
 		if len(dependsOn) > 0 {
 			deps = append(deps, ftypes.Dependency{
@@ -279,7 +290,8 @@ func (p *Parser) parseModule(currentPath, relativePath string) (artifact, error)
 	}
 
 	moduleArtifact := module.artifact()
-	moduleArtifact.Module = true // TODO: introduce RelationshipModule?
+	moduleArtifact.Module = true
+	moduleArtifact.Relationship = ftypes.RelationshipWorkspace
 
 	p.cache.put(moduleArtifact, result)
 

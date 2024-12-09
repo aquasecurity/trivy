@@ -31,6 +31,10 @@ func (a contentManifestAnalyzer) Analyze(_ context.Context, target analyzer.Anal
 		return nil, xerrors.Errorf("invalid content manifest: %w", err)
 	}
 
+	if len(manifest.ContentSets) == 0 {
+		return nil, nil
+	}
+
 	return &analyzer.AnalysisResult{
 		BuildInfo: &types.BuildInfo{
 			ContentSets: manifest.ContentSets,

@@ -1,7 +1,7 @@
 package vex
 
 import (
-	"github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/gocsaf/csaf/v3/csaf"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/log"

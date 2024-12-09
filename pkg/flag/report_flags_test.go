@@ -213,7 +213,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 	t.Run("Error on non existing ignore file", func(t *testing.T) {
 		t.Cleanup(viper.Reset)
 
-		setValue(flag.IgnoreFileFlag.ConfigName, string("doesntexist"))
+		setValue(flag.IgnoreFileFlag.ConfigName, "doesntexist")
 		f := &flag.ReportFlagGroup{
 			IgnoreFile: flag.IgnoreFileFlag.Clone(),
 		}
