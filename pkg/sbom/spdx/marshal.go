@@ -445,7 +445,10 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 
 // newOtherLicense create new OtherLicense for license not included in the SPDX license list
 func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicense {
-	otherLicense := spdx.OtherLicense{}
+	otherLicense := spdx.OtherLicense{
+		ExtractedText: noAssertionField,
+		LicenseName:   noAssertionField,
+	}
 	if text {
 		otherLicense.ExtractedText = license
 	} else {
@@ -600,6 +603,9 @@ func sortFiles(files []*spdx.File) {
 
 // sortOtherLicenses removes duplicates and sorts result slice
 func sortOtherLicenses(licenses []*spdx.OtherLicense) []*spdx.OtherLicense {
+	if len(licenses) == 0 {
+		return nil
+	}
 	licenses = lo.UniqBy(licenses, func(license *spdx.OtherLicense) string {
 		return license.LicenseIdentifier
 	})

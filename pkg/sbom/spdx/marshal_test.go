@@ -914,8 +914,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "com.example:example",
 						PackageVersion:          "1.0.0",
-						PackageLicenseConcluded: "LicenseRef-e9cd3c91226a1faf AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-7f368222b66b338c AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-c9e3ba90af6fce7b AND LicenseRef-43ec15da050d7849",
-						PackageLicenseDeclared:  "LicenseRef-e9cd3c91226a1faf AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-7f368222b66b338c AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-c9e3ba90af6fce7b AND LicenseRef-43ec15da050d7849",
+						PackageLicenseConcluded: "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-73d50f1d1ecbdb3b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-94441301bfddf506",
+						PackageLicenseDeclared:  "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-73d50f1d1ecbdb3b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-94441301bfddf506",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -960,20 +960,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				OtherLicenses: []*spdx.OtherLicense{
 					{
-						LicenseIdentifier: "LicenseRef-43ec15da050d7849",
-						LicenseName:       "UNKNOWN",
+						LicenseIdentifier: "LicenseRef-14b1606fb243e2b6",
+						LicenseName:       "NOASSERTION",
+						ExtractedText:     "BSD-4-clause",
 					},
 					{
-						LicenseIdentifier: "LicenseRef-7f368222b66b338c",
-						LicenseName:       "AFL-3.0 WITH wrong-exceptions",
-					},
-					{
-						LicenseIdentifier: "LicenseRef-c9e3ba90af6fce7b",
+						LicenseIdentifier: "LicenseRef-229659393343e160",
+						LicenseName:       "NOASSERTION",
 						ExtractedText:     "UNKNOWN",
 					},
 					{
-						LicenseIdentifier: "LicenseRef-e9cd3c91226a1faf",
-						ExtractedText:     "BSD-4-clause",
+						LicenseIdentifier: "LicenseRef-73d50f1d1ecbdb3b",
+						LicenseName:       "AFL-3.0 WITH wrong-exceptions",
+						ExtractedText:     "NOASSERTION",
+					},
+					{
+						LicenseIdentifier: "LicenseRef-94441301bfddf506",
+						LicenseName:       "UNKNOWN",
+						ExtractedText:     "NOASSERTION",
 					},
 				},
 			},
@@ -1461,7 +1465,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						str += f.Path
 					}
 				case spdx.OtherLicense:
-					str = "text: " + vv.ExtractedText + "name: " + vv.LicenseName
+					str = vv.ExtractedText + vv.LicenseName
 				case string:
 					str = vv
 				default:
