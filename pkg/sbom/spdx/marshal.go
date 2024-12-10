@@ -216,7 +216,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 	sortPackages(packages)
 	sortRelationships(relationShips)
 	sortFiles(files)
-	sortOtherLicenses(otherLicenses)
+	otherLicenses = sortOtherLicenses(otherLicenses)
 
 	return &spdx.Document{
 		SPDXVersion:       spdx.Version,
@@ -402,7 +402,10 @@ func (m *Marshaler) spdxAnnotations(c *core.Component, timeNow string) []spdx.An
 
 func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense) {
 	// Only library components contain licenses
-	if c.Type == core.TypeLibrary && len(c.Licenses) == 0 {
+	if c.Type != core.TypeLibrary {
+		return "", nil
+	}
+	if len(c.Licenses) == 0 {
 		return noAssertionField, nil
 	}
 	return m.normalizeLicenses(c.Licenses)
@@ -595,10 +598,15 @@ func sortFiles(files []*spdx.File) {
 	})
 }
 
-func sortOtherLicenses(licenses []*spdx.OtherLicense) {
+// sortOtherLicenses removes duplicates and sorts result slice
+func sortOtherLicenses(licenses []*spdx.OtherLicense) []*spdx.OtherLicense {
+	licenses = lo.UniqBy(licenses, func(license *spdx.OtherLicense) string {
+		return license.LicenseIdentifier
+	})
 	sort.Slice(licenses, func(i, j int) bool {
 		return licenses[i].LicenseIdentifier < licenses[j].LicenseIdentifier
 	})
+	return licenses
 }
 
 func elementID(elementType, pkgID string) spdx.ElementID {
