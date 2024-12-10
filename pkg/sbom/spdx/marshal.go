@@ -60,6 +60,8 @@ const (
 	ElementApplication     = "Application"
 	ElementPackage         = "Package"
 	ElementFile            = "File"
+
+	LicenseRefPrefix = "LicenseRef"
 )
 
 var (
@@ -82,6 +84,7 @@ type Marshaler struct {
 	format     spdx.Document
 	hasher     Hash
 	appVersion string // Trivy version. It needed for `creator` field
+	logger     *log.Logger
 }
 
 type Hash func(v any, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
@@ -99,6 +102,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 		format:     spdx.Document{},
 		hasher:     hashstructure.Hash,
 		appVersion: version,
+		logger:     log.WithPrefix("SPDX"),
 	}
 
 	for _, opt := range opts {
@@ -145,6 +149,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 	packageIDs[root.ID()] = rootPkg.PackageSPDXIdentifier
 
 	var files []*spdx.File
+	var otherLicenses []*spdx.OtherLicense
 	for _, c := range bom.Components() {
 		if c.Root {
 			continue
@@ -164,6 +169,14 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 
 		packages = append(packages, &spdxPackage)
 		packageIDs[c.ID()] = spdxPackage.PackageSPDXIdentifier
+
+		// Fill licenses
+		license, others := m.spdxLicense(c)
+		// The Declared License is what the authors of a project believe govern the package
+		spdxPackage.PackageLicenseConcluded = license
+		// The Concluded License field is the license the SPDX file creator believes governs the package
+		spdxPackage.PackageLicenseDeclared = license
+		otherLicenses = append(otherLicenses, others...)
 
 		spdxFiles, err := m.spdxFiles(c)
 		if err != nil {
@@ -203,6 +216,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 	sortPackages(packages)
 	sortRelationships(relationShips)
 	sortFiles(files)
+	sortOtherLicenses(otherLicenses)
 
 	return &spdx.Document{
 		SPDXVersion:       spdx.Version,
@@ -226,6 +240,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		Packages:      packages,
 		Relationships: relationShips,
 		Files:         files,
+		OtherLicenses: otherLicenses,
 	}, nil
 }
 
@@ -249,7 +264,7 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, timeNow, pkgDownloadLo
 		externalReferences = append(externalReferences, m.purlExternalReference(root.PkgIdentifier.PURL.String()))
 	}
 
-	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", root.Name, root.Type))
+	pkgID, err := calcSPDXID(m.hasher, fmt.Sprintf("%s-%s", root.Name, root.Type))
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", pkgID, err)
 	}
@@ -301,12 +316,12 @@ func (m *Marshaler) advisoryExternalReference(primaryURL string) *spdx.PackageEx
 }
 
 func (m *Marshaler) spdxPackage(c *core.Component, timeNow, pkgDownloadLocation string) (spdx.Package, error) {
-	pkgID, err := calcPkgID(m.hasher, c)
+	pkgID, err := calcSPDXID(m.hasher, c)
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
 	}
 
-	var elementType, purpose, license, sourceInfo string
+	var elementType, purpose, sourceInfo string
 	var supplier *spdx.Supplier
 	switch c.Type {
 	case core.TypeOS:
@@ -318,7 +333,9 @@ func (m *Marshaler) spdxPackage(c *core.Component, timeNow, pkgDownloadLocation 
 	case core.TypeLibrary:
 		elementType = ElementPackage
 		purpose = PackagePurposeLibrary
-		license = m.spdxLicense(c)
+
+		// We need to create a new `LicesenRef-*` component for licenses that are not in the SPDX license list
+		// So we will fill licenses later
 
 		if c.SrcName != "" {
 			sourceInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, c.SrcName, c.SrcVersion)
@@ -360,12 +377,6 @@ func (m *Marshaler) spdxPackage(c *core.Component, timeNow, pkgDownloadLocation 
 		PackageSourceInfo:         sourceInfo,
 		PackageSupplier:           supplier,
 		PackageChecksums:          m.spdxChecksums(digests),
-
-		// The Declared License is what the authors of a project believe govern the package
-		PackageLicenseConcluded: license,
-
-		// The Concluded License field is the license the SPDX file creator believes governs the package
-		PackageLicenseDeclared: license,
 	}, nil
 }
 
@@ -389,11 +400,90 @@ func (m *Marshaler) spdxAnnotations(c *core.Component, timeNow string) []spdx.An
 	return annotations
 }
 
-func (m *Marshaler) spdxLicense(c *core.Component) string {
-	if len(c.Licenses) == 0 {
-		return noAssertionField
+func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense) {
+	// Only library components contain licenses
+	if c.Type == core.TypeLibrary && len(c.Licenses) == 0 {
+		return noAssertionField, nil
 	}
-	return NormalizeLicense(c.Licenses)
+	return m.normalizeLicenses(c.Licenses)
+}
+
+func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherLicense) {
+	var otherLicenses = make(map[string]*spdx.OtherLicense) // licenseID -> OtherLicense
+
+	// Save text licenses as OtherLicense
+	for i, license := range licenses {
+		if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
+			otherLicense := m.newOtherLicense(strings.TrimPrefix(license, licensing.LicenseTextPrefix), true)
+			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
+			licenses[i] = otherLicense.LicenseIdentifier
+		}
+	}
+
+	license := strings.Join(lo.Map(licenses, func(license string, index int) string {
+		// e.g. GPL-3.0-with-autoconf-exception
+		license = strings.ReplaceAll(license, "-with-", " WITH ")
+		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+		return fmt.Sprintf("(%s)", license)
+	}), " AND ")
+
+	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
+		return "", nil
+	}
+
+	license, others := m.processNonSpdxLicenses(normalizedLicense)
+	allOtherLicenses := lo.Assign(otherLicenses, others)
+
+	return license, lo.Ternary(len(allOtherLicenses) > 0, lo.Values(allOtherLicenses), nil)
+}
+
+// newOtherLicense create new OtherLicense for license not included in the SPDX license list
+func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicense {
+	otherLicense := spdx.OtherLicense{}
+	if text {
+		otherLicense.ExtractedText = license
+	} else {
+		otherLicense.LicenseName = license
+	}
+	licenseID, err := calcSPDXID(m.hasher, otherLicense)
+	if err != nil {
+		m.logger.Warn("Unable to calculate SPDX licenses ID", log.String("license", license), log.Err(err))
+		return nil
+	}
+	otherLicense.LicenseIdentifier = LicenseRefPrefix + "-" + licenseID
+
+	return &otherLicense
+}
+
+// processNonSpdxLicenses detects licenses that are not on the SPDX list and creates OtherLicense for them
+func (m *Marshaler) processNonSpdxLicenses(license string) (string, map[string]*spdx.OtherLicense) {
+	otherLicenses := make(map[string]*spdx.OtherLicense)
+	var andLicenses []string
+	for _, andLicense := range strings.Split(license, " AND ") {
+		var orLicenses []string
+		for _, orLicense := range strings.Split(andLicense, " OR ") {
+			// Handle brackets - e.g. GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-2.1-only)
+			startRune := lo.Ternary(strings.HasPrefix(orLicense, "("), "(", "")
+			endRune := lo.Ternary(strings.HasSuffix(orLicense, ")"), ")", "")
+			trimmedLicense := strings.TrimPrefix(strings.TrimSuffix(orLicense, ")"), "(")
+			// This is license from SPDX list of text license (already processed)
+			if strings.HasPrefix(trimmedLicense, LicenseRefPrefix) || expression.ValidSpdxLicense(trimmedLicense) {
+				orLicenses = append(orLicenses, orLicense)
+				continue
+			}
+
+			// Save this license as OtherLicense
+			otherLicense := m.newOtherLicense(trimmedLicense, false)
+			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
+			orLicenses = append(orLicenses, startRune+otherLicense.LicenseIdentifier+endRune)
+		}
+		andLicenses = append(andLicenses, strings.Join(orLicenses, " OR "))
+	}
+
+	return strings.Join(andLicenses, " AND "), otherLicenses
 }
 
 func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {
@@ -435,7 +525,7 @@ func (m *Marshaler) spdxFiles(c *core.Component) ([]*spdx.File, error) {
 }
 
 func (m *Marshaler) spdxFile(filePath string, digests []digest.Digest) (*spdx.File, error) {
-	pkgID, err := calcPkgID(m.hasher, filePath)
+	pkgID, err := calcSPDXID(m.hasher, filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
 	}
@@ -505,6 +595,12 @@ func sortFiles(files []*spdx.File) {
 	})
 }
 
+func sortOtherLicenses(licenses []*spdx.OtherLicense) {
+	sort.Slice(licenses, func(i, j int) bool {
+		return licenses[i].LicenseIdentifier < licenses[j].LicenseIdentifier
+	})
+}
+
 func elementID(elementType, pkgID string) spdx.ElementID {
 	return spdx.ElementID(fmt.Sprintf("%s-%s", elementType, pkgID))
 }
@@ -518,13 +614,13 @@ func getDocumentNamespace(root *core.Component) string {
 	)
 }
 
-func calcPkgID(h Hash, v any) (string, error) {
+func calcSPDXID(h Hash, v any) (string, error) {
 	f, err := h(v, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:      true,
 		SlicesAsSets: true,
 	})
 	if err != nil {
-		return "", xerrors.Errorf("could not build package ID for %+v: %w", v, err)
+		return "", xerrors.Errorf("could not build component ID for %+v: %w", v, err)
 	}
 
 	return fmt.Sprintf("%x", f), nil
@@ -549,21 +645,4 @@ func camelCase(inputUnderScoreStr string) (camelCase string) {
 		}
 	}
 	return
-}
-
-func NormalizeLicense(licenses []string) string {
-	license := strings.Join(lo.Map(licenses, func(license string, index int) string {
-		// e.g. GPL-3.0-with-autoconf-exception
-		license = strings.ReplaceAll(license, "-with-", " WITH ")
-		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
-
-		return fmt.Sprintf("(%s)", license)
-	}), " AND ")
-	s, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
-	if err != nil {
-		// Not fail on the invalid license
-		log.Warn("Unable to marshal SPDX licenses", log.String("license", license))
-		return ""
-	}
-	return s
 }
