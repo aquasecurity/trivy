@@ -3,7 +3,7 @@ package policy_test
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -49,7 +49,7 @@ func (b brokenLayer) MediaType() (types.MediaType, error) {
 }
 
 func (b brokenLayer) Compressed() (io.ReadCloser, error) {
-	return nil, fmt.Errorf("compressed error")
+	return nil, errors.New("compressed error")
 }
 
 func newBrokenLayer(t *testing.T) v1.Layer {
@@ -194,7 +194,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:  "sad: Digest returns  an error",
 			clock: fake.NewFakeClock(time.Date(2021, 1, 2, 1, 0, 0, 0, time.UTC)),
 			digestReturns: digestReturns{
-				err: fmt.Errorf("error"),
+				err: errors.New("error"),
 			},
 			metadata: policy.Metadata{
 				Digest:       `sha256:922e50f14ab484f11ae65540c3d2d76009020213f1027d4331d31141575e5414`,
@@ -322,7 +322,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 				layers: []v1.Layer{newFakeLayer(t)},
 			},
 			digestReturns: digestReturns{
-				err: fmt.Errorf("error"),
+				err: errors.New("error"),
 			},
 			want: &policy.Metadata{
 				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",

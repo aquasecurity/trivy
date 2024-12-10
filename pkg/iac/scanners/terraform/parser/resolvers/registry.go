@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -193,7 +194,7 @@ func resolveVersion(input string, versions moduleVersions) (string, error) {
 		return "", fmt.Errorf("1 module expected, found %d", len(versions.Modules))
 	}
 	if len(versions.Modules[0].Versions) == 0 {
-		return "", fmt.Errorf("no available versions for module")
+		return "", errors.New("no available versions for module")
 	}
 
 	constraints, err := version.NewConstraints(input)

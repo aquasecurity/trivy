@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
 	"path"
@@ -99,7 +100,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 		}
 	}
 	if modulePath == "" {
-		return nil, fmt.Errorf("failed to load module from .terraform/modules")
+		return nil, errors.New("failed to load module from .terraform/modules")
 	}
 	if strings.HasPrefix(source, ".") {
 		source = ""
