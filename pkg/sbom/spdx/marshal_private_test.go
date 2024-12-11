@@ -44,15 +44,17 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 				"GPLv2+",
 				"wrong-license or unknown-license",
 			},
-			wantLicenseName: "GPL-2.0-or-later AND (LicenseRef-3a64a1cb4bc51d5d OR LicenseRef-398e59dafb7d221c)",
+			wantLicenseName: "GPL-2.0-or-later AND (LicenseRef-a84be91b438c5e83 OR LicenseRef-8960e1168859663e)",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
-					LicenseIdentifier: "LicenseRef-398e59dafb7d221c",
+					LicenseIdentifier: "LicenseRef-8960e1168859663e",
 					LicenseName:       "unknown-license",
+					ExtractedText:     "NOASSERTION",
 				},
 				{
-					LicenseIdentifier: "LicenseRef-3a64a1cb4bc51d5d",
+					LicenseIdentifier: "LicenseRef-a84be91b438c5e83",
 					LicenseName:       "wrong-license",
+					ExtractedText:     "NOASSERTION",
 				},
 			},
 		},
@@ -78,11 +80,12 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 				"AFL 2.0",
 				"AFL 3.0 with wrong-exceptions",
 			},
-			wantLicenseName: "AFL-2.0 AND LicenseRef-64ec018384f0fde7",
+			wantLicenseName: "AFL-2.0 AND LicenseRef-fb68abbeae80aaed",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
-					LicenseIdentifier: "LicenseRef-64ec018384f0fde7",
+					LicenseIdentifier: "LicenseRef-fb68abbeae80aaed",
 					LicenseName:       "AFL-3.0 WITH wrong-exceptions",
+					ExtractedText:     "NOASSERTION",
 				},
 			},
 		},
@@ -93,14 +96,16 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 				"AFL 2.0",
 				"unknown-license",
 			},
-			wantLicenseName: "LicenseRef-d94457d3705e6c77 AND AFL-2.0 AND LicenseRef-398e59dafb7d221c",
+			wantLicenseName: "LicenseRef-c5e3a1aeaab71db AND AFL-2.0 AND LicenseRef-8960e1168859663e",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
-					LicenseIdentifier: "LicenseRef-398e59dafb7d221c",
+					LicenseIdentifier: "LicenseRef-8960e1168859663e",
 					LicenseName:       "unknown-license",
+					ExtractedText:     "NOASSERTION",
 				},
 				{
-					LicenseIdentifier: "LicenseRef-d94457d3705e6c77",
+					LicenseIdentifier: "LicenseRef-c5e3a1aeaab71db",
+					LicenseName:       "NOASSERTION",
 					ExtractedText:     "unknown-license",
 				},
 			},
