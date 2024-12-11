@@ -14,7 +14,7 @@
   "packages": [
     {
       "name": "Manifest.toml",
-      "SPDXID": "SPDXRef-Application-18fc3597717a3e56",
+      "SPDXID": "SPDXRef-Application-d8a5e692df746bd2",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "primaryPackagePurpose": "APPLICATION",
@@ -35,7 +35,7 @@
     },
     {
       "name": "A",
-      "SPDXID": "SPDXRef-Package-7784b00da0cb0cb0",
+      "SPDXID": "SPDXRef-Package-d8a5e692df746bd3",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -68,40 +68,7 @@
     },
     {
       "name": "B",
-      "SPDXID": "SPDXRef-Package-960543ac5c5f7e10",
-      "versionInfo": "1.9.0",
-      "supplier": "NOASSERTION",
-      "downloadLocation": "NONE",
-      "filesAnalyzed": false,
-      "sourceInfo": "package found in: Manifest.toml",
-      "licenseConcluded": "NOASSERTION",
-      "licenseDeclared": "NOASSERTION",
-      "externalRefs": [
-        {
-          "referenceCategory": "PACKAGE-MANAGER",
-          "referenceType": "purl",
-          "referenceLocator": "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24"
-        }
-      ],
-      "primaryPackagePurpose": "LIBRARY",
-      "annotations": [
-        {
-          "annotator": "Tool: trivy-dev",
-          "annotationDate": "2021-08-25T12:20:30Z",
-          "annotationType": "OTHER",
-          "comment": "PkgID: f41f7b98-334e-11e9-1257-49272045fb24"
-        },
-        {
-          "annotator": "Tool: trivy-dev",
-          "annotationDate": "2021-08-25T12:20:30Z",
-          "annotationType": "OTHER",
-          "comment": "PkgType: julia"
-        }
-      ]
-    },
-    {
-      "name": "B",
-      "SPDXID": "SPDXRef-Package-a4705eb108e4f15c",
+      "SPDXID": "SPDXRef-Package-d8a5e692df746bd4",
       "versionInfo": "1.9.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -133,8 +100,41 @@
       ]
     },
     {
+      "name": "B",
+      "SPDXID": "SPDXRef-Package-d8a5e692df746bd5",
+      "versionInfo": "1.9.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "sourceInfo": "package found in: Manifest.toml",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24"
+        }
+      ],
+      "primaryPackagePurpose": "LIBRARY",
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgID: f41f7b98-334e-11e9-1257-49272045fb24"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "PkgType: julia"
+        }
+      ]
+    },
+    {
       "name": "testdata/fixtures/repo/julia",
-      "SPDXID": "SPDXRef-Filesystem-1be792dd0077c431",
+      "SPDXID": "SPDXRef-Filesystem-d8a5e692df746bd1",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
       "primaryPackagePurpose": "SOURCE",
@@ -150,33 +150,33 @@
   ],
   "relationships": [
     {
-      "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-7784b00da0cb0cb0",
+      "spdxElementId": "SPDXRef-Application-d8a5e692df746bd2",
+      "relatedSpdxElement": "SPDXRef-Package-d8a5e692df746bd3",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-960543ac5c5f7e10",
+      "spdxElementId": "SPDXRef-Application-d8a5e692df746bd2",
+      "relatedSpdxElement": "SPDXRef-Package-d8a5e692df746bd4",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-a4705eb108e4f15c",
+      "spdxElementId": "SPDXRef-Application-d8a5e692df746bd2",
+      "relatedSpdxElement": "SPDXRef-Package-d8a5e692df746bd5",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
-      "relatedSpdxElement": "SPDXRef-Filesystem-1be792dd0077c431",
+      "relatedSpdxElement": "SPDXRef-Filesystem-d8a5e692df746bd1",
       "relationshipType": "DESCRIBES"
     },
     {
-      "spdxElementId": "SPDXRef-Filesystem-1be792dd0077c431",
-      "relatedSpdxElement": "SPDXRef-Application-18fc3597717a3e56",
+      "spdxElementId": "SPDXRef-Filesystem-d8a5e692df746bd1",
+      "relatedSpdxElement": "SPDXRef-Application-d8a5e692df746bd2",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-7784b00da0cb0cb0",
-      "relatedSpdxElement": "SPDXRef-Package-960543ac5c5f7e10",
+      "spdxElementId": "SPDXRef-Package-d8a5e692df746bd3",
+      "relatedSpdxElement": "SPDXRef-Package-d8a5e692df746bd5",
       "relationshipType": "DEPENDS_ON"
     }
   ]
