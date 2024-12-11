@@ -1,5 +1,12 @@
 package expression
 
+import (
+	"slices"
+	"strings"
+
+	"github.com/samber/lo"
+)
+
 // Canonical names of the licenses.
 // ported from https://github.com/google/licenseclassifier/blob/7c62d6fe8d3aa2f39c4affb58c9781d9dc951a2d/license_type.go#L24-L177
 const (
@@ -358,4 +365,131 @@ var (
 		Unlicense,
 		ZeroBSD,
 	}
+
+	// SpdxLicenseExceptions contains all supported SPDX Exceptions
+	// cf. https://github.com/spdx/license-list-data/blob/592c2dcb8497c6fe829eea604045f77d3bce770b/json/exceptions.json
+	// used `awk -F'"' '/"licenseExceptionId":/ {print toupper("\"" $4 "\"," )}' exceptions.json ` command
+	spdxLicenseExceptions = []string{
+		"389-EXCEPTION",
+		"ASTERISK-EXCEPTION",
+		"ASTERISK-LINKING-PROTOCOLS-EXCEPTION",
+		"AUTOCONF-EXCEPTION-2.0",
+		"AUTOCONF-EXCEPTION-3.0",
+		"AUTOCONF-EXCEPTION-GENERIC",
+		"AUTOCONF-EXCEPTION-GENERIC-3.0",
+		"AUTOCONF-EXCEPTION-MACRO",
+		"BISON-EXCEPTION-1.24",
+		"BISON-EXCEPTION-2.2",
+		"BOOTLOADER-EXCEPTION",
+		"CGAL-LINKING-EXCEPTION",
+		"CLASSPATH-EXCEPTION-2.0",
+		"CLISP-EXCEPTION-2.0",
+		"CRYPTSETUP-OPENSSL-EXCEPTION",
+		"DIGIRULE-FOSS-EXCEPTION",
+		"ECOS-EXCEPTION-2.0",
+		"ERLANG-OTP-LINKING-EXCEPTION",
+		"FAWKES-RUNTIME-EXCEPTION",
+		"FLTK-EXCEPTION",
+		"FMT-EXCEPTION",
+		"FONT-EXCEPTION-2.0",
+		"FREERTOS-EXCEPTION-2.0",
+		"GCC-EXCEPTION-2.0",
+		"GCC-EXCEPTION-2.0-NOTE",
+		"GCC-EXCEPTION-3.1",
+		"GMSH-EXCEPTION",
+		"GNAT-EXCEPTION",
+		"GNOME-EXAMPLES-EXCEPTION",
+		"GNU-COMPILER-EXCEPTION",
+		"GNU-JAVAMAIL-EXCEPTION",
+		"GPL-3.0-389-DS-BASE-EXCEPTION",
+		"GPL-3.0-INTERFACE-EXCEPTION",
+		"GPL-3.0-LINKING-EXCEPTION",
+		"GPL-3.0-LINKING-SOURCE-EXCEPTION",
+		"GPL-CC-1.0",
+		"GSTREAMER-EXCEPTION-2005",
+		"GSTREAMER-EXCEPTION-2008",
+		"HARBOUR-EXCEPTION", //nolint:misspell
+		"I2P-GPL-JAVA-EXCEPTION",
+		"INDEPENDENT-MODULES-EXCEPTION",
+		"KICAD-LIBRARIES-EXCEPTION",
+		"LGPL-3.0-LINKING-EXCEPTION",
+		"LIBPRI-OPENH323-EXCEPTION",
+		"LIBTOOL-EXCEPTION",
+		"LINUX-SYSCALL-NOTE",
+		"LLGPL",
+		"LLVM-EXCEPTION",
+		"LZMA-EXCEPTION",
+		"MIF-EXCEPTION",
+		"MXML-EXCEPTION",
+		"NOKIA-QT-EXCEPTION-1.1",
+		"OCAML-LGPL-LINKING-EXCEPTION",
+		"OCCT-EXCEPTION-1.0",
+		"OPENJDK-ASSEMBLY-EXCEPTION-1.0",
+		"OPENVPN-OPENSSL-EXCEPTION",
+		"PCRE2-EXCEPTION",
+		"PS-OR-PDF-FONT-EXCEPTION-20170817",
+		"QPL-1.0-INRIA-2004-EXCEPTION",
+		"QT-GPL-EXCEPTION-1.0",
+		"QT-LGPL-EXCEPTION-1.1",
+		"QWT-EXCEPTION-1.0",
+		"ROMIC-EXCEPTION",
+		"RRDTOOL-FLOSS-EXCEPTION-2.0",
+		"SANE-EXCEPTION",
+		"SHL-2.0",
+		"SHL-2.1",
+		"STUNNEL-EXCEPTION",
+		"SWI-EXCEPTION",
+		"SWIFT-EXCEPTION",
+		"TEXINFO-EXCEPTION",
+		"U-BOOT-EXCEPTION-2.0",
+		"UBDL-EXCEPTION",
+		"UNIVERSAL-FOSS-EXCEPTION-1.0",
+		"VSFTPD-OPENSSL-EXCEPTION",
+		"WXWINDOWS-EXCEPTION-3.1",
+		"X11VNC-OPENSSL-EXCEPTION",
+	}
 )
+
+var spdxLicenses map[string]struct{}
+
+func initSpdxLicenses() {
+	licenseSlices := [][]string{
+		ForbiddenLicenses,
+		RestrictedLicenses,
+		ReciprocalLicenses,
+		NoticeLicenses,
+		PermissiveLicenses,
+		UnencumberedLicenses,
+	}
+
+	for _, licenseSlice := range licenseSlices {
+		spdxLicenses = lo.Assign(spdxLicenses, lo.SliceToMap(licenseSlice, func(l string) (string, struct{}) {
+			return l, struct{}{}
+		}))
+	}
+
+	// Save GNU licenses with "-or-later" and `"-only" suffixes
+	for _, l := range GnuLicenses {
+		license := SimpleExpr{
+			License: l,
+		}
+		spdxLicenses[license.String()] = struct{}{}
+
+		license.HasPlus = true
+		spdxLicenses[license.String()] = struct{}{}
+	}
+
+}
+
+// ValidSpdxLicense returns true if SPDX license lists contain licenseID and license exception (if exists)
+func ValidSpdxLicense(license string) bool {
+	if spdxLicenses == nil {
+		initSpdxLicenses()
+	}
+
+	id, exception, ok := strings.Cut(license, " WITH ")
+	if _, licenseIdFound := spdxLicenses[id]; licenseIdFound && (!ok || slices.Contains(spdxLicenseExceptions, strings.ToUpper(exception))) {
+		return true
+	}
+	return false
+}
