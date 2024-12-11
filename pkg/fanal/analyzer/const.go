@@ -81,6 +81,7 @@ const (
 	TypePip          Type = "pip"
 	TypePipenv       Type = "pipenv"
 	TypePoetry       Type = "poetry"
+	TypeUv           Type = "uv"
 
 	// Go
 	TypeGoBinary Type = "gobinary"

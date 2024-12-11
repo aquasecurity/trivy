@@ -58,6 +58,7 @@ The following languages are currently supported:
 |          | [yarn.lock][yarn-lock]                     |
 | .NET     | [packages.lock.json][dotnet-packages-lock] |
 | Python   | [poetry.lock][poetry-lock]                 |
+|          | [uv.lock][uv-lock]                         |
 | Ruby     | [Gemfile.lock][gemfile-lock]               |
 | Rust     | [cargo-auditable binaries][cargo-binaries] |
 | Go       | [go.mod][go-mod]                           |
@@ -449,6 +450,7 @@ $ trivy convert --format table --severity CRITICAL result.json
 [yarn-lock]: ../coverage/language/nodejs.md#yarn
 [dotnet-packages-lock]: ../coverage/language/dotnet.md#packageslockjson
 [poetry-lock]: ../coverage/language/python.md#poetry
+[uv-lock]: ../coverage/language/python.md#uv
 [gemfile-lock]: ../coverage/language/ruby.md#bundler
 [go-mod]: ../coverage/language/golang.md#go-module
 [composer-lock]: ../coverage/language/php.md#composerlock
