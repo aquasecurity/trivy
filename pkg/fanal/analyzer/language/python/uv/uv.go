@@ -9,6 +9,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	uvparser "github.com/aquasecurity/trivy/pkg/dependency/parser/python/uv"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -27,7 +28,7 @@ type uvAnalyzer struct {
 
 func NewUvAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &uvAnalyzer{
-		lockParser: &lockParser{},
+		lockParser: uvparser.New(),
 	}, nil
 }
 

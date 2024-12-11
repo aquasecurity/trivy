@@ -100,9 +100,13 @@ type Dependency struct {
 	Name string `toml:"name"`
 }
 
-type lockParser struct{}
+type Parser struct{}
 
-func (p *lockParser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func New() *Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lock Lock
 	if _, err := toml.NewDecoder(r).Decode(&lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode uv lock file: %w", err)
