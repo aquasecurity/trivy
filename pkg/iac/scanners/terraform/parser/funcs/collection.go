@@ -523,7 +523,7 @@ var SumFunc = function.New(&function.Spec{
 			if r := recover(); r != nil {
 				if _, ok := r.(big.ErrNaN); ok {
 					ret = cty.NilVal
-					err = fmt.Errorf("can't compute sum of opposing infinities")
+					err = errors.New("can't compute sum of opposing infinities")
 				} else {
 					// not a panic we recognize
 					panic(r)
@@ -623,10 +623,10 @@ var ListFunc = function.New(&function.Spec{
 		AllowNull:        true,
 	},
 	Type: func(args []cty.Value) (ret cty.Type, err error) {
-		return cty.DynamicPseudoType, fmt.Errorf("the \"list\" function was deprecated in Terraform v0.12 and is no longer available; use tolist([ ... ]) syntax to write a literal list")
+		return cty.DynamicPseudoType, errors.New("the \"list\" function was deprecated in Terraform v0.12 and is no longer available; use tolist([ ... ]) syntax to write a literal list")
 	},
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
-		return cty.DynamicVal, fmt.Errorf("the \"list\" function was deprecated in Terraform v0.12 and is no longer available; use tolist([ ... ]) syntax to write a literal list")
+		return cty.DynamicVal, errors.New("the \"list\" function was deprecated in Terraform v0.12 and is no longer available; use tolist([ ... ]) syntax to write a literal list")
 	},
 })
 
@@ -644,9 +644,9 @@ var MapFunc = function.New(&function.Spec{
 		AllowNull:        true,
 	},
 	Type: func(args []cty.Value) (ret cty.Type, err error) {
-		return cty.DynamicPseudoType, fmt.Errorf("the \"map\" function was deprecated in Terraform v0.12 and is no longer available; use tomap({ ... }) syntax to write a literal map")
+		return cty.DynamicPseudoType, errors.New("the \"map\" function was deprecated in Terraform v0.12 and is no longer available; use tomap({ ... }) syntax to write a literal map")
 	},
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
-		return cty.DynamicVal, fmt.Errorf("the \"map\" function was deprecated in Terraform v0.12 and is no longer available; use tomap({ ... }) syntax to write a literal map")
+		return cty.DynamicVal, errors.New("the \"map\" function was deprecated in Terraform v0.12 and is no longer available; use tomap({ ... }) syntax to write a literal map")
 	},
 })

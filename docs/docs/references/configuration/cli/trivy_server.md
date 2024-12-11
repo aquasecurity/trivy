@@ -22,7 +22,7 @@ trivy server [flags]
 ```
       --cache-backend string     [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration       cache TTL when using redis as cache backend
-      --db-repository strings    OCI repository(ies) to retrieve trivy-db in order of priority (default [ghcr.io/aquasecurity/trivy-db:2])
+      --db-repository strings    OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
       --download-db-only         download/update vulnerability database but don't run a scan
       --enable-modules strings   [EXPERIMENTAL] module names to enable
   -h, --help                     help for server
@@ -30,6 +30,7 @@ trivy server [flags]
       --module-dir string        specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress              suppress progress bar
       --password strings         password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --password-stdin           password from stdin. Comma-separated passwords are not supported.
       --redis-ca string          redis ca file location, if using redis as cache backend
       --redis-cert string        redis certificate file location, if using redis as cache backend
       --redis-key string         redis key file location, if using redis as cache backend

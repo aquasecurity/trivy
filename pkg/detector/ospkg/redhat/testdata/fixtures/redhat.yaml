@@ -105,3 +105,66 @@
                     Severity: 3
                 Arches:
                   - aarch64
+    - bucket: expat
+      pairs:
+        - key: RHSA-2024:6989-2 # created for test only
+          value:
+            Entries:
+              - FixedVersion: 0:2.2.5-17.el8_10
+                Affected:
+                  - 4
+                Arches:
+                  - x86_64
+                Cves:
+                  - ID: CVE-2024-45490
+                    Severity: 2
+        - key: RHSA-2024:6989-3 # created for test only
+          value:
+            Entries:
+              - FixedVersion: 0:2.2.5-18.el8_10
+                Affected:
+                  - 4
+                Arches:
+                  - x86_64
+                Cves:
+                  - ID: CVE-2024-45490
+                    Severity: 2
+        - key: CVE-2024-45490
+          value:
+            Entries:
+              - Affected:
+                  - 4
+                Cves:
+                  - Severity: 2
+                Status: 5
+        - key: CVE-2024-45491
+          value:
+            Entries:
+              - Affected:
+                  - 4
+                Cves:
+                  - Severity: 2
+                Status: 5
+        - key: RHSA-2024:6989
+          value:
+            Entries:
+              - FixedVersion: 0:2.2.5-15.el8_10
+                Affected:
+                  - 4
+                Arches:
+                  - x86_64
+                Cves:
+                  - ID: CVE-2024-45490
+                    Severity: 2
+                  - ID: CVE-2024-45491
+                    Severity: 2
+                  - ID: CVE-2024-45492
+                    Severity: 2
+        - key: CVE-2024-45492
+          value:
+            Entries:
+              - Affected:
+                  - 4
+                Cves:
+                  - Severity: 2
+                Status: 5

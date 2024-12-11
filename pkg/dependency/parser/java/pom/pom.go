@@ -23,11 +23,18 @@ type pom struct {
 	content  *pomXML
 }
 
-func (p *pom) inherit(result analysisResult) {
-	// Merge properties
-	p.content.Properties = utils.MergeMaps(result.properties, p.content.Properties)
+func (p *pom) nil() bool {
+	return p == nil || p.content == nil
+}
 
-	art := p.artifact().Inherit(result.artifact)
+func (p *pom) inherit(parent *pom) {
+	if parent == nil {
+		return
+	}
+	// Merge properties
+	p.content.Properties = utils.MergeMaps(parent.properties(), p.content.Properties)
+
+	art := p.artifact().Inherit(parent.artifact())
 
 	p.content.GroupId = art.GroupID
 	p.content.ArtifactId = art.ArtifactID
@@ -40,12 +47,12 @@ func (p *pom) inherit(result analysisResult) {
 	}
 }
 
-func (p pom) properties() properties {
+func (p *pom) properties() properties {
 	props := p.content.Properties
 	return utils.MergeMaps(props, p.projectProperties())
 }
 
-func (p pom) projectProperties() map[string]string {
+func (p *pom) projectProperties() map[string]string {
 	val := reflect.ValueOf(p.content).Elem()
 	props := p.listProperties(val)
 
@@ -73,7 +80,7 @@ func (p pom) projectProperties() map[string]string {
 	return projectProperties
 }
 
-func (p pom) listProperties(val reflect.Value) map[string]string {
+func (p *pom) listProperties(val reflect.Value) map[string]string {
 	props := make(map[string]string)
 	for i := 0; i < val.NumField(); i++ {
 		f := val.Type().Field(i)
@@ -106,17 +113,17 @@ func (p pom) listProperties(val reflect.Value) map[string]string {
 	return props
 }
 
-func (p pom) artifact() artifact {
+func (p *pom) artifact() artifact {
 	return newArtifact(p.content.GroupId, p.content.ArtifactId, p.content.Version, p.licenses(), p.content.Properties)
 }
 
-func (p pom) licenses() []string {
+func (p *pom) licenses() []string {
 	return slices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
 		return lic.Name, lic.Name != ""
 	}))
 }
 
-func (p pom) repositories(servers []Server) ([]string, []string) {
+func (p *pom) repositories(servers []Server) ([]string, []string) {
 	logger := log.WithPrefix("pom")
 	var releaseRepos, snapshotRepos []string
 	for _, rep := range p.content.Repositories.Repository {
@@ -238,13 +245,15 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 
 	// If this dependency is managed in the root POM,
 	// we need to overwrite fields according to the managed dependency.
-	if managed, found := findDep(d.Name(), rootDepManagement); found { // dependencyManagement from the root POM
+	if managed, found := findDep(dep.Name(), rootDepManagement); found { // dependencyManagement from the root POM
 		if managed.Version != "" {
 			dep.Version = evaluateVariable(managed.Version, props, nil)
 		}
+
 		if managed.Scope != "" {
 			dep.Scope = evaluateVariable(managed.Scope, props, nil)
 		}
+
 		if managed.Optional {
 			dep.Optional = managed.Optional
 		}
@@ -255,7 +264,7 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 	}
 
 	// Inherit version, scope and optional from dependencyManagement if empty
-	if managed, found := findDep(d.Name(), depManagement); found { // dependencyManagement from parent
+	if managed, found := findDep(dep.Name(), depManagement); found { // dependencyManagement from parent
 		if dep.Version == "" {
 			dep.Version = evaluateVariable(managed.Version, props, nil)
 		}
@@ -287,7 +296,7 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	}
 
 	var locations ftypes.Locations
-	if opts.lineNumber {
+	if d.StartLine != 0 && d.EndLine != 0 {
 		locations = ftypes.Locations{
 			{
 				StartLine: d.StartLine,

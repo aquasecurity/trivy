@@ -243,20 +243,20 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 		want         bool
 	}{
 		{
-			name: "opensuse.tumbleweed",
+			name: "opensuse-tumbleweed",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "opensuse.tumbleweed",
+				osFamily: "opensuse-tumbleweed",
 				osVer:    "",
 			},
 			distribution: suse.OpenSUSETumbleweed,
 			want:         true,
 		},
 		{
-			name: "opensuse.leap42.3",
+			name: "opensuse-leap42.3",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "opensuse.leap",
+				osFamily: "opensuse-leap",
 				osVer:    "42.3",
 			},
 			distribution: suse.OpenSUSE,
@@ -266,7 +266,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			name: "sles12.3",
 			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "suse linux enterprise server",
+				osFamily: "sles",
 				osVer:    "12.3",
 			},
 			distribution: suse.SUSEEnterpriseLinux,
@@ -276,7 +276,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			name: "latest",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "opensuse.leap",
+				osFamily: "opensuse-leap",
 				osVer:    "999.0",
 			},
 			want: true,

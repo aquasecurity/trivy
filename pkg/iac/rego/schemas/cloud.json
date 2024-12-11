@@ -1859,7 +1859,7 @@
         },
         "cpu": {
           "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
         "environment": {
           "type": "array",
@@ -1878,7 +1878,7 @@
         },
         "memory": {
           "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
         "name": {
           "type": "object",
@@ -5396,6 +5396,10 @@
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.NetworkRule"
           }
         },
+        "publicnetworkaccess": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
         "queueproperties": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.QueueProperties"
@@ -6987,6 +6991,10 @@
         "requiretls": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "sslmode": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }
       }
     },
@@ -7876,6 +7884,9 @@
         "startline": {
           "type": "integer"
         },
+        "unresolvable": {
+          "type": "boolean"
+        },
         "value": {
           "type": "boolean"
         }
@@ -7907,6 +7918,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         },
         "value": {
           "type": "string"
@@ -7940,6 +7954,9 @@
         "startline": {
           "type": "integer"
         },
+        "unresolvable": {
+          "type": "boolean"
+        },
         "value": {
           "type": "integer"
         }
@@ -7972,6 +7989,9 @@
         "startline": {
           "type": "integer"
         },
+        "unresolvable": {
+          "type": "boolean"
+        },
         "value": {
           "type": "object"
         }
@@ -8003,6 +8023,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         }
       }
     },
@@ -8032,6 +8055,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         },
         "value": {
           "type": "string"
@@ -8064,6 +8090,9 @@
         },
         "startline": {
           "type": "integer"
+        },
+        "unresolvable": {
+          "type": "boolean"
         },
         "value": {
           "type": "string"

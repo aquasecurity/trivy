@@ -24,7 +24,7 @@ func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 				Metadata:     block.GetMetadata(),
 				Name:         block.GetAttribute("name").AsStringValueOrDefault("", block),
 				Objects:      nil,
-				ACL:          block.GetAttribute("acl").AsStringValueOrDefault("public-read", block),
+				ACL:          block.GetAttribute("acl").AsStringValueOrDefault("private", block),
 				ForceDestroy: block.GetAttribute("force_destroy").AsBoolValueOrDefault(false, block),
 				Versioning: spaces.Versioning{
 					Metadata: block.GetMetadata(),

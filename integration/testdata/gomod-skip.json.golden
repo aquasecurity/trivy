@@ -26,10 +26,10 @@
           "PkgID": "github.com/docker/distribution@v2.7.1+incompatible",
           "PkgName": "github.com/docker/distribution",
           "PkgIdentifier": {
-            "PURL": "pkg:golang/github.com/docker/distribution@2.7.1%2Bincompatible",
-            "UID": "de19cd663ca047a8"
+            "PURL": "pkg:golang/github.com/docker/distribution@v2.7.1%2Bincompatible",
+            "UID": "782e16d5a74c9fa6"
           },
-          "InstalledVersion": "2.7.1+incompatible",
+          "InstalledVersion": "v2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",
           "Layer": {},
@@ -53,10 +53,10 @@
           "PkgID": "github.com/open-policy-agent/opa@v0.35.0",
           "PkgName": "github.com/open-policy-agent/opa",
           "PkgIdentifier": {
-            "PURL": "pkg:golang/github.com/open-policy-agent/opa@0.35.0",
-            "UID": "6b685002e082ffc5"
+            "PURL": "pkg:golang/github.com/open-policy-agent/opa@v0.35.0",
+            "UID": "3e43f458a7c60c10"
           },
-          "InstalledVersion": "0.35.0",
+          "InstalledVersion": "v0.35.0",
           "FixedVersion": "0.37.0",
           "Status": "fixed",
           "Layer": {},
@@ -100,10 +100,10 @@
           "PkgID": "golang.org/x/text@v0.3.6",
           "PkgName": "golang.org/x/text",
           "PkgIdentifier": {
-            "PURL": "pkg:golang/golang.org/x/text@0.3.6",
-            "UID": "825dc613c0f39d45"
+            "PURL": "pkg:golang/golang.org/x/text@v0.3.6",
+            "UID": "9c987ed7494d95be"
           },
-          "InstalledVersion": "0.3.6",
+          "InstalledVersion": "v0.3.6",
           "FixedVersion": "0.3.7",
           "Status": "fixed",
           "Layer": {},
@@ -133,10 +133,10 @@
           "PkgID": "github.com/docker/distribution@v2.7.1+incompatible",
           "PkgName": "github.com/docker/distribution",
           "PkgIdentifier": {
-            "PURL": "pkg:golang/github.com/docker/distribution@2.7.1%2Bincompatible",
-            "UID": "94376dc37054a7e8"
+            "PURL": "pkg:golang/github.com/docker/distribution@v2.7.1%2Bincompatible",
+            "UID": "97673687db393443"
           },
-          "InstalledVersion": "2.7.1+incompatible",
+          "InstalledVersion": "v2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",
           "Layer": {},

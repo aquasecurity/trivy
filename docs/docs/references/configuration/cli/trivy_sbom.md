@@ -24,11 +24,12 @@ trivy sbom [flags] SBOM_PATH
       --cache-ttl duration           cache TTL when using redis as cache backend
       --compliance string            compliance report to generate
       --custom-headers strings       custom headers in client mode
-      --db-repository strings        OCI repository(ies) to retrieve trivy-db in order of priority (default [ghcr.io/aquasecurity/trivy-db:2])
+      --db-repository strings        OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
       --detection-priority string    specify the detection priority:
                                        - "precise": Prioritizes precise by minimizing false positives.
                                        - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
                                       (precise,comprehensive) (default "precise")
+      --distro string                [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only             download/update vulnerability database but don't run a scan
       --download-java-db-only        download/update Java index database but don't run a scan
       --exit-code int                specify exit code when any security issues are found
@@ -41,18 +42,21 @@ trivy sbom [flags] SBOM_PATH
       --ignore-unfixed               display only fixed vulnerabilities
       --ignored-licenses strings     specify a list of license to ignore
       --ignorefile string            specify .trivyignore file (default ".trivyignore")
-      --java-db-repository strings   OCI repository(ies) to retrieve trivy-java-db in order of priority (default [ghcr.io/aquasecurity/trivy-java-db:1])
+      --java-db-repository strings   OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --list-all-pkgs                output all packages in the JSON report regardless of vulnerability
       --no-progress                  suppress progress bar
       --offline-scan                 do not issue API requests to identify dependencies
   -o, --output string                output file name
       --output-plugin-arg string     [EXPERIMENTAL] output plugin arguments
-      --pkg-relationships strings    list of package relationships (unknown,root,direct,indirect) (default [unknown,root,direct,indirect])
+      --password strings             password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --password-stdin               password from stdin. Comma-separated passwords are not supported.
+      --pkg-relationships strings    list of package relationships (unknown,root,workspace,direct,indirect) (default [unknown,root,workspace,direct,indirect])
       --pkg-types strings            list of package types (os,library) (default [os,library])
       --redis-ca string              redis ca file location, if using redis as cache backend
       --redis-cert string            redis certificate file location, if using redis as cache backend
       --redis-key string             redis key file location, if using redis as cache backend
       --redis-tls                    enable redis TLS with public certificates, if using redis as cache backend
+      --registry-token string        registry token
       --rekor-url string             [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --sbom-sources strings         [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings             comma-separated list of what security issues to detect (vuln,license) (default [vuln])
@@ -67,6 +71,7 @@ trivy sbom [flags] SBOM_PATH
   -t, --template string              output template
       --token string                 for authentication in client/server mode
       --token-header string          specify a header name for token in client/server mode (default "Trivy-Token")
+      --username strings             username. Comma-separated usernames allowed.
       --vex strings                  [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```
 

@@ -16,6 +16,7 @@ type Relationship int
 const (
 	RelationshipUnknown Relationship = iota
 	RelationshipRoot
+	RelationshipWorkspace // For maven `modules`. TODO use it for cargo and npm workspaces
 	RelationshipDirect
 	RelationshipIndirect
 )
@@ -24,6 +25,7 @@ var (
 	Relationships = []Relationship{
 		RelationshipUnknown,
 		RelationshipRoot,
+		RelationshipWorkspace,
 		RelationshipDirect,
 		RelationshipIndirect,
 	}
@@ -31,6 +33,7 @@ var (
 	relationshipNames = [...]string{
 		"unknown",
 		"root",
+		"workspace",
 		"direct",
 		"indirect",
 	}

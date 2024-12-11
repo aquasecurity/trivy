@@ -69,7 +69,7 @@ func Test_adaptBuckets(t *testing.T) {
 					Metadata:     iacTypes.NewTestMetadata(),
 					Name:         iacTypes.String("", iacTypes.NewTestMetadata()),
 					Objects:      nil,
-					ACL:          iacTypes.String("public-read", iacTypes.NewTestMetadata()),
+					ACL:          iacTypes.String("private", iacTypes.NewTestMetadata()),
 					ForceDestroy: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					Versioning: spaces.Versioning{
 						Metadata: iacTypes.NewTestMetadata(),

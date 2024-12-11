@@ -27,8 +27,9 @@ jobs:
         if: github.ref_name == 'main'
         id: image-digest
         run: |
-          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-images)
-          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags | sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       ## We need to work with test image cache only for main branch
@@ -67,8 +68,9 @@ jobs:
         if: github.ref_name == 'main'
         id: image-digest
         run: |
-          IMAGE_LIST=$(skopeo list-tags docker://ghcr.io/aquasecurity/trivy-test-vm-images)
-          DIGEST=$(echo "$IMAGE_LIST" | sha256sum | cut -d' ' -f1)
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags | sort' | sha256sum | cut -d' ' -f1)
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       ## We need to work with test VM image cache only for main branch

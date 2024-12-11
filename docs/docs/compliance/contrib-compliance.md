@@ -1,26 +1,26 @@
 # Custom Compliance Spec
 
 Trivy supports several different compliance specs. The details on compliance scanning with Trivy are provided in the [compliance documentation](../../docs/compliance/compliance.md).
-All of the Compliance Specs currently available in Trivy can be found in the `trivy-checks/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/specs/compliance)).
+All of the Compliance Specs currently available in Trivy can be found in the `trivy-checks/pkg/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/pkg/specs/compliance)).
 
-New checks are based on the custom compliance report detailed in the [main documentation.](../../docs/compliance/compliance/#custom-compliance)
+New checks are based on the custom compliance report detailed in the [main documentation.](./compliance.md#custom-compliance)
 If you would like to create your custom compliance report, please reference the information in the main documentation. This section details how community members can contribute new Compliance Specs to Trivy.
 
 All compliance specs in Trivy are based on formal compliance reports such as CIS Benchmarks.
 
 ## Contributing new Compliance Specs
 
-Compliance specs can be based on new compliance reports becoming available e.g. a new CIS Benchmark version, or identifying missing compliance specs that Trivy users would like to access. 
+Compliance specs can be based on new compliance reports becoming available e.g. a new CIS Benchmark version, or identifying missing compliance specs that Trivy users would like to access.
 
 ### Create a new Compliance Spec
 
-The existing compliance specs in Trivy are located under the `trivy-checks/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/specs/compliance)).
+The existing compliance specs in Trivy are located under the `trivy-checks/pkg/specs/compliance/` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/pkg/specs/compliance)).
 
 Create a new file under `trivy-checks/specs/compliance/` and name the file in the format of "provider-resource-spectype-version.yaml". For example, the file name for AWS CIS Benchmarks for EKS version 1.4 is: `aws-eks-cis-1.4.yaml`. Note that if the compliance spec is not specific to a provider, the `provider` field can be ignored.
 
 ### Minimum spec structure
 
-The structure of the compliance spec is detailed in the [main documentation](./compliance/#custom-compliance). 
+The structure of the compliance spec is detailed in the [main documentation](./compliance.md#custom-compliance).
 
 The first section in the spec is focused on the metadata of the spec. Replace all the fields of the metadata with the information relevant to the compliance spec that will be added. This information can be taken from the official report e.g. the CIS Benchmark report.
 
@@ -37,7 +37,7 @@ Additional information is provided below.
 
 Trivy has a comprehensive list of checks as part of its misconfiguration scanning. These can be found in the `trivy-checks/checks` directory ([Link](https://github.com/aquasecurity/trivy-checks/tree/main/checks)). If the check is present, the `AVD_ID` and other information from the check has to be used.
 
-Note: Take a look at the more generic compliance specs that are already available in Trivy. If you are adding new compliance spec to Kubernetes e.g. AWS EKS CIS Benchmarks, chances are high that the check you would like to add to the new spec has already been defined in the general `k8s-ci-v.000.yaml` compliance spec. The same applies for creating specific Cloud Provider Compliance Specs and the [generic compliance specs](https://github.com/aquasecurity/trivy-checks/tree/main/specs/compliance) available. 
+Note: Take a look at the more generic compliance specs that are already available in Trivy. If you are adding new compliance spec to Kubernetes e.g. AWS EKS CIS Benchmarks, chances are high that the check you would like to add to the new spec has already been defined in the general `k8s-ci-v.000.yaml` compliance spec. The same applies for creating specific Cloud Provider Compliance Specs and the [generic compliance specs](https://github.com/aquasecurity/trivy-checks/tree/main/pkg/specs/compliance) available.
 
 For example, the following check is detailed in the AWS EKS CIS v1.4 Benchmark:
 `3.1.2 Ensure that the kubelet kubeconfig file ownership is set to root:root (Manual)`

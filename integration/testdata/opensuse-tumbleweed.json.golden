@@ -5,7 +5,7 @@
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
-      "Family": "opensuse.tumbleweed",
+      "Family": "opensuse-tumbleweed",
       "Name": "20240607"
     },
     "ImageID": "sha256:580e73f5c823232e6587136e9f5428a89afdf77a123bb8575d08208e0cc34b12",
@@ -60,16 +60,16 @@
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz (opensuse.tumbleweed 20240607)",
+      "Target": "testdata/fixtures/images/opensuse-tumbleweed.tar.gz (opensuse-tumbleweed 20240607)",
       "Class": "os-pkgs",
-      "Type": "opensuse.tumbleweed",
+      "Type": "opensuse-tumbleweed",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "openSUSE-SU-2024:13065-1",
           "PkgID": "libopenssl3@3.1.4-9.1.x86_64",
           "PkgName": "libopenssl3",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/opensuse/libopenssl3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse.tumbleweed-20240607",
+            "PURL": "pkg:rpm/opensuse/libopenssl3@3.1.4-9.1?arch=x86_64\u0026distro=opensuse-tumbleweed-20240607",
             "UID": "f051425f385d2b99"
           },
           "InstalledVersion": "3.1.4-9.1",

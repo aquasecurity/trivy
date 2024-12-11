@@ -24,14 +24,13 @@ import (
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	cfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	dfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/generic"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
-	jsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/json"
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	tfprawscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
 	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
-	yamlscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/yaml"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 
@@ -51,9 +50,14 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeYAML:                  types.YAML,
 }
 
+type DisabledCheck struct {
+	ID      string
+	Scanner string // For logging
+	Reason  string // For logging
+}
+
 type ScannerOption struct {
 	Trace                    bool
-	RegoOnly                 bool
 	Namespaces               []string
 	PolicyPaths              []string
 	DataPaths                []string
@@ -75,9 +79,9 @@ type ScannerOption struct {
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
 
-	DisabledCheckIDs []string
-	SkipFiles        []string
-	SkipDirs         []string
+	DisabledChecks []DisabledCheck
+	SkipFiles      []string
+	SkipDirs       []string
 }
 
 func (o *ScannerOption) Sort() {
@@ -118,9 +122,9 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 	case detection.FileTypeTerraformPlanSnapshot:
 		scanner = tfprawscanner.New(opts...)
 	case detection.FileTypeYAML:
-		scanner = yamlscanner.NewScanner(opts...)
+		scanner = generic.NewYamlScanner(opts...)
 	case detection.FileTypeJSON:
-		scanner = jsonscanner.NewScanner(opts...)
+		scanner = generic.NewJsonScanner(opts...)
 	default:
 		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
@@ -134,6 +138,7 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 }
 
 func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguration, error) {
+	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	newfs, err := s.filterFS(fsys)
 	if err != nil {
 		return nil, xerrors.Errorf("fs filter error: %w", err)
@@ -142,12 +147,12 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
-	log.Debug("Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
+	log.DebugContext(ctx, "Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
 		var invalidContentError *cfparser.InvalidContentError
 		if errors.As(err, &invalidContentError) {
-			log.Error("scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
+			log.ErrorContext(ctx, "scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}
 		return nil, xerrors.Errorf("scan config error: %w", err)
@@ -212,11 +217,17 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 }
 
 func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerOption, error) {
+	disabledCheckIDs := lo.Map(opt.DisabledChecks, func(check DisabledCheck, _ int) string {
+		log.Info("Check disabled", log.Prefix(log.PrefixMisconfiguration), log.String("ID", check.ID),
+			log.String("scanner", check.Scanner), log.String("reason", check.Reason))
+		return check.ID
+	})
+
 	opts := []options.ScannerOption{
 		rego.WithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		rego.WithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
-		options.ScannerWithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
-		rego.WithDisabledCheckIDs(opt.DisabledCheckIDs...),
+		rego.WithIncludeDeprecatedChecks(opt.IncludeDeprecatedChecks),
+		rego.WithDisabledCheckIDs(disabledCheckIDs...),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -244,10 +255,6 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 
 	if opt.Trace {
 		opts = append(opts, rego.WithPerResultTracing(true))
-	}
-
-	if opt.RegoOnly {
-		opts = append(opts, options.ScannerWithRegoOnly(true))
 	}
 
 	if len(policyPaths) > 0 {
@@ -470,18 +477,13 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			}
 		}
 
-		if flattened.Warning {
-			misconf.Warnings = append(misconf.Warnings, misconfResult)
-		} else {
-			switch flattened.Status {
-			case scan.StatusPassed:
-				misconf.Successes = append(misconf.Successes, misconfResult)
-			case scan.StatusIgnored:
-				misconf.Exceptions = append(misconf.Exceptions, misconfResult)
-			case scan.StatusFailed:
-				misconf.Failures = append(misconf.Failures, misconfResult)
-			}
+		switch flattened.Status {
+		case scan.StatusPassed:
+			misconf.Successes = append(misconf.Successes, misconfResult)
+		case scan.StatusFailed:
+			misconf.Failures = append(misconf.Failures, misconfResult)
 		}
+
 		misconfs[filePath] = misconf
 	}
 

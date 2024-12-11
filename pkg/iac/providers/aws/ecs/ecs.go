@@ -43,8 +43,8 @@ func CreateDefinitionsFromString(metadata iacTypes.Metadata, str string) ([]Cont
 type containerDefinitionJSON struct {
 	Name         string            `json:"name"`
 	Image        string            `json:"image"`
-	CPU          int               `json:"cpu"`
-	Memory       int               `json:"memory"`
+	CPU          string            `json:"cpu"`
+	Memory       string            `json:"memory"`
 	Essential    bool              `json:"essential"`
 	PortMappings []portMappingJSON `json:"portMappings"`
 	EnvVars      []envVarJSON      `json:"environment"`
@@ -69,16 +69,21 @@ func (j containerDefinitionJSON) convert(metadata iacTypes.Metadata) ContainerDe
 			HostPort:      iacTypes.Int(jMapping.HostPort, metadata),
 		})
 	}
+
 	var envVars []EnvVar
 	for _, env := range j.EnvVars {
-		envVars = append(envVars, EnvVar(env))
+		envVars = append(envVars, EnvVar{
+			Name:  iacTypes.String(env.Name, metadata),
+			Value: iacTypes.String(env.Value, metadata),
+		})
 	}
+
 	return ContainerDefinition{
 		Metadata:     metadata,
 		Name:         iacTypes.String(j.Name, metadata),
 		Image:        iacTypes.String(j.Image, metadata),
-		CPU:          iacTypes.Int(j.CPU, metadata),
-		Memory:       iacTypes.Int(j.Memory, metadata),
+		CPU:          iacTypes.String(j.CPU, metadata),
+		Memory:       iacTypes.String(j.Memory, metadata),
 		Essential:    iacTypes.Bool(j.Essential, metadata),
 		PortMappings: mappings,
 		Environment:  envVars,
@@ -87,13 +92,11 @@ func (j containerDefinitionJSON) convert(metadata iacTypes.Metadata) ContainerDe
 }
 
 type ContainerDefinition struct {
-	Metadata iacTypes.Metadata
-	Name     iacTypes.StringValue
-	Image    iacTypes.StringValue
-	// TODO: CPU and Memory are strings
-	// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-cpu
-	CPU          iacTypes.IntValue
-	Memory       iacTypes.IntValue
+	Metadata     iacTypes.Metadata
+	Name         iacTypes.StringValue
+	Image        iacTypes.StringValue
+	CPU          iacTypes.StringValue
+	Memory       iacTypes.StringValue
 	Essential    iacTypes.BoolValue
 	PortMappings []PortMapping
 	Environment  []EnvVar
@@ -101,8 +104,8 @@ type ContainerDefinition struct {
 }
 
 type EnvVar struct {
-	Name  string
-	Value string
+	Name  iacTypes.StringValue
+	Value iacTypes.StringValue
 }
 
 type PortMapping struct {

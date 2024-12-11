@@ -11,10 +11,10 @@
       },
       "products": [
         {
-          "@id": "pkg:golang/github.com/aquasecurity/go-direct1@2.0.0",
+          "@id": "pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0",
           "subcomponents": [
             {
-              "@id": "pkg:golang/github.com/aquasecurity/go-transitive@4.0.0"
+              "@id": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
             }
           ]
         }

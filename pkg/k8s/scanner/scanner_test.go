@@ -87,7 +87,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Type:    core.TypeApplication,
 					Name:    "github.com/containerd/containerd",
-					Version: "1.5.2",
+					Version: "v1.5.2",
 					Properties: []core.Property{
 						{
 							Name:      k8sComponentName,
@@ -104,29 +104,29 @@ func TestScanner_Scan(t *testing.T) {
 						PURL: &packageurl.PackageURL{
 							Type:       "golang",
 							Name:       "github.com/containerd/containerd",
-							Version:    "1.5.2",
+							Version:    "v1.5.2",
 							Qualifiers: packageurl.Qualifiers{},
 						},
-						BOMRef: "pkg:golang/github.com%2Fcontainerd%2Fcontainerd@1.5.2",
+						BOMRef: "pkg:golang/github.com%2Fcontainerd%2Fcontainerd@v1.5.2",
 					},
 				},
 				{
 					Type:    core.TypeApplication,
 					Name:    "k8s.io/apiserver",
-					Version: "1.21.1",
+					Version: "v1.21.1",
 					PkgIdentifier: ftypes.PkgIdentifier{
 						PURL: &packageurl.PackageURL{
 							Type:    purl.TypeK8s,
 							Name:    "k8s.io/apiserver",
-							Version: "1.21.1",
+							Version: "v1.21.1",
 						},
-						BOMRef: "pkg:k8s/k8s.io%2Fapiserver@1.21.1",
+						BOMRef: "pkg:k8s/k8s.io%2Fapiserver@v1.21.1",
 					},
 				},
 				{
 					Type:    core.TypeApplication,
 					Name:    "k8s.io/kubelet",
-					Version: "1.21.1",
+					Version: "v1.21.1",
 					Properties: []core.Property{
 						{
 							Name:      k8sComponentName,
@@ -143,9 +143,9 @@ func TestScanner_Scan(t *testing.T) {
 						PURL: &packageurl.PackageURL{
 							Type:    "k8s",
 							Name:    "k8s.io/kubelet",
-							Version: "1.21.1",
+							Version: "v1.21.1",
 						},
-						BOMRef: "pkg:k8s/k8s.io%2Fkubelet@1.21.1",
+						BOMRef: "pkg:k8s/k8s.io%2Fkubelet@v1.21.1",
 					},
 				},
 				{
@@ -176,7 +176,7 @@ func TestScanner_Scan(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "k8s.gcr.io/kube-apiserver:1.21.1",
+							Value: "k8s.gcr.io/kube-apiserver:v1.21.1",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -208,7 +208,7 @@ func TestScanner_Scan(t *testing.T) {
 					Type:    core.TypePlatform,
 					Root:    true,
 					Name:    "k8s.io/kubernetes",
-					Version: "1.21.1",
+					Version: "v1.21.1",
 					Properties: []core.Property{
 						{
 							Name:      "Name",
@@ -225,9 +225,9 @@ func TestScanner_Scan(t *testing.T) {
 						PURL: &packageurl.PackageURL{
 							Type:    purl.TypeK8s,
 							Name:    "k8s.io/kubernetes",
-							Version: "1.21.1",
+							Version: "v1.21.1",
 						},
-						BOMRef: "pkg:k8s/k8s.io%2Fkubernetes@1.21.1",
+						BOMRef: "pkg:k8s/k8s.io%2Fkubernetes@v1.21.1",
 					},
 				},
 				{
@@ -464,19 +464,19 @@ func TestRuntimeVersion(t *testing.T) {
 			name:           "containerd",
 			runtimeVersion: "containerd://1.5.2",
 			wantName:       "github.com/containerd/containerd",
-			wantVersion:    "1.5.2",
+			wantVersion:    "v1.5.2",
 		},
 		{
 			name:           "cri-o",
 			runtimeVersion: "cri-o://1.5.2",
 			wantName:       "github.com/cri-o/cri-o",
-			wantVersion:    "1.5.2",
+			wantVersion:    "v1.5.2",
 		},
 		{
 			name:           "cri-dockerd",
 			runtimeVersion: "cri-dockerd://1.5.2",
 			wantName:       "github.com/Mirantis/cri-dockerd",
-			wantVersion:    "1.5.2",
+			wantVersion:    "v1.5.2",
 		},
 		{
 			name:           "na runtime",

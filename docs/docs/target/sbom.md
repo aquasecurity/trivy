@@ -6,7 +6,7 @@ Trivy can take the following SBOM formats as an input and scan for vulnerabiliti
 - SPDX
 - SPDX JSON
 - CycloneDX-type attestation
-- [KBOM](./kubernetes.md#KBOM) in CycloneDX format
+- [KBOM](./kubernetes.md#kbom) in CycloneDX format
 
 To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
 The input format is automatically detected.
@@ -118,7 +118,7 @@ Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 
 ## KBOM
 
-To read more about KBOM, see the [documentation for Kubernetes scanning](./kubernetes.md#KBOM).
+To read more about KBOM, see the [documentation for Kubernetes scanning](./kubernetes.md#kbom).
 
 The supported Kubernetes distributions for core components vulnerability scanning are:
 

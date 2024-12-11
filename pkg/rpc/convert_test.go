@@ -183,6 +183,78 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 				},
 			},
 		},
+		{
+			args: args{
+				rpcPkgs: []*common.Package{
+					{
+						Name:       "binary",
+						Version:    "4.2+dfsg",
+						Release:    "0.1+deb7u4",
+						Epoch:      0,
+						Arch:       "amd64",
+						SrcName:    "bash",
+						SrcVersion: "4.2+dfsg",
+						SrcRelease: "0.1+deb7u4",
+						SrcEpoch:   0,
+						Licenses:   []string{"GPL-3.0"},
+						Locations: []*common.Location{
+							{
+								StartLine: 10,
+								EndLine:   20,
+							},
+							{
+								StartLine: 22,
+								EndLine:   32,
+							},
+						},
+						Layer: &common.Layer{
+							Digest: "sha256:8d42b73fc1ddc2e9e66c954966f144665825e69f4ed10c66342ae7c26b38d4e4",
+							DiffId: "sha256:745d171eb8c3d69f788da3a1b053056231ad140b80be71d6869229846a1f3a77",
+						},
+						Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+						Indirect: false,
+						Identifier: &common.PkgIdentifier{
+							Uid: "63f8bef824b960e3",
+						},
+						Maintainer: "alice@example.com",
+					},
+				},
+			},
+			want: []ftypes.Package{
+				{
+					Name:       "binary",
+					Version:    "4.2+dfsg",
+					Release:    "0.1+deb7u4",
+					Epoch:      0,
+					Arch:       "amd64",
+					SrcName:    "bash",
+					SrcVersion: "4.2+dfsg",
+					SrcRelease: "0.1+deb7u4",
+					SrcEpoch:   0,
+					Licenses:   []string{"GPL-3.0"},
+					Locations: []ftypes.Location{
+						{
+							StartLine: 10,
+							EndLine:   20,
+						},
+						{
+							StartLine: 22,
+							EndLine:   32,
+						},
+					},
+					Layer: ftypes.Layer{
+						Digest: "sha256:8d42b73fc1ddc2e9e66c954966f144665825e69f4ed10c66342ae7c26b38d4e4",
+						DiffID: "sha256:745d171eb8c3d69f788da3a1b053056231ad140b80be71d6869229846a1f3a77",
+					},
+					Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+					Indirect: false,
+					Identifier: ftypes.PkgIdentifier{
+						UID: "63f8bef824b960e3",
+					},
+					Maintainer: "alice@example.com",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -227,6 +299,14 @@ func TestConvertToRpcVulns(t *testing.T) {
 									V2Score:  7.2,
 									V3Score:  7.8,
 								},
+								vulnerability.NVD: {
+									V2Vector:  "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+									V3Vector:  "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+									V40Vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/U:Green",
+									V2Score:   7.2,
+									V3Score:   7.8,
+									V40Score:  8.7,
+								},
 							},
 							References:       []string{"http://example.com"},
 							PublishedDate:    &fixedPublishedDate,
@@ -262,6 +342,14 @@ func TestConvertToRpcVulns(t *testing.T) {
 							V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
 							V2Score:  7.2,
 							V3Score:  7.8,
+						},
+						"nvd": {
+							V2Vector:  "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+							V3Vector:  "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+							V40Vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/U:Green",
+							V2Score:   7.2,
+							V3Score:   7.8,
+							V40Score:  8.7,
 						},
 					},
 					References: []string{"http://example.com"},

@@ -1,6 +1,7 @@
 package functions
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -65,7 +66,7 @@ func parseISO8601(from string) (Iso8601Duration, error) {
 	if pattern.MatchString(from) {
 		match = pattern.FindStringSubmatch(from)
 	} else {
-		return d, fmt.Errorf("could not parse duration string")
+		return d, errors.New("could not parse duration string")
 	}
 
 	for i, name := range pattern.SubexpNames() {

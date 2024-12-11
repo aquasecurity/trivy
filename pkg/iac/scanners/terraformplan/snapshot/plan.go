@@ -1,6 +1,7 @@
 package snapshot
 
 import (
+	"errors"
 	"fmt"
 	"io"
 
@@ -54,7 +55,7 @@ func readTfPlan(r io.Reader) (*Plan, error) {
 
 	for k, v := range rawPlan.Variables {
 		if len(v.Msgpack) == 0 { // len(0) because that's the default value for a "bytes" in protobuf
-			return nil, fmt.Errorf("dynamic value does not have msgpack serialization")
+			return nil, errors.New("dynamic value does not have msgpack serialization")
 		}
 
 		plan.variableValues[k] = DynamicValue(v.Msgpack)

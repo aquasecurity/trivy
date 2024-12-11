@@ -31,9 +31,10 @@ type History struct {
 }
 
 func findPackage(e ftypes.Package, s []ftypes.Package) *ftypes.Package {
-	for _, a := range s {
+	for i := range s {
+		a := &s[i] // do not range by value to avoid heap allocations
 		if a.Name == e.Name && a.Version == e.Version && a.Release == e.Release {
-			return &a
+			return a
 		}
 	}
 	return nil
@@ -220,7 +221,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Packages[i].InstalledFiles = installedFiles
 		}
 
-		if mergedLayer.OS.Family != "" {
+		if mergedLayer.OS.Family != "" && pkg.Identifier.PURL == nil {
 			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
 		}
 		mergedLayer.Packages[i].Identifier.UID = dependency.UID("", pkg)
