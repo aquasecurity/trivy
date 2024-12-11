@@ -247,6 +247,29 @@ func (p *PackageURL) Package() *ftypes.Package {
 	return pkg
 }
 
+func (p *PackageURL) OS() *ftypes.OS {
+	// Detect OS only for OS packages
+	if p.Class() != types.ClassOSPkg {
+		return nil
+	}
+
+	// `distro` field may be empty for some OS
+	// e.g. `wolfi` doesn't use version for its packages
+	// cf. https://github.com/aquasecurity/trivy/discussions/7073#discussioncomment-9964255
+	distro := p.Qualifiers.Map()["distro"]
+
+	// Trim OS family if exists
+	// e.g. `debian-12` => `12`
+	if _, osRelease, ok := strings.Cut(distro, "-"); ok {
+		distro = osRelease
+	}
+
+	return &ftypes.OS{
+		Family: ftypes.OSType(p.Namespace),
+		Name:   distro,
+	}
+}
+
 // Match returns true if the given PURL "target" satisfies the constraint PURL "p".
 // - If the constraint does not have a version, it will match any version in the target.
 // - If the constraint has qualifiers, the target must have the same set of qualifiers to match.
