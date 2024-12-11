@@ -84,6 +84,9 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}
 	defer composite.Cleanup()
 
+	// Files required by file patterns grouped by analyzer types
+	requiredByFilePatterns := make(map[analyzer.Type][]string)
+
 	err = a.walker.Walk(a.rootPath, a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		dir := a.rootPath
 
@@ -98,7 +101,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		}
 
 		// Skip post analysis if the file is not required
-		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info, requiredByFilePatterns)
 		if len(analyzerTypes) == 0 {
 			return nil
 		}
@@ -118,7 +121,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	wg.Wait()
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts, requiredByFilePatterns); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
