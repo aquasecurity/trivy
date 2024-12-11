@@ -73,6 +73,7 @@ func (o *Option) Sort() {
 	})
 	sort.Strings(o.WalkerOption.SkipFiles)
 	sort.Strings(o.WalkerOption.SkipDirs)
+	sort.Strings(o.WalkerOption.OnlyDirs)
 	sort.Strings(o.FilePatterns)
 }
 
