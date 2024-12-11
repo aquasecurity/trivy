@@ -446,6 +446,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 // newOtherLicense create new OtherLicense for license not included in the SPDX license list
 func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicense {
 	otherLicense := spdx.OtherLicense{
+		// ExtractedText and LicenseName are mandatory fields
 		ExtractedText: noAssertionField,
 		LicenseName:   noAssertionField,
 	}
