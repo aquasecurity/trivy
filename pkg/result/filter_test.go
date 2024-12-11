@@ -998,6 +998,102 @@ func TestFilter(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path with duplicates and different package IDs",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Vulnerabilities: []types.DetectedVulnerability{
+								{
+									VulnerabilityID:  "CVE-2019-0001",
+									PkgID:            "3ff14136-e09f-4df9-80ea-000000000001",
+									PkgName:          "foo",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0001",
+									PkgID:            "3ff14136-e09f-4df9-80ea-000000000002",
+									PkgName:          "foo",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0002",
+									PkgID:            "bar@1.2.3",
+									PkgName:          "bar",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0002",
+									PkgID:            "bar@1.2.3",
+									PkgName:          "bar",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityUnknown,
+				},
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2019-0002",
+								PkgID:            "bar@1.2.3",
+								PkgName:          "bar",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
+							},
+							{
+								VulnerabilityID:  "CVE-2019-0001",
+								PkgID:            "3ff14136-e09f-4df9-80ea-000000000001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
+							},
+							{
+								VulnerabilityID:  "CVE-2019-0001",
+								PkgID:            "3ff14136-e09f-4df9-80ea-000000000002",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
