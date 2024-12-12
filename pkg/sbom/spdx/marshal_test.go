@@ -963,11 +963,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						LicenseIdentifier: "LicenseRef-14b1606fb243e2b6",
 						LicenseName:       "NOASSERTION",
 						ExtractedText:     "BSD-4-clause",
+						LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
 					},
 					{
 						LicenseIdentifier: "LicenseRef-229659393343e160",
 						LicenseName:       "NOASSERTION",
 						ExtractedText:     "UNKNOWN",
+						LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
 					},
 					{
 						LicenseIdentifier: "LicenseRef-73d50f1d1ecbdb3b",

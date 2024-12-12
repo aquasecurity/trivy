@@ -96,7 +96,7 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 				"AFL 2.0",
 				"unknown-license",
 			},
-			wantLicenseName: "LicenseRef-c5e3a1aeaab71db AND AFL-2.0 AND LicenseRef-8960e1168859663e",
+			wantLicenseName: "LicenseRef-ffca10435cadded4 AND AFL-2.0 AND LicenseRef-8960e1168859663e",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
 					LicenseIdentifier: "LicenseRef-8960e1168859663e",
@@ -104,9 +104,10 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 					ExtractedText:     "NOASSERTION",
 				},
 				{
-					LicenseIdentifier: "LicenseRef-c5e3a1aeaab71db",
+					LicenseIdentifier: "LicenseRef-ffca10435cadded4",
 					LicenseName:       "NOASSERTION",
 					ExtractedText:     "unknown-license",
+					LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
 				},
 			},
 		},

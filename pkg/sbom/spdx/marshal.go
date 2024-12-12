@@ -452,6 +452,7 @@ func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicens
 	}
 	if text {
 		otherLicense.ExtractedText = license
+		otherLicense.LicenseComment = "The license text represents text found in package metadata and may not represent the full text of the license"
 	} else {
 		otherLicense.LicenseName = license
 	}
