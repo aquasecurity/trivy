@@ -914,8 +914,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "com.example:example",
 						PackageVersion:          "1.0.0",
-						PackageLicenseConcluded: "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-73d50f1d1ecbdb3b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-94441301bfddf506",
-						PackageLicenseDeclared:  "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-73d50f1d1ecbdb3b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-94441301bfddf506",
+						PackageLicenseConcluded: "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-77bdf77d8292ce5b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-a8d01765900624d3",
+						PackageLicenseDeclared:  "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-77bdf77d8292ce5b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-a8d01765900624d3",
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -972,14 +972,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
 					},
 					{
-						LicenseIdentifier: "LicenseRef-73d50f1d1ecbdb3b",
+						LicenseIdentifier: "LicenseRef-77bdf77d8292ce5b",
 						LicenseName:       "AFL-3.0 WITH wrong-exceptions",
-						ExtractedText:     "NOASSERTION",
+						ExtractedText:     `This component is licensed under "AFL-3.0 WITH wrong-exceptions"`,
 					},
 					{
-						LicenseIdentifier: "LicenseRef-94441301bfddf506",
+						LicenseIdentifier: "LicenseRef-a8d01765900624d3",
 						LicenseName:       "UNKNOWN",
-						ExtractedText:     "NOASSERTION",
+						ExtractedText:     `This component is licensed under "UNKNOWN"`,
 					},
 				},
 			},

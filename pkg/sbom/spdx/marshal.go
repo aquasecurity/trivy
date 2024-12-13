@@ -452,7 +452,7 @@ func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicens
 		otherLicense.LicenseComment = "The license text represents text found in package metadata and may not represent the full text of the license"
 	} else {
 		otherLicense.LicenseName = license
-		otherLicense.ExtractedText = fmt.Sprintf("This component is licensed under %s", license)
+		otherLicense.ExtractedText = fmt.Sprintf("This component is licensed under %q", license)
 	}
 	licenseID, err := calcSPDXID(m.hasher, otherLicense)
 	if err != nil {

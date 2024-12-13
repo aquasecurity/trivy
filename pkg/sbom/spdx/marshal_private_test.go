@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/spdx/tools-golang/spdx"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMarshaler_normalizeLicenses(t *testing.T) {
@@ -44,17 +44,17 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 				"GPLv2+",
 				"wrong-license or unknown-license",
 			},
-			wantLicenseName: "GPL-2.0-or-later AND (LicenseRef-a84be91b438c5e83 OR LicenseRef-8960e1168859663e)",
+			wantLicenseName: "GPL-2.0-or-later AND (LicenseRef-c581e42fe705aa48 OR LicenseRef-a0bb0951a6dfbdbe)",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
-					LicenseIdentifier: "LicenseRef-8960e1168859663e",
+					LicenseIdentifier: "LicenseRef-a0bb0951a6dfbdbe",
 					LicenseName:       "unknown-license",
-					ExtractedText:     "NOASSERTION",
+					ExtractedText:     `This component is licensed under "unknown-license"`,
 				},
 				{
-					LicenseIdentifier: "LicenseRef-a84be91b438c5e83",
+					LicenseIdentifier: "LicenseRef-c581e42fe705aa48",
 					LicenseName:       "wrong-license",
-					ExtractedText:     "NOASSERTION",
+					ExtractedText:     `This component is licensed under "wrong-license"`,
 				},
 			},
 		},
@@ -80,12 +80,12 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 				"AFL 2.0",
 				"AFL 3.0 with wrong-exceptions",
 			},
-			wantLicenseName: "AFL-2.0 AND LicenseRef-fb68abbeae80aaed",
+			wantLicenseName: "AFL-2.0 AND LicenseRef-51373b28fab165e9",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
-					LicenseIdentifier: "LicenseRef-fb68abbeae80aaed",
+					LicenseIdentifier: "LicenseRef-51373b28fab165e9",
 					LicenseName:       "AFL-3.0 WITH wrong-exceptions",
-					ExtractedText:     "NOASSERTION",
+					ExtractedText:     `This component is licensed under "AFL-3.0 WITH wrong-exceptions"`,
 				},
 			},
 		},
@@ -96,12 +96,12 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 				"AFL 2.0",
 				"unknown-license",
 			},
-			wantLicenseName: "LicenseRef-ffca10435cadded4 AND AFL-2.0 AND LicenseRef-8960e1168859663e",
+			wantLicenseName: "LicenseRef-ffca10435cadded4 AND AFL-2.0 AND LicenseRef-a0bb0951a6dfbdbe",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
-					LicenseIdentifier: "LicenseRef-8960e1168859663e",
+					LicenseIdentifier: "LicenseRef-a0bb0951a6dfbdbe",
 					LicenseName:       "unknown-license",
-					ExtractedText:     "NOASSERTION",
+					ExtractedText:     `This component is licensed under "unknown-license"`,
 				},
 				{
 					LicenseIdentifier: "LicenseRef-ffca10435cadded4",
@@ -121,8 +121,8 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 			sort.Slice(gotOtherLicenses, func(i, j int) bool {
 				return gotOtherLicenses[i].LicenseIdentifier < gotOtherLicenses[j].LicenseIdentifier
 			})
-			require.Equal(t, tt.wantLicenseName, gotLicenseName)
-			require.Equal(t, tt.wantOtherLicenses, gotOtherLicenses)
+			assert.Equal(t, tt.wantLicenseName, gotLicenseName)
+			assert.Equal(t, tt.wantOtherLicenses, gotOtherLicenses)
 		})
 	}
 }
