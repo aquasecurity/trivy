@@ -44,23 +44,7 @@ func (l Lock) devDeps() map[string]struct{} {
 
 	packages := l.packages()
 	visited := make(map[string]struct{})
-
-	var walkDeps func(Package)
-	walkDeps = func(pkg Package) {
-		if _, ok := visited[pkg.Name]; ok {
-			return
-		}
-		visited[pkg.Name] = struct{}{}
-		for _, dep := range pkg.Dependencies {
-			depPkg, exists := packages[dep.Name]
-			if !exists {
-				continue
-			}
-			walkDeps(depPkg)
-		}
-	}
-
-	walkDeps(root)
+	walkPackageDeps(root, packages, visited)
 
 	for _, pkg := range packages {
 		if _, exists := visited[pkg.Name]; !exists {
@@ -69,6 +53,20 @@ func (l Lock) devDeps() map[string]struct{} {
 	}
 
 	return devDeps
+}
+
+func walkPackageDeps(pkg Package, packages map[string]Package, visited map[string]struct{}) {
+	if _, ok := visited[pkg.Name]; ok {
+		return
+	}
+	visited[pkg.Name] = struct{}{}
+	for _, dep := range pkg.Dependencies {
+		depPkg, exists := packages[dep.Name]
+		if !exists {
+			continue
+		}
+		walkPackageDeps(depPkg, packages, visited)
+	}
 }
 
 func (l Lock) root() (Package, bool) {
