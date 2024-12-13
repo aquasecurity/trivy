@@ -126,7 +126,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			continue
 		}
 
-		pkgID := dependency.ID(ftypes.Uv, pkg.Name, pkg.Version)
+		pkgID := packageID(pkg.Name, pkg.Version)
 		relationship := ftypes.RelationshipIndirect
 		if pkg.isRoot() {
 			relationship = ftypes.RelationshipRoot
@@ -149,7 +149,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			if !exists {
 				continue
 			}
-			dependsOn = append(dependsOn, dependency.ID(ftypes.Uv, dep.Name, depPkg.Version))
+			dependsOn = append(dependsOn, packageID(dep.Name, depPkg.Version))
 		}
 
 		if len(dependsOn) > 0 {
@@ -161,4 +161,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	return pkgs, deps, nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Uv, name, version)
 }
