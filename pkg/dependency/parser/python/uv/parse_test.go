@@ -37,7 +37,7 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			p := New()
+			p := NewParser()
 			gotPkgs, gotDeps, err := p.Parse(f)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantPkgs, gotPkgs)

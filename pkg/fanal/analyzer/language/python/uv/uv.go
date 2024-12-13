@@ -28,7 +28,7 @@ type uvAnalyzer struct {
 
 func NewUvAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &uvAnalyzer{
-		lockParser: uvparser.New(),
+		lockParser: uvparser.NewParser(),
 	}, nil
 }
 

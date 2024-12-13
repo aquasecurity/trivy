@@ -102,7 +102,7 @@ type Dependency struct {
 
 type Parser struct{}
 
-func New() *Parser {
+func NewParser() *Parser {
 	return &Parser{}
 }
 
