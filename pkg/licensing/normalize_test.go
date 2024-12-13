@@ -206,8 +206,8 @@ func TestNormalize(t *testing.T) {
 			licenses: []string{
 				" The unmapped license ",
 			},
-			normalized:    " The unmapped license ",
-			normalizedKey: " The unmapped license ",
+			normalized:    "The unmapped license",
+			normalizedKey: "The unmapped license",
 		},
 		{
 			licenses: []string{

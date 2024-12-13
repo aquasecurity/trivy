@@ -641,7 +641,6 @@ var plusSuffixes = [3]string{"+", "-OR-LATER", " OR LATER"}
 func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	// Standardize space, including newline
 	name = strings.Join(strings.Fields(name), " ")
-	name = strings.TrimSpace(name)
 	name = strings.ToUpper(name)
 	// Do not perform any further normalization for URLs
 	if strings.HasPrefix(name, "HTTP") {
@@ -679,6 +678,8 @@ func Normalize(name string) string {
 }
 
 func NormalizeLicense(name string) expr.SimpleExpr {
+	// Always trim leading and trailing spaces, even if we don't find this license in `mapping`.
+	name = strings.TrimSpace(name)
 	normalized := standardizeKeyAndSuffix(name)
 	if found, ok := mapping[normalized.License]; ok {
 		return expr.SimpleExpr{License: found.License, HasPlus: found.HasPlus || normalized.HasPlus}
