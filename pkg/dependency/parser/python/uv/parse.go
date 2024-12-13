@@ -1,6 +1,8 @@
 package uv
 
 import (
+	"sort"
+
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -153,12 +155,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 
 		if len(dependsOn) > 0 {
+			sort.Strings(dependsOn)
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependsOn,
 			})
 		}
 	}
+
+	sort.Slice(pkgs, func(i, j int) bool {
+		return pkgs[i].ID < pkgs[j].ID
+	})
+
+	sort.Slice(deps, func(i, j int) bool {
+		return deps[i].ID < deps[j].ID
+	})
 
 	return pkgs, deps, nil
 }
