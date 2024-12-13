@@ -16,6 +16,7 @@ func TestParser_Parse(t *testing.T) {
 		file     string
 		wantPkgs []ftypes.Package
 		wantDeps []ftypes.Dependency
+		wantErr  string
 	}{
 		{
 			name:     "normal",
@@ -29,6 +30,11 @@ func TestParser_Parse(t *testing.T) {
 			wantPkgs: uvLarge,
 			wantDeps: uvLargeDeps,
 		},
+		{
+			name:    "lockfile without root",
+			file:    "testdata/uv_without_root.lock",
+			wantErr: "uv lockfile does not contain a root package",
+		},
 	}
 
 	for _, tt := range tests {
@@ -39,6 +45,10 @@ func TestParser_Parse(t *testing.T) {
 
 			p := NewParser()
 			gotPkgs, gotDeps, err := p.Parse(f)
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)

@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -23,11 +24,13 @@ func init() {
 const version = 1
 
 type uvAnalyzer struct {
+	logger     *log.Logger
 	lockParser language.Parser
 }
 
 func NewUvAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &uvAnalyzer{
+		logger:     log.WithPrefix("uv"),
 		lockParser: uvparser.NewParser(),
 	}, nil
 }
@@ -42,7 +45,8 @@ func (a *uvAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 		// Parse uv.lock
 		app, err := language.Parse(types.Uv, path, r, a.lockParser)
 		if err != nil {
-			return xerrors.Errorf("parse error: %w", err)
+			a.logger.Debug("Failed to parse uv lockfile", log.Err(err))
+			return nil
 		} else if app == nil {
 			return nil
 		}
