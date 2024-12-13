@@ -34,25 +34,16 @@ func (l Lock) directDeps() map[string]struct{} {
 	return deps
 }
 
-func (l Lock) devDeps() map[string]struct{} {
-	devDeps := make(map[string]struct{})
-
+func (l Lock) prodDeps() map[string]struct{} {
 	root, ok := l.root()
 	if !ok {
-		return devDeps
+		return make(map[string]struct{})
 	}
 
 	packages := l.packages()
 	visited := make(map[string]struct{})
 	walkPackageDeps(root, packages, visited)
-
-	for _, pkg := range packages {
-		if _, exists := visited[pkg.Name]; !exists {
-			devDeps[pkg.Name] = struct{}{}
-		}
-	}
-
-	return devDeps
+	return visited
 }
 
 func walkPackageDeps(pkg Package, packages map[string]Package, visited map[string]struct{}) {
@@ -114,7 +105,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	packages := lock.packages()
 	directDeps := lock.directDeps()
-	devDeps := lock.devDeps()
+	prodDeps := lock.prodDeps()
 
 	var (
 		pkgs []ftypes.Package
@@ -122,7 +113,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	)
 
 	for _, pkg := range lock.Packages {
-		if _, ok := devDeps[pkg.Name]; ok {
+		if _, ok := prodDeps[pkg.Name]; !ok {
 			continue
 		}
 
