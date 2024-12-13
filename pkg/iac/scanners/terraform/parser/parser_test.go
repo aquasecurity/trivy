@@ -2161,3 +2161,29 @@ resource "foo" "this" {
 		})
 	}
 }
+
+func TestAttrRefToNullVariable(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`variable "name" {
+  type    = string
+  default = null
+}
+
+resource "aws_s3_bucket" "example" {
+  bucket = var.name
+}`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	_, err := parser.Load(context.TODO())
+	require.NoError(t, err)
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	val := modules.GetResourcesByType("aws_s3_bucket")[0].GetAttribute("bucket").GetRawValue()
+	assert.Nil(t, val)
+}
