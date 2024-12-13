@@ -445,16 +445,14 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 
 // newOtherLicense create new OtherLicense for license not included in the SPDX license list
 func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicense {
-	otherLicense := spdx.OtherLicense{
-		// ExtractedText and LicenseName are mandatory fields
-		ExtractedText: noAssertionField,
-		LicenseName:   noAssertionField,
-	}
+	otherLicense := spdx.OtherLicense{}
 	if text {
+		otherLicense.LicenseName = noAssertionField
 		otherLicense.ExtractedText = license
 		otherLicense.LicenseComment = "The license text represents text found in package metadata and may not represent the full text of the license"
 	} else {
 		otherLicense.LicenseName = license
+		otherLicense.ExtractedText = fmt.Sprintf("This component is licensed under %s", license)
 	}
 	licenseID, err := calcSPDXID(m.hasher, otherLicense)
 	if err != nil {
