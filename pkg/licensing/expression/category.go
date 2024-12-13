@@ -367,7 +367,7 @@ var (
 	}
 
 	// SpdxLicenseExceptions contains all supported SPDX Exceptions
-	// cf. https://github.com/spdx/license-list-data/blob/592c2dcb8497c6fe829eea604045f77d3bce770b/json/exceptions.json
+	// cf. https://spdx.org/licenses/exceptions.json
 	// used `awk -F'"' '/"licenseExceptionId":/ {print toupper("\"" $4 "\"," )}' exceptions.json ` command
 	spdxLicenseExceptions = []string{
 		"389-EXCEPTION",
@@ -381,7 +381,6 @@ var (
 		"BISON-EXCEPTION-1.24",
 		"BISON-EXCEPTION-2.2",
 		"BOOTLOADER-EXCEPTION",
-		"CGAL-LINKING-EXCEPTION",
 		"CLASSPATH-EXCEPTION-2.0",
 		"CLISP-EXCEPTION-2.0",
 		"CRYPTSETUP-OPENSSL-EXCEPTION",
@@ -401,16 +400,13 @@ var (
 		"GNOME-EXAMPLES-EXCEPTION",
 		"GNU-COMPILER-EXCEPTION",
 		"GNU-JAVAMAIL-EXCEPTION",
-		"GPL-3.0-389-DS-BASE-EXCEPTION",
 		"GPL-3.0-INTERFACE-EXCEPTION",
 		"GPL-3.0-LINKING-EXCEPTION",
 		"GPL-3.0-LINKING-SOURCE-EXCEPTION",
 		"GPL-CC-1.0",
 		"GSTREAMER-EXCEPTION-2005",
 		"GSTREAMER-EXCEPTION-2008",
-		"HARBOUR-EXCEPTION", //nolint:misspell
 		"I2P-GPL-JAVA-EXCEPTION",
-		"INDEPENDENT-MODULES-EXCEPTION",
 		"KICAD-LIBRARIES-EXCEPTION",
 		"LGPL-3.0-LINKING-EXCEPTION",
 		"LIBPRI-OPENH323-EXCEPTION",
@@ -420,7 +416,6 @@ var (
 		"LLVM-EXCEPTION",
 		"LZMA-EXCEPTION",
 		"MIF-EXCEPTION",
-		"MXML-EXCEPTION",
 		"NOKIA-QT-EXCEPTION-1.1",
 		"OCAML-LGPL-LINKING-EXCEPTION",
 		"OCCT-EXCEPTION-1.0",
