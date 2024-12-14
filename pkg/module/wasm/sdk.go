@@ -140,8 +140,8 @@ func marshal(v any) uint64 {
 }
 
 func unmarshal(ptr, size uint32, v any) error {
-	b := unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
-	if err := json.Unmarshal(b, v); err != nil {
+	s := ptrToString(ptr, size)
+	if err := json.Unmarshal([]byte(s), v); err != nil {
 		return fmt.Errorf("unmarshal error: %s", err)
 	}
 	return nil
