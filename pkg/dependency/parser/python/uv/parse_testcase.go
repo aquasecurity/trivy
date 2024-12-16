@@ -14,11 +14,11 @@ var (
 	// add a root project
 	// fill in the relationships between the packages
 	uvNormal = []ftypes.Package{
+		{ID: "normal@0.1.0", Name: "normal", Version: "0.1.0", Relationship: ftypes.RelationshipRoot},
+		{ID: "requests@2.32.0", Name: "requests", Version: "2.32.0", Relationship: ftypes.RelationshipDirect},
 		{ID: "certifi@2024.8.30", Name: "certifi", Version: "2024.8.30", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "charset-normalizer@3.4.0", Name: "charset-normalizer", Version: "3.4.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "idna@3.10", Name: "idna", Version: "3.10", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "normal@0.1.0", Name: "normal", Version: "0.1.0", Relationship: ftypes.RelationshipRoot},
-		{ID: "requests@2.32.0", Name: "requests", Version: "2.32.0", Relationship: ftypes.RelationshipDirect},
 		{ID: "urllib3@2.2.3", Name: "urllib3", Version: "2.2.3", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 	}
 
@@ -41,45 +41,45 @@ var (
 	// add a root project
 	// fill in the relationships between the packages
 	uvLarge = []ftypes.Package{
-		{ID: "aiohappyeyeballs@2.4.4", Name: "aiohappyeyeballs", Version: "2.4.4", Relationship: ftypes.RelationshipIndirect, Indirect: true},
+		{ID: "large@0.1.0", Name: "large", Version: "0.1.0", Relationship: ftypes.RelationshipRoot},
 		{ID: "aiohttp@3.11.10", Name: "aiohttp", Version: "3.11.10", Relationship: ftypes.RelationshipDirect},
+		{ID: "asyncio@3.4.3", Name: "asyncio", Version: "3.4.3", Relationship: ftypes.RelationshipDirect},
+		{ID: "boto3@1.35.79", Name: "boto3", Version: "1.35.79", Relationship: ftypes.RelationshipDirect},
+		{ID: "fastapi@0.115.6", Name: "fastapi", Version: "0.115.6", Relationship: ftypes.RelationshipDirect},
+		{ID: "pydantic@2.10.3", Name: "pydantic", Version: "2.10.3", Relationship: ftypes.RelationshipDirect},
+		{ID: "simplejson@3.19.3", Name: "simplejson", Version: "3.19.3", Relationship: ftypes.RelationshipDirect},
+		{ID: "sqlalchemy@2.0.36", Name: "sqlalchemy", Version: "2.0.36", Relationship: ftypes.RelationshipDirect},
+		{ID: "uvicorn@0.32.1", Name: "uvicorn", Version: "0.32.1", Relationship: ftypes.RelationshipDirect},
+		{ID: "aiohappyeyeballs@2.4.4", Name: "aiohappyeyeballs", Version: "2.4.4", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "aiosignal@1.3.1", Name: "aiosignal", Version: "1.3.1", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "annotated-types@0.7.0", Name: "annotated-types", Version: "0.7.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "anyio@4.7.0", Name: "anyio", Version: "4.7.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "async-timeout@5.0.1", Name: "async-timeout", Version: "5.0.1", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "asyncio@3.4.3", Name: "asyncio", Version: "3.4.3", Relationship: ftypes.RelationshipDirect},
 		{ID: "attrs@24.2.0", Name: "attrs", Version: "24.2.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "boto3@1.35.79", Name: "boto3", Version: "1.35.79", Relationship: ftypes.RelationshipDirect},
 		{ID: "botocore@1.35.79", Name: "botocore", Version: "1.35.79", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "click@8.1.7", Name: "click", Version: "8.1.7", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "colorama@0.4.6", Name: "colorama", Version: "0.4.6", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "exceptiongroup@1.2.2", Name: "exceptiongroup", Version: "1.2.2", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "fastapi@0.115.6", Name: "fastapi", Version: "0.115.6", Relationship: ftypes.RelationshipDirect},
 		{ID: "frozenlist@1.5.0", Name: "frozenlist", Version: "1.5.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "greenlet@3.1.1", Name: "greenlet", Version: "3.1.1", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "h11@0.14.0", Name: "h11", Version: "0.14.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "idna@3.10", Name: "idna", Version: "3.10", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "jmespath@1.0.1", Name: "jmespath", Version: "1.0.1", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "large@0.1.0", Name: "large", Version: "0.1.0", Relationship: ftypes.RelationshipRoot},
 		{ID: "multidict@6.1.0", Name: "multidict", Version: "6.1.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "propcache@0.2.1", Name: "propcache", Version: "0.2.1", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "pydantic-core@2.27.1", Name: "pydantic-core", Version: "2.27.1", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "pydantic@2.10.3", Name: "pydantic", Version: "2.10.3", Relationship: ftypes.RelationshipDirect},
 		{ID: "python-dateutil@2.9.0.post0", Name: "python-dateutil", Version: "2.9.0.post0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "s3transfer@0.10.4", Name: "s3transfer", Version: "0.10.4", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "simplejson@3.19.3", Name: "simplejson", Version: "3.19.3", Relationship: ftypes.RelationshipDirect},
 		{ID: "six@1.17.0", Name: "six", Version: "1.17.0", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "sniffio@1.3.1", Name: "sniffio", Version: "1.3.1", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "sqlalchemy@2.0.36", Name: "sqlalchemy", Version: "2.0.36", Relationship: ftypes.RelationshipDirect},
 		{ID: "starlette@0.41.3", Name: "starlette", Version: "0.41.3", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "typing-extensions@4.12.2", Name: "typing-extensions", Version: "4.12.2", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 		{ID: "urllib3@1.26.20", Name: "urllib3", Version: "1.26.20", Relationship: ftypes.RelationshipIndirect, Indirect: true},
-		{ID: "uvicorn@0.32.1", Name: "uvicorn", Version: "0.32.1", Relationship: ftypes.RelationshipDirect},
 		{ID: "yarl@1.18.3", Name: "yarl", Version: "1.18.3", Relationship: ftypes.RelationshipIndirect, Indirect: true},
 	}
 
 	/*
-				uv pip list --format json | jq -r '.[] | .name' | xargs uv pip show | awk -F ': ' '
+		uv pip list --format json | jq -r '.[] | .name' | xargs uv pip show | awk -F ': ' '
 		/^Name/ {name=$2}
 		/^Version/ {version=$2}
 		/^Requires/ {requires=$2}

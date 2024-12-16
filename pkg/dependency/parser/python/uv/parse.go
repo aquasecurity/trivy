@@ -22,19 +22,18 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func (l Lock) directDeps() map[string]struct{} {
+func (l Lock) directDeps(root Package) map[string]struct{} {
 	deps := make(map[string]struct{})
-	root := l.root()
 	for _, dep := range root.Dependencies {
 		deps[dep.Name] = struct{}{}
 	}
 	return deps
 }
 
-func (l Lock) prodDeps() map[string]struct{} {
+func (l Lock) prodDeps(root Package) map[string]struct{} {
 	packages := l.packages()
 	visited := make(map[string]struct{})
-	walkPackageDeps(l.root(), packages, visited)
+	walkPackageDeps(root, packages, visited)
 	return visited
 }
 
@@ -96,18 +95,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	rootPackage := lock.root()
+	// lock file must include root package
+	// cf. https://github.com/astral-sh/uv/blob/f80ddf10b63c3e7b421ca4658e63f97db1e0378c/crates/uv/src/commands/project/lock.rs#L933-L936
 	if rootPackage.Name == "" {
-		return nil, nil, xerrors.New("uv lockfile does not contain a root package. " +
-			"See https://github.com/astral-sh/uv/blob/f80ddf10b63c3e7b421ca4658e63f97db1e0378c/crates/uv/src/commands/project/lock.rs#L933-L936")
+		return nil, nil, xerrors.New("uv lockfile does not contain a root package.")
 	}
 
 	packages := lock.packages()
-	directDeps := lock.directDeps()
-	prodDeps := lock.prodDeps()
+	directDeps := lock.directDeps(rootPackage)
+	prodDeps := lock.prodDeps(rootPackage)
 
 	var (
-		pkgs []ftypes.Package
-		deps []ftypes.Dependency
+		pkgs ftypes.Packages
+		deps ftypes.Dependencies
 	)
 
 	for _, pkg := range lock.Packages {
@@ -150,14 +150,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		}
 	}
 
-	sort.Slice(pkgs, func(i, j int) bool {
-		return pkgs[i].ID < pkgs[j].ID
-	})
-
-	sort.Slice(deps, func(i, j int) bool {
-		return deps[i].ID < deps[j].ID
-	})
-
+	sort.Sort(pkgs)
+	sort.Sort(deps)
 	return pkgs, deps, nil
 }
 

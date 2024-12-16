@@ -45,7 +45,7 @@ func (a *uvAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 		// Parse uv.lock
 		app, err := language.Parse(types.Uv, path, r, a.lockParser)
 		if err != nil {
-			a.logger.Debug("Failed to parse uv lockfile", log.Err(err))
+			a.logger.Warn("Failed to parse uv lockfile", log.Err(err))
 			return nil
 		} else if app == nil {
 			return nil
@@ -65,8 +65,7 @@ func (a *uvAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisI
 }
 
 func (a *uvAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	fileName := filepath.Base(filePath)
-	return fileName == types.UvLock
+	return filepath.Base(filePath) == types.UvLock
 }
 
 func (a *uvAnalyzer) Type() analyzer.Type {

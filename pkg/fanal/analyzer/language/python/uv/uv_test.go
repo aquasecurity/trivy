@@ -27,6 +27,34 @@ func Test_uvAnalyzer_PostAnalyze(t *testing.T) {
 						FilePath: "uv.lock",
 						Packages: types.Packages{
 							{
+								ID:           "uv-test@0.1.0",
+								Name:         "uv-test",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"pluggy@1.5.0",
+									"requests@2.32.3",
+								},
+							},
+							{
+								ID:           "pluggy@1.5.0",
+								Name:         "pluggy",
+								Version:      "1.5.0",
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "requests@2.32.3",
+								Name:         "requests",
+								Version:      "2.32.3",
+								Relationship: types.RelationshipDirect,
+								DependsOn: []string{
+									"certifi@2024.8.30",
+									"charset-normalizer@3.4.0",
+									"idna@3.10",
+									"urllib3@2.2.3",
+								},
+							},
+							{
 								ID:           "certifi@2024.8.30",
 								Name:         "certifi",
 								Version:      "2024.8.30",
@@ -48,39 +76,11 @@ func Test_uvAnalyzer_PostAnalyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:           "pluggy@1.5.0",
-								Name:         "pluggy",
-								Version:      "1.5.0",
-								Relationship: types.RelationshipDirect,
-							},
-							{
-								ID:           "requests@2.32.3",
-								Name:         "requests",
-								Version:      "2.32.3",
-								Relationship: types.RelationshipDirect,
-								DependsOn: []string{
-									"certifi@2024.8.30",
-									"charset-normalizer@3.4.0",
-									"idna@3.10",
-									"urllib3@2.2.3",
-								},
-							},
-							{
 								ID:           "urllib3@2.2.3",
 								Name:         "urllib3",
 								Version:      "2.2.3",
 								Indirect:     true,
 								Relationship: types.RelationshipIndirect,
-							},
-							{
-								ID:           "uv-test@0.1.0",
-								Name:         "uv-test",
-								Version:      "0.1.0",
-								Relationship: types.RelationshipRoot,
-								DependsOn: []string{
-									"pluggy@1.5.0",
-									"requests@2.32.3",
-								},
 							},
 						},
 					},
