@@ -8,7 +8,6 @@ package wasm
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"unsafe"
 
 	"github.com/aquasecurity/trivy/pkg/module/api"
@@ -141,28 +140,17 @@ func marshal(v any) uint64 {
 }
 
 func unmarshal(ptr, size uint32, v any) error {
-	var b []byte
-	s := (*reflect.SliceHeader)(unsafe.Pointer(&b))
-	s.Len = uintptr(size)
-	s.Cap = uintptr(size)
-	s.Data = uintptr(ptr)
-
-	if err := json.Unmarshal(b, v); err != nil {
+	s := ptrToString(ptr, size)
+	if err := json.Unmarshal([]byte(s), v); err != nil {
 		return fmt.Errorf("unmarshal error: %s", err)
 	}
-
 	return nil
 }
 
 // ptrToString returns a string from WebAssembly compatible numeric types representing its pointer and length.
 func ptrToString(ptr uint32, size uint32) string {
-	// Get a slice view of the underlying bytes in the stream. We use SliceHeader, not StringHeader
-	// as it allows us to fix the capacity to what was allocated.
-	return *(*string)(unsafe.Pointer(&reflect.SliceHeader{
-		Data: uintptr(ptr),
-		Len:  uintptr(size), // Tinygo requires these as uintptrs even if they are int fields.
-		Cap:  uintptr(size), // ^^ See https://github.com/tinygo-org/tinygo/issues/1284
-	}))
+	b := unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
+	return *(*string)(unsafe.Pointer(&b))
 }
 
 // stringToPtr returns a pointer and size pair for the given string in a way compatible with WebAssembly numeric types.
