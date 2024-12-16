@@ -16,7 +16,7 @@ import (
 
 // TestRepository tests `trivy repo` with the local code repositories
 func TestRepository(t *testing.T) {
-	t.Setenv("NUGET_PACKAGES", "/tmp/fake_nuget_packages")
+	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	type args struct {
 		scanner        types.Scanner
 		ignoreIDs      []string
