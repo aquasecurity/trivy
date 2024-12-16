@@ -3,9 +3,9 @@ package poetry
 import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
-	// docker run --name pipenv --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
+	// docker run --name poetry --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
 	// apk add curl
-	// curl -sSL https://install.python-poetry.org | python3 -
+	// curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.7 python3 -
 	// export PATH=/root/.local/bin:$PATH
 	// poetry new normal && cd normal
 	// poetry add pypi@2.1
@@ -14,9 +14,9 @@ var (
 		{ID: "pypi@2.1", Name: "pypi", Version: "2.1"},
 	}
 
-	// docker run --name pipenv --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
+	// docker run --name poetry --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
 	// apk add curl
-	// curl -sSL https://install.python-poetry.org | python3 -
+	// curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.7 python3 -
 	// export PATH=/root/.local/bin:$PATH
 	// poetry new many && cd many
 	// curl -o poetry.lock https://raw.githubusercontent.com/python-poetry/poetry/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock
@@ -108,9 +108,9 @@ var (
 		{ID: "xattr@0.10.1", DependsOn: []string{"cffi@1.15.1"}},
 	}
 
-	// docker run --name pipenv --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
+	// docker run --name poetry --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
 	// apk add curl
-	// curl -sSL https://install.python-poetry.org | python3 -
+	// curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.7 python3 -
 	// export PATH=/root/.local/bin:$PATH
 	// poetry new web && cd web
 	// poetry add flask@1.0.3

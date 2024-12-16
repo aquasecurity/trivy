@@ -181,6 +181,99 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 			dir:  "testdata/sad",
 			want: &analyzer.AnalysisResult{},
 		},
+		{
+			// docker run --name poetry --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
+			// wget -qO- https://install.python-poetry.org | POETRY_VERSION=1.8.5 python3 -
+			// export PATH="/root/.local/bin:$PATH"
+			// poetry new groups && cd groups
+			// poetry add requests@2.32.3
+			// poetry add --group dev pytest@8.3.4
+			// poetry add --group lint ruff@0.8.3
+			// poetry add --optional typing-inspect@0.9.0
+			name: "skip deps from groups",
+			dir:  "testdata/with-groups",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Poetry,
+						FilePath: "poetry.lock",
+						Packages: types.Packages{
+							{
+								ID:           "certifi@2024.12.14",
+								Name:         "certifi",
+								Version:      "2024.12.14",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "charset-normalizer@3.4.0",
+								Name:         "charset-normalizer",
+								Version:      "3.4.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "idna@3.10",
+								Name:         "idna",
+								Version:      "3.10",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "mypy-extensions@1.0.0",
+								Name:         "mypy-extensions",
+								Version:      "1.0.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:      "requests@2.32.3",
+								Name:    "requests",
+								Version: "2.32.3",
+								DependsOn: []string{
+									"certifi@2024.12.14",
+									"charset-normalizer@3.4.0",
+									"idna@3.10",
+									"urllib3@2.2.3",
+								},
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "ruff@0.8.3",
+								Name:         "ruff",
+								Version:      "0.8.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "typing-extensions@4.12.2",
+								Name:         "typing-extensions",
+								Version:      "4.12.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:      "typing-inspect@0.9.0",
+								Name:    "typing-inspect",
+								Version: "0.9.0",
+								DependsOn: []string{
+									"mypy-extensions@1.0.0",
+									"typing-extensions@4.12.2",
+								},
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "urllib3@2.2.3",
+								Name:         "urllib3",
+								Version:      "2.2.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
