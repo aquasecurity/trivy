@@ -1,9 +1,12 @@
 package expression
 
 import (
-	"slices"
+	_ "embed"
+	"encoding/json"
 	"strings"
+	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 )
 
@@ -365,89 +368,15 @@ var (
 		Unlicense,
 		ZeroBSD,
 	}
-
-	// SpdxLicenseExceptions contains all supported SPDX Exceptions
-	// cf. https://spdx.org/licenses/exceptions.json
-	// used `awk -F'"' '/"licenseExceptionId":/ {print toupper("\"" $4 "\"," )}' exceptions.json ` command
-	spdxLicenseExceptions = []string{
-		"389-EXCEPTION",
-		"ASTERISK-EXCEPTION",
-		"ASTERISK-LINKING-PROTOCOLS-EXCEPTION",
-		"AUTOCONF-EXCEPTION-2.0",
-		"AUTOCONF-EXCEPTION-3.0",
-		"AUTOCONF-EXCEPTION-GENERIC",
-		"AUTOCONF-EXCEPTION-GENERIC-3.0",
-		"AUTOCONF-EXCEPTION-MACRO",
-		"BISON-EXCEPTION-1.24",
-		"BISON-EXCEPTION-2.2",
-		"BOOTLOADER-EXCEPTION",
-		"CLASSPATH-EXCEPTION-2.0",
-		"CLISP-EXCEPTION-2.0",
-		"CRYPTSETUP-OPENSSL-EXCEPTION",
-		"DIGIRULE-FOSS-EXCEPTION",
-		"ECOS-EXCEPTION-2.0",
-		"ERLANG-OTP-LINKING-EXCEPTION",
-		"FAWKES-RUNTIME-EXCEPTION",
-		"FLTK-EXCEPTION",
-		"FMT-EXCEPTION",
-		"FONT-EXCEPTION-2.0",
-		"FREERTOS-EXCEPTION-2.0",
-		"GCC-EXCEPTION-2.0",
-		"GCC-EXCEPTION-2.0-NOTE",
-		"GCC-EXCEPTION-3.1",
-		"GMSH-EXCEPTION",
-		"GNAT-EXCEPTION",
-		"GNOME-EXAMPLES-EXCEPTION",
-		"GNU-COMPILER-EXCEPTION",
-		"GNU-JAVAMAIL-EXCEPTION",
-		"GPL-3.0-INTERFACE-EXCEPTION",
-		"GPL-3.0-LINKING-EXCEPTION",
-		"GPL-3.0-LINKING-SOURCE-EXCEPTION",
-		"GPL-CC-1.0",
-		"GSTREAMER-EXCEPTION-2005",
-		"GSTREAMER-EXCEPTION-2008",
-		"I2P-GPL-JAVA-EXCEPTION",
-		"KICAD-LIBRARIES-EXCEPTION",
-		"LGPL-3.0-LINKING-EXCEPTION",
-		"LIBPRI-OPENH323-EXCEPTION",
-		"LIBTOOL-EXCEPTION",
-		"LINUX-SYSCALL-NOTE",
-		"LLGPL",
-		"LLVM-EXCEPTION",
-		"LZMA-EXCEPTION",
-		"MIF-EXCEPTION",
-		"NOKIA-QT-EXCEPTION-1.1",
-		"OCAML-LGPL-LINKING-EXCEPTION",
-		"OCCT-EXCEPTION-1.0",
-		"OPENJDK-ASSEMBLY-EXCEPTION-1.0",
-		"OPENVPN-OPENSSL-EXCEPTION",
-		"PCRE2-EXCEPTION",
-		"PS-OR-PDF-FONT-EXCEPTION-20170817",
-		"QPL-1.0-INRIA-2004-EXCEPTION",
-		"QT-GPL-EXCEPTION-1.0",
-		"QT-LGPL-EXCEPTION-1.1",
-		"QWT-EXCEPTION-1.0",
-		"ROMIC-EXCEPTION",
-		"RRDTOOL-FLOSS-EXCEPTION-2.0",
-		"SANE-EXCEPTION",
-		"SHL-2.0",
-		"SHL-2.1",
-		"STUNNEL-EXCEPTION",
-		"SWI-EXCEPTION",
-		"SWIFT-EXCEPTION",
-		"TEXINFO-EXCEPTION",
-		"U-BOOT-EXCEPTION-2.0",
-		"UBDL-EXCEPTION",
-		"UNIVERSAL-FOSS-EXCEPTION-1.0",
-		"VSFTPD-OPENSSL-EXCEPTION",
-		"WXWINDOWS-EXCEPTION-3.1",
-		"X11VNC-OPENSSL-EXCEPTION",
-	}
 )
 
 var spdxLicenses map[string]struct{}
 
-func initSpdxLicenses() {
+var initSpdxLicenses = sync.OnceFunc(func() {
+	if len(spdxLicenses) > 0 {
+		return
+	}
+
 	licenseSlices := [][]string{
 		ForbiddenLicenses,
 		RestrictedLicenses,
@@ -473,18 +402,46 @@ func initSpdxLicenses() {
 		license.HasPlus = true
 		spdxLicenses[license.String()] = struct{}{}
 	}
+})
 
-}
+//go:embed exceptions.json
+var exceptions []byte
+
+var spdxExceptions map[string]struct{}
+
+var initSpdxExceptions = sync.OnceFunc(func() {
+	if len(spdxExceptions) > 0 {
+		return
+	}
+
+	var exs []string
+	if err := json.Unmarshal(exceptions, &exs); err != nil {
+		log.WithPrefix("SPDX").Warn("Unable to parse SPDX exception file", log.Err(err))
+		return
+	}
+
+	spdxExceptions = lo.SliceToMap(exs, func(e string) (string, struct{}) {
+		return e, struct{}{}
+	})
+})
 
 // ValidSpdxLicense returns true if SPDX license lists contain licenseID and license exception (if exists)
 func ValidSpdxLicense(license string) bool {
 	if spdxLicenses == nil {
 		initSpdxLicenses()
 	}
+	if spdxExceptions == nil {
+		initSpdxExceptions()
+	}
 
 	id, exception, ok := strings.Cut(license, " WITH ")
-	if _, licenseIdFound := spdxLicenses[id]; licenseIdFound && (!ok || slices.Contains(spdxLicenseExceptions, strings.ToUpper(exception))) {
-		return true
+	if _, licenseIdFound := spdxLicenses[id]; licenseIdFound {
+		if !ok {
+			return true
+		}
+		if _, exceptionFound := spdxExceptions[strings.ToUpper(exception)]; exceptionFound {
+			return true
+		}
 	}
 	return false
 }
