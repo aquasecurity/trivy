@@ -30,8 +30,7 @@ func (l Lock) directDeps(root Package) map[string]struct{} {
 	return deps
 }
 
-func (l Lock) prodDeps(root Package) map[string]struct{} {
-	packages := l.packages()
+func prodDeps(root Package, packages map[string]Package) map[string]struct{} {
 	visited := make(map[string]struct{})
 	walkPackageDeps(root, packages, visited)
 	return visited
@@ -51,14 +50,21 @@ func walkPackageDeps(pkg Package, packages map[string]Package, visited map[strin
 	}
 }
 
-func (l Lock) root() Package {
+func (l Lock) root() (Package, error) {
+	var pkgs []Package
 	for _, pkg := range l.Packages {
 		if pkg.isRoot() {
-			return pkg
+			pkgs = append(pkgs, pkg)
 		}
 	}
 
-	return Package{}
+	// lock file must include root package
+	// cf. https://github.com/astral-sh/uv/blob/f80ddf10b63c3e7b421ca4658e63f97db1e0378c/crates/uv/src/commands/project/lock.rs#L933-L936
+	if len(pkgs) != 1 {
+		return Package{}, xerrors.New("uv lockfile must contain 1 root package")
+	}
+
+	return pkgs[0], nil
 }
 
 type Package struct {
@@ -94,16 +100,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		return nil, nil, xerrors.Errorf("failed to decode uv lock file: %w", err)
 	}
 
-	rootPackage := lock.root()
-	// lock file must include root package
-	// cf. https://github.com/astral-sh/uv/blob/f80ddf10b63c3e7b421ca4658e63f97db1e0378c/crates/uv/src/commands/project/lock.rs#L933-L936
-	if rootPackage.Name == "" {
-		return nil, nil, xerrors.New("uv lockfile does not contain a root package.")
+	rootPackage, err := lock.root()
+	if err != nil {
+		return nil, nil, err
 	}
 
 	packages := lock.packages()
 	directDeps := lock.directDeps(rootPackage)
-	prodDeps := lock.prodDeps(rootPackage)
+	prodDeps := prodDeps(rootPackage, packages)
 
 	var (
 		pkgs ftypes.Packages

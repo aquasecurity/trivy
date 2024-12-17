@@ -33,7 +33,12 @@ func TestParser_Parse(t *testing.T) {
 		{
 			name:    "lockfile without root",
 			file:    "testdata/uv_without_root.lock",
-			wantErr: "uv lockfile does not contain a root package",
+			wantErr: "uv lockfile must contain 1 root package",
+		},
+		{
+			name:    "multiple roots",
+			file:    "testdata/uv_multiple_roots.lock",
+			wantErr: "uv lockfile must contain 1 root package",
 		},
 	}
 
