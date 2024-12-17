@@ -19,14 +19,6 @@ type Tool struct {
 	Poetry Poetry `toml:"poetry"`
 }
 
-type PackageName string
-
-func (a *PackageName) UnmarshalText(text []byte) error {
-	var err error
-	*a = PackageName(poetry.NormalizePkgName(string(text)))
-	return err
-}
-
 type Poetry struct {
 	Dependencies dependencies     `toml:"dependencies"`
 	Groups       map[string]Group `toml:"group"`
@@ -36,7 +28,7 @@ type Group struct {
 	Dependencies dependencies `toml:"dependencies"`
 }
 
-type dependencies map[string]any
+type dependencies map[string]struct{}
 
 func (d *dependencies) UnmarshalTOML(data any) error {
 	m, ok := data.(map[string]any)
@@ -44,8 +36,8 @@ func (d *dependencies) UnmarshalTOML(data any) error {
 		return fmt.Errorf("dependencies must be map, but got: %T", data)
 	}
 
-	*d = lo.MapKeys(m, func(_ any, pkgName string) string {
-		return poetry.NormalizePkgName(pkgName)
+	*d = lo.MapEntries(m, func(pkgName string, _ any) (string, struct{}) {
+		return poetry.NormalizePkgName(pkgName), struct{}{}
 	})
 	return nil
 }

@@ -24,32 +24,21 @@ func TestParser_Parse(t *testing.T) {
 			want: pyproject.PyProject{
 				Tool: pyproject.Tool{
 					Poetry: pyproject.Poetry{
-						Dependencies: map[string]any{
-							"flask":  "^1.0",
-							"python": "^3.9",
-							"requests": map[string]any{
-								"version":  "2.28.1",
-								"optional": true,
-							},
-							"virtualenv": []any{
-								map[string]any{
-									"version": "^20.4.3,!=20.4.5,!=20.4.6",
-								},
-								map[string]any{
-									"version": "<20.16.6",
-									"markers": "sys_platform == 'win32' and python_version == '3.9'",
-								},
-							},
+						Dependencies: map[string]struct{}{
+							"flask":      {},
+							"python":     {},
+							"requests":   {},
+							"virtualenv": {},
 						},
 						Groups: map[string]pyproject.Group{
 							"dev": {
-								Dependencies: map[string]any{
-									"pytest": "8.3.4",
+								Dependencies: map[string]struct{}{
+									"pytest": {},
 								},
 							},
 							"lint": {
-								Dependencies: map[string]any{
-									"ruff": "0.8.3",
+								Dependencies: map[string]struct{}{
+									"ruff": {},
 								},
 							},
 						},
