@@ -1,13 +1,15 @@
 package expression
 
 import (
-	_ "embed"
 	"encoding/json"
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
+
+	_ "embed"
 )
 
 // Canonical names of the licenses.
