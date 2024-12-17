@@ -540,3 +540,10 @@ type Helm mg.Namespace
 func (Helm) UpdateVersion() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_helm", "./magefiles")
 }
+
+type SPDX mg.Namespace
+
+// UpdateLicenseExceptions updates 'exception.json' with SPDX license exceptions
+func (SPDX) UpdateLicenseExceptions() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_spdx", "./magefiles/spdx.go")
+}
