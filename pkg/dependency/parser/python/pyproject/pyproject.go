@@ -8,7 +8,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/poetry"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 )
 
 type PyProject struct {
@@ -37,7 +37,7 @@ func (d *dependencies) UnmarshalTOML(data any) error {
 	}
 
 	*d = lo.MapEntries(m, func(pkgName string, _ any) (string, struct{}) {
-		return poetry.NormalizePkgName(pkgName), struct{}{}
+		return python.NormalizePkgName(pkgName), struct{}{}
 	})
 	return nil
 }
