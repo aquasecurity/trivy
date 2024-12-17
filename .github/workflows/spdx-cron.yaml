@@ -19,6 +19,14 @@ jobs:
             echo "Run 'mage spdx:updateLicenseExceptions' and push it"
             exit 1
           fi
+          
+      - name: Check if SPDX exceptions are up-to-date
+        run: |
+          mage spdx:updateLicenseExceptions
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage spdx:updateLicenseExceptions' and push it"
+            exit 1
+          fi          
 
       - name: Microsoft Teams Notification
         ## Until the PR with the fix for the AdaptivCard version is merged yet
