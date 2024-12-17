@@ -7,7 +7,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -117,7 +116,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	prodDeps := getProdDeps(project, app)
 
 	app.Packages = lo.Filter(app.Packages, func(pkg types.Package, _ int) bool {
-		_, ok := prodDeps[packageNameFromID(pkg.ID)]
+		_, ok := prodDeps[pkg.ID]
 		return ok
 	})
 
@@ -126,42 +125,41 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 
 func getProdDeps(project pyproject.PyProject, app *types.Application) map[string]struct{} {
 	packages := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
-		return packageNameFromID(pkg.ID), pkg
+		return pkg.ID, pkg
 	})
 
 	visited := make(map[string]struct{})
-	for depName := range project.Tool.Poetry.Dependencies {
-		walkPackageDeps(depName, packages, visited)
-	}
+	deps := project.Tool.Poetry.Dependencies
 
 	for group, groupDeps := range project.Tool.Poetry.Groups {
 		if group == "dev" {
 			continue
 		}
-		for depName := range groupDeps.Dependencies {
-			walkPackageDeps(depName, packages, visited)
+		deps = lo.Assign(deps, groupDeps.Dependencies)
+	}
+
+	for _, pkg := range packages {
+		if _, prodDep := deps[pkg.Name]; !prodDep {
+			continue
 		}
+		walkPackageDeps(pkg.ID, packages, visited)
 	}
 	return visited
 }
 
-func walkPackageDeps(packageName string, packages map[string]types.Package, visited map[string]struct{}) {
-	if _, ok := visited[packageName]; ok {
+func walkPackageDeps(pkgID string, packages map[string]types.Package, visited map[string]struct{}) {
+	if _, ok := visited[pkgID]; ok {
 		return
 	}
-	visited[packageName] = struct{}{}
-	pkg, exists := packages[packageName]
+	visited[pkgID] = struct{}{}
+	pkg, exists := packages[pkgID]
 	if !exists {
 		return
 	}
 
 	for _, dep := range pkg.DependsOn {
-		walkPackageDeps(packageNameFromID(dep), packages, visited)
+		walkPackageDeps(dep, packages, visited)
 	}
-}
-
-func packageNameFromID(id string) string {
-	return strings.Split(id, "@")[0]
 }
 
 func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (pyproject.PyProject, error) {

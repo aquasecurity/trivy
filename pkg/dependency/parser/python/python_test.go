@@ -3,8 +3,9 @@ package python_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 )
 
 func Test_NormalizePkgName(t *testing.T) {
