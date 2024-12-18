@@ -131,7 +131,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			ID:           pkgID,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
-			Indirect:     relationship == ftypes.RelationshipIndirect,
 			Relationship: relationship,
 		})
 
