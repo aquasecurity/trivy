@@ -5,6 +5,6 @@ registries:
 - type: standard
   ref: v3.157.0 # renovate: depName=aquaproj/aqua-registry
 packages:
-- name: tinygo-org/tinygo@v0.31.1
+- name: tinygo-org/tinygo@v0.33.0
 - name: WebAssembly/binaryen@version_112
 - name: magefile/mage@v1.14.0
