@@ -113,17 +113,11 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		}
 	}
 
-	prodDeps := getProdDeps(project, app)
-
-	app.Packages = lo.Filter(app.Packages, func(pkg types.Package, _ int) bool {
-		_, ok := prodDeps[pkg.ID]
-		return ok
-	})
-
+	filterProdPackages(project, app)
 	return nil
 }
 
-func getProdDeps(project pyproject.PyProject, app *types.Application) map[string]struct{} {
+func filterProdPackages(project pyproject.PyProject, app *types.Application) {
 	packages := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
@@ -144,7 +138,11 @@ func getProdDeps(project pyproject.PyProject, app *types.Application) map[string
 		}
 		walkPackageDeps(pkg.ID, packages, visited)
 	}
-	return visited
+
+	app.Packages = lo.Filter(app.Packages, func(pkg types.Package, _ int) bool {
+		_, ok := visited[pkg.ID]
+		return ok
+	})
 }
 
 func walkPackageDeps(pkgID string, packages map[string]types.Package, visited map[string]struct{}) {
