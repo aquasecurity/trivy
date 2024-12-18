@@ -107,6 +107,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 
 	packages := lock.packages()
 	directDeps := lock.directDeps(rootPackage)
+
+	// Since each lockfile contains a root package with a list of direct dependencies,
+	// we can identify all production dependencies by traversing the dependency graph
+	// and collecting all the dependencies that are reachable from the root.
 	prodDeps := prodDeps(rootPackage, packages)
 
 	var (
