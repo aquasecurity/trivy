@@ -121,7 +121,7 @@ linters:
     - usestdlibvars
 
 run:
-  go: '1.22'
+  go: '1.23'
   timeout: 30m
 
 issues:
