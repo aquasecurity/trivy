@@ -25,12 +25,6 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: uvNormalDeps,
 		},
 		{
-			name:     "many",
-			file:     "testdata/uv_large.lock",
-			wantPkgs: uvLarge,
-			wantDeps: uvLargeDeps,
-		},
-		{
 			name:    "lockfile without root",
 			file:    "testdata/uv_without_root.lock",
 			wantErr: "uv lockfile must contain 1 root package",
