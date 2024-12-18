@@ -69,6 +69,7 @@
             "UID": "49acc401742db23d"
           },
           "Version": "0.4.6",
+          "Indirect": true,
           "Relationship": "indirect",
           "Layer": {}
         }
