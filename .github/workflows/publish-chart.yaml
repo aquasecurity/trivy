@@ -71,7 +71,7 @@ jobs:
           git config --global user.name "GitHub Actions"
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.0
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
