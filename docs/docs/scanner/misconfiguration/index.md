@@ -451,7 +451,7 @@ If multiple variables evaluate to the same hostname, Trivy will choose the envir
 
 ### Skipping resources by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.
+Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
 
