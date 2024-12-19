@@ -22,14 +22,6 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func (l Lock) directDeps(root Package) map[string]struct{} {
-	deps := make(map[string]struct{})
-	for _, dep := range root.Dependencies {
-		deps[dep.Name] = struct{}{}
-	}
-	return deps
-}
-
 func prodDeps(root Package, packages map[string]Package) map[string]struct{} {
 	visited := make(map[string]struct{})
 	walkPackageDeps(root, packages, visited)
@@ -41,8 +33,8 @@ func walkPackageDeps(pkg Package, packages map[string]Package, visited map[strin
 		return
 	}
 	visited[pkg.Name] = struct{}{}
-	for _, dep := range pkg.Dependencies {
-		depPkg, exists := packages[dep.Name]
+	for depName := range pkg.nonDevDeps() {
+		depPkg, exists := packages[depName]
 		if !exists {
 			continue
 		}
@@ -68,10 +60,38 @@ func (l Lock) root() (Package, error) {
 }
 
 type Package struct {
-	Name         string       `toml:"name"`
-	Version      string       `toml:"version"`
-	Source       Source       `toml:"source"`
-	Dependencies []Dependency `toml:"dependencies"`
+	Name                 string                  `toml:"name"`
+	Version              string                  `toml:"version"`
+	Source               Source                  `toml:"source"`
+	Dependencies         Dependencies            `toml:"dependencies"`
+	DevDependencies      map[string]Dependencies `toml:"dev-dependencies"`
+	OptionalDependencies map[string]Dependencies `toml:"optional-dependencies"`
+}
+
+func (p Package) directDeps() map[string]struct{} {
+	deps := p.nonDevDeps()
+	for _, groupDeps := range p.DevDependencies {
+		deps = lo.Assign(deps, groupDeps.toSet())
+	}
+	return deps
+}
+
+func (p Package) nonDevDeps() map[string]struct{} {
+	deps := p.Dependencies.toSet()
+	for _, groupDeps := range p.OptionalDependencies {
+		deps = lo.Assign(deps, groupDeps.toSet())
+	}
+	return deps
+}
+
+type Dependencies []Dependency
+
+func (d Dependencies) toSet() map[string]struct{} {
+	deps := make(map[string]struct{})
+	for _, dep := range d {
+		deps[dep.Name] = struct{}{}
+	}
+	return deps
 }
 
 // https://github.com/astral-sh/uv/blob/f7d647e81d7e1e3be189324b06024ed2057168e6/crates/uv-resolver/src/lock/mod.rs#L572-L579
@@ -106,7 +126,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	packages := lock.packages()
-	directDeps := lock.directDeps(rootPackage)
+	directDeps := rootPackage.directDeps()
 
 	// Since each lockfile contains a root package with a list of direct dependencies,
 	// we can identify all production dependencies by traversing the dependency graph
@@ -119,10 +139,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	)
 
 	for _, pkg := range lock.Packages {
-		if _, ok := prodDeps[pkg.Name]; !ok {
-			continue
-		}
-
 		pkgID := packageID(pkg.Name, pkg.Version)
 		relationship := ftypes.RelationshipIndirect
 		if pkg.isRoot() {
@@ -131,21 +147,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			relationship = ftypes.RelationshipDirect
 		}
 
+		_, isProd := prodDeps[pkg.Name]
 		pkgs = append(pkgs, ftypes.Package{
 			ID:           pkgID,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
 			Relationship: relationship,
+			Dev:          !isProd,
 		})
 
 		dependsOn := make([]string, 0, len(pkg.Dependencies))
 
-		for _, dep := range pkg.Dependencies {
-			depPkg, exists := packages[dep.Name]
+		for depName := range pkg.directDeps() {
+			depPkg, exists := packages[depName]
 			if !exists {
 				continue
 			}
-			dependsOn = append(dependsOn, packageID(dep.Name, depPkg.Version))
+			dependsOn = append(dependsOn, packageID(depName, depPkg.Version))
 		}
 
 		if len(dependsOn) > 0 {
