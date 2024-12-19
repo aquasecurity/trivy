@@ -3460,6 +3460,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uv
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7854,6 +7865,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uv
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7954,6 +7976,12 @@ The following scanners are supported for package managers.</p>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">-</td>
 </tr>
+<tr>
+<td>uv</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">-</td>
+</tr>
 </tbody>
 </table>
 <p>In addition, Trivy supports three formats of Python packages: <code>egg</code>, <code>wheel</code> and <code>conda</code>.
@@ -8023,6 +8051,15 @@ The following scanners are supported for Python packages.</p>
 <tr>
 <td>Poetry</td>
 <td>poetry.lock</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">Exclude</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">Not needed</td>
+</tr>
+<tr>
+<td>uv</td>
+<td>uv.lock</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">Exclude</td>
 <td style="text-align: center;">✓</td>
@@ -8121,6 +8158,9 @@ Trivy could detect vulnerabilities on the development packages, which not affect
 <p>Trivy uses <code>poetry.lock</code> to identify dependencies and find vulnerabilities.
 To build the correct dependency graph, <code>pyproject.toml</code> also needs to be present next to <code>poetry.lock</code>.</p>
 <p>License detection is not supported for <code>Poetry</code>.</p>
+<h3 id="uv">uv<a class="headerlink" href="#uv" title="Permanent link">&para;</a></h3>
+<p>Trivy uses <code>uv.lock</code> to identify dependencies and find vulnerabilities.</p>
+<p>License detection is not supported for <code>uv</code>.</p>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
 <p>Trivy parses the manifest files of installed packages in container image scanning and so on.
 See <a href="https://packaging.python.org/en/latest/discussions/package-formats/">here</a> for the detail.</p>
