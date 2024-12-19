@@ -150,12 +150,7 @@ func walkPackageDeps(pkgID string, packages map[string]types.Package, visited ma
 		return
 	}
 	visited[pkgID] = struct{}{}
-	pkg, exists := packages[pkgID]
-	if !exists {
-		return
-	}
-
-	for _, dep := range pkg.DependsOn {
+	for _, dep := range packages[pkgID].DependsOn {
 		walkPackageDeps(dep, packages, visited)
 	}
 }
