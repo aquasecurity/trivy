@@ -14,6 +14,13 @@ virtualenv = [
 
 [tool.poetry.dev-dependencies]
 
+[tool.poetry.group.dev.dependencies]
+pytest = "8.3.4"
+
+
+[tool.poetry.group.lint.dependencies]
+ruff = "0.8.3"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
