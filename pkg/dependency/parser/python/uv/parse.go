@@ -22,10 +22,15 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func (l Lock) directDeps(root Package) map[string]struct{} {
+func (p Package) directDeps() map[string]struct{} {
 	deps := make(map[string]struct{})
-	for _, dep := range root.Dependencies {
+	for _, dep := range p.Dependencies {
 		deps[dep.Name] = struct{}{}
+	}
+	for _, groupDeps := range p.DevDependencies {
+		for _, dep := range groupDeps {
+			deps[dep.Name] = struct{}{}
+		}
 	}
 	return deps
 }
@@ -68,10 +73,11 @@ func (l Lock) root() (Package, error) {
 }
 
 type Package struct {
-	Name         string       `toml:"name"`
-	Version      string       `toml:"version"`
-	Source       Source       `toml:"source"`
-	Dependencies []Dependency `toml:"dependencies"`
+	Name            string                  `toml:"name"`
+	Version         string                  `toml:"version"`
+	Source          Source                  `toml:"source"`
+	Dependencies    []Dependency            `toml:"dependencies"`
+	DevDependencies map[string][]Dependency `toml:"dev-dependencies"`
 }
 
 // https://github.com/astral-sh/uv/blob/f7d647e81d7e1e3be189324b06024ed2057168e6/crates/uv-resolver/src/lock/mod.rs#L572-L579
@@ -106,7 +112,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	packages := lock.packages()
-	directDeps := lock.directDeps(rootPackage)
+	directDeps := rootPackage.directDeps()
 
 	// Since each lockfile contains a root package with a list of direct dependencies,
 	// we can identify all production dependencies by traversing the dependency graph
@@ -119,10 +125,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	)
 
 	for _, pkg := range lock.Packages {
-		if _, ok := prodDeps[pkg.Name]; !ok {
-			continue
-		}
-
 		pkgID := packageID(pkg.Name, pkg.Version)
 		relationship := ftypes.RelationshipIndirect
 		if pkg.isRoot() {
@@ -131,21 +133,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			relationship = ftypes.RelationshipDirect
 		}
 
+		_, isProd := prodDeps[pkg.Name]
 		pkgs = append(pkgs, ftypes.Package{
 			ID:           pkgID,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
 			Relationship: relationship,
+			Dev:          !isProd,
 		})
 
 		dependsOn := make([]string, 0, len(pkg.Dependencies))
 
-		for _, dep := range pkg.Dependencies {
-			depPkg, exists := packages[dep.Name]
+		for depName := range pkg.directDeps() {
+			depPkg, exists := packages[depName]
 			if !exists {
 				continue
 			}
-			dependsOn = append(dependsOn, packageID(dep.Name, depPkg.Version))
+			dependsOn = append(dependsOn, packageID(depName, depPkg.Version))
 		}
 
 		if len(dependsOn) > 0 {

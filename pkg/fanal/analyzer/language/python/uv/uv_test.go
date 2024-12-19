@@ -33,6 +33,7 @@ func Test_uvAnalyzer_PostAnalyze(t *testing.T) {
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"pluggy@1.5.0",
+									"pytest@8.3.4",
 									"requests@2.32.3",
 								},
 							},
@@ -41,6 +42,19 @@ func Test_uvAnalyzer_PostAnalyze(t *testing.T) {
 								Name:         "pluggy",
 								Version:      "1.5.0",
 								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "pytest@8.3.4",
+								Name:         "pytest",
+								Version:      "8.3.4",
+								Relationship: types.RelationshipDirect,
+								Dev:          true,
+								DependsOn: []string{
+									"colorama@0.4.6",
+									"iniconfig@2.0.0",
+									"packaging@24.2",
+									"pluggy@1.5.0",
+								},
 							},
 							{
 								ID:           "requests@2.32.3",
@@ -69,11 +83,35 @@ func Test_uvAnalyzer_PostAnalyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 							},
 							{
+								ID:           "colorama@0.4.6",
+								Name:         "colorama",
+								Version:      "0.4.6",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+							},
+							{
 								ID:           "idna@3.10",
 								Name:         "idna",
 								Version:      "3.10",
 								Indirect:     true,
 								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "iniconfig@2.0.0",
+								Name:         "iniconfig",
+								Version:      "2.0.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+							},
+							{
+								ID:           "packaging@24.2",
+								Name:         "packaging",
+								Version:      "24.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
 							},
 							{
 								ID:           "urllib3@2.2.3",
