@@ -22,19 +22,6 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func (p Package) directDeps() map[string]struct{} {
-	deps := make(map[string]struct{})
-	for _, dep := range p.Dependencies {
-		deps[dep.Name] = struct{}{}
-	}
-	for _, groupDeps := range p.DevDependencies {
-		for _, dep := range groupDeps {
-			deps[dep.Name] = struct{}{}
-		}
-	}
-	return deps
-}
-
 func prodDeps(root Package, packages map[string]Package) map[string]struct{} {
 	visited := make(map[string]struct{})
 	walkPackageDeps(root, packages, visited)
@@ -46,8 +33,8 @@ func walkPackageDeps(pkg Package, packages map[string]Package, visited map[strin
 		return
 	}
 	visited[pkg.Name] = struct{}{}
-	for _, dep := range pkg.Dependencies {
-		depPkg, exists := packages[dep.Name]
+	for depName := range pkg.nonDevDeps() {
+		depPkg, exists := packages[depName]
 		if !exists {
 			continue
 		}
@@ -73,11 +60,38 @@ func (l Lock) root() (Package, error) {
 }
 
 type Package struct {
-	Name            string                  `toml:"name"`
-	Version         string                  `toml:"version"`
-	Source          Source                  `toml:"source"`
-	Dependencies    []Dependency            `toml:"dependencies"`
-	DevDependencies map[string][]Dependency `toml:"dev-dependencies"`
+	Name                 string                  `toml:"name"`
+	Version              string                  `toml:"version"`
+	Source               Source                  `toml:"source"`
+	Dependencies         Dependencies            `toml:"dependencies"`
+	DevDependencies      map[string]Dependencies `toml:"dev-dependencies"`
+	OptionalDependencies map[string]Dependencies `toml:"optional-dependencies"`
+}
+
+func (p Package) directDeps() map[string]struct{} {
+	deps := p.nonDevDeps()
+	for _, groupDeps := range p.DevDependencies {
+		deps = lo.Assign(deps, groupDeps.toSet())
+	}
+	return deps
+}
+
+func (p Package) nonDevDeps() map[string]struct{} {
+	deps := p.Dependencies.toSet()
+	for _, groupDeps := range p.OptionalDependencies {
+		deps = lo.Assign(deps, groupDeps.toSet())
+	}
+	return deps
+}
+
+type Dependencies []Dependency
+
+func (d Dependencies) toSet() map[string]struct{} {
+	deps := make(map[string]struct{})
+	for _, dep := range d {
+		deps[dep.Name] = struct{}{}
+	}
+	return deps
 }
 
 // https://github.com/astral-sh/uv/blob/f7d647e81d7e1e3be189324b06024ed2057168e6/crates/uv-resolver/src/lock/mod.rs#L572-L579
