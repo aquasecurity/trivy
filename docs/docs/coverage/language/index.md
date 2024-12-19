@@ -22,6 +22,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 |                      | gemspec                                                                                    |     ✅     |     ✅      |       -        |       -        |
 | [Python](python.md)  | Pipfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | poetry.lock                                                                                |     -     |     -      |       ✅        |       ✅        |
+|                      | uv.lock                                                                                    |     -     |     -      |       ✅        |       ✅        |
 |                      | requirements.txt                                                                           |     -     |     -      |       ✅        |       ✅        |
 |                      | egg package[^1]                                                                            |     ✅     |     ✅      |       -        |       -        |
 |                      | wheel package[^2]                                                                          |     ✅     |     ✅      |       -        |       -        |

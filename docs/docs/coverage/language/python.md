@@ -8,6 +8,7 @@ The following scanners are supported for package managers.
 | pip             |  ✓   |       ✓       |    ✓    |
 | Pipenv          |  ✓   |       ✓       |    -    |
 | Poetry          |  ✓   |       ✓       |    -    |
+| uv              |  ✓   |       ✓       |    -    |
 
 In addition, Trivy supports three formats of Python packages: `egg`, `wheel` and `conda`.
 The following scanners are supported for Python packages.
@@ -26,6 +27,7 @@ The following table provides an outline of the features Trivy offers.
 | pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |                    ✓                     |
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |                Not needed                |
 | Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |    -     |                Not needed                |
+| uv              | uv.lock          |            ✓            |     Exclude      |                  ✓                   |    -     |                Not needed                |
 
 
 | Packaging | Dependency graph |
@@ -125,6 +127,11 @@ Trivy uses `poetry.lock` to identify dependencies and find vulnerabilities.
 To build the correct dependency graph, `pyproject.toml` also needs to be present next to `poetry.lock`.
 
 License detection is not supported for `Poetry`.
+
+### uv
+Trivy uses `uv.lock` to identify dependencies and find vulnerabilities.
+
+License detection is not supported for `uv`.
 
 ## Packaging
 Trivy parses the manifest files of installed packages in container image scanning and so on.

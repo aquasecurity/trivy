@@ -160,6 +160,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/poetry.json.golden",
 		},
 		{
+			name: "uv",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/uv",
+			},
+			golden: "testdata/uv.json.golden",
+		},
+		{
 			name: "pom",
 			args: args{
 				scanner: types.VulnerabilityScanner,
