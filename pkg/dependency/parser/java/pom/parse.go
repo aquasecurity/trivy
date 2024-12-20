@@ -22,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -118,11 +119,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	rootArt := root.artifact()
 	rootArt.Relationship = ftypes.RelationshipRoot
 
-	return p.parseRoot(rootArt, make(map[string]struct{}))
+	return p.parseRoot(rootArt, set.New[string]())
 }
 
 // nolint: gocyclo
-func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) parseRoot(root artifact, uniqModules set.Set[string]) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
@@ -145,10 +146,10 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 		// Modules should be handled separately so that they can have independent dependencies.
 		// It means multi-module allows for duplicate dependencies.
 		if art.Module {
-			if _, ok := uniqModules[art.String()]; ok {
+			if uniqModules.Contains(art.String()) {
 				continue
 			}
-			uniqModules[art.String()] = struct{}{}
+			uniqModules.Append(art.String())
 
 			modulePkgs, moduleDeps, err := p.parseRoot(art, uniqModules)
 			if err != nil {
@@ -251,7 +252,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ft
 		// `mvn` shows modules separately from the root package and does not show module nesting.
 		// So we can add all modules as dependencies of root package.
 		if art.Relationship == ftypes.RelationshipRoot {
-			dependsOn = append(dependsOn, lo.Keys(uniqModules)...)
+			dependsOn = append(dependsOn, uniqModules.Items()...)
 		}
 
 		sort.Strings(dependsOn)
@@ -340,13 +341,16 @@ type analysisResult struct {
 }
 
 type analysisOptions struct {
-	exclusions    map[string]struct{}
+	exclusions    set.Set[string]
 	depManagement []pomDependency // from the root POM
 }
 
 func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
 	if pom.nil() {
 		return analysisResult{}, nil
+	}
+	if opts.exclusions == nil {
+		opts.exclusions = set.New[string]()
 	}
 	// Update remoteRepositories
 	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
@@ -492,19 +496,19 @@ func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependenc
 	})
 }
 
-func (p *Parser) filterDependencies(artifacts []artifact, exclusions map[string]struct{}) []artifact {
+func (p *Parser) filterDependencies(artifacts []artifact, exclusions set.Set[string]) []artifact {
 	return lo.Filter(artifacts, func(art artifact, _ int) bool {
 		return !excludeDep(exclusions, art)
 	})
 }
 
-func excludeDep(exclusions map[string]struct{}, art artifact) bool {
-	if _, ok := exclusions[art.Name()]; ok {
+func excludeDep(exclusions set.Set[string], art artifact) bool {
+	if exclusions.Contains(art.Name()) {
 		return true
 	}
 	// Maven can use "*" in GroupID and ArtifactID fields to exclude dependencies
 	// https://maven.apache.org/pom.html#exclusions
-	for exlusion := range exclusions {
+	for exlusion := range exclusions.Iter() {
 		// exclusion format - "<groupID>:<artifactID>"
 		e := strings.Split(exlusion, ":")
 		if (e[0] == art.GroupID || e[0] == "*") && (e[1] == art.ArtifactID || e[1] == "*") {
