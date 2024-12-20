@@ -1,5 +1,7 @@
 package set
 
+import "iter"
+
 // Set defines the interface for set operations
 type Set[T comparable] interface {
 	// Add adds an item to the set
@@ -25,6 +27,9 @@ type Set[T comparable] interface {
 
 	// Items returns all items in the set as a slice
 	Items() []T
+
+	// Iter returns an iterator over the set
+	Iter() iter.Seq[T]
 
 	// Union returns a new set containing all items from both sets
 	Union(other Set[T]) Set[T]

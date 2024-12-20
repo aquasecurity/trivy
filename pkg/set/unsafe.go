@@ -1,6 +1,10 @@
 package set
 
-import "maps"
+import (
+	"iter"
+	"maps"
+	"slices"
+)
 
 // unsafeSet represents a non-thread-safe set implementation
 // WARNING: This implementation is not thread-safe
@@ -58,11 +62,12 @@ func (s unsafeSet[T]) Clone() Set[T] {
 
 // Items returns all items in the set as a slice
 func (s unsafeSet[T]) Items() []T {
-	items := make([]T, 0, len(s))
-	for item := range s {
-		items = append(items, item)
-	}
-	return items
+	return slices.Collect(s.Iter())
+}
+
+// Iter returns an iterator over the set
+func (s unsafeSet[T]) Iter() iter.Seq[T] {
+	return maps.Keys(s)
 }
 
 // Union returns a new set containing all items from both sets
