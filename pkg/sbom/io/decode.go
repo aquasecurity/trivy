@@ -348,15 +348,25 @@ func (m *Decoder) addOSPkgs(sbom *types.SBOM) {
 // addLangPkgs traverses relationships and adds language-specific packages
 func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 	for id, app := range m.apps {
-		for _, rel := range m.bom.Relationships()[id] {
-			pkg, ok := m.pkgs[rel.Dependency]
-			if !ok {
-				continue
-			}
-			app.Packages = append(app.Packages, *pkg)
-			delete(m.pkgs, rel.Dependency) // Delete the added package
-		}
+		m.addNestedPackageToApp(id, app)
 		sbom.Applications = append(sbom.Applications, *app)
+	}
+}
+
+// addNestedPackageToApp recursively finds all dependencies and adds these packages to the application
+// This is necessary to avoid creating orphan packages.
+// for example, for `Application -> RootPkg -> DirectPkg`:
+// `DirectPkg` will become an orphan if we add only `RootPkg` and remove `RootPkg` from `m.pkgs`
+func (m *Decoder) addNestedPackageToApp(id uuid.UUID, app *ftypes.Application) {
+	for _, rel := range m.bom.Relationships()[id] {
+		pkg, ok := m.pkgs[rel.Dependency]
+		if !ok {
+			continue
+		}
+		app.Packages = append(app.Packages, *pkg)
+		delete(m.pkgs, rel.Dependency) // Delete the added package
+
+		m.addNestedPackageToApp(rel.Dependency, app)
 	}
 }
 
