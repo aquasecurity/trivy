@@ -569,13 +569,25 @@ func (b *Block) Attributes() map[string]*Attribute {
 	return attributes
 }
 
+func (b *Block) NullableValues() cty.Value {
+	return b.values(true)
+}
+
 func (b *Block) Values() cty.Value {
+	return b.values(false)
+}
+
+func (b *Block) values(allowNull bool) cty.Value {
 	values := createPresetValues(b)
 	for _, attribute := range b.GetAttributes() {
 		if attribute.Name() == "for_each" {
 			continue
 		}
-		values[attribute.Name()] = attribute.NullableValue()
+		if allowNull {
+			values[attribute.Name()] = attribute.NullableValue()
+		} else {
+			values[attribute.Name()] = attribute.Value()
+		}
 	}
 	return cty.ObjectVal(postProcessValues(b, values))
 }
