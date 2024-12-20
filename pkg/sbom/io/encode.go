@@ -418,30 +418,9 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	// Case 3: Relationship: known , DependsOn: unknown (e.g., go.mod without $GOPATH)
 	//         All packages are included in the parent
 	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
-	//         - There is root parent: false. Packages are included in the root package (e.g. GoBinaries).
-	//         - There is no root parent: true. All packages are included in the parent even if they have parents (e.g. OS packages).
-	switch {
-	// Case 1, 2 and 3
-	case len(parents[pkg.ID]) == 0:
-		return true
-	// Case 4
-	case pkg.Relationship == ftypes.RelationshipUnknown && !hasParentWithRootRelationship(pkg.ID, parents):
-		return true
-	default:
-		return false
-	}
-}
-
-// hasParentWithRootRelationship indicates that the parents contain the root package.
-// Defining this is necessary to avoid including packages in the parent package instead of the root package.
-// cf. https://github.com/aquasecurity/trivy/issues/8102
-func hasParentWithRootRelationship(id string, parents map[string]ftypes.Packages) bool {
-	for _, parent := range parents[id] {
-		if parent.Relationship == ftypes.RelationshipRoot {
-			return true
-		}
-	}
-	return false
+	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
+	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
+	return len(parents[pkg.ID]) == 0
 }
 
 func filterProperties(props []core.Property) []core.Property {
