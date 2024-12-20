@@ -70,7 +70,7 @@ type Scanner struct {
 	embeddedChecks map[string]*ast.Module
 	customSchemas  map[string][]byte
 
-	disabledCheckIDs map[string]struct{}
+	disabledCheckIDs set.Set[string]
 }
 
 func (s *Scanner) trace(heading string, input any) {
@@ -107,7 +107,7 @@ func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 		runtimeValues:    addRuntimeValues(),
 		logger:           log.WithPrefix("rego"),
 		customSchemas:    make(map[string][]byte),
-		disabledCheckIDs: make(map[string]struct{}),
+		disabledCheckIDs: set.New[string](),
 	}
 
 	for _, opt := range opts {
@@ -225,15 +225,15 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			continue
 		}
 
-		usedRules := make(map[string]struct{})
+		usedRules := set.New[string]()
 
 		// all rules
 		for _, rule := range module.Rules {
 			ruleName := rule.Head.Name.String()
-			if _, ok := usedRules[ruleName]; ok {
+			if usedRules.Contains(ruleName) {
 				continue
 			}
-			usedRules[ruleName] = struct{}{}
+			usedRules.Add(ruleName)
 			if isEnforcedRule(ruleName) {
 				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs)
 				if err != nil {

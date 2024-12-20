@@ -119,15 +119,12 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 	}
 
 	// gather namespaces
-	uniq := make(map[string]struct{})
+	uniq := set.New[string]()
 	for _, module := range s.policies {
 		namespace := getModuleNamespace(module)
-		uniq[namespace] = struct{}{}
+		uniq.Add(namespace)
 	}
-	var namespaces []string
-	for namespace := range uniq {
-		namespaces = append(namespaces, namespace)
-	}
+	namespaces := uniq.Items()
 
 	dataFS := srcFS
 	if s.dataFS != nil {
@@ -293,7 +290,7 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 		}
 
 		if IsBuiltinNamespace(getModuleNamespace(module)) {
-			if _, disabled := s.disabledCheckIDs[meta.ID]; disabled { // ignore builtin disabled checks
+			if s.disabledCheckIDs.Contains(meta.ID) { // ignore builtin disabled checks
 				continue
 			}
 		}
