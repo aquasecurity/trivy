@@ -76,6 +76,9 @@
     {
       "bom-ref": "pkg:deb/debian/adduser@3.118?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Adduser Developers <adduser@packages.debian.org>"
+      },
       "name": "adduser",
       "version": "3.118",
       "licenses": [
@@ -111,14 +114,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.118"
         }
-      ],
-      "supplier": {
-        "name": "Debian Adduser Developers <adduser@packages.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/apt@1.8.2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "APT Development Team <deity@lists.debian.org>"
+      },
       "name": "apt",
       "version": "1.8.2",
       "licenses": [
@@ -159,14 +162,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.8.2"
         }
-      ],
-      "supplier": {
-        "name": "APT Development Team <deity@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/base-files@10.3%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Santiago Vila <sanvila@debian.org>"
+      },
       "name": "base-files",
       "version": "10.3+deb10u2",
       "licenses": [
@@ -202,14 +205,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "10.3+deb10u2"
         }
-      ],
-      "supplier": {
-        "name": "Santiago Vila <sanvila@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/base-passwd@3.5.46?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Colin Watson <cjwatson@debian.org>"
+      },
       "name": "base-passwd",
       "version": "3.5.46",
       "licenses": [
@@ -250,14 +253,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.5.46"
         }
-      ],
-      "supplier": {
-        "name": "Colin Watson <cjwatson@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/bash@5.0-4?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Matthias Klose <doko@debian.org>"
+      },
       "name": "bash",
       "version": "5.0-4",
       "licenses": [
@@ -297,14 +300,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "5.0"
         }
-      ],
-      "supplier": {
-        "name": "Matthias Klose <doko@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "bsdutils",
       "version": "1:2.33.1-0.1",
       "licenses": [
@@ -414,14 +417,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ca-certificates@20190110?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Michael Shuler <michael@pbandjelly.org>"
+      },
       "name": "ca-certificates",
       "version": "20190110",
       "licenses": [
@@ -467,14 +470,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "20190110"
         }
-      ],
-      "supplier": {
-        "name": "Michael Shuler <michael@pbandjelly.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/coreutils@8.30-3?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Michael Stone <mstone@debian.org>"
+      },
       "name": "coreutils",
       "version": "8.30-3",
       "licenses": [
@@ -514,14 +517,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "8.30"
         }
-      ],
-      "supplier": {
-        "name": "Michael Stone <mstone@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/dash@0.5.10.2-5?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Andrej Shadura <andrewsh@debian.org>"
+      },
       "name": "dash",
       "version": "0.5.10.2-5",
       "licenses": [
@@ -561,14 +564,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.5.10.2"
         }
-      ],
-      "supplier": {
-        "name": "Andrej Shadura <andrewsh@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/debconf@1.5.71?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debconf Developers <debconf-devel@lists.alioth.debian.org>"
+      },
       "name": "debconf",
       "version": "1.5.71",
       "licenses": [
@@ -604,14 +607,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.5.71"
         }
-      ],
-      "supplier": {
-        "name": "Debconf Developers <debconf-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/debian-archive-keyring@2019.1?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Release Team <packages@release.debian.org>"
+      },
       "name": "debian-archive-keyring",
       "version": "2019.1",
       "licenses": [
@@ -647,14 +650,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2019.1"
         }
-      ],
-      "supplier": {
-        "name": "Debian Release Team <packages@release.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/debianutils@4.8.6.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Clint Adams <clint@debian.org>"
+      },
       "name": "debianutils",
       "version": "4.8.6.1",
       "licenses": [
@@ -690,14 +693,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "4.8.6.1"
         }
-      ],
-      "supplier": {
-        "name": "Clint Adams <clint@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/diffutils@3.7-3?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Santiago Vila <sanvila@debian.org>"
+      },
       "name": "diffutils",
       "version": "1:3.7-3",
       "licenses": [
@@ -746,14 +749,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.7"
         }
-      ],
-      "supplier": {
-        "name": "Santiago Vila <sanvila@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/dpkg@1.19.7?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Dpkg Developers <debian-dpkg@lists.debian.org>"
+      },
       "name": "dpkg",
       "version": "1.19.7",
       "licenses": [
@@ -809,14 +812,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.19.7"
         }
-      ],
-      "supplier": {
-        "name": "Dpkg Developers <debian-dpkg@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/e2fsprogs@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
+      },
       "name": "e2fsprogs",
       "version": "1.44.5-1+deb10u2",
       "licenses": [
@@ -861,14 +864,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.44.5"
         }
-      ],
-      "supplier": {
-        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/fdisk@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "fdisk",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -978,14 +981,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/findutils@4.6.0%2Bgit%2B20190209-2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Andreas Metzler <ametzler@debian.org>"
+      },
       "name": "findutils",
       "version": "4.6.0+git+20190209-2",
       "licenses": [
@@ -1030,14 +1033,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "4.6.0+git+20190209"
         }
-      ],
-      "supplier": {
-        "name": "Andreas Metzler <ametzler@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/gcc-8-base@8.3.0-6?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
+      },
       "name": "gcc-8-base",
       "version": "8.3.0-6",
       "licenses": [
@@ -1102,14 +1105,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "8.3.0"
         }
-      ],
-      "supplier": {
-        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>"
+      },
       "name": "gpgv",
       "version": "2.2.12-1+deb10u1",
       "licenses": [
@@ -1204,14 +1207,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.2.12"
         }
-      ],
-      "supplier": {
-        "name": "Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/grep@3.3-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Anibal Monsalve Salazar <anibal@debian.org>"
+      },
       "name": "grep",
       "version": "3.3-1",
       "licenses": [
@@ -1256,14 +1259,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.3"
         }
-      ],
-      "supplier": {
-        "name": "Anibal Monsalve Salazar <anibal@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/gzip@1.9-3?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Bdale Garbee <bdale@gag.com>"
+      },
       "name": "gzip",
       "version": "1.9-3",
       "licenses": [
@@ -1303,14 +1306,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.9"
         }
-      ],
-      "supplier": {
-        "name": "Bdale Garbee <bdale@gag.com>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/hostname@3.21?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Michael Meskes <meskes@debian.org>"
+      },
       "name": "hostname",
       "version": "3.21",
       "licenses": [
@@ -1346,14 +1349,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.21"
         }
-      ],
-      "supplier": {
-        "name": "Michael Meskes <meskes@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian systemd Maintainers <pkg-systemd-maintainers@lists.alioth.debian.org>"
+      },
       "name": "init-system-helpers",
       "version": "1.56+nmu1",
       "licenses": [
@@ -1399,14 +1402,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.56+nmu1"
         }
-      ],
-      "supplier": {
-        "name": "Debian systemd Maintainers <pkg-systemd-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libacl1@2.2.53-4?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Guillem Jover <guillem@debian.org>"
+      },
       "name": "libacl1",
       "version": "2.2.53-4",
       "licenses": [
@@ -1461,14 +1464,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.2.53"
         }
-      ],
-      "supplier": {
-        "name": "Guillem Jover <guillem@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libapt-pkg5.0@1.8.2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "APT Development Team <deity@lists.debian.org>"
+      },
       "name": "libapt-pkg5.0",
       "version": "1.8.2",
       "licenses": [
@@ -1509,14 +1512,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.8.2"
         }
-      ],
-      "supplier": {
-        "name": "APT Development Team <deity@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Guillem Jover <guillem@debian.org>"
+      },
       "name": "libattr1",
       "version": "1:2.4.48-4",
       "licenses": [
@@ -1575,14 +1578,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.4.48"
         }
-      ],
-      "supplier": {
-        "name": "Guillem Jover <guillem@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Laurent Bigonville <bigon@debian.org>"
+      },
       "name": "libaudit-common",
       "version": "1:2.8.4-3",
       "licenses": [
@@ -1636,14 +1639,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.8.4"
         }
-      ],
-      "supplier": {
-        "name": "Laurent Bigonville <bigon@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Laurent Bigonville <bigon@debian.org>"
+      },
       "name": "libaudit1",
       "version": "1:2.8.4-3",
       "licenses": [
@@ -1697,14 +1700,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.8.4"
         }
-      ],
-      "supplier": {
-        "name": "Laurent Bigonville <bigon@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libblkid1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "libblkid1",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -1814,14 +1817,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libbz2-1.0@1.0.6-9.2~deb10u1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Anibal Monsalve Salazar <anibal@debian.org>"
+      },
       "name": "libbz2-1.0",
       "version": "1.0.6-9.2~deb10u1",
       "licenses": [
@@ -1866,14 +1869,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.0.6"
         }
-      ],
-      "supplier": {
-        "name": "Anibal Monsalve Salazar <anibal@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libc-bin@2.28-10?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "GNU Libc Maintainers <debian-glibc@lists.debian.org>"
+      },
       "name": "libc-bin",
       "version": "2.28-10",
       "licenses": [
@@ -1918,14 +1921,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.28"
         }
-      ],
-      "supplier": {
-        "name": "GNU Libc Maintainers <debian-glibc@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libc6@2.28-10?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "GNU Libc Maintainers <debian-glibc@lists.debian.org>"
+      },
       "name": "libc6",
       "version": "2.28-10",
       "licenses": [
@@ -1970,14 +1973,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.28"
         }
-      ],
-      "supplier": {
-        "name": "GNU Libc Maintainers <debian-glibc@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libcap-ng0@0.7.9-2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Pierre Chifflier <pollux@debian.org>"
+      },
       "name": "libcap-ng0",
       "version": "0.7.9-2",
       "licenses": [
@@ -2027,14 +2030,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.7.9"
         }
-      ],
-      "supplier": {
-        "name": "Pierre Chifflier <pollux@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
+      },
       "name": "libcom-err2",
       "version": "1.44.5-1+deb10u2",
       "purl": "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -2067,14 +2070,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.44.5"
         }
-      ],
-      "supplier": {
-        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Berkeley DB Team <team+bdb@tracker.debian.org>"
+      },
       "name": "libdb5.3",
       "version": "5.3.28+dfsg1-0.5",
       "purl": "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64&distro=debian-10.2",
@@ -2107,14 +2110,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "5.3.28+dfsg1"
         }
-      ],
-      "supplier": {
-        "name": "Debian Berkeley DB Team <team+bdb@tracker.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libdebconfclient0@0.249?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Install System Team <debian-boot@lists.debian.org>"
+      },
       "name": "libdebconfclient0",
       "version": "0.249",
       "purl": "pkg:deb/debian/libdebconfclient0@0.249?arch=amd64&distro=debian-10.2",
@@ -2143,14 +2146,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.249"
         }
-      ],
-      "supplier": {
-        "name": "Debian Install System Team <debian-boot@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libext2fs2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
+      },
       "name": "libext2fs2",
       "version": "1.44.5-1+deb10u2",
       "licenses": [
@@ -2195,14 +2198,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.44.5"
         }
-      ],
-      "supplier": {
-        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libfdisk1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "libfdisk1",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -2312,14 +2315,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libffi6@3.2.1-9?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
+      },
       "name": "libffi6",
       "version": "3.2.1-9",
       "licenses": [
@@ -2359,14 +2362,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.2.1"
         }
-      ],
-      "supplier": {
-        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
+      },
       "name": "libgcc1",
       "version": "1:8.3.0-6",
       "purl": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64&distro=debian-10.2&epoch=1",
@@ -2399,14 +2402,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "8.3.0"
         }
-      ],
-      "supplier": {
-        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libgcrypt20@1.8.4-5?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
+      },
       "name": "libgcrypt20",
       "version": "1.8.4-5",
       "licenses": [
@@ -2451,14 +2454,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.8.4"
         }
-      ],
-      "supplier": {
-        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libgdbm-compat4@1.18.1-4?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Dmitry Bogatov <KAction@debian.org>"
+      },
       "name": "libgdbm-compat4",
       "version": "1.18.1-4",
       "licenses": [
@@ -2518,14 +2521,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.18.1"
         }
-      ],
-      "supplier": {
-        "name": "Dmitry Bogatov <KAction@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libgdbm6@1.18.1-4?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Dmitry Bogatov <KAction@debian.org>"
+      },
       "name": "libgdbm6",
       "version": "1.18.1-4",
       "licenses": [
@@ -2585,14 +2588,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.18.1"
         }
-      ],
-      "supplier": {
-        "name": "Dmitry Bogatov <KAction@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64&distro=debian-10.2&epoch=2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Science Team <debian-science-maintainers@lists.alioth.debian.org>"
+      },
       "name": "libgmp10",
       "version": "2:6.1.2+dfsg-4",
       "licenses": [
@@ -2651,14 +2654,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "6.1.2+dfsg"
         }
-      ],
-      "supplier": {
-        "name": "Debian Science Team <debian-science-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libgnutls30@3.6.7-4?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
+      },
       "name": "libgnutls30",
       "version": "3.6.7-4",
       "licenses": [
@@ -2748,14 +2751,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.6.7"
         }
-      ],
-      "supplier": {
-        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libgpg-error0@1.35-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>"
+      },
       "name": "libgpg-error0",
       "version": "1.35-1",
       "licenses": [
@@ -2820,14 +2823,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.35"
         }
-      ],
-      "supplier": {
-        "name": "Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libhogweed4@3.4.1-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Magnus Holmgren <holmgren@debian.org>"
+      },
       "name": "libhogweed4",
       "version": "3.4.1-1",
       "purl": "pkg:deb/debian/libhogweed4@3.4.1-1?arch=amd64&distro=debian-10.2",
@@ -2860,14 +2863,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.4.1"
         }
-      ],
-      "supplier": {
-        "name": "Magnus Holmgren <holmgren@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Libidn team <help-libidn@gnu.org>"
+      },
       "name": "libidn2-0",
       "version": "2.0.5-1",
       "licenses": [
@@ -2937,14 +2940,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.0.5"
         }
-      ],
-      "supplier": {
-        "name": "Debian Libidn team <help-libidn@gnu.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libjemalloc2@5.1.0-3?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Faidon Liambotis <paravoid@debian.org>"
+      },
       "name": "libjemalloc2",
       "version": "5.1.0-3",
       "licenses": [
@@ -3009,14 +3012,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "5.1.0"
         }
-      ],
-      "supplier": {
-        "name": "Faidon Liambotis <paravoid@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/liblz4-1@1.8.3-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Nobuhiro Iwamatsu <iwamatsu@debian.org>"
+      },
       "name": "liblz4-1",
       "version": "1.8.3-1",
       "licenses": [
@@ -3066,14 +3069,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.8.3"
         }
-      ],
-      "supplier": {
-        "name": "Nobuhiro Iwamatsu <iwamatsu@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/liblzma5@5.2.4-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Jonathan Nieder <jrnieder@gmail.com>"
+      },
       "name": "liblzma5",
       "version": "5.2.4-1",
       "licenses": [
@@ -3183,14 +3186,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "5.2.4"
         }
-      ],
-      "supplier": {
-        "name": "Jonathan Nieder <jrnieder@gmail.com>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libmount1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "libmount1",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -3300,14 +3303,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Craig Small <csmall@debian.org>"
+      },
       "name": "libncurses6",
       "version": "6.1+20181013-2+deb10u2",
       "purl": "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -3340,14 +3343,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "6.1+20181013"
         }
-      ],
-      "supplier": {
-        "name": "Craig Small <csmall@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Craig Small <csmall@debian.org>"
+      },
       "name": "libncursesw6",
       "version": "6.1+20181013-2+deb10u2",
       "purl": "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -3380,14 +3383,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "6.1+20181013"
         }
-      ],
-      "supplier": {
-        "name": "Craig Small <csmall@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libnettle6@3.4.1-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Magnus Holmgren <holmgren@debian.org>"
+      },
       "name": "libnettle6",
       "version": "3.4.1-1",
       "licenses": [
@@ -3467,14 +3470,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.4.1"
         }
-      ],
-      "supplier": {
-        "name": "Magnus Holmgren <holmgren@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libp11-kit0@0.23.15-2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
+      },
       "name": "libp11-kit0",
       "version": "0.23.15-2",
       "licenses": [
@@ -3534,14 +3537,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.23.15"
         }
-      ],
-      "supplier": {
-        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libpam-modules-bin@1.3.1-5?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Steve Langasek <vorlon@debian.org>"
+      },
       "name": "libpam-modules-bin",
       "version": "1.3.1-5",
       "licenses": [
@@ -3581,14 +3584,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.3.1"
         }
-      ],
-      "supplier": {
-        "name": "Steve Langasek <vorlon@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libpam-modules@1.3.1-5?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Steve Langasek <vorlon@debian.org>"
+      },
       "name": "libpam-modules",
       "version": "1.3.1-5",
       "licenses": [
@@ -3628,14 +3631,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.3.1"
         }
-      ],
-      "supplier": {
-        "name": "Steve Langasek <vorlon@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libpam-runtime@1.3.1-5?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Steve Langasek <vorlon@debian.org>"
+      },
       "name": "libpam-runtime",
       "version": "1.3.1-5",
       "licenses": [
@@ -3675,14 +3678,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.3.1"
         }
-      ],
-      "supplier": {
-        "name": "Steve Langasek <vorlon@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libpam0g@1.3.1-5?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Steve Langasek <vorlon@debian.org>"
+      },
       "name": "libpam0g",
       "version": "1.3.1-5",
       "licenses": [
@@ -3722,14 +3725,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.3.1"
         }
-      ],
-      "supplier": {
-        "name": "Steve Langasek <vorlon@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64&distro=debian-10.2&epoch=2",
       "type": "library",
+      "supplier": {
+        "name": "Matthew Vernon <matthew@debian.org>"
+      },
       "name": "libpcre3",
       "version": "2:8.39-12",
       "purl": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64&distro=debian-10.2&epoch=2",
@@ -3766,14 +3769,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "8.39"
         }
-      ],
-      "supplier": {
-        "name": "Matthew Vernon <matthew@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libreadline7@7.0-5?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Matthias Klose <doko@debian.org>"
+      },
       "name": "libreadline7",
       "version": "7.0-5",
       "licenses": [
@@ -3818,14 +3821,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "7.0"
         }
-      ],
-      "supplier": {
-        "name": "Matthias Klose <doko@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Team <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "libruby2.5",
       "version": "2.5.5-3+deb10u1",
       "licenses": [
@@ -3965,14 +3968,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.5.5"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Team <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libseccomp2@2.3.3-4?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Kees Cook <kees@debian.org>"
+      },
       "name": "libseccomp2",
       "version": "2.3.3-4",
       "licenses": [
@@ -4012,14 +4015,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.3.3"
         }
-      ],
-      "supplier": {
-        "name": "Kees Cook <kees@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
+      },
       "name": "libselinux1",
       "version": "2.8-1+b1",
       "licenses": [
@@ -4064,14 +4067,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.8"
         }
-      ],
-      "supplier": {
-        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libsemanage-common@2.8-2?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
+      },
       "name": "libsemanage-common",
       "version": "2.8-2",
       "licenses": [
@@ -4116,14 +4119,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.8"
         }
-      ],
-      "supplier": {
-        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libsemanage1@2.8-2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
+      },
       "name": "libsemanage1",
       "version": "2.8-2",
       "licenses": [
@@ -4168,14 +4171,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.8"
         }
-      ],
-      "supplier": {
-        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libsepol1@2.8-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
+      },
       "name": "libsepol1",
       "version": "2.8-1",
       "licenses": [
@@ -4220,14 +4223,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.8"
         }
-      ],
-      "supplier": {
-        "name": "Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libsmartcols1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "libsmartcols1",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -4337,14 +4340,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
+      },
       "name": "libss2",
       "version": "1.44.5-1+deb10u2",
       "purl": "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -4377,14 +4380,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.44.5"
         }
-      ],
-      "supplier": {
-        "name": "Theodore Y. Ts'o <tytso@mit.edu>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>"
+      },
       "name": "libssl1.1",
       "version": "1.1.1d-0+deb10u2",
       "purl": "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -4417,14 +4420,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.1.1d"
         }
-      ],
-      "supplier": {
-        "name": "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
+      },
       "name": "libstdc++6",
       "version": "8.3.0-6",
       "purl": "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64&distro=debian-10.2",
@@ -4457,14 +4460,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "8.3.0"
         }
-      ],
-      "supplier": {
-        "name": "Debian GCC Maintainers <debian-gcc@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libsystemd0@241-7~deb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian systemd Maintainers <pkg-systemd-maintainers@lists.alioth.debian.org>"
+      },
       "name": "libsystemd0",
       "version": "241-7~deb10u2",
       "licenses": [
@@ -4534,14 +4537,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "241"
         }
-      ],
-      "supplier": {
-        "name": "Debian systemd Maintainers <pkg-systemd-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libtasn1-6@4.13-3?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
+      },
       "name": "libtasn1-6",
       "version": "4.13-3",
       "licenses": [
@@ -4596,14 +4599,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "4.13"
         }
-      ],
-      "supplier": {
-        "name": "Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Craig Small <csmall@debian.org>"
+      },
       "name": "libtinfo6",
       "version": "6.1+20181013-2+deb10u2",
       "purl": "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -4636,14 +4639,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "6.1+20181013"
         }
-      ],
-      "supplier": {
-        "name": "Craig Small <csmall@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libudev1@241-7~deb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian systemd Maintainers <pkg-systemd-maintainers@lists.alioth.debian.org>"
+      },
       "name": "libudev1",
       "version": "241-7~deb10u2",
       "licenses": [
@@ -4713,14 +4716,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "241"
         }
-      ],
-      "supplier": {
-        "name": "Debian systemd Maintainers <pkg-systemd-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libunistring2@0.9.10-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Jörg Frings-Fürst <debian@jff.email>"
+      },
       "name": "libunistring2",
       "version": "0.9.10-1",
       "licenses": [
@@ -4810,14 +4813,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.9.10"
         }
-      ],
-      "supplier": {
-        "name": "J\u00f6rg Frings-F\u00fcrst <debian@jff.email>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libuuid1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "libuuid1",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -4927,14 +4930,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libyaml-0-2@0.2.1-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Anders Kaseorg <andersk@mit.edu>"
+      },
       "name": "libyaml-0-2",
       "version": "0.2.1-1",
       "licenses": [
@@ -4979,14 +4982,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.2.1"
         }
-      ],
-      "supplier": {
-        "name": "Anders Kaseorg <andersk@mit.edu>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Med Packaging Team <debian-med-packaging@lists.alioth.debian.org>"
+      },
       "name": "libzstd1",
       "version": "1.3.8+dfsg-3",
       "licenses": [
@@ -5046,14 +5049,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.3.8+dfsg"
         }
-      ],
-      "supplier": {
-        "name": "Debian Med Packaging Team <debian-med-packaging@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/login@4.5-1.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Shadow package maintainers <pkg-shadow-devel@lists.alioth.debian.org>"
+      },
       "name": "login",
       "version": "1:4.5-1.1",
       "licenses": [
@@ -5097,14 +5100,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "4.5"
         }
-      ],
-      "supplier": {
-        "name": "Shadow package maintainers <pkg-shadow-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/mawk@1.3.3-17%2Bb3?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Steve Langasek <vorlon@debian.org>"
+      },
       "name": "mawk",
       "version": "1.3.3-17+b3",
       "licenses": [
@@ -5144,14 +5147,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.3.3"
         }
-      ],
-      "supplier": {
-        "name": "Steve Langasek <vorlon@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/mount@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "mount",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -5261,14 +5264,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u2?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Craig Small <csmall@debian.org>"
+      },
       "name": "ncurses-base",
       "version": "6.1+20181013-2+deb10u2",
       "purl": "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u2?arch=all&distro=debian-10.2",
@@ -5301,14 +5304,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "6.1+20181013"
         }
-      ],
-      "supplier": {
-        "name": "Craig Small <csmall@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Craig Small <csmall@debian.org>"
+      },
       "name": "ncurses-bin",
       "version": "6.1+20181013-2+deb10u2",
       "purl": "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -5341,14 +5344,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "6.1+20181013"
         }
-      ],
-      "supplier": {
-        "name": "Craig Small <csmall@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>"
+      },
       "name": "openssl",
       "version": "1.1.1d-0+deb10u2",
       "purl": "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64&distro=debian-10.2",
@@ -5381,14 +5384,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.1.1d"
         }
-      ],
-      "supplier": {
-        "name": "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Shadow package maintainers <pkg-shadow-devel@lists.alioth.debian.org>"
+      },
       "name": "passwd",
       "version": "1:4.5-1.1",
       "licenses": [
@@ -5432,14 +5435,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "4.5"
         }
-      ],
-      "supplier": {
-        "name": "Shadow package maintainers <pkg-shadow-devel@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/perl-base@5.28.1-6?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Niko Tyni <ntyni@debian.org>"
+      },
       "name": "perl-base",
       "version": "5.28.1-6",
       "purl": "pkg:deb/debian/perl-base@5.28.1-6?arch=amd64&distro=debian-10.2",
@@ -5472,14 +5475,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "5.28.1"
         }
-      ],
-      "supplier": {
-        "name": "Niko Tyni <ntyni@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/rake@12.3.1-3?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "rake",
       "version": "12.3.1-3",
       "licenses": [
@@ -5519,14 +5522,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "12.3.1"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/readline-common@7.0-5?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Matthias Klose <doko@debian.org>"
+      },
       "name": "readline-common",
       "version": "7.0-5",
       "licenses": [
@@ -5571,14 +5574,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "7.0"
         }
-      ],
-      "supplier": {
-        "name": "Matthias Klose <doko@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby-did-you-mean@1.2.1-1?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "ruby-did-you-mean",
       "version": "1.2.1-1",
       "licenses": [
@@ -5618,14 +5621,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.2.1"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby-minitest@5.11.3-1?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "ruby-minitest",
       "version": "5.11.3-1",
       "licenses": [
@@ -5665,14 +5668,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "5.11.3"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby-net-telnet@0.1.1-2?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "ruby-net-telnet",
       "version": "0.1.1-2",
       "licenses": [
@@ -5712,14 +5715,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.1.1"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby-power-assert@1.1.1-1?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "ruby-power-assert",
       "version": "1.1.1-1",
       "licenses": [
@@ -5764,14 +5767,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.1.1"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby-test-unit@3.2.8-1?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "ruby-test-unit",
       "version": "3.2.8-1",
       "licenses": [
@@ -5826,14 +5829,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "3.2.8"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby-xmlrpc@0.3.0-2?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "ruby-xmlrpc",
       "version": "0.3.0-2",
       "licenses": [
@@ -5873,14 +5876,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "0.3.0"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Team <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "ruby2.5",
       "version": "2.5.5-3+deb10u1",
       "licenses": [
@@ -6020,14 +6023,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.5.5"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Team <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/ruby@2.5.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Antonio Terceiro <terceiro@debian.org>"
+      },
       "name": "ruby",
       "version": "1:2.5.1",
       "licenses": [
@@ -6072,14 +6075,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.5.1"
         }
-      ],
-      "supplier": {
-        "name": "Antonio Terceiro <terceiro@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/rubygems-integration@1.11?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
+      },
       "name": "rubygems-integration",
       "version": "1.11",
       "licenses": [
@@ -6115,14 +6118,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.11"
         }
-      ],
-      "supplier": {
-        "name": "Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/sed@4.7-1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Clint Adams <clint@debian.org>"
+      },
       "name": "sed",
       "version": "4.7-1",
       "licenses": [
@@ -6162,14 +6165,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "4.7"
         }
-      ],
-      "supplier": {
-        "name": "Clint Adams <clint@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/sysvinit-utils@2.93-8?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Debian sysvinit maintainers <debian-init-diversity@chiark.greenend.org.uk>"
+      },
       "name": "sysvinit-utils",
       "version": "2.93-8",
       "licenses": [
@@ -6214,14 +6217,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.93"
         }
-      ],
-      "supplier": {
-        "name": "Debian sysvinit maintainers <debian-init-diversity@chiark.greenend.org.uk>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "Bdale Garbee <bdale@gag.com>"
+      },
       "name": "tar",
       "version": "1.30+dfsg-6",
       "licenses": [
@@ -6266,14 +6269,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.30+dfsg"
         }
-      ],
-      "supplier": {
-        "name": "Bdale Garbee <bdale@gag.com>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "GNU Libc Maintainers <debian-glibc@lists.debian.org>"
+      },
       "name": "tzdata",
       "version": "2019c-0+deb10u1",
       "purl": "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all&distro=debian-10.2",
@@ -6306,14 +6309,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2019c"
         }
-      ],
-      "supplier": {
-        "name": "GNU Libc Maintainers <debian-glibc@lists.debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/util-linux@2.33.1-0.1?arch=amd64&distro=debian-10.2",
       "type": "library",
+      "supplier": {
+        "name": "LaMont Jones <lamont@debian.org>"
+      },
       "name": "util-linux",
       "version": "2.33.1-0.1",
       "licenses": [
@@ -6423,14 +6426,14 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "2.33.1"
         }
-      ],
-      "supplier": {
-        "name": "LaMont Jones <lamont@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
+      "supplier": {
+        "name": "Mark Brown <broonie@debian.org>"
+      },
       "name": "zlib1g",
       "version": "1:1.2.11.dfsg-1",
       "licenses": [
@@ -6474,10 +6477,7 @@
           "name": "aquasecurity:trivy:SrcVersion",
           "value": "1.2.11.dfsg"
         }
-      ],
-      "supplier": {
-        "name": "Mark Brown <broonie@debian.org>"
-      }
+      ]
     },
     {
       "bom-ref": "pkg:gem/activesupport@6.0.2.1",
@@ -8631,111 +8631,33 @@
     {
       "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
-        "pkg:deb/debian/adduser@3.118?arch=all&distro=debian-10.2",
         "pkg:deb/debian/apt@1.8.2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/base-files@10.3%2Bdeb10u2?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/base-passwd@3.5.46?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/bash@5.0-4?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/ca-certificates@20190110?arch=all&distro=debian-10.2",
         "pkg:deb/debian/coreutils@8.30-3?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/dash@0.5.10.2-5?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/debconf@1.5.71?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/debian-archive-keyring@2019.1?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/debianutils@4.8.6.1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/diffutils@3.7-3?arch=amd64&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/dpkg@1.19.7?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/e2fsprogs@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/fdisk@2.33.1-0.1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/findutils@4.6.0%2Bgit%2B20190209-2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/gcc-8-base@8.3.0-6?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/grep@3.3-1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/gzip@1.9-3?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/hostname@3.21?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all&distro=debian-10.2",
         "pkg:deb/debian/libacl1@2.2.53-4?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libapt-pkg5.0@1.8.2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/libblkid1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libbz2-1.0@1.0.6-9.2~deb10u1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/libc-bin@2.28-10?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libc6@2.28-10?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libcap-ng0@0.7.9-2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libdebconfclient0@0.249?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/libext2fs2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libfdisk1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libffi6@3.2.1-9?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/libgcrypt20@1.8.4-5?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libgdbm-compat4@1.18.1-4?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libgdbm6@1.18.1-4?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64&distro=debian-10.2&epoch=2",
-        "pkg:deb/debian/libgnutls30@3.6.7-4?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libgpg-error0@1.35-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libhogweed4@3.4.1-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/libjemalloc2@5.1.0-3?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/liblz4-1@1.8.3-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/liblzma5@5.2.4-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libmount1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libnettle6@3.4.1-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libp11-kit0@0.23.15-2?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/libpam-modules-bin@1.3.1-5?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libpam-modules@1.3.1-5?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/libpam-runtime@1.3.1-5?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/libpam0g@1.3.1-5?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libpcre3@8.39-12?arch=amd64&distro=debian-10.2&epoch=2",
-        "pkg:deb/debian/libreadline7@7.0-5?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libseccomp2@2.3.3-4?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libsemanage-common@2.8-2?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/libsemanage1@2.8-2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libsepol1@2.8-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libsmartcols1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libsystemd0@241-7~deb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libtasn1-6@4.13-3?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libudev1@241-7~deb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libunistring2@0.9.10-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libuuid1@2.33.1-0.1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libyaml-0-2@0.2.1-1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/login@4.5-1.1?arch=amd64&distro=debian-10.2&epoch=1",
         "pkg:deb/debian/mawk@1.3.3-17%2Bb3?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/mount@2.33.1-0.1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u2?arch=all&distro=debian-10.2",
         "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/passwd@4.5-1.1?arch=amd64&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/perl-base@5.28.1-6?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/rake@12.3.1-3?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/readline-common@7.0-5?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/ruby-did-you-mean@1.2.1-1?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/ruby-minitest@5.11.3-1?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/ruby-net-telnet@0.1.1-2?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/ruby-power-assert@1.1.1-1?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/ruby-test-unit@3.2.8-1?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/ruby-xmlrpc@0.3.0-2?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/ruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/ruby@2.5.1?arch=amd64&distro=debian-10.2&epoch=1",
-        "pkg:deb/debian/rubygems-integration@1.11?arch=all&distro=debian-10.2",
         "pkg:deb/debian/sed@4.7-1?arch=amd64&distro=debian-10.2",
         "pkg:deb/debian/sysvinit-utils@2.93-8?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all&distro=debian-10.2",
-        "pkg:deb/debian/util-linux@2.33.1-0.1?arch=amd64&distro=debian-10.2",
-        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64&distro=debian-10.2&epoch=1"
+        "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all&distro=debian-10.2"
       ]
     },
     {
