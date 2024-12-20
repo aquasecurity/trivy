@@ -270,7 +270,7 @@ func Test_unsafeSet_Clear(t *testing.T) {
 
 			got := s.Size()
 			assert.Zero(t, got, "unexpected set size")
-			assert.Equal(t, 0, len(s.Items()), "items should be empty")
+			assert.Empty(t, s.Items(), "items should be empty")
 		})
 	}
 }

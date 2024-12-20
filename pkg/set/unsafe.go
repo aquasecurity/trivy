@@ -8,7 +8,7 @@ import (
 
 // unsafeSet represents a non-thread-safe set implementation
 // WARNING: This implementation is not thread-safe
-type unsafeSet[T comparable] map[T]struct{}
+type unsafeSet[T comparable] map[T]struct{} //nolint: gocritic
 
 // New creates a new empty non-thread-safe set with optional initial values
 func New[T comparable](values ...T) Set[T] {

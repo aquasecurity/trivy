@@ -226,7 +226,7 @@ func (img *image) imageConfig(config *container.Config) v1.Config {
 	}
 
 	if len(config.ExposedPorts) > 0 {
-		c.ExposedPorts = make(map[string]struct{})
+		c.ExposedPorts = make(map[string]struct{}) //nolint: gocritic
 		for port := range config.ExposedPorts {
 			c.ExposedPorts[port.Port()] = struct{}{}
 		}
