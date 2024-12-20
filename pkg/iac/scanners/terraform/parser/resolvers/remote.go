@@ -72,8 +72,6 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		return err
 	}
 
-	var opts []getter.ClientOption
-
 	// Overwrite the file getter so that a file will be copied
 	getter.Getters["file"] = &getter.FileGetter{Copy: true}
 
@@ -87,7 +85,13 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		Pwd:     opt.WorkingDir,
 		Getters: getter.Getters,
 		Mode:    getter.ClientModeAny,
-		Options: opts,
+	}
+
+	terminalPrompt := os.Getenv("GIT_TERMINAL_PROMPT")
+	if err := os.Setenv("GIT_TERMINAL_PROMPT", "0"); err != nil {
+		opt.Logger.Error("Failed to set env", log.String("name", "GIT_TERMINAL_PROMPT"), log.Err(err))
+	} else {
+		defer os.Setenv("GIT_TERMINAL_PROMPT", terminalPrompt)
 	}
 
 	if err := client.Get(); err != nil {
