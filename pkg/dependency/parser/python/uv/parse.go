@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -22,25 +23,25 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func (l Lock) directDeps(root Package) map[string]struct{} {
-	deps := make(map[string]struct{})
+func (l Lock) directDeps(root Package) set.Set[string] {
+	deps := set.New[string]()
 	for _, dep := range root.Dependencies {
-		deps[dep.Name] = struct{}{}
+		deps.Append(dep.Name)
 	}
 	return deps
 }
 
-func prodDeps(root Package, packages map[string]Package) map[string]struct{} {
-	visited := make(map[string]struct{})
+func prodDeps(root Package, packages map[string]Package) set.Set[string] {
+	visited := set.New[string]()
 	walkPackageDeps(root, packages, visited)
 	return visited
 }
 
-func walkPackageDeps(pkg Package, packages map[string]Package, visited map[string]struct{}) {
-	if _, ok := visited[pkg.Name]; ok {
+func walkPackageDeps(pkg Package, packages map[string]Package, visited set.Set[string]) {
+	if visited.Contains(pkg.Name) {
 		return
 	}
-	visited[pkg.Name] = struct{}{}
+	visited.Append(pkg.Name)
 	for _, dep := range pkg.Dependencies {
 		depPkg, exists := packages[dep.Name]
 		if !exists {
@@ -119,7 +120,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	)
 
 	for _, pkg := range lock.Packages {
-		if _, ok := prodDeps[pkg.Name]; !ok {
+		if !prodDeps.Contains(pkg.Name) {
 			continue
 		}
 
@@ -127,7 +128,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		relationship := ftypes.RelationshipIndirect
 		if pkg.isRoot() {
 			relationship = ftypes.RelationshipRoot
-		} else if _, ok := directDeps[pkg.Name]; ok {
+		} else if directDeps.Contains(pkg.Name) {
 			relationship = ftypes.RelationshipDirect
 		}
 

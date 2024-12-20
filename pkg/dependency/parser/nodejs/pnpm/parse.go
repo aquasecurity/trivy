@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -215,7 +216,7 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		}
 	}
 
-	visited := make(map[string]struct{})
+	visited := set.New[string]()
 	// Overwrite the `Dev` field for dev deps and their child dependencies.
 	for _, pkg := range resolvedPkgs {
 		if !pkg.Dev {
@@ -227,8 +228,8 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 }
 
 // markRootPkgs sets `Dev` to false for non dev dependency.
-func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited map[string]struct{}) {
-	if _, ok := visited[id]; ok {
+func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps map[string]ftypes.Dependency, visited set.Set[string]) {
+	if visited.Contains(id) {
 		return
 	}
 	pkg, ok := pkgs[id]
@@ -238,7 +239,7 @@ func (p *Parser) markRootPkgs(id string, pkgs map[string]ftypes.Package, deps ma
 
 	pkg.Dev = false
 	pkgs[id] = pkg
-	visited[id] = struct{}{}
+	visited.Append(id)
 
 	// Update child deps
 	for _, depID := range deps[id].DependsOn {

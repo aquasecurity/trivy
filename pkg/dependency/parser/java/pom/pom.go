@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"maps"
 	"net/url"
 	"reflect"
 	"strings"
@@ -15,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
@@ -287,12 +287,12 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	// To avoid shadow adding exclusions to top pom's,
 	// we need to initialize a new map for each new artifact
 	// See `exclusions in child` test for more information
-	exclusions := make(map[string]struct{})
+	exclusions := set.New[string]()
 	if opts.exclusions != nil {
-		exclusions = maps.Clone(opts.exclusions)
+		exclusions = opts.exclusions.Clone()
 	}
 	for _, e := range d.Exclusions.Exclusion {
-		exclusions[fmt.Sprintf("%s:%s", e.GroupID, e.ArtifactID)] = struct{}{}
+		exclusions.Append(fmt.Sprintf("%s:%s", e.GroupID, e.ArtifactID))
 	}
 
 	var locations ftypes.Locations

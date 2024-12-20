@@ -12,6 +12,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
@@ -30,7 +31,7 @@ type artifact struct {
 	Version    version
 	Licenses   []string
 
-	Exclusions map[string]struct{}
+	Exclusions set.Set[string]
 
 	Module       bool
 	Relationship ftypes.Relationship

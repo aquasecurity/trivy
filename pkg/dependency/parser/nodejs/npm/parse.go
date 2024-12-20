@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -91,7 +92,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-lock-json#packages
 	p.resolveLinks(packages)
 
-	directDeps := make(map[string]struct{})
+	directDeps := set.New[string]()
 	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies, packages[""].PeerDependencies) {
 		pkgPath := joinPaths(nodeModulesDir, name)
 		if _, ok := packages[pkgPath]; !ok {
@@ -101,7 +102,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		}
 		// Store the package paths of direct dependencies
 		// e.g. node_modules/body-parser
-		directDeps[pkgPath] = struct{}{}
+		directDeps.Append(pkgPath)
 	}
 
 	for pkgPath, pkg := range packages {
@@ -366,13 +367,13 @@ func (p *Parser) pkgNameFromPath(pkgPath string) string {
 
 func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {
 	var uniqDeps ftypes.Dependencies
-	unique := make(map[string]struct{})
+	unique := set.New[string]()
 
 	for _, dep := range deps {
 		sort.Strings(dep.DependsOn)
 		depKey := fmt.Sprintf("%s:%s", dep.ID, strings.Join(dep.DependsOn, ","))
-		if _, ok := unique[depKey]; !ok {
-			unique[depKey] = struct{}{}
+		if !unique.Contains(depKey) {
+			unique.Append(depKey)
 			uniqDeps = append(uniqDeps, dep)
 		}
 	}
@@ -381,11 +382,11 @@ func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {
 	return uniqDeps
 }
 
-func isIndirectPkg(pkgPath string, directDeps map[string]struct{}) bool {
+func isIndirectPkg(pkgPath string, directDeps set.Set[string]) bool {
 	// A project can contain 2 different versions of the same dependency.
 	// e.g. `node_modules/string-width/node_modules/strip-ansi` and `node_modules/string-ansi`
 	// direct dependencies always have root path (`node_modules/<pkg_name>`)
-	if _, ok := directDeps[pkgPath]; ok {
+	if directDeps.Contains(pkgPath) {
 		return false
 	}
 	return true

@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/trivy-checks/pkg/spec"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -31,17 +31,17 @@ const (
 
 // Scanners reads spec control and determines the scanners by check ID prefix
 func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
-	scannerTypes := make(map[types.Scanner]struct{})
+	scannerTypes := set.New[types.Scanner]()
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
 			scannerType := scannerByCheckID(check.ID)
 			if scannerType == types.UnknownScanner {
 				return nil, xerrors.Errorf("unsupported check ID: %s", check.ID)
 			}
-			scannerTypes[scannerType] = struct{}{}
+			scannerTypes.Append(scannerType)
 		}
 	}
-	return lo.Keys(scannerTypes), nil
+	return scannerTypes.Items(), nil
 }
 
 // CheckIDs return list of compliance check IDs

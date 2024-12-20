@@ -10,19 +10,6 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func UniqueStrings(ss []string) []string {
-	var results []string
-	uniq := make(map[string]struct{})
-	for _, s := range ss {
-		if _, ok := uniq[s]; ok {
-			continue
-		}
-		results = append(results, s)
-		uniq[s] = struct{}{}
-	}
-	return results
-}
-
 func UniquePackages(pkgs []ftypes.Package) []ftypes.Package {
 	if len(pkgs) == 0 {
 		return nil
