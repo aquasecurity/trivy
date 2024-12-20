@@ -412,16 +412,16 @@ func (p *Parser) resolveParent(pom *pom) error {
 }
 
 func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) []pomDependency {
-	uniq := make(map[string]struct{})
+	uniq := set.New[string]()
 	var depManagement []pomDependency
 	// The preceding argument takes precedence.
 	for _, dm := range depManagements {
 		for _, dep := range dm {
-			if _, ok := uniq[dep.Name()]; ok {
+			if uniq.Contains(dep.Name()) {
 				continue
 			}
 			depManagement = append(depManagement, dep)
-			uniq[dep.Name()] = struct{}{}
+			uniq.Append(dep.Name())
 		}
 	}
 	return depManagement
