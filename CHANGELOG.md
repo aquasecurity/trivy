@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.59.0](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.59.0) (2024-12-20)
+
+
+### Features
+
+* add `--distro` flag to manually specify OS distribution for vulnerability scanning ([#8070](https://github.com/aquasecurity/trivy/issues/8070)) ([da17dc7](https://github.com/aquasecurity/trivy/commit/da17dc72782cd68b5d2c4314a67936343462b75e))
+* **misconf:** generate placeholders for random provider resources ([#8051](https://github.com/aquasecurity/trivy/issues/8051)) ([ffe24e1](https://github.com/aquasecurity/trivy/commit/ffe24e18dc3dca816ec9ce5ccf66d5d7b5ea70d6))
+* **nodejs:** respect peer dependencies for dependency tree ([#7989](https://github.com/aquasecurity/trivy/issues/7989)) ([7389961](https://github.com/aquasecurity/trivy/commit/73899610e8eece670d2e5ddc1478fcc0a2a5760d))
+* **python:** add support for uv ([#8080](https://github.com/aquasecurity/trivy/issues/8080)) ([c4a4a5f](https://github.com/aquasecurity/trivy/commit/c4a4a5fa971d73ae924afcf2259631f15e96e520))
+
+
+### Bug Fixes
+
+* CVE-2024-45337: Misuse of ServerConfig.PublicKeyCallback may cause authorization bypass ([#8088](https://github.com/aquasecurity/trivy/issues/8088)) ([d7ac286](https://github.com/aquasecurity/trivy/commit/d7ac286085077c969734225a789e6cc056d5c5f5))
+* enable err-error and errorf rules from perfsprint linter ([#7859](https://github.com/aquasecurity/trivy/issues/7859)) ([156a2aa](https://github.com/aquasecurity/trivy/commit/156a2aa4c49386828c0446f8978473c8da7a8754))
+* **flag:** skip hidden flags for `--generate-default-config` command ([#8046](https://github.com/aquasecurity/trivy/issues/8046)) ([5e68bdc](https://github.com/aquasecurity/trivy/commit/5e68bdc9d08f96d22451d7b5dd93e79ca576eeb7))
+* handle `BLOW_UNKNOWN` error to download DBs ([#8060](https://github.com/aquasecurity/trivy/issues/8060)) ([51f2123](https://github.com/aquasecurity/trivy/commit/51f2123c5ccc4f7a37d1068830b6670b4ccf9ac8))
+* **java:** correctly overwrite version from depManagement if dependency uses `project.*` props ([#8050](https://github.com/aquasecurity/trivy/issues/8050)) ([9d9f80d](https://github.com/aquasecurity/trivy/commit/9d9f80d9791f38a0b4c727152166ae4d237a83a9))
+* **license:** always trim leading and trailing spaces for licenses ([#8095](https://github.com/aquasecurity/trivy/issues/8095)) ([f5e4291](https://github.com/aquasecurity/trivy/commit/f5e429179df1637de96962ab9c19e4336056bb5d))
+* **misconf:** use log instead of fmt for logging ([#8033](https://github.com/aquasecurity/trivy/issues/8033)) ([07b2d7f](https://github.com/aquasecurity/trivy/commit/07b2d7fbd7f8ef5473c2438c560fffc8bdadf913))
+* **oracle:** add architectures support for advisories ([#4809](https://github.com/aquasecurity/trivy/issues/4809)) ([90f1d8d](https://github.com/aquasecurity/trivy/commit/90f1d8d78aa20b47fafab2c8ecb07247f075ef45))
+* **redhat:** correct rewriting of recommendations for the same vulnerability ([#8063](https://github.com/aquasecurity/trivy/issues/8063)) ([4202c4b](https://github.com/aquasecurity/trivy/commit/4202c4ba0d8fcff4b89499fe03050ef4efd37330))
+* respect GITHUB_TOKEN to download artifacts from GHCR ([#7580](https://github.com/aquasecurity/trivy/issues/7580)) ([21b68e1](https://github.com/aquasecurity/trivy/commit/21b68e18188f91935ac1055a78ee97a7f35a110d))
+* **sbom:** fix wrong overwriting of applications obtained from different sbom files but having same app type ([#8052](https://github.com/aquasecurity/trivy/issues/8052)) ([fd07074](https://github.com/aquasecurity/trivy/commit/fd07074e8033530eee2732193b00e59f27c73096))
+* **sbom:** scan results of SBOMs generated from container images are missing layers ([#7635](https://github.com/aquasecurity/trivy/issues/7635)) ([f9fceb5](https://github.com/aquasecurity/trivy/commit/f9fceb58bf64657dee92302df1ed97e597e474c9))
+* Updated twitter icon ([#7772](https://github.com/aquasecurity/trivy/issues/7772)) ([2c41ac8](https://github.com/aquasecurity/trivy/commit/2c41ac83a95e9347605d36f483171a60ffce0fa2))
+* wasm module test ([#8099](https://github.com/aquasecurity/trivy/issues/8099)) ([2200f38](https://github.com/aquasecurity/trivy/commit/2200f3846d675c64ab9302af43224d663a67c944))
+
+
+### Performance Improvements
+
+* avoid heap allocation in applier findPackage ([#7883](https://github.com/aquasecurity/trivy/issues/7883)) ([9bd6ed7](https://github.com/aquasecurity/trivy/commit/9bd6ed73e5d49d52856c76124e84c268475c5456))
+
 ## [0.58.0](https://github.com/aquasecurity/trivy/compare/v0.57.0...v0.58.0) (2024-12-02)
 
 
