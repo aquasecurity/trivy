@@ -1,5 +1,17 @@
 package expression
 
+import (
+	"encoding/json"
+	"strings"
+	"sync"
+
+	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
+
+	_ "embed"
+)
+
 // Canonical names of the licenses.
 // ported from https://github.com/google/licenseclassifier/blob/7c62d6fe8d3aa2f39c4affb58c9781d9dc951a2d/license_type.go#L24-L177
 const (
@@ -359,3 +371,79 @@ var (
 		ZeroBSD,
 	}
 )
+
+var spdxLicenses map[string]struct{}
+
+var initSpdxLicenses = sync.OnceFunc(func() {
+	if len(spdxLicenses) > 0 {
+		return
+	}
+
+	licenseSlices := [][]string{
+		ForbiddenLicenses,
+		RestrictedLicenses,
+		ReciprocalLicenses,
+		NoticeLicenses,
+		PermissiveLicenses,
+		UnencumberedLicenses,
+	}
+
+	for _, licenseSlice := range licenseSlices {
+		spdxLicenses = lo.Assign(spdxLicenses, lo.SliceToMap(licenseSlice, func(l string) (string, struct{}) {
+			return l, struct{}{}
+		}))
+	}
+
+	// Save GNU licenses with "-or-later" and `"-only" suffixes
+	for _, l := range GnuLicenses {
+		license := SimpleExpr{
+			License: l,
+		}
+		spdxLicenses[license.String()] = struct{}{}
+
+		license.HasPlus = true
+		spdxLicenses[license.String()] = struct{}{}
+	}
+})
+
+//go:embed exceptions.json
+var exceptions []byte
+
+var spdxExceptions map[string]struct{}
+
+var initSpdxExceptions = sync.OnceFunc(func() {
+	if len(spdxExceptions) > 0 {
+		return
+	}
+
+	var exs []string
+	if err := json.Unmarshal(exceptions, &exs); err != nil {
+		log.WithPrefix("SPDX").Warn("Unable to parse SPDX exception file", log.Err(err))
+		return
+	}
+
+	spdxExceptions = lo.SliceToMap(exs, func(e string) (string, struct{}) {
+		return e, struct{}{}
+	})
+})
+
+// ValidSpdxLicense returns true if SPDX license lists contain licenseID and license exception (if exists)
+func ValidSpdxLicense(license string) bool {
+	if spdxLicenses == nil {
+		initSpdxLicenses()
+	}
+	if spdxExceptions == nil {
+		initSpdxExceptions()
+	}
+
+	id, exception, ok := strings.Cut(license, " WITH ")
+	if _, licenseIdFound := spdxLicenses[id]; licenseIdFound {
+		if !ok {
+			return true
+		}
+		if _, exceptionFound := spdxExceptions[strings.ToUpper(exception)]; exceptionFound {
+			return true
+		}
+	}
+	return false
+}
