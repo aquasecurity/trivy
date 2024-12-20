@@ -24,11 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-var checkTypesWithSubtype = map[types.Source]struct{}{
-	types.SourceCloud:      {},
-	types.SourceDefsec:     {},
-	types.SourceKubernetes: {},
-}
+var checkTypesWithSubtype = set.New[types.Source](types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
 
 var supportedProviders = makeSupportedProviders()
 
@@ -145,7 +141,7 @@ func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, d
 	}
 
 	instance := rego.New(regoOptions...)
-	set, err := instance.Eval(ctx)
+	resultSet, err := instance.Eval(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -163,7 +159,7 @@ func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, d
 			traces = strings.Split(traceBuffer.String(), "\n")
 		}
 	}
-	return set, traces, nil
+	return resultSet, traces, nil
 }
 
 type Input struct {
@@ -255,8 +251,7 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 }
 
 func isPolicyWithSubtype(sourceType types.Source) bool {
-	_, exists := checkTypesWithSubtype[sourceType]
-	return exists
+	return checkTypesWithSubtype.Contains(sourceType)
 }
 
 func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
@@ -327,12 +322,12 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 			continue
 		}
 
-		set, traces, err := s.runQuery(ctx, qualified, parsedInput, false)
+		resultSet, traces, err := s.runQuery(ctx, qualified, parsedInput, false)
 		if err != nil {
 			return nil, err
 		}
-		s.trace("RESULTSET", set)
-		ruleResults := s.convertResults(set, input, namespace, rule, traces)
+		s.trace("RESULTSET", resultSet)
+		ruleResults := s.convertResults(resultSet, input, namespace, rule, traces)
 		if len(ruleResults) == 0 { // It passed because we didn't find anything wrong (NOT because it didn't exist)
 			var result regoResult
 			result.FS = input.FS
