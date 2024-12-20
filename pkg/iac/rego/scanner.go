@@ -31,9 +31,9 @@ var supportedProviders = makeSupportedProviders()
 func makeSupportedProviders() set.Set[string] {
 	m := set.New[string]()
 	for _, p := range providers.AllProviders() {
-		m.Add(string(p))
+		m.Append(string(p))
 	}
-	m.Add("kind") // kubernetes
+	m.Append("kind") // kubernetes
 	return m
 }
 
@@ -229,7 +229,7 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			if usedRules.Contains(ruleName) {
 				continue
 			}
-			usedRules.Add(ruleName)
+			usedRules.Append(ruleName)
 			if isEnforcedRule(ruleName) {
 				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs)
 				if err != nil {

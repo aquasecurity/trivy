@@ -87,7 +87,7 @@ func Test_unsafeSet_Add(t *testing.T) {
 		{
 			name: "add duplicate integer",
 			prepare: func(s set.Set[any]) {
-				s.Add(1)
+				s.Append(1)
 			},
 			input:    1,
 			wantSize: 1,
@@ -127,7 +127,7 @@ func Test_unsafeSet_Add(t *testing.T) {
 			if tt.prepare != nil {
 				tt.prepare(s)
 			}
-			s.Add(tt.input)
+			s.Append(tt.input)
 
 			got := s.Size()
 			assert.Equal(t, tt.wantSize, got, "unexpected set size")
@@ -156,7 +156,7 @@ func Test_unsafeSet_Append(t *testing.T) {
 		{
 			name: "append with duplicates",
 			prepare: func(s set.Set[int]) {
-				s.Add(1)
+				s.Append(1)
 			},
 			input: []int{
 				1,
@@ -170,7 +170,7 @@ func Test_unsafeSet_Append(t *testing.T) {
 		{
 			name: "append empty slice",
 			prepare: func(s set.Set[int]) {
-				s.Add(1)
+				s.Append(1)
 			},
 			input:    []int{},
 			wantSize: 1,
@@ -205,7 +205,7 @@ func Test_unsafeSet_Remove(t *testing.T) {
 		{
 			name: "remove existing element",
 			prepare: func(s set.Set[int]) {
-				s.Add(1)
+				s.Append(1)
 			},
 			input:    1,
 			wantSize: 0,
@@ -213,7 +213,7 @@ func Test_unsafeSet_Remove(t *testing.T) {
 		{
 			name: "remove non-existing element",
 			prepare: func(s set.Set[int]) {
-				s.Add(1)
+				s.Append(1)
 			},
 			input:    2,
 			wantSize: 1,
@@ -249,9 +249,9 @@ func Test_unsafeSet_Clear(t *testing.T) {
 		{
 			name: "clear non-empty set",
 			prepare: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
-				s.Add(3)
+				s.Append(1)
+				s.Append(2)
+				s.Append(3)
 			},
 		},
 		{
@@ -283,7 +283,7 @@ func Test_unsafeSet_Clone(t *testing.T) {
 		assert.Equal(t, 0, cloned.Size(), "cloned set should be empty")
 
 		// Verify independence
-		original.Add("test")
+		original.Append("test")
 		assert.False(t, cloned.Contains("test"), "cloned set should not be affected by original")
 	})
 
@@ -297,16 +297,16 @@ func Test_unsafeSet_Clone(t *testing.T) {
 		assert.True(t, cloned.Contains(true), "should contain boolean")
 
 		// Verify independence
-		original.Add("new")
+		original.Append("new")
 		assert.False(t, cloned.Contains("new"), "cloned set should not be affected by original")
-		cloned.Add("another")
+		cloned.Append("another")
 		assert.False(t, original.Contains("another"), "original set should not be affected by clone")
 	})
 
 	// Test nil pointer
 	t.Run("nil pointer", func(t *testing.T) {
 		original := set.New[*int]()
-		original.Add(nil)
+		original.Append(nil)
 
 		cloned := original.Clone()
 
@@ -324,9 +324,9 @@ func Test_unsafeSet_Items(t *testing.T) {
 		{
 			name: "get items from non-empty set",
 			prepare: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
-				s.Add(3)
+				s.Append(1)
+				s.Append(2)
+				s.Append(3)
 			},
 			want: []int{
 				1,
@@ -364,12 +364,12 @@ func Test_unsafeSet_Union(t *testing.T) {
 		{
 			name: "union of non-overlapping sets",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
+				s.Append(1)
+				s.Append(2)
 			},
 			prepare2: func(s set.Set[int]) {
-				s.Add(3)
-				s.Add(4)
+				s.Append(3)
+				s.Append(4)
 			},
 			want: []int{
 				1,
@@ -381,14 +381,14 @@ func Test_unsafeSet_Union(t *testing.T) {
 		{
 			name: "union of overlapping sets",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
-				s.Add(3)
+				s.Append(1)
+				s.Append(2)
+				s.Append(3)
 			},
 			prepare2: func(s set.Set[int]) {
-				s.Add(2)
-				s.Add(3)
-				s.Add(4)
+				s.Append(2)
+				s.Append(3)
+				s.Append(4)
 			},
 			want: []int{
 				1,
@@ -400,8 +400,8 @@ func Test_unsafeSet_Union(t *testing.T) {
 		{
 			name: "union with empty set",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
+				s.Append(1)
+				s.Append(2)
 			},
 			prepare2: nil,
 			want: []int{
@@ -447,14 +447,14 @@ func Test_unsafeSet_Intersection(t *testing.T) {
 		{
 			name: "intersection of overlapping sets",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
-				s.Add(3)
+				s.Append(1)
+				s.Append(2)
+				s.Append(3)
 			},
 			prepare2: func(s set.Set[int]) {
-				s.Add(2)
-				s.Add(3)
-				s.Add(4)
+				s.Append(2)
+				s.Append(3)
+				s.Append(4)
 			},
 			want: []int{
 				2,
@@ -464,20 +464,20 @@ func Test_unsafeSet_Intersection(t *testing.T) {
 		{
 			name: "intersection of non-overlapping sets",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
+				s.Append(1)
+				s.Append(2)
 			},
 			prepare2: func(s set.Set[int]) {
-				s.Add(3)
-				s.Add(4)
+				s.Append(3)
+				s.Append(4)
 			},
 			want: []int{},
 		},
 		{
 			name: "intersection with empty set",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
+				s.Append(1)
+				s.Append(2)
 			},
 			prepare2: nil,
 			want:     []int{},
@@ -514,26 +514,26 @@ func Test_unsafeSet_Difference(t *testing.T) {
 		{
 			name: "difference of overlapping sets",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
-				s.Add(3)
+				s.Append(1)
+				s.Append(2)
+				s.Append(3)
 			},
 			prepare2: func(s set.Set[int]) {
-				s.Add(2)
-				s.Add(3)
-				s.Add(4)
+				s.Append(2)
+				s.Append(3)
+				s.Append(4)
 			},
 			want: []int{1},
 		},
 		{
 			name: "difference with non-overlapping set",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
+				s.Append(1)
+				s.Append(2)
 			},
 			prepare2: func(s set.Set[int]) {
-				s.Add(3)
-				s.Add(4)
+				s.Append(3)
+				s.Append(4)
 			},
 			want: []int{
 				1,
@@ -543,8 +543,8 @@ func Test_unsafeSet_Difference(t *testing.T) {
 		{
 			name: "difference with empty set",
 			prepare1: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
+				s.Append(1)
+				s.Append(2)
 			},
 			prepare2: nil,
 			want: []int{
@@ -556,8 +556,8 @@ func Test_unsafeSet_Difference(t *testing.T) {
 			name:     "difference of empty set",
 			prepare1: nil,
 			prepare2: func(s set.Set[int]) {
-				s.Add(1)
-				s.Add(2)
+				s.Append(1)
+				s.Append(2)
 			},
 			want: []int{},
 		},

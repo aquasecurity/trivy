@@ -19,11 +19,6 @@ func New[T comparable](values ...T) Set[T] {
 	return s
 }
 
-// Add adds an item to the set
-func (s unsafeSet[T]) Add(item T) {
-	s[item] = struct{}{}
-}
-
 // Append adds multiple items to the set and returns the new size
 func (s unsafeSet[T]) Append(val ...T) int {
 	for _, item := range val {

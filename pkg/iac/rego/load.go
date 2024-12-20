@@ -122,7 +122,7 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 	uniq := set.New[string]()
 	for _, module := range s.policies {
 		namespace := getModuleNamespace(module)
-		uniq.Add(namespace)
+		uniq.Append(namespace)
 	}
 	namespaces := uniq.Items()
 

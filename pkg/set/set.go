@@ -4,9 +4,6 @@ import "iter"
 
 // Set defines the interface for set operations
 type Set[T comparable] interface {
-	// Add adds an item to the set
-	Add(item T)
-
 	// Append adds multiple items to the set and returns the new size
 	Append(val ...T) int
 
