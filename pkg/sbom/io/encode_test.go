@@ -522,10 +522,6 @@ func TestEncoder_Encode(t *testing.T) {
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
 					{
-						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
-						Type:       core.RelationshipContains,
-					},
-					{
 						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
 						Type:       core.RelationshipContains,
 					},
