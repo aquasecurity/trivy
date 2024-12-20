@@ -12,16 +12,13 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-var builtinNamespaces = map[string]struct{}{
-	"builtin":   {},
-	"defsec":    {},
-	"appshield": {},
-}
+var builtinNamespaces = set.New("builtin", "defsec", "appshield")
 
 func BuiltinNamespaces() []string {
-	return lo.Keys(builtinNamespaces)
+	return builtinNamespaces.Items()
 }
 
 func IsBuiltinNamespace(namespace string) bool {

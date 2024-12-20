@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"maps"
 	"strings"
 
 	"github.com/open-policy-agent/opa/ast"
@@ -22,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var checkTypesWithSubtype = map[types.Source]struct{}{
@@ -32,19 +32,19 @@ var checkTypesWithSubtype = map[types.Source]struct{}{
 
 var supportedProviders = makeSupportedProviders()
 
-func makeSupportedProviders() map[string]struct{} {
-	m := make(map[string]struct{})
+func makeSupportedProviders() set.Set[string] {
+	m := set.New[string]()
 	for _, p := range providers.AllProviders() {
-		m[string(p)] = struct{}{}
+		m.Add(string(p))
 	}
-	m["kind"] = struct{}{} // kubernetes
+	m.Add("kind") // kubernetes
 	return m
 }
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	ruleNamespaces           map[string]struct{}
+	ruleNamespaces           set.Set[string]
 	policies                 map[string]*ast.Module
 	store                    storage.Store
 	runtimeValues            *ast.Term
@@ -103,14 +103,12 @@ func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		regoErrorLimit:   ast.CompileErrorLimitDefault,
 		sourceType:       source,
-		ruleNamespaces:   make(map[string]struct{}),
+		ruleNamespaces:   builtinNamespaces.Clone(),
 		runtimeValues:    addRuntimeValues(),
 		logger:           log.WithPrefix("rego"),
 		customSchemas:    make(map[string][]byte),
 		disabledCheckIDs: make(map[string]struct{}),
 	}
-
-	maps.Copy(s.ruleNamespaces, builtinNamespaces)
 
 	for _, opt := range opts {
 		opt(s)
@@ -198,7 +196,7 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 
 		namespace := getModuleNamespace(module)
 		topLevel := strings.Split(namespace, ".")[0]
-		if _, ok := s.ruleNamespaces[topLevel]; !ok {
+		if !s.ruleNamespaces.Contains(topLevel) {
 			continue
 		}
 
@@ -290,7 +288,7 @@ func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	for _, input := range inputs {
 		if ii, ok := input.Contents.(map[string]any); ok {
 			for provider := range ii {
-				if _, exists := supportedProviders[provider]; !exists {
+				if !supportedProviders.Contains(provider) {
 					continue
 				}
 

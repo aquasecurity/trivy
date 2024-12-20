@@ -69,9 +69,7 @@ func WithDataDirs(paths ...string) options.ScannerOption {
 func WithPolicyNamespaces(namespaces ...string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if ss, ok := s.(*Scanner); ok {
-			for _, namespace := range namespaces {
-				ss.ruleNamespaces[namespace] = struct{}{}
-			}
+			ss.ruleNamespaces.Append(namespaces...)
 		}
 	}
 }
