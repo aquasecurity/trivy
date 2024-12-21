@@ -103,46 +103,47 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	// Identify the direct/transitive dependencies
+	prodRootDeps := project.Tool.Poetry.Dependencies
+	directDeps := lo.Assign(prodRootDeps, getDevDeps(project))
+	prodDeps := getProdPackages(app, prodRootDeps)
+
+	// Identify the direct/transitive/dev dependencies
 	for i, pkg := range app.Packages {
-		if _, ok := project.Tool.Poetry.Dependencies[pkg.Name]; ok {
+		_, isProd := prodDeps[pkg.ID]
+		app.Packages[i].Dev = !isProd
+		if _, ok := directDeps[pkg.Name]; ok {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
 			app.Packages[i].Indirect = true
 			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
-
-	filterProdPackages(project, app)
 	return nil
 }
 
-func filterProdPackages(project pyproject.PyProject, app *types.Application) {
+func getDevDeps(project pyproject.PyProject) map[string]struct{} {
+	deps := make(map[string]struct{})
+	for _, groupDeps := range project.Tool.Poetry.Groups {
+		deps = lo.Assign(deps, groupDeps.Dependencies)
+	}
+	return deps
+}
+
+func getProdPackages(app *types.Application, prodRootDeps map[string]struct{}) map[string]struct{} {
 	packages := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
 	visited := make(map[string]struct{})
-	deps := project.Tool.Poetry.Dependencies
-
-	for group, groupDeps := range project.Tool.Poetry.Groups {
-		if group == "dev" {
-			continue
-		}
-		deps = lo.Assign(deps, groupDeps.Dependencies)
-	}
 
 	for _, pkg := range packages {
-		if _, prodDep := deps[pkg.Name]; !prodDep {
+		if _, directDep := prodRootDeps[pkg.Name]; !directDep {
 			continue
 		}
 		walkPackageDeps(pkg.ID, packages, visited)
 	}
 
-	app.Packages = lo.Filter(app.Packages, func(pkg types.Package, _ int) bool {
-		_, ok := visited[pkg.ID]
-		return ok
-	})
+	return visited
 }
 
 func walkPackageDeps(pkgID string, packages map[string]types.Package, visited map[string]struct{}) {
