@@ -1,7 +1,6 @@
 package pyproject
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/BurntSushi/toml"
@@ -33,7 +32,7 @@ type dependencies map[string]struct{}
 func (d *dependencies) UnmarshalTOML(data any) error {
 	m, ok := data.(map[string]any)
 	if !ok {
-		return fmt.Errorf("dependencies must be map, but got: %T", data)
+		return xerrors.Errorf("dependencies must be map, but got: %T", data)
 	}
 
 	*d = lo.MapEntries(m, func(pkgName string, _ any) (string, struct{}) {
