@@ -94,7 +94,7 @@ func (a poetryAnalyzer) parsePoetryLock(path string, r io.Reader) (*types.Applic
 func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Application) error {
 	// Parse pyproject.toml to identify the direct dependencies
 	path := filepath.Join(dir, types.PyProject)
-	p, err := a.parsePyProject(fsys, path)
+	project, err := a.parsePyProject(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from poetry.lock
 		a.logger.Debug("pyproject.toml not found", log.FilePath(path))
@@ -105,7 +105,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 
 	// Identify the direct/transitive dependencies
 	for i, pkg := range app.Packages {
-		if _, ok := p[pkg.Name]; ok {
+		if _, ok := project.Tool.Poetry.Dependencies[pkg.Name]; ok {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
 			app.Packages[i].Indirect = true
@@ -113,26 +113,60 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		}
 	}
 
+	filterProdPackages(project, app)
 	return nil
 }
 
-func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]any, error) {
+func filterProdPackages(project pyproject.PyProject, app *types.Application) {
+	packages := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
+		return pkg.ID, pkg
+	})
+
+	visited := make(map[string]struct{})
+	deps := project.Tool.Poetry.Dependencies
+
+	for group, groupDeps := range project.Tool.Poetry.Groups {
+		if group == "dev" {
+			continue
+		}
+		deps = lo.Assign(deps, groupDeps.Dependencies)
+	}
+
+	for _, pkg := range packages {
+		if _, prodDep := deps[pkg.Name]; !prodDep {
+			continue
+		}
+		walkPackageDeps(pkg.ID, packages, visited)
+	}
+
+	app.Packages = lo.Filter(app.Packages, func(pkg types.Package, _ int) bool {
+		_, ok := visited[pkg.ID]
+		return ok
+	})
+}
+
+func walkPackageDeps(pkgID string, packages map[string]types.Package, visited map[string]struct{}) {
+	if _, ok := visited[pkgID]; ok {
+		return
+	}
+	visited[pkgID] = struct{}{}
+	for _, dep := range packages[pkgID].DependsOn {
+		walkPackageDeps(dep, packages, visited)
+	}
+}
+
+func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (pyproject.PyProject, error) {
 	// Parse pyproject.toml
 	f, err := fsys.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return pyproject.PyProject{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
-	parsed, err := a.pyprojectParser.Parse(f)
+	project, err := a.pyprojectParser.Parse(f)
 	if err != nil {
-		return nil, err
+		return pyproject.PyProject{}, err
 	}
 
-	// Packages from `pyproject.toml` can use uppercase characters, `.` and `_`.
-	parsed = lo.MapKeys(parsed, func(_ any, pkgName string) string {
-		return poetry.NormalizePkgName(pkgName)
-	})
-
-	return parsed, nil
+	return project, nil
 }
