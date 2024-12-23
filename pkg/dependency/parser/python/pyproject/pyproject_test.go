@@ -2,7 +2,6 @@ package pyproject_test
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/set"
 	"os"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func TestParser_Parse(t *testing.T) {
