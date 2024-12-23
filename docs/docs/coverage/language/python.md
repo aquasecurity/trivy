@@ -104,6 +104,8 @@ urllib3==1.26.15
 `requirements.txt` files don't contain information about dependencies used for development.
 Trivy could detect vulnerabilities on the development packages, which not affect your production environment.
 
+By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
 #### License detection
 
 `requirements.txt` files don't contain information about licenses.
@@ -122,6 +124,8 @@ Trivy could detect vulnerabilities on the development packages, which not affect
 
 License detection is not supported for `Pipenv`.
 
+By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
 ### Poetry
 Trivy uses `poetry.lock` to identify dependencies and find vulnerabilities.
 To build the correct dependency graph, `pyproject.toml` also needs to be present next to `poetry.lock`.
@@ -132,6 +136,8 @@ License detection is not supported for `Poetry`.
 Trivy uses `uv.lock` to identify dependencies and find vulnerabilities.
 
 License detection is not supported for `uv`.
+
+By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
 ## Packaging
 Trivy parses the manifest files of installed packages in container image scanning and so on.
