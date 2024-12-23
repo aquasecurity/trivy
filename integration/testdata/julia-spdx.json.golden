@@ -156,11 +156,6 @@
     },
     {
       "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
-      "relatedSpdxElement": "SPDXRef-Package-960543ac5c5f7e10",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Application-18fc3597717a3e56",
       "relatedSpdxElement": "SPDXRef-Package-a4705eb108e4f15c",
       "relationshipType": "CONTAINS"
     },
