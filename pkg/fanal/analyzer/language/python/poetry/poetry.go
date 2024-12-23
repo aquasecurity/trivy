@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -122,7 +123,7 @@ func filterProdPackages(project pyproject.PyProject, app *types.Application) {
 		return pkg.ID, pkg
 	})
 
-	visited := make(map[string]struct{})
+	visited := set.New[string]()
 	deps := project.Tool.Poetry.Dependencies
 
 	for group, groupDeps := range project.Tool.Poetry.Groups {
@@ -140,16 +141,15 @@ func filterProdPackages(project pyproject.PyProject, app *types.Application) {
 	}
 
 	app.Packages = lo.Filter(app.Packages, func(pkg types.Package, _ int) bool {
-		_, ok := visited[pkg.ID]
-		return ok
+		return visited.Contains(pkg.ID)
 	})
 }
 
-func walkPackageDeps(pkgID string, packages map[string]types.Package, visited map[string]struct{}) {
-	if _, ok := visited[pkgID]; ok {
+func walkPackageDeps(pkgID string, packages map[string]types.Package, visited set.Set[string]) {
+	if visited.Contains(pkgID) {
 		return
 	}
-	visited[pkgID] = struct{}{}
+	visited.Append(pkgID)
 	for _, dep := range packages[pkgID].DependsOn {
 		walkPackageDeps(dep, packages, visited)
 	}
