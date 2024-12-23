@@ -294,18 +294,10 @@
     {
       "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
-        "pkg:npm/asap@2.0.6",
         "pkg:npm/jquery@3.3.9",
-        "pkg:npm/js-tokens@4.0.0",
-        "pkg:npm/loose-envify@1.4.0",
-        "pkg:npm/object-assign@4.1.1",
         "pkg:npm/promise@8.0.3",
-        "pkg:npm/prop-types@15.7.2",
-        "pkg:npm/react-is@16.8.6",
         "pkg:npm/react@16.8.6",
-        "pkg:npm/redux@4.0.1",
-        "pkg:npm/scheduler@0.13.6",
-        "pkg:npm/symbol-observable@1.2.0"
+        "pkg:npm/redux@4.0.1"
       ]
     },
     {
