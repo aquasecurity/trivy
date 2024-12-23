@@ -106,7 +106,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 
 	// Identify the direct/transitive dependencies
 	for i, pkg := range app.Packages {
-		if _, ok := project.Tool.Poetry.Dependencies[pkg.Name]; ok {
+		if project.Tool.Poetry.Dependencies.Contains(pkg.Name) {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
 			app.Packages[i].Indirect = true
@@ -130,11 +130,11 @@ func filterProdPackages(project pyproject.PyProject, app *types.Application) {
 		if group == "dev" {
 			continue
 		}
-		deps = lo.Assign(deps, groupDeps.Dependencies)
+		deps.Set = deps.Union(groupDeps.Dependencies)
 	}
 
 	for _, pkg := range packages {
-		if _, prodDep := deps[pkg.Name]; !prodDep {
+		if !deps.Contains(pkg.Name) {
 			continue
 		}
 		walkPackageDeps(pkg.ID, packages, visited)
