@@ -7,6 +7,7 @@
 [![License: Apache-2.0][license-img]][license]
 [![GitHub Downloads][github-downloads-img]][release]
 ![Docker Pulls][docker-pulls]
+[![Gurubase](https://img.shields.io/badge/Gurubase-Ask%20Trivy%20Guru-006BFF)](https://gurubase.io/g/trivy)
 
 [📖 Documentation][docs]
 </div>
