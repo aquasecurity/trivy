@@ -128,6 +128,9 @@ To build the correct dependency graph, `pyproject.toml` also needs to be present
 
 License detection is not supported for `Poetry`.
 
+By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
+
 ### uv
 Trivy uses `uv.lock` to identify dependencies and find vulnerabilities.
 
