@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -330,7 +331,7 @@ func (m *Decoder) parseSrcVersion(ctx context.Context, pkg *ftypes.Package, ver 
 
 // addOSPkgs traverses relationships and adds OS packages
 func (m *Decoder) addOSPkgs(sbom *types.SBOM) {
-	pkgs := m.traverseDependencies(m.osID)
+	pkgs := m.traverseDependencies(m.osID, set.New[uuid.UUID]())
 	if len(pkgs) == 0 {
 		return
 	}
@@ -340,7 +341,7 @@ func (m *Decoder) addOSPkgs(sbom *types.SBOM) {
 // addLangPkgs traverses relationships and adds language-specific packages
 func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 	for id, app := range m.apps {
-		app.Packages = append(app.Packages, m.traverseDependencies(id)...)
+		app.Packages = append(app.Packages, m.traverseDependencies(id, set.New[uuid.UUID]())...)
 		sbom.Applications = append(sbom.Applications, *app)
 	}
 }
@@ -350,19 +351,23 @@ func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 // dependent packages. The collected packages are removed from m.pkgs to prevent duplicate
 // processing. This ensures that all dependencies, including transitive ones, are properly
 // captured and associated with their parent component.
-func (m *Decoder) traverseDependencies(id uuid.UUID) ftypes.Packages {
+func (m *Decoder) traverseDependencies(id uuid.UUID, seen set.Set[uuid.UUID]) ftypes.Packages {
 	var pkgs ftypes.Packages
 	for _, rel := range m.bom.Relationships()[id] {
+		if seen.Contains(rel.Dependency) {
+			continue // Skip if already seen to avoid infinite loop and duplicate processing
+		}
 		pkg, ok := m.pkgs[rel.Dependency]
 		if !ok {
 			continue
 		}
 		// Add the current package
 		pkgs = append(pkgs, *pkg)
+		seen.Append(rel.Dependency)
 		delete(m.pkgs, rel.Dependency) // Delete the added package
 
 		// Add the nested packages
-		pkgs = append(pkgs, m.traverseDependencies(rel.Dependency)...)
+		pkgs = append(pkgs, m.traverseDependencies(rel.Dependency, seen)...)
 	}
 	return pkgs
 }
