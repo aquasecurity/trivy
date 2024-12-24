@@ -27,7 +27,7 @@ The following table provides an outline of the features Trivy offers.
 | pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |                    ✓                     |
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |                Not needed                |
 | Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |    -     |                Not needed                |
-| uv              | uv.lock          |            ✓            |     [Include](#uv)      |                  ✓                   |    -     |                Not needed                |
+| uv              | uv.lock          |            ✓            |     [Exclude](#uv)      |                  ✓                   |    -     |                Not needed                |
 
 
 | Packaging | Dependency graph |
