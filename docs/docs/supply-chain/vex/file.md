@@ -269,13 +269,13 @@ You can see [the appendix](#applying-vex-to-dependency-trees) for more details o
 Provide the VEX when scanning your target.
 
 ```bash
-$ trivy image debian:11 --vex debian11.openvex.json
+$ trivy image debian:11.6 --vex debian11.openvex.json
 ...
 2023-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability {"VEX format": "OpenVEX", "vulnerability-id": "CVE-2019-8457", "status": "not_affected", "justification": "vulnerable_code_not_in_execute_path"}
 
-debian11.spdx.json (debian 11.6)
-================================
-Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
+debian:11.6 (debian 11.6)
+
+Total: 176 (UNKNOWN: 1, LOW: 82, MEDIUM: 46, HIGH: 41, CRITICAL: 5)
 ```
 
 CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.
@@ -420,13 +420,13 @@ You can see [the appendix](#applying-vex-to-dependency-trees) for more details o
 Provide the CSAF document when scanning your target.
 
 ```bash
-$ trivy image debian:11 --vex debian11.vex.csaf
+$ trivy image debian:11.8 --vex debian11.vex.csaf
 ...
 2024-01-02T10:28:26.704+0100	INFO	Filtered out the detected vulnerability	{"VEX format": "CSAF", "vulnerability-id": "CVE-2019-8457", "status": "not_affected"}
 
-debian11.spdx.json (debian 11.6)
-================================
-Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
+debian:11.8 (debian 11.8)
+
+Total: 153 (UNKNOWN: 1, LOW: 82, MEDIUM: 33, HIGH: 32, CRITICAL: 5)
 ```
 
 CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.

@@ -187,10 +187,11 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 			// export PATH="/root/.local/bin:$PATH"
 			// poetry new groups && cd groups
 			// poetry add requests@2.32.3
+			// poetry add httpx@0.28.1 --extras socks
+			// poetry add --optional typing-inspect@0.9.0
 			// poetry add --group dev pytest@8.3.4
 			// poetry add --group lint ruff@0.8.3
-			// poetry add --optional typing-inspect@0.9.0
-			name: "skip deps from groups",
+			name: "with groups",
 			dir:  "testdata/with-groups",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -198,6 +199,19 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Poetry,
 						FilePath: "poetry.lock",
 						Packages: types.Packages{
+							{
+								ID:           "anyio@4.7.0",
+								Name:         "anyio",
+								Version:      "4.7.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn: []string{
+									"exceptiongroup@1.2.2",
+									"idna@3.10",
+									"sniffio@1.3.1",
+									"typing-extensions@4.12.2",
+								},
+							},
 							{
 								ID:           "certifi@2024.12.14",
 								Name:         "certifi",
@@ -213,6 +227,52 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 							},
 							{
+								ID:           "colorama@0.4.6",
+								Name:         "colorama",
+								Version:      "0.4.6",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+							},
+							{
+								ID:           "exceptiongroup@1.2.2",
+								Name:         "exceptiongroup",
+								Version:      "1.2.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "h11@0.14.0",
+								Name:         "h11",
+								Version:      "0.14.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "httpcore@1.0.7",
+								Name:         "httpcore",
+								Version:      "1.0.7",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn: []string{
+									"certifi@2024.12.14",
+									"h11@0.14.0",
+								},
+							},
+							{
+								ID:           "httpx@0.28.1",
+								Name:         "httpx",
+								Version:      "0.28.1",
+								Relationship: types.RelationshipDirect,
+								DependsOn: []string{
+									"anyio@4.7.0",
+									"certifi@2024.12.14",
+									"httpcore@1.0.7",
+									"idna@3.10",
+									"socksio@1.0.0",
+								},
+							},
+							{
 								ID:           "idna@3.10",
 								Name:         "idna",
 								Version:      "3.10",
@@ -220,11 +280,50 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 							},
 							{
+								ID:           "iniconfig@2.0.0",
+								Name:         "iniconfig",
+								Version:      "2.0.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+							},
+							{
 								ID:           "mypy-extensions@1.0.0",
 								Name:         "mypy-extensions",
 								Version:      "1.0.0",
 								Indirect:     true,
 								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "packaging@24.2",
+								Name:         "packaging",
+								Version:      "24.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+							},
+							{
+								ID:           "pluggy@1.5.0",
+								Name:         "pluggy",
+								Version:      "1.5.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+							},
+							{
+								ID:           "pytest@8.3.4",
+								Name:         "pytest",
+								Version:      "8.3.4",
+								Relationship: types.RelationshipDirect,
+								Dev:          true,
+								DependsOn: []string{
+									"colorama@0.4.6",
+									"exceptiongroup@1.2.2",
+									"iniconfig@2.0.0",
+									"packaging@24.2",
+									"pluggy@1.5.0",
+									"tomli@2.2.1",
+								},
 							},
 							{
 								ID:      "requests@2.32.3",
@@ -242,8 +341,30 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:           "ruff@0.8.3",
 								Name:         "ruff",
 								Version:      "0.8.3",
+								Relationship: types.RelationshipDirect,
+								Dev:          true,
+							},
+							{
+								ID:           "sniffio@1.3.1",
+								Name:         "sniffio",
+								Version:      "1.3.1",
 								Indirect:     true,
 								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "socksio@1.0.0",
+								Name:         "socksio",
+								Version:      "1.0.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "tomli@2.2.1",
+								Name:         "tomli",
+								Version:      "2.2.1",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
 							},
 							{
 								ID:           "typing-extensions@4.12.2",

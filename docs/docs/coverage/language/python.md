@@ -26,8 +26,8 @@ The following table provides an outline of the features Trivy offers.
 |-----------------|------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|:----------------------------------------:|
 | pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |                    ✓                     |
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |                Not needed                |
-| Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |    -     |                Not needed                |
-| uv              | uv.lock          |            ✓            |     [Exclude](#uv)      |                  ✓                   |    -     |                Not needed                |
+| Poetry          | poetry.lock      |            ✓            |     [Exclude](#poetry)      |                  ✓                   |    -     |                Not needed                |
+| uv              | uv.lock          |            ✓            |     [Exclude](#uv)      |                  ✓                   |    -     |                Not needed                |          |
 
 
 | Packaging | Dependency graph |
@@ -127,6 +127,9 @@ Trivy uses `poetry.lock` to identify dependencies and find vulnerabilities.
 To build the correct dependency graph, `pyproject.toml` also needs to be present next to `poetry.lock`.
 
 License detection is not supported for `Poetry`.
+
+By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
 
 ### uv
 Trivy uses `uv.lock` to identify dependencies and find vulnerabilities.
