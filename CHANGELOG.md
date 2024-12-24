@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.58.1](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.58.1) (2024-12-24)
+
+
+### Bug Fixes
+
+* handle `BLOW_UNKNOWN` error to download DBs [backport: release/v0.58] ([#8121](https://github.com/aquasecurity/trivy/issues/8121)) ([9a56e7c](https://github.com/aquasecurity/trivy/commit/9a56e7cd6964ffd4187a8e44a36d49b54587db56))
+* **java:** correctly overwrite version from depManagement if dependency uses `project.*` props [backport: release/v0.58] ([#8119](https://github.com/aquasecurity/trivy/issues/8119)) ([4278a09](https://github.com/aquasecurity/trivy/commit/4278a09f59590ee16494e0a1ad31fb374f2e243f))
+* **oracle:** add architectures support for advisories [backport: release/v0.58] ([#8125](https://github.com/aquasecurity/trivy/issues/8125)) ([89b341f](https://github.com/aquasecurity/trivy/commit/89b341f0c6dc7f24239f9a9e4809524ec289a864))
+* **python:** skip dev group's deps for poetry [backport: release/v0.58] ([#8158](https://github.com/aquasecurity/trivy/issues/8158)) ([8b93081](https://github.com/aquasecurity/trivy/commit/8b930816bc527166ced5d57754ad7fccb1cef832))
+* **redhat:** correct rewriting of recommendations for the same vulnerability [backport: release/v0.58] ([#8135](https://github.com/aquasecurity/trivy/issues/8135)) ([33818e1](https://github.com/aquasecurity/trivy/commit/33818e121f989fd12c15aa65affd2d01b867db61))
+* **sbom:** attach nested packages to Application [backport: release/v0.58] ([#8168](https://github.com/aquasecurity/trivy/issues/8168)) ([03160e4](https://github.com/aquasecurity/trivy/commit/03160e4fd1b0a6aef8c4f3d96529e68fed7e70ee))
+* **sbom:** fix wrong overwriting of applications obtained from different sbom files but having same app type [backport: release/v0.58] ([#8124](https://github.com/aquasecurity/trivy/issues/8124)) ([f842fe1](https://github.com/aquasecurity/trivy/commit/f842fe1675b434e72a8194628525c42fd3e155af))
+* **sbom:** use root package for `unknown` dependencies (if exists) [backport: release/v0.58] ([#8156](https://github.com/aquasecurity/trivy/issues/8156)) ([18cd1a5](https://github.com/aquasecurity/trivy/commit/18cd1a59cbb32d87371fe8ab24497f06855e0c80))
+
 ## [0.58.0](https://github.com/aquasecurity/trivy/compare/v0.57.0...v0.58.0) (2024-12-02)
 
 
