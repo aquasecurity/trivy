@@ -9,32 +9,37 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name    string
 		file    string
-		want    map[string]any
+		want    pyproject.PyProject
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
 			name: "happy path",
 			file: "testdata/happy.toml",
-			want: map[string]any{
-				"flask":  "^1.0",
-				"python": "^3.9",
-				"requests": map[string]any{
-					"version":  "2.28.1",
-					"optional": true,
-				},
-				"virtualenv": []any{
-					map[string]any{
-						"version": "^20.4.3,!=20.4.5,!=20.4.6",
-					},
-					map[string]any{
-						"version": "<20.16.6",
-						"markers": "sys_platform == 'win32' and python_version == '3.9'",
+			want: pyproject.PyProject{
+				Tool: pyproject.Tool{
+					Poetry: pyproject.Poetry{
+						Dependencies: pyproject.Dependencies{
+							Set: set.New[string]("flask", "python", "requests", "virtualenv"),
+						},
+						Groups: map[string]pyproject.Group{
+							"dev": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("pytest"),
+								},
+							},
+							"lint": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("ruff"),
+								},
+							},
+						},
 					},
 				},
 			},

@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -22,18 +23,18 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func prodDeps(root Package, packages map[string]Package) map[string]struct{} {
-	visited := make(map[string]struct{})
+func prodDeps(root Package, packages map[string]Package) set.Set[string] {
+	visited := set.New[string]()
 	walkPackageDeps(root, packages, visited)
 	return visited
 }
 
-func walkPackageDeps(pkg Package, packages map[string]Package, visited map[string]struct{}) {
-	if _, ok := visited[pkg.Name]; ok {
+func walkPackageDeps(pkg Package, packages map[string]Package, visited set.Set[string]) {
+	if visited.Contains(pkg.Name) {
 		return
 	}
-	visited[pkg.Name] = struct{}{}
-	for depName := range pkg.nonDevDeps() {
+	visited.Append(pkg.Name)
+	for depName := range pkg.nonDevDeps().Iter() {
 		depPkg, exists := packages[depName]
 		if !exists {
 			continue
@@ -68,28 +69,31 @@ type Package struct {
 	OptionalDependencies map[string]Dependencies `toml:"optional-dependencies"`
 }
 
-func (p Package) directDeps() map[string]struct{} {
+func (p Package) directDeps() set.Set[string] {
 	deps := p.nonDevDeps()
 	for _, groupDeps := range p.DevDependencies {
-		deps = lo.Assign(deps, groupDeps.toSet())
+		deps.Append(groupDeps.toSet().Items()...)
+
 	}
 	return deps
 }
 
-func (p Package) nonDevDeps() map[string]struct{} {
+func (p Package) nonDevDeps() set.Set[string] {
 	deps := p.Dependencies.toSet()
 	for _, groupDeps := range p.OptionalDependencies {
-		deps = lo.Assign(deps, groupDeps.toSet())
+		deps.Append(groupDeps.toSet().Items()...)
 	}
 	return deps
 }
 
-type Dependencies []Dependency
+type Dependencies []struct {
+	Name string `toml:"name"`
+}
 
-func (d Dependencies) toSet() map[string]struct{} {
-	deps := make(map[string]struct{})
+func (d Dependencies) toSet() set.Set[string] {
+	deps := set.New[string]()
 	for _, dep := range d {
-		deps[dep.Name] = struct{}{}
+		deps.Append(dep.Name)
 	}
 	return deps
 }
@@ -143,22 +147,21 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		relationship := ftypes.RelationshipIndirect
 		if pkg.isRoot() {
 			relationship = ftypes.RelationshipRoot
-		} else if _, ok := directDeps[pkg.Name]; ok {
+		} else if directDeps.Contains(pkg.Name) {
 			relationship = ftypes.RelationshipDirect
 		}
 
-		_, isProd := prodDeps[pkg.Name]
 		pkgs = append(pkgs, ftypes.Package{
 			ID:           pkgID,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
 			Relationship: relationship,
-			Dev:          !isProd,
+			Dev:          !prodDeps.Contains(pkg.Name),
 		})
 
 		dependsOn := make([]string, 0, len(pkg.Dependencies))
 
-		for depName := range pkg.directDeps() {
+		for depName := range pkg.directDeps().Iter() {
 			depPkg, exists := packages[depName]
 			if !exists {
 				continue

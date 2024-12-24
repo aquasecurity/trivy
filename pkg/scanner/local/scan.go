@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 
@@ -458,12 +459,12 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package, options types.ScanOption
 	}
 
 	// pkg has priority over pkgsFromCommands
-	uniqPkgs := make(map[string]struct{})
+	uniqPkgs := set.New[string]()
 	for _, pkg := range pkgs {
-		uniqPkgs[pkg.Name] = struct{}{}
+		uniqPkgs.Append(pkg.Name)
 	}
 	for _, pkg := range pkgsFromCommands {
-		if _, ok := uniqPkgs[pkg.Name]; ok {
+		if uniqPkgs.Contains(pkg.Name) {
 			continue
 		}
 		pkgs = append(pkgs, pkg)
