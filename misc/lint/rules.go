@@ -30,3 +30,8 @@ func errorsJoin(m dsl.Matcher) {
 	m.Match(`errors.Join($*args)`).
 		Report("use github.com/hashicorp/go-multierror.Append instead of errors.Join.")
 }
+
+func mapSet(m dsl.Matcher) {
+	m.Match(`map[$x]struct{}`).
+		Report("use github.com/aquasecurity/trivy/pkg/set.Set instead of map.")
+}

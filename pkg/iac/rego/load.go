@@ -12,16 +12,13 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-var builtinNamespaces = map[string]struct{}{
-	"builtin":   {},
-	"defsec":    {},
-	"appshield": {},
-}
+var builtinNamespaces = set.New("builtin", "defsec", "appshield")
 
 func BuiltinNamespaces() []string {
-	return lo.Keys(builtinNamespaces)
+	return builtinNamespaces.Items()
 }
 
 func IsBuiltinNamespace(namespace string) bool {
@@ -122,15 +119,12 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 	}
 
 	// gather namespaces
-	uniq := make(map[string]struct{})
+	uniq := set.New[string]()
 	for _, module := range s.policies {
 		namespace := getModuleNamespace(module)
-		uniq[namespace] = struct{}{}
+		uniq.Append(namespace)
 	}
-	var namespaces []string
-	for namespace := range uniq {
-		namespaces = append(namespaces, namespace)
-	}
+	namespaces := uniq.Items()
 
 	dataFS := srcFS
 	if s.dataFS != nil {
@@ -296,7 +290,7 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 		}
 
 		if IsBuiltinNamespace(getModuleNamespace(module)) {
-			if _, disabled := s.disabledCheckIDs[meta.ID]; disabled { // ignore builtin disabled checks
+			if s.disabledCheckIDs.Contains(meta.ID) { // ignore builtin disabled checks
 				continue
 			}
 		}
