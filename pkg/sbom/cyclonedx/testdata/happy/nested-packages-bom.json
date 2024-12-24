@@ -19,7 +19,7 @@
     "component": {
       "bom-ref": "1cb40520-a22c-481f-ad77-6bc6960430c5",
       "type": "application",
-      "name": "/Users/dmitriy/work/tmp/7169",
+      "name": "/test",
       "properties": [
         {
           "name": "aquasecurity:trivy:SchemaVersion",
@@ -139,10 +139,7 @@
     {
       "ref": "4021d631-e242-4e69-8a93-928665810a27",
       "dependsOn": [
-        "pkg:golang/github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
-        "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
-        "pkg:golang/github.com/aquasecurity/test",
-        "pkg:golang/golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1"
+        "pkg:golang/github.com/aquasecurity/test"
       ]
     },
     {
