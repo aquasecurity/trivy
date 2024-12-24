@@ -669,6 +669,93 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path for BOM with nested packages",
+			inputFile: "testdata/happy/nested-packages-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     "gobinary",
+						FilePath: "foo/bar/test.elf",
+						Packages: ftypes.Packages{
+							{
+								ID:   "github.com/aquasecurity/test",
+								Name: "github.com/aquasecurity/test",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/aquasecurity",
+										Name:      "test",
+									},
+									BOMRef: "pkg:golang/github.com/aquasecurity/test",
+								},
+								DependsOn: []string{
+									"github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+									"github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+									"stdlib@v1.15.2",
+								},
+							},
+							{
+								ID:      "github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+								Name:    "github.com/aquasecurity/go-pep440-version",
+								Version: "v0.0.0-20210121094942-22b2f8951d46",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/aquasecurity",
+										Name:      "go-pep440-version",
+										Version:   "v0.0.0-20210121094942-22b2f8951d46",
+									},
+									BOMRef: "pkg:golang/github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+								},
+							},
+							{
+								ID:      "github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+								Name:    "github.com/aquasecurity/go-version",
+								Version: "v0.0.0-20210121072130-637058cfe492",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/aquasecurity",
+										Name:      "go-version",
+										Version:   "v0.0.0-20210121072130-637058cfe492",
+									},
+									BOMRef: "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+								},
+							},
+							{
+								ID:      "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								Name:    "golang.org/x/xerrors",
+								Version: "v0.0.0-20200804184101-5ec99f83aff1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "golang.org/x",
+										Name:      "xerrors",
+										Version:   "v0.0.0-20200804184101-5ec99f83aff1",
+									},
+									BOMRef: "pkg:golang/golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								},
+							},
+							{
+								ID:      "stdlib@v1.15.2",
+								Name:    "stdlib",
+								Version: "v1.15.2",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.15.2",
+									},
+									BOMRef: "pkg:golang/stdlib@v1.15.2",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: types.SBOM{

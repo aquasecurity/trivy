@@ -1,0 +1,172 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:12346a7a-5819-43bf-9411-5c146304f023",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2024-12-20T10:57:13+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "0.38.7-764-g30c7cb137"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "1cb40520-a22c-481f-ad77-6bc6960430c5",
+      "type": "application",
+      "name": "/test",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "4021d631-e242-4e69-8a93-928665810a27",
+      "type": "application",
+      "name": "foo/bar/test.elf",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "gobinary"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+      "type": "library",
+      "name": "github.com/aquasecurity/go-pep440-version",
+      "version": "v0.0.0-20210121094942-22b2f8951d46",
+      "purl": "pkg:golang/github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gobinary"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+      "type": "library",
+      "name": "github.com/aquasecurity/go-version",
+      "version": "v0.0.0-20210121072130-637058cfe492",
+      "purl": "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gobinary"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/aquasecurity/test",
+      "type": "library",
+      "name": "github.com/aquasecurity/test",
+      "purl": "pkg:golang/github.com/aquasecurity/test",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "github.com/aquasecurity/test"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gobinary"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+      "type": "library",
+      "name": "golang.org/x/xerrors",
+      "version": "v0.0.0-20200804184101-5ec99f83aff1",
+      "purl": "pkg:golang/golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gobinary"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/stdlib@v1.15.2",
+      "type": "library",
+      "name": "stdlib",
+      "version": "v1.15.2",
+      "purl": "pkg:golang/stdlib@v1.15.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "stdlib@v1.15.2"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gobinary"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "1cb40520-a22c-481f-ad77-6bc6960430c5",
+      "dependsOn": [
+        "4021d631-e242-4e69-8a93-928665810a27"
+      ]
+    },
+    {
+      "ref": "4021d631-e242-4e69-8a93-928665810a27",
+      "dependsOn": [
+        "pkg:golang/github.com/aquasecurity/test"
+      ]
+    },
+    {
+      "ref": "pkg:golang/github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:golang/github.com/aquasecurity/test",
+      "dependsOn": [
+        "pkg:golang/github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+        "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+        "pkg:golang/golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+        "pkg:golang/stdlib@v1.15.2"
+      ]
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:golang/stdlib@v1.15.2",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}
