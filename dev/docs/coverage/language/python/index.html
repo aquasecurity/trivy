@@ -8052,7 +8052,7 @@ The following scanners are supported for Python packages.</p>
 <td>Poetry</td>
 <td>poetry.lock</td>
 <td style="text-align: center;">✓</td>
-<td style="text-align: center;">Exclude</td>
+<td style="text-align: center;"><a href="#poetry">Exclude</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">Not needed</td>
@@ -8158,6 +8158,7 @@ Trivy could detect vulnerabilities on the development packages, which not affect
 <p>Trivy uses <code>poetry.lock</code> to identify dependencies and find vulnerabilities.
 To build the correct dependency graph, <code>pyproject.toml</code> also needs to be present next to <code>poetry.lock</code>.</p>
 <p>License detection is not supported for <code>Poetry</code>.</p>
+<p>By default, Trivy doesn't report development dependencies. Use the <code>--include-dev-deps</code> flag to include them.</p>
 <h3 id="uv">uv<a class="headerlink" href="#uv" title="Permanent link">&para;</a></h3>
 <p>Trivy uses <code>uv.lock</code> to identify dependencies and find vulnerabilities.</p>
 <p>License detection is not supported for <code>uv</code>.</p>
