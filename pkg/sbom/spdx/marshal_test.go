@@ -843,6 +843,148 @@ func TestMarshaler_Marshal(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with various licenses",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "pom.xml",
+				ArtifactType:  artifact.TypeFilesystem,
+				Results: types.Results{
+					{
+						Target: "pom.xml",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Pom,
+						Packages: []ftypes.Package{
+							{
+								ID:      "com.example:example:1.0.0",
+								Name:    "com.example:example",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "example",
+										Version:   "1.0.0",
+									},
+								},
+								Licenses: []string{
+									"text://BSD-4-clause",
+									"BSD-4-clause or LGPL-2.0-only",
+									"AFL 3.0 with wrong-exceptions",
+									"AFL 3.0 with Autoconf-exception-3.0",
+									"text://UNKNOWN",
+									"UNKNOWN",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "pom.xml",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/pom.xml-3ff14136-e09f-4df9-80ea-000000000004",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     "trivy-0.56.2",
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				Packages: []*spdx.Package{
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Application-800d9e6e0f88ab3a"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "pom.xml",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						Annotations: []spdx.Annotation{
+							annotation(t, "Class: lang-pkgs"),
+							annotation(t, "Type: pom"),
+						},
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-69cd7625c68537c7"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "com.example:example",
+						PackageVersion:          "1.0.0",
+						PackageLicenseConcluded: "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-77bdf77d8292ce5b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-a8d01765900624d3",
+						PackageLicenseDeclared:  "LicenseRef-14b1606fb243e2b6 AND (BSD-4-Clause OR LGPL-2.0-only) AND LicenseRef-77bdf77d8292ce5b AND AFL-3.0 WITH Autoconf-exception-3.0 AND LicenseRef-229659393343e160 AND LicenseRef-a8d01765900624d3",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:maven/com.example/example@1.0.0",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PackageSourceInfo:     "package found in: pom.xml",
+						Annotations: []spdx.Annotation{
+							annotation(t, "PkgID: com.example:example:1.0.0"),
+							annotation(t, "PkgType: pom"),
+						},
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-340a6f62df359d6a"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "pom.xml",
+						Annotations: []spdx.Annotation{
+							annotation(t, "SchemaVersion: 2"),
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+					},
+				},
+				Relationships: []*spdx.Relationship{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-800d9e6e0f88ab3a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-69cd7625c68537c7"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-340a6f62df359d6a"},
+						Relationship: "DESCRIBES",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-340a6f62df359d6a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-800d9e6e0f88ab3a"},
+						Relationship: "CONTAINS",
+					},
+				},
+				OtherLicenses: []*spdx.OtherLicense{
+					{
+						LicenseIdentifier: "LicenseRef-14b1606fb243e2b6",
+						LicenseName:       "NOASSERTION",
+						ExtractedText:     "BSD-4-clause",
+						LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
+					},
+					{
+						LicenseIdentifier: "LicenseRef-229659393343e160",
+						LicenseName:       "NOASSERTION",
+						ExtractedText:     "UNKNOWN",
+						LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
+					},
+					{
+						LicenseIdentifier: "LicenseRef-77bdf77d8292ce5b",
+						LicenseName:       "AFL-3.0 WITH wrong-exceptions",
+						ExtractedText:     `This component is licensed under "AFL-3.0 WITH wrong-exceptions"`,
+					},
+					{
+						LicenseIdentifier: "LicenseRef-a8d01765900624d3",
+						LicenseName:       "UNKNOWN",
+						ExtractedText:     `This component is licensed under "UNKNOWN"`,
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with vulnerability",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
@@ -1324,6 +1466,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 					for _, f := range vv.Files {
 						str += f.Path
 					}
+				case spdx.OtherLicense:
+					str = vv.ExtractedText + vv.LicenseName
 				case string:
 					str = vv
 				default:
@@ -1346,59 +1490,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 
 			assert.NoError(t, spdxlib.ValidateDocument(spdxDoc))
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
-		})
-	}
-}
-
-func Test_GetLicense(t *testing.T) {
-	tests := []struct {
-		name  string
-		input []string
-		want  string
-	}{
-		{
-			name: "happy path",
-			input: []string{
-				"GPLv2+",
-			},
-			want: "GPL-2.0-or-later",
-		},
-		{
-			name: "happy path with multi license",
-			input: []string{
-				"GPLv2+",
-				"GPLv3+",
-			},
-			want: "GPL-2.0-or-later AND GPL-3.0-or-later",
-		},
-		{
-			name: "happy path with OR operator",
-			input: []string{
-				"GPLv2+",
-				"LGPL 2.0 or GNU LESSER",
-			},
-			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-2.1-only)",
-		},
-		{
-			name: "happy path with AND operator",
-			input: []string{
-				"GPLv2+",
-				"LGPL 2.0 and GNU LESSER",
-			},
-			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only",
-		},
-		{
-			name: "happy path with WITH operator",
-			input: []string{
-				"AFL 2.0",
-				"AFL 3.0 with distribution exception",
-			},
-			want: "AFL-2.0 AND AFL-3.0 WITH distribution-exception",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tspdx.NormalizeLicense(tt.input))
 		})
 	}
 }
