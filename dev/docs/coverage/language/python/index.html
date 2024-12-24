@@ -8061,7 +8061,7 @@ The following scanners are supported for Python packages.</p>
 <td>uv</td>
 <td>uv.lock</td>
 <td style="text-align: center;">✓</td>
-<td style="text-align: center;">Exclude</td>
+<td style="text-align: center;"><a href="#uv">Exclude</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">Not needed</td>
@@ -8162,6 +8162,7 @@ To build the correct dependency graph, <code>pyproject.toml</code> also needs to
 <h3 id="uv">uv<a class="headerlink" href="#uv" title="Permanent link">&para;</a></h3>
 <p>Trivy uses <code>uv.lock</code> to identify dependencies and find vulnerabilities.</p>
 <p>License detection is not supported for <code>uv</code>.</p>
+<p>By default, Trivy doesn't report development dependencies. Use the <code>--include-dev-deps</code> flag to include them.</p>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
 <p>Trivy parses the manifest files of installed packages in container image scanning and so on.
 See <a href="https://packaging.python.org/en/latest/discussions/package-formats/">here</a> for the detail.</p>
