@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -31,7 +32,7 @@ type Scanner struct {
 	options      []options.ScannerOption
 	parserOpt    []parser.Option
 	executorOpt  []executor.Option
-	dirs         map[string]struct{}
+	dirs         set.Set[string]
 	forceAllDirs bool
 	regoScanner  *rego.Scanner
 	execLock     sync.RWMutex
@@ -55,7 +56,7 @@ func (s *Scanner) AddExecutorOptions(opts ...executor.Option) {
 
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
-		dirs:    make(map[string]struct{}),
+		dirs:    set.New[string](),
 		options: opts,
 		logger:  log.WithPrefix("terraform scanner"),
 	}
