@@ -32,15 +32,6 @@ func CacheDir() string {
 	return cacheDir
 }
 
-func StringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
 func IsCommandAvailable(name string) bool {
 	if _, err := exec.LookPath(name); err != nil {
 		return false

@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -13,7 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const redhatAnalyzerVersion = 1
@@ -83,7 +83,7 @@ func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 }
 
 func (a redhatOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a redhatOSAnalyzer) requiredFiles() []string {
