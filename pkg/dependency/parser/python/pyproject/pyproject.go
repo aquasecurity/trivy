@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type PyProject struct {
@@ -19,25 +20,27 @@ type Tool struct {
 }
 
 type Poetry struct {
-	Dependencies dependencies     `toml:"dependencies"`
+	Dependencies Dependencies     `toml:"dependencies"`
 	Groups       map[string]Group `toml:"group"`
 }
 
 type Group struct {
-	Dependencies dependencies `toml:"dependencies"`
+	Dependencies Dependencies `toml:"dependencies"`
 }
 
-type dependencies map[string]struct{}
+type Dependencies struct {
+	set.Set[string]
+}
 
-func (d *dependencies) UnmarshalTOML(data any) error {
+func (d *Dependencies) UnmarshalTOML(data any) error {
 	m, ok := data.(map[string]any)
 	if !ok {
 		return xerrors.Errorf("dependencies must be map, but got: %T", data)
 	}
 
-	*d = lo.MapEntries(m, func(pkgName string, _ any) (string, struct{}) {
-		return python.NormalizePkgName(pkgName), struct{}{}
-	})
+	d.Set = set.New[string](lo.MapToSlice(m, func(pkgName string, _ any) string {
+		return python.NormalizePkgName(pkgName)
+	})...)
 	return nil
 }
 

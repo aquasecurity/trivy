@@ -19,6 +19,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var (
@@ -1508,86 +1509,86 @@ func TestResolveDependency(t *testing.T) {
 	var tests = map[string]struct {
 		pkgName             string
 		apkIndexArchivePath string
-		expected            map[string]struct{}
+		want                set.Set[string]
 	}{
 		"low": {
 			pkgName:             "libblkid",
 			apkIndexArchivePath: "testdata/history_v3.9.json",
-			expected: map[string]struct{}{
-				"libblkid": {},
-				"libuuid":  {},
-				"musl":     {},
-			},
+			want: set.New(
+				"libblkid",
+				"libuuid",
+				"musl",
+			),
 		},
 		"medium": {
 			pkgName:             "libgcab",
 			apkIndexArchivePath: "testdata/history_v3.9.json",
-			expected: map[string]struct{}{
-				"busybox":  {},
-				"libblkid": {},
-				"libuuid":  {},
-				"musl":     {},
-				"libmount": {},
-				"pcre":     {},
-				"glib":     {},
-				"libgcab":  {},
-				"libintl":  {},
-				"zlib":     {},
-				"libffi":   {},
-			},
+			want: set.New(
+				"busybox",
+				"libblkid",
+				"libuuid",
+				"musl",
+				"libmount",
+				"pcre",
+				"glib",
+				"libgcab",
+				"libintl",
+				"zlib",
+				"libffi",
+			),
 		},
 		"high": {
 			pkgName:             "postgresql",
 			apkIndexArchivePath: "testdata/history_v3.9.json",
-			expected: map[string]struct{}{
-				"busybox":               {},
-				"ncurses-terminfo-base": {},
-				"ncurses-terminfo":      {},
-				"libedit":               {},
-				"db":                    {},
-				"libsasl":               {},
-				"libldap":               {},
-				"libpq":                 {},
-				"postgresql-client":     {},
-				"tzdata":                {},
-				"libxml2":               {},
-				"postgresql":            {},
-				"musl":                  {},
-				"libcrypto1.1":          {},
-				"libssl1.1":             {},
-				"ncurses-libs":          {},
-				"zlib":                  {},
-			},
+			want: set.New(
+				"busybox",
+				"ncurses-terminfo-base",
+				"ncurses-terminfo",
+				"libedit",
+				"db",
+				"libsasl",
+				"libldap",
+				"libpq",
+				"postgresql-client",
+				"tzdata",
+				"libxml2",
+				"postgresql",
+				"musl",
+				"libcrypto1.1",
+				"libssl1.1",
+				"ncurses-libs",
+				"zlib",
+			),
 		},
 		"package alias": {
 			pkgName:             "sqlite-dev",
 			apkIndexArchivePath: "testdata/history_v3.9.json",
-			expected: map[string]struct{}{
-				"sqlite-dev":  {},
-				"sqlite-libs": {},
-				"pkgconf":     {}, // pkgconfig => pkgconf
-				"musl":        {},
-			},
+			want: set.New(
+				"sqlite-dev",
+				"sqlite-libs",
+				"pkgconf", // pkgconfig => pkgconf
+				"musl",
+			),
 		},
 		"circular dependencies": {
 			pkgName:             "nodejs",
 			apkIndexArchivePath: "testdata/history_v3.7.json",
-			expected: map[string]struct{}{
-				"busybox":               {},
-				"c-ares":                {},
-				"ca-certificates":       {},
-				"http-parser":           {},
-				"libcrypto1.0":          {},
-				"libgcc":                {},
-				"libressl2.6-libcrypto": {},
-				"libssl1.0":             {},
-				"libstdc++":             {},
-				"libuv":                 {},
-				"musl":                  {},
-				"nodejs":                {},
-				"nodejs-npm":            {},
-				"zlib":                  {},
-			},
+			want: set.New(
+				"busybox",
+				"c-ares",
+				"ca-certificates",
+				"http-parser",
+				"libcrypto1.0",
+				"libgcc",
+				"libressl2.6-libcrypto",
+				"libssl1.0",
+				"libstdc++",
+				"libuv",
+				"musl",
+				"nodejs",
+				"nodejs-npm",
+				"zlib",
+			),
 		},
 	}
 	analyzer := alpineCmdAnalyzer{}
@@ -1600,15 +1601,10 @@ func TestResolveDependency(t *testing.T) {
 		if err = json.NewDecoder(f).Decode(&apkIndexArchive); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
-		circularDependencyCheck := make(map[string]struct{})
+		circularDependencyCheck := set.New[string]()
 		pkgs := analyzer.resolveDependency(apkIndexArchive, v.pkgName, circularDependencyCheck)
-		actual := make(map[string]struct{})
-		for _, pkg := range pkgs {
-			actual[pkg] = struct{}{}
-		}
-		if !reflect.DeepEqual(v.expected, actual) {
-			t.Errorf("[%s]\n%s", testName, pretty.Compare(v.expected, actual))
-		}
+		got := set.New(pkgs...)
+		assert.Equal(t, v.want, got, testName)
 	}
 }
 

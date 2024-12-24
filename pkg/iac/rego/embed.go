@@ -13,6 +13,7 @@ import (
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var LoadAndRegister = sync.OnceFunc(func() {
@@ -49,7 +50,7 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 	}
 
 	retriever := NewMetadataRetriever(compiler)
-	regoCheckIDs := make(map[string]struct{})
+	regoCheckIDs := set.New[string]()
 
 	for _, module := range modules {
 		metadata, err := retriever.RetrieveMetadata(ctx, module)
@@ -66,7 +67,7 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 		}
 
 		if !metadata.Deprecated {
-			regoCheckIDs[metadata.AVDID] = struct{}{}
+			regoCheckIDs.Append(metadata.AVDID)
 		}
 
 		rules.Register(metadata.ToRule())

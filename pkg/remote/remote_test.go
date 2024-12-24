@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/testdocker/registry"
 	"github.com/aquasecurity/testdocker/tarfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
@@ -216,13 +217,13 @@ type userAgentsTrackingHandler struct {
 	hr http.Handler
 
 	mu     sync.Mutex
-	agents map[string]struct{}
+	agents set.Set[string]
 }
 
 func newUserAgentsTrackingHandler(hr http.Handler) *userAgentsTrackingHandler {
 	return &userAgentsTrackingHandler{
 		hr:     hr,
-		agents: make(map[string]struct{}),
+		agents: set.New[string](),
 	}
 }
 
@@ -230,7 +231,7 @@ func (uh *userAgentsTrackingHandler) ServeHTTP(rw http.ResponseWriter, r *http.R
 	for _, agent := range r.Header["User-Agent"] {
 		// Skip test framework user agent
 		if agent != "Go-http-client/1.1" {
-			uh.agents[agent] = struct{}{}
+			uh.agents.Append(agent)
 		}
 	}
 	uh.hr.ServeHTTP(rw, r)
@@ -271,7 +272,7 @@ func TestUserAgents(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Len(t, tracker.agents, 1)
-	_, ok := tracker.agents[fmt.Sprintf("trivy/%s go-containerregistry", app.Version())]
+	ok := tracker.agents.Contains(fmt.Sprintf("trivy/%s go-containerregistry", app.Version()))
 	require.True(t, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
 }
 
