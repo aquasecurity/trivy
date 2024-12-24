@@ -8386,13 +8386,13 @@ This is particularly useful when there is a common component or library that is 
 <p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
 <h3 id="scan-with-vex">Scan with VEX<a class="headerlink" href="#scan-with-vex" title="Permanent link">&para;</a></h3>
 <p>Provide the VEX when scanning your target.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>debian:11<span class="w"> </span>--vex<span class="w"> </span>debian11.openvex.json
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>debian:11.6<span class="w"> </span>--vex<span class="w"> </span>debian11.openvex.json
 ...
 <span class="m">2023</span>-04-26T17:56:05.358+0300<span class="w">    </span>INFO<span class="w">    </span>Filtered<span class="w"> </span>out<span class="w"> </span>the<span class="w"> </span>detected<span class="w"> </span>vulnerability<span class="w"> </span><span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>:<span class="w"> </span><span class="s2">&quot;OpenVEX&quot;</span>,<span class="w"> </span><span class="s2">&quot;vulnerability-id&quot;</span>:<span class="w"> </span><span class="s2">&quot;CVE-2019-8457&quot;</span>,<span class="w"> </span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;not_affected&quot;</span>,<span class="w"> </span><span class="s2">&quot;justification&quot;</span>:<span class="w"> </span><span class="s2">&quot;vulnerable_code_not_in_execute_path&quot;</span><span class="o">}</span>
 
-debian11.spdx.json<span class="w"> </span><span class="o">(</span>debian<span class="w"> </span><span class="m">11</span>.6<span class="o">)</span>
-<span class="o">================================</span>
-Total:<span class="w"> </span><span class="m">80</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>LOW:<span class="w"> </span><span class="m">58</span>,<span class="w"> </span>MEDIUM:<span class="w"> </span><span class="m">6</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">16</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">0</span><span class="o">)</span>
+debian:11.6<span class="w"> </span><span class="o">(</span>debian<span class="w"> </span><span class="m">11</span>.6<span class="o">)</span>
+
+Total:<span class="w"> </span><span class="m">176</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>LOW:<span class="w"> </span><span class="m">82</span>,<span class="w"> </span>MEDIUM:<span class="w"> </span><span class="m">46</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">41</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">5</span><span class="o">)</span>
 </code></pre></div>
 <p>CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.</p>
 <h2 id="csaf">CSAF<a class="headerlink" href="#csaf" title="Permanent link">&para;</a></h2>
@@ -8552,13 +8552,13 @@ At present, the specified relationship category is not taken into account and al
 <p>You can see <a href="#applying-vex-to-dependency-trees">the appendix</a> for more details on how VEX is applied in Trivy.</p>
 <h3 id="scan-with-csaf-vex">Scan with CSAF VEX<a class="headerlink" href="#scan-with-csaf-vex" title="Permanent link">&para;</a></h3>
 <p>Provide the CSAF document when scanning your target.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>debian:11<span class="w"> </span>--vex<span class="w"> </span>debian11.vex.csaf
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>debian:11.8<span class="w"> </span>--vex<span class="w"> </span>debian11.vex.csaf
 ...
 <span class="m">2024</span>-01-02T10:28:26.704+0100<span class="w">    </span>INFO<span class="w">    </span>Filtered<span class="w"> </span>out<span class="w"> </span>the<span class="w"> </span>detected<span class="w"> </span>vulnerability<span class="w"> </span><span class="o">{</span><span class="s2">&quot;VEX format&quot;</span>:<span class="w"> </span><span class="s2">&quot;CSAF&quot;</span>,<span class="w"> </span><span class="s2">&quot;vulnerability-id&quot;</span>:<span class="w"> </span><span class="s2">&quot;CVE-2019-8457&quot;</span>,<span class="w"> </span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;not_affected&quot;</span><span class="o">}</span>
 
-debian11.spdx.json<span class="w"> </span><span class="o">(</span>debian<span class="w"> </span><span class="m">11</span>.6<span class="o">)</span>
-<span class="o">================================</span>
-Total:<span class="w"> </span><span class="m">80</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>LOW:<span class="w"> </span><span class="m">58</span>,<span class="w"> </span>MEDIUM:<span class="w"> </span><span class="m">6</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">16</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">0</span><span class="o">)</span>
+debian:11.8<span class="w"> </span><span class="o">(</span>debian<span class="w"> </span><span class="m">11</span>.8<span class="o">)</span>
+
+Total:<span class="w"> </span><span class="m">153</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>LOW:<span class="w"> </span><span class="m">82</span>,<span class="w"> </span>MEDIUM:<span class="w"> </span><span class="m">33</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">32</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">5</span><span class="o">)</span>
 </code></pre></div>
 <p>CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.</p>
 <h2 id="appendix">Appendix<a class="headerlink" href="#appendix" title="Permanent link">&para;</a></h2>
