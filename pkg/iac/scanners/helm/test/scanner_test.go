@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -136,28 +137,28 @@ func Test_helm_scanner_with_dir(t *testing.T) {
 		require.NotNil(t, results)
 
 		failed := results.GetFailed()
-		assert.Len(t, failed, 14)
+		assert.Len(t, failed, 13)
 
 		visited := make(map[string]bool)
-		var errorCodes []string
 		for _, result := range failed {
-			id := result.Flatten().RuleID
-			if _, exists := visited[id]; !exists {
-				visited[id] = true
-				errorCodes = append(errorCodes, id)
-			}
+			visited[result.Rule().AVDID] = true
 		}
+		errorCodes := lo.Keys(visited)
 
-		sort.Strings(errorCodes)
-
-		assert.Equal(t, []string{
+		assert.ElementsMatch(t, []string{
 			"AVD-KSV-0001", "AVD-KSV-0003",
 			"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
-			"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
+			"AVD-KSV-0015", "AVD-KSV-0016",
 			"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
 			"AVD-KSV-0104", "AVD-KSV-0106",
 			"AVD-KSV-0117",
 		}, errorCodes)
+
+		ignored := results.GetIgnored()
+		assert.Len(t, ignored, 1)
+
+		assert.Equal(t, "AVD-KSV-0018", ignored[0].Rule().AVDID)
+		assert.Equal(t, "templates/deployment.yaml", ignored[0].Metadata().Range().GetFilename())
 	}
 }
 
@@ -231,19 +232,12 @@ deny[res] {
 			assert.Len(t, failed, 15)
 
 			visited := make(map[string]bool)
-			var errorCodes []string
 			for _, result := range failed {
-				id := result.Flatten().RuleID
-				if _, exists := visited[id]; !exists {
-					visited[id] = true
-					errorCodes = append(errorCodes, id)
-				}
+				visited[result.Rule().AVDID] = true
 			}
-			assert.Len(t, errorCodes, 14)
+			errorCodes := lo.Keys(visited)
 
-			sort.Strings(errorCodes)
-
-			assert.Equal(t, []string{
+			assert.ElementsMatch(t, []string{
 				"AVD-KSV-0001", "AVD-KSV-0003",
 				"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
 				"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
