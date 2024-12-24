@@ -330,15 +330,7 @@ func (m *Decoder) parseSrcVersion(ctx context.Context, pkg *ftypes.Package, ver 
 
 // addOSPkgs traverses relationships and adds OS packages
 func (m *Decoder) addOSPkgs(sbom *types.SBOM) {
-	var pkgs []ftypes.Package
-	for _, rel := range m.bom.Relationships()[m.osID] {
-		pkg, ok := m.pkgs[rel.Dependency]
-		if !ok {
-			continue
-		}
-		pkgs = append(pkgs, *pkg)
-		delete(m.pkgs, rel.Dependency) // Delete the added package
-	}
+	pkgs := m.traverseDependencies(m.osID)
 	if len(pkgs) == 0 {
 		return
 	}
