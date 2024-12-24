@@ -104,9 +104,8 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	prodRootDeps := project.Tool.Poetry.Dependencies
-	directDeps := prodRootDeps.Union(getDevDeps(project))
-	prodDeps := getProdPackages(app, prodRootDeps)
+	directDeps := directDeps(project)
+	prodDeps := prodPackages(app, project.Tool.Poetry.Dependencies)
 
 	// Identify the direct/transitive/dev dependencies
 	for i, pkg := range app.Packages {
@@ -121,15 +120,15 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	return nil
 }
 
-func getDevDeps(project pyproject.PyProject) set.Set[string] {
-	deps := set.New[string]()
+func directDeps(project pyproject.PyProject) set.Set[string] {
+	deps := project.Tool.Poetry.Dependencies.Clone()
 	for _, groupDeps := range project.Tool.Poetry.Groups {
 		deps.Append(groupDeps.Dependencies.Items()...)
 	}
 	return deps
 }
 
-func getProdPackages(app *types.Application, prodRootDeps set.Set[string]) set.Set[string] {
+func prodPackages(app *types.Application, prodRootDeps set.Set[string]) set.Set[string] {
 	packages := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
