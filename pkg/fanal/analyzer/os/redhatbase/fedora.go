@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"os"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const fedoraAnalyzerVersion = 1
@@ -45,7 +45,7 @@ func (a fedoraOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 }
 
 func (a fedoraOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, a.requiredFiles())
+	return slices.Contains(a.requiredFiles(), filePath)
 }
 
 func (a fedoraOSAnalyzer) requiredFiles() []string {
