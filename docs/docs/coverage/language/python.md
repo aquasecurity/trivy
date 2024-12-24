@@ -27,7 +27,7 @@ The following table provides an outline of the features Trivy offers.
 | pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |                    ✓                     |
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |                Not needed                |
 | Poetry          | poetry.lock      |            ✓            |     [Exclude](#poetry)      |                  ✓                   |    -     |                Not needed                |
-| uv              | uv.lock          |            ✓            |     Exclude      |                  ✓                   |    -     |                Not needed                |
+| uv              | uv.lock          |            ✓            |     [Exclude](#uv)      |                  ✓                   |    -     |                Not needed                |          |
 
 
 | Packaging | Dependency graph |
@@ -135,6 +135,8 @@ By default, Trivy doesn't report development dependencies. Use the `--include-de
 Trivy uses `uv.lock` to identify dependencies and find vulnerabilities.
 
 License detection is not supported for `uv`.
+
+By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
 ## Packaging
 Trivy parses the manifest files of installed packages in container image scanning and so on.

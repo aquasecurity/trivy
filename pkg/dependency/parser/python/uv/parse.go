@@ -23,14 +23,6 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func (l Lock) directDeps(root Package) set.Set[string] {
-	deps := set.New[string]()
-	for _, dep := range root.Dependencies {
-		deps.Append(dep.Name)
-	}
-	return deps
-}
-
 func prodDeps(root Package, packages map[string]Package) set.Set[string] {
 	visited := set.New[string]()
 	walkPackageDeps(root, packages, visited)
@@ -42,8 +34,8 @@ func walkPackageDeps(pkg Package, packages map[string]Package, visited set.Set[s
 		return
 	}
 	visited.Append(pkg.Name)
-	for _, dep := range pkg.Dependencies {
-		depPkg, exists := packages[dep.Name]
+	for depName := range pkg.nonDevDeps().Iter() {
+		depPkg, exists := packages[depName]
 		if !exists {
 			continue
 		}
@@ -69,10 +61,41 @@ func (l Lock) root() (Package, error) {
 }
 
 type Package struct {
-	Name         string       `toml:"name"`
-	Version      string       `toml:"version"`
-	Source       Source       `toml:"source"`
-	Dependencies []Dependency `toml:"dependencies"`
+	Name                 string                  `toml:"name"`
+	Version              string                  `toml:"version"`
+	Source               Source                  `toml:"source"`
+	Dependencies         Dependencies            `toml:"dependencies"`
+	DevDependencies      map[string]Dependencies `toml:"dev-dependencies"`
+	OptionalDependencies map[string]Dependencies `toml:"optional-dependencies"`
+}
+
+func (p Package) directDeps() set.Set[string] {
+	deps := p.nonDevDeps()
+	for _, groupDeps := range p.DevDependencies {
+		deps.Append(groupDeps.toSet().Items()...)
+
+	}
+	return deps
+}
+
+func (p Package) nonDevDeps() set.Set[string] {
+	deps := p.Dependencies.toSet()
+	for _, groupDeps := range p.OptionalDependencies {
+		deps.Append(groupDeps.toSet().Items()...)
+	}
+	return deps
+}
+
+type Dependencies []struct {
+	Name string `toml:"name"`
+}
+
+func (d Dependencies) toSet() set.Set[string] {
+	deps := set.New[string]()
+	for _, dep := range d {
+		deps.Append(dep.Name)
+	}
+	return deps
 }
 
 // https://github.com/astral-sh/uv/blob/f7d647e81d7e1e3be189324b06024ed2057168e6/crates/uv-resolver/src/lock/mod.rs#L572-L579
@@ -107,7 +130,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	}
 
 	packages := lock.packages()
-	directDeps := lock.directDeps(rootPackage)
+	directDeps := rootPackage.directDeps()
 
 	// Since each lockfile contains a root package with a list of direct dependencies,
 	// we can identify all production dependencies by traversing the dependency graph
@@ -120,10 +143,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	)
 
 	for _, pkg := range lock.Packages {
-		if !prodDeps.Contains(pkg.Name) {
-			continue
-		}
-
 		pkgID := packageID(pkg.Name, pkg.Version)
 		relationship := ftypes.RelationshipIndirect
 		if pkg.isRoot() {
@@ -137,16 +156,17 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Name:         pkg.Name,
 			Version:      pkg.Version,
 			Relationship: relationship,
+			Dev:          !prodDeps.Contains(pkg.Name),
 		})
 
 		dependsOn := make([]string, 0, len(pkg.Dependencies))
 
-		for _, dep := range pkg.Dependencies {
-			depPkg, exists := packages[dep.Name]
+		for depName := range pkg.directDeps().Iter() {
+			depPkg, exists := packages[depName]
 			if !exists {
 				continue
 			}
-			dependsOn = append(dependsOn, packageID(dep.Name, depPkg.Version))
+			dependsOn = append(dependsOn, packageID(depName, depPkg.Version))
 		}
 
 		if len(dependsOn) > 0 {
