@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -348,6 +349,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			artifactOpt: artifact.Option{
 				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
+				ImageOption:          types.ImageOptions{MaxImageSize: units.GB},
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
@@ -2242,6 +2244,14 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			wantErr: "put artifact failed",
+		},
+		{
+			name:      "sad path, image size is larger than the maximum",
+			imagePath: "../../test/testdata/alpine-311.tar.gz",
+			artifactOpt: artifact.Option{
+				ImageOption: types.ImageOptions{MaxImageSize: units.MB * 1},
+			},
+			wantErr: "uncompressed image size 5.86MB exceeds maximum allowed size 1MB",
 		},
 	}
 	for _, tt := range tests {

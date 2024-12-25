@@ -45,6 +45,7 @@ require (
 	github.com/docker/cli v27.4.1+incompatible
 	github.com/docker/docker v27.4.1+incompatible
 	github.com/docker/go-connections v0.5.0
+	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.18.0
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/go-openapi/runtime v0.28.0 // indirect
@@ -217,7 +218,6 @@ require (
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.8.2 // indirect
 	github.com/docker/go-metrics v0.0.1 // indirect
-	github.com/docker/go-units v0.5.0 // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect

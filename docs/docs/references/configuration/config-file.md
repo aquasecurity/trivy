@@ -137,6 +137,9 @@ image:
   # Same as '--input'
   input: ""
 
+  # Same as '--max-image-size'
+  max-size: ""
+
   # Same as '--platform'
   platform: ""
 

@@ -5,11 +5,13 @@ import (
 	"errors"
 	"io"
 	"os"
+	"path/filepath"
 	"reflect"
 	"slices"
 	"strings"
 	"sync"
 
+	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -36,6 +38,8 @@ type Artifact struct {
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
+
+	cacheDir string
 }
 
 type LayerInfo struct {
@@ -60,6 +64,11 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("config analyzer group error: %w", err)
 	}
 
+	cacheDir, err := os.MkdirTemp("", "layers")
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create a temp dir: %w", err)
+	}
+
 	return Artifact{
 		logger:         log.WithPrefix("image"),
 		image:          img,
@@ -70,6 +79,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		handlerManager: handlerManager,
 
 		artifactOption: opt,
+		cacheDir:       cacheDir,
 	}, nil
 }
 
@@ -87,6 +97,11 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	diffIDs := a.diffIDs(configFile)
 	a.logger.Debug("Detected diff ID", log.Any("diff_ids", diffIDs))
+
+	defer os.RemoveAll(a.cacheDir)
+	if err := a.checkImageSize(diffIDs); err != nil {
+		return artifact.Reference{}, err
+	}
 
 	// Try retrieving a remote SBOM document
 	if res, err := a.retrieveRemoteSBOM(ctx); err == nil {
@@ -196,6 +211,56 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 		}
 	}
 	return layerKeyMap
+}
+
+func (a Artifact) checkImageSize(diffIDs []string) error {
+	maxSize := a.artifactOption.ImageOption.MaxImageSize
+	if maxSize == 0 {
+		return nil
+	}
+
+	imageSize, err := a.imageSize(diffIDs)
+	if err != nil {
+		return xerrors.Errorf("failed to calculate image size: %w", err)
+	}
+
+	if imageSize > maxSize {
+		return xerrors.Errorf(
+			"uncompressed image size %s exceeds maximum allowed size %s",
+			units.HumanSizeWithPrecision(float64(imageSize), 3), units.HumanSize(float64(maxSize)),
+		)
+	}
+	return nil
+}
+
+func (a Artifact) imageSize(diffIDs []string) (int64, error) {
+	var imageSize int64
+
+	for _, diffID := range diffIDs {
+		layerSize, err := a.saveLayer(diffID)
+		if err != nil {
+			return -1, xerrors.Errorf("failed to save layer: %w", err)
+		}
+		imageSize += layerSize
+	}
+
+	return imageSize, nil
+}
+
+func (a Artifact) saveLayer(diffID string) (int64, error) {
+	_, rc, err := a.uncompressedLayer(diffID)
+	if err != nil {
+		return -1, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
+	}
+	defer rc.Close()
+
+	f, err := os.Create(filepath.Join(a.cacheDir, diffID))
+	if err != nil {
+		return -1, xerrors.Errorf("failed to create a file: %w", err)
+	}
+	defer f.Close()
+
+	return io.Copy(f, rc)
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
@@ -359,6 +424,11 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error
 			return "", nil, xerrors.Errorf("failed to get the digest (%s): %w", diffID, err)
 		}
 		digest = d.String()
+	}
+
+	f, err := os.Open(filepath.Join(a.cacheDir, diffID))
+	if err == nil {
+		return digest, f, nil
 	}
 
 	rc, err := layer.Uncompressed()
