@@ -45,6 +45,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	switch option.Format {
 	case types.FormatTable:
 		writer = &table.Writer{
+			Scanners:             option.Scanners,
 			Output:               output,
 			Severities:           option.Severities,
 			Tree:                 option.DependencyTree,
