@@ -99,7 +99,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	a.logger.Debug("Detected diff ID", log.Any("diff_ids", diffIDs))
 
 	defer os.RemoveAll(a.cacheDir)
-	if err := a.checkImageSize(diffIDs); err != nil {
+	if err := a.checkImageSize(ctx, diffIDs); err != nil {
 		return artifact.Reference{}, err
 	}
 
@@ -213,13 +213,13 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	return layerKeyMap
 }
 
-func (a Artifact) checkImageSize(diffIDs []string) error {
+func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 	maxSize := a.artifactOption.ImageOption.MaxImageSize
 	if maxSize == 0 {
 		return nil
 	}
 
-	imageSize, err := a.imageSize(diffIDs)
+	imageSize, err := a.imageSize(ctx, diffIDs)
 	if err != nil {
 		return xerrors.Errorf("failed to calculate image size: %w", err)
 	}
@@ -233,15 +233,25 @@ func (a Artifact) checkImageSize(diffIDs []string) error {
 	return nil
 }
 
-func (a Artifact) imageSize(diffIDs []string) (int64, error) {
+func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error) {
 	var imageSize int64
 
-	for _, diffID := range diffIDs {
-		layerSize, err := a.saveLayer(diffID)
-		if err != nil {
-			return -1, xerrors.Errorf("failed to save layer: %w", err)
-		}
-		imageSize += layerSize
+	p := parallel.NewPipeline(a.artifactOption.Parallel, false, diffIDs,
+		func(_ context.Context, diffID string) (int64, error) {
+			layerSize, err := a.saveLayer(diffID)
+			if err != nil {
+				return -1, xerrors.Errorf("failed to save layer: %w", err)
+			}
+			return layerSize, nil
+		},
+		func(layerSize int64) error {
+			imageSize += layerSize
+			return nil
+		},
+	)
+
+	if err := p.Do(ctx); err != nil {
+		return -1, xerrors.Errorf("pipeline error: %w", err)
 	}
 
 	return imageSize, nil
