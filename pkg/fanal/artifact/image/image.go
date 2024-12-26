@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/cheggaaa/pb/v3"
 	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
@@ -101,7 +102,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	a.logger.Debug("Detected diff ID", log.Any("diff_ids", diffIDs))
 
 	defer os.RemoveAll(a.cacheDir)
-	if err := a.checkImageSize(ctx, diffIDs); err != nil {
+	if err := a.checkImageSize(ctx); err != nil {
 		return artifact.Reference{}, err
 	}
 
@@ -215,13 +216,13 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	return layerKeyMap
 }
 
-func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
+func (a Artifact) checkImageSize(ctx context.Context) error {
 	maxSize := a.artifactOption.ImageOption.MaxImageSize
 	if maxSize == 0 {
 		return nil
 	}
 
-	imageSize, err := a.imageSize(ctx, diffIDs)
+	imageSize, err := a.imageSize(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to calculate image size: %w", err)
 	}
@@ -238,12 +239,17 @@ func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 	return nil
 }
 
-func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error) {
+func (a Artifact) imageSize(ctx context.Context) (int64, error) {
+	layers, err := a.image.Layers()
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get image layers: %w", err)
+	}
+
 	var imageSize int64
 
-	p := parallel.NewPipeline(a.artifactOption.Parallel, false, diffIDs,
-		func(_ context.Context, diffID string) (int64, error) {
-			layerSize, err := a.saveLayer(diffID)
+	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layers,
+		func(ctx context.Context, layer v1.Layer) (int64, error) {
+			layerSize, err := a.downloadLayer(layer)
 			if err != nil {
 				return -1, xerrors.Errorf("failed to save layer: %w", err)
 			}
@@ -262,20 +268,58 @@ func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error
 	return imageSize, nil
 }
 
-func (a Artifact) saveLayer(diffID string) (int64, error) {
-	_, rc, err := a.uncompressedLayer(diffID)
+func (a Artifact) downloadLayer(layer v1.Layer) (int64, error) {
+	rc, err := layer.Compressed()
 	if err != nil {
-		return -1, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
+		return -1, xerrors.Errorf("failed to fetch the layer: %w", err)
 	}
 	defer rc.Close()
 
-	f, err := os.Create(filepath.Join(a.cacheDir, diffID))
+	h, err := layer.DiffID()
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get hash of layer: %w", err)
+	}
+
+	file := filepath.Join(a.cacheDir, h.String())
+	f, err := os.Create(file)
 	if err != nil {
 		return -1, xerrors.Errorf("failed to create a file: %w", err)
 	}
 	defer f.Close()
 
-	return io.Copy(f, rc)
+	size, err := layer.Size()
+	if err != nil {
+		return -1, xerrors.Errorf("size error: %w", err)
+	}
+
+	bar := pb.Simple.Start64(size)
+	if a.artifactOption.NoProgress {
+		bar.SetWriter(io.Discard)
+	}
+	pr := bar.NewProxyReader(rc)
+	defer bar.Finish()
+
+	bar.Set("prefix", shortenHash(h.Hex, 12))
+
+	dr, err := uncompressed(pr)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to init decompressor: %w", err)
+	}
+	defer dr.Close()
+
+	n, err := io.Copy(f, dr)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to download layer: %w", err)
+	}
+
+	return n, nil
+}
+
+func shortenHash(hash string, length int) string {
+	if len(hash) > length {
+		return hash[:length]
+	}
+	return hash
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
