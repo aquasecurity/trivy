@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -26,6 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
+	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Artifact struct {
@@ -225,10 +227,13 @@ func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 	}
 
 	if imageSize > maxSize {
-		return xerrors.Errorf(
-			"uncompressed image size %s exceeds maximum allowed size %s",
-			units.HumanSizeWithPrecision(float64(imageSize), 3), units.HumanSize(float64(maxSize)),
-		)
+		return &trivyTypes.UserError{
+			Message: fmt.Sprintf(
+				"uncompressed image size %s exceeds maximum allowed size %s",
+				units.HumanSizeWithPrecision(float64(imageSize), 3),
+				units.HumanSize(float64(maxSize)),
+			),
+		}
 	}
 	return nil
 }
