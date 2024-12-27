@@ -15,6 +15,7 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -222,7 +223,7 @@ func (a Artifact) checkImageSize(ctx context.Context) error {
 		return nil
 	}
 
-	imageSize, err := a.imageSize(ctx)
+	imageSize, err := a.downloadImage(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to calculate image size: %w", err)
 	}
@@ -239,14 +240,49 @@ func (a Artifact) checkImageSize(ctx context.Context) error {
 	return nil
 }
 
-func (a Artifact) imageSize(ctx context.Context) (int64, error) {
+// progressLayer wraps a v1.Layer to add progress bar functionality
+type progressLayer struct {
+	v1.Layer
+	bar *pb.ProgressBar
+}
+
+func newProgressLayer(layer v1.Layer, bar *pb.ProgressBar) (v1.Layer, error) {
+	return partial.CompressedToLayer(&progressLayer{
+		Layer: layer, bar: bar,
+	})
+}
+
+func (l *progressLayer) Compressed() (io.ReadCloser, error) {
+	rc, err := l.Layer.Compressed()
+	if err != nil {
+		return nil, err
+	}
+
+	return l.bar.NewProxyReader(rc), nil
+}
+
+func (a Artifact) downloadImage(ctx context.Context) (int64, error) {
 	layers, err := a.image.Layers()
 	if err != nil {
 		return -1, xerrors.Errorf("failed to get image layers: %w", err)
 	}
 
-	var imageSize int64
+	if !a.artifactOption.NoProgress {
+		progressPool := pb.NewPool()
+		wrappedLayers, err := a.wrapLayers(layers, progressPool)
+		if err != nil {
+			return -1, xerrors.Errorf("failed to wrap")
+		}
+		if err := progressPool.Start(); err != nil {
+			log.Error("Failed to start progress bar pool", log.Err(err))
+		} else {
+			defer progressPool.Stop()
+			layers = wrappedLayers
+		}
 
+	}
+
+	var imageSize int64
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layers,
 		func(ctx context.Context, layer v1.Layer) (int64, error) {
 			layerSize, err := a.downloadLayer(layer)
@@ -268,6 +304,24 @@ func (a Artifact) imageSize(ctx context.Context) (int64, error) {
 	return imageSize, nil
 }
 
+func (a Artifact) wrapLayers(layers []v1.Layer, progressPool *pb.Pool) ([]v1.Layer, error) {
+	wrappedLayers := make([]v1.Layer, 0, len(layers))
+	for _, l := range layers {
+		size, err := l.Size()
+		if err != nil {
+			return nil, err
+		}
+		bar := pb.New64(size).SetTemplate(pb.Full)
+		progressPool.Add(bar)
+		pl, err := newProgressLayer(l, bar)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create progress layer: %w", err)
+		}
+		wrappedLayers = append(wrappedLayers, pl)
+	}
+	return wrappedLayers, nil
+}
+
 func (a Artifact) downloadLayer(layer v1.Layer) (int64, error) {
 	rc, err := layer.Compressed()
 	if err != nil {
@@ -287,21 +341,7 @@ func (a Artifact) downloadLayer(layer v1.Layer) (int64, error) {
 	}
 	defer f.Close()
 
-	size, err := layer.Size()
-	if err != nil {
-		return -1, xerrors.Errorf("size error: %w", err)
-	}
-
-	bar := pb.Simple.Start64(size)
-	if a.artifactOption.NoProgress {
-		bar.SetWriter(io.Discard)
-	}
-	pr := bar.NewProxyReader(rc)
-	defer bar.Finish()
-
-	bar.Set("prefix", shortenHash(h.Hex, 12))
-
-	dr, err := uncompressed(pr)
+	dr, err := uncompressed(rc)
 	if err != nil {
 		return -1, xerrors.Errorf("failed to init decompressor: %w", err)
 	}
@@ -313,13 +353,6 @@ func (a Artifact) downloadLayer(layer v1.Layer) (int64, error) {
 	}
 
 	return n, nil
-}
-
-func shortenHash(hash string, length int) string {
-	if len(hash) > length {
-		return hash[:length]
-	}
-	return hash
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
