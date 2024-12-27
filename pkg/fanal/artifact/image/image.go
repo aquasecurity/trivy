@@ -41,7 +41,7 @@ type Artifact struct {
 
 	artifactOption artifact.Option
 
-	cacheDir string
+	layerCacheDir string
 }
 
 type LayerInfo struct {
@@ -81,7 +81,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		handlerManager: handlerManager,
 
 		artifactOption: opt,
-		cacheDir:       cacheDir,
+		layerCacheDir:  cacheDir,
 	}, nil
 }
 
@@ -100,8 +100,10 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	diffIDs := a.diffIDs(configFile)
 	a.logger.Debug("Detected diff ID", log.Any("diff_ids", diffIDs))
 
-	defer os.RemoveAll(a.cacheDir)
 	if err := a.checkImageSize(ctx, diffIDs); err != nil {
+		if err := os.RemoveAll(a.layerCacheDir); err != nil {
+			log.Error("Failed to remove layer cache", log.Err(err))
+		}
 		return artifact.Reference{}, err
 	}
 
@@ -158,8 +160,8 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	}, nil
 }
 
-func (Artifact) Clean(_ artifact.Reference) error {
-	return nil
+func (a Artifact) Clean(_ artifact.Reference) error {
+	return os.RemoveAll(a.layerCacheDir)
 }
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
@@ -269,7 +271,7 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 	}
 	defer rc.Close()
 
-	f, err := os.Create(filepath.Join(a.cacheDir, diffID))
+	f, err := os.Create(filepath.Join(a.layerCacheDir, diffID))
 	if err != nil {
 		return -1, xerrors.Errorf("failed to create a file: %w", err)
 	}
@@ -441,7 +443,7 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error
 		digest = d.String()
 	}
 
-	f, err := os.Open(filepath.Join(a.cacheDir, diffID))
+	f, err := os.Open(filepath.Join(a.layerCacheDir, diffID))
 	if err == nil {
 		return digest, f, nil
 	}

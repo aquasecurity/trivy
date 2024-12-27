@@ -2272,6 +2272,8 @@ func TestArtifact_Inspect(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			}
+			defer a.Clean(got)
+
 			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 		})
