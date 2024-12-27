@@ -2246,12 +2246,20 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantErr: "put artifact failed",
 		},
 		{
-			name:      "sad path, image size is larger than the maximum",
+			name:      "sad path, compressed image size is larger than the maximum",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			artifactOpt: artifact.Option{
 				ImageOption: types.ImageOptions{MaxImageSize: units.MB * 1},
 			},
-			wantErr: "uncompressed image size 5.86MB exceeds maximum allowed size 1MB",
+			wantErr: "compressed image size 3.03MB exceeds maximum allowed size 1MB",
+		},
+		{
+			name:      "sad path, image size is larger than the maximum",
+			imagePath: "../../test/testdata/alpine-311.tar.gz",
+			artifactOpt: artifact.Option{
+				ImageOption: types.ImageOptions{MaxImageSize: units.MB * 4},
+			},
+			wantErr: "uncompressed image size 5.86MB exceeds maximum allowed size 4MB",
 		},
 	}
 	for _, tt := range tests {

@@ -217,10 +217,29 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	return layerKeyMap
 }
 
+func limitErrorMessage(typ string, maxSize, imageSize int64) string {
+	return fmt.Sprintf(
+		"%s image size %s exceeds maximum allowed size %s", typ,
+		units.HumanSizeWithPrecision(float64(imageSize), 3),
+		units.HumanSize(float64(maxSize)),
+	)
+}
+
 func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 	maxSize := a.artifactOption.ImageOption.MaxImageSize
 	if maxSize == 0 {
 		return nil
+	}
+
+	compressedSize, err := a.compressedImageSize(diffIDs)
+	if err != nil {
+		return nil
+	}
+
+	if compressedSize > maxSize {
+		return &trivyTypes.UserError{
+			Message: limitErrorMessage("compressed", maxSize, compressedSize),
+		}
 	}
 
 	imageSize, err := a.imageSize(ctx, diffIDs)
@@ -230,14 +249,32 @@ func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 
 	if imageSize > maxSize {
 		return &trivyTypes.UserError{
-			Message: fmt.Sprintf(
-				"uncompressed image size %s exceeds maximum allowed size %s",
-				units.HumanSizeWithPrecision(float64(imageSize), 3),
-				units.HumanSize(float64(maxSize)),
-			),
+			Message: limitErrorMessage("uncompressed", maxSize, imageSize),
 		}
 	}
 	return nil
+}
+
+func (a Artifact) compressedImageSize(diffIDs []string) (int64, error) {
+	var totalSize int64
+	for _, diffID := range diffIDs {
+		h, err := v1.NewHash(diffID)
+		if err != nil {
+			return -1, xerrors.Errorf("invalid layer ID (%s): %w", diffID, err)
+		}
+
+		layer, err := a.image.LayerByDiffID(h)
+		if err != nil {
+			return -1, xerrors.Errorf("failed to get the layer (%s): %w", diffID, err)
+		}
+		layerSize, err := layer.Size()
+		if err != nil {
+			return -1, xerrors.Errorf("failed to get layer size: %w", err)
+		}
+		totalSize += layerSize
+	}
+
+	return totalSize, nil
 }
 
 func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error) {
