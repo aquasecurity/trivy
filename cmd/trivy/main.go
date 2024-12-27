@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
 
 	"golang.org/x/xerrors"
@@ -25,8 +24,7 @@ func main() {
 
 		var userErr *types.UserError
 		if errors.As(err, &userErr) {
-			fmt.Println("Error: " + userErr.Error())
-			os.Exit(1)
+			log.Fatal("Error", log.Err(userErr))
 		}
 
 		log.Fatal("Fatal error", log.Err(err))

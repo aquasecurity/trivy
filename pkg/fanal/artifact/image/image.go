@@ -68,7 +68,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 
 	cacheDir, err := os.MkdirTemp("", "layers")
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create a temp dir: %w", err)
+		return nil, xerrors.Errorf("failed to create a cache layers temp dir: %w", err)
 	}
 
 	return Artifact{
