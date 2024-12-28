@@ -12,10 +12,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/cheggaaa/pb/v3"
 	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -27,7 +25,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
 )
@@ -36,7 +33,8 @@ type Artifact struct {
 	logger         *log.Logger
 	image          types.Image
 	cache          cache.ArtifactCache
-	walker         walker.LayerTar
+	layerWalker    walker.LayerTar
+	imageWalker    *imageWalker
 	analyzer       analyzer.AnalyzerGroup       // analyzer for files in container image
 	configAnalyzer analyzer.ConfigAnalyzerGroup // analyzer for container image config
 	handlerManager handler.Manager
@@ -49,6 +47,8 @@ type Artifact struct {
 type LayerInfo struct {
 	DiffID    string
 	CreatedBy string // can be empty
+
+	cacheKey string
 }
 
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
@@ -77,7 +77,8 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		logger:         log.WithPrefix("image"),
 		image:          img,
 		cache:          c,
-		walker:         walker.NewLayerTar(opt.WalkerOption),
+		layerWalker:    walker.NewLayerTar(opt.WalkerOption),
+		imageWalker:    newImageWalker(opt.Parallel, !opt.NoProgress, img),
 		analyzer:       a,
 		configAnalyzer: ca,
 		handlerManager: handlerManager,
@@ -103,7 +104,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	a.logger.Debug("Detected diff ID", log.Any("diff_ids", diffIDs))
 
 	defer os.RemoveAll(a.cacheDir)
-	if err := a.checkImageSize(ctx); err != nil {
+	if err := a.checkImageSize(ctx, diffIDs); err != nil {
 		return artifact.Reference{}, err
 	}
 
@@ -212,18 +213,19 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 		layerKeyMap[layerKey] = LayerInfo{
 			DiffID:    diffID,
 			CreatedBy: c,
+			cacheKey:  layerKey,
 		}
 	}
 	return layerKeyMap
 }
 
-func (a Artifact) checkImageSize(ctx context.Context) error {
+func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 	maxSize := a.artifactOption.ImageOption.MaxImageSize
 	if maxSize == 0 {
 		return nil
 	}
 
-	imageSize, err := a.downloadImage(ctx)
+	imageSize, err := a.downloadImage(ctx, diffIDs)
 	if err != nil {
 		return xerrors.Errorf("failed to calculate image size: %w", err)
 	}
@@ -240,86 +242,29 @@ func (a Artifact) checkImageSize(ctx context.Context) error {
 	return nil
 }
 
-// progressLayer wraps a v1.Layer to add progress bar functionality
-type progressLayer struct {
-	v1.Layer
-	bar *pb.ProgressBar
-}
-
-func newProgressLayer(layer v1.Layer, bar *pb.ProgressBar) (v1.Layer, error) {
-	return partial.CompressedToLayer(&progressLayer{
-		Layer: layer, bar: bar,
-	})
-}
-
-func (l *progressLayer) Compressed() (io.ReadCloser, error) {
-	rc, err := l.Layer.Compressed()
-	if err != nil {
-		return nil, err
-	}
-
-	return l.bar.NewProxyReader(rc), nil
-}
-
-func (a Artifact) downloadImage(ctx context.Context) (int64, error) {
-	layers, err := a.image.Layers()
-	if err != nil {
-		return -1, xerrors.Errorf("failed to get image layers: %w", err)
-	}
-
-	if !a.artifactOption.NoProgress {
-		progressPool := pb.NewPool()
-		wrappedLayers, err := a.wrapLayers(layers, progressPool)
-		if err != nil {
-			return -1, xerrors.Errorf("failed to wrap")
-		}
-		if err := progressPool.Start(); err != nil {
-			log.Error("Failed to start progress bar pool", log.Err(err))
-		} else {
-			defer progressPool.Stop()
-			layers = wrappedLayers
-		}
-
-	}
-
+func (a Artifact) downloadImage(ctx context.Context, diffIDs []string) (int64, error) {
 	var imageSize int64
-	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layers,
-		func(ctx context.Context, layer v1.Layer) (int64, error) {
-			layerSize, err := a.downloadLayer(layer)
+
+	if err := a.imageWalker.walk(ctx, diffIDs,
+		func(l v1.Layer, _ string) (any, error) {
+			layerSize, err := a.downloadLayer(l)
 			if err != nil {
 				return -1, xerrors.Errorf("failed to save layer: %w", err)
 			}
 			return layerSize, nil
 		},
-		func(layerSize int64) error {
-			imageSize += layerSize
+		func(layerSize any) error {
+			v, ok := layerSize.(int64)
+			if ok {
+				imageSize += v
+			}
 			return nil
 		},
-	)
-
-	if err := p.Do(ctx); err != nil {
+	); err != nil {
 		return -1, xerrors.Errorf("pipeline error: %w", err)
 	}
 
 	return imageSize, nil
-}
-
-func (a Artifact) wrapLayers(layers []v1.Layer, progressPool *pb.Pool) ([]v1.Layer, error) {
-	wrappedLayers := make([]v1.Layer, 0, len(layers))
-	for _, l := range layers {
-		size, err := l.Size()
-		if err != nil {
-			return nil, err
-		}
-		bar := pb.New64(size).SetTemplate(pb.Full)
-		progressPool.Add(bar)
-		pl, err := newProgressLayer(l, bar)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to create progress layer: %w", err)
-		}
-		wrappedLayers = append(wrappedLayers, pl)
-	}
-	return wrappedLayers, nil
 }
 
 func (a Artifact) downloadLayer(layer v1.Layer) (int64, error) {
@@ -358,33 +303,40 @@ func (a Artifact) downloadLayer(layer v1.Layer) (int64, error) {
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
 
+	missingLayers := make(map[string]LayerInfo)
+	for _, layerKey := range layerKeys {
+		l, ok := layerKeyMap[layerKey]
+		if ok {
+			missingLayers[l.DiffID] = l
+		}
+	}
+
 	var osFound types.OS
-	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
-		layerKey string) (any, error) {
-		layer := layerKeyMap[layerKey]
+	if err := a.imageWalker.walk(ctx, lo.Keys(missingLayers),
+		func(l v1.Layer, diffID string) (any, error) {
+			var disabledAnalyzers []analyzer.Type
+			if slices.Contains(baseDiffIDs, diffID) {
+				disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeSecret)
+			}
 
-		// If it is a base layer, secret scanning should not be performed.
-		var disabledAnalyzers []analyzer.Type
-		if slices.Contains(baseDiffIDs, layer.DiffID) {
-			disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeSecret)
-		}
+			layerInfo := missingLayers[diffID]
 
-		layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
-		}
-		if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
-			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
-		}
-		if lo.IsNotEmpty(layerInfo.OS) {
-			osFound = layerInfo.OS
-		}
-		return nil, nil
+			blobInfo, err := a.inspectLayer(ctx, l, layerInfo, disabledAnalyzers)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to analyze layer (%s): %w", diffID, err)
+			}
 
-	}, nil)
-
-	if err := p.Do(ctx); err != nil {
-		return xerrors.Errorf("pipeline error: %w", err)
+			if err = a.cache.PutBlob(layerInfo.cacheKey, blobInfo); err != nil {
+				return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", missingLayers[diffID], err)
+			}
+			if lo.IsNotEmpty(blobInfo.OS) {
+				osFound = blobInfo.OS
+			}
+			return nil, nil
+		},
+		nil,
+	); err != nil {
+		return xerrors.Errorf("failed to walk image: %w", err)
 	}
 
 	if missingImage != "" {
@@ -396,10 +348,10 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	return nil
 }
 
-func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
+func (a Artifact) inspectLayer(ctx context.Context, layer v1.Layer, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
 	a.logger.Debug("Missing diff ID in cache", log.String("diff_id", layerInfo.DiffID))
 
-	layerDigest, rc, err := a.uncompressedLayer(layerInfo.DiffID)
+	layerDigest, rc, err := a.uncompressedLayer(layer, layerInfo.DiffID)
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
 	}
@@ -422,7 +374,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	defer composite.Cleanup()
 
 	// Walk a tar layer
-	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := a.layerWalker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -496,18 +448,7 @@ func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {
 	})
 }
 
-func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error) {
-	// diffID is a hash of the uncompressed layer
-	h, err := v1.NewHash(diffID)
-	if err != nil {
-		return "", nil, xerrors.Errorf("invalid layer ID (%s): %w", diffID, err)
-	}
-
-	layer, err := a.image.LayerByDiffID(h)
-	if err != nil {
-		return "", nil, xerrors.Errorf("failed to get the layer (%s): %w", diffID, err)
-	}
-
+func (a Artifact) uncompressedLayer(layer v1.Layer, diffID string) (string, io.ReadCloser, error) {
 	// digest is a hash of the compressed layer
 	var digest string
 	if a.isCompressed(layer) {
