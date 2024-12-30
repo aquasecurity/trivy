@@ -46,7 +46,7 @@ require (
 	github.com/docker/docker v27.4.1+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/fatih/color v1.18.0
-	github.com/go-git/go-git/v5 v5.12.0
+	github.com/go-git/go-git/v5 v5.13.0
 	github.com/go-openapi/runtime v0.28.0 // indirect
 	github.com/go-openapi/strfmt v0.23.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.5
@@ -131,7 +131,7 @@ require (
 	google.golang.org/protobuf v1.36.1
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.16.4
-	k8s.io/api v0.31.3
+	k8s.io/api v0.32.0
 	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738
 	modernc.org/sqlite v1.34.4
 	sigs.k8s.io/yaml v1.4.0
@@ -166,7 +166,7 @@ require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/Microsoft/hcsshim v0.12.9 // indirect
 	github.com/OneOfOne/xxhash v1.2.8 // indirect
-	github.com/ProtonMail/go-crypto v1.1.2 // indirect
+	github.com/ProtonMail/go-crypto v1.1.3 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/agnivade/levenshtein v1.2.0 // indirect
@@ -353,7 +353,7 @@ require (
 	github.com/sigstore/cosign/v2 v2.2.4 // indirect
 	github.com/sigstore/sigstore v1.8.10 // indirect
 	github.com/sigstore/timestamp-authority v1.2.2 // indirect
-	github.com/skeema/knownhosts v1.2.2 // indirect
+	github.com/skeema/knownhosts v1.3.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
