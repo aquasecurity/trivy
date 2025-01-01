@@ -2,6 +2,7 @@ package functions
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -20,7 +21,7 @@ func Test_UTCNow(t *testing.T) {
 			args: []any{
 				"d",
 			},
-			expected: fmt.Sprintf("%d", time.Now().UTC().Day()),
+			expected: strconv.Itoa(time.Now().UTC().Day()),
 		},
 		{
 			name: "utc now date",
