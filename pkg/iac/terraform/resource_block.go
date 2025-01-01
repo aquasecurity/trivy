@@ -75,14 +75,14 @@ var resourceTemplate = `{{ .BlockType }} "{{ .Type }}" "{{ .Name }}" {
 func renderTemplateValue(val any) string {
 	switch t := val.(type) {
 	case map[string]any:
-		return fmt.Sprintf("= %s", renderMap(t))
+		return "= " + renderMap(t)
 	case []any:
 		if isMapSlice(t) {
 			return renderSlice(t)
 		}
-		return fmt.Sprintf("= %s", renderSlice(t))
+		return "= " + renderSlice(t)
 	default:
-		return fmt.Sprintf("= %s", renderPrimitive(val))
+		return "= " + renderPrimitive(val)
 	}
 }
 
@@ -145,7 +145,7 @@ func renderSlice(vals []any) string {
 		for _, v := range vals {
 			result = fmt.Sprintf("%s\t%v,\n", result, renderPrimitive(v))
 		}
-		result = fmt.Sprintf("%s]", result)
+		result += "]"
 		return result
 	}
 }
@@ -162,7 +162,7 @@ func renderMap(val map[string]any) string {
 		}
 		result = fmt.Sprintf("%s\t%s = %s\n", result, k, renderPrimitive(v))
 	}
-	result = fmt.Sprintf("%s}", result)
+	result += "}"
 	return result
 }
 

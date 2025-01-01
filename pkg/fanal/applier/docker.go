@@ -115,7 +115,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 		// Apply OS packages
 		for _, pkgInfo := range layer.PackageInfos {
-			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
+			key := pkgInfo.FilePath + "/type:ospkg"
 			nestedMap.SetByString(key, sep, pkgInfo)
 		}
 
@@ -131,7 +131,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
-			key := fmt.Sprintf("%s/type:config", config.FilePath)
+			key := config.FilePath + "/type:config"
 			nestedMap.SetByString(key, sep, config)
 		}
 

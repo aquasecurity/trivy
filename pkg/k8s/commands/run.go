@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
@@ -42,7 +41,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
 			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration
-			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
+			log.WarnContext(ctx, "Provide a higher timeout value, see "+doc.URL("/docs/configuration/", ""))
 		}
 	}()
 	opts.K8sVersion = cluster.GetClusterVersion()

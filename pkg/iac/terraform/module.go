@@ -104,7 +104,7 @@ func (c *Module) GetProviderBlocksByProvider(providerName, alias string) Blocks 
 	for _, block := range c.blocks {
 		if block.Type() == "provider" && len(block.Labels()) > 0 && block.TypeLabel() == providerName {
 			if alias != "" {
-				if block.HasChild("alias") && block.GetAttribute("alias").Equals(strings.ReplaceAll(alias, fmt.Sprintf("%s.", providerName), "")) {
+				if block.HasChild("alias") && block.GetAttribute("alias").Equals(strings.ReplaceAll(alias, providerName+".", "")) {
 					results = append(results, block)
 
 				}

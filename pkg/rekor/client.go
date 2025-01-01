@@ -2,7 +2,6 @@ package rekor
 
 import (
 	"context"
-	"fmt"
 	"slices"
 
 	pkgclient "github.com/sigstore/rekor/pkg/client"
@@ -64,7 +63,7 @@ type Client struct {
 }
 
 func NewClient(rekorURL string) (*Client, error) {
-	c, err := pkgclient.GetRekorClient(rekorURL, pkgclient.WithUserAgent(fmt.Sprintf("trivy/%s", app.Version())))
+	c, err := pkgclient.GetRekorClient(rekorURL, pkgclient.WithUserAgent("trivy/"+app.Version()))
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create rekor client: %w", err)
 	}

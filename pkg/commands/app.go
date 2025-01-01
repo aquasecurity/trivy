@@ -136,7 +136,7 @@ func loadPluginCommands() []*cobra.Command {
 	for _, p := range plugins {
 		p := p
 		cmd := &cobra.Command{
-			Use:     fmt.Sprintf("%s [flags]", p.Name),
+			Use:     p.Name + " [flags]",
 			Short:   p.Summary,
 			Long:    p.Description,
 			GroupID: groupPlugin,

@@ -35,7 +35,7 @@ func setUpRegistry(t *testing.T) (*httptest.Server, v1.Hash) {
 	images := map[string]v1.Image{
 		"v2/debian:latest":                            imgWithVEX,
 		"v2/debian:no-vex":                            setUpImage(t),
-		fmt.Sprintf("v2/debian@%s", d.String()):       imgWithVEX,
+		"v2/debian@" + d.String():                     imgWithVEX,
 		fmt.Sprintf("v2/debian:sha256-%s.att", d.Hex): setUpVEXAttestation(t), // VEX attestation
 	}
 

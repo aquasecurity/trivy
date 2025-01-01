@@ -454,24 +454,24 @@ rules:
 }
 
 func BenchmarkIsType_SmallFile(b *testing.B) {
-	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", "small.file"))
+	data, err := os.ReadFile("./testdata/" + "small.file")
 	require.NoError(b, err)
 
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = IsType(fmt.Sprintf("./testdata/%s", "small.file"), bytes.NewReader(data), FileTypeAzureARM)
+		_ = IsType("./testdata/"+"small.file", bytes.NewReader(data), FileTypeAzureARM)
 	}
 }
 
 func BenchmarkIsType_BigFile(b *testing.B) {
-	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", "big.file"))
+	data, err := os.ReadFile("./testdata/" + "big.file")
 	require.NoError(b, err)
 
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = IsType(fmt.Sprintf("./testdata/%s", "big.file"), bytes.NewReader(data), FileTypeAzureARM)
+		_ = IsType("./testdata/"+"big.file", bytes.NewReader(data), FileTypeAzureARM)
 	}
 }
 

@@ -3,7 +3,6 @@ package cargo
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"io/fs"
 	"maps"
@@ -238,7 +237,7 @@ func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, er
 	//   - 1.2.* -> 1.2.*
 	//   - ^1.2  -> ^1.2
 	if _, err := goversion.Parse(constraint); err == nil {
-		constraint = fmt.Sprintf("^%s", constraint)
+		constraint = "^" + constraint
 	}
 
 	ver, err := semver.Parse(currentVersion)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -237,7 +238,7 @@ func (m *Marshaler) packageDownloadLocation(root *core.Component) string {
 		// Trivy currently only supports git repositories. Format examples:
 		// git+https://git.myproject.org/MyProject.git
 		// git+http://git.myproject.org/MyProject
-		location = fmt.Sprintf("git+%s", root.Name)
+		location = "git+" + root.Name
 	}
 	return location
 }
@@ -440,7 +441,7 @@ func (m *Marshaler) spdxFile(filePath string, digests []digest.Digest) (*spdx.Fi
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
 	}
 	return &spdx.File{
-		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
+		FileSPDXIdentifier: spdx.ElementID("File-" + pkgID),
 		FileName:           filePath,
 		Checksums:          m.spdxChecksums(digests),
 	}, nil
@@ -527,7 +528,7 @@ func calcPkgID(h Hash, v any) (string, error) {
 		return "", xerrors.Errorf("could not build package ID for %+v: %w", v, err)
 	}
 
-	return fmt.Sprintf("%x", f), nil
+	return strconv.FormatUint(f, 16), nil
 }
 
 func camelCase(inputUnderScoreStr string) (camelCase string) {

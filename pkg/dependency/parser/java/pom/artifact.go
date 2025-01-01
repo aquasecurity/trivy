@@ -170,7 +170,7 @@ func evaluateVariable(s string, props map[string]string, seenProps []string) str
 func printLoopedPropertiesStack(env string, usedProps []string) {
 	var s string
 	for _, prop := range usedProps {
-		s += fmt.Sprintf("%s -> ", prop)
+		s += prop + " -> "
 	}
 	log.Warn("Lopped properties were detected", log.String("prop", s+env))
 }

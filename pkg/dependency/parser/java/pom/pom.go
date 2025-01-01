@@ -69,7 +69,7 @@ func (p *pom) projectProperties() map[string]string {
 		}
 
 		// e.g. ${project.groupId}
-		key := fmt.Sprintf("project.%s", k)
+		key := "project." + k
 		projectProperties[key] = v
 
 		// It is deprecated, but still available.

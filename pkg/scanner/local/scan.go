@@ -3,7 +3,6 @@ package local
 import (
 	"context"
 	"errors"
-	"fmt"
 	"slices"
 	"sort"
 	"strings"
@@ -345,7 +344,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
 	// this ensures we don't generate bad links for custom policies
 	if res.Namespace == "" || rego.IsBuiltinNamespace(res.Namespace) {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
+		primaryURL = "https://avd.aquasec.com/misconfig/" + strings.ToLower(res.ID)
 		res.References = append(res.References, primaryURL)
 	}
 

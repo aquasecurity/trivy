@@ -2,7 +2,6 @@ package spdx
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"strings"
 
@@ -178,7 +177,7 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 
 	// Source package
 	if strings.HasPrefix(spdxPkg.PackageSourceInfo, SourcePackagePrefix) {
-		srcPkgName := strings.TrimPrefix(spdxPkg.PackageSourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
+		srcPkgName := strings.TrimPrefix(spdxPkg.PackageSourceInfo, SourcePackagePrefix+": ")
 		component.SrcName, component.SrcVersion, _ = strings.Cut(srcPkgName, " ")
 	}
 

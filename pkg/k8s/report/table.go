@@ -78,7 +78,7 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 func updateTargetContext(r *Resource) {
 	targetName := fmt.Sprintf("namespace: %s, %s: %s", r.Namespace, strings.ToLower(r.Kind), r.Name)
 	if r.Kind == "NodeComponents" || r.Kind == "NodeInfo" {
-		targetName = fmt.Sprintf("node: %s", r.Name)
+		targetName = "node: " + r.Name
 	}
 	for i := range r.Report.Results {
 		r.Report.Results[i].Target = targetName
