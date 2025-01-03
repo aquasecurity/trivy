@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"fmt"
 	"math/rand/v2"
 	"strings"
 
@@ -67,7 +66,7 @@ func postProcessValues(b *Block, input map[string]cty.Value) map[string]cty.Valu
 		if bucket := input["bucket"]; bucket.Type().Equals(cty.String) {
 			bucketName = bucket.AsString()
 		}
-		input["arn"] = cty.StringVal(fmt.Sprintf("arn:aws:s3:::%s", bucketName))
+		input["arn"] = cty.StringVal("arn:aws:s3:::" + bucketName)
 	}
 
 	return input

@@ -47,7 +47,7 @@ func NewStaticMetadata(pkgPath string, inputOpt InputOptions) *StaticMetadata {
 		ID:           "N/A",
 		Title:        "N/A",
 		Severity:     "UNKNOWN",
-		Description:  fmt.Sprintf("Rego module: %s", pkgPath),
+		Description:  "Rego module: " + pkgPath,
 		Package:      pkgPath,
 		InputOptions: inputOpt,
 		Frameworks: map[framework.Framework][]string{

@@ -3,7 +3,6 @@ package secret
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -131,7 +130,7 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	// Also, paths to these files do not have "/" prefix.
 	// We need to add a "/" prefix to properly filter paths from the config file.
 	if input.Dir == "" { // add leading `/` for files extracted from image
-		filePath = fmt.Sprintf("/%s", filePath)
+		filePath = "/" + filePath
 	}
 
 	result := a.scanner.Scan(secret.ScanArgs{

@@ -66,7 +66,7 @@ func TestRedisCache_PutArtifact(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			c, err := cache.NewRedisCache("redis://"+addr, "", "", "", false, 0)
 			require.NoError(t, err)
 
 			err = c.PutArtifact(tt.args.artifactID, tt.args.artifactConfig)
@@ -152,7 +152,7 @@ func TestRedisCache_PutBlob(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			c, err := cache.NewRedisCache("redis://"+addr, "", "", "", false, 0)
 			require.NoError(t, err)
 
 			err = c.PutBlob(tt.args.blobID, tt.args.blobConfig)
@@ -234,7 +234,7 @@ func TestRedisCache_GetArtifact(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			c, err := cache.NewRedisCache("redis://"+addr, "", "", "", false, 0)
 			require.NoError(t, err)
 
 			got, err := c.GetArtifact(tt.artifactID)
@@ -324,7 +324,7 @@ func TestRedisCache_GetBlob(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			c, err := cache.NewRedisCache("redis://"+addr, "", "", "", false, 0)
 			require.NoError(t, err)
 
 			got, err := c.GetBlob(tt.blobID)
@@ -433,7 +433,7 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 				addr = "dummy:6379"
 			}
 
-			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			c, err := cache.NewRedisCache("redis://"+addr, "", "", "", false, 0)
 			require.NoError(t, err)
 
 			missingArtifact, missingBlobIDs, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs)
@@ -456,7 +456,7 @@ func TestRedisCache_Close(t *testing.T) {
 	defer s.Close()
 
 	t.Run("close", func(t *testing.T) {
-		c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", s.Addr()), "", "", "", false, 0)
+		c, err := cache.NewRedisCache("redis://"+s.Addr(), "", "", "", false, 0)
 		require.NoError(t, err)
 
 		closeErr := c.Close()
@@ -478,7 +478,7 @@ func TestRedisCache_Clear(t *testing.T) {
 	s.Set("foo", "bar")
 
 	t.Run("clear", func(t *testing.T) {
-		c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", s.Addr()), "", "", "", false, 0)
+		c, err := cache.NewRedisCache("redis://"+s.Addr(), "", "", "", false, 0)
 		require.NoError(t, err)
 
 		require.NoError(t, c.Clear())
@@ -532,7 +532,7 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c, err := cache.NewRedisCache(fmt.Sprintf("redis://%s", addr), "", "", "", false, 0)
+			c, err := cache.NewRedisCache("redis://"+addr, "", "", "", false, 0)
 			require.NoError(t, err)
 
 			err = c.DeleteBlobs(tt.args.blobIDs)

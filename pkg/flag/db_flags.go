@@ -1,7 +1,7 @@
 package flag
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
@@ -188,7 +188,7 @@ func parseRepository(repo string, dbSchemaVersion int) (name.Reference, error) {
 		return dbRepository, nil
 	}
 
-	dbRepository = t.Tag(fmt.Sprint(dbSchemaVersion))
+	dbRepository = t.Tag(strconv.Itoa(dbSchemaVersion))
 	log.Info("Adding schema version to the DB repository for backward compatibility",
 		log.String("repository", dbRepository.String()))
 

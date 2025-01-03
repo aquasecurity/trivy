@@ -3,7 +3,6 @@ package binary
 import (
 	"cmp"
 	"debug/buildinfo"
-	"fmt"
 	"runtime/debug"
 	"slices"
 	"sort"
@@ -60,7 +59,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	stdlibVersion := strings.TrimPrefix(info.GoVersion, "go")
 	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
 	// Add the `v` prefix to be consistent with module and dependency versions.
-	stdlibVersion = fmt.Sprintf("v%s", stdlibVersion)
+	stdlibVersion = "v" + stdlibVersion
 
 	ldflags := p.ldFlags(info.Settings)
 	pkgs := make(ftypes.Packages, 0, len(info.Deps)+2)

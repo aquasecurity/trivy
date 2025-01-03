@@ -1,7 +1,6 @@
 package mod
 
 import (
-	"fmt"
 	"io"
 	"regexp"
 	"sort"
@@ -96,7 +95,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 				Name: "stdlib",
 				// Our versioning library doesn't support canonical (goX.Y.Z) format,
 				// So we need to add `v` prefix for consistency (with module and dependency versions).
-				Version:      fmt.Sprintf("v%s", toolchainVer),
+				Version:      "v" + toolchainVer,
 				Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 			}
 		}

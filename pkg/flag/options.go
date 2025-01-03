@@ -664,7 +664,7 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 			continue
 		}
 
-		usages += fmt.Sprintf("%s Flags\n", group.Name())
+		usages += group.Name() + " Flags\n"
 		usages += flags.FlagUsages() + "\n"
 	}
 	return strings.TrimSpace(usages)

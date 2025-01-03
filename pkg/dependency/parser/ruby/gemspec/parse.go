@@ -2,7 +2,6 @@ package gemspec
 
 import (
 	"bufio"
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -64,19 +63,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) (pkgs []ftypes.Package, deps []ftypes
 
 		// Capture name, version, license, and licenses
 		switch {
-		case strings.HasPrefix(line, fmt.Sprintf("%s.name", newVar)):
+		case strings.HasPrefix(line, newVar+".name"):
 			// https://guides.rubygems.org/specification-reference/#name
 			name = findSubString(nameRegexp, line, "name")
 			name = trim(name)
-		case strings.HasPrefix(line, fmt.Sprintf("%s.version", newVar)):
+		case strings.HasPrefix(line, newVar+".version"):
 			// https://guides.rubygems.org/specification-reference/#version
 			version = findSubString(versionRegexp, line, "version")
 			version = trim(version)
-		case strings.HasPrefix(line, fmt.Sprintf("%s.licenses", newVar)):
+		case strings.HasPrefix(line, newVar+".licenses"):
 			// https://guides.rubygems.org/specification-reference/#licenses=
 			license = findSubString(licensesRegexp, line, "licenses")
 			license = parseLicenses(license)
-		case strings.HasPrefix(line, fmt.Sprintf("%s.license", newVar)):
+		case strings.HasPrefix(line, newVar+".license"):
 			// https://guides.rubygems.org/specification-reference/#license=
 			license = findSubString(licenseRegexp, line, "license")
 			license = trim(license)

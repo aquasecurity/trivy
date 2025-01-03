@@ -2,7 +2,6 @@ package image
 
 import (
 	"context"
-	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -39,7 +38,7 @@ func setupEngineAndRegistry(t *testing.T) (*httptest.Server, *httptest.Server) {
 		Auth:   auth.Auth{},
 	})
 
-	t.Setenv("DOCKER_HOST", fmt.Sprintf("tcp://%s", te.Listener.Addr().String()))
+	t.Setenv("DOCKER_HOST", "tcp://"+te.Listener.Addr().String())
 
 	return te, tr
 }
@@ -154,7 +153,7 @@ func TestNewDockerImage(t *testing.T) {
 		{
 			name: "happy path with Docker Registry",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
@@ -202,7 +201,7 @@ func TestNewDockerImage(t *testing.T) {
 		{
 			name: "happy path with insecure Docker Registry",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.ImageOptions{
 					RegistryOptions: types.RegistryOptions{
 						Credentials: []types.Credential{
@@ -260,14 +259,14 @@ func TestNewDockerImage(t *testing.T) {
 		{
 			name: "sad path with invalid tag",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.11!!!", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.11!!!",
 			},
 			wantErr: true,
 		},
 		{
 			name: "sad path with non-exist image",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:100", serverAddr),
+				imageName: serverAddr + "/library/alpine:100",
 			},
 			wantErr: true,
 		},
@@ -343,7 +342,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 		{
 			name: "happy path with private Docker Registry",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.ImageOptions{
 					RegistryOptions: types.RegistryOptions{
 						Credentials: []types.Credential{
@@ -360,7 +359,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 		{
 			name: "happy path with registry token",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.ImageOptions{
 					RegistryOptions: types.RegistryOptions{
 						RegistryToken: registryToken,
@@ -372,14 +371,14 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 		{
 			name: "sad path without a credential",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.11",
 			},
 			wantErr: "unexpected status code 401",
 		},
 		{
 			name: "sad path with invalid registry token",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.11",
 				option: types.ImageOptions{
 					RegistryOptions: types.RegistryOptions{
 						RegistryToken: registryToken + "invalid",
@@ -542,7 +541,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
+			imageName := serverAddr + "/library/alpine:3.10"
 			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
 			defer cleanup()

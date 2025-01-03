@@ -174,7 +174,7 @@ func getPrivateRegistryTokenFromEnvVars(hostname string) (string, error) {
 		return "", fmt.Errorf("could not convert hostname %s to a punycode encoded ASCII string so cannot find token for this registry", hostname)
 	}
 
-	envVar := fmt.Sprintf("TF_TOKEN_%s", strings.ReplaceAll(asciiHostname, ".", "_"))
+	envVar := "TF_TOKEN_" + strings.ReplaceAll(asciiHostname, ".", "_")
 	token = os.Getenv(envVar)
 
 	// Dashes in the hostname can optionally be converted to double underscores

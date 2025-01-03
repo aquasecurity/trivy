@@ -1,7 +1,6 @@
 package daemon
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -33,7 +32,7 @@ func TestMain(m *testing.M) {
 	te := engine.NewDockerEngine(opt)
 	defer te.Close()
 
-	os.Setenv("DOCKER_HOST", fmt.Sprintf("tcp://%s", te.Listener.Addr().String()))
+	os.Setenv("DOCKER_HOST", "tcp://"+te.Listener.Addr().String())
 
 	os.Exit(m.Run())
 }

@@ -3,7 +3,6 @@ package remote
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -142,7 +141,7 @@ func httpTransport(option types.RegistryOptions) (http.RoundTripper, error) {
 		tr.TLSClientConfig.Certificates = []tls.Certificate{cert}
 	}
 
-	tripper := transport.NewUserAgent(tr, fmt.Sprintf("trivy/%s", app.Version()))
+	tripper := transport.NewUserAgent(tr, "trivy/"+app.Version())
 	return tripper, nil
 }
 

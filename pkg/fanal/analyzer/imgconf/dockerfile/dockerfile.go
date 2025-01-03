@@ -98,7 +98,7 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 	}
 
 	if !userFound && input.Config.Config.User != "" {
-		user := fmt.Sprintf("USER %s", input.Config.Config.User)
+		user := "USER " + input.Config.Config.User
 		dockerfile.WriteString(user)
 	}
 

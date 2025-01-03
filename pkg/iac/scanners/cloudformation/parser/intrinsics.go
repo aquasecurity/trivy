@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -48,7 +47,7 @@ func IsIntrinsicFunc(node *yaml.Node) bool {
 
 	nodeTag := strings.TrimPrefix(node.Tag, "!")
 	if nodeTag != "Ref" && nodeTag != "Condition" {
-		nodeTag = fmt.Sprintf("Fn::%s", nodeTag)
+		nodeTag = "Fn::" + nodeTag
 	}
 	for tag := range intrinsicFuncs {
 
@@ -96,7 +95,7 @@ func getIntrinsicTag(tag string) string {
 	case "Ref", "Contains":
 		return tag
 	default:
-		return fmt.Sprintf("Fn::%s", tag)
+		return "Fn::" + tag
 	}
 }
 

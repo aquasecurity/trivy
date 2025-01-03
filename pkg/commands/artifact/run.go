@@ -341,16 +341,13 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
 			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration/
-			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
+			log.WarnContext(ctx, "Provide a higher timeout value, see "+doc.URL("/docs/configuration/", ""))
 		}
 	}()
 
 	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
 		log.WarnContext(ctx,
-			fmt.Sprintf(
-				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
-				doc.URL("/docs/references/modes/client-server", ""),
-			),
+			"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see "+doc.URL("/docs/references/modes/client-server", ""),
 		)
 	}
 

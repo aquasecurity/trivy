@@ -81,7 +81,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "single credential",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
@@ -96,7 +96,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "multiple credential",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
@@ -115,7 +115,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "keychain",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				config:    fmt.Sprintf(`{"auths": {%q: {"auth": %q}}}`, serverAddr, encode("test", "testpass")),
 				option: types.RegistryOptions{
 					Insecure: true,
@@ -125,7 +125,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "platform",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
@@ -146,7 +146,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "force platform",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
@@ -169,7 +169,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "bad credential",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
@@ -185,7 +185,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "bad keychain",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: serverAddr + "/library/alpine:3.10",
 				config:    fmt.Sprintf(`{"auths": {%q: {"auth": %q}}}`, serverAddr, encode("foo", "bar")),
 				option: types.RegistryOptions{
 					Insecure: true,
@@ -257,7 +257,7 @@ func TestUserAgents(t *testing.T) {
 
 	serverAddr := tr.Listener.Addr().String()
 
-	n, err := name.ParseReference(fmt.Sprintf("%s/library/alpine:3.10", serverAddr))
+	n, err := name.ParseReference(serverAddr + "/library/alpine:3.10")
 	require.NoError(t, err)
 
 	_, err = Get(context.Background(), n, types.RegistryOptions{
