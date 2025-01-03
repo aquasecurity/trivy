@@ -40,6 +40,7 @@ type StaticMetadata struct {
 	Library            bool
 	CloudFormation     *scan.EngineMetadata
 	Terraform          *scan.EngineMetadata
+	Examples           string
 }
 
 func NewStaticMetadata(pkgPath string, inputOpt InputOptions) *StaticMetadata {
@@ -76,6 +77,7 @@ func (sm *StaticMetadata) update(meta map[string]any) error {
 	upd(&sm.Provider, "provider")
 	upd(&sm.RecommendedActions, "recommended_actions")
 	upd(&sm.RecommendedActions, "recommended_action")
+	upd(&sm.Examples, "examples")
 
 	if raw, ok := meta["deprecated"]; ok {
 		if dep, ok := raw.(bool); ok {
@@ -270,6 +272,7 @@ func (m StaticMetadata) ToRule() scan.Rule {
 		Frameworks:     m.Frameworks,
 		CloudFormation: m.CloudFormation,
 		Terraform:      m.Terraform,
+		Examples:       m.Examples,
 	}
 }
 
