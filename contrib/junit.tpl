@@ -44,5 +44,15 @@
     </testsuite>
 {{- end }}
 
+{{- if .Secrets }}
+    {{- $secrets := len .Secrets }}
+    <testsuite tests="{{ $secrets }}" failures="{{ $secrets }}" name="{{ .Target }}" time="0">{{ range .Secrets }}
+        <testcase classname="{{ .RuleID }}" name="[{{ .Severity }}] {{ .Title }}">
+            <failure message="{{ .Title }}" type="description">{{ escapeXML .Match }}</failure>
+        </testcase>
+    {{- end }}
+    </testsuite>
+{{- end }}
+
 {{- end }}
 </testsuites>
