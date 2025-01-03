@@ -1,0 +1,79 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "apk-apk-tools-2.14.4-r0",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2024-06-17T19:43:26Z",
+    "creators": [
+      "Tool: melange (v0.17.0-8-gc3c8c96)",
+      "Organization: Chainguard, Inc"
+    ],
+    "licenseListVersion": "3.22"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/chainguard/melange/d7e304b043df8c3e4dd1fe484ac9a4f56f25033e",
+  "documentDescribes": [
+    "SPDXRef-Package-apk-tools-2.14.4-r0"
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-apk-tools-2.14.4-r0",
+      "name": "apk-tools",
+      "versionInfo": "2.14.4-r0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "GPL-2.0-only",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "copyrightText": "\n",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/apk-tools@2.14.4-r0?arch=x86_64",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-busybox-1.36.1-r10",
+      "name": "busybox",
+      "versionInfo": "1.36.1-r10",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "GPL-2.0-only",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "copyrightText": "\n",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/busybox@1.36.1-r10?arch=x86_64\u0026distro=20230201",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-glibc-locale-posix-2.39-r6",
+      "name": "glibc-locale-posix",
+      "versionInfo": "2.39-r6",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "LGPL-2.1-or-later",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "copyrightText": "\n",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/glibc-locale-posix@2.39-r6?arch=x86_64\u0026distro=20230201",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": []
+}
+
