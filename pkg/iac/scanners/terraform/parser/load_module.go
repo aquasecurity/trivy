@@ -25,7 +25,7 @@ type ModuleDefinition struct {
 }
 
 func (d *ModuleDefinition) inputVars() map[string]cty.Value {
-	inputs := d.Definition.Values().AsValueMap()
+	inputs := d.Definition.NullableValues().AsValueMap()
 	if inputs == nil {
 		return make(map[string]cty.Value)
 	}
