@@ -25,6 +25,7 @@ func TestDockerEngine(t *testing.T) {
 		ignoreStatus  []string
 		severity      []string
 		ignoreIDs     []string
+		maxImageSize  string
 		input         string
 		golden        string
 		wantErr       string
@@ -33,6 +34,12 @@ func TestDockerEngine(t *testing.T) {
 			name:   "alpine:3.9",
 			input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			golden: "testdata/alpine-39.json.golden",
+		},
+		{
+			name:         "alpine:3.9, with max image size",
+			maxImageSize: "100mb",
+			input:        "testdata/fixtures/images/alpine-39.tar.gz",
+			golden:       "testdata/alpine-39.json.golden",
 		},
 		{
 			name: "alpine:3.9, with high and critical severity",
@@ -195,6 +202,12 @@ func TestDockerEngine(t *testing.T) {
 			input:        "badimage:latest",
 			wantErr:      "unable to inspect the image (badimage:latest)",
 		},
+		{
+			name:         "sad path, image size is larger than the maximum",
+			input:        "testdata/fixtures/images/alpine-39.tar.gz",
+			maxImageSize: "1mb",
+			wantErr:      "uncompressed image size 5.8MB exceeds maximum allowed size 1MB",
+		},
 	}
 
 	// Set up testing DB
@@ -263,6 +276,11 @@ func TestDockerEngine(t *testing.T) {
 				require.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
+
+			if tt.maxImageSize != "" {
+				osArgs = append(osArgs, []string{"--max-image-size", tt.maxImageSize}...)
+			}
+
 			osArgs = append(osArgs, tt.input)
 
 			// Run Trivy
