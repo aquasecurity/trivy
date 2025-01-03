@@ -12,6 +12,7 @@ import (
 	"github.com/liamg/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -125,6 +126,7 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 		file := file
 		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
 
+		ignoreRules := ignore.Parse(file.ManifestContent, file.TemplateFilePath, "")
 		manifests, err := kparser.Parse(ctx, strings.NewReader(file.ManifestContent), file.TemplateFilePath)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
@@ -150,6 +152,7 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 					return nil, err
 				}
 				fileResults.SetSourceAndFilesystem(helmParser.ChartSource, renderedFS, detection.IsArchive(helmParser.ChartSource))
+				fileResults.Ignore(ignoreRules, nil)
 			}
 
 			results = append(results, fileResults...)
