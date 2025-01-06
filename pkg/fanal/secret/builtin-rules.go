@@ -3,10 +3,10 @@ package secret
 import (
 	"fmt"
 
-	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 )
 
 var (
