@@ -8,14 +8,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	checks "github.com/aquasecurity/trivy-checks"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 func Test_EmbeddedLoading(t *testing.T) {
 	LoadAndRegister()
 
-	frameworkRules := rules.GetRegistered()
+	frameworkRules := GetRegistered()
 	var found bool
 	for _, rule := range frameworkRules {
 		if rule.GetRule().RegoPackage != "" {
@@ -197,7 +196,7 @@ deny[res]{
 				RegisterRegoRules(policies)
 			})
 
-			for _, rule := range rules.GetRegistered() {
+			for _, rule := range GetRegistered() {
 				if rule.AVDID == tc.id {
 					assert.Equal(t, tc.expected.Deprecated, rule.GetRule().Deprecated, tc.name)
 				}

@@ -1,7 +1,8 @@
-package rules
+package rego
 
 import (
 	"encoding/json"
+	"sort"
 	"strings"
 )
 
@@ -92,28 +93,26 @@ func GetProviders() (providers []Provider) {
 		})
 	}
 
+	sort.Slice(providers, func(i, j int) bool {
+		return providers[i].Name < providers[j].Name
+	})
 	return providers
 }
 
 func GetProvidersAsJson() ([]byte, error) {
-
 	providers := GetProviders()
-
 	return json.MarshalIndent(providers, "", "  ")
 }
 
 func GetProviderNames() []string {
-
 	registeredRules := GetRegistered()
 
 	providers := make(map[string]bool)
 
 	for _, rule := range registeredRules {
-
 		if _, ok := providers[rule.GetRule().Provider.DisplayName()]; !ok {
 			providers[rule.GetRule().Provider.DisplayName()] = true
 		}
-
 	}
 
 	var uniqueProviders []string
@@ -121,6 +120,7 @@ func GetProviderNames() []string {
 		uniqueProviders = append(uniqueProviders, p)
 	}
 
+	sort.Strings(uniqueProviders)
 	return uniqueProviders
 
 }
@@ -147,6 +147,7 @@ func GetProviderServiceNames(providerName string) []string {
 		uniqueServices = append(uniqueServices, p)
 	}
 
+	sort.Strings(uniqueServices)
 	return uniqueServices
 }
 

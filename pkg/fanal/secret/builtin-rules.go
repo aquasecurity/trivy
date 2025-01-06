@@ -3,10 +3,10 @@ package secret
 import (
 	"fmt"
 
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	iacRules "github.com/aquasecurity/trivy/pkg/iac/rules"
 )
 
 var (
@@ -89,9 +89,9 @@ func GetBuiltinRules() []Rule {
 }
 
 // This function is exported for trivy-plugin-aqua purposes only
-func GetSecretRulesMetadata() []iacRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, i int) iacRules.Check {
-		return iacRules.Check{
+func GetSecretRulesMetadata() []rego.Check {
+	return lo.Map(builtinRules, func(rule Rule, i int) rego.Check {
+		return rego.Check{
 			Name:        rule.ID,
 			Description: rule.Title,
 		}

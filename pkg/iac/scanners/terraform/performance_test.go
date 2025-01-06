@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
-	"github.com/aquasecurity/trivy/pkg/iac/rules"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 )
@@ -43,7 +43,7 @@ module "something" {
 }
 `
 
-	for _, rule := range rules.GetRegistered() {
+	for _, rule := range rego.GetRegistered() {
 		if rule.GetRule().Terraform == nil {
 			continue
 		}

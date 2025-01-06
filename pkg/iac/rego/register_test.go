@@ -1,4 +1,4 @@
-package rules
+package rego
 
 import (
 	"fmt"
