@@ -19,6 +19,13 @@ func (o *OS) Detected() bool {
 	return o.Family != ""
 }
 
+// Normalize normalizes OS family names for backward compatibility
+func (o *OS) Normalize() {
+	if alias, ok := OSTypeAliases[o.Family]; ok {
+		o.Family = alias
+	}
+}
+
 // Merge merges OS version and enhanced security maintenance programs
 func (o *OS) Merge(newOS OS) {
 	if lo.IsEmpty(newOS) {
@@ -45,6 +52,11 @@ func (o *OS) Merge(newOS OS) {
 			o.Extended = true
 		}
 	}
+	// When merging layers, there are cases when a layer contains an OS with an old name:
+	//   - Cache contains a layer derived from an old version of Trivy.
+	//   - `client` uses an old version of Trivy, but `server` is a new version of Trivy (for `client/server` mode).
+	// So we need to normalize the OS name for backward compatibility.
+	o.Normalize()
 }
 
 type Repository struct {
