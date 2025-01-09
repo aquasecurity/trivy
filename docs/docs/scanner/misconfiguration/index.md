@@ -503,6 +503,22 @@ Resources:
       BucketName: test-bucket
 ```
 
+!!!note
+    Ignore rules for Helm files should be placed before the YAML object, since only it contains the location data needed for ignoring.
+    
+Example for Helm:
+```yaml
+      serviceAccountName: "testchart.serviceAccountName"
+      containers:
+        # trivy:ignore:KSV018
+        - name: "testchart"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 3000
+          image: "your-repository/your-image:your-tag"
+          imagePullPolicy: "Always"
+```
+
 #### Expiration Date
 
 You can specify the expiration date of the ignore rule in `yyyy-mm-dd` format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
