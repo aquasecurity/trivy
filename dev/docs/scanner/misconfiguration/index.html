@@ -8447,7 +8447,7 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 </blockquote>
 <p>If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.</p>
 <h3 id="skipping-resources-by-inline-comments">Skipping resources by inline comments<a class="headerlink" href="#skipping-resources-by-inline-comments" title="Permanent link">&para;</a></h3>
-<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.</p>
+<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.</p>
 <p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
 <p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>
 <p>For example, to ignore a misconfiguration ID <code>AVD-GCP-0051</code> in a Terraform HCL file:</p>
@@ -8483,6 +8483,21 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 <span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;AWS::S3::Bucket&#39;</span>
 <span class="w">    </span><span class="nt">Properties</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">BucketName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-bucket</span>
+</code></pre></div></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ignore rules for Helm files should be placed before the YAML object, since only it contains the location data needed for ignoring.</p>
+</div>
+<p>Example for Helm:
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;testchart.serviceAccountName&quot;</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="c1"># trivy:ignore:KSV018</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;testchart&quot;</span>
+<span class="w">          </span><span class="nt">securityContext</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">            </span><span class="nt">runAsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-repository/your-image:your-tag&quot;</span>
+<span class="w">          </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Always&quot;</span>
 </code></pre></div></p>
 <h4 id="expiration-date">Expiration Date<a class="headerlink" href="#expiration-date" title="Permanent link">&para;</a></h4>
 <p>You can specify the expiration date of the ignore rule in <code>yyyy-mm-dd</code> format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
