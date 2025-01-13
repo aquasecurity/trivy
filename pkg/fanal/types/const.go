@@ -43,6 +43,15 @@ const (
 	Wolfi              OSType = "wolfi"
 )
 
+// OSTypeAliases is a map of aliases for operating systems.
+// This is used to map the old family names to the new ones for backward compatibility.
+var OSTypeAliases = map[OSType]OSType{
+	"opensuse.leap":                OpenSUSELeap,
+	"opensuse.tumbleweed":          OpenSUSETumbleweed,
+	"suse linux enterprise micro":  SLEMicro,
+	"suse linux enterprise server": SLES,
+}
+
 // Programming language dependencies
 const (
 	Bundler        LangType = "bundler"
