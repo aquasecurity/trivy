@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.58.2](https://github.com/aquasecurity/trivy/compare/v0.58.1...v0.58.2) (2025-01-13)
+
+
+### Bug Fixes
+
+* CVE-2025-21613 and CVE-2025-21614 : go-git: argument injection via the URL field [backport: release/v0.58] ([#8215](https://github.com/aquasecurity/trivy/issues/8215)) ([b733ecc](https://github.com/aquasecurity/trivy/commit/b733ecc7bc752d61837d08f2650bd480b645bb1d))
+* **misconf:** allow null values only for tf variables [backport: release/v0.58] ([#8238](https://github.com/aquasecurity/trivy/issues/8238)) ([f72d2bc](https://github.com/aquasecurity/trivy/commit/f72d2bce8d3418dbcb670434bc15bb857b421f98))
+* **suse:** SUSE - update OSType constants and references for compatility [backport: release/v0.58] ([#8237](https://github.com/aquasecurity/trivy/issues/8237)) ([2896367](https://github.com/aquasecurity/trivy/commit/289636758eccf990f36ea2be34f6db2c02cfab6b))
+
 ## [0.58.1](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.58.1) (2024-12-24)
 
 
