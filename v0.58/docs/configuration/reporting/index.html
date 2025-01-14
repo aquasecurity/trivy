@@ -53,16 +53,6 @@
     <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-  
-
-
-  
-  
-
-<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-V9LJGFH7GX"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-V9LJGFH7GX",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-V9LJGFH7GX",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
-  
-    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
-  
 
     
     
@@ -327,24 +317,6 @@ You're not viewing the latest version of the documentation.
           
   
   Contributing
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../../commercial/compare/" class="md-tabs__link">
-          
-  
-  Enterprise
 
         </a>
       </li>
@@ -7753,117 +7725,6 @@ You're not viewing the latest version of the documentation.
   
 
     
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
-        
-          
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    
-  
-    Enterprise
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Enterprise
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../commercial/compare/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Comparison
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../commercial/contact/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Contact Us
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
@@ -8268,10 +8129,6 @@ This flag is only available with the <code>--format table</code> flag.</p>
 <td><a href="../../coverage/language/python/#poetry">poetry.lock</a></td>
 </tr>
 <tr>
-<td></td>
-<td><a href="../../coverage/language/python/#uv">uv.lock</a></td>
-</tr>
-<tr>
 <td>Ruby</td>
 <td><a href="../../coverage/language/ruby/#bundler">Gemfile.lock</a></td>
 </tr>
@@ -8369,19 +8226,13 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><code>$ trivy image -f json -o results.json alpine:latest
+<div class="highlight"><pre><span></span><code>$ trivy image -f json -o results.json golang:1.12-alpine
 </code></pre></div>
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>2024-12-26T22:01:18+05:30   INFO    [vuln] Vulnerability scanning is enabled
-2024-12-26T22:01:18+05:30   INFO    [secret] Secret scanning is enabled
-2024-12-26T22:01:18+05:30   INFO    [secret] If your scanning is slow, please try &#39;--scanners vuln&#39; to disable secret scanning
-2024-12-26T22:01:18+05:30   INFO    [secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
-2024-12-26T22:01:18+05:30   INFO    Detected OS family=&quot;alpine&quot; version=&quot;3.20.3&quot;
-2024-12-26T22:01:18+05:30   INFO    [alpine] Detecting vulnerabilities...   os_version=&quot;3.20&quot; repository=&quot;3.20&quot; pkg_num=14
-2024-12-26T22:01:18+05:30   INFO    Number of language-specific files   num=0
-2024-12-26T22:01:18+05:30   WARN    Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.58/docs/scanner/vulnerability#severity-selection for details.
+<div class="highlight"><pre><span></span><code>2019-05-16T01:46:31.777+0900    INFO    Updating vulnerability database...
+2019-05-16T01:47:03.007+0900    INFO    Detecting Alpine vulnerabilities...
 </code></pre></div>
 
 </details>
@@ -8389,175 +8240,107 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 <details>
 <summary>JSON</summary>
 
-<div class="highlight"><pre><span></span><code>{
-  &quot;SchemaVersion&quot;: 2,
-  &quot;CreatedAt&quot;: &quot;2024-12-26T21:58:15.943876+05:30&quot;,
-  &quot;ArtifactName&quot;: &quot;alpine:latest&quot;,
-  &quot;ArtifactType&quot;: &quot;container_image&quot;,
-  &quot;Metadata&quot;: {
-    &quot;OS&quot;: {
-      &quot;Family&quot;: &quot;alpine&quot;,
-      &quot;Name&quot;: &quot;3.20.3&quot;
-    },
-    &quot;ImageID&quot;: &quot;sha256:511a44083d3a23416fadc62847c45d14c25cbace86e7a72b2b350436978a0450&quot;,
-    &quot;DiffIDs&quot;: [
-      &quot;sha256:651d9022c23486dfbd396c13db293af6845731cbd098a5f5606db4bc9f5573e8&quot;
-    ],
-    &quot;RepoTags&quot;: [
-      &quot;alpine:latest&quot;
-    ],
-    &quot;RepoDigests&quot;: [
-      &quot;alpine@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a&quot;
-    ],
-    &quot;ImageConfig&quot;: {
-      &quot;architecture&quot;: &quot;arm64&quot;,
-      &quot;created&quot;: &quot;2024-09-06T12:05:36Z&quot;,
-      &quot;history&quot;: [
-        {
-          &quot;created&quot;: &quot;2024-09-06T12:05:36Z&quot;,
-          &quot;created_by&quot;: &quot;ADD alpine-minirootfs-3.20.3-aarch64.tar.gz / # buildkit&quot;,
-          &quot;comment&quot;: &quot;buildkit.dockerfile.v0&quot;
-        },
-        {
-          &quot;created&quot;: &quot;2024-09-06T12:05:36Z&quot;,
-          &quot;created_by&quot;: &quot;CMD [\&quot;/bin/sh\&quot;]&quot;,
-          &quot;comment&quot;: &quot;buildkit.dockerfile.v0&quot;,
-          &quot;empty_layer&quot;: true
-        }
-      ],
-      &quot;os&quot;: &quot;linux&quot;,
-      &quot;rootfs&quot;: {
-        &quot;type&quot;: &quot;layers&quot;,
-        &quot;diff_ids&quot;: [
-          &quot;sha256:651d9022c23486dfbd396c13db293af6845731cbd098a5f5606db4bc9f5573e8&quot;
+<div class="highlight"><pre><span></span><code>[
+  {
+    &quot;Target&quot;: &quot;php-app/composer.lock&quot;,
+    &quot;Vulnerabilities&quot;: null
+  },
+  {
+    &quot;Target&quot;: &quot;node-app/package-lock.json&quot;,
+    &quot;Vulnerabilities&quot;: [
+      {
+        &quot;VulnerabilityID&quot;: &quot;CVE-2018-16487&quot;,
+        &quot;PkgName&quot;: &quot;lodash&quot;,
+        &quot;InstalledVersion&quot;: &quot;4.17.4&quot;,
+        &quot;FixedVersion&quot;: &quot;\u003e=4.17.11&quot;,
+        &quot;Title&quot;: &quot;lodash: Prototype pollution in utilities function&quot;,
+        &quot;Description&quot;: &quot;A prototype pollution vulnerability was found in lodash \u003c4.17.11 where the functions merge, mergeWith, and defaultsDeep can be tricked into adding or modifying properties of Object.prototype.&quot;,
+        &quot;Severity&quot;: &quot;HIGH&quot;,
+        &quot;References&quot;: [
+          &quot;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16487&quot;,
+        ]
+      }
+    ]
+  },
+  {
+    &quot;Target&quot;: &quot;trivy-ci-test (alpine 3.7.1)&quot;,
+    &quot;Vulnerabilities&quot;: [
+      {
+        &quot;VulnerabilityID&quot;: &quot;CVE-2018-16840&quot;,
+        &quot;PkgName&quot;: &quot;curl&quot;,
+        &quot;InstalledVersion&quot;: &quot;7.61.0-r0&quot;,
+        &quot;FixedVersion&quot;: &quot;7.61.1-r1&quot;,
+        &quot;Title&quot;: &quot;curl: Use-after-free when closing \&quot;easy\&quot; handle in Curl_close()&quot;,
+        &quot;Description&quot;: &quot;A heap use-after-free flaw was found in curl versions from 7.59.0 through 7.61.1 in the code related to closing an easy handle. &quot;,
+        &quot;Severity&quot;: &quot;HIGH&quot;,
+        &quot;References&quot;: [
+          &quot;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16840&quot;,
         ]
       },
-      &quot;config&quot;: {
-        &quot;Cmd&quot;: [
-          &quot;/bin/sh&quot;
-        ],
-        &quot;Env&quot;: [
-          &quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;
-        ],
-        &quot;WorkingDir&quot;: &quot;/&quot;,
-        &quot;ArgsEscaped&quot;: true
+      {
+        &quot;VulnerabilityID&quot;: &quot;CVE-2019-3822&quot;,
+        &quot;PkgName&quot;: &quot;curl&quot;,
+        &quot;InstalledVersion&quot;: &quot;7.61.0-r0&quot;,
+        &quot;FixedVersion&quot;: &quot;7.61.1-r2&quot;,
+        &quot;Title&quot;: &quot;curl: NTLMv2 type-3 header stack buffer overflow&quot;,
+        &quot;Description&quot;: &quot;libcurl versions from 7.36.0 to before 7.64.0 are vulnerable to a stack-based buffer overflow. &quot;,
+        &quot;Severity&quot;: &quot;HIGH&quot;,
+        &quot;References&quot;: [
+          &quot;https://curl.haxx.se/docs/CVE-2019-3822.html&quot;,
+          &quot;https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E&quot;
+        ]
+      },
+      {
+        &quot;VulnerabilityID&quot;: &quot;CVE-2018-16839&quot;,
+        &quot;PkgName&quot;: &quot;curl&quot;,
+        &quot;InstalledVersion&quot;: &quot;7.61.0-r0&quot;,
+        &quot;FixedVersion&quot;: &quot;7.61.1-r1&quot;,
+        &quot;Title&quot;: &quot;curl: Integer overflow leading to heap-based buffer overflow in Curl_sasl_create_plain_message()&quot;,
+        &quot;Description&quot;: &quot;Curl versions 7.33.0 through 7.61.1 are vulnerable to a buffer overrun in the SASL authentication code that may lead to denial of service.&quot;,
+        &quot;Severity&quot;: &quot;HIGH&quot;,
+        &quot;References&quot;: [
+          &quot;https://github.com/curl/curl/commit/f3a24d7916b9173c69a3e0ee790102993833d6c5&quot;,
+        ]
+      },
+      {
+        &quot;VulnerabilityID&quot;: &quot;CVE-2018-19486&quot;,
+        &quot;PkgName&quot;: &quot;git&quot;,
+        &quot;InstalledVersion&quot;: &quot;2.15.2-r0&quot;,
+        &quot;FixedVersion&quot;: &quot;2.15.3-r0&quot;,
+        &quot;Title&quot;: &quot;git: Improper handling of PATH allows for commands to be executed from the current directory&quot;,
+        &quot;Description&quot;: &quot;Git before 2.19.2 on Linux and UNIX executes commands from the current working directory (as if &#39;.&#39; were at the end of $PATH) in certain cases involving the run_command() API and run-command.c, because there was a dangerous change from execvp to execv during 2017.&quot;,
+        &quot;Severity&quot;: &quot;HIGH&quot;,
+        &quot;References&quot;: [
+          &quot;https://usn.ubuntu.com/3829-1/&quot;,
+        ]
+      },
+      {
+        &quot;VulnerabilityID&quot;: &quot;CVE-2018-17456&quot;,
+        &quot;PkgName&quot;: &quot;git&quot;,
+        &quot;InstalledVersion&quot;: &quot;2.15.2-r0&quot;,
+        &quot;FixedVersion&quot;: &quot;2.15.3-r0&quot;,
+        &quot;Title&quot;: &quot;git: arbitrary code execution via .gitmodules&quot;,
+        &quot;Description&quot;: &quot;Git before 2.14.5, 2.15.x before 2.15.3, 2.16.x before 2.16.5, 2.17.x before 2.17.2, 2.18.x before 2.18.1, and 2.19.x before 2.19.1 allows remote code execution during processing of a recursive \&quot;git clone\&quot; of a superproject if a .gitmodules file has a URL field beginning with a &#39;-&#39; character.&quot;,
+        &quot;Severity&quot;: &quot;HIGH&quot;,
+        &quot;References&quot;: [
+          &quot;http://www.securitytracker.com/id/1041811&quot;,
+        ]
       }
-    }
+    ]
   },
-  &quot;Results&quot;: [
-    {
-      &quot;Target&quot;: &quot;alpine:latest (alpine 3.20.3)&quot;,
-      &quot;Class&quot;: &quot;os-pkgs&quot;,
-      &quot;Type&quot;: &quot;alpine&quot;,
-      &quot;Vulnerabilities&quot;: [
-        {
-          &quot;VulnerabilityID&quot;: &quot;CVE-2024-9143&quot;,
-          &quot;PkgID&quot;: &quot;libcrypto3@3.3.2-r0&quot;,
-          &quot;PkgName&quot;: &quot;libcrypto3&quot;,
-          &quot;PkgIdentifier&quot;: {
-            &quot;PURL&quot;: &quot;pkg:apk/alpine/libcrypto3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3&quot;,
-            &quot;UID&quot;: &quot;f705555b49cd2259&quot;
-          },
-          &quot;InstalledVersion&quot;: &quot;3.3.2-r0&quot;,
-          &quot;FixedVersion&quot;: &quot;3.3.2-r1&quot;,
-          &quot;Status&quot;: &quot;fixed&quot;,
-          &quot;Layer&quot;: {
-            &quot;DiffID&quot;: &quot;sha256:651d9022c23486dfbd396c13db293af6845731cbd098a5f5606db4bc9f5573e8&quot;
-          },
-          &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/nvd/cve-2024-9143&quot;,
-          &quot;DataSource&quot;: {
-            &quot;ID&quot;: &quot;alpine&quot;,
-            &quot;Name&quot;: &quot;Alpine Secdb&quot;,
-            &quot;URL&quot;: &quot;https://secdb.alpinelinux.org/&quot;
-          },
-          &quot;Title&quot;: &quot;openssl: Low-level invalid GF(2^m) parameters lead to OOB memory access&quot;,
-          &quot;Description&quot;: &quot;Issue summary: Use of the low-level GF(2^m) elliptic curve APIs with untrusted\nexplicit values for the field polynomial can lead to out-of-bounds memory reads\nor writes.\n\nImpact summary: Out of bound memory writes can lead to an application crash or\neven a possibility of a remote code execution, however, in all the protocols\ninvolving Elliptic Curve Cryptography that we&#39;re aware of, either only \&quot;named\ncurves\&quot; are supported, or, if explicit curve parameters are supported, they\nspecify an X9.62 encoding of binary (GF(2^m)) curves that can&#39;t represent\nproblematic input values. Thus the likelihood of existence of a vulnerable\napplication is low.\n\nIn particular, the X9.62 encoding is used for ECC keys in X.509 certificates,\nso problematic inputs cannot occur in the context of processing X.509\ncertificates.  Any problematic use-cases would have to be using an \&quot;exotic\&quot;\ncurve encoding.\n\nThe affected APIs include: EC_GROUP_new_curve_GF2m(), EC_GROUP_new_from_params(),\nand various supporting BN_GF2m_*() functions.\n\nApplications working with \&quot;exotic\&quot; explicit binary (GF(2^m)) curve parameters,\nthat make it possible to represent invalid field polynomials with a zero\nconstant term, via the above or similar APIs, may terminate abruptly as a\nresult of reading or writing outside of array bounds.  Remote code execution\ncannot easily be ruled out.\n\nThe FIPS modules in 3.3, 3.2, 3.1 and 3.0 are not affected by this issue.&quot;,
-          &quot;Severity&quot;: &quot;LOW&quot;,
-          &quot;CweIDs&quot;: [
-            &quot;CWE-787&quot;
-          ],
-          &quot;VendorSeverity&quot;: {
-            &quot;amazon&quot;: 3,
-            &quot;redhat&quot;: 1,
-            &quot;ubuntu&quot;: 1
-          },
-          &quot;CVSS&quot;: {
-            &quot;redhat&quot;: {
-              &quot;V3Vector&quot;: &quot;CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L&quot;,
-              &quot;V3Score&quot;: 3.7
-            }
-          },
-          &quot;References&quot;: [
-            &quot;https://access.redhat.com/security/cve/CVE-2024-9143&quot;,
-            &quot;https://github.com/openssl/openssl/commit/72ae83ad214d2eef262461365a1975707f862712&quot;,
-            &quot;https://github.com/openssl/openssl/commit/bc7e04d7c8d509fb78fc0e285aa948fb0da04700&quot;,
-            &quot;https://github.com/openssl/openssl/commit/c0d3e4d32d2805f49bec30547f225bc4d092e1f4&quot;,
-            &quot;https://github.com/openssl/openssl/commit/fdf6723362ca51bd883295efe206cb5b1cfa5154&quot;,
-            &quot;https://github.openssl.org/openssl/extended-releases/commit/8efc0cbaa8ebba8e116f7b81a876a4123594d86a&quot;,
-            &quot;https://github.openssl.org/openssl/extended-releases/commit/9d576994cec2b7aa37a91740ea7e680810957e41&quot;,
-            &quot;https://nvd.nist.gov/vuln/detail/CVE-2024-9143&quot;,
-            &quot;https://openssl-library.org/news/secadv/20241016.txt&quot;,
-            &quot;https://www.cve.org/CVERecord?id=CVE-2024-9143&quot;
-          ],
-          &quot;PublishedDate&quot;: &quot;2024-10-16T17:15:18.13Z&quot;,
-          &quot;LastModifiedDate&quot;: &quot;2024-11-08T16:35:21.58Z&quot;
-        },
-        {
-          &quot;VulnerabilityID&quot;: &quot;CVE-2024-9143&quot;,
-          &quot;PkgID&quot;: &quot;libssl3@3.3.2-r0&quot;,
-          &quot;PkgName&quot;: &quot;libssl3&quot;,
-          &quot;PkgIdentifier&quot;: {
-            &quot;PURL&quot;: &quot;pkg:apk/alpine/libssl3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3&quot;,
-            &quot;UID&quot;: &quot;c4a39ef718e71832&quot;
-          },
-          &quot;InstalledVersion&quot;: &quot;3.3.2-r0&quot;,
-          &quot;FixedVersion&quot;: &quot;3.3.2-r1&quot;,
-          &quot;Status&quot;: &quot;fixed&quot;,
-          &quot;Layer&quot;: {
-            &quot;DiffID&quot;: &quot;sha256:651d9022c23486dfbd396c13db293af6845731cbd098a5f5606db4bc9f5573e8&quot;
-          },
-          &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/nvd/cve-2024-9143&quot;,
-          &quot;DataSource&quot;: {
-            &quot;ID&quot;: &quot;alpine&quot;,
-            &quot;Name&quot;: &quot;Alpine Secdb&quot;,
-            &quot;URL&quot;: &quot;https://secdb.alpinelinux.org/&quot;
-          },
-          &quot;Title&quot;: &quot;openssl: Low-level invalid GF(2^m) parameters lead to OOB memory access&quot;,
-          &quot;Description&quot;: &quot;Issue summary: Use of the low-level GF(2^m) elliptic curve APIs with untrusted\nexplicit values for the field polynomial can lead to out-of-bounds memory reads\nor writes.\n\nImpact summary: Out of bound memory writes can lead to an application crash or\neven a possibility of a remote code execution, however, in all the protocols\ninvolving Elliptic Curve Cryptography that we&#39;re aware of, either only \&quot;named\ncurves\&quot; are supported, or, if explicit curve parameters are supported, they\nspecify an X9.62 encoding of binary (GF(2^m)) curves that can&#39;t represent\nproblematic input values. Thus the likelihood of existence of a vulnerable\napplication is low.\n\nIn particular, the X9.62 encoding is used for ECC keys in X.509 certificates,\nso problematic inputs cannot occur in the context of processing X.509\ncertificates.  Any problematic use-cases would have to be using an \&quot;exotic\&quot;\ncurve encoding.\n\nThe affected APIs include: EC_GROUP_new_curve_GF2m(), EC_GROUP_new_from_params(),\nand various supporting BN_GF2m_*() functions.\n\nApplications working with \&quot;exotic\&quot; explicit binary (GF(2^m)) curve parameters,\nthat make it possible to represent invalid field polynomials with a zero\nconstant term, via the above or similar APIs, may terminate abruptly as a\nresult of reading or writing outside of array bounds.  Remote code execution\ncannot easily be ruled out.\n\nThe FIPS modules in 3.3, 3.2, 3.1 and 3.0 are not affected by this issue.&quot;,
-          &quot;Severity&quot;: &quot;LOW&quot;,
-          &quot;CweIDs&quot;: [
-            &quot;CWE-787&quot;
-          ],
-          &quot;VendorSeverity&quot;: {
-            &quot;amazon&quot;: 3,
-            &quot;redhat&quot;: 1,
-            &quot;ubuntu&quot;: 1
-          },
-          &quot;CVSS&quot;: {
-            &quot;redhat&quot;: {
-              &quot;V3Vector&quot;: &quot;CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L&quot;,
-              &quot;V3Score&quot;: 3.7
-            }
-          },
-          &quot;References&quot;: [
-            &quot;https://access.redhat.com/security/cve/CVE-2024-9143&quot;,
-            &quot;https://github.com/openssl/openssl/commit/72ae83ad214d2eef262461365a1975707f862712&quot;,
-            &quot;https://github.com/openssl/openssl/commit/bc7e04d7c8d509fb78fc0e285aa948fb0da04700&quot;,
-            &quot;https://github.com/openssl/openssl/commit/c0d3e4d32d2805f49bec30547f225bc4d092e1f4&quot;,
-            &quot;https://github.com/openssl/openssl/commit/fdf6723362ca51bd883295efe206cb5b1cfa5154&quot;,
-            &quot;https://github.openssl.org/openssl/extended-releases/commit/8efc0cbaa8ebba8e116f7b81a876a4123594d86a&quot;,
-            &quot;https://github.openssl.org/openssl/extended-releases/commit/9d576994cec2b7aa37a91740ea7e680810957e41&quot;,
-            &quot;https://nvd.nist.gov/vuln/detail/CVE-2024-9143&quot;,
-            &quot;https://openssl-library.org/news/secadv/20241016.txt&quot;,
-            &quot;https://www.cve.org/CVERecord?id=CVE-2024-9143&quot;
-          ],
-          &quot;PublishedDate&quot;: &quot;2024-10-16T17:15:18.13Z&quot;,
-          &quot;LastModifiedDate&quot;: &quot;2024-11-08T16:35:21.58Z&quot;
-        }
-      ]
-    }
-  ]
-}
+  {
+    &quot;Target&quot;: &quot;python-app/Pipfile.lock&quot;,
+    &quot;Vulnerabilities&quot;: null
+  },
+  {
+    &quot;Target&quot;: &quot;ruby-app/Gemfile.lock&quot;,
+    &quot;Vulnerabilities&quot;: null
+  },
+  {
+    &quot;Target&quot;: &quot;rust-app/Cargo.lock&quot;,
+    &quot;Vulnerabilities&quot;: null
+  }
+]
 </code></pre></div>
 
 </details>
@@ -8807,8 +8590,6 @@ $<span class="w"> </span>trivy<span class="w"> </span>convert<span class="w"> </
 
 
 
-  
-
 
 
 
@@ -8883,7 +8664,7 @@ $<span class="w"> </span>trivy<span class="w"> </span>convert<span class="w"> </
       
     
     <a href="https://twitter.com/AquaTrivy" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l164.9-188.5L26.8 48h145.6l100.5 132.9zm-24.8 373.8h39.1L151.1 88h-42z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253"/></svg>
     </a>
   
     
