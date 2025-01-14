@@ -30,7 +30,7 @@ import (
 )
 
 type FlagType interface {
-	int | string | []string | bool | time.Duration | float64
+	int | string | []string | bool | time.Duration | float64 | map[string][]string
 }
 
 type Flag[T FlagType] struct {
@@ -161,6 +161,8 @@ func (f *Flag[T]) cast(val any) any {
 		return cast.ToFloat64(val)
 	case time.Duration:
 		return cast.ToDuration(val)
+	case map[string][]string:
+		return cast.ToStringMapStringSlice(val)
 	case []string:
 		if s, ok := val.(string); ok && strings.Contains(s, ",") {
 			// Split environmental variables by comma as it is not done by viper.
