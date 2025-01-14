@@ -10,6 +10,8 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
@@ -29,6 +31,7 @@ var (
 
 // Writer implements Writer and output in tabular form
 type Writer struct {
+	Scanners   types.Scanners
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
@@ -53,6 +56,13 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw Writer) Write(_ context.Context, report types.Report) error {
+	if !tw.isOutputToTerminal() {
+		tml.DisableFormatting()
+	}
+
+	if err := tw.renderSummary(report); err != nil {
+		return xerrors.Errorf("failed to render summary: %w", err)
+	}
 
 	for _, result := range report.Results {
 		// Not display a table of custom resources
@@ -61,6 +71,60 @@ func (tw Writer) Write(_ context.Context, report types.Report) error {
 		}
 		tw.write(result)
 	}
+	return nil
+}
+
+func (tw Writer) renderSummary(report types.Report) error {
+	// Fprintln has a bug
+	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"); err != nil {
+		return err
+	}
+
+	t := newTableWriter(tw.Output, tw.isOutputToTerminal())
+	t.SetAutoMerge(false)
+	t.SetColumnMaxWidth(80)
+
+	var scanners []Scanner
+	for _, scanner := range tw.Scanners {
+		s := NewScanner(scanner)
+		if lo.IsNil(s) {
+			continue
+		}
+		scanners = append(scanners, s)
+	}
+
+	headers := []string{
+		"Target",
+		"Type",
+	}
+	alignments := []table.Alignment{
+		table.AlignLeft,
+		table.AlignCenter,
+	}
+	for _, scanner := range scanners {
+		headers = append(headers, scanner.Header())
+		alignments = append(alignments, scanner.Alignment())
+	}
+	t.SetHeaders(headers...)
+	t.SetAlignment(alignments...)
+
+	for _, result := range report.Results {
+		resultType := string(result.Type)
+		if result.Class == types.ClassSecret {
+			resultType = "text"
+		} else if result.Class == types.ClassLicense {
+			resultType = "-"
+		}
+		rows := []string{
+			result.Target,
+			resultType,
+		}
+		for _, scanner := range scanners {
+			rows = append(rows, tw.colorizeCount(scanner.Count(result)))
+		}
+		t.AddRows(rows)
+	}
+	t.Render()
 	return nil
 }
 
@@ -95,6 +159,17 @@ func (tw Writer) write(result types.Result) {
 
 func (tw Writer) isOutputToTerminal() bool {
 	return IsOutputToTerminal(tw.Output)
+}
+
+func (tw Writer) colorizeCount(count int) string {
+	if count < 0 {
+		return "-"
+	}
+	sprintf := fmt.Sprintf
+	if count != 0 && tw.isOutputToTerminal() {
+		sprintf = color.New(color.FgHiRed).SprintfFunc()
+	}
+	return sprintf("%d", count)
 }
 
 func newTableWriter(output io.Writer, isTerminal bool) *table.Table {
