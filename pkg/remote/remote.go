@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -24,8 +25,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
-
-var logger = log.WithPrefix("remote")
 
 type Descriptor = remote.Descriptor
 
@@ -147,14 +146,13 @@ func registryMirrors(hostRef name.Reference, option types.RegistryOptions) []nam
 
 	ctx := hostRef.Context()
 	reg := ctx.RegistryStr()
-	repo := ctx.RepositoryStr()
 	if ms, ok := option.RegistryMirrors[reg]; ok {
 		for _, m := range ms {
 			var nameOpts []name.Option
 			if option.Insecure {
 				nameOpts = append(nameOpts, name.Insecure)
 			}
-			mirrorImageName := fmt.Sprintf("%s/%s", m, repo)
+			mirrorImageName := strings.Replace(hostRef.Name(), reg, m, 1)
 			ref, err := name.ParseReference(mirrorImageName, nameOpts...)
 			if err != nil {
 				log.WithPrefix("remote").Warn("Unable to parse mirror of image", log.String("mirror", mirrorImageName))
