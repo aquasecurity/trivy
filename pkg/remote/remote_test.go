@@ -94,6 +94,46 @@ func TestGet(t *testing.T) {
 			},
 		},
 		{
+			name: "mirror",
+			args: args{
+				imageName: "foo.bar.io/library/alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"foo.bar.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "incorrect mirror - use image from host",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"foo.bar.io": {
+							"wrong.repository",
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
 			name: "multiple credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
