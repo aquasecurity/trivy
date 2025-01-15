@@ -114,6 +114,26 @@ func TestGet(t *testing.T) {
 			},
 		},
 		{
+			name: "mirror for dockerhub",
+			args: args{
+				imageName: "alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"index.docker.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
 			name: "incorrect mirror - use image from host",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
