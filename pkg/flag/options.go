@@ -469,11 +469,12 @@ func (o *Options) ScanOpts() types.ScanOptions {
 // RegistryOpts returns options for OCI registries
 func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
-		Credentials:   o.Credentials,
-		RegistryToken: o.RegistryToken,
-		Insecure:      o.Insecure,
-		Platform:      o.Platform,
-		AWSRegion:     o.AWSOptions.Region,
+		Credentials:     o.Credentials,
+		RegistryToken:   o.RegistryToken,
+		Insecure:        o.Insecure,
+		Platform:        o.Platform,
+		AWSRegion:       o.AWSOptions.Region,
+		RegistryMirrors: o.RegistryMirrors,
 	}
 }
 
