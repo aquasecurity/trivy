@@ -125,7 +125,7 @@ func TestGet(t *testing.T) {
 						},
 					},
 					RegistryMirrors: map[string][]string{
-						"foo.bar.io": {
+						serverAddr: {
 							"wrong.repository",
 						},
 					},
