@@ -26,7 +26,7 @@ jobs:
             
             // If the user does not have write or admin permissions, leave a comment and close the issue
             if (permission !== 'write' && permission !== 'admin') {
-              const commentBody = "Please see https://aquasecurity.github.io/trivy/latest/community/contribute/issue/";
+              const commentBody = "Please see https://trivy.dev/latest/community/contribute/issue/";
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
