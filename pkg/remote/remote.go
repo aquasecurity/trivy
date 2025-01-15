@@ -25,6 +25,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
+var logger = log.WithPrefix("remote")
+
 type Descriptor = remote.Descriptor
 
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
@@ -36,39 +38,46 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 	}
 
 	var errs error
-	// Try each authentication method until it succeeds
-	for _, authOpt := range authOptions(ctx, ref, option) {
-		remoteOpts := []remote.Option{
-			remote.WithTransport(tr),
-			authOpt,
-		}
+	// Try each mirrors/host until it succeeds
+	for _, r := range append(registryMirrors(ref, option), ref) {
+		// Try each authentication method until it succeeds
+		for _, authOpt := range authOptions(ctx, r, option) {
+			remoteOpts := []remote.Option{
+				remote.WithTransport(tr),
+				authOpt,
+			}
 
-		if option.Platform.Platform != nil {
-			p, err := resolvePlatform(ref, option.Platform, remoteOpts)
+			if option.Platform.Platform != nil {
+				p, err := resolvePlatform(r, option.Platform, remoteOpts)
+				if err != nil {
+					return nil, xerrors.Errorf("platform error: %w", err)
+				}
+				// Don't pass platform when the specified image is single-arch.
+				if p.Platform != nil {
+					remoteOpts = append(remoteOpts, remote.WithPlatform(*p.Platform))
+				}
+			}
+
+			var desc *remote.Descriptor
+			desc, err = remote.Get(r, remoteOpts...)
 			if err != nil {
-				return nil, xerrors.Errorf("platform error: %w", err)
+				errs = multierror.Append(errs, err)
+				continue
 			}
-			// Don't pass platform when the specified image is single-arch.
-			if p.Platform != nil {
-				remoteOpts = append(remoteOpts, remote.WithPlatform(*p.Platform))
-			}
-		}
 
-		desc, err := remote.Get(ref, remoteOpts...)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-			continue
-		}
-
-		if option.Platform.Force {
-			if err = satisfyPlatform(desc, lo.FromPtr(option.Platform.Platform)); err != nil {
-				return nil, err
+			if option.Platform.Force {
+				if err = satisfyPlatform(desc, lo.FromPtr(option.Platform.Platform)); err != nil {
+					return nil, err
+				}
 			}
+			if ref.Context().RegistryStr() != r.Context().RegistryStr() {
+				log.WithPrefix("remote").Info("Mirror was used to get remote image", log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
+			}
+			return desc, nil
 		}
-		return desc, nil
 	}
 
-	// No authentication succeeded
+	// No authentication for mirrors/host succeeded
 	return nil, errs
 }
 
@@ -81,21 +90,28 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 	}
 
 	var errs error
-	// Try each authentication method until it succeeds
-	for _, authOpt := range authOptions(ctx, ref, option) {
-		remoteOpts := []remote.Option{
-			remote.WithTransport(tr),
-			authOpt,
+	// Try each mirrors/host until it succeeds
+	for _, r := range append(registryMirrors(ref, option), ref) {
+		// Try each authentication method until it succeeds
+		for _, authOpt := range authOptions(ctx, r, option) {
+			remoteOpts := []remote.Option{
+				remote.WithTransport(tr),
+				authOpt,
+			}
+			index, err := remote.Image(r, remoteOpts...)
+			if err != nil {
+				errs = multierror.Append(errs, err)
+				continue
+			}
+
+			if ref.Context().RegistryStr() != r.Context().RegistryStr() {
+				log.WithPrefix("remote").Info("Mirror was used to get remote image", log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
+			}
+			return index, nil
 		}
-		index, err := remote.Image(ref, remoteOpts...)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-			continue
-		}
-		return index, nil
 	}
 
-	// No authentication succeeded
+	// No authentication for mirrors/host succeeded
 	return nil, errs
 }
 
@@ -124,6 +140,30 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 
 	// No authentication succeeded
 	return nil, errs
+}
+
+func registryMirrors(hostRef name.Reference, option types.RegistryOptions) []name.Reference {
+	var mirrors []name.Reference
+
+	ctx := hostRef.Context()
+	reg := ctx.RegistryStr()
+	repo := ctx.RepositoryStr()
+	if ms, ok := option.RegistryMirrors[reg]; ok {
+		for _, m := range ms {
+			var nameOpts []name.Option
+			if option.Insecure {
+				nameOpts = append(nameOpts, name.Insecure)
+			}
+			mirrorImageName := fmt.Sprintf("%s/%s", m, repo)
+			ref, err := name.ParseReference(mirrorImageName, nameOpts...)
+			if err != nil {
+				log.WithPrefix("remote").Warn("Unable to parse mirror of image", log.String("mirror", mirrorImageName))
+				continue
+			}
+			mirrors = append(mirrors, ref)
+		}
+	}
+	return mirrors
 }
 
 func httpTransport(option types.RegistryOptions) (http.RoundTripper, error) {
