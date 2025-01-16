@@ -1,7 +1,7 @@
 package dependency
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/mitchellh/hashstructure/v2"
@@ -52,5 +52,5 @@ func UID(filePath string, pkg types.Package) string {
 	if err != nil {
 		log.Warn("Failed to calculate the package hash", log.String("pkg", pkg.Name), log.Err(err))
 	}
-	return fmt.Sprintf("%x", hash)
+	return strconv.FormatUint(hash, 16)
 }

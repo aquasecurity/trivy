@@ -83,7 +83,7 @@ linters-settings:
       - simmilar
   perfsprint:
     # Optimizes even if it requires an int or uint type cast.
-    int-conversion: false
+    int-conversion: true
     # Optimizes into `err.Error()` even if it is only equivalent for non-nil errors.
     err-error: true
     # Optimizes `fmt.Errorf`.
