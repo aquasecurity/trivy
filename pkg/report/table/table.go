@@ -123,7 +123,7 @@ func (tw Writer) renderSummary(report types.Report) error {
 		resultType := string(result.Type)
 		if result.Class == types.ClassSecret {
 			resultType = "text"
-		} else if result.Class == types.ClassLicense {
+		} else if result.Class == types.ClassLicense || result.Class == types.ClassLicenseFile {
 			resultType = "-"
 		}
 		rows := []string{
