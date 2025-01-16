@@ -93,6 +93,12 @@ func (tw Writer) renderSummary(report types.Report) error {
 		scanners = append(scanners, s)
 	}
 
+	// It should be an impossible case.
+	// But it is possible when Trivy is used as a library.
+	if len(scanners) == 0 {
+		return xerrors.Errorf("unable to find scanners")
+	}
+
 	headers := []string{
 		"Target",
 		"Type",

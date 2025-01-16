@@ -16,15 +16,21 @@ import (
 func TestWriter_Write(t *testing.T) {
 	testCases := []struct {
 		name               string
+		scanners           types.Scanners
 		results            types.Results
-		expectedOutput     string
+		wantOutput         string
+		wantError          string
 		includeNonFailures bool
 	}{
 		{
 			name: "vulnerability and custom resource",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
 			results: types.Results{
 				{
 					Target: "test",
+					Type:   ftypes.Jar,
 					Class:  types.ClassLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
@@ -48,9 +54,17 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `
-test ()
-=======
+			wantOutput: `
+Report Summary
+
+┌────────┬──────┬─────────────────┐
+│ Target │ Type │ Vulnerabilities │
+├────────┼──────┼─────────────────┤
+│ test   │ jar  │        1        │
+└────────┴──────┴─────────────────┘
+
+test (jar)
+==========
 Total: 1 (MEDIUM: 0, HIGH: 1)
 
 ┌─────────┬───────────────┬──────────┬──────────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
@@ -63,13 +77,36 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 		},
 		{
 			name: "no vulns",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
 			results: types.Results{
 				{
 					Target: "test",
 					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
 				},
 			},
-			expectedOutput: ``,
+			wantOutput: `
+Report Summary
+
+┌────────┬──────┬─────────────────┐
+│ Target │ Type │ Vulnerabilities │
+├────────┼──────┼─────────────────┤
+│ test   │ jar  │        0        │
+└────────┴──────┴─────────────────┘
+`,
+		},
+		{
+			name: "no scanners",
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
+				},
+			},
+			wantError: "unable to find scanners",
 		},
 	}
 
@@ -85,10 +122,16 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityMedium,
 				},
+				Scanners: tc.scanners,
 			}
 			err := writer.Write(nil, types.Report{Results: tc.results})
+			if tc.wantError != "" {
+				require.Error(t, err)
+				return
+			}
+
 			require.NoError(t, err)
-			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
+			assert.Equal(t, tc.wantOutput, tableWritten.String(), tc.name)
 		})
 	}
 }
