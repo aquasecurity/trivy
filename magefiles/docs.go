@@ -163,7 +163,7 @@ func writeFlagValue(val any, ind string, w *os.File) {
 }
 
 var registryMirrorsExample = map[string][]string{
-	"docker.io": {
+	"index.docker.io": {
 		"harbor.example.com/docker.io",
 		"mirror.gcr.io",
 	},

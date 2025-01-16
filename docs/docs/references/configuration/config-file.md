@@ -462,7 +462,7 @@ pkg:
 ```yaml
 registry:
   mirrors:
-    docker.io:
+    index.docker.io:
      - harbor.example.com/docker.io
      - mirror.gcr.io
 
