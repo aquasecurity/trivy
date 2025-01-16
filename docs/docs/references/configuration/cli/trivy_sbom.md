@@ -45,6 +45,7 @@ trivy sbom [flags] SBOM_PATH
       --java-db-repository strings   OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --list-all-pkgs                output all packages in the JSON report regardless of vulnerability
       --no-progress                  suppress progress bar
+      --no-summary                   hide summary table
       --offline-scan                 do not issue API requests to identify dependencies
   -o, --output string                output file name
       --output-plugin-arg string     [EXPERIMENTAL] output plugin arguments
