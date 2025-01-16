@@ -54,6 +54,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			Trace:                option.Trace,
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
+			NoSummary:            option.NoSummary,
 		}
 	case types.FormatJSON:
 		writer = &JSONWriter{

@@ -32,6 +32,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		compliance       string
 		debug            bool
 		pkgTypes         string
+		noSummary        bool
 	}
 	tests := []struct {
 		name     string
@@ -116,6 +117,20 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
+			name: "invalid option combination: --no-summary with --format json",
+			fields: fields{
+				format:    "json",
+				noSummary: true,
+			},
+			wantLogs: []string{
+				`"--no-summary" can be used only with "--format table".`,
+			},
+			want: flag.ReportOptions{
+				Format:    "json",
+				NoSummary: false,
+			},
+		},
+		{
 			name: "happy path with output plugin args",
 			fields: fields{
 				output:           "plugin=count",
@@ -184,6 +199,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
 			setValue(flag.SeverityFlag.ConfigName, tt.fields.severities)
 			setValue(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
+			setValue(flag.NoSummaryFlag.ConfigName, tt.fields.noSummary)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
@@ -199,6 +215,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				OutputPluginArg: flag.OutputPluginArgFlag.Clone(),
 				Severity:        flag.SeverityFlag.Clone(),
 				Compliance:      flag.ComplianceFlag.Clone(),
+				NoSummary:       flag.NoSummaryFlag.Clone(),
 			}
 
 			got, err := f.ToOptions()
