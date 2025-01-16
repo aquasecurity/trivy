@@ -961,6 +961,91 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			wantErr: "unknown OS",
 		},
+		{
+			name: "SUSE images - legacy OS name with backward compatibility",
+			args: args{
+				imageID: "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
+				layerIDs: []string{
+					"sha256:2615f175cf3da67c48c6542914744943ee5e9c253547b03e3cfe8aae605c3199",
+				},
+			},
+			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+				{
+					Args: cache.LocalArtifactCacheGetBlobArgs{
+						BlobID: "sha256:2615f175cf3da67c48c6542914744943ee5e9c253547b03e3cfe8aae605c3199",
+					},
+					Returns: cache.LocalArtifactCacheGetBlobReturns{
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: 1,
+							Digest:        "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
+							DiffID:        "sha256:d555e1b0b42f21a1cf198e52bcb12fe66aa015348e4390d2d5acddd327d79073",
+							OS: types.OS{
+								Family: "suse linux enterprise server",
+								Name:   "15.4",
+							},
+							PackageInfos: []types.PackageInfo{
+								{
+									FilePath: "usr/lib/sysimage/rpm/Packages.db",
+									Packages: types.Packages{
+										{
+											Name:       "curl",
+											Version:    "7.79.1",
+											SrcName:    "curl",
+											SrcVersion: "7.79.1",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+				{
+					Args: cache.LocalArtifactCacheGetArtifactArgs{
+						ArtifactID: "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
+					},
+					Returns: cache.LocalArtifactCacheGetArtifactReturns{
+						ArtifactInfo: types.ArtifactInfo{
+							SchemaVersion: 1,
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{
+					Family: "sles",
+					Name:   "15.4",
+				},
+				Packages: types.Packages{
+					{
+						Name:       "curl",
+						Version:    "7.79.1",
+						SrcName:    "curl",
+						SrcVersion: "7.79.1",
+						Identifier: types.PkgIdentifier{
+							UID: "1e9b3d3a73785651",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeRPM,
+								Namespace: "suse",
+								Name:      "curl",
+								Version:   "7.79.1",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "sles-15.4",
+									},
+								},
+							},
+						},
+						Layer: types.Layer{
+							Digest: "sha256:fb44d01953611ba18d43d88e158c25579d18eff42db671182245010620a283f3",
+							DiffID: "sha256:d555e1b0b42f21a1cf198e52bcb12fe66aa015348e4390d2d5acddd327d79073",
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

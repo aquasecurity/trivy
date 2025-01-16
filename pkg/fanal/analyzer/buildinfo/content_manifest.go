@@ -10,11 +10,17 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&contentManifestAnalyzer{})
 }
+
+var contentSetsDirs = set.New[string](
+	"root/buildinfo/content_manifests/",
+	"usr/share/buildinfo/", // for RHCOS
+)
 
 const contentManifestAnalyzerVersion = 1
 
@@ -44,7 +50,7 @@ func (a contentManifestAnalyzer) Analyze(_ context.Context, target analyzer.Anal
 
 func (a contentManifestAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, file := filepath.Split(filepath.ToSlash(filePath))
-	if dir != "root/buildinfo/content_manifests/" {
+	if !contentSetsDirs.Contains(dir) {
 		return false
 	}
 	return filepath.Ext(file) == ".json"

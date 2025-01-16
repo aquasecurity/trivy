@@ -415,8 +415,8 @@ If Trivy is installed using rpm then default templates can be found at `/usr/loc
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
-|      Secret      |           |
-|     License      |           |
+|      Secret      |     ✓     |
+|     License      |     ✓     |
 
 In the following example using the template `junit.tpl` XML can be generated.
 ```

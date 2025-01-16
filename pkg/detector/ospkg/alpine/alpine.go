@@ -48,6 +48,7 @@ var (
 		"3.18": time.Date(2025, 5, 9, 23, 59, 59, 0, time.UTC),
 		"3.19": time.Date(2025, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.20": time.Date(2026, 04, 1, 23, 59, 59, 0, time.UTC),
+		"3.21": time.Date(2026, 12, 5, 23, 59, 59, 0, time.UTC),
 		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )

@@ -3,7 +3,7 @@ version: 2
 project_name: trivy_canary_build
 builds:
   -
-    main: cmd/trivy/main.go
+    main: ./cmd/trivy/
     binary: trivy
     ldflags:
       - -s -w
