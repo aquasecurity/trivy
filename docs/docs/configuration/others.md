@@ -117,3 +117,23 @@ The following example will fail when a critical vulnerability is found or the OS
 ```
 $ trivy image --exit-code 1 --exit-on-eol 1 --severity CRITICAL alpine:3.16.3
 ```
+
+## Mirrors support
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Trivy supports mirrors for [remote container images](../target/container_image.md#container-registry) and [databases](./db.md).
+
+To configure them, add a list of mirrors along with the host to the [trivy config file](../references/configuration/config-file.md#registry-options).
+
+!!! note
+    Use the `index.docker.io` host for images from `Docker Hub`, even if you don't use that prefix.
+
+Example for `index.docker.io`:
+```yaml
+registry:
+  mirrors:
+    index.docker.io:
+     - mirror.gcr.io
+```
