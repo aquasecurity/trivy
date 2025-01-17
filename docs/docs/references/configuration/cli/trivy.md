@@ -39,6 +39,7 @@ trivy [global flags] command [flags] target
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
   -v, --version                   show version
+      --color string              enable or disable color output (true, false, auto)
 ```
 
 ### SEE ALSO
