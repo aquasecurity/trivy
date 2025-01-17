@@ -38,7 +38,11 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 
 	var errs error
 	// Try each mirrors/host until it succeeds
-	for _, r := range append(registryMirrors(ref, option), ref) {
+	mirrors, err := registryMirrors(ref, option)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to parse mirrors: %w", err)
+	}
+	for _, r := range append(mirrors, ref) {
 		// Try each authentication method until it succeeds
 		for _, authOpt := range authOptions(ctx, r, option) {
 			remoteOpts := []remote.Option{
@@ -90,7 +94,11 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 
 	var errs error
 	// Try each mirrors/host until it succeeds
-	for _, r := range append(registryMirrors(ref, option), ref) {
+	mirrors, err := registryMirrors(ref, option)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to parse mirrors: %w", err)
+	}
+	for _, r := range append(mirrors, ref) {
 		// Try each authentication method until it succeeds
 		for _, authOpt := range authOptions(ctx, r, option) {
 			remoteOpts := []remote.Option{
@@ -141,7 +149,7 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 	return nil, errs
 }
 
-func registryMirrors(hostRef name.Reference, option types.RegistryOptions) []name.Reference {
+func registryMirrors(hostRef name.Reference, option types.RegistryOptions) ([]name.Reference, error) {
 	var mirrors []name.Reference
 
 	reg := hostRef.Context().RegistryStr()
@@ -154,13 +162,12 @@ func registryMirrors(hostRef name.Reference, option types.RegistryOptions) []nam
 			mirrorImageName := strings.Replace(hostRef.Name(), reg, m, 1)
 			ref, err := name.ParseReference(mirrorImageName, nameOpts...)
 			if err != nil {
-				log.WithPrefix("remote").Warn("Unable to parse mirror of image", log.String("mirror", mirrorImageName))
-				continue
+				return nil, xerrors.Errorf("unable to parse image from mirror registry: %w", err)
 			}
 			mirrors = append(mirrors, ref)
 		}
 	}
-	return mirrors
+	return mirrors, nil
 }
 
 func httpTransport(option types.RegistryOptions) (http.RoundTripper, error) {
