@@ -184,6 +184,10 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 	return nil, errs
 }
 
+// registryMirrors returns a list of mirrors for ref, obtained from options.RegistryMirrors
+// `go-containerregistry` doesn't support mirrors, so we need to handle them ourselves.
+// TODO: use `WithMirror` when `go-containerregistry` will support mirrors.
+// cf. https://github.com/google/go-containerregistry/pull/2010
 func registryMirrors(hostRef name.Reference, option types.RegistryOptions) ([]name.Reference, error) {
 	var mirrors []name.Reference
 
