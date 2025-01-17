@@ -144,8 +144,7 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 func registryMirrors(hostRef name.Reference, option types.RegistryOptions) []name.Reference {
 	var mirrors []name.Reference
 
-	ctx := hostRef.Context()
-	reg := ctx.RegistryStr()
+	reg := hostRef.Context().RegistryStr()
 	if ms, ok := option.RegistryMirrors[reg]; ok {
 		for _, m := range ms {
 			var nameOpts []name.Option
