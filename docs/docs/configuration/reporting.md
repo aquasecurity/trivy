@@ -19,9 +19,80 @@ Trivy supports the following formats:
 |      Secret      |     ✓     |
 |     License      |     ✓     |
 
+```bash
+$ trivy image -f table golang:1.22.11-alpine3.21
 ```
-$ trivy image -f table golang:1.12-alpine
+
+<details>
+<summary>Result</summary>
+
 ```
+...
+
+
+Report Summary
+
+┌─────────────────────────────────────────────┬──────────┬─────────────────┬─────────┐
+│                   Target                    │   Type   │ Vulnerabilities │ Secrets │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ golang:1.22.11-alpine3.21 (alpine 3.21.2)   │  alpine  │        0        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ Node.js                                     │ node-pkg │        0        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ usr/local/go/bin/go                         │ gobinary │        0        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ usr/local/go/bin/gofmt                      │ gobinary │        0        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+...
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ usr/local/go/pkg/tool/linux_amd64/vet       │ gobinary │        0        │    -    │
+└─────────────────────────────────────────────┴──────────┴─────────────────┴─────────┘
+
+golang:1.22.11-alpine3.21 (alpine 3.21.2)
+
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+```
+
+</details>
+
+#### Summary table
+Before result tables Trivy shows summary table.
+
+<details>
+<summary>Report Summary</summary>
+
+```
+┌───────────────────────┬────────────┬─────────────────┬───────────────────┬─────────┬──────────┐
+│        Target         │    Type    │ Vulnerabilities │ Misconfigurations │ Secrets │ Licenses │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ test (alpine 3.20.3)  │   alpine   │        2        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ Java                  │    jar     │        2        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ app/Dockerfile        │ dockerfile │        -        │         2         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ requirements.txt      │    text    │        0        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ requirements.txt      │    text    │        -        │         -         │    1    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ OS Packages           │     -      │        -        │         -         │    -    │    1     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ Java                  │     -      │        -        │         -         │    -    │    0     │
+└───────────────────────┴────────────┴─────────────────┴───────────────────┴─────────┴──────────┘
+```
+
+</details>
+
+This table:
+
+- include columns for enabled [scanners](../references/terminology.md#scanner) only.
+- Contains separate lines for the same targets but different scanners.
+- `-` means that Trivy didn't scan this target.
+- `0` means that Trivy scanned this target, but found no vulns/misconfigs.
+
+!!! note 
+    Use `--no-summary-table` flag to hide summary table.
 
 #### Show origins of vulnerable dependencies
 
