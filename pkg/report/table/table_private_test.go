@@ -66,7 +66,7 @@ var (
 		},
 	}
 	secret = types.Result{
-		Target: "/app/aws-secrets.txt",
+		Target: "requirements.txt",
 		Class:  types.ClassSecret,
 		Secrets: []types.DetectedSecret{
 			{
@@ -133,7 +133,7 @@ Report Summary
 ├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
 │ app/Dockerfile        │ dockerfile │        -        │         2         │    -    │    -     │
 ├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ /app/aws-secrets.txt  │    text    │        -        │         -         │    1    │    -     │
+│ requirements.txt      │    text    │        -        │         -         │    1    │    -     │
 ├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
 │ OS Packages           │     -      │        -        │         -         │    -    │    1     │
 ├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
@@ -167,23 +167,27 @@ Report Summary
 `,
 		},
 		{
-			name: "happy path vuln scanner only without vulnerabilities",
+			name: "happy path no vulns + secret",
 			scanners: []types.Scanner{
 				types.VulnerabilityScanner,
+				types.SecretScanner,
 			},
 			report: types.Report{
 				Results: []types.Result{
 					noVuln,
+					secret,
 				},
 			},
 			want: `
 Report Summary
 
-┌──────────────────┬──────┬─────────────────┐
-│      Target      │ Type │ Vulnerabilities │
-├──────────────────┼──────┼─────────────────┤
-│ requirements.txt │ pip  │        0        │
-└──────────────────┴──────┴─────────────────┘
+┌──────────────────┬──────┬─────────────────┬─────────┐
+│      Target      │ Type │ Vulnerabilities │ Secrets │
+├──────────────────┼──────┼─────────────────┼─────────┤
+│ requirements.txt │ pip  │        0        │    -    │
+├──────────────────┼──────┼─────────────────┼─────────┤
+│ requirements.txt │ text │        -        │    1    │
+└──────────────────┴──────┴─────────────────┴─────────┘
 `,
 		},
 		{
