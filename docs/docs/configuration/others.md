@@ -118,7 +118,7 @@ The following example will fail when a critical vulnerability is found or the OS
 $ trivy image --exit-code 1 --exit-on-eol 1 --severity CRITICAL alpine:3.16.3
 ```
 
-## Mirrors support
+## Mirror Registries
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
