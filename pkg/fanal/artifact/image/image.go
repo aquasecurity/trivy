@@ -302,6 +302,7 @@ func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error
 }
 
 func (a Artifact) saveLayer(diffID string) (int64, error) {
+	a.logger.Debug("Pulling the layer to the local cache", log.String("diff_id", diffID))
 	_, rc, err := a.uncompressedLayer(diffID)
 	if err != nil {
 		return -1, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
@@ -482,6 +483,7 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error
 
 	f, err := os.Open(filepath.Join(a.layerCacheDir, diffID))
 	if err == nil {
+		a.logger.Debug("Loaded the layer from the local cache", log.String("diff_id", diffID))
 		return digest, f, nil
 	}
 
