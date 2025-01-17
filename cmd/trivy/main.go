@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	_ "modernc.org/sqlite" // sqlite driver for RPM DB and Java DB
+	"github.com/fatih/color" // Import the color package
 )
 
 func main() {
@@ -36,6 +37,20 @@ func run() error {
 	}
 
 	app := commands.NewApp()
+
+	// Initialize color settings based on the --color flag
+	colorFlag := app.PersistentFlags().Lookup("color")
+	if colorFlag != nil {
+		switch colorFlag.Value.String() {
+		case "true":
+			color.NoColor = false
+		case "false":
+			color.NoColor = true
+		case "auto":
+			// Default behavior, let the color package decide
+		}
+	}
+
 	if err := app.Execute(); err != nil {
 		return err
 	}
