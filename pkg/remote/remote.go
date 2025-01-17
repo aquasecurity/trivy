@@ -122,7 +122,7 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 		var image v1.Image
 		image, err = tryImage(ctx, tr, r, option)
 		if err != nil {
-			err = multierror.Append(errs, err)
+			errs = multierror.Append(errs, err)
 			continue
 
 		}
