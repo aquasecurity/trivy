@@ -462,9 +462,6 @@ pkg:
 ```yaml
 registry:
   mirrors:
-    index.docker.io:
-     - harbor.example.com/docker.io
-     - mirror.gcr.io
 
   # Same as '--password'
   password: []

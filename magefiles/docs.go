@@ -127,7 +127,7 @@ func writeFlags(group flag.FlagGroup, w *os.File) {
 			}
 			w.WriteString(ind + parts[i] + ":")
 			if isLastPart {
-				writeFlagValue(value(flg), ind, w)
+				writeFlagValue(flg.GetDefaultValue(), ind, w)
 			}
 			w.WriteString("\n")
 		}
@@ -160,18 +160,4 @@ func writeFlagValue(val any, ind string, w *os.File) {
 	default:
 		fmt.Fprintf(w, " %v\n", v)
 	}
-}
-
-var registryMirrorsExample = map[string][]string{
-	"index.docker.io": {
-		"harbor.example.com/docker.io",
-		"mirror.gcr.io",
-	},
-}
-
-func value(flg flag.Flagger) any {
-	if flg.GetConfigName() == flag.RegistryMirrorsFlag.ConfigName {
-		return registryMirrorsExample
-	}
-	return flg.GetDefaultValue()
 }
