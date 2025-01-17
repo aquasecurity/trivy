@@ -85,7 +85,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
+func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err error) {
 	imageID, err := a.image.ID()
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("unable to get the image ID: %w", err)
@@ -100,10 +100,12 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	diffIDs := a.diffIDs(configFile)
 	a.logger.Debug("Detected diff ID", log.Any("diff_ids", diffIDs))
 
-	if err := a.checkImageSize(ctx, diffIDs); err != nil {
-		if err := os.RemoveAll(a.layerCacheDir); err != nil {
-			log.Error("Failed to remove layer cache", log.Err(err))
+	defer func() {
+		if rerr := os.RemoveAll(a.layerCacheDir); rerr != nil {
+			log.Error("Failed to remove layer cache", log.Err(rerr))
 		}
+	}()
+	if err := a.checkImageSize(ctx, diffIDs); err != nil {
 		return artifact.Reference{}, err
 	}
 
@@ -161,7 +163,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 }
 
 func (a Artifact) Clean(_ artifact.Reference) error {
-	return os.RemoveAll(a.layerCacheDir)
+	return nil
 }
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
