@@ -3,6 +3,7 @@ package remote
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -36,51 +37,68 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
 
-	var errs error
-	// Try each mirrors/host until it succeeds
 	mirrors, err := registryMirrors(ref, option)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse mirrors: %w", err)
 	}
+
+	var errs error
+	// Try each mirrors/host until it succeeds
 	for _, r := range append(mirrors, ref) {
 		// Try each authentication method until it succeeds
-		for _, authOpt := range authOptions(ctx, r, option) {
-			remoteOpts := []remote.Option{
-				remote.WithTransport(tr),
-				authOpt,
-			}
-
-			if option.Platform.Platform != nil {
-				p, err := resolvePlatform(r, option.Platform, remoteOpts)
-				if err != nil {
-					return nil, xerrors.Errorf("platform error: %w", err)
-				}
-				// Don't pass platform when the specified image is single-arch.
-				if p.Platform != nil {
-					remoteOpts = append(remoteOpts, remote.WithPlatform(*p.Platform))
-				}
-			}
-
-			var desc *remote.Descriptor
-			desc, err = remote.Get(r, remoteOpts...)
-			if err != nil {
-				errs = multierror.Append(errs, err)
+		desc, err := tryGet(ctx, tr, r, option)
+		if err != nil {
+			var multiErr *multierror.Error
+			// authorization failed for all auth options - check other repositories
+			if errors.As(err, &multiErr) {
+				errs = multierror.Append(errs, multiErr.Errors...)
 				continue
 			}
-
-			if option.Platform.Force {
-				if err = satisfyPlatform(desc, lo.FromPtr(option.Platform.Platform)); err != nil {
-					return nil, err
-				}
-			}
-			if ref.Context().RegistryStr() != r.Context().RegistryStr() {
-				log.WithPrefix("remote").Info("Mirror was used to get remote image", log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
-			}
-			return desc, nil
+			// Other errors
+			return nil, err
 		}
+		return desc, nil
 	}
 
 	// No authentication for mirrors/host succeeded
+	return nil, errs
+}
+
+func tryGet(ctx context.Context, tr http.RoundTripper, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
+	var errs error
+	for _, authOpt := range authOptions(ctx, ref, option) {
+		remoteOpts := []remote.Option{
+			remote.WithTransport(tr),
+			authOpt,
+		}
+
+		if option.Platform.Platform != nil {
+			p, err := resolvePlatform(ref, option.Platform, remoteOpts)
+			if err != nil {
+				return nil, xerrors.Errorf("platform error: %w", err)
+			}
+			// Don't pass platform when the specified image is single-arch.
+			if p.Platform != nil {
+				remoteOpts = append(remoteOpts, remote.WithPlatform(*p.Platform))
+			}
+		}
+
+		desc, err := remote.Get(ref, remoteOpts...)
+		if err != nil {
+			errs = multierror.Append(errs, err)
+			continue
+		}
+
+		if option.Platform.Force {
+			if err = satisfyPlatform(desc, lo.FromPtr(option.Platform.Platform)); err != nil {
+				return nil, err
+			}
+		}
+		if ref.Context().RegistryStr() != ref.Context().RegistryStr() {
+			log.WithPrefix("remote").Info("Mirror was used to get remote image", log.String("image", ref.String()), log.String("mirror", ref.Context().RegistryStr()))
+		}
+		return desc, nil
+	}
 	return nil, errs
 }
 
@@ -92,33 +110,50 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
 
-	var errs error
-	// Try each mirrors/host until it succeeds
 	mirrors, err := registryMirrors(ref, option)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse mirrors: %w", err)
 	}
+
+	var errs error
+	// Try each mirrors/origin registries until it succeeds
 	for _, r := range append(mirrors, ref) {
 		// Try each authentication method until it succeeds
-		for _, authOpt := range authOptions(ctx, r, option) {
-			remoteOpts := []remote.Option{
-				remote.WithTransport(tr),
-				authOpt,
-			}
-			index, err := remote.Image(r, remoteOpts...)
-			if err != nil {
-				errs = multierror.Append(errs, err)
-				continue
-			}
+		var image v1.Image
+		image, err = tryImage(ctx, tr, r, option)
+		if err != nil {
+			err = multierror.Append(errs, err)
+			continue
 
-			if ref.Context().RegistryStr() != r.Context().RegistryStr() {
-				log.WithPrefix("remote").Info("Mirror was used to get remote image", log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
-			}
-			return index, nil
 		}
+		return image, nil
 	}
 
 	// No authentication for mirrors/host succeeded
+	return nil, errs
+}
+
+// tryImage checks all auth options and tries to get v1.Image.
+// If none of the auth options work - function returns multierrors for each auth option.
+func tryImage(ctx context.Context, tr http.RoundTripper, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
+	var errs error
+	for _, authOpt := range authOptions(ctx, ref, option) {
+		remoteOpts := []remote.Option{
+			remote.WithTransport(tr),
+			authOpt,
+		}
+		index, err := remote.Image(ref, remoteOpts...)
+		if err != nil {
+			errs = multierror.Append(errs, err)
+			continue
+		}
+
+		if ref.Context().RegistryStr() != ref.Context().RegistryStr() {
+			log.WithPrefix("remote").Info("Mirror was used to get remote image",
+				log.String("image", ref.String()), log.String("mirror", ref.Context().RegistryStr()))
+		}
+		return index, nil
+	}
 	return nil, errs
 }
 
