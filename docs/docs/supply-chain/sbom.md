@@ -453,7 +453,7 @@ SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: alpine:3.15
-DocumentNamespace: https://aquasecurity.github.io/trivy/container_image/alpine:3.15-bebf6b19-a94c-4e2c-af44-065f63923f48
+DocumentNamespace: https://trivy.dev/container_image/alpine:3.15-bebf6b19-a94c-4e2c-af44-065f63923f48
 Creator: Organization: aquasecurity
 Creator: Tool: trivy-0.38.1
 Created: 2022-04-28T07:32:57.142806Z
@@ -608,7 +608,7 @@ $ cat result.spdx.json | jq .
 		]
 	},
 	"dataLicense": "CC0-1.0",
-	"documentNamespace": "http://aquasecurity.github.io/trivy/container_image/alpine:3.15-d9549e3a-a4c5-4ee3-8bde-8c78d451fbe7",
+	"documentNamespace": "http://trivy.dev/container_image/alpine:3.15-d9549e3a-a4c5-4ee3-8bde-8c78d451fbe7",
 	"name": "alpine:3.15",
 	"packages": [
 		{
