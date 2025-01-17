@@ -258,6 +258,28 @@ func TestGet(t *testing.T) {
 			wantErr: "invalid username/password",
 		},
 		{
+			name: "bad credential for multiple mirrors",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "foo",
+							Password: "bar",
+						},
+					},
+					Insecure: true,
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							serverAddr,
+							serverAddr,
+						},
+					},
+				},
+			},
+			wantErr: "6 errors occurred:", // 2 errors for each repository (for 2 mirrors and the original repository)
+		},
+		{
 			name: "bad keychain",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
