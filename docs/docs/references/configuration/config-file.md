@@ -521,8 +521,8 @@ ignorefile: ".trivyignore"
 # Same as '--list-all-pkgs'
 list-all-pkgs: false
 
-# Same as '--no-summary'
-no-summary: false
+# Same as '--no-summary-table'
+no-summary-table: false
 
 # Same as '--output'
 output: ""

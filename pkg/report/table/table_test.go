@@ -17,7 +17,7 @@ func TestWriter_Write(t *testing.T) {
 	testCases := []struct {
 		name               string
 		scanners           types.Scanners
-		noSummary          bool
+		noSummaryTable     bool
 		results            types.Results
 		wantOutput         string
 		wantError          string
@@ -103,7 +103,7 @@ Report Summary
 			scanners: types.Scanners{
 				types.VulnerabilityScanner,
 			},
-			noSummary: true,
+			noSummaryTable: true,
 			results: types.Results{
 				{
 					Target: "test",
@@ -138,8 +138,8 @@ Report Summary
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityMedium,
 				},
-				Scanners:  tc.scanners,
-				NoSummary: tc.noSummary,
+				Scanners:       tc.scanners,
+				NoSummaryTable: tc.noSummaryTable,
 			}
 			err := writer.Write(nil, types.Report{Results: tc.results})
 			if tc.wantError != "" {

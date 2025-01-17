@@ -95,11 +95,11 @@ var (
 
 func Test_renderSummary(t *testing.T) {
 	tests := []struct {
-		name      string
-		scanners  types.Scanners
-		noSummary bool
-		report    types.Report
-		want      string
+		name           string
+		scanners       types.Scanners
+		noSummaryTable bool
+		report         types.Report
+		want           string
 	}{
 		{
 			name: "happy path all scanners",
@@ -215,9 +215,9 @@ Report Summary
 			tml.DisableFormatting()
 			tableWritten := bytes.Buffer{}
 			writer := Writer{
-				Output:    &tableWritten,
-				Scanners:  tt.scanners,
-				NoSummary: tt.noSummary,
+				Output:         &tableWritten,
+				Scanners:       tt.scanners,
+				NoSummaryTable: tt.noSummaryTable,
 			}
 			err := writer.renderSummary(tt.report)
 			require.NoError(t, err)

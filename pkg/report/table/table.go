@@ -42,7 +42,7 @@ type Writer struct {
 	ShowSuppressed bool
 
 	// Hide summary table
-	NoSummary bool
+	NoSummaryTable bool
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -63,7 +63,7 @@ func (tw Writer) Write(_ context.Context, report types.Report) error {
 		tml.DisableFormatting()
 	}
 
-	if !tw.NoSummary {
+	if !tw.NoSummaryTable {
 		if err := tw.renderSummary(report); err != nil {
 			return xerrors.Errorf("failed to render summary: %w", err)
 		}

@@ -109,9 +109,9 @@ var (
 		ConfigName: "scan.show-suppressed",
 		Usage:      "[EXPERIMENTAL] show suppressed vulnerabilities",
 	}
-	NoSummaryFlag = Flag[bool]{
-		Name:       "no-summary",
-		ConfigName: "no-summary",
+	NoSummaryTableFlag = Flag[bool]{
+		Name:       "no-summary-table",
+		ConfigName: "no-summary-table",
 		Usage:      "hide summary table",
 	}
 )
@@ -133,7 +133,7 @@ type ReportFlagGroup struct {
 	Severity        *Flag[[]string]
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
-	NoSummary       *Flag[bool]
+	NoSummaryTable  *Flag[bool]
 }
 
 type ReportOptions struct {
@@ -151,7 +151,7 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
-	NoSummary        bool
+	NoSummaryTable   bool
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -170,7 +170,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Severity:        SeverityFlag.Clone(),
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
-		NoSummary:       NoSummaryFlag.Clone(),
+		NoSummaryTable:  NoSummaryTableFlag.Clone(),
 	}
 }
 
@@ -194,7 +194,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Severity,
 		f.Compliance,
 		f.ShowSuppressed,
-		f.NoSummary,
+		f.NoSummaryTable,
 	}
 }
 
@@ -207,7 +207,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	template := f.Template.Value()
 	dependencyTree := f.DependencyTree.Value()
 	listAllPkgs := f.ListAllPkgs.Value()
-	noSummary := f.NoSummary.Value()
+	noSummaryTable := f.NoSummaryTable.Value()
 
 	if template != "" {
 		if format == "" {
@@ -238,9 +238,9 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	}
 
 	// "--so-summary" option is available only with "--format table".
-	if noSummary && format != types.FormatTable {
-		noSummary = false
-		log.Warn(`"--no-summary" can be used only with "--format table".`)
+	if noSummaryTable && format != types.FormatTable {
+		noSummaryTable = false
+		log.Warn(`"--no-summary-table" can be used only with "--format table".`)
 	}
 
 	cs, err := loadComplianceTypes(f.Compliance.Value())
@@ -275,7 +275,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Severities:       toSeverity(f.Severity.Value()),
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
-		NoSummary:        noSummary,
+		NoSummaryTable:   noSummaryTable,
 	}, nil
 }
 
