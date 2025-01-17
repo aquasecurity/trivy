@@ -170,6 +170,8 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
+			defer a.Clean(got)
+
 			require.NoError(t, err, tt.name)
 			got.BOM = nil
 			assert.Equal(t, tt.want, got)
@@ -312,6 +314,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
+			defer a.Clean(got)
 
 			require.NoError(t, err, tt.name)
 			got.BOM = nil
