@@ -104,45 +104,45 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	// Identify the direct/transitive dependencies
+	directDeps := directDeps(project)
+	prodDeps := prodPackages(app, project.Tool.Poetry.Dependencies)
+
+	// Identify the direct/transitive/dev dependencies
 	for i, pkg := range app.Packages {
-		if project.Tool.Poetry.Dependencies.Contains(pkg.Name) {
+		app.Packages[i].Dev = !prodDeps.Contains(pkg.ID)
+		if directDeps.Contains(pkg.Name) {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
 			app.Packages[i].Indirect = true
 			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
-
-	filterProdPackages(project, app)
 	return nil
 }
 
-func filterProdPackages(project pyproject.PyProject, app *types.Application) {
+func directDeps(project pyproject.PyProject) set.Set[string] {
+	deps := project.Tool.Poetry.Dependencies.Clone()
+	for _, groupDeps := range project.Tool.Poetry.Groups {
+		deps.Append(groupDeps.Dependencies.Items()...)
+	}
+	return deps
+}
+
+func prodPackages(app *types.Application, prodRootDeps set.Set[string]) set.Set[string] {
 	packages := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
 	visited := set.New[string]()
-	deps := project.Tool.Poetry.Dependencies
-
-	for group, groupDeps := range project.Tool.Poetry.Groups {
-		if group == "dev" {
-			continue
-		}
-		deps.Set = deps.Union(groupDeps.Dependencies)
-	}
 
 	for _, pkg := range packages {
-		if !deps.Contains(pkg.Name) {
+		if !prodRootDeps.Contains(pkg.Name) {
 			continue
 		}
 		walkPackageDeps(pkg.ID, packages, visited)
 	}
 
-	app.Packages = lo.Filter(app.Packages, func(pkg types.Package, _ int) bool {
-		return visited.Contains(pkg.ID)
-	})
+	return visited
 }
 
 func walkPackageDeps(pkgID string, packages map[string]types.Package, visited set.Set[string]) {

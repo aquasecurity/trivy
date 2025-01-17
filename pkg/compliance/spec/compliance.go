@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	sp "github.com/aquasecurity/trivy-checks/pkg/spec"
+	"github.com/aquasecurity/trivy-checks/pkg/specs"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -97,7 +97,7 @@ func GetComplianceSpec(specNameOrPath, cacheDir string) (ComplianceSpec, error) 
 	} else {
 		_, err := os.Stat(filepath.Join(checksDir(cacheDir), "metadata.json"))
 		if err != nil { // cache corrupt or bundle does not exist, load embedded version
-			b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
+			b = []byte(specs.GetSpec(specNameOrPath))
 			log.Debug("Compliance spec loaded from embedded library", log.String("spec", specNameOrPath))
 		} else {
 			// load from bundle on disk
