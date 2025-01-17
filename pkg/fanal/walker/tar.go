@@ -23,12 +23,14 @@ var parentDir = ".." + utils.PathSeparator
 type LayerTar struct {
 	skipFiles []string
 	skipDirs  []string
+	onlyDirs  []string
 }
 
 func NewLayerTar(opt Option) LayerTar {
 	return LayerTar{
 		skipFiles: utils.CleanSkipPaths(opt.SkipFiles),
 		skipDirs:  utils.CleanSkipPaths(opt.SkipDirs),
+		onlyDirs:  utils.CleanSkipPaths(opt.OnlyDirs),
 	}
 }
 
