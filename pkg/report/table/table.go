@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -80,6 +81,9 @@ func (tw Writer) Write(_ context.Context, report types.Report) error {
 }
 
 func (tw Writer) renderSummary(report types.Report) error {
+	log.WithPrefix("report").Info("Report Summary table contains special symbols",
+		log.String("'-'", "Target didn't scanned"),
+		log.String("'0'", "Target scanned, but didn't contain vulns/misconfigs/secrets/licenses"))
 	// Fprintln has a bug
 	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"); err != nil {
 		return err
