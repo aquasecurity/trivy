@@ -71,3 +71,12 @@ type nopCloser struct {
 }
 
 func (nopCloser) Close() error { return nil }
+
+type ReadCloser struct {
+	io.Reader
+	CloseFunc func() error
+}
+
+func (rac *ReadCloser) Close() error {
+	return rac.CloseFunc()
+}
