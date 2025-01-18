@@ -264,6 +264,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 	defer composite.Cleanup()
 
+	// Files required by file patterns grouped by analyzer types
+	requiredByFilePatterns := make(map[analyzer.Type][]string)
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
@@ -271,7 +273,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		}
 
 		// Skip post analysis if the file is not required
-		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info, requiredByFilePatterns)
 		if len(analyzerTypes) == 0 {
 			return nil
 		}
@@ -295,7 +297,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	wg.Wait()
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts, requiredByFilePatterns); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
