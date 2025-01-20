@@ -57,6 +57,11 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 			// Other errors
 			return nil, err
 		}
+
+		if ref.Context().RegistryStr() != r.Context().RegistryStr() {
+			log.WithPrefix("remote").Info("Mirror was used to get remote image",
+				log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
+		}
 		return desc, nil
 	}
 
@@ -64,6 +69,7 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 	return nil, errs
 }
 
+// tryGet checks all auth options and tries to get Descriptor.
 func tryGet(ctx context.Context, tr http.RoundTripper, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
 	var errs error
 	for _, authOpt := range authOptions(ctx, ref, option) {
@@ -94,9 +100,6 @@ func tryGet(ctx context.Context, tr http.RoundTripper, ref name.Reference, optio
 				return nil, err
 			}
 		}
-		if ref.Context().RegistryStr() != ref.Context().RegistryStr() {
-			log.WithPrefix("remote").Info("Mirror was used to get remote image", log.String("image", ref.String()), log.String("mirror", ref.Context().RegistryStr()))
-		}
 		return desc, nil
 	}
 	return nil, errs
@@ -126,6 +129,10 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 			continue
 
 		}
+		if ref.Context().RegistryStr() != r.Context().RegistryStr() {
+			log.WithPrefix("remote").Info("Mirror was used to get remote image",
+				log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
+		}
 		return image, nil
 	}
 
@@ -148,10 +155,6 @@ func tryImage(ctx context.Context, tr http.RoundTripper, ref name.Reference, opt
 			continue
 		}
 
-		if ref.Context().RegistryStr() != ref.Context().RegistryStr() {
-			log.WithPrefix("remote").Info("Mirror was used to get remote image",
-				log.String("image", ref.String()), log.String("mirror", ref.Context().RegistryStr()))
-		}
 		return index, nil
 	}
 	return nil, errs
