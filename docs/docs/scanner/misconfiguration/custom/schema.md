@@ -30,7 +30,7 @@ You can interactively view these schemas with the [Trivy Schema Explorer](https:
 
 
 ## Example
-In Trivy we have been able to define a schema for a [Dockerfile](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas)
+As mentioned earlier, amongst other built-in schemas, Trivy offers a built in-schema for scanning Dockerfiles. It is available [here](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas)
 Without input schemas, a check would be as follows:
 
 !!! example
@@ -43,7 +43,7 @@ Without input schemas, a check would be as follows:
     }
     ```
 
-If this check is run against offending Dockerfile(s), there will not be any issues as the check will fail to evaluate.
+If this check is run against an offending Dockerfile(s), there will not be any issues as the check will fail to evaluate.
 Although the check's failure to evaluate is legitimate, this should not result in a positive result for the scan.
 
 For instance if we have a check that checks for misconfigurations in a `Dockerfile`, we could define the
