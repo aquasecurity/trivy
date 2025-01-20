@@ -3,7 +3,9 @@ package dockerfile_test
 import (
 	"bytes"
 	"context"
+	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -629,4 +631,74 @@ COPY --from=dep /binary /`
 		})
 	}
 
+}
+
+func Test_IgnoreByInlineComments(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected bool
+	}{
+		{
+			name: "without ignore rule",
+			src: `FROM scratch
+MAINTAINER moby@example.com`,
+			expected: true,
+		},
+		{
+			name: "with ignore rule",
+			src: `FROM scratch
+# trivy:ignore:USER-TEST-0001
+MAINTAINER moby@example.com`,
+			expected: false,
+		},
+	}
+
+	check := `# METADATA
+# title: test
+# schemas:
+# - input: schema["dockerfile"]
+# custom:
+#   avd_id: USER-TEST-0001
+#   short_code: maintainer-deprecated
+#   input:
+#     selector:
+#     - type: dockerfile
+package user.test0001
+
+import rego.v1
+
+get_maintainer contains cmd if {
+	cmd := input.Stages[_].Commands[_]
+	cmd.Cmd == "maintainer"
+}
+
+deny contains res if {
+	cmd := get_maintainer[_]
+	msg := sprintf("MAINTAINER should not be used: 'MAINTAINER %s'", [cmd.Value[0]])
+	res := result.new(msg, cmd)
+}
+`
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := fstest.MapFS{
+				"Dockerfile": &fstest.MapFile{Data: []byte(tt.src)},
+			}
+
+			scanner := dockerfile.NewScanner(
+				rego.WithPolicyReader(strings.NewReader(check)),
+				rego.WithPolicyNamespaces("user"),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithRegoErrorLimits(0),
+			)
+			results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+			require.NoError(t, err)
+			if tt.expected {
+				testutil.AssertRuleFound(t, "dockerfile-general-maintainer-deprecated", results, "")
+			} else {
+				testutil.AssertRuleNotFailed(t, "dockerfile-general-maintainer-deprecated", results, "")
+			}
+		})
+	}
 }
