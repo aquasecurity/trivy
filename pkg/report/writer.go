@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
@@ -89,9 +90,11 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			target = option.Target
 		}
 		writer = &SarifWriter{
-			Output:  output,
-			Version: option.AppVersion,
-			Target:  target,
+			Output:    output,
+			Version:   option.AppVersion,
+			Target:    target,
+			StartTime: option.StartTime,
+			EndTime:   option.EndTime,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)

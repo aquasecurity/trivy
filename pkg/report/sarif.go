@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
@@ -52,6 +53,8 @@ type SarifWriter struct {
 	run           *sarif.Run
 	locationCache map[string][]location
 	Target        string
+	StartTime     time.Time
+	EndTime       time.Time
 }
 
 type sarifData struct {
@@ -263,6 +266,12 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	sw.run.ColumnKind = columnKind
 	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
 		"ROOTPATH": {URI: &rootPath},
+	}
+	sw.run.Invocations = []*sarif.Invocation{
+		{
+			StartTimeUtc: sw.StartTime.Format(time.RFC3339),
+			EndTimeUtc:   sw.EndTime.Format(time.RFC3339),
+		},
 	}
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
