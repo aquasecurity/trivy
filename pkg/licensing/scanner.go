@@ -21,9 +21,9 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 }
 
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
-	license := NormalizeLicense(licenseName)
+	license := Normalize(licenseName)
 	for category, names := range s.categories {
-		if slices.Contains(names, license.License) {
+		if slices.Contains(names, license) {
 			return category, categoryToSeverity(category).String()
 		}
 	}

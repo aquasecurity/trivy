@@ -41,6 +41,10 @@ type CompoundExpr struct {
 	right       Expression
 }
 
+func (c CompoundExpr) Conjunction() string {
+	return c.conjunction.literal
+}
+
 func (c CompoundExpr) String() string {
 	left := c.left.String()
 	if l, ok := c.left.(CompoundExpr); ok {

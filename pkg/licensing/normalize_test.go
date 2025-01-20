@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
 
 func TestNormalize(t *testing.T) {
@@ -221,7 +222,7 @@ func TestNormalize(t *testing.T) {
 		t.Run(tt.normalized, func(t *testing.T) {
 			for _, ll := range tt.licenses {
 				normalized := licensing.Normalize(ll)
-				normalizedKey := licensing.NormalizeLicense(ll).License
+				normalizedKey := licensing.NormalizeLicense(expression.SimpleExpr{License: ll}).(expression.SimpleExpr).License
 				assert.Equal(t, tt.normalized, normalized)
 				assert.Equal(t, tt.normalizedKey, normalizedKey)
 			}
