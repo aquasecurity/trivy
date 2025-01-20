@@ -81,6 +81,9 @@ type RegistryOptions struct {
 	// RegistryToken is a bearer token to be sent to a registry
 	RegistryToken string
 
+	// RegistryMirrors is a map of hosts with mirrors for them
+	RegistryMirrors map[string][]string
+
 	// SSL/TLS
 	Insecure bool
 

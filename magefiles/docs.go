@@ -147,6 +147,14 @@ func writeFlagValue(val any, ind string, w *os.File) {
 		} else {
 			w.WriteString(" []\n")
 		}
+	case map[string][]string:
+		w.WriteString("\n")
+		for k, vv := range v {
+			fmt.Fprintf(w, "%s  %s:\n", ind, k)
+			for _, vvv := range vv {
+				fmt.Fprintf(w, "  %s - %s\n", ind, vvv)
+			}
+		}
 	case string:
 		fmt.Fprintf(w, " %q\n", v)
 	default:
