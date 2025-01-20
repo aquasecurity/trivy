@@ -17,7 +17,7 @@ func TestManifestToRego(t *testing.T) {
 		expected any
 	}{
 		{
-			name: "use timestamp tag",
+			name: "timestamp tag",
 			src:  `global: !!timestamp 2024-04-01`,
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
@@ -27,6 +27,19 @@ func TestManifestToRego(t *testing.T) {
 					"endline":   1,
 				},
 				"global": "2024-04-01T00:00:00Z",
+			},
+		},
+		{
+			name: "binary tag",
+			src:  `binaryField: !!binary dGVzdA==`,
+			expected: map[string]any{
+				"__defsec_metadata": map[string]any{
+					"filepath":  "",
+					"offset":    0,
+					"startline": 1,
+					"endline":   1,
+				},
+				"binaryField": []uint8{0x74, 0x65, 0x73, 0x74},
 			},
 		},
 	}

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strconv"
 	"time"
@@ -21,6 +22,7 @@ const (
 	TagSlice     TagType = "!!seq"
 	TagMap       TagType = "!!map"
 	TagTimestamp TagType = "!!timestamp"
+	TagBinary    TagType = "!!binary"
 )
 
 type ManifestNode struct {
@@ -37,7 +39,7 @@ func (r *ManifestNode) ToRego() any {
 		return nil
 	}
 	switch r.Type {
-	case TagBool, TagInt, TagString, TagStr:
+	case TagBool, TagInt, TagString, TagStr, TagBinary:
 		return r.Value
 	case TagTimestamp:
 		t, ok := r.Value.(time.Time)
@@ -97,6 +99,12 @@ func (r *ManifestNode) UnmarshalYAML(node *yaml.Node) error {
 		var val time.Time
 		if err := node.Decode(&val); err != nil {
 			return fmt.Errorf("failed to decode timestamp: %w", err)
+		}
+		r.Value = val
+	case TagBinary:
+		val, err := base64.StdEncoding.DecodeString(node.Value)
+		if err != nil {
+			return fmt.Errorf("failed to decode binary data: %w", err)
 		}
 		r.Value = val
 	case TagMap:
