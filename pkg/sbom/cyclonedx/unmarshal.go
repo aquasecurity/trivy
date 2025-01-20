@@ -112,7 +112,7 @@ func (b *BOM) parseExternalReferences(bom *cdx.BOM) []core.ExternalReference {
 	if bom.ExternalReferences == nil {
 		return nil
 	}
-	refs := make([]core.ExternalReference, 0)
+	var refs = make([]core.ExternalReference, 0)
 
 	for _, ref := range *bom.ExternalReferences {
 		t, err := b.unmarshalReferenceType(ref.Type)

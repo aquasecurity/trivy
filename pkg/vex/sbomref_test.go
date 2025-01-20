@@ -1,16 +1,18 @@
 package vex_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/vex"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
 const (
@@ -22,18 +24,18 @@ func setUpServer(t *testing.T) *httptest.Server {
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == vexExternalRef {
 			f, err := os.Open("testdata/" + vexExternalRef + ".json")
-			require.NoError(t, err)
+			t.Error(err)
 			defer f.Close()
 
 			_, err = io.Copy(w, f)
-			require.NoError(t, err)
+			t.Error(err)
 		} else if r.URL.Path == vexUnknown {
 			f, err := os.Open("testdata/" + vexUnknown + ".json")
-			require.NoError(t, err)
+			t.Error(err)
 			defer f.Close()
 
 			_, err = io.Copy(w, f)
-			require.NoError(t, err)
+			t.Error(err)
 		}
 
 		http.NotFound(w, r)
@@ -62,12 +64,12 @@ func TestRetrieveExternalVEXDocuments(t *testing.T) {
 	t.Run("external vex retrieval", func(t *testing.T) {
 		set, err := vex.NewSBOMReferenceSet(setupTestReport(s, vexExternalRef))
 		require.NoError(t, err)
-		require.Equal(t, 1, len(set.Vexes))
+		require.Len(t, set.Vexes, 1)
 	})
 
 	t.Run("incompatible external vex", func(t *testing.T) {
 		set, err := vex.NewSBOMReferenceSet(setupTestReport(s, vexUnknown))
 		require.NoError(t, err)
-		require.Equal(t, 0, len(set.Vexes))
+		require.Empty(t, set.Vexes)
 	})
 }

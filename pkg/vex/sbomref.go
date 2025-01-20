@@ -3,14 +3,16 @@ package vex
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"golang.org/x/xerrors"
-	"io"
-	"net/http"
-	"net/url"
 )
 
 type SBOMReferenceSet struct {
@@ -71,13 +73,13 @@ func RetrieveExternalVEXDocuments(refs []url.URL, report *types.Report) ([]VEX, 
 
 }
 
-func RetrieveExternalVEXDocument(VEXUrl url.URL, report *types.Report) (VEX, error) {
+func RetrieveExternalVEXDocument(url url.URL, report *types.Report) (VEX, error) {
 
 	logger := log.WithPrefix("vex").With(log.String("type", "externalReference"))
 
-	logger.Info(fmt.Sprintf("Retrieving external VEX document from host %s", VEXUrl.Host))
+	logger.Info(fmt.Sprintf("Retrieving external VEX document from host %s", url.Host))
 
-	res, err := http.Get(VEXUrl.String())
+	res, err := http.Get(url.String())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to fetch file via HTTP: %w", err)
 	}
@@ -88,7 +90,7 @@ func RetrieveExternalVEXDocument(VEXUrl url.URL, report *types.Report) (VEX, err
 		return nil, xerrors.Errorf("unable to read response into memory: %w", err)
 	}
 
-	if v, err := decodeVEX(bytes.NewReader(val), VEXUrl.String(), report); err != nil {
+	if v, err := decodeVEX(bytes.NewReader(val), url.String(), report); err != nil {
 		return nil, xerrors.Errorf("unable to load VEX: %w", err)
 	} else {
 		return v, nil
