@@ -18,7 +18,7 @@ func TestManifestToRego(t *testing.T) {
 	}{
 		{
 			name: "timestamp tag",
-			src:  `global: !!timestamp 2024-04-01`,
+			src:  `field: !!timestamp 2024-04-01`,
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  "",
@@ -26,12 +26,12 @@ func TestManifestToRego(t *testing.T) {
 					"startline": 1,
 					"endline":   1,
 				},
-				"global": "2024-04-01T00:00:00Z",
+				"field": "2024-04-01T00:00:00Z",
 			},
 		},
 		{
 			name: "binary tag",
-			src:  `binaryField: !!binary dGVzdA==`,
+			src:  `field: !!binary dGVzdA==`,
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  "",
@@ -39,7 +39,20 @@ func TestManifestToRego(t *testing.T) {
 					"startline": 1,
 					"endline":   1,
 				},
-				"binaryField": []uint8{0x74, 0x65, 0x73, 0x74},
+				"field": []uint8{0x74, 0x65, 0x73, 0x74},
+			},
+		},
+		{
+			name: "float tag",
+			src:  `field: 1.1`,
+			expected: map[string]any{
+				"__defsec_metadata": map[string]any{
+					"filepath":  "",
+					"offset":    0,
+					"startline": 1,
+					"endline":   1,
+				},
+				"field": 1.1,
 			},
 		},
 	}

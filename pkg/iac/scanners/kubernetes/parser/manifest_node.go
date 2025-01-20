@@ -39,7 +39,7 @@ func (r *ManifestNode) ToRego() any {
 		return nil
 	}
 	switch r.Type {
-	case TagBool, TagInt, TagString, TagStr, TagBinary:
+	case TagBool, TagInt, TagFloat, TagString, TagStr, TagBinary:
 		return r.Value
 	case TagTimestamp:
 		t, ok := r.Value.(time.Time)
