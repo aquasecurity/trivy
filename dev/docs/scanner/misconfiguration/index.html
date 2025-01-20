@@ -2180,15 +2180,15 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+  <a href="#skipping-detected-misconfigurations-by-inline-comments" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skipping resources by inline comments
+        Skipping detected misconfigurations by inline comments
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+    <nav class="md-nav" aria-label="Skipping detected misconfigurations by inline comments">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -7953,15 +7953,15 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+  <a href="#skipping-detected-misconfigurations-by-inline-comments" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skipping resources by inline comments
+        Skipping detected misconfigurations by inline comments
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+    <nav class="md-nav" aria-label="Skipping detected misconfigurations by inline comments">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -8446,8 +8446,8 @@ For example, token credentials for <code>例えば.com</code> must be set in a v
 For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--caf-dma_fr or TF_TOKEN_xn<em><strong>_caf</strong>dma</em>fr.</p>
 </blockquote>
 <p>If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.</p>
-<h3 id="skipping-resources-by-inline-comments">Skipping resources by inline comments<a class="headerlink" href="#skipping-resources-by-inline-comments" title="Permanent link">&para;</a></h3>
-<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.</p>
+<h3 id="skipping-detected-misconfigurations-by-inline-comments">Skipping detected misconfigurations by inline comments<a class="headerlink" href="#skipping-detected-misconfigurations-by-inline-comments" title="Permanent link">&para;</a></h3>
+<p>Trivy supports ignoring detected misconfigurations by inline comments for Terraform, CloudFormation (YAML), Helm and Dockerfile configuration files only.</p>
 <p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
 <p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>
 <p>For example, to ignore a misconfiguration ID <code>AVD-GCP-0051</code> in a Terraform HCL file:</p>
@@ -8498,6 +8498,11 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 <span class="w">            </span><span class="nt">runAsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
 <span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-repository/your-image:your-tag&quot;</span>
 <span class="w">          </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Always&quot;</span>
+</code></pre></div></p>
+<p>Example for Dockerfile:
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">scratch</span>
+<span class="c"># trivy:ignore:AVD-DS-0022</span>
+<span class="k">MAINTAINER</span><span class="w"> </span><span class="s">moby@example.com</span>
 </code></pre></div></p>
 <h4 id="expiration-date">Expiration Date<a class="headerlink" href="#expiration-date" title="Permanent link">&para;</a></h4>
 <p>You can specify the expiration date of the ignore rule in <code>yyyy-mm-dd</code> format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
