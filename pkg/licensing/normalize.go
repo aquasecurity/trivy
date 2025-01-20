@@ -698,7 +698,7 @@ func normalizeSimpleExpr(e expr.SimpleExpr) expr.Expression {
 }
 
 func normalizeCompoundExpr(e expr.CompoundExpr) expr.Expression {
-	if e.Conjunction() != "WITH" {
+	if e.Conjunction() != expr.TokenWith {
 		return e // Do not normalize compound expressions other than "WITH"
 	}
 	normalized := standardizeKeyAndSuffix(e.String())
