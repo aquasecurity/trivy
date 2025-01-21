@@ -37,36 +37,9 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
 
-	mirrors, err := registryMirrors(ref, option)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to parse mirrors: %w", err)
-	}
-
-	var errs error
-	// Try each mirrors/host until it succeeds
-	for _, r := range append(mirrors, ref) {
-		// Try each authentication method until it succeeds
-		desc, err := tryGet(ctx, tr, r, option)
-		if err != nil {
-			var multiErr *multierror.Error
-			// authorization failed for all auth options - check other repositories
-			if errors.As(err, &multiErr) {
-				errs = multierror.Append(errs, multiErr.Errors...)
-				continue
-			}
-			// Other errors
-			return nil, err
-		}
-
-		if ref.Context().RegistryStr() != r.Context().RegistryStr() {
-			log.WithPrefix("remote").Info("Mirror was used to get remote image",
-				log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
-		}
-		return desc, nil
-	}
-
-	// No authentication for mirrors/host succeeded
-	return nil, errs
+	return tryWithMirrors(ref, option, func(r name.Reference) (*Descriptor, error) {
+		return tryGet(ctx, tr, r, option)
+	})
 }
 
 // tryGet checks all auth options and tries to get Descriptor.
@@ -113,31 +86,43 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
 
+	return tryWithMirrors(ref, option, func(r name.Reference) (v1.Image, error) {
+		return tryImage(ctx, tr, r, option)
+	})
+}
+
+// tryWithMirrors handles common mirror logic for Get and Image functions
+func tryWithMirrors[T any](ref name.Reference, option types.RegistryOptions, fn func(name.Reference) (T, error)) (T, error) {
+	var zero T
 	mirrors, err := registryMirrors(ref, option)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse mirrors: %w", err)
+		return zero, xerrors.Errorf("unable to parse mirrors: %w", err)
 	}
 
+	// Try each mirrors/host until it succeeds
 	var errs error
-	// Try each mirrors/origin registries until it succeeds
 	for _, r := range append(mirrors, ref) {
-		// Try each authentication method until it succeeds
-		var image v1.Image
-		image, err = tryImage(ctx, tr, r, option)
+		result, err := fn(r)
 		if err != nil {
-			errs = multierror.Append(errs, err)
-			continue
-
+			var multiErr *multierror.Error
+			// All auth options failed, try the next mirror/host
+			if errors.As(err, &multiErr) {
+				errs = multierror.Append(errs, multiErr.Errors...)
+				continue
+			}
+			// Other errors
+			return zero, err
 		}
+
 		if ref.Context().RegistryStr() != r.Context().RegistryStr() {
-			log.WithPrefix("remote").Info("Mirror was used to get remote image",
+			log.WithPrefix("remote").Info("Using the mirror registry to get the image",
 				log.String("image", ref.String()), log.String("mirror", r.Context().RegistryStr()))
 		}
-		return image, nil
+		return result, nil
 	}
 
 	// No authentication for mirrors/host succeeded
-	return nil, errs
+	return zero, errs
 }
 
 // tryImage checks all auth options and tries to get v1.Image.
