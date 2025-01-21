@@ -971,6 +971,10 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 func (a *Attribute) referencesFromExpression(expression hcl.Expression) []*Reference {
 	var refs []*Reference
 	switch t := expression.(type) {
+	case *hclsyntax.ObjectConsExpr:
+		for _, item := range t.Items {
+			refs = append(refs, a.referencesFromExpression(item.ValueExpr)...)
+		}
 	case *hclsyntax.ConditionalExpr:
 		if ref, err := createDotReferenceFromTraversal(a.module, t.TrueResult.Variables()...); err == nil {
 			refs = append(refs, ref)
