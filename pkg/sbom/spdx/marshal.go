@@ -414,15 +414,6 @@ func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense
 func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherLicense) {
 	var otherLicenses = make(map[string]*spdx.OtherLicense) // licenseID -> OtherLicense
 
-	// Save text licenses as OtherLicense
-	for i, license := range licenses {
-		if strings.HasPrefix(license, licensing.LicenseTextPrefix) {
-			otherLicense := m.newOtherLicense(strings.TrimPrefix(license, licensing.LicenseTextPrefix), true)
-			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
-			licenses[i] = otherLicense.LicenseIdentifier
-		}
-	}
-
 	license := strings.Join(lo.Map(licenses, func(license string, index int) string {
 		// e.g. GPL-3.0-with-autoconf-exception
 		license = strings.ReplaceAll(license, "-with-", " WITH ")
@@ -430,17 +421,51 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		return fmt.Sprintf("(%s)", license)
 	}), " AND ")
 
-	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX)
+	replaceOtherLicenses := func(expr expression.Expression) expression.Expression {
+		var licenseName string
+		var textLicense bool
+		switch e := expr.(type) {
+		case expression.SimpleExpr:
+			// Trim `text:--` prefix (expression.NormalizeForSPDX normalized `text://` prefix)
+			if strings.HasPrefix(e.License, "text:--") {
+				textLicense = true
+				e.License = strings.TrimPrefix(e.License, "text:--")
+			}
+
+			if expression.ValidateSPDXLicense(e.License) {
+				return e
+			}
+
+			licenseName = e.License
+		case expression.CompoundExpr:
+			// Check only CompoundExpr with `WITH` token as one license
+			if e.Conjunction() != expression.TokenWith {
+				return expr
+			}
+
+			// Check that license and exception are valid
+			if expression.ValidateSPDXLicense(e.Left().String()) && expression.ValidateSPDXException(e.Right().String()) {
+				// Use SimpleExpr for a valid SPDX license with an exception,
+				// to avoid parsing the license and exception separately.
+				return expression.SimpleExpr{License: e.String()}
+			}
+
+			licenseName = e.String()
+		}
+
+		l := m.newOtherLicense(licenseName, textLicense)
+		otherLicenses[l.LicenseIdentifier] = l
+		return expression.SimpleExpr{License: l.LicenseIdentifier}
+	}
+
+	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, replaceOtherLicenses)
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))
 		return "", nil
 	}
 
-	license, others := m.processNonSpdxLicenses(normalizedLicense)
-	allOtherLicenses := lo.Assign(otherLicenses, others)
-
-	return license, lo.Ternary(len(allOtherLicenses) > 0, lo.Values(allOtherLicenses), nil)
+	return normalizedLicense, lo.Ternary(len(otherLicenses) > 0, lo.Values(otherLicenses), nil)
 }
 
 // newOtherLicense create new OtherLicense for license not included in the SPDX license list
@@ -456,40 +481,13 @@ func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicens
 	}
 	licenseID, err := calcSPDXID(m.hasher, otherLicense)
 	if err != nil {
+		// This must be an unattainable case.
 		m.logger.Warn("Unable to calculate SPDX licenses ID", log.String("license", license), log.Err(err))
-		return nil
+		licenseID = license
 	}
 	otherLicense.LicenseIdentifier = LicenseRefPrefix + "-" + licenseID
 
 	return &otherLicense
-}
-
-// processNonSpdxLicenses detects licenses that are not on the SPDX list and creates OtherLicense for them
-func (m *Marshaler) processNonSpdxLicenses(license string) (string, map[string]*spdx.OtherLicense) {
-	otherLicenses := make(map[string]*spdx.OtherLicense)
-	var andLicenses []string
-	for _, andLicense := range strings.Split(license, " AND ") {
-		var orLicenses []string
-		for _, orLicense := range strings.Split(andLicense, " OR ") {
-			// Handle brackets - e.g. GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-2.1-only)
-			startRune := lo.Ternary(strings.HasPrefix(orLicense, "("), "(", "")
-			endRune := lo.Ternary(strings.HasSuffix(orLicense, ")"), ")", "")
-			trimmedLicense := strings.TrimPrefix(strings.TrimSuffix(orLicense, ")"), "(")
-			// This is license from SPDX list of text license (already processed)
-			if strings.HasPrefix(trimmedLicense, LicenseRefPrefix) || expression.ValidateSPDXLicense(trimmedLicense) {
-				orLicenses = append(orLicenses, orLicense)
-				continue
-			}
-
-			// Save this license as OtherLicense
-			otherLicense := m.newOtherLicense(trimmedLicense, false)
-			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
-			orLicenses = append(orLicenses, startRune+otherLicense.LicenseIdentifier+endRune)
-		}
-		andLicenses = append(andLicenses, strings.Join(orLicenses, " OR "))
-	}
-
-	return strings.Join(andLicenses, " AND "), otherLicenses
 }
 
 func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {

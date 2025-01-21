@@ -27,8 +27,9 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 			input: []string{
 				"GPLv2+",
 				"GPLv3+",
+				"BSD-4-Clause",
 			},
-			wantLicenseName: "GPL-2.0-or-later AND GPL-3.0-or-later",
+			wantLicenseName: "GPL-2.0-or-later AND GPL-3.0-or-later AND BSD-4-Clause",
 		},
 		{
 			name: "happy path with OR operator",

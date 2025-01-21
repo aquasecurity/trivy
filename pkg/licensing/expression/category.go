@@ -421,20 +421,16 @@ var initSpdxExceptions = sync.OnceFunc(func() {
 	spdxExceptions.Append(exs...)
 })
 
-// ValidateSPDXLicense returns true if SPDX license lists contain licenseID and license exception (if exists)
+// ValidateSPDXLicense returns true if SPDX license list contain licenseID
 func ValidateSPDXLicense(license string) bool {
 	initSpdxLicenses()
+
+	return spdxLicenses.Contains(license)
+}
+
+// ValidateSPDXException returns true if SPDX exception list contain exception
+func ValidateSPDXException(exception string) bool {
 	initSpdxExceptions()
 
-	id, exception, hasException := strings.Cut(license, " WITH ")
-	if !spdxLicenses.Contains(id) {
-		return false
-	}
-	if !hasException {
-		return true
-	}
-	if !spdxExceptions.Contains(strings.ToUpper(exception)) {
-		return false
-	}
-	return true
+	return spdxExceptions.Contains(strings.ToUpper(exception))
 }
