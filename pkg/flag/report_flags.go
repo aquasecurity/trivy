@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -99,6 +100,15 @@ var (
 		Values:     dbTypes.SeverityNames,
 		Usage:      "severities of security issues to be displayed",
 	}
+	SeveritySrcFlag = Flag[[]string]{
+		Name:       "severity-src",
+		ConfigName: "severity-src",
+		Default: []string{
+			"auto",
+		},
+		Values: append(xstrings.ToStringSlice(vulnerability.AllSourceIDs), "auto"),
+		Usage:  "order of data sources for selecting vulnerability severity level",
+	}
 	ComplianceFlag = Flag[string]{
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
@@ -126,6 +136,7 @@ type ReportFlagGroup struct {
 	Output          *Flag[string]
 	OutputPluginArg *Flag[string]
 	Severity        *Flag[[]string]
+	SeveritySrc     *Flag[[]string]
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
 }
@@ -143,6 +154,7 @@ type ReportOptions struct {
 	Output           string
 	OutputPluginArgs []string
 	Severities       []dbTypes.Severity
+	SeveritySrc      []string
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
 }
@@ -161,6 +173,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Output:          OutputFlag.Clone(),
 		OutputPluginArg: OutputPluginArgFlag.Clone(),
 		Severity:        SeverityFlag.Clone(),
+		SeveritySrc:     SeveritySrcFlag.Clone(),
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
 	}
@@ -184,6 +197,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Output,
 		f.OutputPluginArg,
 		f.Severity,
+		f.SeveritySrc,
 		f.Compliance,
 		f.ShowSuppressed,
 	}
@@ -257,6 +271,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Output:           f.Output.Value(),
 		OutputPluginArgs: outputPluginArgs,
 		Severities:       toSeverity(f.Severity.Value()),
+		SeveritySrc:      f.SeveritySrc.Value(),
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
 	}, nil
