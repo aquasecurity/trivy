@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"

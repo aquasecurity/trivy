@@ -269,8 +269,8 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	}
 	sw.run.Invocations = []*sarif.Invocation{
 		{
-			StartTimeUtc: sw.StartTime.Format(time.RFC3339),
-			EndTimeUtc:   sw.EndTime.Format(time.RFC3339),
+			StartTimeUTC: &sw.StartTime,
+			EndTimeUTC:   &sw.EndTime,
 		},
 	}
 	sarifReport.AddRun(sw.run)

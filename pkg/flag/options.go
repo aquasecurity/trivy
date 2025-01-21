@@ -385,6 +385,9 @@ type Options struct {
 	// outputWriter is not initialized via the CLI.
 	// It is mainly used for testing purposes or by tools that use Trivy as a library.
 	outputWriter io.Writer
+
+	StartTime time.Time
+	EndTime   time.Time
 }
 
 // Align takes consistency of options
