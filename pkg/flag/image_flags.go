@@ -63,7 +63,7 @@ var (
 		Name:       "max-image-size",
 		ConfigName: "image.max-size",
 		Default:    "",
-		Usage:      "maximum image size to process, specified in a human-readable format (e.g., '44kB', '17MB'); an error will be returned if the image exceeds this size",
+		Usage:      "[EXPERIMENTAL] maximum image size to process, specified in a human-readable format (e.g., '44kB', '17MB'); an error will be returned if the image exceeds this size",
 	}
 )
 
