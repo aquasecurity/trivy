@@ -641,7 +641,6 @@ var plusSuffixes = [3]string{"+", "-OR-LATER", " OR LATER"}
 func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	// Standardize space, including newline
 	name = strings.Join(strings.Fields(name), " ")
-	name = strings.TrimSpace(name)
 	name = strings.ToUpper(name)
 	// Do not perform any further normalization for URLs
 	if strings.HasPrefix(name, "HTTP") {
@@ -675,15 +674,38 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 }
 
 func Normalize(name string) string {
-	return NormalizeLicense(name).String()
+	return NormalizeLicense(expr.SimpleExpr{License: name}).String()
 }
 
-func NormalizeLicense(name string) expr.SimpleExpr {
+func NormalizeLicense(exp expr.Expression) expr.Expression {
+	switch e := exp.(type) {
+	case expr.SimpleExpr:
+		return normalizeSimpleExpr(e)
+	case expr.CompoundExpr:
+		return normalizeCompoundExpr(e)
+	}
+	return exp
+}
+
+func normalizeSimpleExpr(e expr.SimpleExpr) expr.Expression {
+	// Always trim leading and trailing spaces, even if we don't find this license in `mapping`.
+	name := strings.TrimSpace(e.License)
 	normalized := standardizeKeyAndSuffix(name)
+	if found, ok := mapping[normalized.License]; ok {
+		return expr.SimpleExpr{License: found.License, HasPlus: e.HasPlus || found.HasPlus || normalized.HasPlus}
+	}
+	return expr.SimpleExpr{License: name, HasPlus: e.HasPlus}
+}
+
+func normalizeCompoundExpr(e expr.CompoundExpr) expr.Expression {
+	if e.Conjunction() != expr.TokenWith {
+		return e // Do not normalize compound expressions other than "WITH"
+	}
+	normalized := standardizeKeyAndSuffix(e.String())
 	if found, ok := mapping[normalized.License]; ok {
 		return expr.SimpleExpr{License: found.License, HasPlus: found.HasPlus || normalized.HasPlus}
 	}
-	return expr.SimpleExpr{License: name, HasPlus: false}
+	return e // Do not normalize compound expressions that are not found in `mapping`
 }
 
 func SplitLicenses(str string) []string {

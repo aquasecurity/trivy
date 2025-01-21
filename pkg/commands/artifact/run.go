@@ -498,16 +498,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 		target = opts.Input
 	}
 
-	scanOptions := types.ScanOptions{
-		PkgTypes:            opts.PkgTypes,
-		PkgRelationships:    opts.PkgRelationships,
-		Scanners:            opts.Scanners,
-		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
-		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		LicenseCategories:   opts.LicenseCategories,
-		FilePatterns:        opts.FilePatterns,
-		IncludeDevDeps:      opts.IncludeDevDeps,
-	}
+	scanOptions := opts.ScanOpts()
 
 	if len(opts.ImageConfigScanners) != 0 {
 		log.WithPrefix(log.PrefixContainerImage).Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))

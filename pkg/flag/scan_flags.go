@@ -2,8 +2,11 @@ package flag
 
 import (
 	"runtime"
+	"slices"
+	"strings"
 
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -110,6 +113,11 @@ var (
   - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
 `,
 	}
+	DistroFlag = Flag[string]{
+		Name:       "distro",
+		ConfigName: "scan.distro",
+		Usage:      "[EXPERIMENTAL] specify a distribution, <family>/<version>",
+	}
 )
 
 type ScanFlagGroup struct {
@@ -123,6 +131,7 @@ type ScanFlagGroup struct {
 	SBOMSources       *Flag[[]string]
 	RekorURL          *Flag[string]
 	DetectionPriority *Flag[string]
+	DistroFlag        *Flag[string]
 }
 
 type ScanOptions struct {
@@ -136,6 +145,7 @@ type ScanOptions struct {
 	SBOMSources       []string
 	RekorURL          string
 	DetectionPriority ftypes.DetectionPriority
+	Distro            ftypes.OS
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -150,6 +160,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		RekorURL:          RekorURLFlag.Clone(),
 		Slow:              SlowFlag.Clone(),
 		DetectionPriority: DetectionPriority.Clone(),
+		DistroFlag:        DistroFlag.Clone(),
 	}
 }
 
@@ -169,6 +180,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.SBOMSources,
 		f.RekorURL,
 		f.DetectionPriority,
+		f.DistroFlag,
 	}
 }
 
@@ -188,6 +200,18 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		parallel = runtime.NumCPU()
 	}
 
+	var distro ftypes.OS
+	if f.DistroFlag != nil && f.DistroFlag.Value() != "" {
+		family, version, _ := strings.Cut(f.DistroFlag.Value(), "/")
+		if !slices.Contains(ftypes.OSTypes, ftypes.OSType(family)) {
+			return ScanOptions{}, xerrors.Errorf("unknown OS family: %s, must be %q", family, ftypes.OSTypes)
+		}
+		distro = ftypes.OS{
+			Family: ftypes.OSType(family),
+			Name:   version,
+		}
+	}
+
 	return ScanOptions{
 		Target:            target,
 		SkipDirs:          f.SkipDirs.Value(),
@@ -199,5 +223,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		SBOMSources:       f.SBOMSources.Value(),
 		RekorURL:          f.RekorURL.Value(),
 		DetectionPriority: ftypes.DetectionPriority(f.DetectionPriority.Value()),
+		Distro:            distro,
 	}, nil
 }

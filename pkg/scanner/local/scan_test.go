@@ -222,6 +222,75 @@ func TestScanner_Scan(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with OS rewriting",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
+					},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
+					Distro: ftypes.OS{
+						Family: "alpine",
+						Name:   "3.11",
+					},
+				},
+			},
+			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				},
+				Returns: ApplierApplyLayersReturns{
+					Detail: ftypes.ArtifactDetail{
+						OS: ftypes.OS{
+							Family: ftypes.Alpine,
+							Name:   "3.10",
+						},
+						Packages: []ftypes.Package{
+							muslPkg,
+						},
+					},
+				},
+			},
+			wantResults: types.Results{
+				{
+					Target: "alpine:latest (alpine 3.11)",
+					Class:  types.ClassOSPkg,
+					Type:   ftypes.Alpine,
+					Packages: ftypes.Packages{
+						muslPkg,
+					},
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-9999",
+							PkgName:          muslPkg.Name,
+							InstalledVersion: muslPkg.Version,
+							FixedVersion:     "1.2.4",
+							Status:           dbTypes.StatusFixed,
+							Layer: ftypes.Layer{
+								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+							PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "dos",
+								Description: "dos vulnerability",
+								Severity:    "HIGH",
+							},
+						},
+					},
+				},
+			},
+			wantOS: ftypes.OS{
+				Family: "alpine",
+				Name:   "3.11",
+				Eosl:   true,
+			},
+		},
+		{
 			name: "happy path license scanner",
 			args: args{
 				target:   "alpine:latest",

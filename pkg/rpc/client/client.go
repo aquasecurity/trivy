@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"net/http"
 
+	"github.com/samber/lo"
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
@@ -12,6 +13,7 @@ import (
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
+	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -75,6 +77,14 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		licenseCategories[string(category)] = &rpc.Licenses{Names: names}
 	}
 
+	var distro *common.OS
+	if !lo.IsEmpty(opts.Distro) {
+		distro = &common.OS{
+			Family: string(opts.Distro.Family),
+			Name:   opts.Distro.Name,
+		}
+	}
+
 	var res *rpc.ScanResponse
 	err := r.Retry(func() error {
 		var err error
@@ -88,6 +98,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 				Scanners:          xstrings.ToStringSlice(opts.Scanners),
 				LicenseCategories: licenseCategories,
 				IncludeDevDeps:    opts.IncludeDevDeps,
+				Distro:            distro,
 			},
 		})
 		return err

@@ -4,7 +4,11 @@ import (
 	"io"
 
 	"github.com/BurntSushi/toml"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type PyProject struct {
@@ -16,7 +20,28 @@ type Tool struct {
 }
 
 type Poetry struct {
-	Dependencies map[string]any `toml:"dependencies"`
+	Dependencies Dependencies     `toml:"dependencies"`
+	Groups       map[string]Group `toml:"group"`
+}
+
+type Group struct {
+	Dependencies Dependencies `toml:"dependencies"`
+}
+
+type Dependencies struct {
+	set.Set[string]
+}
+
+func (d *Dependencies) UnmarshalTOML(data any) error {
+	m, ok := data.(map[string]any)
+	if !ok {
+		return xerrors.Errorf("dependencies must be map, but got: %T", data)
+	}
+
+	d.Set = set.New[string](lo.MapToSlice(m, func(pkgName string, _ any) string {
+		return python.NormalizePkgName(pkgName)
+	})...)
+	return nil
 }
 
 // Parser parses pyproject.toml defined in PEP518.
@@ -28,10 +53,10 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r io.Reader) (map[string]any, error) {
+func (p *Parser) Parse(r io.Reader) (PyProject, error) {
 	var conf PyProject
 	if _, err := toml.NewDecoder(r).Decode(&conf); err != nil {
-		return nil, xerrors.Errorf("toml decode error: %w", err)
+		return PyProject{}, xerrors.Errorf("toml decode error: %w", err)
 	}
-	return conf.Tool.Poetry.Dependencies, nil
+	return conf, nil
 }

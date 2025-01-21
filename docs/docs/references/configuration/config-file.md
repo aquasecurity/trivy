@@ -570,6 +570,9 @@ scan:
   # Same as '--detection-priority'
   detection-priority: "precise"
 
+  # Same as '--distro'
+  distro: ""
+
   # Same as '--file-patterns'
   file-patterns: []
 

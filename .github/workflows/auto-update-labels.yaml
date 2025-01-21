@@ -6,7 +6,7 @@ on:
     branches:
       - main
 env:
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.23'
 jobs:
   deploy:
     name: Auto-update labels
