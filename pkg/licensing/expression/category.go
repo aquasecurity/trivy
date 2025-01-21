@@ -426,14 +426,15 @@ func ValidateSPDXLicense(license string) bool {
 	initSpdxLicenses()
 	initSpdxExceptions()
 
-	id, exception, ok := strings.Cut(license, " WITH ")
-	if licenseIdFound := spdxLicenses.Contains(id); licenseIdFound {
-		if !ok {
-			return true
-		}
-		if exceptionFound := spdxExceptions.Contains(strings.ToUpper(exception)); exceptionFound {
-			return true
-		}
+	id, exception, hasException := strings.Cut(license, " WITH ")
+	if !spdxLicenses.Contains(id) {
+		return false
 	}
-	return false
+	if !hasException {
+		return true
+	}
+	if !spdxExceptions.Contains(strings.ToUpper(exception)) {
+		return false
+	}
+	return true
 }
