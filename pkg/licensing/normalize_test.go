@@ -220,7 +220,7 @@ func TestNormalize(t *testing.T) {
 		{
 			licenses: []expression.Expression{
 				expression.SimpleExpr{License: "GPLv2 WITH EXCEPTIONS"},
-				expression.NewCompoudExpr( // "GPLv2 WITH EXCEPTIONS"
+				expression.NewCompoundExpr( // "GPLv2 WITH EXCEPTIONS"
 					expression.SimpleExpr{License: "GPLv2"},
 					expression.TokenWith,
 					expression.SimpleExpr{License: "EXCEPTIONS"},

@@ -48,7 +48,7 @@ type CompoundExpr struct {
 	right       Expression
 }
 
-func NewCompoudExpr(left Expression, conjunction Token, right Expression) CompoundExpr {
+func NewCompoundExpr(left Expression, conjunction Token, right Expression) CompoundExpr {
 	return CompoundExpr{left: left, conjunction: conjunction, right: right}
 }
 
