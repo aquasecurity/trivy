@@ -3,11 +3,12 @@ package terraform
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_AllReferences(t *testing.T) {
@@ -36,12 +37,20 @@ func Test_AllReferences(t *testing.T) {
 			refs:  []string{"data.aws_ami.ubuntu.most_recent"},
 		},
 		{
+			input: "5 == 5 ? var.foo : data.aws_ami.ubuntu.most_recent", // conditional
+			refs:  []string{"variable.foo", "data.aws_ami.ubuntu.most_recent"},
+		},
+		{
 			input: `{x = 1, y = data.aws_ami.ubuntu.most_recent}`,
 			refs:  []string{"data.aws_ami.ubuntu.most_recent"},
 		},
 		{
 			input: `{foo = 1 == 1 ? true : data.aws_ami.ubuntu.most_recent}`,
 			refs:  []string{"data.aws_ami.ubuntu.most_recent"},
+		},
+		{
+			input: `[var.foo, var.bar]`,
+			refs:  []string{"variable.foo", "variable.bar"},
 		},
 	}
 
