@@ -414,7 +414,7 @@ var initSpdxExceptions = sync.OnceFunc(func() {
 
 	var exs []string
 	if err := json.Unmarshal(exceptions, &exs); err != nil {
-		log.WithPrefix("SPDX").Warn("Unable to parse SPDX exception file", log.Err(err))
+		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX exception file", log.Err(err))
 		return
 	}
 

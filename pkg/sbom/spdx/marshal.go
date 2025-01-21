@@ -102,7 +102,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 		format:     spdx.Document{},
 		hasher:     hashstructure.Hash,
 		appVersion: version,
-		logger:     log.WithPrefix("SPDX"),
+		logger:     log.WithPrefix(log.PrefixSPDX),
 	}
 
 	for _, opt := range opts {
