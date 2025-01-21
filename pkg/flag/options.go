@@ -461,6 +461,7 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		FilePatterns:        o.FilePatterns,
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,
+		SeveritySrc:         o.SeveritySrc,
 	}
 }
 
