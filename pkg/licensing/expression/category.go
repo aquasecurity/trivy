@@ -1,6 +1,7 @@
 package expression
 
 import (
+	_ "embed"
 	"encoding/json"
 	"strings"
 	"sync"
@@ -8,8 +9,6 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/log"
-
-	_ "embed"
 )
 
 // Canonical names of the licenses.
@@ -427,8 +426,8 @@ var initSpdxExceptions = sync.OnceFunc(func() {
 	})
 })
 
-// ValidSpdxLicense returns true if SPDX license lists contain licenseID and license exception (if exists)
-func ValidSpdxLicense(license string) bool {
+// ValidateSPDXLicense returns true if SPDX license lists contain licenseID and license exception (if exists)
+func ValidateSPDXLicense(license string) bool {
 	if spdxLicenses == nil {
 		initSpdxLicenses()
 	}

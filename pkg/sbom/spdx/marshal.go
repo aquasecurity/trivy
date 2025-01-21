@@ -476,7 +476,7 @@ func (m *Marshaler) processNonSpdxLicenses(license string) (string, map[string]*
 			endRune := lo.Ternary(strings.HasSuffix(orLicense, ")"), ")", "")
 			trimmedLicense := strings.TrimPrefix(strings.TrimSuffix(orLicense, ")"), "(")
 			// This is license from SPDX list of text license (already processed)
-			if strings.HasPrefix(trimmedLicense, LicenseRefPrefix) || expression.ValidSpdxLicense(trimmedLicense) {
+			if strings.HasPrefix(trimmedLicense, LicenseRefPrefix) || expression.ValidateSPDXLicense(trimmedLicense) {
 				orLicenses = append(orLicenses, orLicense)
 				continue
 			}
