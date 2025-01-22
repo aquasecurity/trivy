@@ -5,6 +5,8 @@ package repo
 import (
 	"context"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/go-git/go-git/v5"
@@ -13,8 +15,11 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/gittest"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
@@ -182,24 +187,74 @@ func TestNewArtifact(t *testing.T) {
 }
 
 func TestArtifact_Inspect(t *testing.T) {
-	ts, _ := setupGitRepository(t, "test-repo", "testdata/test-repo")
+	ts, repo := setupGitRepository(t, "test-repo", "testdata/test-repo")
 	defer ts.Close()
 
+	// Get the HEAD commit hash for verification
+	head, err := repo.Head()
+	require.NoError(t, err)
+	commitHash := head.Hash().String()
+
+	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
+	require.NoError(t, err)
+
+	handlerManager, err := handler.NewManager(artifact.Option{})
+	require.NoError(t, err)
+
+	wantCacheKey, err := cache.CalcKey(commitHash, a.AnalyzerVersions(), handlerManager.Versions(), artifact.Option{})
+	require.NoError(t, err)
+
+	worktree, err := repo.Worktree()
+	require.NoError(t, err)
+
+	localPath := worktree.Filesystem.Root()
+
 	tests := []struct {
-		name    string
-		rawurl  string
-		want    artifact.Reference
-		wantErr bool
+		name      string
+		rawurl    string
+		modifyDir func(t *testing.T, dir string)
+		want      artifact.Reference
+		wantErr   bool
 	}{
 		{
-			name:   "happy path",
+			name:   "remote repo",
 			rawurl: ts.URL + "/test-repo.git",
 			want: artifact.Reference{
 				Name: ts.URL + "/test-repo.git",
 				Type: artifact.TypeRepository,
-				ID:   "sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d",
+				ID:   wantCacheKey, // Calculated from commit hash
 				BlobIDs: []string{
-					"sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d",
+					wantCacheKey, // Calculated from commit hash
+				},
+			},
+		},
+		{
+			name:   "local repo",
+			rawurl: localPath,
+			want: artifact.Reference{
+				Name: localPath,
+				Type: artifact.TypeRepository,
+				ID:   wantCacheKey, // Calculated from commit hash
+				BlobIDs: []string{
+					wantCacheKey, // Calculated from commit hash
+				},
+			},
+		},
+		{
+			name:   "dirty repository",
+			rawurl: localPath,
+			modifyDir: func(t *testing.T, dir string) {
+				require.NoError(t, os.WriteFile(filepath.Join(dir, "new-file.txt"), []byte("test"), 0644))
+				t.Cleanup(func() {
+					require.NoError(t, os.Remove(filepath.Join(dir, "new-file.txt")))
+				})
+			},
+			want: artifact.Reference{
+				Name: localPath,
+				Type: artifact.TypeRepository,
+				ID:   "sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d", // Calculated from UUID
+				BlobIDs: []string{
+					"sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d", // Calculated from UUID
 				},
 			},
 		},
@@ -207,6 +262,14 @@ func TestArtifact_Inspect(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Set fake UUID for consistency
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+			// Apply modifications to make the repository dirty if specified
+			if tt.modifyDir != nil {
+				tt.modifyDir(t, tt.rawurl)
+			}
+
 			fsCache, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
 
@@ -215,6 +278,11 @@ func TestArtifact_Inspect(t *testing.T) {
 			defer cleanup()
 
 			ref, err := art.Inspect(context.Background())
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, ref)
 		})

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/google/wire"
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
@@ -20,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
@@ -45,6 +47,7 @@ type Artifact struct {
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
+	commitHash     string // only set when the git repository is clean
 }
 
 func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
@@ -58,14 +61,55 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
-	return Artifact{
+	art := Artifact{
 		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),
 		cache:          c,
 		walker:         w,
 		analyzer:       a,
 		handlerManager: handlerManager,
 		artifactOption: opt,
-	}, nil
+	}
+
+	// Check if the directory is a git repository and clean
+	if hash, err := getCleanGitHash(art.rootPath); err == nil {
+		art.commitHash = hash
+	} else {
+		log.WithPrefix("fs").Debug("Random cache key will be used", log.Err(err))
+	}
+
+	return art, nil
+}
+
+// getCleanGitHash returns the commit hash if the repository is clean, otherwise returns an error
+func getCleanGitHash(dir string) (string, error) {
+	repo, err := git.PlainOpen(dir)
+	if err != nil {
+		return "", xerrors.Errorf("failed to open git repository: %w", err)
+	}
+
+	// Get the working tree
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return "", xerrors.Errorf("failed to get worktree: %w", err)
+	}
+
+	// Get the current status
+	status, err := worktree.Status()
+	if err != nil {
+		return "", xerrors.Errorf("failed to get status: %w", err)
+	}
+
+	if !status.IsClean() {
+		return "", xerrors.New("repository is dirty")
+	}
+
+	// Get the HEAD commit hash
+	head, err := repo.Head()
+	if err != nil {
+		return "", xerrors.Errorf("failed to get HEAD: %w", err)
+	}
+
+	return head.Hash().String(), nil
 }
 
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
@@ -169,11 +213,20 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 }
 
 func (a Artifact) Clean(reference artifact.Reference) error {
+	// Don't delete cache if it's a clean git repository
+	if a.commitHash != "" {
+		return nil
+	}
 	return a.cache.DeleteBlobs(reference.BlobIDs)
 }
 
 func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
-	// calculate hash of JSON and use it as pseudo artifactID and blobID
+	// If this is a clean git repository, use the commit hash as cache key
+	if a.commitHash != "" {
+		return cache.CalcKey(a.commitHash, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	}
+
+	// For non-git repositories or dirty git repositories, use the blob info
 	h := sha256.New()
 	if err := json.NewEncoder(h).Encode(blobInfo); err != nil {
 		return "", xerrors.Errorf("json error: %w", err)
