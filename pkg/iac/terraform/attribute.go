@@ -971,6 +971,10 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 func (a *Attribute) referencesFromExpression(expression hcl.Expression) []*Reference {
 	var refs []*Reference
 	switch t := expression.(type) {
+	case *hclsyntax.ParenthesesExpr:
+		refs = append(refs, a.referencesFromExpression(t.Expression)...)
+	case *hclsyntax.ObjectConsKeyExpr:
+		refs = append(refs, a.referencesFromExpression(t.Wrapped)...)
 	case *hclsyntax.ObjectConsExpr:
 		for _, item := range t.Items {
 			refs = append(refs, a.referencesFromExpression(item.KeyExpr)...)
