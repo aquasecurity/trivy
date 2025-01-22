@@ -611,6 +611,10 @@ secret:
 ## Vulnerability options
 
 ```yaml
+# Same as '--severity-src'
+severity-src:
+ - auto
+
 vulnerability:
   # Same as '--ignore-status'
   ignore-status: []
