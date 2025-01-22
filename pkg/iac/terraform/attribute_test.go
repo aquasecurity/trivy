@@ -45,12 +45,17 @@ func Test_AllReferences(t *testing.T) {
 			refs:  []string{"data.aws_ami.ubuntu.most_recent"},
 		},
 		{
-			input: `{foo = 1 == 1 ? true : data.aws_ami.ubuntu.most_recent}`,
-			refs:  []string{"data.aws_ami.ubuntu.most_recent"},
+			input: `{foo = 1 == 1 ? var.bar : data.aws_ami.ubuntu.most_recent}`,
+			refs:  []string{"variable.bar", "data.aws_ami.ubuntu.most_recent"},
 		},
 		{
 			input: `[var.foo, var.bar]`,
 			refs:  []string{"variable.foo", "variable.bar"},
+		},
+		{
+			// Expression in the key
+			input: `{(local.foo): local.bar}`,
+			refs:  []string{"locals.foo", "locals.bar"},
 		},
 	}
 

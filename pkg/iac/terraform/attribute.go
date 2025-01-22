@@ -973,6 +973,7 @@ func (a *Attribute) referencesFromExpression(expression hcl.Expression) []*Refer
 	switch t := expression.(type) {
 	case *hclsyntax.ObjectConsExpr:
 		for _, item := range t.Items {
+			refs = append(refs, a.referencesFromExpression(item.KeyExpr)...)
 			refs = append(refs, a.referencesFromExpression(item.ValueExpr)...)
 		}
 	case *hclsyntax.ConditionalExpr:
