@@ -444,10 +444,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 			}
 
 			// Check that license and exception are valid
-			if exception := expression.SPDXExceptionID(e.Right().String()); exception != "" && expression.ValidateSPDXLicense(e.Left().String()) {
-				// Overwrite left license part (exception) to use correct SPDX exception id
-				exc := expression.SimpleExpr{License: exception}
-				e = expression.NewCompoundExpr(e.Left(), e.Conjunction(), exc)
+			if expression.ValidateSPDXLicense(e.Left().String()) && expression.ValidateSPDXException(e.Right().String()) {
 				// Use SimpleExpr for a valid SPDX license with an exception,
 				// to avoid parsing the license and exception separately.
 				return expression.SimpleExpr{License: e.String()}
