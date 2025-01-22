@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -18,9 +17,9 @@ import (
 )
 
 const (
-	exceptionFile = "exceptions.json"
-	exceptionDir  = "./pkg/licensing/expression"
-	exceptionURL  = "https://spdx.org/licenses/exceptions.json"
+	exceptionFileName = "exceptions.json"
+	exceptionDir      = "./pkg/licensing/expression"
+	exceptionURL      = "https://spdx.org/licenses/exceptions.json"
 )
 
 type Exceptions struct {
@@ -44,7 +43,7 @@ func run() error {
 	if err != nil {
 		return xerrors.Errorf("unable to download exceptions.json file: %w", err)
 	}
-	tmpFile, err := os.ReadFile(filepath.Join(tmpDir, exceptionFile))
+	tmpFile, err := os.ReadFile(filepath.Join(tmpDir, exceptionFileName))
 	if err != nil {
 		return xerrors.Errorf("unable to read exceptions.json file: %w", err)
 	}
@@ -55,11 +54,11 @@ func run() error {
 	}
 
 	exs := lo.Map(exceptions.Exceptions, func(ex Exception, _ int) string {
-		return strings.ToUpper(ex.ID)
+		return ex.ID
 	})
 	sort.Strings(exs)
 
-	exceptionFile := filepath.Join(exceptionDir, exceptionFile)
+	exceptionFile := filepath.Join(exceptionDir, exceptionFileName)
 	f, err := os.Create(exceptionFile)
 	if err != nil {
 		return xerrors.Errorf("unable to create file %s: %w", exceptionFile, err)

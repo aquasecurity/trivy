@@ -1,13 +1,16 @@
 package expression
 
 import (
-	_ "embed"
 	"encoding/json"
 	"strings"
 	"sync"
 
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+
+	_ "embed"
 )
 
 // Canonical names of the licenses.
@@ -405,10 +408,10 @@ var initSpdxLicenses = sync.OnceFunc(func() {
 //go:embed exceptions.json
 var exceptions []byte
 
-var spdxExceptions = set.New[string]()
+var spdxExceptions map[string]string
 
 var initSpdxExceptions = sync.OnceFunc(func() {
-	if spdxExceptions.Size() > 0 {
+	if len(spdxExceptions) > 0 {
 		return
 	}
 
@@ -417,8 +420,9 @@ var initSpdxExceptions = sync.OnceFunc(func() {
 		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX exception file", log.Err(err))
 		return
 	}
-
-	spdxExceptions.Append(exs...)
+	spdxExceptions = lo.SliceToMap(exs, func(exception string) (string, string) {
+		return strings.ToUpper(exception), exception
+	})
 })
 
 // ValidateSPDXLicense returns true if SPDX license list contain licenseID
@@ -428,9 +432,9 @@ func ValidateSPDXLicense(license string) bool {
 	return spdxLicenses.Contains(license)
 }
 
-// ValidateSPDXException returns true if SPDX exception list contain exception
-func ValidateSPDXException(exception string) bool {
+// SPDXExceptionID returns SPDX exception-id if spdx exception list contain this exception
+func SPDXExceptionID(exception string) string {
 	initSpdxExceptions()
 
-	return spdxExceptions.Contains(strings.ToUpper(exception))
+	return spdxExceptions[strings.ToUpper(exception)]
 }

@@ -91,6 +91,13 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with incorrect cases for license and exception",
+			input: []string{
+				"afl 3.0 with autoCONF-exception-3.0",
+			},
+			wantLicenseName: "AFL-3.0 WITH Autoconf-exception-3.0",
+		},
+		{
 			name: "happy path with text of license",
 			input: []string{
 				"text://unknown-license",
