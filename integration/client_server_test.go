@@ -37,6 +37,7 @@ type csArgs struct {
 	Target            string
 	secretConfig      string
 	Distro            string
+	SeveritySrc       []string
 }
 
 func TestClientServer(t *testing.T) {
@@ -279,6 +280,19 @@ func TestClientServer(t *testing.T) {
 				ListAllPackages:  true,
 			},
 			golden: "testdata/npm.json.golden",
+		},
+		{
+			name: "scan package-lock.json with severity from `ubuntu` in client/server mode",
+			args: csArgs{
+				Command:          "repo",
+				RemoteAddrOption: "--server",
+				Target:           "testdata/fixtures/repo/npm/",
+				SeveritySrc: []string{
+					"alpine",
+					"ubuntu",
+				},
+			},
+			golden: "testdata/npm-ubuntu-severity.json.golden",
 		},
 		{
 			name: "scan sample.pem with repo command in client/server mode",
@@ -674,6 +688,12 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string 
 	if len(c.Severity) != 0 {
 		osArgs = append(osArgs,
 			"--severity", strings.Join(c.Severity, ","),
+		)
+	}
+
+	if len(c.SeveritySrc) != 0 {
+		osArgs = append(osArgs,
+			"--severity-src", strings.Join(c.SeveritySrc, ","),
 		)
 	}
 
