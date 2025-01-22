@@ -461,6 +461,8 @@ pkg:
 
 ```yaml
 registry:
+  mirrors:
+
   # Same as '--password'
   password: []
 
