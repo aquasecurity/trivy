@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -62,6 +63,7 @@ func NewArtifact(target string, c cache.ArtifactCache, w Walker, artifactOpt art
 }
 
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
+	ctx = log.WithContextPrefix(ctx, "repo")
 	ref, err := a.local.Inspect(ctx)
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("remote repository error: %w", err)

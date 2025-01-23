@@ -41,13 +41,15 @@ type Walker interface {
 
 type Artifact struct {
 	rootPath       string
+	logger         *log.Logger
 	cache          cache.ArtifactCache
 	walker         Walker
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
-	commitHash     string // only set when the git repository is clean
+
+	commitHash string // only set when the git repository is clean
 }
 
 func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
@@ -63,6 +65,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 
 	art := Artifact{
 		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),
+		logger:         log.WithPrefix("fs"),
 		cache:          c,
 		walker:         w,
 		analyzer:       a,
@@ -71,17 +74,17 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 	}
 
 	// Check if the directory is a git repository and clean
-	if hash, err := getCleanGitHash(art.rootPath); err == nil {
+	if hash, err := gitCommitHash(art.rootPath); err == nil {
 		art.commitHash = hash
 	} else {
-		log.WithPrefix("fs").Debug("Random cache key will be used", log.Err(err))
+		art.logger.Debug("Random cache key will be used", log.Err(err))
 	}
 
 	return art, nil
 }
 
-// getCleanGitHash returns the commit hash if the repository is clean, otherwise returns an error
-func getCleanGitHash(dir string) (string, error) {
+// gitCommitHash returns the latest commit hash if the git repository is clean, otherwise returns an error
+func gitCommitHash(dir string) (string, error) {
 	repo, err := git.PlainOpen(dir)
 	if err != nil {
 		return "", xerrors.Errorf("failed to open git repository: %w", err)
@@ -113,6 +116,31 @@ func getCleanGitHash(dir string) (string, error) {
 }
 
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
+	// Calculate cache key
+	cacheKey, err := a.calcCacheKey()
+	if err != nil {
+		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
+	}
+
+	// Check if the cache exists only when it's a clean git repository
+	if a.commitHash != "" {
+		_, missingBlobs, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
+		if err != nil {
+			return artifact.Reference{}, xerrors.Errorf("unable to get missing blob: %w", err)
+		}
+
+		if len(missingBlobs) == 0 {
+			// Cache hit
+			a.logger.DebugContext(ctx, "Cache hit", log.String("key", cacheKey))
+			return artifact.Reference{
+				Name:    a.rootPath,
+				Type:    artifact.TypeFilesystem,
+				ID:      cacheKey,
+				BlobIDs: []string{cacheKey},
+			}, nil
+		}
+	}
+
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)
@@ -183,11 +211,6 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to call hooks: %w", err)
-	}
-
-	cacheKey, err := a.calcCacheKey()
-	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
