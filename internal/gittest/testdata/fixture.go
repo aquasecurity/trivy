@@ -30,9 +30,10 @@ func Fixtures() error {
 
 	slog.Info("Cloning...", slog.String("url", repoURL))
 
-	// Clone the repository
+	// Clone the repository with all branches and tags
 	_, err := git.PlainClone(cloneDir, false, &git.CloneOptions{
-		URL: repoURL,
+		URL:  repoURL,
+		Tags: git.AllTags,
 	})
 	if err != nil {
 		return xerrors.Errorf("error cloning repository: %w", err)
