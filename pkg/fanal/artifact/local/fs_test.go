@@ -2116,9 +2116,6 @@ func TestMixedConfigurationScan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
@@ -2276,9 +2273,6 @@ func TestJSONConfigScan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
@@ -2440,9 +2434,6 @@ func TestYAMLConfigScan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
