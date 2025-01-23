@@ -3,7 +3,6 @@ package local
 import (
 	"context"
 	"crypto/sha256"
-	"encoding/json"
 	"os"
 	"path"
 	"path/filepath"
@@ -21,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 var (
@@ -141,7 +141,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
-	cacheKey, err := a.calcCacheKey(blobInfo)
+	cacheKey, err := a.calcCacheKey()
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
 	}
@@ -172,18 +172,17 @@ func (a Artifact) Clean(reference artifact.Reference) error {
 	return a.cache.DeleteBlobs(reference.BlobIDs)
 }
 
-func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
-	// calculate hash of JSON and use it as pseudo artifactID and blobID
+func (a Artifact) calcCacheKey() (string, error) {
+	// Generate a random UUID for the cache key
+	id := uuid.New()
+
+	// Calculate sha256 hash from UUID
 	h := sha256.New()
-	if err := json.NewEncoder(h).Encode(blobInfo); err != nil {
-		return "", xerrors.Errorf("json error: %w", err)
+	if _, err := h.Write([]byte(id.String())); err != nil {
+		return "", xerrors.Errorf("sha256 calculation error: %w", err)
 	}
 
+	// Format as sha256 digest
 	d := digest.NewDigest(digest.SHA256, h)
-	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
-	if err != nil {
-		return "", xerrors.Errorf("cache key: %w", err)
-	}
-
-	return cacheKey, nil
+	return d.String(), nil
 }
