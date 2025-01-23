@@ -252,9 +252,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: localPath,
 				Type: artifact.TypeRepository,
-				ID:   "sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d", // Calculated from UUID
+				ID:   "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				BlobIDs: []string{
-					"sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d", // Calculated from UUID
+					"sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				},
 			},
 		},
@@ -269,6 +269,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			if tt.modifyDir != nil {
 				tt.modifyDir(t, tt.rawurl)
 			}
+
+			// Set fake UUID for consistent test results
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			fsCache, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
