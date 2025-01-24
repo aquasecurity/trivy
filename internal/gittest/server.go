@@ -5,7 +5,9 @@ package gittest
 import (
 	"errors"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -57,6 +59,51 @@ func NewServer(t *testing.T, repo, dir string) *httptest.Server {
 	require.NoError(t, err)
 
 	return httptest.NewServer(service)
+}
+
+// NewServerWithRepository creates a git server with an existing repository
+func NewServerWithRepository(t *testing.T, repo, dir string) *httptest.Server {
+	// Create a bare repository
+	bareDir := t.TempDir()
+	gitDir := filepath.Join(bareDir, repo+".git")
+
+	// Clone the existing repository as a bare repository
+	r, err := git.PlainClone(gitDir, true, &git.CloneOptions{
+		URL:  dir,
+		Tags: git.AllTags,
+	})
+	require.NoError(t, err)
+
+	// Fetch all remote branches and create local branches
+	err = r.Fetch(&git.FetchOptions{
+		RefSpecs: []config.RefSpec{
+			"+refs/remotes/origin/*:refs/heads/*",
+		},
+		Tags: git.AllTags,
+	})
+	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+		require.NoError(t, err)
+	}
+
+	// Set up a git server
+	service := gitkit.New(gitkit.Config{Dir: bareDir})
+	err = service.Setup()
+	require.NoError(t, err)
+
+	return httptest.NewServer(service)
+}
+
+// NewTestServer creates a git server with the local copy of "github.com/aquasecurity/trivy-test-repo".
+// If the test repository doesn't exist, it suggests running 'mage test:unit'.
+func NewTestServer(t *testing.T) *httptest.Server {
+	_, filePath, _, _ := runtime.Caller(0)
+	dir := filepath.Join(filepath.Dir(filePath), "testdata", "test-repo")
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		require.Fail(t, "test-repo not found. Please run 'mage test:unit' to set up the test fixtures")
+	}
+
+	return NewServerWithRepository(t, "test-repo", dir)
 }
 
 func Clone(t *testing.T, ts *httptest.Server, repo, worktree string) *git.Repository {

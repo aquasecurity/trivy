@@ -26,6 +26,7 @@ thumbs.db
 coverage.txt
 integration/testdata/fixtures/images
 integration/testdata/fixtures/vm-images
+internal/gittest/testdata/test-repo
 
 # SBOMs generated during CI
 /bom.json
