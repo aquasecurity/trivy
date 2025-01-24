@@ -23,7 +23,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.4.0
-	github.com/aquasecurity/trivy-db v0.0.0-20241209111357-8c398f13db0e
+	github.com/aquasecurity/trivy-db v0.0.0-20250124070237-8089e2019d26
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20241101182546-89bffc3932bc
 	github.com/aws/aws-sdk-go-v2 v1.33.0
@@ -435,5 +435,3 @@ require (
 	tags.cncf.io/container-device-interface v0.8.0 // indirect
 	tags.cncf.io/container-device-interface/specs-go v0.8.0 // indirect
 )
-
-replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20250121072428-fb8c5ead3c64

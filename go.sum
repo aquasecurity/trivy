@@ -685,8 +685,6 @@ github.com/DATA-DOG/go-sqlmock v1.5.2 h1:OcvFkGmslmlZibjAjaHm3L//6LiuBgolP7Oputl
 github.com/DATA-DOG/go-sqlmock v1.5.2/go.mod h1:88MAG/4G7SMwSE3CeA0ZKzrT5CiOU3OJ+JlNzwDqpNU=
 github.com/DataDog/zstd v1.5.5 h1:oWf5W7GtOLgp6bciQYDmhHHjdhYkALu6S/5Ni9ZgSvQ=
 github.com/DataDog/zstd v1.5.5/go.mod h1:g4AWEaM3yOg3HYfnJ3YIawPnVdXJh9QME85blwSAmyw=
-github.com/DmitriyLewen/trivy-db v0.0.0-20250121072428-fb8c5ead3c64 h1:nPovX3lR3DQEgmOP8OtmBH1OIX8uhMTwxqlAuyAeMYg=
-github.com/DmitriyLewen/trivy-db v0.0.0-20250121072428-fb8c5ead3c64/go.mod h1:/hse/SN0Tl4kGM+9THwlCXBIuMyr5K6RlNepte70mdU=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.24.2 h1:cZpsGsWTIFKymTA0je7IIvi1O7Es7apb9CF3EQlOcfE=
@@ -804,6 +802,8 @@ github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gw
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
 github.com/aquasecurity/trivy-checks v1.4.0 h1:XFGPuA8C4f31GO9g7xOkubHq4W87y9iXrWnulsIoZFs=
 github.com/aquasecurity/trivy-checks v1.4.0/go.mod h1:TSUbI3wBy9jgQl5lRUCR+B5pNiOxp6M26Jep8VCL/eM=
+github.com/aquasecurity/trivy-db v0.0.0-20250124070237-8089e2019d26 h1:mnQ+X4sfCnK4+2smmXl2bUkRoCVzpl4V8wC0G+7943I=
+github.com/aquasecurity/trivy-db v0.0.0-20250124070237-8089e2019d26/go.mod h1:+wdtzqE9N8y58jssuXEQRbDHoCUfJqL5XKmOIEneC7M=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20241101182546-89bffc3932bc h1:/mFBYIK9RY+L8s1CIbQbJ5B3v0YmoDSu5eAzavvMa+Y=
