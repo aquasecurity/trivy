@@ -3,8 +3,7 @@ package ecr
 import (
 	"testing"
 
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"

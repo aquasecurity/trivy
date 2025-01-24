@@ -449,9 +449,9 @@ From the Terraform [docs](https://developer.hashicorp.com/terraform/cli/config/c
 If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.
 
 
-### Skipping resources by inline comments
+### Skipping detected misconfigurations by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation and Helm configuration files only.
+Trivy supports ignoring detected misconfigurations by inline comments for Terraform, CloudFormation (YAML), Helm and Dockerfile configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
 
@@ -517,6 +517,13 @@ Example for Helm:
             runAsGroup: 3000
           image: "your-repository/your-image:your-tag"
           imagePullPolicy: "Always"
+```
+
+Example for Dockerfile:
+```Dockerfile
+FROM scratch
+# trivy:ignore:AVD-DS-0022
+MAINTAINER moby@example.com
 ```
 
 #### Expiration Date

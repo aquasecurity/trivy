@@ -50,6 +50,7 @@ type Rule struct {
 	Severity       severity.Severity                `json:"severity"`
 	Terraform      *EngineMetadata                  `json:"terraform,omitempty"`
 	CloudFormation *EngineMetadata                  `json:"cloud_formation,omitempty"`
+	Examples       string                           `json:"-"`
 	CustomChecks   CustomChecks                     `json:"-"`
 	RegoPackage    string                           `json:"-"`
 	Frameworks     map[framework.Framework][]string `json:"frameworks"`

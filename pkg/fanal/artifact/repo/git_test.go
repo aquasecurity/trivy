@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
@@ -197,9 +198,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: ts.URL + "/test-repo.git",
 				Type: artifact.TypeRepository,
-				ID:   "sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d",
+				ID:   "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				BlobIDs: []string{
-					"sha256:88233504639eb201433a0505956309ba0c48156f45beb786f95ccd3e8a343e9d",
+					"sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				},
 			},
 		},
@@ -207,6 +208,9 @@ func TestArtifact_Inspect(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Set fake UUID for consistent test results
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
 			fsCache, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
 
