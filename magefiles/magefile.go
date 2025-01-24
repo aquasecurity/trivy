@@ -309,6 +309,9 @@ func (t Test) K8s() error {
 	}()
 	// wait for the kind cluster is running correctly
 	err = sh.RunWithV(ENV, "kubectl", "wait", "--for=condition=Ready", "nodes", "--all", "--timeout=300s")
+	if err != nil {
+		return fmt.Errorf("can't wait for the kind cluster: %w", err)
+	}
 
 	err = sh.RunWithV(ENV, "kubectl", "apply", "-f", "./integration/testdata/fixtures/k8s/test_nginx.yaml")
 	if err != nil {
@@ -345,7 +348,7 @@ func initk8sLimitedUserEnv() error {
 			return err
 		}
 	}
-	envs := map[string]string{}
+	envs := make(map[string]string)
 	var err error
 	envs["CA"], err = sh.Output("kubectl", "config", "view", "-o", "jsonpath=\"{.clusters[?(@.name == 'kind-kind-test')].cluster.certificate-authority-data}\"", "--flatten")
 	if err != nil {
