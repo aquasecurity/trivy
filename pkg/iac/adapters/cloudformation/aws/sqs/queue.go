@@ -3,8 +3,7 @@ package sqs
 import (
 	"errors"
 
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
