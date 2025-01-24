@@ -360,9 +360,9 @@ func initk8sLimitedUserEnv() error {
 		return err
 	}
 	commandsWith := [][]string{
-		{"sed", "-i", "''", "s|{{CA}}|$CA|g", "./integration/limitedconfig"},
-		{"sed", "-i", "''", "s|{{URL}}|$URL|g", "./integration/limitedconfig"},
-		{"sed", "-i", "''", "s|{{TOKEN}}|$TOKEN|g", "./integration/limitedconfig"},
+		{"sed", "-i", "-e", "s|{{CA}}|$CA|g", "./integration/limitedconfig"},
+		{"sed", "-i", "-e", "s|{{URL}}|$URL|g", "./integration/limitedconfig"},
+		{"sed", "-i", "-e", "s|{{TOKEN}}|$TOKEN|g", "./integration/limitedconfig"},
 	}
 	for _, cmd := range commandsWith {
 		if err := sh.RunWithV(envs, cmd[0], cmd[1:]...); err != nil {
