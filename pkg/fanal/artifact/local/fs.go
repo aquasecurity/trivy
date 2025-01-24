@@ -75,6 +75,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 
 	// Check if the directory is a git repository and clean
 	if hash, err := gitCommitHash(art.rootPath); err == nil {
+		art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", hash))
 		art.commitHash = hash
 	} else {
 		art.logger.Debug("Random cache key will be used", log.Err(err))
