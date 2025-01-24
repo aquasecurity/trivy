@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/gittest"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 
@@ -168,11 +169,12 @@ func TestArtifact_Inspect(t *testing.T) {
 	defer ts.Close()
 
 	tests := []struct {
-		name      string
-		rawurl    string
-		modifyDir func(t *testing.T, dir string)
-		want      artifact.Reference
-		wantErr   bool
+		name         string
+		rawurl       string
+		setup        func(t *testing.T, dir string, c cache.ArtifactCache)
+		want         artifact.Reference
+		wantBlobInfo *types.BlobInfo
+		wantErr      bool
 	}{
 		{
 			name:   "remote repo",
@@ -184,6 +186,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				BlobIDs: []string{
 					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c", // Calculated from commit hash
 				},
+			},
+			wantBlobInfo: &types.BlobInfo{
+				SchemaVersion: types.BlobJSONSchemaVersion,
 			},
 		},
 		{
@@ -197,11 +202,14 @@ func TestArtifact_Inspect(t *testing.T) {
 					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c", // Calculated from commit hash
 				},
 			},
+			wantBlobInfo: &types.BlobInfo{
+				SchemaVersion: types.BlobJSONSchemaVersion,
+			},
 		},
 		{
 			name:   "dirty repository",
 			rawurl: "../../../../internal/gittest/testdata/test-repo",
-			modifyDir: func(t *testing.T, dir string) {
+			setup: func(t *testing.T, dir string, _ cache.ArtifactCache) {
 				require.NoError(t, os.WriteFile(filepath.Join(dir, "new-file.txt"), []byte("test"), 0644))
 				t.Cleanup(func() {
 					require.NoError(t, os.Remove(filepath.Join(dir, "new-file.txt")))
@@ -215,6 +223,41 @@ func TestArtifact_Inspect(t *testing.T) {
 					"sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				},
 			},
+			wantBlobInfo: &types.BlobInfo{
+				SchemaVersion: types.BlobJSONSchemaVersion,
+			},
+		},
+		{
+			name:   "cache hit",
+			rawurl: "../../../../internal/gittest/testdata/test-repo",
+			setup: func(t *testing.T, dir string, c cache.ArtifactCache) {
+				blobInfo := types.BlobInfo{
+					SchemaVersion: types.BlobJSONSchemaVersion,
+					OS: types.OS{
+						Family: types.Alpine,
+						Name:   "3.16.0",
+					},
+				}
+				// Store the blob info in the cache to test cache hit
+				cacheKey := "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c"
+				err := c.PutBlob(cacheKey, blobInfo)
+				require.NoError(t, err)
+			},
+			want: artifact.Reference{
+				Name: "../../../../internal/gittest/testdata/test-repo",
+				Type: artifact.TypeRepository,
+				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
+				BlobIDs: []string{
+					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
+				},
+			},
+			wantBlobInfo: &types.BlobInfo{
+				SchemaVersion: types.BlobJSONSchemaVersion,
+				OS: types.OS{
+					Family: types.Alpine,
+					Name:   "3.16.0",
+				},
+			},
 		},
 	}
 
@@ -223,18 +266,15 @@ func TestArtifact_Inspect(t *testing.T) {
 			// Set fake UUID for consistency
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			// Apply modifications to make the repository dirty if specified
-			if tt.modifyDir != nil {
-				tt.modifyDir(t, tt.rawurl)
+			// Create memory cache
+			c := cache.NewMemoryCache()
+
+			// Apply setup if specified
+			if tt.setup != nil {
+				tt.setup(t, tt.rawurl, c)
 			}
 
-			// Set fake UUID for consistent test results
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
-			fsCache, err := cache.NewFSCache(t.TempDir())
-			require.NoError(t, err)
-
-			art, cleanup, err := NewArtifact(tt.rawurl, fsCache, walker.NewFS(), artifact.Option{})
+			art, cleanup, err := NewArtifact(tt.rawurl, c, walker.NewFS(), artifact.Option{})
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -246,6 +286,11 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, ref)
+
+			// Verify cache contents after inspection
+			blobInfo, err := c.GetBlob(tt.want.BlobIDs[0])
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantBlobInfo, &blobInfo, "cache content mismatch")
 		})
 	}
 }
