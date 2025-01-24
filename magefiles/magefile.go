@@ -16,11 +16,12 @@ import (
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
 
-	//mage:import rpm
-	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
 	// Trivy packages should not be imported in Mage (see https://github.com/aquasecurity/trivy/pull/4242),
 	// but this package doesn't have so many dependencies, and Mage is still fast.
+	//mage:import gittest
 	gittest "github.com/aquasecurity/trivy/internal/gittest/testdata"
+	//mage:import rpm
+	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
