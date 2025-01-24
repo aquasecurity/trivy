@@ -55,6 +55,7 @@ trivy config [flags] DIR
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
+      --color string                      enable or disable color output (true, false, auto)
 ```
 
 ### Options inherited from parent commands

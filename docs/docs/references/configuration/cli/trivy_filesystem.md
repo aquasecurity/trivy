@@ -99,6 +99,7 @@ trivy filesystem [flags] PATH
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
+      --color string                      enable or disable color output (true, false, auto)
 ```
 
 ### Options inherited from parent commands
