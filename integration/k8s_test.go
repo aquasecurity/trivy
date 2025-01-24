@@ -106,4 +106,55 @@ func TestK8s(t *testing.T) {
 			return len(*r.Dependencies) > 0
 		}))
 	})
+
+	t.Run("Limited user test", func(t *testing.T) {
+		// Set up the output file
+		outputFile := filepath.Join(t.TempDir(), "output.json")
+
+		osArgs := []string{
+			"--cache-dir",
+			cacheDir,
+			"k8s",
+			"limitedcontext",
+			"--report",
+			"summary",
+			"-q",
+			"--timeout",
+			"5m0s",
+			"--include-namespaces", "limitedns",
+			//			"--kubeconfig", "limitedconfig",
+			"--format",
+			"json",
+			"--output",
+			outputFile,
+		}
+
+		// Run Trivy
+		err := execute(osArgs)
+		require.NoError(t, err)
+
+		var got report.ConsolidatedReport
+		f, err := os.Open(outputFile)
+		require.NoError(t, err)
+		defer f.Close()
+
+		err = json.NewDecoder(f).Decode(&got)
+		require.NoError(t, err)
+
+		// Flatten findings
+		results := lo.FlatMap(got.Findings, func(resource report.Resource, _ int) []types.Result {
+			return resource.Results
+		})
+
+		// Has vulnerabilities
+		assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
+			return len(r.Vulnerabilities) > 0
+		}))
+
+		// Has misconfigurations
+		assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
+			return len(r.Misconfigurations) > 0
+		}))
+
+	})
 }
