@@ -1,8 +1,7 @@
 package sam
 
 import (
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
