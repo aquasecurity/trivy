@@ -1057,8 +1057,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 
 			got, err := a.ApplyLayers(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 			} else {
 				require.NoError(t, err, tt.name)
 			}

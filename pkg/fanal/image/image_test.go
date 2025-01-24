@@ -397,8 +397,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			defer cleanup()
 
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, err)
+				require.ErrorContains(t, err, tt.wantErr, err)
 			} else {
 				require.NoError(t, err)
 			}
@@ -488,8 +487,7 @@ func TestNewArchiveImage(t *testing.T) {
 			img, err := NewArchiveImage(tt.args.fileName)
 			switch {
 			case tt.wantErr != "":
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			default:
 				require.NoError(t, err, tt.name)

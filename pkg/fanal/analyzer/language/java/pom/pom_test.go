@@ -191,8 +191,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 				},
 			})
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

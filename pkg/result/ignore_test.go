@@ -49,7 +49,7 @@ func TestParseIgnoreFile(t *testing.T) {
 		_, _ = f.WriteString("this file is not a yaml file")
 
 		got, err := ParseIgnoreFile(context.TODO(), f.Name())
-		assert.Contains(t, err.Error(), "yaml decode error")
+		require.ErrorContains(t, err, "yaml decode error")
 		assert.Empty(t, got)
 	})
 

@@ -446,8 +446,7 @@ func TestNewPackageURL(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			packageURL, err := purl.New(tc.typ, tc.metadata, tc.pkg)
 			if tc.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tc.wantErr)
+				require.ErrorContains(t, err, tc.wantErr)
 				return
 			}
 			require.NoError(t, err)

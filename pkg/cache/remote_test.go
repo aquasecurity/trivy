@@ -152,8 +152,7 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 			})
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
-				require.Error(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			} else {
 				require.NoError(t, err, tt.name)
@@ -217,8 +216,7 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 			})
 			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
-				require.Error(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			} else {
 				require.NoError(t, err, tt.name)
@@ -299,8 +297,7 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 			})
 			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
-				require.Error(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			} else {
 				require.NoError(t, err, tt.name)
@@ -353,8 +350,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 			})
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err, tt.name)

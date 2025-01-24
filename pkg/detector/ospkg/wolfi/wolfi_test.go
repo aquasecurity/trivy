@@ -196,8 +196,7 @@ func TestScanner_Detect(t *testing.T) {
 			s := wolfi.NewScanner()
 			got, err := s.Detect(nil, "", tt.args.repo, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
