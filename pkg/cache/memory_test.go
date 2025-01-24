@@ -314,8 +314,7 @@ func TestMemoryCache_DeleteBlobs(t *testing.T) {
 			// Check that the blobs are no longer in the cache
 			for _, blobID := range tt.blobIDs {
 				_, err := c.GetBlob(blobID)
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), "not found in memory cache")
+				require.ErrorContains(t, err, "not found in memory cache")
 			}
 		})
 	}
@@ -348,12 +347,10 @@ func TestMemoryCache_Clear(t *testing.T) {
 			require.NoError(t, err)
 
 			_, err = c.GetArtifact(tt.artifactID)
-			require.Error(t, err)
-			assert.Contains(t, err.Error(), "not found in memory cache")
+			require.ErrorContains(t, err, "not found in memory cache")
 
 			_, err = c.GetBlob(tt.blobID)
-			require.Error(t, err)
-			assert.Contains(t, err.Error(), "not found in memory cache")
+			require.ErrorContains(t, err, "not found in memory cache")
 		})
 	}
 }
@@ -385,12 +382,10 @@ func TestMemoryCache_Close(t *testing.T) {
 			require.NoError(t, err)
 
 			_, err = c.GetArtifact(tt.artifactID)
-			require.Error(t, err)
-			assert.Contains(t, err.Error(), "not found in memory cache")
+			require.ErrorContains(t, err, "not found in memory cache")
 
 			_, err = c.GetBlob(tt.blobID)
-			require.Error(t, err)
-			assert.Contains(t, err.Error(), "not found in memory cache")
+			require.ErrorContains(t, err, "not found in memory cache")
 		})
 	}
 }

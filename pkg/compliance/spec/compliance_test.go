@@ -271,7 +271,7 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 
 	t.Run("load user specified spec from disk fails", func(t *testing.T) {
 		_, err := spec.GetComplianceSpec("@doesnotexist", "does-not-matter")
-		assert.Contains(t, err.Error(), "error retrieving compliance spec from path")
+		require.ErrorContains(t, err, "error retrieving compliance spec from path")
 	})
 
 	t.Run("bundle does not exist", func(t *testing.T) {
@@ -288,6 +288,6 @@ func TestComplianceSpec_LoadFromDiskBundle(t *testing.T) {
 
 	t.Run("load spec yaml unmarshal failure", func(t *testing.T) {
 		_, err := spec.GetComplianceSpec("invalid", filepath.Join("testdata", "testcache"))
-		assert.Contains(t, err.Error(), "spec yaml decode error")
+		require.ErrorContains(t, err, "spec yaml decode error")
 	})
 }

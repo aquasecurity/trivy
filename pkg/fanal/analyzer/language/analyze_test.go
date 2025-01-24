@@ -97,8 +97,7 @@ func TestAnalyze(t *testing.T) {
 
 			got, err := language.Analyze(tt.args.fileType, tt.args.filePath, tt.args.content, mp)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 

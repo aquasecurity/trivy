@@ -101,8 +101,7 @@ func Test_dbWorker_update(t *testing.T) {
 			err = w.update(ctx, "1.2.3", dbDir,
 				tt.skipUpdate, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.Error(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
 			}
 			require.NoError(t, err, tt.name)
