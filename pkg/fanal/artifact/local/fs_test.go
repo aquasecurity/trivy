@@ -265,8 +265,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			got, err := a.Inspect(context.Background())
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			} else {
 				require.NoError(t, err)

@@ -261,8 +261,7 @@ func Test_newURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := newURL(tt.args.rawurl)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			} else {
 				require.NoError(t, err)
