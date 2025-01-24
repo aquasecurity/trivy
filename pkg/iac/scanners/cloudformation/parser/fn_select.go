@@ -19,12 +19,11 @@ func ResolveSelect(property *Property) (resolved *Property, success bool) {
 	list := refValue[1]
 
 	if index.IsNotInt() {
-		if index.IsConvertableTo(cftypes.Int) {
-			//
-			index = index.ConvertTo(cftypes.Int)
-		} else {
+		if !index.IsConvertableTo(cftypes.Int) {
 			return abortIntrinsic(property, "index on property [%s] should be an int, returning original Property", property.name)
 		}
+		//
+		index = index.ConvertTo(cftypes.Int)
 	}
 
 	if list.IsNotList() {

@@ -151,12 +151,12 @@ func getLifecycle(resource *parser.Resource) []s3.Rules {
 }
 
 func getWebsite(r *parser.Resource) *s3.Website {
-	if block := r.GetProperty("WebsiteConfiguration"); block.IsNil() {
+	block := r.GetProperty("WebsiteConfiguration")
+	if block.IsNil() {
 		return nil
-	} else {
-		return &s3.Website{
-			Metadata: block.Metadata(),
-		}
+	}
+	return &s3.Website{
+		Metadata: block.Metadata(),
 	}
 }
 

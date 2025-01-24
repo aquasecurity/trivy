@@ -118,11 +118,10 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 func getRuleIndex(id string, indexes map[string]int) int {
 	if i, ok := indexes[id]; ok {
 		return i
-	} else {
-		l := len(indexes)
-		indexes[id] = l
-		return l
 	}
+	l := len(indexes)
+	indexes[id] = l
+	return l
 }
 
 func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {

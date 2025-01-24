@@ -165,21 +165,21 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			}
 
 			// Collect dependencies of the direct dependency
-			if dep, err := a.collectDeps(modDir, lib.ID); err != nil {
+			dep, err := a.collectDeps(modDir, lib.ID)
+			if err != nil {
 				return xerrors.Errorf("dependency graph error: %w", err)
 			} else if dep.ID == "" {
 				// go.mod not found
 				continue
-			} else {
-				// Filter out unused dependencies and convert module names to module IDs
-				apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
-					if m, ok := usedPkgs[modName]; !ok {
-						return "", false
-					} else {
-						return m.ID, true
-					}
-				})
 			}
+			// Filter out unused dependencies and convert module names to module IDs
+			apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
+				m, ok := usedPkgs[modName]
+				if !ok {
+					return "", false
+				}
+				return m.ID, true
+			})
 		}
 	}
 	return nil

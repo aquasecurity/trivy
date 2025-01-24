@@ -892,9 +892,7 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	var customResources []*common.CustomResource
 	for _, res := range blobInfo.CustomResources {
 		data, err := structpb.NewValue(res.Data)
-		if err != nil {
-
-		} else {
+		if err == nil {
 			customResources = append(customResources, &common.CustomResource{
 				Type:     res.Type,
 				FilePath: res.FilePath,

@@ -254,9 +254,8 @@ func (p *Property) GetProperty(path string) *Property {
 		if nestedProperty.isFunction() {
 			resolved, _ := nestedProperty.resolveValue()
 			return resolved
-		} else {
-			return nestedProperty
 		}
+		return nestedProperty
 	}
 
 	return &Property{}

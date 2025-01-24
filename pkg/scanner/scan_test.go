@@ -205,10 +205,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				require.Error(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
-
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
