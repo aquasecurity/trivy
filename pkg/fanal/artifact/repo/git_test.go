@@ -51,7 +51,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "local repo",
 			args: args{
-				target:     "testdata",
+				target:     "../../../../internal/gittest/testdata/test-repo",
 				c:          nil,
 				noProgress: false,
 			},
