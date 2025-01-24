@@ -549,28 +549,25 @@ func (p *Parser) retrieveParent(currentPath, relativePath string, target artifac
 	// Try relativePath
 	if relativePath != "" {
 		pom, err := p.tryRelativePath(target, currentPath, relativePath)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-		} else {
+		if err == nil {
 			return pom, nil
 		}
+		errs = multierror.Append(errs, err)
 	}
 
 	// If not found, search the parent director
 	pom, err := p.tryRelativePath(target, currentPath, "../pom.xml")
-	if err != nil {
-		errs = multierror.Append(errs, err)
-	} else {
+	if err == nil {
 		return pom, nil
 	}
+	errs = multierror.Append(errs, err)
 
 	// If not found, search local/remote remoteRepositories
 	pom, err = p.tryRepository(target.GroupID, target.ArtifactID, target.Version.String())
-	if err != nil {
-		errs = multierror.Append(errs, err)
-	} else {
+	if err == nil {
 		return pom, nil
 	}
+	errs = multierror.Append(errs, err)
 
 	// Reaching here means the POM wasn't found
 	return nil, errs

@@ -431,11 +431,11 @@ func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
 
 	working := b
 	for _, subBlock := range blocks {
-		if checkBlock := working.GetBlock(subBlock); checkBlock == nil {
+		checkBlock := working.GetBlock(subBlock)
+		if checkBlock == nil {
 			return nil, working
-		} else {
-			working = checkBlock
 		}
+		working = checkBlock
 	}
 
 	if working != nil {
@@ -532,11 +532,11 @@ func (b *Block) MissingNestedChild(name string) bool {
 
 	working := b
 	for _, subBlock := range blocks {
-		if checkBlock := working.GetBlock(subBlock); checkBlock == nil {
+		checkBlock := working.GetBlock(subBlock)
+		if checkBlock == nil {
 			return true
-		} else {
-			working = checkBlock
 		}
+		working = checkBlock
 	}
 	return !working.HasChild(last)
 

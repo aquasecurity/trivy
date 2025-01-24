@@ -131,11 +131,11 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 	// Take the file name of the first layer if not specified
 	fileName := opt.Filename
 	if fileName == "" {
-		if v, ok := manifest.Layers[0].Annotations[titleAnnotation]; !ok {
+		v, ok := manifest.Layers[0].Annotations[titleAnnotation]
+		if !ok {
 			return xerrors.Errorf("annotation %s is missing", titleAnnotation)
-		} else {
-			fileName = v
 		}
+		fileName = v
 	}
 
 	layerMediaType, err := layer.MediaType()

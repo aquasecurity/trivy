@@ -332,12 +332,12 @@ func NewServer(t *testing.T) *Server {
 
 			resEntries := models.LogEntry{}
 			for _, uuid := range params.EntryUUIDs {
-				if e, ok := entries[uuid]; !ok {
+				e, ok := entries[uuid]
+				if !ok {
 					http.Error(w, "no such uuid", http.StatusNotFound)
 					return
-				} else {
-					resEntries[uuid] = e
 				}
+				resEntries[uuid] = e
 			}
 			w.Header().Set("Content-Type", "application/json")
 			err = json.NewEncoder(w).Encode([]models.LogEntry{resEntries})

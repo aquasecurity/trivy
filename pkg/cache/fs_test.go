@@ -289,9 +289,8 @@ func TestFSCache_PutBlob(t *testing.T) {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err, tt.name)
 
 			fs.db.View(func(tx *bolt.Tx) error {
 				layerBucket := tx.Bucket([]byte(blobBucket))
@@ -369,9 +368,8 @@ func TestFSCache_PutArtifact(t *testing.T) {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err, tt.name)
 
 			err = fs.db.View(func(tx *bolt.Tx) error {
 				// check decompressedDigestBucket
