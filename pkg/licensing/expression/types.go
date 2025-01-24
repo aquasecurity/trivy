@@ -56,6 +56,14 @@ func (c CompoundExpr) Conjunction() Token {
 	return c.conjunction
 }
 
+func (c CompoundExpr) Left() Expression {
+	return c.left
+}
+
+func (c CompoundExpr) Right() Expression {
+	return c.right
+}
+
 func (c CompoundExpr) String() string {
 	left := c.left.String()
 	if l, ok := c.left.(CompoundExpr); ok {
