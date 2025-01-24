@@ -35,6 +35,7 @@ func TestRepository(t *testing.T) {
 		includeDevDeps bool
 		parallel       int
 		vex            string
+		severitySrc    []string
 	}
 	tests := []struct {
 		name     string
@@ -103,6 +104,18 @@ func TestRepository(t *testing.T) {
 				listAllPkgs: true,
 			},
 			golden: "testdata/npm.json.golden",
+		},
+		{
+			name: "npm with severity from ubuntu",
+			args: args{
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/repo/npm",
+				severitySrc: []string{
+					"alpine",
+					"ubuntu",
+				},
+			},
+			golden: "testdata/npm-ubuntu-severity.json.golden",
 		},
 		{
 			name: "npm with dev deps",
@@ -536,6 +549,12 @@ func TestRepository(t *testing.T) {
 				for _, skipDir := range tt.args.skipDirs {
 					osArgs = append(osArgs, "--skip-dirs", skipDir)
 				}
+			}
+
+			if len(tt.args.severitySrc) != 0 {
+				osArgs = append(osArgs,
+					"--severity-src", strings.Join(tt.args.severitySrc, ","),
+				)
 			}
 
 			if tt.args.listAllPkgs {

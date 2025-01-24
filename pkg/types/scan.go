@@ -122,4 +122,5 @@ type ScanOptions struct {
 	FilePatterns        []string
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
+	SeveritySrc         []string
 }
