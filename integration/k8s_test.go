@@ -107,7 +107,7 @@ func TestK8s(t *testing.T) {
 		}))
 	})
 
-	t.Run("Limited user test", func(t *testing.T) {
+	t.Run("limited user test", func(t *testing.T) {
 		// Set up the output file
 		outputFile := filepath.Join(t.TempDir(), "output.json")
 
@@ -116,8 +116,8 @@ func TestK8s(t *testing.T) {
 			cacheDir,
 			"k8s",
 			"kind-kind-test",
-			//"limitedcontext",
-			//			"--kubeconfig", "limitedconfig",
+			// "limitedcontext",
+			// "--kubeconfig", "limitedconfig",
 			"--report",
 			"summary",
 			"-q",

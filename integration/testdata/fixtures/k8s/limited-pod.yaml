@@ -5,7 +5,7 @@ metadata:
   namespace: limitedns
 spec:
   containers:
-  - name: my-alpine-sleeper
-    image: alpine:3.17.1
-    command: [ "/bin/sh", "-c", "--" ]
-    args: [ "while true; do sleep 30; done;"]
+    - name: nginx
+      image: nginx:1.14.2
+      ports:
+        - containerPort: 80
