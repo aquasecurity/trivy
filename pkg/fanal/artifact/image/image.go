@@ -235,7 +235,7 @@ func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 
 	compressedSize, err := a.compressedImageSize(diffIDs)
 	if err != nil {
-		return nil
+		return xerrors.Errorf("failed to get compressed image size: %w", err)
 	}
 
 	if compressedSize > maxSize {
