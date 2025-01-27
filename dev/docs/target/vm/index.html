@@ -2026,6 +2026,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#supported-architectures" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8086,6 +8097,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#supported-architectures" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8325,6 +8347,11 @@ See <a href="../../scanner/license/">here</a> for the detail.</p>
 <h2 id="sbom-generation">SBOM generation<a class="headerlink" href="#sbom-generation" title="Permanent link">&para;</a></h2>
 <p>Trivy can generate SBOM for VM images.
 See <a href="../../supply-chain/sbom/">here</a> for the detail.</p>
+<h2 id="scan-cache">Scan Cache<a class="headerlink" href="#scan-cache" title="Permanent link">&para;</a></h2>
+<p>When scanning AMI or EBS snapshots, it stores analysis results in the cache, using the snapshot ID.
+Scanning the same snapshot several times skips analysis if the cache is already available.</p>
+<p>When scanning local files, it doesn't use the cache by default.</p>
+<p>More details are available in the <a href="../../configuration/cache/#scan-cache-backend">cache documentation</a>.</p>
 <h2 id="supported-architectures">Supported Architectures<a class="headerlink" href="#supported-architectures" title="Permanent link">&para;</a></h2>
 <h3 id="virtual-machine-images">Virtual machine images<a class="headerlink" href="#virtual-machine-images" title="Permanent link">&para;</a></h3>
 <table>

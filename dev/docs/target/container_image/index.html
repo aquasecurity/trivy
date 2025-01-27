@@ -2012,6 +2012,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8268,6 +8279,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8747,6 +8769,10 @@ For an overview of Trivy's Compliance feature, including working with custom com
 </div>
 <h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
 <p>Please reference <a href="../../advanced/private-registries/">this page</a>.</p>
+<h2 id="scan-cache">Scan Cache<a class="headerlink" href="#scan-cache" title="Permanent link">&para;</a></h2>
+<p>When scanning container images, it stores analysis results in the cache, using the image ID and the layer IDs as the key.
+This approach enables faster scans of the same container image or different images that share layers.</p>
+<p>More details are available in the <a href="../../configuration/cache/#scan-cache-backend">cache documentation</a>.</p>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h2>
 <h3 id="scan-image-on-a-specific-architecture-and-os">Scan Image on a specific Architecture and OS<a class="headerlink" href="#scan-image-on-a-specific-architecture-and-os" title="Permanent link">&para;</a></h3>
 <p>By default, Trivy loads an image on a "linux/amd64" machine.

@@ -1904,6 +1904,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7890,6 +7901,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8058,6 +8080,10 @@ See <a href="../../scanner/license/">here</a> for the detail.</p>
 <h2 id="sbom-generation">SBOM generation<a class="headerlink" href="#sbom-generation" title="Permanent link">&para;</a></h2>
 <p>Trivy can generate SBOM for code repositories.
 See <a href="../../supply-chain/sbom/">here</a> for the detail.</p>
+<h2 id="scan-cache">Scan Cache<a class="headerlink" href="#scan-cache" title="Permanent link">&para;</a></h2>
+<p>When scanning git repositories, it stores analysis results in the cache, using the latest commit hash as the key.
+Note that the cache is not used when the repository is dirty, otherwise Trivy will miss the files that are not committed.</p>
+<p>More details are available in the <a href="../../configuration/cache/#scan-cache-backend">cache documentation</a>.</p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <p>The following flags and environmental variables are available for remote git repositories.</p>
 <h3 id="scanning-a-branch">Scanning a Branch<a class="headerlink" href="#scanning-a-branch" title="Permanent link">&para;</a></h3>

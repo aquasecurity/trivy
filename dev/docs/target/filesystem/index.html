@@ -1838,6 +1838,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -7806,6 +7817,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#scan-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -7904,6 +7926,12 @@ See <a href="../../scanner/license/">here</a> for the detail.</p>
 <h2 id="sbom-generation">SBOM generation<a class="headerlink" href="#sbom-generation" title="Permanent link">&para;</a></h2>
 <p>Trivy can generate SBOM for local projects.
 See <a href="../../supply-chain/sbom/">here</a> for the detail.</p>
+<h2 id="scan-cache">Scan Cache<a class="headerlink" href="#scan-cache" title="Permanent link">&para;</a></h2>
+<p>When scanning local projects, it doesn't use the cache by default.
+However, when the local project is a git repository with clean status and the cache backend other than the memory one is enabled, it stores analysis results, using the latest commit hash as the key.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>fs<span class="w"> </span>--cache-backend<span class="w"> </span>fs<span class="w"> </span>/path/to/git/repo
+</code></pre></div>
+<p>More details are available in the <a href="../../configuration/cache/#scan-cache-backend">cache documentation</a>.</p>
 
 
 

@@ -7880,9 +7880,7 @@ It supports three types of backends for this cache: </p>
 </li>
 </ul>
 <h3 id="local-file-system">Local File System<a class="headerlink" href="#local-file-system" title="Permanent link">&para;</a></h3>
-<p>The local file system backend is the default choice for container and VM image scans.
-When scanning container images, it stores analysis results on a per-layer basis, using layer IDs as keys.
-This approach enables faster scans of the same container image or different images that share layers.</p>
+<p>The local file system backend is the default choice for container image, VM image and repository scans.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Internally, this backend uses <a href="https://github.com/etcd-io/bbolt">BoltDB</a>, which has an important limitation: only one process can access the cache at a time.
@@ -7892,7 +7890,7 @@ For more details on this limitation, refer to the <a href="https://aquasecurity.
 <h3 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">&para;</a></h3>
 <p>The memory backend stores analysis results in memory, which means the cache is discarded when the process ends.
 This makes it useful in scenarios where caching is not required or desired.
-It serves as the default for repository, filesystem and SBOM scans and can also be employed for container image scans when caching is unnecessary.</p>
+It serves as the default for filesystem and SBOM scans and can also be employed for container image scans when caching is unnecessary.</p>
 <p>To use the memory backend for a container image scan, you can use the following command:</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>debian:11<span class="w"> </span>--cache-backend<span class="w"> </span>memory
 </code></pre></div>
