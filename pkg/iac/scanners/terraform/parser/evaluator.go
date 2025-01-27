@@ -38,6 +38,9 @@ type evaluator struct {
 	parentParser      *Parser
 	allowDownloads    bool
 	skipCachedModules bool
+	// stepHooks are functions that are called after each evaluation step.
+	// They can be used to provide additional semantics to other terraform blocks.
+	stepHooks []EvaluateStepHook
 }
 
 func newEvaluator(
@@ -55,6 +58,7 @@ func newEvaluator(
 	logger *log.Logger,
 	allowDownloads bool,
 	skipCachedModules bool,
+	stepHooks []EvaluateStepHook,
 ) *evaluator {
 
 	// create a context to store variables and make functions available
@@ -87,8 +91,11 @@ func newEvaluator(
 		logger:            logger,
 		allowDownloads:    allowDownloads,
 		skipCachedModules: skipCachedModules,
+		stepHooks:         stepHooks,
 	}
 }
+
+type EvaluateStepHook func(ctx *tfcontext.Context, blocks terraform.Blocks, inputVars map[string]cty.Value)
 
 func (e *evaluator) evaluateStep() {
 
@@ -103,6 +110,10 @@ func (e *evaluator) evaluateStep() {
 	e.ctx.Set(e.getValuesByBlockType("data"), "data")
 	e.ctx.Set(e.getValuesByBlockType("output"), "output")
 	e.ctx.Set(e.getValuesByBlockType("module"), "module")
+
+	for _, hook := range e.stepHooks {
+		hook(e.ctx, e.blocks, e.inputVars)
+	}
 }
 
 // exportOutputs is used to export module outputs to the parent module

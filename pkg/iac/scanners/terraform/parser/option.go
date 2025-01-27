@@ -8,6 +8,12 @@ import (
 
 type Option func(p *Parser)
 
+func OptionWithEvalHook(hooks EvaluateStepHook) Option {
+	return func(p *Parser) {
+		p.stepHooks = append(p.stepHooks, hooks)
+	}
+}
+
 func OptionWithTFVarsPaths(paths ...string) Option {
 	return func(p *Parser) {
 		p.tfvarsPaths = paths
