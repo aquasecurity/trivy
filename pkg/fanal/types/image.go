@@ -53,6 +53,7 @@ type ImageOptions struct {
 	PodmanOptions     PodmanOptions
 	ContainerdOptions ContainerdOptions
 	ImageSources      ImageSources
+	MaxImageSize      int64
 }
 
 type DockerOptions struct {
