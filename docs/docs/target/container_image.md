@@ -463,6 +463,12 @@ trivy image --compliance docker-cis-1.6.0 [YOUR_IMAGE_NAME]
 ## Authentication
 Please reference [this page](../advanced/private-registries/index.md).
 
+## Scan Cache
+When scanning container images, it stores analysis results in the cache, using the image ID and the layer IDs as the key.
+This approach enables faster scans of the same container image or different images that share layers.
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
+
 ## Options
 ### Scan Image on a specific Architecture and OS
 By default, Trivy loads an image on a "linux/amd64" machine.

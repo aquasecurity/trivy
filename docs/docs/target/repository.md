@@ -109,6 +109,12 @@ $ trivy repo --scanners license (REPO_PATH | REPO_URL)
 Trivy can generate SBOM for code repositories.
 See [here](../supply-chain/sbom.md) for the detail.
 
+## Scan Cache
+When scanning git repositories, it stores analysis results in the cache, using the latest commit hash as the key.
+Note that the cache is not used when the repository is dirty, otherwise Trivy will miss the files that are not committed.
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
+
 ## References
 The following flags and environmental variables are available for remote git repositories.
 
