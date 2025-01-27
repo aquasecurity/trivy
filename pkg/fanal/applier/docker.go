@@ -232,6 +232,12 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		}
 	}
 
+	// De-duplicate same debian packages from different dirs
+	// cf. https://github.com/aquasecurity/trivy/issues/8297
+	mergedLayer.Packages = lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
+		return pkg.ID
+	})
+
 	for _, app := range mergedLayer.Applications {
 		for i, pkg := range app.Packages {
 			// Skip lookup for SBOM
