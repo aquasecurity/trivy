@@ -956,7 +956,7 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	if a == nil {
 		return nil
 	}
-	refs := a.extractReferences()
+	refs := a.referencesFromExpression(a.hclAttribute.Expr)
 	for _, block := range blocks {
 		for _, ref := range refs {
 			if ref.TypeLabel() == "each" && block.HasChild("for_each") {
@@ -967,77 +967,31 @@ func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	return refs
 }
 
-// nolint
-func (a *Attribute) referencesFromExpression(expression hcl.Expression) []*Reference {
-	var refs []*Reference
-	switch t := expression.(type) {
-	case *hclsyntax.ParenthesesExpr:
-		refs = append(refs, a.referencesFromExpression(t.Expression)...)
-	case *hclsyntax.ObjectConsKeyExpr:
-		refs = append(refs, a.referencesFromExpression(t.Wrapped)...)
-	case *hclsyntax.ObjectConsExpr:
-		for _, item := range t.Items {
-			refs = append(refs, a.referencesFromExpression(item.KeyExpr)...)
-			refs = append(refs, a.referencesFromExpression(item.ValueExpr)...)
+func (a *Attribute) referencesFromExpression(expr hcl.Expression) []*Reference {
+	if reflect.TypeOf(expr).String() == "*json.expression" {
+		if ref, err := createDotReferenceFromTraversal(a.module, expr.Variables()...); err == nil {
+			return []*Reference{ref}
 		}
-	case *hclsyntax.ConditionalExpr:
-		if ref, err := createDotReferenceFromTraversal(a.module, t.TrueResult.Variables()...); err == nil {
-			refs = append(refs, ref)
-		}
-		if ref, err := createDotReferenceFromTraversal(a.module, t.FalseResult.Variables()...); err == nil {
-			refs = append(refs, ref)
-		}
-		if ref, err := createDotReferenceFromTraversal(a.module, t.Condition.Variables()...); err == nil {
-			refs = append(refs, ref)
-		}
-	case *hclsyntax.ScopeTraversalExpr:
-		if ref, err := createDotReferenceFromTraversal(a.module, t.Variables()...); err == nil {
-			refs = append(refs, ref)
-		}
-	case *hclsyntax.TemplateWrapExpr:
-		refs = a.referencesFromExpression(t.Wrapped)
-	case *hclsyntax.TemplateExpr:
-		for _, part := range t.Parts {
-			ref, err := createDotReferenceFromTraversal(a.module, part.Variables()...)
-			if err != nil {
-				continue
-			}
-			refs = append(refs, ref)
-		}
-	case *hclsyntax.TupleConsExpr:
-		for _, v := range t.Variables() {
-			if ref, err := createDotReferenceFromTraversal(a.module, v); err == nil {
-				refs = append(refs, ref)
-			}
-		}
-	case *hclsyntax.RelativeTraversalExpr:
-		switch s := t.Source.(type) {
-		case *hclsyntax.IndexExpr:
-			if collectionRef, err := createDotReferenceFromTraversal(a.module, s.Collection.Variables()...); err == nil {
-				key, _ := s.Key.Value(a.ctx.Inner())
-				collectionRef.SetKey(key)
-				refs = append(refs, collectionRef)
-			}
-		default:
-			if ref, err := createDotReferenceFromTraversal(a.module, t.Source.Variables()...); err == nil {
-				refs = append(refs, ref)
-			}
-		}
-	default:
-		if reflect.TypeOf(expression).String() == "*json.expression" {
-			if ref, err := createDotReferenceFromTraversal(a.module, expression.Variables()...); err == nil {
-				refs = append(refs, ref)
-			}
-		}
-	}
-	return refs
-}
-
-func (a *Attribute) extractReferences() []*Reference {
-	if a == nil {
 		return nil
 	}
-	return a.referencesFromExpression(a.hclAttribute.Expr)
+
+	vars := expr.Variables()
+	refs := make([]*Reference, 0, len(vars))
+	for _, v := range vars {
+		ref, err := createDotReferenceFromTraversal(a.module, v)
+		if err != nil {
+			continue
+		}
+
+		if relExpr, ok := expr.(*hclsyntax.RelativeTraversalExpr); ok {
+			if idxExpr, ok := relExpr.Source.(*hclsyntax.IndexExpr); ok {
+				key, _ := idxExpr.Key.Value(a.ctx.Inner())
+				ref.SetKey(key)
+			}
+		}
+		refs = append(refs, ref)
+	}
+	return refs
 }
 
 func (a *Attribute) IsResourceBlockReference(resourceType string) bool {

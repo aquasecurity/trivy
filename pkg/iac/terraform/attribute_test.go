@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/hashicorp/hcl/v2/json"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
@@ -27,6 +28,14 @@ func Test_AllReferences(t *testing.T) {
 		{
 			input: "var.foo",
 			refs:  []string{"variable.foo"},
+		},
+		{
+			input: "resource.foo.bar[local.idx].name",
+			refs:  []string{"foo.bar", "locals.idx"},
+		},
+		{
+			input: "resource.foo.bar[0].name",
+			refs:  []string{"foo.bar[0].name"},
 		},
 		{
 			input: "resource.aws_instance.id",
@@ -63,9 +72,9 @@ func Test_AllReferences(t *testing.T) {
 		t.Run(test.input, func(t *testing.T) {
 			ctx := context.NewContext(&hcl.EvalContext{}, nil)
 
-			exp, diags := hclsyntax.ParseExpression([]byte(test.input), "", hcl.Pos{Line: 1, Column: 1})
-			if diags != nil && diags.HasErrors() {
-				t.Fatal(diags.Error())
+			exp, diag := hclsyntax.ParseExpression([]byte(test.input), "", hcl.Pos{Line: 1, Column: 1})
+			if diag.HasErrors() {
+				require.NoError(t, diag)
 			}
 
 			a := NewAttribute(&hcl.Attribute{
@@ -82,6 +91,42 @@ func Test_AllReferences(t *testing.T) {
 			}
 
 			require.ElementsMatch(t, test.refs, humanRefs)
+		})
+	}
+}
+
+func Test_AllReferences_JSON(t *testing.T) {
+	tests := []struct {
+		src      string
+		expected []string
+	}{
+		{
+			src:      `"hello ${noun}"`,
+			expected: []string{"noun"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.src, func(t *testing.T) {
+			expr, diag := json.ParseExpression([]byte(tt.src), "")
+			if diag.HasErrors() {
+				require.NoError(t, diag)
+			}
+
+			attr := NewAttribute(&hcl.Attribute{
+				Name:      "test",
+				Expr:      expr,
+				Range:     hcl.Range{},
+				NameRange: hcl.Range{},
+			}, context.NewContext(&hcl.EvalContext{}, nil), "", types.Metadata{}, Reference{}, "", nil)
+
+			refs := attr.AllReferences()
+			humanRefs := make([]string, 0, len(refs))
+			for _, ref := range refs {
+				humanRefs = append(humanRefs, ref.HumanReadable())
+			}
+
+			require.ElementsMatch(t, tt.expected, humanRefs)
 		})
 	}
 }
