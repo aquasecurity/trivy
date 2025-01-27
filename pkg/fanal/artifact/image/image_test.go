@@ -2267,7 +2267,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			artifactOpt: artifact.Option{
 				ImageOption: types.ImageOptions{MaxImageSize: units.MB * 1},
 			},
-			wantErr: "the accumulated size of uncompressed layers 2.1MB exceeds maximum allowed size 1MB",
+			wantErr: "uncompressed layers size 2.1MB exceeds maximum allowed size 1MB",
 		},
 	}
 	for _, tt := range tests {
