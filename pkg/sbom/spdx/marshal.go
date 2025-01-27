@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -635,7 +636,7 @@ func calcSPDXID(h Hash, v any) (string, error) {
 		return "", xerrors.Errorf("could not build component ID for %+v: %w", v, err)
 	}
 
-	return fmt.Sprintf("%x", f), nil
+	return strconv.FormatUint(f, 16), nil
 }
 
 func camelCase(inputUnderScoreStr string) (camelCase string) {
