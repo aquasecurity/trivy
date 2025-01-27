@@ -2056,6 +2056,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#prevent-scanning-oversized-container-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prevent scanning oversized container images
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -8301,6 +8312,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#prevent-scanning-oversized-container-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prevent scanning oversized container images
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -8768,6 +8790,19 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 <p>You can configure Podman daemon socket with <code>--podman-host</code>.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--podman-host<span class="w"> </span>/run/user/1000/podman/podman.sock<span class="w"> </span>YOUR_IMAGE
 </code></pre></div>
+<h3 id="prevent-scanning-oversized-container-images">Prevent scanning oversized container images<a class="headerlink" href="#prevent-scanning-oversized-container-images" title="Permanent link">&para;</a></h3>
+<p>Use the <code>--max-image-size</code> flag to avoid scanning images that exceed a specified size. The size is specified in a human-readable format (e.g., <code>100MB</code>, <code>10GB</code>). If the compressed image size exceeds the specified threshold, an error is returned immediately. Otherwise, all layers are pulled, stored in a temporary folder, and their uncompressed size is verified before scanning. Temporary layers are always cleaned up, even after a successful scan.</p>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<p>Example Usage:
+<div class="highlight"><pre><span></span><code><span class="c1"># Limit uncompressed image size to 10GB</span>
+$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--max-image-size<span class="o">=</span>10GB<span class="w"> </span>myapp:latest
+</code></pre></div></p>
+<p>Error Output:
+<div class="highlight"><pre><span></span><code>Error:<span class="w"> </span>uncompressed<span class="w"> </span>image<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>15GB<span class="o">)</span><span class="w"> </span>exceeds<span class="w"> </span>maximum<span class="w"> </span>allowed<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>10GB<span class="o">)</span>
+</code></pre></div></p>
 
 
 
