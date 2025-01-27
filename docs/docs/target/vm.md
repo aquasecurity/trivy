@@ -182,6 +182,14 @@ $ trivy vm --scanners license [YOUR_VM_IMAGE]
 Trivy can generate SBOM for VM images.
 See [here](../supply-chain/sbom.md) for the detail.
 
+## Scan Cache
+When scanning AMI or EBS snapshots, it stores analysis results in the cache, using the snapshot ID.
+Scanning the same snapshot several times skips analysis if the cache is already available.
+
+When scanning local files, it doesn't use the cache by default.
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
+
 ## Supported Architectures
 
 ### Virtual machine images
