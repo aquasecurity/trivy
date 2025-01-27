@@ -522,8 +522,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 				DisabledAnalyzers: tt.args.disabledAnalyzers,
 			})
 			if err != nil && tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
@@ -549,8 +548,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 
 			wg.Wait()
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 

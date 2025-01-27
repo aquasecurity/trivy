@@ -95,8 +95,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, tt.input)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			} else {
 				require.NoError(t, err)

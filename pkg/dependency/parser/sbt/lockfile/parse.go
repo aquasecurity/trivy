@@ -5,9 +5,9 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/liamg/jfather"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
