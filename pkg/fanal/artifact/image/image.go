@@ -246,6 +246,10 @@ func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
 
 	imageSize, err := a.imageSize(ctx, diffIDs)
 	if err != nil {
+		var uerr *trivyTypes.UserError
+		if errors.As(err, &uerr) {
+			return uerr
+		}
 		return xerrors.Errorf("failed to calculate image size: %w", err)
 	}
 
@@ -281,6 +285,7 @@ func (a Artifact) compressedImageSize(diffIDs []string) (int64, error) {
 
 func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error) {
 	var imageSize int64
+	var completedLayers int
 
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, diffIDs,
 		func(_ context.Context, diffID string) (int64, error) {
@@ -292,6 +297,19 @@ func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error
 		},
 		func(layerSize int64) error {
 			imageSize += layerSize
+			completedLayers += 1
+			// If the layer size exceeds the limit during loading, return an error immediately.
+			// Otherwise, if the image is fully loaded, check the size later.
+			if imageSize > a.artifactOption.ImageOption.MaxImageSize &&
+				completedLayers != len(diffIDs) {
+				return &trivyTypes.UserError{
+					Message: fmt.Sprintf(
+						"the accumulated size of uncompressed layers %s exceeds maximum allowed size %s",
+						units.HumanSizeWithPrecision(float64(imageSize), 3),
+						units.HumanSize(float64(a.artifactOption.ImageOption.MaxImageSize)),
+					),
+				}
+			}
 			return nil
 		},
 	)
