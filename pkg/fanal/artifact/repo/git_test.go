@@ -331,13 +331,10 @@ func Test_newURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := newURL(tt.args.rawurl)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
-
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got.String())
 		})
 	}

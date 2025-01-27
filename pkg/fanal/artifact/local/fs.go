@@ -1,8 +1,10 @@
 package local
 
 import (
+	"cmp"
 	"context"
 	"crypto/sha256"
+	"errors"
 	"os"
 	"path"
 	"path/filepath"
@@ -12,6 +14,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/google/wire"
 	"github.com/opencontainers/go-digest"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -63,9 +66,11 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
+	prefix := lo.Ternary(opt.Type == artifact.TypeRepository, "repo", "fs")
+
 	art := Artifact{
 		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),
-		logger:         log.WithPrefix("fs"),
+		logger:         log.WithPrefix(prefix),
 		cache:          c,
 		walker:         w,
 		analyzer:       a,
@@ -73,11 +78,15 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 		artifactOption: opt,
 	}
 
+	art.logger.Debug("Analyzing...", log.String("root", art.rootPath),
+		lo.Ternary(opt.Original != "", log.String("original", opt.Original), log.Nil))
+
 	// Check if the directory is a git repository and clean
 	if hash, err := gitCommitHash(art.rootPath); err == nil {
 		art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", hash))
 		art.commitHash = hash
-	} else {
+	} else if !errors.Is(err, git.ErrRepositoryNotExists) {
+		// Only log if the file path is a git repository
 		art.logger.Debug("Random cache key will be used", log.Err(err))
 	}
 
@@ -134,8 +143,8 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 			// Cache hit
 			a.logger.DebugContext(ctx, "Cache hit", log.String("key", cacheKey))
 			return artifact.Reference{
-				Name:    a.rootPath,
-				Type:    artifact.TypeFilesystem,
+				Name:    cmp.Or(a.artifactOption.Original, a.rootPath),
+				Type:    a.artifactOption.Type,
 				ID:      cacheKey,
 				BlobIDs: []string{cacheKey},
 			}, nil
@@ -224,13 +233,13 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	if err == nil && len(b) != 0 {
 		hostName = strings.TrimSpace(string(b))
 	} else {
-		// To slash for Windows
-		hostName = filepath.ToSlash(a.rootPath)
+		target := cmp.Or(a.artifactOption.Original, a.rootPath)
+		hostName = filepath.ToSlash(target) // To slash for Windows
 	}
 
 	return artifact.Reference{
 		Name:    hostName,
-		Type:    artifact.TypeFilesystem,
+		Type:    a.artifactOption.Type,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
