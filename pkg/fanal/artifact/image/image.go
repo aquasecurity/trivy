@@ -297,7 +297,8 @@ func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error
 			totalSize += layerSize
 			completedLayers += 1
 			// If the layer size exceeds the limit during loading, return an error immediately.
-			// Otherwise, if the image is fully loaded, check the size later.
+			// Otherwise, if the image is fully loaded, check the size later
+			// to possibly work with the image
 			if totalSize > a.artifactOption.ImageOption.MaxImageSize &&
 				completedLayers != len(diffIDs) {
 				return a.imageSizeError("uncompressed layers", totalSize)
