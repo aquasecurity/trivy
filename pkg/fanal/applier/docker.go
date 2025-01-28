@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type Config struct {
@@ -236,10 +237,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 	// De-duplicate same debian packages from different dirs
 	// cf. https://github.com/aquasecurity/trivy/issues/8297
-	packages := lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
+	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
 		return cmp.Or(pkg.ID, fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)))
-	})
-	mergedLayer.Packages = lo.Ternary(len(packages) > 0, packages, nil)
+	}))
 
 	for _, app := range mergedLayer.Applications {
 		for i, pkg := range app.Packages {
