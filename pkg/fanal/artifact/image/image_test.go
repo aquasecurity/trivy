@@ -2294,11 +2294,11 @@ func TestArtifact_InspectWithMaxImageSize(t *testing.T) {
 			wantErr: "compressed image size 2.44kB exceeds maximum allowed size 1kB",
 		},
 		{
-			name: "uncompressed image size is larger than the maximum",
+			name: "uncompressed layers size is larger than the maximum",
 			artifactOpt: artifact.Option{
 				ImageOption: types.ImageOptions{MaxImageSize: units.KB * 3},
 			},
-			wantErr: "uncompressed image size 5.12kB exceeds maximum allowed size 3kB",
+			wantErr: "uncompressed layers size 5.12kB exceeds maximum allowed size 3kB",
 		},
 	}
 

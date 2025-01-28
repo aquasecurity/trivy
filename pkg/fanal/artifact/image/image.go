@@ -230,60 +230,49 @@ func (a Artifact) imageSizeError(typ string, size int64) error {
 }
 
 func (a Artifact) checkImageSize(ctx context.Context, diffIDs []string) error {
-	maxSize := a.artifactOption.ImageOption.MaxImageSize
-	if maxSize == 0 {
+	if a.artifactOption.ImageOption.MaxImageSize == 0 {
 		return nil
 	}
 
-	compressedSize, err := a.compressedImageSize(diffIDs)
-	if err != nil {
+	if err := a.checkCompressedImageSize(diffIDs); err != nil {
 		return xerrors.Errorf("failed to get compressed image size: %w", err)
 	}
 
-	if compressedSize > maxSize {
-		return a.imageSizeError("compressed image", compressedSize)
-	}
-
-	imageSize, err := a.imageSize(ctx, diffIDs)
-	if err != nil {
-		var uerr *trivyTypes.UserError
-		if errors.As(err, &uerr) {
-			return uerr
-		}
+	if err := a.checkUncompressedImageSize(ctx, diffIDs); err != nil {
 		return xerrors.Errorf("failed to calculate image size: %w", err)
-	}
-
-	if imageSize > maxSize {
-		return a.imageSizeError("uncompressed image", imageSize)
 	}
 	return nil
 }
 
-func (a Artifact) compressedImageSize(diffIDs []string) (int64, error) {
+func (a Artifact) checkCompressedImageSize(diffIDs []string) error {
 	var totalSize int64
+
 	for _, diffID := range diffIDs {
 		h, err := v1.NewHash(diffID)
 		if err != nil {
-			return -1, xerrors.Errorf("invalid layer ID (%s): %w", diffID, err)
+			return xerrors.Errorf("invalid layer ID (%s): %w", diffID, err)
 		}
 
 		layer, err := a.image.LayerByDiffID(h)
 		if err != nil {
-			return -1, xerrors.Errorf("failed to get the layer (%s): %w", diffID, err)
+			return xerrors.Errorf("failed to get the layer (%s): %w", diffID, err)
 		}
 		layerSize, err := layer.Size()
 		if err != nil {
-			return -1, xerrors.Errorf("failed to get layer size: %w", err)
+			return xerrors.Errorf("failed to get layer size: %w", err)
 		}
 		totalSize += layerSize
 	}
 
-	return totalSize, nil
+	if totalSize > a.artifactOption.ImageOption.MaxImageSize {
+		return a.imageSizeError("compressed image", totalSize)
+	}
+
+	return nil
 }
 
-func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error) {
+func (a Artifact) checkUncompressedImageSize(ctx context.Context, diffIDs []string) error {
 	var totalSize int64
-	var completedLayers int
 
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, diffIDs,
 		func(_ context.Context, diffID string) (int64, error) {
@@ -295,12 +284,7 @@ func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error
 		},
 		func(layerSize int64) error {
 			totalSize += layerSize
-			completedLayers += 1
-			// If the layer size exceeds the limit during loading, return an error immediately.
-			// Otherwise, if the image is fully loaded, check the size later
-			// to possibly work with the image
-			if totalSize > a.artifactOption.ImageOption.MaxImageSize &&
-				completedLayers != len(diffIDs) {
+			if totalSize > a.artifactOption.ImageOption.MaxImageSize {
 				return a.imageSizeError("uncompressed layers", totalSize)
 			}
 			return nil
@@ -308,10 +292,10 @@ func (a Artifact) imageSize(ctx context.Context, diffIDs []string) (int64, error
 	)
 
 	if err := p.Do(ctx); err != nil {
-		return -1, xerrors.Errorf("pipeline error: %w", err)
+		return xerrors.Errorf("pipeline error: %w", err)
 	}
 
-	return totalSize, nil
+	return nil
 }
 
 func (a Artifact) saveLayer(diffID string) (int64, error) {
