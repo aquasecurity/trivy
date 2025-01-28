@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
@@ -311,9 +312,9 @@ func rawToString(raw any) string {
 	}
 	switch t := raw.(type) {
 	case int:
-		return fmt.Sprintf("%d", t)
+		return strconv.Itoa(t)
 	case bool:
-		return fmt.Sprintf("%t", t)
+		return strconv.FormatBool(t)
 	case float64:
 		return fmt.Sprintf("%f", t)
 	case string:

@@ -1,16 +1,20 @@
 package local
 
 import (
+	"cmp"
 	"context"
 	"crypto/sha256"
+	"errors"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"sync"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/google/wire"
 	"github.com/opencontainers/go-digest"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -19,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -39,12 +44,15 @@ type Walker interface {
 
 type Artifact struct {
 	rootPath       string
+	logger         *log.Logger
 	cache          cache.ArtifactCache
 	walker         Walker
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
+
+	commitHash string // only set when the git repository is clean
 }
 
 func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
@@ -58,17 +66,92 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
-	return Artifact{
+	opt.Type = cmp.Or(opt.Type, artifact.TypeFilesystem)
+	prefix := lo.Ternary(opt.Type == artifact.TypeRepository, "repo", "fs")
+
+	art := Artifact{
 		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),
+		logger:         log.WithPrefix(prefix),
 		cache:          c,
 		walker:         w,
 		analyzer:       a,
 		handlerManager: handlerManager,
 		artifactOption: opt,
-	}, nil
+	}
+
+	art.logger.Debug("Analyzing...", log.String("root", art.rootPath),
+		lo.Ternary(opt.Original != "", log.String("original", opt.Original), log.Nil))
+
+	// Check if the directory is a git repository and clean
+	if hash, err := gitCommitHash(art.rootPath); err == nil {
+		art.logger.Debug("Using the latest commit hash for calculating cache key", log.String("commit_hash", hash))
+		art.commitHash = hash
+	} else if !errors.Is(err, git.ErrRepositoryNotExists) {
+		// Only log if the file path is a git repository
+		art.logger.Debug("Random cache key will be used", log.Err(err))
+	}
+
+	return art, nil
+}
+
+// gitCommitHash returns the latest commit hash if the git repository is clean, otherwise returns an error
+func gitCommitHash(dir string) (string, error) {
+	repo, err := git.PlainOpen(dir)
+	if err != nil {
+		return "", xerrors.Errorf("failed to open git repository: %w", err)
+	}
+
+	// Get the working tree
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return "", xerrors.Errorf("failed to get worktree: %w", err)
+	}
+
+	// Get the current status
+	status, err := worktree.Status()
+	if err != nil {
+		return "", xerrors.Errorf("failed to get status: %w", err)
+	}
+
+	if !status.IsClean() {
+		return "", xerrors.New("repository is dirty")
+	}
+
+	// Get the HEAD commit hash
+	head, err := repo.Head()
+	if err != nil {
+		return "", xerrors.Errorf("failed to get HEAD: %w", err)
+	}
+
+	return head.Hash().String(), nil
 }
 
 func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
+	// Calculate cache key
+	cacheKey, err := a.calcCacheKey()
+	if err != nil {
+		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
+	}
+
+	// Check if the cache exists only when it's a clean git repository
+	if a.commitHash != "" {
+		_, missingBlobs, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
+		if err != nil {
+			return artifact.Reference{}, xerrors.Errorf("unable to get missing blob: %w", err)
+		}
+
+		if len(missingBlobs) == 0 {
+			// Cache hit
+			a.logger.DebugContext(ctx, "Cache hit", log.String("key", cacheKey))
+			return artifact.Reference{
+				Name:    cmp.Or(a.artifactOption.Original, a.rootPath),
+				Type:    a.artifactOption.Type,
+				ID:      cacheKey,
+				BlobIDs: []string{cacheKey},
+			}, nil
+		}
+	}
+
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)
@@ -141,11 +224,6 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 		return artifact.Reference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
-	cacheKey, err := a.calcCacheKey()
-	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
-	}
-
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
@@ -156,29 +234,35 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	if err == nil && len(b) != 0 {
 		hostName = strings.TrimSpace(string(b))
 	} else {
-		// To slash for Windows
-		hostName = filepath.ToSlash(a.rootPath)
+		target := cmp.Or(a.artifactOption.Original, a.rootPath)
+		hostName = filepath.ToSlash(target) // To slash for Windows
 	}
 
 	return artifact.Reference{
 		Name:    hostName,
-		Type:    artifact.TypeFilesystem,
+		Type:    a.artifactOption.Type,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
 }
 
 func (a Artifact) Clean(reference artifact.Reference) error {
+	// Don't delete cache if it's a clean git repository
+	if a.commitHash != "" {
+		return nil
+	}
 	return a.cache.DeleteBlobs(reference.BlobIDs)
 }
 
 func (a Artifact) calcCacheKey() (string, error) {
-	// Generate a random UUID for the cache key
-	id := uuid.New()
+	// If this is a clean git repository, use the commit hash as cache key
+	if a.commitHash != "" {
+		return cache.CalcKey(a.commitHash, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	}
 
-	// Calculate sha256 hash from UUID
+	// For non-git repositories or dirty git repositories, use UUID as cache key
 	h := sha256.New()
-	if _, err := h.Write([]byte(id.String())); err != nil {
+	if _, err := h.Write([]byte(uuid.New().String())); err != nil {
 		return "", xerrors.Errorf("sha256 calculation error: %w", err)
 	}
 

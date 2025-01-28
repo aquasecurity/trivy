@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"golang.org/x/xerrors"
+
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
 )
@@ -132,7 +134,7 @@ func parseTimestamp(ts string) (time.Time, error) {
 			case "Z07:00":
 				what = "UTC offset"
 			case "T":
-				return time.Time{}, fmt.Errorf("not a valid RFC3339 timestamp: missing required time introducer 'T'")
+				return time.Time{}, xerrors.New("not a valid RFC3339 timestamp: missing required time introducer 'T'")
 			case ":", "-":
 				if err.ValueElem == "" {
 					return time.Time{}, fmt.Errorf("not a valid RFC3339 timestamp: end of string where %q is expected", err.LayoutElem)
