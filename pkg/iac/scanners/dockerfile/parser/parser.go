@@ -107,7 +107,7 @@ func originalFromHeredoc(node *parser.Node) string {
 // heredoc processing taken from here
 // https://github.com/moby/buildkit/blob/9a39e2c112b7c98353c27e64602bc08f31fe356e/frontend/dockerfile/dockerfile2llb/convert.go#L1200
 func processHeredoc(node *parser.Node) string {
-	if parser.MustParseHeredoc(node.Next.Value) == nil {
+	if parser.MustParseHeredoc(node.Next.Value) == nil || strings.HasPrefix(node.Heredocs[0].Content, "#!") {
 		// more complex heredoc is passed to the shell as is
 		var sb strings.Builder
 		sb.WriteString(node.Next.Value)
@@ -117,11 +117,6 @@ func processHeredoc(node *parser.Node) string {
 			sb.WriteString(heredoc.Name)
 		}
 		return sb.String()
-	}
-
-	// if heredoc contains shebang, docker creates a file with the contents and runs it
-	if strings.HasPrefix(node.Heredocs[0].Content, "#!") {
-		return "/dev/pipes/" + node.Heredocs[0].Name
 	}
 
 	// simple heredoc and the content is run in a shell

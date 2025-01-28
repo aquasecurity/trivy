@@ -97,7 +97,7 @@ EOF`,
 #!/usr/bin/env python
 print("hello world")
 EOF`,
-			expected: "/dev/pipes/EOF",
+			expected: "<<EOF\n#!/usr/bin/env python\nprint(\"hello world\")\nEOF",
 		},
 	}
 
