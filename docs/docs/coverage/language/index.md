@@ -1,20 +1,18 @@
 # Programming Language
 
-Trivy supports programming languages for 
+Trivy scans programming languages packages in the following scanners: 
 
 - [SBOM][sbom]
 - [Vulnerabilities][vuln]
 - [Licenses][license]
 
+## Pre/Post Build
+Trivy categorizes targets into either Pre-build and Post-build. The files analyzed vary depending on the target type.   
+Pre-build is meant for scanning code projects, where packages are likely in package manager lock files (e.g `package-lock.json`). Post-build is meant for scanning deployable artifacts (e.g vm, container) where packages are likely "installed" (e.g in `node_modules`) and source code (including lock files) is not available.
+
 ## Supported languages
-The files analyzed vary depending on the target.
-This is because Trivy primarily categorizes targets into two groups:
 
-- Pre-build
-- Post-build
-
-If the target is a pre-build project, like a code repository, Trivy will analyze files used for building, such as lock files.
-On the other hand, when the target is a post-build artifact, like a container image, Trivy will analyze installed package metadata like `.gemspec`, binary files, and so on.
+The following table lists the supported languages and the way Trivy scans each language in each target:
 
 | Language             | File                                                                                       | Image[^4] | Rootfs[^5] | Filesystem[^6] | Repository[^7] |
 |----------------------|--------------------------------------------------------------------------------------------|:---------:|:----------:|:--------------:|:--------------:|

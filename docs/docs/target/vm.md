@@ -3,21 +3,35 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-To scan virtual machine (VM) images, you can use the `vm` subcommand.
+Scan virtual machine (VM) images.
 
-## Targets
-The following targets are currently supported:
+`vm` is a post-build target type, which means it scans installed packages. For more information, see [Target types](../coverage/language/index.md#target-types).
 
-- Local file
-- AWS EC2
-    - Amazon Machine Image (AMI)
-    - Amazon Elastic Block Store (EBS) Snapshot
+Usage:
 
-### Local file
-Pass the path to your local VM image file.
+You can scan a VM image file, Amazon Machine Image (AMI), or Amazon Elastic Block Store (EBS) snapshot.
 
-```bash
-$ trivy vm --scanners vuln disk.vmdk
+```shell
+trivy vm disk.vmdk
+trivy vm ami:${your_ami_id}
+trivy vm ebs:${your_ebs_snapshot_id}
+```
+## Scanners
+
+Supported scanners:
+
+- Vulnerabilities
+- Misconfigurations
+- Secrets
+- Licenses
+
+By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](https://trivy.dev/latest/docs/configuration/others/#enabledisable-scanners).
+
+## Local file
+Pass the path to a local VM image file.
+
+```shell
+trivy vm --scanners vuln disk.vmdk
 ```
 
 <details>
@@ -63,127 +77,55 @@ Total: 802 (UNKNOWN: 0, LOW: 17, MEDIUM: 554, HIGH: 221, CRITICAL: 10)
 
 </details>
 
-### Amazon Machine Image (AMI)
-You can specify your AMI ID with the `ami:` prefix.
+## Amazon Machine Image (AMI)
+You can specify an AMI ID with the `ami:` prefix.
+
+AMIs in the marketplace are not supported because the EBS direct APIs don't support that. See [the AWS documentation][ebsapi-elements] for the detail.
 
 ```shell
-$ trivy vm ami:${your_ami_id}
+trivy vm --scanners vuln ami:ami-0123456789abcdefg
 ```
 
-!!! note
-    AMIs in the marketplace are not supported because the EBS direct APIs don't support that.
-    See [the AWS documentation][ebsapi-elements] for the detail.
-
-#### Example
+You can set AWS region via `--aws-region` flag.
 
 ```shell
-$ trivy vm --scanners vuln ami:ami-0123456789abcdefg
+trivy vm --aws-region ap-northeast-1 ami:ami-0123456789abcdefg
 ```
 
-If you want to scan a AMI of non-default setting region, you can set any region via `--aws-region` option.
-
-```shell
-$ trivy vm --aws-region ap-northeast-1 ami:ami-0123456789abcdefg
-```
-
-
-#### Required Actions
+### Required Roles
 Some actions on EBS are also necessary since Trivy scans an EBS snapshot tied to the specified AMI under the hood.
 
-- ec2:DescribeImages
-- ebs:ListSnapshotBlocks
-- ebs:GetSnapshotBlock
+- `ec2:DescribeImages`
+- `ebs:ListSnapshotBlocks`
+- `ebs:GetSnapshotBlock`
 
-### Amazon Elastic Block Store (EBS) Snapshot
+## Amazon Elastic Block Store (EBS) Snapshot
 You can specify your EBS snapshot ID with the `ebs:` prefix.
 
+Public snapshots are not supported because the EBS direct APIs don't support that. See [the AWS documentation][ebsapi-elements] for the detail.
+
 ```shell
-$ trivy vm ebs:${your_ebs_snapshot_id}
+trivy vm --scanners vuln ebs:snap-0123456789abcdefg
 ```
 
-!!! note
-    Public snapshots are not supported because the EBS direct APIs don't support that.
-    See [the AWS documentation][ebsapi-elements] for the detail.
-
-#### Example
+You can set AWS region via `--aws-region` flag.
 
 ```shell
-$ trivy vm --scanners vuln ebs:snap-0123456789abcdefg
-```
-
-
-If you want to scan an EBS Snapshot of non-default setting region, you can set any region via `--aws-region` option.
-
-```shell
-$ trivy vm --aws-region ap-northeast-1 ebs:ebs-0123456789abcdefg
+trivy vm --aws-region ap-northeast-1 ebs:ebs-0123456789abcdefg
 ```
 
 The above command takes a while as it calls EBS API and fetches the EBS blocks.
-If you want to scan the same snapshot several times, you can download the snapshot locally by using [coldsnap][coldsnap] maintained by AWS.
-Then, Trivy can scan the local VM image file.
+If you want to scan the same snapshot several times, you can download the snapshot locally by using [coldsnap][coldsnap] maintained by AWS. Then, Trivy can scan the local VM image file.
 
-```shell
+```bash
 $ coldsnap download snap-0123456789abcdefg disk.img
 $ trivy vm ./disk.img
 ```
 
-#### Required Actions
+### Required Roles
 
-- ebs:ListSnapshotBlocks
-- ebs:GetSnapshotBlock
-
-## Scanners
-Trivy supports VM image scanning for
-
-- Vulnerabilities
-- Misconfigurations
-- Secrets
-- Licenses
-
-### Vulnerabilities
-It is enabled by default.
-You can simply specify your VM image location.
-It detects known vulnerabilities in your VM image.
-See [here](../scanner/vulnerability.md) for the detail.
-
-```
-$ trivy vm [YOUR_VM_IMAGE]
-```
-
-!!! note
-    Scanning `Red Hat` has a limitation, see the [Red Hat](../coverage/os/rhel.md#content-manifests) page for details.
-
-### Misconfigurations
-It is supported, but it is not useful in most cases.
-As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
-If your VM image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners misconfig`.
-
-```
-$ trivy vm --scanners misconfig [YOUR_VM_IMAGE]
-```
-
-### Secrets
-It is enabled by default.
-See [here](../scanner/secret.md) for the detail.
-
-```shell
-$ trivy vm [YOUR_VM_IMAGE]
-```
-
-!!! tip
-    The scanning could be faster if you enable only vulnerability scanning (`--scanners vuln`) because Trivy tries to download only necessary blocks for vulnerability detection.
-
-### Licenses
-It is disabled by default.
-See [here](../scanner/license.md) for the detail.
-
-```shell
-$ trivy vm --scanners license [YOUR_VM_IMAGE]
-```
-
-## SBOM generation
-Trivy can generate SBOM for VM images.
-See [here](../supply-chain/sbom.md) for the detail.
+- `ebs:ListSnapshotBlocks`
+- `ebs:GetSnapshotBlock`
 
 ## Scan Cache
 When scanning AMI or EBS snapshots, it stores analysis results in the cache, using the snapshot ID.
@@ -195,7 +137,7 @@ More details are available in the [cache documentation](../configuration/cache.m
 
 ## Supported Architectures
 
-### Virtual machine images
+Virtual machine images:
 
 | Image format | Support |
 |--------------|:-------:|
@@ -206,7 +148,7 @@ More details are available in the [cache documentation](../configuration/cache.m
 | QCOW2        |         |
 
 
-#### VMDK disk types
+VMDK disk types:
 
 | VMDK disk type              | Support |
 |-----------------------------|:-------:|
@@ -225,8 +167,7 @@ More details are available in the [cache documentation](../configuration/cache.m
 
 Reference: [VMware Virtual Disk Format 1.1.pdf][vmdk]
 
-
-### Disk partitions
+Disk partitions:
 
 | Disk format                  | Support |
 |------------------------------|:-------:|
@@ -235,7 +176,7 @@ Reference: [VMware Virtual Disk Format 1.1.pdf][vmdk]
 | GUID partition table (GPT)   |    ✔    |
 | Logical volume manager (LVM) |         |
 
-### Filesystems
+Filesystems:
 
 | Filesystem format | Support |
 |-------------------|:-------:|
