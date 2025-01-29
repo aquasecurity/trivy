@@ -460,6 +460,7 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		ImageConfigScanners: o.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
 		LicenseCategories:   o.LicenseCategories,
+		LicenseFull:         o.LicenseFull,
 		FilePatterns:        o.FilePatterns,
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,

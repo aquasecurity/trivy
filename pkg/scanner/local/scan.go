@@ -262,17 +262,22 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	scanner := licensing.NewScanner(options.LicenseCategories)
 
 	// License - OS packages
-	var osPkgLicenses []types.DetectedLicense
-	for _, pkg := range target.Packages {
-		for _, license := range pkg.Licenses {
-			osPkgLicenses = append(osPkgLicenses, toDetectedLicense(scanner, license, pkg.Name, ""))
+	if len(target.Packages) > 0 {
+		var osPkgLicenses []types.DetectedLicense
+		for _, pkg := range target.Packages {
+			for _, license := range pkg.Licenses {
+				osPkgLicenses = append(osPkgLicenses, toDetectedLicense(scanner, license, pkg.Name, ""))
+			}
 		}
+		// We only need to add result with OS package licenses if Packages were found.
+		// This is to avoid user confusion.
+		// e.g. when we didn't find packages but show that we didn't find licenses in the Packages.
+		results = append(results, types.Result{
+			Target:   "OS Packages",
+			Class:    types.ClassLicense,
+			Licenses: osPkgLicenses,
+		})
 	}
-	results = append(results, types.Result{
-		Target:   "OS Packages",
-		Class:    types.ClassLicense,
-		Licenses: osPkgLicenses,
-	})
 
 	// License - language-specific packages
 	for _, app := range target.Applications {
@@ -300,26 +305,32 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	}
 
 	// License - file header or license file
-	var fileLicenses []types.DetectedLicense
-	for _, license := range target.Licenses {
-		for _, finding := range license.Findings {
-			category, severity := scanner.Scan(finding.Name)
-			fileLicenses = append(fileLicenses, types.DetectedLicense{
-				Severity:   severity,
-				Category:   category,
-				FilePath:   license.FilePath,
-				Name:       finding.Name,
-				Confidence: finding.Confidence,
-				Link:       finding.Link,
-			})
+	if options.LicenseFull {
+		var fileLicenses []types.DetectedLicense
+		for _, license := range target.Licenses {
+			for _, finding := range license.Findings {
+				category, severity := scanner.Scan(finding.Name)
+				fileLicenses = append(fileLicenses, types.DetectedLicense{
+					Severity:   severity,
+					Category:   category,
+					FilePath:   license.FilePath,
+					Name:       finding.Name,
+					Confidence: finding.Confidence,
+					Link:       finding.Link,
+				})
 
+			}
 		}
+
+		// We only need to add the result with license files if the `--license-full` flag is enabled.
+		// This is to avoid user confusion.
+		// e.g. the user might think that we were looking for licenses but didn't find them.
+		results = append(results, types.Result{
+			Target:   "Loose File License(s)",
+			Class:    types.ClassLicenseFile,
+			Licenses: fileLicenses,
+		})
 	}
-	results = append(results, types.Result{
-		Target:   "Loose File License(s)",
-		Class:    types.ClassLicenseFile,
-		Licenses: fileLicenses,
-	})
 
 	return results
 }

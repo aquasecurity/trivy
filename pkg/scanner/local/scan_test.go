@@ -298,6 +298,7 @@ func TestScanner_Scan(t *testing.T) {
 				options: types.ScanOptions{
 					PkgRelationships: ftypes.Relationships,
 					Scanners:         types.Scanners{types.LicenseScanner},
+					LicenseFull:      true,
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
