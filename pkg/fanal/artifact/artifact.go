@@ -14,6 +14,7 @@ import (
 )
 
 type Option struct {
+	Type              Type
 	AnalyzerGroup     analyzer.Group // It is empty in OSS
 	DisabledAnalyzers []analyzer.Type
 	DisabledHandlers  []types.HandlerType
@@ -29,6 +30,10 @@ type Option struct {
 	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
 	DetectionPriority types.DetectionPriority
+
+	// Original is the original target location, e.g. "github.com/aquasecurity/trivy"
+	// Currently, it is used only for remote git repositories
+	Original string
 
 	// Git repositories
 	RepoBranch string

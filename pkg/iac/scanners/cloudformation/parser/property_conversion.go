@@ -98,7 +98,7 @@ func (p *Property) convertToString() *Property {
 	case cftypes.Int:
 		return p.deriveResolved(cftypes.String, strconv.Itoa(p.AsInt()))
 	case cftypes.Bool:
-		return p.deriveResolved(cftypes.String, fmt.Sprintf("%v", p.AsBool()))
+		return p.deriveResolved(cftypes.String, strconv.FormatBool(p.AsBool()))
 	case cftypes.List:
 		var parts []string
 		for _, property := range p.AsList() {

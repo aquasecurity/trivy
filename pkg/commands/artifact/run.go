@@ -587,6 +587,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 					Host: opts.PodmanHost,
 				},
 				ImageSources: opts.ImageSources,
+				MaxImageSize: opts.MaxImageSize,
 			},
 
 			// For misconfiguration scanning

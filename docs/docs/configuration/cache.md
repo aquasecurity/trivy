@@ -51,9 +51,7 @@ It supports three types of backends for this cache:
     - TTL can be configured via `--cache-ttl`
 
 ### Local File System
-The local file system backend is the default choice for container and VM image scans.
-When scanning container images, it stores analysis results on a per-layer basis, using layer IDs as keys.
-This approach enables faster scans of the same container image or different images that share layers.
+The local file system backend is the default choice for container image, VM image and repository scans.
 
 !!! note
     Internally, this backend uses [BoltDB][boltdb], which has an important limitation: only one process can access the cache at a time.
@@ -63,7 +61,7 @@ This approach enables faster scans of the same container image or different imag
 ### Memory
 The memory backend stores analysis results in memory, which means the cache is discarded when the process ends.
 This makes it useful in scenarios where caching is not required or desired.
-It serves as the default for repository, filesystem and SBOM scans and can also be employed for container image scans when caching is unnecessary.
+It serves as the default for filesystem and SBOM scans and can also be employed for container image scans when caching is unnecessary.
 
 To use the memory backend for a container image scan, you can use the following command:
 

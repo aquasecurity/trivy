@@ -117,3 +117,46 @@ The following example will fail when a critical vulnerability is found or the OS
 ```
 $ trivy image --exit-code 1 --exit-on-eol 1 --severity CRITICAL alpine:3.16.3
 ```
+
+## Mirror Registries
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Trivy supports mirrors for [remote container images](../target/container_image.md#container-registry) and [databases](./db.md).
+
+To configure them, add a list of mirrors along with the host to the [trivy config file](../references/configuration/config-file.md#registry-options).
+
+!!! note
+    Use the `index.docker.io` host for images from `Docker Hub`, even if you don't use that prefix.
+
+Example for `index.docker.io`:
+```yaml
+registry:
+  mirrors:
+    index.docker.io:
+     - mirror.gcr.io
+```
+
+### Registry check procedure
+Trivy uses the following registry order to get the image:
+
+- mirrors in the same order as they are specified in the configuration file
+- source registry
+
+In cases where we can't get the image from the mirror registry (e.g. when authentication fails, image doesn't exist, etc.) - Trivy will check other mirrors (or the source registry if all mirrors have already been checked).
+
+Example:
+```yaml
+registry:
+  mirrors:
+    index.docker.io:
+     - mirror.with.bad.auth // We don't have credentials for this registry
+     - mirror.without.image // Registry doesn't have this image
+```
+
+When we want to get the image `alpine` with the settings above. The logic will be as follows:
+
+1. Try to get the image from `mirror.with.bad.auth/library/alpine`, but we get an error because there are no credentials for this registry.
+2. Try to get the image from `mirror.without.image/library/alpine`, but we get an error because this registry doesn't have this image (but most likely it will be an error about authorization).
+3. Get the image from `index.docker.io` (the original registry).

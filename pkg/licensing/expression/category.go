@@ -1,5 +1,18 @@
 package expression
 
+import (
+	"encoding/json"
+	"strings"
+	"sync"
+
+	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
+
+	_ "embed"
+)
+
 // Canonical names of the licenses.
 // ported from https://github.com/google/licenseclassifier/blob/7c62d6fe8d3aa2f39c4affb58c9781d9dc951a2d/license_type.go#L24-L177
 const (
@@ -359,3 +372,70 @@ var (
 		ZeroBSD,
 	}
 )
+
+var spdxLicenses = set.New[string]()
+
+var initSpdxLicenses = sync.OnceFunc(func() {
+	if spdxLicenses.Size() > 0 {
+		return
+	}
+
+	licenseSlices := [][]string{
+		ForbiddenLicenses,
+		RestrictedLicenses,
+		ReciprocalLicenses,
+		NoticeLicenses,
+		PermissiveLicenses,
+		UnencumberedLicenses,
+	}
+
+	for _, licenseSlice := range licenseSlices {
+		spdxLicenses.Append(licenseSlice...)
+	}
+
+	// Save GNU licenses with "-or-later" and `"-only" suffixes
+	for _, l := range GnuLicenses {
+		license := SimpleExpr{
+			License: l,
+		}
+		spdxLicenses.Append(license.String())
+
+		license.HasPlus = true
+		spdxLicenses.Append(license.String())
+	}
+})
+
+//go:embed exceptions.json
+var exceptions []byte
+
+var spdxExceptions map[string]SimpleExpr
+
+var initSpdxExceptions = sync.OnceFunc(func() {
+	if len(spdxExceptions) > 0 {
+		return
+	}
+
+	var exs []string
+	if err := json.Unmarshal(exceptions, &exs); err != nil {
+		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX exception file", log.Err(err))
+		return
+	}
+	spdxExceptions = lo.SliceToMap(exs, func(exception string) (string, SimpleExpr) {
+		return strings.ToUpper(exception), SimpleExpr{License: exception}
+	})
+})
+
+// ValidateSPDXLicense returns true if SPDX license list contain licenseID
+func ValidateSPDXLicense(license string) bool {
+	initSpdxLicenses()
+
+	return spdxLicenses.Contains(license)
+}
+
+// ValidateSPDXException returns true if SPDX exception list contain exceptionID
+func ValidateSPDXException(exception string) bool {
+	initSpdxExceptions()
+
+	_, ok := spdxExceptions[strings.ToUpper(exception)]
+	return ok
+}
