@@ -84,16 +84,14 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 			createdBy = strings.TrimPrefix(h.CreatedBy, "/bin/sh -c #(nop)")
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
-			createdBy = strings.ReplaceAll(h.CreatedBy, "/bin/sh -c", "RUN")
+			createdBy = buildRunInstruction(createdBy)
 		case strings.HasSuffix(h.CreatedBy, "# buildkit"):
 			// buildkit instructions
 			// COPY ./foo /foo # buildkit
 			// ADD ./foo.txt /foo.txt # buildkit
 			// RUN /bin/sh -c ls -hl /foo # buildkit
 			createdBy = strings.TrimSuffix(h.CreatedBy, "# buildkit")
-			if strings.HasPrefix(h.CreatedBy, "RUN /bin/sh -c") {
-				createdBy = strings.ReplaceAll(createdBy, "RUN /bin/sh -c", "RUN")
-			}
+			createdBy = buildRunInstruction(createdBy)
 		case strings.HasPrefix(h.CreatedBy, "USER"):
 			// USER instruction
 			createdBy = h.CreatedBy
@@ -111,6 +109,14 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 	}
 
 	return dockerfile.Bytes()
+}
+
+func buildRunInstruction(s string) string {
+	pos := strings.Index(s, "/bin/sh -c")
+	if pos == -1 {
+		return s
+	}
+	return "RUN" + s[pos+len("/bin/sh -c"):]
 }
 
 func buildHealthcheckInstruction(health *v1.HealthConfig) string {
