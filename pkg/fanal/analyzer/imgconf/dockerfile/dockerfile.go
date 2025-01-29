@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -49,11 +50,33 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 	if input.Config == nil {
 		return nil, nil
 	}
+
+	fsys := mapfs.New()
+	if err := fsys.WriteVirtualFile(
+		"Dockerfile", imageConfigToDockerfile(input.Config), 0600); err != nil {
+		return nil, xerrors.Errorf("mapfs write error: %w", err)
+	}
+
+	misconfs, err := a.scanner.Scan(ctx, fsys)
+	if err != nil {
+		return nil, xerrors.Errorf("history scan error: %w", err)
+	}
+	// The result should be a single element as it passes one Dockerfile.
+	if len(misconfs) != 1 {
+		return nil, nil
+	}
+
+	return &analyzer.ConfigAnalysisResult{
+		Misconfiguration: &misconfs[0],
+	}, nil
+}
+
+func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 	dockerfile := new(bytes.Buffer)
 	var userFound bool
-	baseLayerIndex := image.GuessBaseImageIndex(input.Config.History)
-	for i := baseLayerIndex + 1; i < len(input.Config.History); i++ {
-		h := input.Config.History[i]
+	baseLayerIndex := image.GuessBaseImageIndex(cfg.History)
+	for i := baseLayerIndex + 1; i < len(cfg.History); i++ {
+		h := cfg.History[i]
 		var createdBy string
 		switch {
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
@@ -77,48 +100,36 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 			userFound = true
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
-			var interval, timeout, startPeriod, retries, command string
-			if input.Config.Config.Healthcheck.Interval != 0 {
-				interval = fmt.Sprintf("--interval=%s ", input.Config.Config.Healthcheck.Interval)
-			}
-			if input.Config.Config.Healthcheck.Timeout != 0 {
-				timeout = fmt.Sprintf("--timeout=%s ", input.Config.Config.Healthcheck.Timeout)
-			}
-			if input.Config.Config.Healthcheck.StartPeriod != 0 {
-				startPeriod = fmt.Sprintf("--startPeriod=%s ", input.Config.Config.Healthcheck.StartPeriod)
-			}
-			if input.Config.Config.Healthcheck.Retries != 0 {
-				retries = fmt.Sprintf("--retries=%d ", input.Config.Config.Healthcheck.Retries)
-			}
-			command = strings.Join(input.Config.Config.Healthcheck.Test, " ")
-			command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
-			createdBy = fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
+			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
 		}
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
-	if !userFound && input.Config.Config.User != "" {
-		user := fmt.Sprintf("USER %s", input.Config.Config.User)
+	if !userFound && cfg.Config.User != "" {
+		user := fmt.Sprintf("USER %s", cfg.Config.User)
 		dockerfile.WriteString(user)
 	}
 
-	fsys := mapfs.New()
-	if err := fsys.WriteVirtualFile("Dockerfile", dockerfile.Bytes(), 0600); err != nil {
-		return nil, xerrors.Errorf("mapfs write error: %w", err)
-	}
+	return dockerfile.Bytes()
+}
 
-	misconfs, err := a.scanner.Scan(ctx, fsys)
-	if err != nil {
-		return nil, xerrors.Errorf("history scan error: %w", err)
+func buildHealthcheckInstruction(health *v1.HealthConfig) string {
+	var interval, timeout, startPeriod, retries, command string
+	if health.Interval != 0 {
+		interval = fmt.Sprintf("--interval=%s ", health.Interval)
 	}
-	// The result should be a single element as it passes one Dockerfile.
-	if len(misconfs) != 1 {
-		return nil, nil
+	if health.Timeout != 0 {
+		timeout = fmt.Sprintf("--timeout=%s ", health.Timeout)
 	}
-
-	return &analyzer.ConfigAnalysisResult{
-		Misconfiguration: &misconfs[0],
-	}, nil
+	if health.StartPeriod != 0 {
+		startPeriod = fmt.Sprintf("--startPeriod=%s ", health.StartPeriod)
+	}
+	if health.Retries != 0 {
+		retries = fmt.Sprintf("--retries=%d ", health.Retries)
+	}
+	command = strings.Join(health.Test, " ")
+	command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
+	return fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
 }
 
 func (a *historyAnalyzer) Required(_ types.OS) bool {
