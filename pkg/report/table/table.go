@@ -9,6 +9,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/log"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -80,6 +82,11 @@ func (tw Writer) Write(_ context.Context, report types.Report) error {
 }
 
 func (tw Writer) renderSummary(report types.Report) error {
+	if len(report.Results) == 0 {
+		tw.showEmptyResultsWarning()
+		return nil
+	}
+
 	// Fprintln has a bug
 	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"+
 		"Legend:\n"+
@@ -140,6 +147,34 @@ func (tw Writer) renderSummary(report types.Report) error {
 	}
 	t.Render()
 	return nil
+}
+
+// showEmptyResultsWarning
+func (tw Writer) showEmptyResultsWarning() {
+	resultByFiles := []types.Scanner{
+		types.VulnerabilityScanner,
+		types.MisconfigScanner,
+	}
+	resultByFindings := []types.Scanner{
+		types.SecretScanner,
+		types.LicenseScanner,
+	}
+
+	var warnStrings []string
+	if scanners := lo.Intersect(resultByFiles, tw.Scanners); len(scanners) > 0 {
+		warnStrings = append(warnStrings, fmt.Sprintf("Supported files for %s scanner(s) not found",
+			strings.Join(xstrings.ToStringSlice(scanners), "/")))
+	}
+	if scanners := lo.Intersect(resultByFindings, tw.Scanners); len(scanners) > 0 {
+		warnStrings = append(warnStrings, fmt.Sprintf("No results found for %s scanner(s)",
+			strings.Join(xstrings.ToStringSlice(scanners), "/")))
+	}
+
+	if len(warnStrings) == 0 {
+		warnStrings = append(warnStrings, "Scanners are not enabled.")
+	}
+
+	log.WithPrefix("report").Warn(strings.Join(warnStrings, ". "))
 }
 
 func (tw Writer) write(result types.Result) {
