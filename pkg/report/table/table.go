@@ -179,7 +179,7 @@ func (tw Writer) showEmptyResultsWarning() {
 		warnStrings = append(warnStrings, "Scanners are not enabled.")
 	}
 
-	log.WithPrefix("report").Warn(strings.Join(warnStrings, " "))
+	log.WithPrefix("report").Info(strings.Join(warnStrings, " "))
 }
 
 // splitAggregatedPackages splits aggregated packages into different results with path as target.
