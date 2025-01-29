@@ -1883,7 +1883,18 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Kubernetes target configurations">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#required-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required roles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Required roles">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -7815,7 +7826,18 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Kubernetes target configurations">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#required-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required roles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Required roles">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -8016,8 +8038,35 @@ For detailed information, please use the <code>--report all</code> option.</p>
 You can also specify a <code>kubeconfig</code> using the <code>--kubeconfig</code> flag:</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>k8s<span class="w"> </span>--kubeconfig<span class="w"> </span>~/.kube/config2
 </code></pre></div>
-<p>By default, all cluster resource images will be downloaded and scanned.</p>
+<h2 id="required-roles">Required roles<a class="headerlink" href="#required-roles" title="Permanent link">&para;</a></h2>
+<p>To successfully scan a Kubernetes cluster, <code>trivy kubernetes</code> subcommand must be executed under a role or a cluster role that has some specific permissions.</p>
+<p>The role must have <code>list</code> verb for all resources (<code>"*"</code>) inside the following API groups: core (<code>""</code>), <code>"apps"</code>, <code>"batch"</code>,<code>"networking.k8s.io"</code>, <code>"rbac.authorization.k8s.io"</code>:
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;apps&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;batch&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;networking.k8s.io&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;rbac.authorization.k8s.io&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;*&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+If <code>node collector</code> is enabled (default: enabled), Trivy needs a cluster role with some additional permissions to run and track the jobs:
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;nodes/proxy&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;pods/log&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;events&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;batch&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;jobs&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;cronjobs&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;batch&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;jobs&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;create&quot;</span><span class="p p-Indicator">,</span><span class="s">&quot;delete&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;namespaces&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;create&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div></p>
 <h3 id="skip-images">Skip-images<a class="headerlink" href="#skip-images" title="Permanent link">&para;</a></h3>
+<p>By default, all cluster resource images will be downloaded and scanned.</p>
 <p>You can control whether Trivy will scan and download the cluster resource images. To disable this feature, add the --skip-images flag.</p>
 <ul>
 <li><code>--skip-images</code> flag will prevent the downloading and scanning of images (including vulnerabilities and secrets) in the cluster resources.</li>
@@ -8044,6 +8093,10 @@ You can also specify a <code>kubeconfig</code> using the <code>--kubeconfig</cod
 <li><code>--exclude-namespaces</code> will exclude the listed namespaces from cluster scanning.</li>
 </ul>
 <p>By default, all namespaces will be included in cluster scanning.</p>
+<div class="admonition note">
+<p class="admonition-title">using <code>--exclude-namespaces</code></p>
+<p>Trivy requires a complete list of namespaces to exclude specific ones. Therefore, <code>--exclude-namespaces</code> option is only available for cluster roles now.</p>
+</div>
 <p>Example:</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>k8s<span class="w"> </span>--report<span class="w"> </span>summary<span class="w"> </span>--exclude-namespace<span class="w"> </span>dev-system,staging-system
 </code></pre></div>
