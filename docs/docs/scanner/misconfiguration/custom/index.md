@@ -121,17 +121,17 @@ Trivy supports extra fields in the `custom` section as described below.
 If you are creating checks for your Trivy misconfiguration scans, some fields are optional as referenced in the table below. The `schemas` field should be used to enable policy validation using a built-in schema. It is recommended to use this to ensure your checks are 
 correct and do not reference incorrect properties/values.
 
-| Field name                 | Allowed values                                                    |        Default value         |     In table     |     In JSON      |
-|----------------------------|-------------------------------------------------------------------|:----------------------------:|:----------------:|:----------------:|
-| title                      | Any characters                                                    |             N/A              | :material-check: | :material-check: |
-| description                | Any characters                                                    |                              | :material-close: | :material-check: |
-| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) | :material-close: | :material-close: |
-| custom.id                  | Any characters                                                    |             N/A              | :material-check: | :material-check: |
-| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            | :material-check: | :material-check: |
-| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: |
-| custom.deprecated          | `true`, `false`                                                   |           `false`            | :material-close: | :material-check: | 
-| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: |
-| url                        | Any characters                                                    |                              | :material-close: | :material-check: |
+| Field name                 | Allowed values                                                    |        Default value         | In table | In JSON |
+|----------------------------|-------------------------------------------------------------------|:----------------------------:|:--------:|:-------:|
+| title                      | Any characters                                                    |             N/A              |    ✅     |    ✅    |
+| description                | Any characters                                                    |                              |    -     |    ✅    |
+| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) |    -     |    -    |
+| custom.id                  | Any characters                                                    |             N/A              |    ✅     |    ✅    |
+| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            |    ✅     |    ✅    |
+| custom.recommended_actions | Any characters                                                    |                              |    -     |    ✅    |
+| custom.deprecated          | `true`, `false`                                                   |           `false`            |    -     |    ✅    |
+| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              |    -     |    ✅    |
+| url                        | Any characters                                                    |                              |    -     |    ✅    |
 
 #### custom.avd_id and custom.id
 
