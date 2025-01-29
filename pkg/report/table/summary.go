@@ -79,7 +79,7 @@ func (s LicenseScanner) Header() string {
 }
 
 func (s LicenseScanner) Count(result types.Result) int {
-	if result.Class == types.ClassLicense {
+	if result.Class == types.ClassLicense || result.Class == types.ClassLicenseFile {
 		return len(result.Licenses)
 	}
 	return -1
