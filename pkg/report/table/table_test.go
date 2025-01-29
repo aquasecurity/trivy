@@ -33,6 +33,13 @@ func TestWriter_Write(t *testing.T) {
 					Target: "test",
 					Type:   ftypes.Jar,
 					Class:  types.ClassLangPkg,
+					Packages: []ftypes.Package{
+						{
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
+						},
+					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -40,6 +47,7 @@ func TestWriter_Write(t *testing.T) {
 							InstalledVersion: "1.2.3",
 							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 							Status:           dbTypes.StatusWillNotFix,
+							PkgPath:          "test.jar",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "foobar",
 								Description: "baz",
@@ -61,22 +69,22 @@ Report Summary
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
-┌────────┬──────┬─────────────────┐
-│ Target │ Type │ Vulnerabilities │
-├────────┼──────┼─────────────────┤
-│ test   │ jar  │        1        │
-└────────┴──────┴─────────────────┘
+┌──────────┬──────┬─────────────────┐
+│  Target  │ Type │ Vulnerabilities │
+├──────────┼──────┼─────────────────┤
+│ test.jar │ jar  │        1        │
+└──────────┴──────┴─────────────────┘
 
 test (jar)
 ==========
 Total: 1 (MEDIUM: 0, HIGH: 1)
 
-┌─────────┬───────────────┬──────────┬──────────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
-│ Library │ Vulnerability │ Severity │    Status    │ Installed Version │ Fixed Version │                   Title                   │
-├─────────┼───────────────┼──────────┼──────────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
-│ foo     │ CVE-2020-0001 │ HIGH     │ will_not_fix │ 1.2.3             │               │ foobar                                    │
-│         │               │          │              │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
-└─────────┴───────────────┴──────────┴──────────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
+┌────────────────┬───────────────┬──────────┬──────────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│    Library     │ Vulnerability │ Severity │    Status    │ Installed Version │ Fixed Version │                   Title                   │
+├────────────────┼───────────────┼──────────┼──────────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo (test.jar) │ CVE-2020-0001 │ HIGH     │ will_not_fix │ 1.2.3             │               │ foobar                                    │
+│                │               │          │              │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
+└────────────────┴───────────────┴──────────┴──────────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
 `,
 		},
 		{
@@ -89,6 +97,13 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 					Target: "test",
 					Class:  types.ClassLangPkg,
 					Type:   ftypes.Jar,
+					Packages: []ftypes.Package{
+						{
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
+						},
+					},
 				},
 			},
 			wantOutput: `
@@ -97,11 +112,11 @@ Report Summary
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
-┌────────┬──────┬─────────────────┐
-│ Target │ Type │ Vulnerabilities │
-├────────┼──────┼─────────────────┤
-│ test   │ jar  │        0        │
-└────────┴──────┴─────────────────┘
+┌──────────┬──────┬─────────────────┐
+│  Target  │ Type │ Vulnerabilities │
+├──────────┼──────┼─────────────────┤
+│ test.jar │ jar  │        0        │
+└──────────┴──────┴─────────────────┘
 `,
 		},
 		{

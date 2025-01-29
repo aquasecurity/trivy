@@ -32,6 +32,20 @@ var (
 		Target: "Java",
 		Class:  types.ClassLangPkg,
 		Type:   ftypes.Jar,
+		Packages: []ftypes.Package{
+			{
+				Name:     "com.fasterxml.jackson.core:jackson-databind",
+				FilePath: "app/jackson-databind-2.13.4.1.jar",
+			},
+			{
+				Name:     "com.google.code.gson:gson",
+				FilePath: "app/gson-2.11.0.jar",
+			},
+			{
+				Name:     "org.apache.logging.log4j:log4j-core",
+				FilePath: "app/jackson-databind-2.13.4.1.jar/nested/app2/log4j-core-2.17.0.jar",
+			},
+		},
 		Vulnerabilities: []types.DetectedVulnerability{
 			{
 				VulnerabilityID: "CVE-2022-42003",
@@ -185,6 +199,8 @@ Legend:
 ├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
 │ test (alpine 3.20.3)              │   alpine   │        2        │         -         │    -    │    -     │
 ├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ app/gson-2.11.0.jar               │    jar     │        0        │         -         │    -    │    -     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
 │ app/jackson-databind-2.13.4.1.jar │    jar     │        2        │         -         │    -    │    -     │
 ├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
 │ loader-utils/package.json         │  node-pkg  │        2        │         -         │    -    │    -     │
@@ -226,6 +242,8 @@ Legend:
 │              Target               │  Type  │ Vulnerabilities │
 ├───────────────────────────────────┼────────┼─────────────────┤
 │ test (alpine 3.20.3)              │ alpine │        2        │
+├───────────────────────────────────┼────────┼─────────────────┤
+│ app/gson-2.11.0.jar               │  jar   │        0        │
 ├───────────────────────────────────┼────────┼─────────────────┤
 │ app/jackson-databind-2.13.4.1.jar │  jar   │        2        │
 └───────────────────────────────────┴────────┴─────────────────┘
