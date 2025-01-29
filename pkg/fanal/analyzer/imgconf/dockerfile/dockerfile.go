@@ -99,6 +99,12 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
+		default:
+			for _, prefix := range []string{"ARG", "ENV", "ENTRYPOINT"} {
+				strings.HasPrefix(h.CreatedBy, prefix)
+				createdBy = h.CreatedBy
+				break
+			}
 		}
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}

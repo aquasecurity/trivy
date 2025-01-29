@@ -411,6 +411,26 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 			},
 			expected: "ARG TAG=latest\n",
 		},
+		{
+			name: "buildkit metadata instructions",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "ARG TAG=latest",
+					},
+					{
+						CreatedBy: "ENV TAG=latest",
+					},
+					{
+						CreatedBy: "ENTRYPOINT [\"/bin/sh\" \"-c\" \"echo test\"]",
+					},
+				},
+			},
+			expected: `ARG TAG=latest
+ENV TAG=latest
+ENTRYPOINT ["/bin/sh" "-c" "echo test"]
+`,
+		},
 	}
 
 	for _, tt := range tests {
