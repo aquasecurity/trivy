@@ -543,3 +543,6 @@ Error Output:
 ```bash
 Error: uncompressed image size (15GB) exceeds maximum allowed size (10GB)
 ```
+
+!!! note
+    Trivy displays size using decimal (SI) prefixes (based on 1000).
