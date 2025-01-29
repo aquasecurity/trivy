@@ -52,7 +52,7 @@ trivy k8s --kubeconfig ~/.kube/config2
 ## Required roles
 To successfully scan a Kubernetes cluster, `trivy kubernetes` subcommand must be executed under a role or a cluster role that has some specific permissions.
 
-The role must have `list` verb for all resources (`"*"`) inside next API groups: core (`""`), `"apps"`, `"batch"`,`"networking.k8s.io"`, `"rbac.authorization.k8s.io"`:
+The role must have `list` verb for all resources (`"*"`) inside the following API groups: core (`""`), `"apps"`, `"batch"`,`"networking.k8s.io"`, `"rbac.authorization.k8s.io"`:
 ```yaml
 - apiGroups: [""]
   resources: ["*"]
