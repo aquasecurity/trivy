@@ -164,11 +164,11 @@ func (tw Writer) showEmptyResultsWarning() {
 
 	var warnStrings []string
 	if scanners := lo.Intersect(resultByFiles, tw.Scanners); len(scanners) > 0 {
-		warnStrings = append(warnStrings, fmt.Sprintf("Supported files for %s scanner(s) not found",
+		warnStrings = append(warnStrings, fmt.Sprintf("Supported files for %s scanner(s) not found.",
 			strings.Join(xstrings.ToStringSlice(scanners), "/")))
 	}
 	if scanners := lo.Intersect(resultByFindings, tw.Scanners); len(scanners) > 0 {
-		warnStrings = append(warnStrings, fmt.Sprintf("No results found for %s scanner(s)",
+		warnStrings = append(warnStrings, fmt.Sprintf("No results found for %s scanner(s).",
 			strings.Join(xstrings.ToStringSlice(scanners), "/")))
 	}
 
@@ -176,7 +176,7 @@ func (tw Writer) showEmptyResultsWarning() {
 		warnStrings = append(warnStrings, "Scanners are not enabled.")
 	}
 
-	log.WithPrefix("report").Warn(strings.Join(warnStrings, ". "))
+	log.WithPrefix("report").Warn(strings.Join(warnStrings, " "))
 }
 
 func (tw Writer) write(result types.Result) {
