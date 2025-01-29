@@ -124,6 +124,9 @@ func Test_renderSummary(t *testing.T) {
 			want: `
 Report Summary
 
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
 ┌───────────────────────┬────────────┬─────────────────┬───────────────────┬─────────┬──────────┐
 │        Target         │    Type    │ Vulnerabilities │ Misconfigurations │ Secrets │ Licenses │
 ├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
@@ -157,6 +160,9 @@ Report Summary
 			want: `
 Report Summary
 
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
 ┌──────────────────────┬────────┬─────────────────┐
 │        Target        │  Type  │ Vulnerabilities │
 ├──────────────────────┼────────┼─────────────────┤
@@ -181,6 +187,9 @@ Report Summary
 			want: `
 Report Summary
 
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
 ┌──────────────────┬──────┬─────────────────┬─────────┐
 │      Target      │ Type │ Vulnerabilities │ Secrets │
 ├──────────────────┼──────┼─────────────────┼─────────┤
@@ -188,29 +197,6 @@ Report Summary
 ├──────────────────┼──────┼─────────────────┼─────────┤
 │ requirements.txt │ text │        -        │    1    │
 └──────────────────┴──────┴─────────────────┴─────────┘
-`,
-		},
-		{
-			name: "happy path vuln scanner only",
-			scanners: []types.Scanner{
-				types.VulnerabilityScanner,
-			},
-			report: types.Report{
-				Results: []types.Result{
-					osVuln,
-					jarVuln,
-				},
-			},
-			want: `
-Report Summary
-
-┌──────────────────────┬────────┬─────────────────┐
-│        Target        │  Type  │ Vulnerabilities │
-├──────────────────────┼────────┼─────────────────┤
-│ test (alpine 3.20.3) │ alpine │        2        │
-├──────────────────────┼────────┼─────────────────┤
-│ Java                 │  jar   │        2        │
-└──────────────────────┴────────┴─────────────────┘
 `,
 		},
 	}

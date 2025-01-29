@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -81,11 +80,11 @@ func (tw Writer) Write(_ context.Context, report types.Report) error {
 }
 
 func (tw Writer) renderSummary(report types.Report) error {
-	log.WithPrefix("report").Info("Report Summary table contains special symbols",
-		log.String("'-'", "Target didn't scanned"),
-		log.String("'0'", "Target scanned, but didn't contain vulns/misconfigs/secrets/licenses"))
 	// Fprintln has a bug
-	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"); err != nil {
+	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"+
+		"Legend:\n"+
+		"- '-': Not scanned\n"+
+		"- '0': Clean (no security findings detected)\n"); err != nil {
 		return err
 	}
 
