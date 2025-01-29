@@ -523,9 +523,9 @@ $ trivy image --podman-host /run/user/1000/podman/podman.sock YOUR_IMAGE
 Use the `--max-image-size` flag to avoid scanning images that exceed a specified size. The size is specified in a human-readable format (e.g., `100MB`, `10GB`).
 
 An error is returned in the following cases:
+
 - if the compressed image size exceeds the limit,
-- if the total size of the layers exceeds the specified limit during their pulling,
-- if the uncompressed image size exceeds the limit after the layers are pulled.
+- if the accumulated size of the uncompressed layers exceeds the limit during their pulling.
 
 The layers are pulled into a temporary folder during their pulling and are always cleaned up, even after a successful scan.
 
