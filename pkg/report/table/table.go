@@ -7,8 +7,10 @@ import (
 	"os"
 	"runtime"
 	"slices"
+	"sort"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -16,6 +18,7 @@ import (
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
@@ -129,7 +132,7 @@ func (tw Writer) renderSummary(report types.Report) error {
 	t.SetHeaders(headers...)
 	t.SetAlignment(alignments...)
 
-	for _, result := range report.Results {
+	for _, result := range splitAggregatedPackages(report.Results) {
 		resultType := string(result.Type)
 		if result.Class == types.ClassSecret {
 			resultType = "text"
@@ -177,6 +180,69 @@ func (tw Writer) showEmptyResultsWarning() {
 	}
 
 	log.WithPrefix("report").Warn(strings.Join(warnStrings, " "))
+}
+
+// splitAggregatedPackages splits aggregated packages into different results with path as target.
+// Other results will be returned as is.
+func splitAggregatedPackages(results types.Results) types.Results {
+	var newResults types.Results
+
+	for _, result := range results {
+		if !slices.Contains(ftypes.AggregatingTypes, result.Type) &&
+			// License results from applications don't have `Type`.
+			(result.Class != types.ClassLicense || !slices.Contains(lo.Values(langpkg.PkgTargets), result.Target)) {
+			newResults = append(newResults, result)
+			continue
+		}
+
+		newResults = append(newResults, splitAggregatedVulns(result)...)
+		newResults = append(newResults, splitAggregatedLicenses(result)...)
+
+	}
+	return newResults
+}
+
+func splitAggregatedVulns(result types.Result) types.Results {
+	var newResults types.Results
+
+	vulns := make(map[string][]types.DetectedVulnerability)
+	for _, vuln := range result.Vulnerabilities {
+		pkgPath := rootJarFromPath(vuln.PkgPath)
+		vulns[pkgPath] = append(vulns[pkgPath], vuln)
+	}
+	for pkgPath, v := range vulns {
+		newResult := result
+		newResult.Target = lo.Ternary(pkgPath != "", pkgPath, result.Target)
+		newResult.Vulnerabilities = v
+
+		newResults = append(newResults, newResult)
+	}
+
+	sort.Slice(newResults, func(i, j int) bool {
+		return newResults[i].Target < newResults[j].Target
+	})
+	return newResults
+}
+
+func splitAggregatedLicenses(result types.Result) types.Results {
+	var newResults types.Results
+
+	licenses := make(map[string][]types.DetectedLicense)
+	for _, license := range result.Licenses {
+		licenses[license.FilePath] = append(licenses[license.FilePath], license)
+	}
+	for filePath, l := range licenses {
+		newResult := result
+		newResult.Target = lo.Ternary(filePath != "", filePath, result.Target)
+		newResult.Licenses = l
+
+		newResults = append(newResults, newResult)
+	}
+
+	sort.Slice(newResults, func(i, j int) bool {
+		return newResults[i].Target < newResults[j].Target
+	})
+	return newResults
 }
 
 func (tw Writer) write(result types.Result) {

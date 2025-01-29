@@ -28,7 +28,7 @@ var (
 			},
 		},
 	}
-	jarVuln = types.Result{
+	jarVulns = types.Result{
 		Target: "Java",
 		Class:  types.ClassLangPkg,
 		Type:   ftypes.Jar,
@@ -41,7 +41,35 @@ var (
 			{
 				VulnerabilityID: "CVE-2021-44832",
 				PkgName:         "org.apache.logging.log4j:log4j-core",
-				PkgPath:         "app/log4j-core-2.17.0.jar",
+				PkgPath:         "app/jackson-databind-2.13.4.1.jar/nested/app2/log4j-core-2.17.0.jar",
+			},
+		},
+	}
+
+	npmVulns = types.Result{
+		Target: "Node.js",
+		Class:  types.ClassLangPkg,
+		Type:   ftypes.NodePkg,
+		Vulnerabilities: []types.DetectedVulnerability{
+			{
+				VulnerabilityID: "CVE-2022-37601",
+				PkgName:         "loader-utils",
+				PkgPath:         "loader-utils/package.json",
+			},
+			{
+				VulnerabilityID: "CVE-2022-37599",
+				PkgName:         "loader-utils",
+				PkgPath:         "loader-utils/package.json",
+			},
+			{
+				VulnerabilityID: "CVE-2021-23566",
+				PkgName:         "nanoid",
+				PkgPath:         "nanoid/package.json",
+			},
+			{
+				VulnerabilityID: "CVE-2024-55565",
+				PkgName:         "nanoid",
+				PkgPath:         "nanoid/package.json",
 			},
 		},
 	}
@@ -88,6 +116,24 @@ var (
 		Target: "Java",
 		Class:  types.ClassLicense,
 	}
+
+	npmLicenses = types.Result{
+		Target: "Node.js",
+		Class:  types.ClassLicense,
+		Licenses: []types.DetectedLicense{
+			{
+				Name:     "MIT",
+				FilePath: "loader-utils/package.json",
+				Category: "notice",
+			},
+			{
+				Name:     "MIT",
+				FilePath: "nanoid/package.json",
+				Category: "notice",
+			},
+		},
+	}
+
 	fileLicense = types.Result{
 		Target: "Loose File License(s)",
 		Class:  types.ClassLicenseFile,
@@ -118,11 +164,13 @@ func Test_renderSummary(t *testing.T) {
 			report: types.Report{
 				Results: []types.Result{
 					osVuln,
-					jarVuln,
+					jarVulns,
+					npmVulns,
 					dockerfileMisconfig,
 					secret,
 					osLicense,
 					jarLicense,
+					npmLicenses,
 					fileLicense,
 				},
 			},
@@ -132,23 +180,29 @@ Report Summary
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
-┌───────────────────────┬────────────┬─────────────────┬───────────────────┬─────────┬──────────┐
-│        Target         │    Type    │ Vulnerabilities │ Misconfigurations │ Secrets │ Licenses │
-├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ test (alpine 3.20.3)  │   alpine   │        2        │         -         │    -    │    -     │
-├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ Java                  │    jar     │        2        │         -         │    -    │    -     │
-├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ app/Dockerfile        │ dockerfile │        -        │         2         │    -    │    -     │
-├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ requirements.txt      │    text    │        -        │         -         │    1    │    -     │
-├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ OS Packages           │     -      │        -        │         -         │    -    │    1     │
-├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ Java                  │     -      │        -        │         -         │    -    │    0     │
-├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
-│ Loose File License(s) │     -      │        -        │         -         │    -    │    1     │
-└───────────────────────┴────────────┴─────────────────┴───────────────────┴─────────┴──────────┘
+┌───────────────────────────────────┬────────────┬─────────────────┬───────────────────┬─────────┬──────────┐
+│              Target               │    Type    │ Vulnerabilities │ Misconfigurations │ Secrets │ Licenses │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ test (alpine 3.20.3)              │   alpine   │        2        │         -         │    -    │    -     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ app/jackson-databind-2.13.4.1.jar │    jar     │        2        │         -         │    -    │    -     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ loader-utils/package.json         │  node-pkg  │        2        │         -         │    -    │    -     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ nanoid/package.json               │  node-pkg  │        2        │         -         │    -    │    -     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ app/Dockerfile                    │ dockerfile │        -        │         2         │    -    │    -     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ requirements.txt                  │    text    │        -        │         -         │    1    │    -     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ OS Packages                       │     -      │        -        │         -         │    -    │    1     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ loader-utils/package.json         │     -      │        -        │         -         │    -    │    1     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ nanoid/package.json               │     -      │        -        │         -         │    -    │    1     │
+├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ Loose File License(s)             │     -      │        -        │         -         │    -    │    1     │
+└───────────────────────────────────┴────────────┴─────────────────┴───────────────────┴─────────┴──────────┘
 `,
 		},
 		{
@@ -159,7 +213,7 @@ Legend:
 			report: types.Report{
 				Results: []types.Result{
 					osVuln,
-					jarVuln,
+					jarVulns,
 				},
 			},
 			want: `
@@ -168,13 +222,13 @@ Report Summary
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)
-┌──────────────────────┬────────┬─────────────────┐
-│        Target        │  Type  │ Vulnerabilities │
-├──────────────────────┼────────┼─────────────────┤
-│ test (alpine 3.20.3) │ alpine │        2        │
-├──────────────────────┼────────┼─────────────────┤
-│ Java                 │  jar   │        2        │
-└──────────────────────┴────────┴─────────────────┘
+┌───────────────────────────────────┬────────┬─────────────────┐
+│              Target               │  Type  │ Vulnerabilities │
+├───────────────────────────────────┼────────┼─────────────────┤
+│ test (alpine 3.20.3)              │ alpine │        2        │
+├───────────────────────────────────┼────────┼─────────────────┤
+│ app/jackson-databind-2.13.4.1.jar │  jar   │        2        │
+└───────────────────────────────────┴────────┴─────────────────┘
 `,
 		},
 		{
