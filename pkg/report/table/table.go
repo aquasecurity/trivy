@@ -10,7 +10,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -20,6 +19,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -205,7 +205,11 @@ func splitAggregatedPackages(results types.Results) types.Results {
 func splitAggregatedVulns(result types.Result) types.Results {
 	var newResults types.Results
 
-	vulns := make(map[string][]types.DetectedVulnerability)
+	// Save packages to display them in the table even if no vulnerabilities were found
+	vulns := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, []types.DetectedVulnerability) {
+		return rootJarFromPath(pkg.FilePath), []types.DetectedVulnerability{}
+	})
+
 	for _, vuln := range result.Vulnerabilities {
 		pkgPath := rootJarFromPath(vuln.PkgPath)
 		vulns[pkgPath] = append(vulns[pkgPath], vuln)
