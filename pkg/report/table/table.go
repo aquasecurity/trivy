@@ -149,7 +149,9 @@ func (tw Writer) renderSummary(report types.Report) error {
 	return nil
 }
 
-// showEmptyResultsWarning
+// showEmptyResultsWarning shows WARN why the results array is empty based on the enabled scanners.
+// We need to separate the vuln/misconfig and secret/license scanners,
+// because the results array contains results without findings for vulns/misconfig only.
 func (tw Writer) showEmptyResultsWarning() {
 	resultByFiles := []types.Scanner{
 		types.VulnerabilityScanner,
