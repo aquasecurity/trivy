@@ -61,7 +61,7 @@ The role must have `list` verb for all resources (`"*"`) inside the following AP
   resources: ["*"]
   verbs: ["list"]
 ```
-If `node collector` is enabled (by default), Trivy needs a cluster role with some additional permissions to run and track the jobs:
+If `node collector` is enabled (default: enabled), Trivy needs a cluster role with some additional permissions to run and track the jobs:
 ```yaml
 - apiGroups: [""]
   resources: ["nodes/proxy", "pods/log"]
