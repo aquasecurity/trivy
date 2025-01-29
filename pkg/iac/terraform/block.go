@@ -123,7 +123,7 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	return &b
 }
 
-func (b *Block) AsNative() *hcl.Block {
+func (b *Block) HCLBlock() *hcl.Block {
 	return b.hclBlock
 }
 
