@@ -1,15 +1,26 @@
 # Rootfs
-Rootfs scanning is for special use cases such as
 
-- Host machine
-- [Root filesystem](../advanced/container/embed-in-dockerfile.md)
-- [Unpacked filesystem](../advanced/container/unpacked-filesystem.md)
- 
-```bash
-$ trivy rootfs /path/to/rootfs
+Scan a filesystem. This is typically used for scanning:
+
+- Scan host machine
+- [Scan container](../advanced/container/embed-in-dockerfile.md)
+- [Scan unpacked container filesystem](../advanced/container/unpacked-filesystem.md)
+
+`rootfs` is a post-build target type, which means it scans installed packages. For more information, see [Target types](../coverage/language/index.md#target-types).
+
+Usage:
+
+```shell
+trivy rootfs /path/to/fs
 ```
 
-!!! note
-    Rootfs scanning works differently from the Filesystem scanning.
-    You should use `trivy fs` to scan your local projects in CI/CD.
-    See [here](../scanner/vulnerability.md) for the differences.
+## Scanners
+
+Supported scanners:
+
+- Vulnerabilities
+- Misconfigurations
+- Secrets
+- Licenses
+
+By default, only vulnerability and secret scanning are enabled. You can configure which scanners are used with the [`--scanners` flag](https://trivy.dev/latest/docs/configuration/others/#enabledisable-scanners).
