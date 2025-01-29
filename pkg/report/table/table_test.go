@@ -66,14 +66,15 @@ func TestWriter_Write(t *testing.T) {
 			wantOutput: `
 Report Summary
 
-Legend:
-- '-': Not scanned
-- '0': Clean (no security findings detected)
 ┌──────────┬──────┬─────────────────┐
 │  Target  │ Type │ Vulnerabilities │
 ├──────────┼──────┼─────────────────┤
 │ test.jar │ jar  │        1        │
 └──────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
 
 test (jar)
 ==========
@@ -109,14 +110,15 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 			wantOutput: `
 Report Summary
 
-Legend:
-- '-': Not scanned
-- '0': Clean (no security findings detected)
 ┌──────────┬──────┬─────────────────┐
 │  Target  │ Type │ Vulnerabilities │
 ├──────────┼──────┼─────────────────┤
 │ test.jar │ jar  │        0        │
 └──────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
 `,
 		},
 		{

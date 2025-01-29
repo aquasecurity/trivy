@@ -191,9 +191,6 @@ func Test_renderSummary(t *testing.T) {
 			want: `
 Report Summary
 
-Legend:
-- '-': Not scanned
-- '0': Clean (no security findings detected)
 ┌───────────────────────────────────┬────────────┬─────────────────┬───────────────────┬─────────┬──────────┐
 │              Target               │    Type    │ Vulnerabilities │ Misconfigurations │ Secrets │ Licenses │
 ├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
@@ -219,6 +216,10 @@ Legend:
 ├───────────────────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
 │ Loose File License(s)             │     -      │        -        │         -         │    -    │    1     │
 └───────────────────────────────────┴────────────┴─────────────────┴───────────────────┴─────────┴──────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
 `,
 		},
 		{
@@ -235,9 +236,6 @@ Legend:
 			want: `
 Report Summary
 
-Legend:
-- '-': Not scanned
-- '0': Clean (no security findings detected)
 ┌───────────────────────────────────┬────────┬─────────────────┐
 │              Target               │  Type  │ Vulnerabilities │
 ├───────────────────────────────────┼────────┼─────────────────┤
@@ -247,6 +245,10 @@ Legend:
 ├───────────────────────────────────┼────────┼─────────────────┤
 │ app/jackson-databind-2.13.4.1.jar │  jar   │        2        │
 └───────────────────────────────────┴────────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
 `,
 		},
 		{
@@ -264,9 +266,6 @@ Legend:
 			want: `
 Report Summary
 
-Legend:
-- '-': Not scanned
-- '0': Clean (no security findings detected)
 ┌──────────────────┬──────┬─────────────────┬─────────┐
 │      Target      │ Type │ Vulnerabilities │ Secrets │
 ├──────────────────┼──────┼─────────────────┼─────────┤
@@ -274,6 +273,10 @@ Legend:
 ├──────────────────┼──────┼─────────────────┼─────────┤
 │ requirements.txt │ text │        -        │    1    │
 └──────────────────┴──────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
 `,
 		},
 	}

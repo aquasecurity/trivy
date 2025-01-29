@@ -91,10 +91,7 @@ func (tw Writer) renderSummary(report types.Report) error {
 	}
 
 	// Fprintln has a bug
-	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"+
-		"Legend:\n"+
-		"- '-': Not scanned\n"+
-		"- '0': Clean (no security findings detected)\n"); err != nil {
+	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"); err != nil {
 		return err
 	}
 
@@ -149,6 +146,13 @@ func (tw Writer) renderSummary(report types.Report) error {
 		t.AddRows(rows)
 	}
 	t.Render()
+
+	// Show legend
+	if err := tml.Fprintf(tw.Output, "Legend:\n"+
+		"- '-': Not scanned\n"+
+		"- '0': Clean (no security findings detected)\n\n"); err != nil {
+		return err
+	}
 	return nil
 }
 
