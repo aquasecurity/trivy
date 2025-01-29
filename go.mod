@@ -27,14 +27,13 @@ require (
 	github.com/aquasecurity/trivy-checks v1.4.0
 	github.com/aquasecurity/trivy-db v0.0.0-20241209111357-8c398f13db0e
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
-	github.com/aquasecurity/trivy-kubernetes v0.6.7-0.20241101182546-89bffc3932bc
+	github.com/aquasecurity/trivy-kubernetes v0.7.0
 	github.com/aws/aws-sdk-go-v2 v1.34.0
 	github.com/aws/aws-sdk-go-v2/config v1.29.2
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.55
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.201.1
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.38.7
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.74.1
-	github.com/aws/aws-sdk-go-v2/service/sts v1.33.10 // indirect
 	github.com/aws/smithy-go v1.22.2
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
 	github.com/bmatcuk/doublestar/v4 v4.8.1
@@ -179,16 +178,6 @@ require (
 	github.com/anchore/go-struct-converter v0.0.0-20221118182256-c68fdcfa2092 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/aws/aws-sdk-go v1.55.5 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.25 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.29 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.29 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ebs v1.22.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.24.12 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.11 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
@@ -416,12 +405,12 @@ require (
 	k8s.io/apiextensions-apiserver v0.32.0 // indirect
 	k8s.io/apimachinery v0.32.1 // indirect
 	k8s.io/apiserver v0.32.0 // indirect
-	k8s.io/cli-runtime v0.32.0 // indirect
-	k8s.io/client-go v0.32.0 // indirect
-	k8s.io/component-base v0.32.0 // indirect
+	k8s.io/cli-runtime v0.32.1 // indirect
+	k8s.io/client-go v0.32.1 // indirect
+	k8s.io/component-base v0.32.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20241105132330-32ad38e42d3f // indirect
-	k8s.io/kubectl v0.32.0 // indirect
+	k8s.io/kubectl v0.32.1 // indirect
 	modernc.org/libc v1.55.3 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
@@ -433,4 +422,18 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.2 // indirect
 	tags.cncf.io/container-device-interface v0.8.0 // indirect
 	tags.cncf.io/container-device-interface/specs-go v0.8.0 // indirect
+)
+
+require (
+	github.com/aws/aws-sdk-go v1.55.6 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.25 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.29 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.29 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ebs v1.22.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.24.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.11 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.33.10 // indirect
 )
