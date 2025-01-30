@@ -206,7 +206,7 @@ func TestDockerEngine(t *testing.T) {
 			name:         "sad path, image size is larger than the maximum",
 			input:        "testdata/fixtures/images/alpine-39.tar.gz",
 			maxImageSize: "3mb",
-			wantErr:      "uncompressed image size 5.8MB exceeds maximum allowed size 3MB",
+			wantErr:      "uncompressed layers size 5.8MB exceeds maximum allowed size 3MB",
 		},
 	}
 

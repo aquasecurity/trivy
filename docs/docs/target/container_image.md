@@ -526,7 +526,14 @@ $ trivy image --podman-host /run/user/1000/podman/podman.sock YOUR_IMAGE
 ```
 
 ### Prevent scanning oversized container images
-Use the `--max-image-size` flag to avoid scanning images that exceed a specified size. The size is specified in a human-readable format (e.g., `100MB`, `10GB`). If the compressed image size exceeds the specified threshold, an error is returned immediately. Otherwise, all layers are pulled, stored in a temporary folder, and their uncompressed size is verified before scanning. Temporary layers are always cleaned up, even after a successful scan.
+Use the `--max-image-size` flag to avoid scanning images that exceed a specified size. The size is specified in a human-readable format[^1] (e.g., `100MB`, `10GB`).
+
+An error is returned in the following cases:
+
+- if the compressed image size exceeds the limit,
+- if the accumulated size of the uncompressed layers exceeds the limit during their pulling.
+
+The layers are pulled into a temporary folder during their pulling and are always cleaned up, even after a successful scan.
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
@@ -542,3 +549,5 @@ Error Output:
 ```bash
 Error: uncompressed image size (15GB) exceeds maximum allowed size (10GB)
 ```
+
+[^1]: Trivy uses decimal (SI) prefixes (based on 1000) for size.
