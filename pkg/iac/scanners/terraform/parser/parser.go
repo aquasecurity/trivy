@@ -90,6 +90,10 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	return mp
 }
 
+func (p *Parser) Files() map[string]*hcl.File {
+	return p.underlying.Files()
+}
+
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 
 	isJSON := strings.HasSuffix(fullPath, ".tf.json")
