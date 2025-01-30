@@ -17,8 +17,8 @@ type Cluster struct {
 }
 
 type ClusterSettings struct {
-	Metadata                 iacTypes.Metadata
-	ContainerInsightsEnabled iacTypes.BoolValue
+	Metadata              iacTypes.Metadata
+	ContainerInsightsMode iacTypes.StringValue
 }
 
 type TaskDefinition struct {

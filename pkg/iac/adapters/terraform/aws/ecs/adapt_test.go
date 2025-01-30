@@ -23,7 +23,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			terraform: `
 			resource "aws_ecs_cluster" "example" {
 				name = "services-cluster"
-			  
+
 				setting {
 				  name  = "containerInsights"
 				  value = "enabled"
@@ -31,8 +31,25 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Metadata:              iacTypes.NewTestMetadata(),
+				ContainerInsightsMode: iacTypes.String("enabled", iacTypes.NewTestMetadata()),
+			},
+		},
+		{
+			name: "container insights enhanced",
+			terraform: `
+			resource "aws_ecs_cluster" "example" {
+				name = "services-cluster"
+
+				setting {
+				  name  = "containerInsights"
+				  value = "enhanced"
+				}
+			}
+`,
+			expected: ecs.ClusterSettings{
+				Metadata:              iacTypes.NewTestMetadata(),
+				ContainerInsightsMode: iacTypes.String("enhanced", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -40,7 +57,7 @@ func Test_adaptClusterSettings(t *testing.T) {
 			terraform: `
 			resource "aws_ecs_cluster" "example" {
 				name = "services-cluster"
-			  
+
 				setting {
 				  name  = "invalidName"
 				  value = "enabled"
@@ -48,19 +65,19 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Metadata:              iacTypes.NewTestMetadata(),
+				ContainerInsightsMode: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
 			name: "defaults",
 			terraform: `
-			resource "aws_ecs_cluster" "example" {			
+			resource "aws_ecs_cluster" "example" {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Metadata:              iacTypes.NewTestMetadata(),
+				ContainerInsightsMode: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
 			},
 		},
 	}
@@ -99,10 +116,10 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 	}
 ]
 				EOF
-			  
+
 				volume {
 				  name = "service-storage"
-			  
+
 				  efs_volume_configuration {
 					transit_encryption      = "ENABLED"
 				  }
@@ -145,7 +162,7 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			resource "aws_ecs_task_definition" "example" {
 				volume {
 					name = "service-storage"
-				
+
 					efs_volume_configuration {
 					}
 				  }
@@ -181,7 +198,7 @@ func TestLines(t *testing.T) {
 	src := `
 	resource "aws_ecs_cluster" "example" {
 		name = "services-cluster"
-	  
+
 		setting {
 		  name  = "containerInsights"
 		  value = "enabled"
@@ -202,10 +219,10 @@ func TestLines(t *testing.T) {
 		}
 	]
 		EOF
-	  
+
 		volume {
 		  name = "service-storage"
-	  
+
 		  efs_volume_configuration {
 			transit_encryption      = "ENABLED"
 		  }
@@ -227,8 +244,8 @@ func TestLines(t *testing.T) {
 	assert.Equal(t, 5, cluster.Settings.Metadata.Range().GetStartLine())
 	assert.Equal(t, 8, cluster.Settings.Metadata.Range().GetEndLine())
 
-	assert.Equal(t, 7, cluster.Settings.ContainerInsightsEnabled.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 7, cluster.Settings.ContainerInsightsEnabled.GetMetadata().Range().GetEndLine())
+	assert.Equal(t, 7, cluster.Settings.ContainerInsightsMode.GetMetadata().Range().GetStartLine())
+	assert.Equal(t, 7, cluster.Settings.ContainerInsightsMode.GetMetadata().Range().GetEndLine())
 
 	assert.Equal(t, 11, taskDefinition.Metadata.Range().GetStartLine())
 	assert.Equal(t, 33, taskDefinition.Metadata.Range().GetEndLine())

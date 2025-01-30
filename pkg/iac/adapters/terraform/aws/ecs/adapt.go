@@ -32,17 +32,17 @@ func adaptClusterResource(resourceBlock *terraform.Block) ecs.Cluster {
 
 func adaptClusterSettings(resourceBlock *terraform.Block) ecs.ClusterSettings {
 	settings := ecs.ClusterSettings{
-		Metadata:                 resourceBlock.GetMetadata(),
-		ContainerInsightsEnabled: types.BoolDefault(false, resourceBlock.GetMetadata()),
+		Metadata:              resourceBlock.GetMetadata(),
+		ContainerInsightsMode: types.StringDefault("disabled", resourceBlock.GetMetadata()),
 	}
 
 	if settingBlock := resourceBlock.GetBlock("setting"); settingBlock.IsNotNil() {
 		settings.Metadata = settingBlock.GetMetadata()
 		if settingBlock.GetAttribute("name").Equals("containerInsights") {
 			insightsAttr := settingBlock.GetAttribute("value")
-			settings.ContainerInsightsEnabled = types.Bool(insightsAttr.Equals("enabled"), settingBlock.GetMetadata())
+			settings.ContainerInsightsMode = insightsAttr.AsStringValueOrDefault("enabled", settingBlock)
 			if insightsAttr.IsNotNil() {
-				settings.ContainerInsightsEnabled = types.Bool(insightsAttr.Equals("enabled"), insightsAttr.GetMetadata())
+				settings.ContainerInsightsMode = insightsAttr.AsStringValueOrDefault("enabled", settingBlock)
 			}
 		}
 	}

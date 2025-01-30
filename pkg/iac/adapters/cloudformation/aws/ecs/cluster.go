@@ -27,8 +27,8 @@ func getClusters(ctx parser.FileContext) (clusters []ecs.Cluster) {
 func getClusterSettings(r *parser.Resource) ecs.ClusterSettings {
 
 	clusterSettings := ecs.ClusterSettings{
-		Metadata:                 r.Metadata(),
-		ContainerInsightsEnabled: types.BoolDefault(false, r.Metadata()),
+		Metadata:              r.Metadata(),
+		ContainerInsightsMode: types.StringDefault("disabled", r.Metadata()),
 	}
 
 	clusterSettingMap := r.GetProperty("ClusterSettings")
@@ -50,8 +50,8 @@ func checkProperty(setting *parser.Property, clusterSettings *ecs.ClusterSetting
 	name := settingMap["Name"]
 	if name.IsNotNil() && name.EqualTo("containerInsights") {
 		value := settingMap["Value"]
-		if value.IsNotNil() && value.EqualTo("enabled") {
-			clusterSettings.ContainerInsightsEnabled = types.Bool(true, value.Metadata())
+		if value.IsNotNil() {
+			clusterSettings.ContainerInsightsMode = types.String(value.AsString(), value.Metadata())
 		}
 	}
 }
