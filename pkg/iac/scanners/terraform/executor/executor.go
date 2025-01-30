@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strconv"
 
 	"github.com/zclconf/go-cty/cty"
 
@@ -123,13 +124,13 @@ func ignoreByParams(params map[string]string, modules terraform.Modules, m *type
 		case cty.Number:
 			bf := val.AsBigFloat()
 			f64, _ := bf.Float64()
-			comparableInt := fmt.Sprintf("%d", int(f64))
+			comparableInt := strconv.Itoa(int(f64))
 			comparableFloat := fmt.Sprintf("%f", f64)
 			if param != comparableInt && param != comparableFloat {
 				return false
 			}
 		case cty.Bool:
-			if fmt.Sprintf("%t", val.True()) != param {
+			if strconv.FormatBool(val.True()) != param {
 				return false
 			}
 		default:

@@ -70,8 +70,7 @@ func TestParse(t *testing.T) {
 
 			got, _, err := config.NewParser().Parse(f)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 

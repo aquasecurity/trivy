@@ -11,9 +11,9 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/log"
 )

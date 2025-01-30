@@ -463,6 +463,12 @@ trivy image --compliance docker-cis-1.6.0 [YOUR_IMAGE_NAME]
 ## Authentication
 Please reference [this page](../advanced/private-registries/index.md).
 
+## Scan Cache
+When scanning container images, it stores analysis results in the cache, using the image ID and the layer IDs as the key.
+This approach enables faster scans of the same container image or different images that share layers.
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
+
 ## Options
 ### Scan Image on a specific Architecture and OS
 By default, Trivy loads an image on a "linux/amd64" machine.
@@ -517,4 +523,22 @@ You can configure Podman daemon socket with `--podman-host`.
 
 ```shell
 $ trivy image --podman-host /run/user/1000/podman/podman.sock YOUR_IMAGE
+```
+
+### Prevent scanning oversized container images
+Use the `--max-image-size` flag to avoid scanning images that exceed a specified size. The size is specified in a human-readable format (e.g., `100MB`, `10GB`). If the compressed image size exceeds the specified threshold, an error is returned immediately. Otherwise, all layers are pulled, stored in a temporary folder, and their uncompressed size is verified before scanning. Temporary layers are always cleaned up, even after a successful scan.
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+
+Example Usage:
+```bash
+# Limit uncompressed image size to 10GB
+$ trivy image --max-image-size=10GB myapp:latest
+```
+
+Error Output:
+```bash
+Error: uncompressed image size (15GB) exceeds maximum allowed size (10GB)
 ```

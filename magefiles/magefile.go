@@ -16,10 +16,12 @@ import (
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
 
-	//mage:import rpm
-	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
 	// Trivy packages should not be imported in Mage (see https://github.com/aquasecurity/trivy/pull/4242),
 	// but this package doesn't have so many dependencies, and Mage is still fast.
+	//mage:import gittest
+	gittest "github.com/aquasecurity/trivy/internal/gittest/testdata"
+	//mage:import rpm
+	rpm "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm/testdata"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -286,7 +288,7 @@ func compileWasmModules(pattern string) error {
 
 // Unit runs unit tests
 func (t Test) Unit() error {
-	mg.Deps(t.GenerateModules, rpm.Fixtures)
+	mg.Deps(t.GenerateModules, rpm.Fixtures, gittest.Fixtures)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-short", "-coverprofile=coverage.txt", "-covermode=atomic", "./...")
 }
 
@@ -307,11 +309,72 @@ func (t Test) K8s() error {
 	defer func() {
 		_ = sh.RunWithV(ENV, "kind", "delete", "cluster", "--name", "kind-test")
 	}()
+	// wait for the kind cluster is running correctly
+	err = sh.RunWithV(ENV, "kubectl", "wait", "--for=condition=Ready", "nodes", "--all", "--timeout=300s")
+	if err != nil {
+		return fmt.Errorf("can't wait for the kind cluster: %w", err)
+	}
+
 	err = sh.RunWithV(ENV, "kubectl", "apply", "-f", "./integration/testdata/fixtures/k8s/test_nginx.yaml")
+	if err != nil {
+		return fmt.Errorf("can't create a test deployment: %w", err)
+	}
+
+	// create an environment for limited user test
+	err = initk8sLimitedUserEnv()
+	if err != nil {
+		return fmt.Errorf("can't create environment for limited user: %w", err)
+	}
+
+	// print all resources for info
+	err = sh.RunWithV(ENV, "kubectl", "get", "all", "-A")
 	if err != nil {
 		return err
 	}
+
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=k8s_integration", "./integration/...")
+}
+
+func initk8sLimitedUserEnv() error {
+	commands := [][]string{
+		{"kubectl", "create", "namespace", "limitedns"},
+		{"kubectl", "create", "-f", "./integration/testdata/fixtures/k8s/limited-pod.yaml"},
+		{"kubectl", "create", "serviceaccount", "limiteduser"},
+		{"kubectl", "create", "-f", "./integration/testdata/fixtures/k8s/limited-role.yaml"},
+		{"kubectl", "create", "-f", "./integration/testdata/fixtures/k8s/limited-binding.yaml"},
+		{"cp", "./integration/testdata/fixtures/k8s/kube-config-template", "./integration/limitedconfig"},
+	}
+
+	for _, cmd := range commands {
+		if err := sh.RunV(cmd[0], cmd[1:]...); err != nil {
+			return err
+		}
+	}
+	envs := make(map[string]string)
+	var err error
+	envs["CA"], err = sh.Output("kubectl", "config", "view", "-o", "jsonpath=\"{.clusters[?(@.name == 'kind-kind-test')].cluster.certificate-authority-data}\"", "--flatten")
+	if err != nil {
+		return err
+	}
+	envs["URL"], err = sh.Output("kubectl", "config", "view", "-o", "jsonpath=\"{.clusters[?(@.name == 'kind-kind-test')].cluster.server}\"")
+	if err != nil {
+		return err
+	}
+	envs["TOKEN"], err = sh.Output("kubectl", "create", "token", "limiteduser", "--duration=8760h")
+	if err != nil {
+		return err
+	}
+	commandsWith := [][]string{
+		{"sed", "-i", "-e", "s|{{CA}}|$CA|g", "./integration/limitedconfig"},
+		{"sed", "-i", "-e", "s|{{URL}}|$URL|g", "./integration/limitedconfig"},
+		{"sed", "-i", "-e", "s|{{TOKEN}}|$TOKEN|g", "./integration/limitedconfig"},
+	}
+	for _, cmd := range commandsWith {
+		if err := sh.RunWithV(envs, cmd[0], cmd[1:]...); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Module runs Wasm integration tests
@@ -532,4 +595,11 @@ type Helm mg.Namespace
 // UpdateVersion updates a version for Trivy Helm Chart and creates a PR
 func (Helm) UpdateVersion() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_helm", "./magefiles")
+}
+
+type SPDX mg.Namespace
+
+// UpdateLicenseExceptions updates 'exception.json' with SPDX license exceptions
+func (SPDX) UpdateLicenseExceptions() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_spdx", "./magefiles/spdx.go")
 }

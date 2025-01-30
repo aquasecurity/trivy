@@ -49,9 +49,40 @@ You can also specify a `kubeconfig` using the `--kubeconfig` flag:
 trivy k8s --kubeconfig ~/.kube/config2
 ```
 
-By default, all cluster resource images will be downloaded and scanned.
+## Required roles
+To successfully scan a Kubernetes cluster, `trivy kubernetes` subcommand must be executed under a role or a cluster role that has some specific permissions.
+
+The role must have `list` verb for all resources (`"*"`) inside the following API groups: core (`""`), `"apps"`, `"batch"`,`"networking.k8s.io"`, `"rbac.authorization.k8s.io"`:
+```yaml
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["list"]
+- apiGroups: ["apps", "batch", "networking.k8s.io", "rbac.authorization.k8s.io"]
+  resources: ["*"]
+  verbs: ["list"]
+```
+If `node collector` is enabled (default: enabled), Trivy needs a cluster role with some additional permissions to run and track the jobs:
+```yaml
+- apiGroups: [""]
+  resources: ["nodes/proxy", "pods/log"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["list", "get"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["create","delete", "watch"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["create"]
+```
 
 ### Skip-images
+
+By default, all cluster resource images will be downloaded and scanned.
 
 You can control whether Trivy will scan and download the cluster resource images. To disable this feature, add the --skip-images flag.
 
@@ -90,6 +121,9 @@ You can control which namespaces will be discovered using the `--include-namespa
 - `--exclude-namespaces` will exclude the listed namespaces from cluster scanning.
 
 By default, all namespaces will be included in cluster scanning.
+
+!!! note "using `--exclude-namespaces`"
+    Trivy requires a complete list of namespaces to exclude specific ones. Therefore, `--exclude-namespaces` option is only available for cluster roles now.
 
 Example:
 

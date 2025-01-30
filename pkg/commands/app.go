@@ -478,8 +478,6 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	repoFlags.ScanFlagGroup.DistroFlag = nil // `repo` subcommand doesn't support scanning OS packages, so we can disable `--distro`
 
-	repoFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
-
 	cmd := &cobra.Command{
 		Use:     "repository [flags] (REPO_PATH | REPO_URL)",
 		Aliases: []string{"repo"},
