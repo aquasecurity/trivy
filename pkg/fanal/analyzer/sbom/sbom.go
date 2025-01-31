@@ -52,6 +52,10 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 		handleBitnamiImages(path.Dir(input.FilePath), bom)
 	}
 
+	for i, pkgInfo := range bom.Packages {
+		bom.Packages[i].FilePath = path.Join(input.FilePath, pkgInfo.FilePath)
+	}
+
 	// FilePath for apps with aggregatingTypes is empty.
 	// Set the SBOM file path as Application.FilePath to correctly overwrite applications when merging layers.
 	for i, app := range bom.Applications {
