@@ -608,6 +608,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 			WalkerOption: walker.Option{
 				SkipFiles: opts.SkipFiles,
 				SkipDirs:  opts.SkipDirs,
+				OnlyDirs:  opts.OnlyDirs,
 			},
 		},
 	}, scanOptions, nil
