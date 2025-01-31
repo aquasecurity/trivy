@@ -50,7 +50,7 @@ func checkProperty(setting *parser.Property, clusterSettings *ecs.ClusterSetting
 	name := settingMap["Name"]
 	if name.IsNotNil() && name.EqualTo("containerInsights") {
 		value := settingMap["Value"]
-		if value.IsNotNil() && value.EqualTo("enabled") {
+		if value.IsNotNil() && (value.EqualTo("enabled") || value.EqualTo("enhanced")) {
 			clusterSettings.ContainerInsightsEnabled = types.Bool(true, value.Metadata())
 		}
 	}

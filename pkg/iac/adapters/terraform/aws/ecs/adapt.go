@@ -40,9 +40,9 @@ func adaptClusterSettings(resourceBlock *terraform.Block) ecs.ClusterSettings {
 		settings.Metadata = settingBlock.GetMetadata()
 		if settingBlock.GetAttribute("name").Equals("containerInsights") {
 			insightsAttr := settingBlock.GetAttribute("value")
-			settings.ContainerInsightsEnabled = types.Bool(insightsAttr.Equals("enabled"), settingBlock.GetMetadata())
+			settings.ContainerInsightsEnabled = types.Bool(insightsAttr.IsAny("enabled", "enhanced"), settingBlock.GetMetadata())
 			if insightsAttr.IsNotNil() {
-				settings.ContainerInsightsEnabled = types.Bool(insightsAttr.Equals("enabled"), insightsAttr.GetMetadata())
+				settings.ContainerInsightsEnabled = types.Bool(insightsAttr.IsAny("enabled", "enhanced"), insightsAttr.GetMetadata())
 			}
 		}
 	}
