@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.59.1](https://github.com/aquasecurity/trivy/compare/v0.59.0...v0.59.1) (2025-01-31)
+
+
+### Bug Fixes
+
+* **misconf:** ecs include enhanced for container insights ([#8326](https://github.com/aquasecurity/trivy/issues/8326)) ([39789ff](https://github.com/aquasecurity/trivy/commit/39789fff438d11bc6eccd254b3b890beb68c240b))
+* **sbom:** preserve OS packages from multiple SBOMs ([#8325](https://github.com/aquasecurity/trivy/issues/8325)) ([bd5baaf](https://github.com/aquasecurity/trivy/commit/bd5baaf93054d71223e0721c7547a0567dea3b02))
+
 ## [0.59.0](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.59.0) (2025-01-30)
 
 
