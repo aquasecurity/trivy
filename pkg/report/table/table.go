@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/fatih/color"
 
 	"github.com/aquasecurity/table"
@@ -53,6 +54,9 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw Writer) Write(_ context.Context, report types.Report) error {
+	if len(report.Results) == 0 {
+		log.Info("No results found")
+	}
 
 	for _, result := range report.Results {
 		// Not display a table of custom resources
@@ -61,6 +65,7 @@ func (tw Writer) Write(_ context.Context, report types.Report) error {
 		}
 		tw.write(result)
 	}
+
 	return nil
 }
 
