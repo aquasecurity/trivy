@@ -1,6 +1,7 @@
 package poetry
 
 import (
+	"slices"
 	"sort"
 
 	"github.com/BurntSushi/toml"
@@ -17,6 +18,7 @@ import (
 type Lockfile struct {
 	Packages []struct {
 		Category       string         `toml:"category"`
+		Groups         []string       `toml:"groups"`
 		Description    string         `toml:"description"`
 		Marker         string         `toml:"marker,omitempty"`
 		Name           string         `toml:"name"`
@@ -50,7 +52,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var pkgs []ftypes.Package
 	var deps []ftypes.Dependency
 	for _, pkg := range lockfile.Packages {
-		if pkg.Category == "dev" {
+		// TODO upgrade logic for working with groups
+		// Skip only:
+		// - category = "dev"
+		// - groups = ["dev"]
+		if pkg.Category == "dev" || (len(pkg.Groups) == 1 && slices.Contains(pkg.Groups, "dev")) {
 			continue
 		}
 

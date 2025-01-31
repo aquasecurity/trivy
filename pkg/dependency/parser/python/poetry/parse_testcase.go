@@ -83,7 +83,11 @@ var (
 
 	// cat poetry.lock | grep "\[package.dependencies\]" -B 3 -A 8 - it might help to complete this slice
 	poetryManyDeps = []ftypes.Dependency{
-		{ID: "build@0.10.0", DependsOn: []string{"colorama@0.4.6", "importlib-metadata@6.0.0", "packaging@23.0", "pyproject-hooks@1.0.0", "tomli@2.0.1"}},
+		{
+			ID: "build@0.10.0", DependsOn: []string{
+				"colorama@0.4.6", "importlib-metadata@6.0.0", "packaging@23.0", "pyproject-hooks@1.0.0", "tomli@2.0.1",
+			},
+		},
 		{ID: "cachecontrol@0.12.11", DependsOn: []string{"lockfile@0.12.2", "msgpack@1.0.4", "requests@2.28.2"}},
 		{ID: "cffi@1.15.1", DependsOn: []string{"pycparser@2.21"}},
 		{ID: "cleo@2.0.1", DependsOn: []string{"crashtest@0.4.1", "rapidfuzz@2.13.7"}},
@@ -93,18 +97,34 @@ var (
 		{ID: "importlib-metadata@6.0.0", DependsOn: []string{"typing-extensions@4.4.0", "zipp@3.12.0"}},
 		{ID: "importlib-resources@5.10.2", DependsOn: []string{"zipp@3.12.0"}},
 		{ID: "jaraco-classes@3.2.3", DependsOn: []string{"more-itertools@9.0.0"}},
-		{ID: "jsonschema@4.17.3", DependsOn: []string{"attrs@22.2.0", "importlib-metadata@6.0.0", "importlib-resources@5.10.2", "pkgutil-resolve-name@1.3.10", "pyrsistent@0.19.3", "typing-extensions@4.4.0"}},
-		{ID: "keyring@23.13.1", DependsOn: []string{"importlib-metadata@6.0.0", "importlib-resources@5.10.2", "jaraco-classes@3.2.3", "jeepney@0.8.0", "pywin32-ctypes@0.2.0", "secretstorage@3.3.3"}},
+		{
+			ID: "jsonschema@4.17.3", DependsOn: []string{
+				"attrs@22.2.0", "importlib-metadata@6.0.0", "importlib-resources@5.10.2", "pkgutil-resolve-name@1.3.10",
+				"pyrsistent@0.19.3", "typing-extensions@4.4.0",
+			},
+		},
+		{
+			ID: "keyring@23.13.1", DependsOn: []string{
+				"importlib-metadata@6.0.0", "importlib-resources@5.10.2", "jaraco-classes@3.2.3", "jeepney@0.8.0",
+				"pywin32-ctypes@0.2.0", "secretstorage@3.3.3",
+			},
+		},
 		{ID: "pexpect@4.8.0", DependsOn: []string{"ptyprocess@0.7.0"}},
 		{ID: "platformdirs@2.6.2", DependsOn: []string{"typing-extensions@4.4.0"}},
 		{ID: "poetry-core@1.5.0", DependsOn: []string{"importlib-metadata@6.0.0"}},
 		{ID: "poetry-plugin-export@1.3.0", DependsOn: []string{"poetry-core@1.5.0"}},
 		{ID: "pyproject-hooks@1.0.0", DependsOn: []string{"tomli@2.0.1"}},
-		{ID: "requests@2.28.2", DependsOn: []string{"certifi@2022.12.7", "charset-normalizer@3.0.1", "idna@3.4", "urllib3@1.26.14"}},
+		{
+			ID:        "requests@2.28.2",
+			DependsOn: []string{"certifi@2022.12.7", "charset-normalizer@3.0.1", "idna@3.4", "urllib3@1.26.14"},
+		},
 		{ID: "requests-toolbelt@0.10.1", DependsOn: []string{"requests@2.28.2"}},
 		{ID: "secretstorage@3.3.3", DependsOn: []string{"cryptography@39.0.0", "jeepney@0.8.0"}},
 		{ID: "virtualenv@20.16.5", DependsOn: []string{"distlib@0.3.6", "filelock@3.9.0", "platformdirs@2.6.2"}},
-		{ID: "virtualenv@20.17.1", DependsOn: []string{"distlib@0.3.6", "filelock@3.9.0", "importlib-metadata@6.0.0", "platformdirs@2.6.2"}},
+		{
+			ID:        "virtualenv@20.17.1",
+			DependsOn: []string{"distlib@0.3.6", "filelock@3.9.0", "importlib-metadata@6.0.0", "platformdirs@2.6.2"},
+		},
 		{ID: "xattr@0.10.1", DependsOn: []string{"cffi@1.15.1"}},
 	}
 
@@ -131,5 +151,22 @@ var (
 		{ID: "flask@1.0.3", DependsOn: []string{"click@8.1.3", "itsdangerous@2.1.2", "jinja2@3.1.2", "werkzeug@2.2.3"}},
 		{ID: "jinja2@3.1.2", DependsOn: []string{"markupsafe@2.1.2"}},
 		{ID: "werkzeug@2.2.3", DependsOn: []string{"markupsafe@2.1.2"}},
+	}
+
+	poetryV2Flask = []ftypes.Package{
+		{ID: "click@8.1.8", Name: "click", Version: "8.1.8"},
+		{ID: "colorama@0.4.6", Name: "colorama", Version: "0.4.6"},
+		{ID: "flask@1.0.3", Name: "flask", Version: "1.0.3"},
+		{ID: "itsdangerous@2.2.0", Name: "itsdangerous", Version: "2.2.0"},
+		{ID: "jinja2@3.1.5", Name: "jinja2", Version: "3.1.5"},
+		{ID: "markupsafe@3.0.2", Name: "markupsafe", Version: "3.0.2"},
+		{ID: "werkzeug@3.1.3", Name: "werkzeug", Version: "3.1.3"},
+	}
+
+	poetryV2FlaskDeps = []ftypes.Dependency{
+		{ID: "click@8.1.8", DependsOn: []string{"colorama@0.4.6"}},
+		{ID: "flask@1.0.3", DependsOn: []string{"click@8.1.8", "itsdangerous@2.2.0", "jinja2@3.1.5", "werkzeug@3.1.3"}},
+		{ID: "jinja2@3.1.5", DependsOn: []string{"markupsafe@3.0.2"}},
+		{ID: "werkzeug@3.1.3", DependsOn: []string{"markupsafe@3.0.2"}},
 	}
 )

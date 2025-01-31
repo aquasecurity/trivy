@@ -39,6 +39,13 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: poetryFlaskDeps,
 			wantErr:  assert.NoError,
 		},
+		{
+			name:     "flask + poetry v2",
+			file:     "testdata/poetry_v2_flask.lock",
+			wantPkgs: poetryV2Flask,
+			wantDeps: poetryV2FlaskDeps,
+			wantErr:  assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
