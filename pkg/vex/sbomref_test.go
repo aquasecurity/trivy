@@ -18,24 +18,35 @@ import (
 const (
 	vexExternalRef = "/openvex"
 	vexUnknown     = "/unknown"
+	vexNotFound    = "/not-found"
 )
 
 func setUpServer(t *testing.T) *httptest.Server {
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		println(r.URL.Path)
 		if r.URL.Path == vexExternalRef {
 			f, err := os.Open("testdata/" + vexExternalRef + ".json")
-			t.Error(err)
+			if err != nil {
+				t.Error(err)
+			}
+
 			defer f.Close()
 
 			_, err = io.Copy(w, f)
-			t.Error(err)
+			if err != nil {
+				t.Error(err)
+			}
 		} else if r.URL.Path == vexUnknown {
 			f, err := os.Open("testdata/" + vexUnknown + ".json")
-			t.Error(err)
+			if err != nil {
+				t.Error(err)
+			}
 			defer f.Close()
 
 			_, err = io.Copy(w, f)
-			t.Error(err)
+			if err != nil {
+				t.Error(err)
+			}
 		}
 
 		http.NotFound(w, r)
@@ -69,6 +80,12 @@ func TestRetrieveExternalVEXDocuments(t *testing.T) {
 
 	t.Run("incompatible external vex", func(t *testing.T) {
 		set, err := vex.NewSBOMReferenceSet(setupTestReport(s, vexUnknown))
+		require.NoError(t, err)
+		require.Empty(t, set.Vexes)
+	})
+
+	t.Run("vex not found", func(t *testing.T) {
+		set, err := vex.NewSBOMReferenceSet(setupTestReport(s, vexNotFound))
 		require.NoError(t, err)
 		require.Empty(t, set.Vexes)
 	})

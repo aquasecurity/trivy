@@ -20,7 +20,6 @@ type SBOMReferenceSet struct {
 }
 
 func NewSBOMReferenceSet(report *types.Report) (*SBOMReferenceSet, error) {
-	fmt.Println("hello there")
 
 	if report.ArtifactType != artifact.TypeCycloneDX {
 		return nil, xerrors.Errorf("externalReferences can only be used when scanning CycloneDX SBOMs: %w", report.ArtifactType)
@@ -59,9 +58,11 @@ func RetrieveExternalVEXDocuments(refs []url.URL, report *types.Report) ([]VEX, 
 	var docs []VEX
 	for _, ref := range refs {
 		doc, err := RetrieveExternalVEXDocument(ref, report)
-		if err != nil && doc != nil {
-			docs = append(docs, doc)
+		if err != nil {
+			logger.Debug(fmt.Sprintf("Could not retrieve external VEX document from %s", ref.String()))
+			continue
 		}
+		docs = append(docs, doc)
 	}
 	logger.Debug("Retrieved external VEX documents", "count", len(docs))
 
@@ -73,24 +74,28 @@ func RetrieveExternalVEXDocuments(refs []url.URL, report *types.Report) ([]VEX, 
 
 }
 
-func RetrieveExternalVEXDocument(url url.URL, report *types.Report) (VEX, error) {
+func RetrieveExternalVEXDocument(vexUrl url.URL, report *types.Report) (VEX, error) {
 
 	logger := log.WithPrefix("vex").With(log.String("type", "externalReference"))
 
-	logger.Info(fmt.Sprintf("Retrieving external VEX document from host %s", url.Host))
+	logger.Info(fmt.Sprintf("Retrieving external VEX document from host %s", vexUrl.Host))
 
-	res, err := http.Get(url.String())
+	res, err := http.Get(vexUrl.String())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to fetch file via HTTP: %w", err)
 	}
 	defer res.Body.Close()
 
-	val, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to read response into memory: %w", err)
+	if res.StatusCode != http.StatusOK {
+		return nil, xerrors.Errorf("Did not receive 2xx status code: %w", res.StatusCode)
 	}
 
-	if v, err := decodeVEX(bytes.NewReader(val), url.String(), report); err != nil {
+	val, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, xerrors.Errorf("Unable to read response into memory: %w", err)
+	}
+
+	if v, err := decodeVEX(bytes.NewReader(val), vexUrl.String(), report); err != nil || v == nil {
 		return nil, xerrors.Errorf("unable to load VEX: %w", err)
 	} else {
 		return v, nil
