@@ -57,7 +57,7 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 		d.Set = set.New[string](lo.MapToSlice(deps, func(pkgName string, _ any) string {
 			return python.NormalizePkgName(pkgName)
 		})...)
-	case []interface{}: // For Poetry v2
+	case []any: // For Poetry v2
 		d.Set = set.New[string]()
 		for i := range deps {
 			dep, ok := deps[i].(string)
