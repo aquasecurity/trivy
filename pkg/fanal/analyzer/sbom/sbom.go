@@ -52,6 +52,8 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 		handleBitnamiImages(path.Dir(input.FilePath), bom)
 	}
 
+	// Add the filePath to avoid overwriting OS packages when merging packages from multiple SBOM files.
+	// cf. https://github.com/aquasecurity/trivy/issues/8324
 	for i, pkgInfo := range bom.Packages {
 		bom.Packages[i].FilePath = path.Join(input.FilePath, pkgInfo.FilePath)
 	}
