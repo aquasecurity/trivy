@@ -35,7 +35,7 @@ func TestParser_Parse(t *testing.T) {
 		{
 			name:     "flask + poetry v2",
 			file:     "testdata/poetry_v2_flask.lock",
-			wantPkgs: poetryV2Flask,
+			wantPkgs: poetryFlask,
 			wantDeps: poetryV2FlaskDeps,
 			wantErr:  assert.NoError,
 		},

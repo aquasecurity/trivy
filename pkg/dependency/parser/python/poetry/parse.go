@@ -52,19 +52,16 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	var pkgs []ftypes.Package
 	var deps []ftypes.Dependency
 	for _, pkg := range lockfile.Packages {
-		// TODO upgrade logic for working with groups
-		// Skip only:
-		// - category = "dev"
-		// - groups = ["dev"]
-		if pkg.Category == "dev" || (len(pkg.Groups) == 1 && slices.Contains(pkg.Groups, "dev")) {
-			continue
-		}
-
 		pkgID := packageID(pkg.Name, pkg.Version)
 		pkgs = append(pkgs, ftypes.Package{
 			ID:      pkgID,
 			Name:    pkg.Name,
 			Version: pkg.Version,
+			// TODO upgrade logic for working with groups
+			// Mark only:
+			// - category = "dev"
+			// - groups = ["dev"]
+			Dev: pkg.Category == "dev" || (len(pkg.Groups) == 1 && slices.Contains(pkg.Groups, "dev")),
 		})
 
 		dependsOn := p.parseDependencies(pkg.Dependencies, pkgVersions)
