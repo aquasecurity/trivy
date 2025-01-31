@@ -46,6 +46,32 @@ func TestParser_Parse(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "happy path v2",
+			file: "testdata/happy_v2.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("check-wheel-contents", "flask"),
+					},
+				},
+				Tool: pyproject.Tool{
+					Poetry: pyproject.Poetry{
+						Dependencies: pyproject.Dependencies{
+							Set: set.New[string]("annotated-types", "python"),
+						},
+						Groups: map[string]pyproject.Group{
+							"dev": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("pytest"),
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,

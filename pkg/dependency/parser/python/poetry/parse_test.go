@@ -26,17 +26,17 @@ func TestParser_Parse(t *testing.T) {
 			wantErr:  assert.NoError,
 		},
 		{
-			name:     "many",
-			file:     "testdata/poetry_many.lock",
-			wantPkgs: poetryMany,
-			wantDeps: poetryManyDeps,
-			wantErr:  assert.NoError,
-		},
-		{
 			name:     "flask",
 			file:     "testdata/poetry_flask.lock",
 			wantPkgs: poetryFlask,
 			wantDeps: poetryFlaskDeps,
+			wantErr:  assert.NoError,
+		},
+		{
+			name:     "flask + poetry v2",
+			file:     "testdata/poetry_v2_flask.lock",
+			wantPkgs: poetryFlask,
+			wantDeps: poetryV2FlaskDeps,
 			wantErr:  assert.NoError,
 		},
 	}
