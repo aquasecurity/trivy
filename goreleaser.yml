@@ -165,7 +165,7 @@ dockers:
       - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/trivy"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/trivy/"
-      - "--label=org.opencontainers.image.documentation=https://aquasecurity.github.io/trivy/v{{ .Version }}/"
+      - "--label=org.opencontainers.image.documentation=https://trivy.dev/v{{ .Version }}/"
       - "--platform=linux/amd64"
     extra_files:
     - contrib/
@@ -190,7 +190,7 @@ dockers:
       - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/trivy"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/trivy/"
-      - "--label=org.opencontainers.image.documentation=https://aquasecurity.github.io/trivy/v{{ .Version }}/"
+      - "--label=org.opencontainers.image.documentation=https://trivy.dev/v{{ .Version }}/"
       - "--platform=linux/arm64"
     extra_files:
     - contrib/
@@ -215,7 +215,7 @@ dockers:
       - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/trivy"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/trivy/"
-      - "--label=org.opencontainers.image.documentation=https://aquasecurity.github.io/trivy/v{{ .Version }}/"
+      - "--label=org.opencontainers.image.documentation=https://trivy.dev/v{{ .Version }}/"
       - "--platform=linux/s390x"
     extra_files:
     - contrib/
@@ -240,7 +240,7 @@ dockers:
       - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/trivy"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
       - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/trivy/"
-      - "--label=org.opencontainers.image.documentation=https://aquasecurity.github.io/trivy/v{{ .Version }}/"
+      - "--label=org.opencontainers.image.documentation=https://trivy.dev/v{{ .Version }}/"
       - "--platform=linux/ppc64le"
     extra_files:
     - contrib/
