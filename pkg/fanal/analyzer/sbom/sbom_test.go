@@ -239,6 +239,42 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
+			name:     "valid ca-certificates spdx file",
+			file:     "testdata/ca-certificates.spdx.json",
+			filePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
+			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
+						Packages: types.Packages{
+							{
+								ID:         "ca-certificates@20230311",
+								Name:       "ca-certificates",
+								Version:    "20230311",
+								Arch:       "all",
+								SrcName:    "ca-certificates",
+								SrcVersion: "20230311",
+								Licenses:   []string{"GPL-2.0-or-later AND GPL-2.0-only AND MPL-2.0"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "ca-certificates",
+										Version:   "20230311",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "arch", Value: "all"},
+											{Key: "distro", Value: "debian-12.9"},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
+		},
+		{
 			name:     "invalid spdx file",
 			file:     "testdata/invalid_spdx.json",
 			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
