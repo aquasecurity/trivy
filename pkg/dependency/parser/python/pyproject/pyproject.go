@@ -38,6 +38,19 @@ type Dependencies struct {
 	set.Set[string]
 }
 
+// MainDeps returns set of main deps
+// `poetry` only uses 1 list of main dependencies
+// `project.dependencies` (first priority) or `tool.poetry.dependencies` (if `project.dependencies` is missing)
+func (p PyProject) MainDeps() set.Set[string] {
+	deps := set.New[string]()
+	if p.Project.Dependencies.Set != nil {
+		deps.Append(p.Project.Dependencies.Items()...)
+	} else if p.Tool.Poetry.Dependencies.Set != nil {
+		deps.Append(p.Tool.Poetry.Dependencies.Items()...)
+	}
+	return deps
+}
+
 func (d *Dependencies) UnmarshalTOML(data any) error {
 	switch deps := data.(type) {
 	case map[string]any: // For Poetry v1
