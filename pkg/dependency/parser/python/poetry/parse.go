@@ -61,7 +61,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			// Mark only:
 			// - `category = "dev"`
 			// - groups without `main`. e.g. `groups = ["dev"]`
-			Dev: pkg.Category == "dev" || !slices.Contains(pkg.Groups, "main"),
+			Dev: pkg.Category == "dev" || (len(pkg.Groups) > 0 && !slices.Contains(pkg.Groups, "main")),
 		})
 
 		dependsOn := p.parseDependencies(pkg.Dependencies, pkgVersions)
