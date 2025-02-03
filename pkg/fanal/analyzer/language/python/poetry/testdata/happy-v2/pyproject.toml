@@ -1,0 +1,26 @@
+[project]
+name = "web"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask (==1.0.3)",
+    "pluggy (==0.13.1)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "5.4.3"
+
+
+[tool.poetry.group.lint.dependencies]
+ruff = "0.8.3"
+
