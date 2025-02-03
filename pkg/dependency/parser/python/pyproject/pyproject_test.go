@@ -51,7 +51,7 @@ func TestParser_Parse(t *testing.T) {
 			want: pyproject.PyProject{
 				Project: pyproject.Project{
 					Dependencies: pyproject.Dependencies{
-						Set: set.New[string]("check-wheel-contents", "flask"),
+						Set: set.New[string]("check-wheel-contents", "flask", "pluggy"),
 					},
 				},
 				Tool: pyproject.Tool{

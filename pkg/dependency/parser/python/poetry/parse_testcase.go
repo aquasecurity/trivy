@@ -19,9 +19,9 @@ var (
 	// curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.7 python3 -
 	// export PATH=/root/.local/bin:$PATH
 	// poetry new web && cd web
+	// poetry add pluggy@0.13.1 -E pre-commit,tox
 	// poetry add flask@1.0.3
 	// poetry add pytest@5.4.3 --dev
-	// poetry add pluggy@0.13.1
 	// poetry show -a | awk '{gsub(/\(!\)/, ""); printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\"},\n") }'
 	// mark dev deps
 	poetryFlask = []ftypes.Package{

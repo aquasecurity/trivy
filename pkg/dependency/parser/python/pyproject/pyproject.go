@@ -65,8 +65,8 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 				return xerrors.Errorf("dependencies must be string, but got: %T", deps[i])
 			}
 			// There are some formats:
-			// e.g. `Flask == 1.1.4`, `Flask==1.1.4`, `Flask (>= 1.0.0)`, `Flask(>= 1.0.0)`, etc.
-			dep = strings.NewReplacer(">", " ", "<", " ", "=", " ", "(", " ").Replace(dep)
+			// e.g. `Flask == 1.1.4`, `Flask==1.1.4`, `Flask(>= 1.0.0)`, `pluggy[pre-commit,tox] (==0.13.1)`, etc.
+			dep = strings.NewReplacer(">", " ", "<", " ", "=", " ", "(", " ", "[", " ").Replace(dep)
 			d.Set.Append(strings.Fields(dep)[0]) // Save only name
 		}
 	default:
