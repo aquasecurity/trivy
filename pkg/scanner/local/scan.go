@@ -261,26 +261,44 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	var results types.Results
 	scanner := licensing.NewScanner(options.LicenseCategories)
 
-	// License - OS packages
-	if len(target.Packages) > 0 {
-		var osPkgLicenses []types.DetectedLicense
-		for _, pkg := range target.Packages {
-			for _, license := range pkg.Licenses {
-				osPkgLicenses = append(osPkgLicenses, toDetectedLicense(scanner, license, pkg.Name, ""))
-			}
-		}
-		// We only need to add result with OS package licenses if Packages were found.
-		// This is to avoid user confusion.
-		// e.g. when we didn't find packages but show that we didn't find licenses in the Packages.
-		results = append(results, types.Result{
-			Target:   "OS Packages",
-			Class:    types.ClassLicense,
-			Licenses: osPkgLicenses,
-		})
+	// Scan licenses for OS packages
+	if result := s.scanOSPackageLicenses(target.Packages, scanner); result != nil {
+		results = append(results, *result)
 	}
 
-	// License - language-specific packages
-	for _, app := range target.Applications {
+	// Scan licenses for language-specific packages
+	results = append(results, s.scanApplicationLicenses(target.Applications, scanner)...)
+
+	// Scan licenses in file headers or license files
+	if result := s.scanFileLicenses(target.Licenses, scanner, options); result != nil {
+		results = append(results, *result)
+	}
+
+	return results
+}
+
+func (s Scanner) scanOSPackageLicenses(packages []ftypes.Package, scanner licensing.Scanner) *types.Result {
+	if len(packages) == 0 {
+		return nil
+	}
+
+	var licenses []types.DetectedLicense
+	for _, pkg := range packages {
+		for _, license := range pkg.Licenses {
+			licenses = append(licenses, toDetectedLicense(scanner, license, pkg.Name, ""))
+		}
+	}
+	return &types.Result{
+		Target:   "OS Packages",
+		Class:    types.ClassLicense,
+		Licenses: licenses,
+	}
+}
+
+func (s Scanner) scanApplicationLicenses(apps []ftypes.Application, scanner licensing.Scanner) []types.Result {
+	var results []types.Result
+
+	for _, app := range apps {
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
@@ -304,35 +322,33 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 		})
 	}
 
-	// License - file header or license file
-	if options.LicenseFull {
-		var fileLicenses []types.DetectedLicense
-		for _, license := range target.Licenses {
-			for _, finding := range license.Findings {
-				category, severity := scanner.Scan(finding.Name)
-				fileLicenses = append(fileLicenses, types.DetectedLicense{
-					Severity:   severity,
-					Category:   category,
-					FilePath:   license.FilePath,
-					Name:       finding.Name,
-					Confidence: finding.Confidence,
-					Link:       finding.Link,
-				})
+	return results
+}
 
-			}
+func (s Scanner) scanFileLicenses(licenses []ftypes.LicenseFile, scanner licensing.Scanner, options types.ScanOptions) *types.Result {
+	if !options.LicenseFull {
+		return nil
+	}
+	var detectedLicenses []types.DetectedLicense
+	for _, license := range licenses {
+		for _, finding := range license.Findings {
+			category, severity := scanner.Scan(finding.Name)
+			detectedLicenses = append(detectedLicenses, types.DetectedLicense{
+				Severity:   severity,
+				Category:   category,
+				FilePath:   license.FilePath,
+				Name:       finding.Name,
+				Confidence: finding.Confidence,
+				Link:       finding.Link,
+			})
 		}
-
-		// We only need to add the result with license files if the `--license-full` flag is enabled.
-		// This is to avoid user confusion.
-		// e.g. the user might think that we were looking for licenses but didn't find them.
-		results = append(results, types.Result{
-			Target:   "Loose File License(s)",
-			Class:    types.ClassLicenseFile,
-			Licenses: fileLicenses,
-		})
 	}
 
-	return results
+	return &types.Result{
+		Target:   "Loose File License(s)",
+		Class:    types.ClassLicenseFile,
+		Licenses: detectedLicenses,
+	}
 }
 
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
