@@ -232,7 +232,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 									{
 										ID:               "KSV001",
 										Name:             lo.ToPtr("Misconfiguration"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag &#39;:latest&#39; used")},
+										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("Image tag ':latest' used")},
 										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
@@ -373,7 +373,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 										ID:               "aws-secret-access-key",
 										Name:             lo.ToPtr("Secret"),
 										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("AWS Secret Access Key")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("'AWS_secret_KEY'=\"****************************************\"")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
 											Level: "error",
 										},
