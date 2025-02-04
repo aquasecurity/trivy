@@ -434,18 +434,21 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
-	// Filter only enabled misconfiguration scanners
-	ma, err := filterMisconfigAnalyzers(opts.MisconfigScanners, analyzer.TypeConfigFiles)
-	if err != nil {
-		log.Error("Invalid misconfiguration scanners specified, defaulting to use all misconfig scanners",
-			log.Any("scanners", opts.MisconfigScanners))
-	} else {
-		analyzers = append(analyzers, ma...)
-	}
-
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+	} else {
+		// Filter only enabled misconfiguration scanners
+		ma, err := disabledMisconfigAnalyzers(analyzer.TypeConfigFiles, opts.MisconfigScanners)
+		if err != nil {
+			log.Error("Invalid misconfiguration scanners specified, defaulting to use all misconfig scanners",
+				log.Any("scanners", opts.MisconfigScanners))
+		} else {
+			analyzers = append(analyzers, ma...)
+		}
+
+		log.Debug("Enabling misconfiguration scanners",
+			log.Any("scanners", lo.Without(analyzer.TypeConfigFiles, analyzers...)))
 	}
 
 	// Scanning file headers and license files is expensive.
@@ -482,13 +485,12 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	return analyzers
 }
 
-func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, error) {
+func disabledMisconfigAnalyzers(all, included []analyzer.Type) ([]analyzer.Type, error) {
 	_, missing := lo.Difference(all, included)
 	if len(missing) > 0 {
 		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
 	}
 
-	log.Debug("Enabling misconfiguration scanners", log.Any("scanners", included))
 	return lo.Without(all, included...), nil
 }
 
