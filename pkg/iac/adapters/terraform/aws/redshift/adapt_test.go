@@ -1,7 +1,6 @@
 package redshift
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -76,7 +75,6 @@ func Test_Adapt(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
 			adapted := Adapt(modules)
-			fmt.Println(adapted.SecurityGroups[0].Description.Value())
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}
