@@ -207,29 +207,24 @@ func splitAggregatedPackages(results types.Results) types.Results {
 }
 
 func splitAggregatedVulns(result types.Result) types.Results {
-	var newResults types.Results
-
 	// Save packages to display them in the table even if no vulnerabilities were found
-	vulns := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, []types.DetectedVulnerability) {
-		return rootJarFromPath(pkg.FilePath), []types.DetectedVulnerability{}
+	resultMap := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, *types.Result) {
+		filePath := rootJarFromPath(pkg.FilePath)
+		return filePath, &types.Result{
+			Target: lo.Ternary(filePath != "", filePath, result.Target),
+			Class:  result.Class,
+			Type:   result.Type,
+		}
 	})
-
 	for _, vuln := range result.Vulnerabilities {
 		pkgPath := rootJarFromPath(vuln.PkgPath)
-		vulns[pkgPath] = append(vulns[pkgPath], vuln)
+		resultMap[pkgPath].Vulnerabilities = append(resultMap[pkgPath].Vulnerabilities, vuln)
 	}
-	for pkgPath, v := range vulns {
-		newResult := result
-		newResult.Target = lo.Ternary(pkgPath != "", pkgPath, result.Target)
-		newResult.Vulnerabilities = v
-
-		newResults = append(newResults, newResult)
-	}
-
+	newResults := lo.Values(resultMap)
 	sort.Slice(newResults, func(i, j int) bool {
 		return newResults[i].Target < newResults[j].Target
 	})
-	return newResults
+	return lo.FromSlicePtr(newResults)
 }
 
 func splitAggregatedLicenses(result types.Result) types.Results {

@@ -64,6 +64,16 @@ var (
 		Target: "Node.js",
 		Class:  types.ClassLangPkg,
 		Type:   ftypes.NodePkg,
+		Packages: []ftypes.Package{
+			{
+				Name:     "loader-utils@2.0.2",
+				FilePath: "loader-utils/package.json",
+			},
+			{
+				Name:     "nanoid@3.1.25",
+				FilePath: "nanoid/package.json",
+			},
+		},
 		Vulnerabilities: []types.DetectedVulnerability{
 			{
 				VulnerabilityID: "CVE-2022-37601",
