@@ -86,8 +86,8 @@ func (a *adapter) adaptPermission(permission *terraform.Block) lambda.Permission
 	sourceARNAttr := permission.GetAttribute("source_arn")
 	sourceARN := sourceARNAttr.AsStringValueOrDefault("", permission)
 
-	if len(sourceARNAttr.AllReferences()) > 0 {
-		sourceARN = iacTypes.String(sourceARNAttr.AllReferences()[0].NameLabel(), sourceARNAttr.GetMetadata())
+	if refs := sourceARNAttr.AllReferences(); len(refs) > 0 {
+		sourceARN = iacTypes.String(refs[0].NameLabel(), sourceARNAttr.GetMetadata())
 	}
 
 	return lambda.Permission{
