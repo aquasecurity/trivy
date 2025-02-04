@@ -27,7 +27,7 @@ func NewDocument(filePath string, report *types.Report) (VEX, error) {
 	}
 	defer f.Close()
 
-	if v, err := decodeVEX(f, filePath, report); err != nil {
+	if v, errs := decodeVEX(f, filePath, report); errs != nil || v == nil {
 		return nil, xerrors.Errorf("unable to load VEX: %w", err)
 	} else {
 		return v, nil
