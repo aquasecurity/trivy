@@ -239,8 +239,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 
 	// "--so-summary" option is available only with "--format table".
 	if noSummaryTable && format != types.FormatTable {
-		noSummaryTable = false
-		log.Warn(`"--no-summary-table" can be used only with "--format table".`)
+		return ReportOptions{}, xerrors.New(`"--no-summary-table" can be used only with "--format table".`)
 	}
 
 	cs, err := loadComplianceTypes(f.Compliance.Value())

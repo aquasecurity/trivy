@@ -38,6 +38,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		name     string
 		fields   fields
 		want     flag.ReportOptions
+		wantErr  string
 		wantLogs []string
 	}{
 		{
@@ -117,20 +118,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid option combination: --no-summary-table with --format json",
-			fields: fields{
-				format:         "json",
-				noSummaryTable: true,
-			},
-			wantLogs: []string{
-				`"--no-summary-table" can be used only with "--format table".`,
-			},
-			want: flag.ReportOptions{
-				Format:         "json",
-				NoSummaryTable: false,
-			},
-		},
-		{
 			name: "happy path with output plugin args",
 			fields: fields{
 				output:           "plugin=count",
@@ -174,6 +161,14 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				},
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
+		},
+		{
+			name: "invalid option combination: --no-summary-table with --format json",
+			fields: fields{
+				format:         "json",
+				noSummaryTable: true,
+			},
+			wantErr: `"--no-summary-table" can be used only with "--format table".`,
 		},
 	}
 	for _, tt := range tests {
@@ -219,7 +214,11 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			}
 
 			got, err := f.ToOptions()
-			require.NoError(t, err)
+			if tt.wantErr != "" {
+				require.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+
 			assert.EqualExportedValuesf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
