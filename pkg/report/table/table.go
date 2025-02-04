@@ -85,11 +85,6 @@ func (tw Writer) Write(_ context.Context, report types.Report) error {
 }
 
 func (tw Writer) renderSummary(report types.Report) error {
-	if len(report.Results) == 0 {
-		tw.showEmptyResultsWarning()
-		return nil
-	}
-
 	// Fprintln has a bug
 	if err := tml.Fprintf(tw.Output, "\n<underline><bold>Report Summary</bold></underline>\n\n"); err != nil {
 		return err
@@ -145,6 +140,12 @@ func (tw Writer) renderSummary(report types.Report) error {
 		}
 		t.AddRows(rows)
 	}
+
+	if len(report.Results) == 0 {
+		t.AddRows(slices.Repeat([]string{"-"}, len(scanners)+2))
+		tw.showEmptyResultsWarning()
+	}
+
 	t.Render()
 
 	// Show legend

@@ -132,6 +132,13 @@ Legend:
 					Target: "test",
 					Class:  types.ClassLangPkg,
 					Type:   ftypes.Jar,
+					Packages: []ftypes.Package{
+						{
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
+						},
+					},
 				},
 			},
 			wantOutput: ``,

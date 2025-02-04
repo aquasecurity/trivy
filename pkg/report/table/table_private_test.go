@@ -289,6 +289,48 @@ Legend:
 
 `,
 		},
+		{
+			name: "happy path without supported files for vulns + secret",
+			scanners: []types.Scanner{
+				types.VulnerabilityScanner,
+				types.SecretScanner,
+			},
+			want: `
+Report Summary
+
+┌────────┬──────┬─────────────────┬─────────┐
+│ Target │ Type │ Vulnerabilities │ Secrets │
+├────────┼──────┼─────────────────┼─────────┤
+│ -      │  -   │        -        │    -    │
+└────────┴──────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+`,
+		},
+		{
+			name: "happy path without supported files for all scanners",
+			scanners: []types.Scanner{
+				types.VulnerabilityScanner,
+				types.SecretScanner,
+				types.MisconfigScanner,
+				types.LicenseScanner,
+			},
+			want: `
+Report Summary
+
+┌────────┬──────┬─────────────────┬─────────┬───────────────────┬──────────┐
+│ Target │ Type │ Vulnerabilities │ Secrets │ Misconfigurations │ Licenses │
+├────────┼──────┼─────────────────┼─────────┼───────────────────┼──────────┤
+│ -      │  -   │        -        │    -    │         -         │    -     │
+└────────┴──────┴─────────────────┴─────────┴───────────────────┴──────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+`,
+		},
 	}
 
 	for _, tt := range tests {
