@@ -88,8 +88,8 @@ This table:
 
 - Includes columns for enabled [scanners](../references/terminology.md#scanner) only.
 - Contains separate lines for the same targets but different scanners.
-- `-` means that Trivy didn't scan this target.
-- `0` means that Trivy scanned this target, but found no vulns/misconfigs.
+    - `-` means that the scanner didn't scan this target.
+    - `0` means that the scanner scanned this target, but found no security issues.
 
 !!! note 
     Use `--no-summary-table` flag to hide summary table.
