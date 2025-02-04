@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/samber/lo"
@@ -787,5 +788,204 @@ func TestToPathUri(t *testing.T) {
 		if got != test.output {
 			t.Errorf("toPathUri(%q) got %q, wanted %q", test.input, got, test.output)
 		}
+	}
+}
+
+func TestSarifWriter_Write_WithInvocationTimes(t *testing.T) {
+	tests := []struct {
+		name      string
+		startTime time.Time
+		endTime   time.Time
+		input     types.Report
+		want      *sarif.Report
+	}{
+		{
+			name:      "report with invocation times",
+			startTime: time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC),
+			endTime:   time.Date(2023, 1, 1, 12, 30, 0, 0, time.UTC),
+			input: types.Report{
+				ArtifactName: "debian:9",
+				ArtifactType: artifact.TypeContainerImage,
+				Metadata: types.Metadata{
+					ImageID: "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
+					RepoTags: []string{
+						"debian:9",
+					},
+					RepoDigests: []string{
+						"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534",
+					},
+				},
+				Results: types.Results{
+					{
+						Target: "library/test 1",
+						Class:  types.ClassOSPkg,
+						Packages: []ftypes.Package{
+							{
+								Name:    "foo",
+								Version: "1.2.3",
+								Locations: []ftypes.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+									{
+										StartLine: 15,
+										EndLine:   20,
+									},
+								},
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-0001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "3.4.5",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+								SeveritySource:   "redhat",
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "foobar",
+									Description: "baz",
+									Severity:    "HIGH",
+									VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+										vulnerability.NVD:    dbTypes.SeverityCritical,
+										vulnerability.RedHat: dbTypes.SeverityHigh,
+									},
+									CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
+										vulnerability.NVD: {
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+											V3Score:  9.8,
+										},
+										vulnerability.RedHat: {
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+											V3Score:  7.5,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        lo.ToPtr(""),
+								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:               "CVE-2020-0001",
+										Name:             lo.ToPtr("OsPackageVulnerability"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("foobar")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("baz")},
+										DefaultConfiguration: &sarif.ReportingConfiguration{
+											Level: "error",
+										},
+										HelpURI: lo.ToPtr("https://avd.aquasec.com/nvd/cve-2020-0001"),
+										Properties: map[string]any{
+											"tags": []any{
+												"vulnerability",
+												"security",
+												"HIGH",
+											},
+											"precision":         "very-high",
+											"security-severity": "7.5",
+										},
+										Help: &sarif.MultiformatMessageString{
+											Text:     lo.ToPtr("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
+											Markdown: lo.ToPtr("**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nbaz"),
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    lo.ToPtr("CVE-2020-0001"),
+								RuleIndex: lo.ToPtr[uint](0),
+								Level:     lo.ToPtr("error"),
+								Message:   sarif.Message{Text: lo.ToPtr("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: lo.ToPtr("library/test 1: foo@1.2.3")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       lo.ToPtr("library/test%201"),
+												URIBaseId: lo.ToPtr("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   lo.ToPtr(5),
+												EndLine:     lo.ToPtr(10),
+												StartColumn: lo.ToPtr(1),
+												EndColumn:   lo.ToPtr(1),
+											},
+										},
+									},
+									{
+										Message: &sarif.Message{Text: lo.ToPtr("library/test 1: foo@1.2.3")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       lo.ToPtr("library/test%201"),
+												URIBaseId: lo.ToPtr("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   lo.ToPtr(15),
+												EndLine:     lo.ToPtr(20),
+												StartColumn: lo.ToPtr(1),
+												EndColumn:   lo.ToPtr(1),
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///"),
+							},
+						},
+						PropertyBag: sarif.PropertyBag{
+							Properties: map[string]any{
+								"imageName":   "debian:9",
+								"imageID":     "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
+								"repoDigests": []any{"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534"},
+								"repoTags":    []any{"debian:9"},
+							},
+						},
+						Invocations: []*sarif.Invocation{
+							{
+								StartTimeUtc: "2023-01-01T12:00:00Z",
+								EndTimeUtc:   "2023-01-01T12:30:00Z",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sarifWritten := bytes.NewBuffer(nil)
+			w := report.SarifWriter{
+				Output:    sarifWritten,
+				StartTime: tt.startTime,
+				EndTime:   tt.endTime,
+			}
+			err := w.Write(context.TODO(), tt.input)
+			require.NoError(t, err)
+
+			result := &sarif.Report{}
+			err = json.Unmarshal(sarifWritten.Bytes(), result)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, result)
+		})
 	}
 }
