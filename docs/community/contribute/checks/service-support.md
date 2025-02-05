@@ -57,7 +57,7 @@ type AWS struct {
 
 ### Update Adapters
 
-Now you'll need to update all of the [adapters](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/adapters) which populate the struct of the provider that you have been using. Following the example above, if you want to add support for CodeBuild in Terraform, you'll need to update the Terraform AWS adatper as shown here: [`trivy/pkg/iac/adapters/terraform/aws/codebuild/adapt.go`](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/adapters/terraform/aws/codebuild/adapt.go).
+Now you'll need to update all of the [adapters](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/adapters) which populate the struct of the provider that you have been using. Following the example above, if you want to add support for CodeBuild in Terraform, you'll need to update the Terraform AWS adapter as shown here: [`trivy/pkg/iac/adapters/terraform/aws/codebuild/adapt.go`](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/adapters/terraform/aws/codebuild/adapt.go).
 
 Another example for updating the adapters is provided in the [following PR.](https://github.com/aquasecurity/defsec/pull/1000/files) Additionally, please refer to the respective Terraform documentation on the provider to which you are adding the service. For instance, the Terraform documentation for AWS CodeBuild is provided [here.](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project)
 

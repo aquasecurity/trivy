@@ -31,7 +31,7 @@ Git clone the tutorial and cd into the directory:
 git clone git@github.com:Cloud-Native-Security/trivy-demo.git
 cd bad_iac/terraform
 ``` 
-In this case, the folder only containes Terraform configuration files. However, you could scan a directory that contains several different configurations e.g. Kubernetes YAML manifests, Dockerfile, and Terraform. Trivy will then detect the different configuration files and apply the right rules automatically. 
+In this case, the folder only contains Terraform configuration files. However, you could scan a directory that contains several different configurations e.g. Kubernetes YAML manifests, Dockerfile, and Terraform. Trivy will then detect the different configuration files and apply the right rules automatically. 
 
 ## Different types of `trivy config` scans 
 

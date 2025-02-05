@@ -86,7 +86,7 @@ Let's look at the check line by line:
 Note that Rego
 
 * uses `AND` automatically to combine conditions in this check
-* automatically iterates through the array of commands in the Dockefile and allowed images 
+* automatically iterates through the array of commands in the Dockerfile and allowed images 
 
 ## Run the check in a Trivy misconfiguration scan
 
