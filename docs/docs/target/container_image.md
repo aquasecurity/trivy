@@ -405,7 +405,14 @@ Trivy supports the generation of Software Bill of Materials (SBOM) for container
 Trivy can generate SBOM for container images.
 See [here](../supply-chain/sbom.md) for the detail.
 
-### Discovery
+### SBOM inside of container image
+Trivy can search for Software Bill of Materials (SBOMs) among container image files and scan for vulnerabilities for components in these files.
+
+!!!note
+    There are cases where Trivy can't detect the file path for Applications from third-party SBOM files.
+    For these, Trivy uses the SBOM file path as the Application file path
+
+### SBOM referencing the container image
 Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
 If an SBOM is found, the vulnerability scan is performed using the SBOM instead of the container image.
 By using the SBOM, you can perform a vulnerability scan more quickly, as it allows you to skip pulling the container image and analyzing its layers.
