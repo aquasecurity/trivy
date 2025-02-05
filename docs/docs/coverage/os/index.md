@@ -1,6 +1,6 @@
 # OS
 
-Trivy scans operating systems packages in the following scanners: 
+Trivy scans operating system packages in the following scanners: 
 
 - [SBOM][sbom]
 - [Vulnerabilities][vuln]
