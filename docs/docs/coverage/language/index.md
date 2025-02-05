@@ -1,6 +1,6 @@
 # Programming Language
 
-Trivy scans programming languages packages in the following scanners: 
+Trivy scans programming language packages in the following scanners: 
 
 - [SBOM][sbom]
 - [Vulnerabilities][vuln]
