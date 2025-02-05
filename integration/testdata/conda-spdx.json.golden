@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/conda",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000004",
+  "documentNamespace": "http://trivy.dev/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000004",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",
