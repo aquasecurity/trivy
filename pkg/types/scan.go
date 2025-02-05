@@ -111,7 +111,7 @@ type ScanTarget struct {
 	CustomResources []types.CustomResource
 }
 
-// ScanOptions holds the attributes for scanning vulnerabilities
+// ScanOptions holds the attributes for scanning vulnerabilities/licenses
 type ScanOptions struct {
 	PkgTypes            []string
 	PkgRelationships    []types.Relationship
@@ -119,6 +119,7 @@ type ScanOptions struct {
 	ImageConfigScanners Scanners // Scanners for container image configuration
 	ScanRemovedPackages bool
 	LicenseCategories   map[types.LicenseCategory][]string
+	LicenseFull         bool
 	FilePatterns        []string
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
