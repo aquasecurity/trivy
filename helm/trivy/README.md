@@ -63,9 +63,9 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `image.pullSecret`                    | The name of an imagePullSecret used to pull trivy image from e.g. Docker Hub or a private registry  | |
 | `replicaCount`                        | Number of Trivy Pods to run                                   | `1`            |
 | `trivy.debugMode`                     | The flag to enable or disable Trivy debug mode                          | `false` |
-| `trivy.gitHubToken`                   | The GitHub access token to download Trivy DB. More info: https://github.com/aquasecurity/trivy#github-rate-limiting                          |      |
-| `trivy.registryUsername`              | The username used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
-| `trivy.registryPassword`              | The password used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
+| `trivy.gitHubToken`                   | The GitHub access token to download Trivy DB. More info: https://trivy.dev/latest/docs/references/troubleshooting/#github-rate-limiting                          |      |
+| `trivy.registryUsername`              | The username used to log in at dockerhub. More info: https://trivy.dev/latest/docs/advanced/private-registries/docker-hub/ |      |
+| `trivy.registryPassword`              | The password used to log in at dockerhub. More info: https://trivy.dev/latest/docs/advanced/private-registries/docker-hub/ |      |
 | `trivy.registryCredentialsExistingSecret` | Name of Secret containing dockerhub credentials. Alternative to the 2 parameters above, has precedence if set.                    |      |
 | `trivy.serviceAccount.annotations`        | Additional annotations to add to the Kubernetes service account resource |     |
 | `trivy.skipDBUpdate`                    | The flag to enable or disable Trivy DB downloads from GitHub            | `false`        |
@@ -90,7 +90,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `tolerations`                         | Tolerations for pod assignment                                              |     |
 | `podAnnotations`                      | Annotations for pods created by statefulset                             | `{}` |
 
-The above parameters map to the env variables defined in [trivy](https://github.com/aquasecurity/trivy#configuration).
+The above parameters map to the env variables defined in [trivy](https://trivy.dev/latest/docs/configuration/#configuration).
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
 
@@ -108,4 +108,4 @@ This chart uses a PersistentVolumeClaim to reduce the number of database downloa
 ## Caching
 
 You can specify a Redis server as cache backend. This Redis server has to be already present. You can use the [bitnami chart](https://bitnami.com/stack/redis/helm).
-More Information about the caching backends can be found [here](https://github.com/aquasecurity/trivy#specify-cache-backend).
+More Information about the caching backends can be found [here](https://trivy.dev/latest/docs/configuration/cache/#scan-cache-backend).

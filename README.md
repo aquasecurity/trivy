@@ -107,7 +107,7 @@ trivy k8s --report summary cluster
 ## Want more? Check out Aqua
 
 If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.  
-You can find a high level comparison table specific to Trivy users [here](https://trivy.dev/commercial/comparison).  
+You can find a high level comparison table specific to Trivy users [here](https://trivy.dev/latest/commercial/compare/).
 In addition check out the <https://aquasec.com> website for more information about our products and services.
 If you'd like to contact Aqua or request a demo, please use this form: <https://www.aquasec.com/demo>
 
