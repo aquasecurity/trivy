@@ -9,7 +9,7 @@ Trivy can take the following SBOM formats as an input and scan for vulnerabiliti
 - [KBOM](./kubernetes.md#kbom) in CycloneDX format
 
 !!! note
-    If you are looking to generate SBOM instead of scanning it, please use the `--format` flag in the respective scan command.
+    If you are looking to generate SBOM instead of scanning it, please use the `--format` flag in the respective scan command. For more information see [here](../supply-chain/sbom.md#generating).
 
 To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
 The input format is automatically detected.
