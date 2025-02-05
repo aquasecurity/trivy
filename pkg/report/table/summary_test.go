@@ -1,15 +1,12 @@
-package table
+package table_test
 
 import (
-	"bytes"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/tml"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -171,11 +168,10 @@ var (
 
 func Test_renderSummary(t *testing.T) {
 	tests := []struct {
-		name           string
-		scanners       types.Scanners
-		noSummaryTable bool
-		report         types.Report
-		want           string
+		name     string
+		scanners types.Scanners
+		report   types.Report
+		want     string
 	}{
 		{
 			name: "happy path all scanners",
@@ -335,16 +331,9 @@ Legend:
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tml.DisableFormatting()
-			tableWritten := bytes.Buffer{}
-			writer := Writer{
-				Output:         &tableWritten,
-				Scanners:       tt.scanners,
-				NoSummaryTable: tt.noSummaryTable,
-			}
-			err := writer.renderSummary(tt.report)
+			r, err := table.NewSummaryRenderer(tt.report, false, tt.scanners)
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, tableWritten.String())
+			require.Equal(t, tt.want, r.Render(), tt.name)
 		})
 	}
 }
