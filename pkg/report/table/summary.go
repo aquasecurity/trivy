@@ -7,6 +7,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/fatih/color"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -14,9 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
-	"github.com/fatih/color"
-	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 )
 
 type Scanner interface {

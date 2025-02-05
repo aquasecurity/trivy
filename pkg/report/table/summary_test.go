@@ -3,10 +3,11 @@ package table_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (
