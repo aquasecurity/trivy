@@ -12,6 +12,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4.1.6
 
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.1.1
+        with:
+          aqua_version: v1.25.0
+          aqua_opts: ""
+
       - name: Check if SPDX exceptions are up-to-date
         run: |
           mage spdx:updateLicenseExceptions
