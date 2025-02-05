@@ -15,14 +15,12 @@ import (
 
 type secretRenderer struct {
 	w          *bytes.Buffer
-	target     string
-	secrets    []types.DetectedSecret
 	severities []dbTypes.Severity
 	width      int
 	ansi       bool
 }
 
-func NewSecretRenderer(target string, secrets []types.DetectedSecret, ansi bool, severities []dbTypes.Severity) *secretRenderer {
+func NewSecretRenderer(ansi bool, severities []dbTypes.Severity) *secretRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -32,37 +30,39 @@ func NewSecretRenderer(target string, secrets []types.DetectedSecret, ansi bool,
 	}
 	return &secretRenderer{
 		w:          bytes.NewBuffer([]byte{}),
-		target:     target,
-		secrets:    secrets,
 		severities: severities,
 		width:      width,
 		ansi:       ansi,
 	}
 }
 
-func (r *secretRenderer) Render() string {
+func (r *secretRenderer) Flush() string {
+	return r.w.String()
+}
+
+func (r *secretRenderer) Render(result types.Result) {
 	// Trivy doesn't currently support showing suppressed secrets
 	// So just skip this result
-	if len(r.secrets) == 0 {
-		return ""
+	if len(result.Secrets) == 0 {
+		return
 	}
-	target := r.target + " (secrets)"
+	target := result.Target + " (secrets)"
 	RenderTarget(r.w, target, r.ansi)
 
-	severityCount := r.countSeverities()
+	severityCount := r.countSeverities(result.Secrets)
 	total, summaries := summarize(r.severities, severityCount)
 
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
-	for _, m := range r.secrets {
-		r.renderSingle(m)
+	for _, m := range result.Secrets {
+		r.renderSingle(result.Target, m)
 	}
-	return r.w.String()
+	return
 }
 
-func (r *secretRenderer) countSeverities() map[string]int {
+func (r *secretRenderer) countSeverities(secrets []types.DetectedSecret) map[string]int {
 	severityCount := make(map[string]int)
-	for _, secret := range r.secrets {
+	for _, secret := range secrets {
 		severity := secret.Severity
 		severityCount[severity]++
 	}
@@ -82,9 +82,9 @@ func (r *secretRenderer) printSingleDivider() {
 	r.printf("<dim>%s\r\n", strings.Repeat("─", r.width))
 }
 
-func (r *secretRenderer) renderSingle(secret types.DetectedSecret) {
+func (r *secretRenderer) renderSingle(target string, secret types.DetectedSecret) {
 	r.renderSummary(secret)
-	r.renderCode(secret)
+	r.renderCode(target, secret)
 	r.printf("\r\n\r\n")
 }
 
@@ -114,7 +114,7 @@ func (r *secretRenderer) renderSummary(secret types.DetectedSecret) {
 	r.printSingleDivider()
 }
 
-func (r *secretRenderer) renderCode(secret types.DetectedSecret) {
+func (r *secretRenderer) renderCode(target string, secret types.DetectedSecret) {
 	// highlight code if we can...
 	if lines := secret.Code.Lines; len(lines) > 0 {
 
@@ -136,7 +136,7 @@ func (r *secretRenderer) renderCode(secret types.DetectedSecret) {
 		} else if secret.Layer.DiffID != "" {
 			note = fmt.Sprintf(" (added in layer '%s')", strings.TrimPrefix(secret.Layer.DiffID, "sha256:")[:12])
 		}
-		r.printf(" <blue>%s%s<magenta>%s\r\n", r.target, lineInfo, note)
+		r.printf(" <blue>%s%s<magenta>%s\r\n", target, lineInfo, note)
 		r.printSingleDivider()
 
 		for i, line := range lines {

@@ -13,35 +13,37 @@ import (
 )
 
 func TestSecretRenderer(t *testing.T) {
-
 	tests := []struct {
 		name  string
-		input []types.DetectedSecret
+		input types.Result
 		want  string
 	}{
 		{
 			name: "single line",
-			input: []types.DetectedSecret{
-				{
-					RuleID:    "rule-id",
-					Category:  ftypes.SecretRuleCategory("category"),
-					Title:     "this is a title",
-					Severity:  "HIGH",
-					Layer:     ftypes.Layer{DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
-					StartLine: 1,
-					EndLine:   1,
-					Code: ftypes.Code{
-						Lines: []ftypes.Line{
-							{
-								Number:     1,
-								Content:    "password=secret",
-								IsCause:    true,
-								FirstCause: true,
-								LastCause:  true,
+			input: types.Result{
+				Target: "my-file",
+				Secrets: []types.DetectedSecret{
+					{
+						RuleID:    "rule-id",
+						Category:  ftypes.SecretRuleCategory("category"),
+						Title:     "this is a title",
+						Severity:  "HIGH",
+						Layer:     ftypes.Layer{DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+						StartLine: 1,
+						EndLine:   1,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:     1,
+									Content:    "password=secret",
+									IsCause:    true,
+									FirstCause: true,
+									LastCause:  true,
+								},
 							},
 						},
+						Match: "secret",
 					},
-					Match: "secret",
 				},
 			},
 			want: `
@@ -63,51 +65,54 @@ this is a title
 		},
 		{
 			name: "multiple line",
-			input: []types.DetectedSecret{
-				{
-					RuleID:   "rule-id",
-					Category: ftypes.SecretRuleCategory("category"),
-					Title:    "this is a title",
-					Severity: "HIGH",
-					Layer: ftypes.Layer{
-						DiffID:    "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-						CreatedBy: "COPY my-file my-file",
-					},
-					StartLine: 3,
-					EndLine:   4,
-					Code: ftypes.Code{
-						Lines: []ftypes.Line{
-							{
-								Number:  1,
-								Content: "#!/bin/bash",
-							},
-							{
-								Number:  2,
-								Content: "",
-							},
-							{
-								Number:     3,
-								Content:    "password=this is a \\",
-								IsCause:    true,
-								FirstCause: true,
-							},
-							{
-								Number:    4,
-								Content:   "secret password",
-								IsCause:   true,
-								LastCause: true,
-							},
-							{
-								Number:  5,
-								Content: "some-app --password $password",
-							},
-							{
-								Number:  6,
-								Content: "echo all done",
+			input: types.Result{
+				Target: "my-file",
+				Secrets: []types.DetectedSecret{
+					{
+						RuleID:   "rule-id",
+						Category: ftypes.SecretRuleCategory("category"),
+						Title:    "this is a title",
+						Severity: "HIGH",
+						Layer: ftypes.Layer{
+							DiffID:    "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy: "COPY my-file my-file",
+						},
+						StartLine: 3,
+						EndLine:   4,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:  1,
+									Content: "#!/bin/bash",
+								},
+								{
+									Number:  2,
+									Content: "",
+								},
+								{
+									Number:     3,
+									Content:    "password=this is a \\",
+									IsCause:    true,
+									FirstCause: true,
+								},
+								{
+									Number:    4,
+									Content:   "secret password",
+									IsCause:   true,
+									LastCause: true,
+								},
+								{
+									Number:  5,
+									Content: "some-app --password $password",
+								},
+								{
+									Number:  6,
+									Content: "echo all done",
+								},
 							},
 						},
+						Match: "secret",
 					},
-					Match: "secret",
 				},
 			},
 			want: `
@@ -134,13 +139,14 @@ this is a title
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			renderer := table.NewSecretRenderer("my-file", test.input, false, []dbTypes.Severity{
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			renderer := table.NewSecretRenderer(false, []dbTypes.Severity{
 				dbTypes.SeverityHigh,
 				dbTypes.SeverityMedium,
 			})
-			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
+			renderer.Render(tt.input)
+			assert.Equal(t, tt.want, strings.ReplaceAll(renderer.Flush(), "\r\n", "\n"))
 		})
 	}
 }

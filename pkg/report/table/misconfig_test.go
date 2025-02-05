@@ -13,7 +13,6 @@ import (
 )
 
 func TestMisconfigRenderer(t *testing.T) {
-
 	tests := []struct {
 		name               string
 		input              types.Result
@@ -339,12 +338,15 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			severities := []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
-				dbTypes.SeverityCritical}
-			renderer := table.NewMisconfigRenderer(test.input, severities, false, test.includeNonFailures, false)
-			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			severities := []dbTypes.Severity{
+				dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
+				dbTypes.SeverityCritical,
+			}
+			renderer := table.NewMisconfigRenderer(severities, false, tt.includeNonFailures, false)
+			renderer.Render(tt.input)
+			assert.Equal(t, tt.want, strings.ReplaceAll(renderer.Flush(), "\r\n", "\n"))
 		})
 	}
 }
