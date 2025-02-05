@@ -25,8 +25,7 @@ type pkgLicenseRenderer struct {
 	once        *sync.Once
 }
 
-func NewPkgLicenseRenderer(isTerminal bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
-	buf := bytes.NewBuffer([]byte{})
+func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
 	return &pkgLicenseRenderer{
 		w:           buf,
 		tableWriter: newTableWriter(buf, isTerminal),
@@ -34,10 +33,6 @@ func NewPkgLicenseRenderer(isTerminal bool, severities []dbTypes.Severity) *pkgL
 		severities:  severities,
 		once:        new(sync.Once),
 	}
-}
-
-func (r *pkgLicenseRenderer) Flush() string {
-	return r.w.String()
 }
 
 func (r *pkgLicenseRenderer) Render(result types.Result) {
@@ -114,8 +109,7 @@ type fileLicenseRenderer struct {
 	once        *sync.Once
 }
 
-func NewFileLicenseRenderer(isTerminal bool, severities []dbTypes.Severity) *fileLicenseRenderer {
-	buf := bytes.NewBuffer([]byte{})
+func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *fileLicenseRenderer {
 	return &fileLicenseRenderer{
 		w:           buf,
 		tableWriter: newTableWriter(buf, isTerminal),
@@ -125,9 +119,6 @@ func NewFileLicenseRenderer(isTerminal bool, severities []dbTypes.Severity) *fil
 	}
 }
 
-func (r *fileLicenseRenderer) Flush() string {
-	return r.w.String()
-}
 func (r *fileLicenseRenderer) Render(result types.Result) {
 	// Trivy doesn't currently support showing suppressed licenses
 	// So just skip this result

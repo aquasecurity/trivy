@@ -1,6 +1,7 @@
 package table
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -52,24 +53,28 @@ type Writer struct {
 
 type Renderer interface {
 	Render(result types.Result)
-	Flush() string
 }
 
 type renderers struct {
-	vulnerabilityRenderer *vulnerabilityRenderer
-	misconfigRenderer     *misconfigRenderer
-	secretRenderer        *secretRenderer
-	pkgLicenseRenderer    *pkgLicenseRenderer
-	fileLicenseRenderer   *fileLicenseRenderer
+	// Use one buffer for all renderers
+	buf *bytes.Buffer
+
+	vulnerabilityRenderer Renderer
+	misconfigRenderer     Renderer
+	secretRenderer        Renderer
+	pkgLicenseRenderer    Renderer
+	fileLicenseRenderer   Renderer
 }
 
 func (tw *Writer) initRenderers() {
+	buf := bytes.NewBuffer([]byte{})
 	tw.renderers = renderers{
-		vulnerabilityRenderer: NewVulnerabilityRenderer(tw.isOutputToTerminal(), tw.Tree, tw.ShowSuppressed, tw.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal()),
-		secretRenderer:        NewSecretRenderer(tw.isOutputToTerminal(), tw.Severities),
-		pkgLicenseRenderer:    NewPkgLicenseRenderer(tw.isOutputToTerminal(), tw.Severities),
-		fileLicenseRenderer:   NewFileLicenseRenderer(tw.isOutputToTerminal(), tw.Severities),
+		buf:                   buf,
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, tw.isOutputToTerminal(), tw.Tree, tw.ShowSuppressed, tw.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal()),
+		secretRenderer:        NewSecretRenderer(buf, tw.isOutputToTerminal(), tw.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, tw.isOutputToTerminal(), tw.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, tw.isOutputToTerminal(), tw.Severities),
 	}
 }
 
@@ -90,11 +95,7 @@ func (tw *Writer) Write(_ context.Context, report types.Report) error {
 }
 
 func (tw *Writer) flush() {
-	_, _ = fmt.Fprint(tw.Output, tw.vulnerabilityRenderer.Flush())
-	_, _ = fmt.Fprint(tw.Output, tw.misconfigRenderer.Flush())
-	_, _ = fmt.Fprint(tw.Output, tw.secretRenderer.Flush())
-	_, _ = fmt.Fprint(tw.Output, tw.pkgLicenseRenderer.Flush())
-	_, _ = fmt.Fprint(tw.Output, tw.fileLicenseRenderer.Flush())
+	_, _ = fmt.Fprint(tw.Output, tw.buf.String())
 }
 
 func (tw *Writer) render(result types.Result) {

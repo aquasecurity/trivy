@@ -30,7 +30,7 @@ type misconfigRenderer struct {
 	ansi               bool
 }
 
-func NewMisconfigRenderer(severities []dbTypes.Severity, trace, includeNonFailures, ansi bool) *misconfigRenderer {
+func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool) *misconfigRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -39,17 +39,13 @@ func NewMisconfigRenderer(severities []dbTypes.Severity, trace, includeNonFailur
 		tml.DisableFormatting()
 	}
 	return &misconfigRenderer{
-		w:                  bytes.NewBuffer([]byte{}),
+		w:                  buf,
 		severities:         severities,
 		trace:              trace,
 		includeNonFailures: includeNonFailures,
 		width:              width,
 		ansi:               ansi,
 	}
-}
-
-func (r *misconfigRenderer) Flush() string {
-	return r.w.String()
 }
 
 func (r *misconfigRenderer) Render(result types.Result) {

@@ -1,6 +1,7 @@
 package table_test
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -141,12 +142,13 @@ this is a title
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			renderer := table.NewSecretRenderer(false, []dbTypes.Severity{
+			buf := bytes.NewBuffer([]byte{})
+			renderer := table.NewSecretRenderer(buf, false, []dbTypes.Severity{
 				dbTypes.SeverityHigh,
 				dbTypes.SeverityMedium,
 			})
 			renderer.Render(tt.input)
-			assert.Equal(t, tt.want, strings.ReplaceAll(renderer.Flush(), "\r\n", "\n"))
+			assert.Equal(t, tt.want, strings.ReplaceAll(buf.String(), "\r\n", "\n"))
 		})
 	}
 }

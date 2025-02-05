@@ -20,7 +20,7 @@ type secretRenderer struct {
 	ansi       bool
 }
 
-func NewSecretRenderer(ansi bool, severities []dbTypes.Severity) *secretRenderer {
+func NewSecretRenderer(buf *bytes.Buffer, ansi bool, severities []dbTypes.Severity) *secretRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -29,15 +29,11 @@ func NewSecretRenderer(ansi bool, severities []dbTypes.Severity) *secretRenderer
 		tml.DisableFormatting()
 	}
 	return &secretRenderer{
-		w:          bytes.NewBuffer([]byte{}),
+		w:          buf,
 		severities: severities,
 		width:      width,
 		ansi:       ansi,
 	}
-}
-
-func (r *secretRenderer) Flush() string {
-	return r.w.String()
 }
 
 func (r *secretRenderer) Render(result types.Result) {

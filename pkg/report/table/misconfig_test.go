@@ -1,6 +1,7 @@
 package table_test
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -344,9 +345,10 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
 				dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
 				dbTypes.SeverityCritical,
 			}
-			renderer := table.NewMisconfigRenderer(severities, false, tt.includeNonFailures, false)
+			buf := bytes.NewBuffer([]byte{})
+			renderer := table.NewMisconfigRenderer(buf, severities, false, tt.includeNonFailures, false)
 			renderer.Render(tt.input)
-			assert.Equal(t, tt.want, strings.ReplaceAll(renderer.Flush(), "\r\n", "\n"))
+			assert.Equal(t, tt.want, strings.ReplaceAll(buf.String(), "\r\n", "\n"))
 		})
 	}
 }
