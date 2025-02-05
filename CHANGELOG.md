@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.59.1](https://github.com/aquasecurity/trivy/compare/v0.59.0...v0.59.1) (2025-02-04)
+
+
+### Bug Fixes
+
+* **misconf:** do not log scanners when misconfig scanning is disabled [backport: release/v0.59] ([#8349](https://github.com/aquasecurity/trivy/issues/8349)) ([412c690](https://github.com/aquasecurity/trivy/commit/412c690924d4414ef6d8a5f37b293969bc245d32))
+* **python:** add `poetry` v2 support [backport: release/v0.59] ([#8335](https://github.com/aquasecurity/trivy/issues/8335)) ([1741fdd](https://github.com/aquasecurity/trivy/commit/1741fddbe07d166dffbfb9b6f768940e52d08487))
+* **sbom:** preserve OS packages from multiple SBOMs [backport: release/v0.59] ([#8333](https://github.com/aquasecurity/trivy/issues/8333)) ([3fd8e27](https://github.com/aquasecurity/trivy/commit/3fd8e2785b2b838327a80cdc8b489583c3664944))
+
 ## [0.59.0](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.59.0) (2025-01-30)
 
 
