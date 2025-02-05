@@ -995,3 +995,128 @@ deny contains res if {
 
 	assert.Len(t, results.GetFailed(), 1)
 }
+
+func TestRenderedCause(t *testing.T) {
+
+	check := `# METADATA
+# title: S3 Data should be versioned
+# custom:
+#   id: AVD-AWS-0090
+#   avd_id: AVD-AWS-0090
+package user.aws.s3.aws0090
+
+import rego.v1
+
+deny contains res if {
+	some bucket in input.aws.s3.buckets
+	not bucket.versioning.enabled.value
+	res := result.new(
+		"Bucket does not have versioning enabled",
+		bucket.versioning.enabled
+	)
+}
+`
+
+	tests := []struct {
+		name     string
+		fsys     fstest.MapFS
+		expected string
+	}{
+		{
+			name: "just misconfigured resource",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+locals {
+	versioning = false
+}
+
+resource "aws_s3_bucket" "test" {
+	bucket = "test"
+
+	versioning {
+		enabled = local.versioning
+	}
+}
+`)},
+			},
+			expected: `resource "aws_s3_bucket" "test" {
+  versioning {
+    enabled = false
+  }
+}`,
+		},
+		{
+			name: "misconfigured resource instance",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+locals {
+	versioning = false
+}
+
+resource "aws_s3_bucket" "test" {
+	count = 1
+	bucket = "test"
+
+	versioning {
+		enabled = local.versioning
+	}
+}
+`)},
+			},
+			expected: `resource "aws_s3_bucket" "test" {
+  versioning {
+    enabled = false
+  }
+}`,
+		},
+		{
+			name: "misconfigured resource instance in the module",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+module "bucket" {
+	source = "../modules/bucket"
+}
+`),
+				},
+				"modules/bucket/main.tf": &fstest.MapFile{Data: []byte(`
+locals {
+  versioning = false
+}
+
+resource "aws_s3_bucket" "test" {
+  count = 1
+  bucket = "test"
+
+  versioning {
+    enabled = local.versioning
+  }
+}`)},
+			},
+			expected: `resource "aws_s3_bucket" "test" {
+  versioning {
+    enabled = false
+  }
+}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			scanner := New(
+				ScannerWithAllDirectories(true),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithPolicyReader(strings.NewReader(check)),
+				rego.WithPolicyNamespaces("user"),
+			)
+
+			results, err := scanner.ScanFS(context.TODO(), tt.fsys, ".")
+			require.NoError(t, err)
+
+			failed := results.GetFailed()
+
+			assert.Len(t, failed, 1)
+
+			assert.Equal(t, tt.expected, failed[0].Flatten().RenderedCause.Raw)
+		})
+	}
+}
