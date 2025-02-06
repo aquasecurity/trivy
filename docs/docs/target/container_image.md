@@ -408,9 +408,13 @@ See [here](../supply-chain/sbom.md) for the detail.
 ### SBOM inside of container image
 Trivy can search for Software Bill of Materials (SBOMs) among container image files and scan for vulnerabilities for components in these files.
 
-!!!note
-    There are cases where Trivy can't detect the file path for Applications from third-party SBOM files.
-    For these, Trivy uses the SBOM file path as the Application file path
+#### Third-party SBOM files
+SBOM documentations regulates the main points regarding components[^2]. 
+However, developers have different opinions on the types of components used, the relationships between components, etc.
+
+For this reason, Trivy can't always correctly determine the path to the file (lock files, binary files, etc.) with information about the component. 
+In these cases, Trivy uses the path to the scanned SBOM file. 
+This is necessary so that the user can track the source of the dependency, and also to generate a correct SBOM report.
 
 ### SBOM referencing the container image
 Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
@@ -558,3 +562,4 @@ Error: uncompressed image size (15GB) exceeds maximum allowed size (10GB)
 ```
 
 [^1]: Trivy uses decimal (SI) prefixes (based on 1000) for size.
+[^2]: SPDX uses `package` instead of `component`.
