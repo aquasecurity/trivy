@@ -153,3 +153,13 @@ func (r Range) Validate() error {
 	}
 	return nil
 }
+
+// Includes returns true if 'other' is strictly inside 'r'.
+func (r Range) Includes(other Range) bool {
+	return r.startLine < other.startLine && r.endLine > other.endLine
+}
+
+// Covers returns true if 'r' fully contains 'other'.
+func (r Range) Covers(other Range) bool {
+	return r.startLine <= other.startLine && r.endLine >= other.endLine
+}
