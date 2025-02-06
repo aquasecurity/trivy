@@ -8009,7 +8009,7 @@ deny[res] {
 <p>Have a look at the existing package names in the <a href="https://github.com/aquasecurity/trivy-checks/tree/main/checks">built in checks</a>. </p>
 <p>The package name should be in the format <code>builtin.PROVIDER.SERVICE.ID</code>, e.g. <code>builtin.aws.rds.aws0176</code>.</p>
 <h2 id="generating-an-id">Generating an ID<a class="headerlink" href="#generating-an-id" title="Permanent link">&para;</a></h2>
-<p>Every check has a custom ID that is referenced throughout the metadata of the check to uniquely identify the check. If you plan to contribue your check back into the <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a> repository, it will require a valid ID. </p>
+<p>Every check has a custom ID that is referenced throughout the metadata of the check to uniquely identify the check. If you plan to contribute your check back into the <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a> repository, it will require a valid ID. </p>
 <p>Running <code>make id</code> in the root of the trivy-checks repository will provide you with the next available <em>ID</em> for your rule. </p>
 <h2 id="check-schemas">Check Schemas<a class="headerlink" href="#check-schemas" title="Permanent link">&para;</a></h2>
 <p>Rego Checks for Trivy can utilise Schemas to map the input to specific objects. The schemas available are listed <a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas">here.</a>. </p>

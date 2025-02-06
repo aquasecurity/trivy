@@ -8136,7 +8136,7 @@ Total:<span class="w"> </span><span class="m">3</span><span class="w"> </span><s
 <h3 id="taints-and-tolerations">Taints and Tolerations<a class="headerlink" href="#taints-and-tolerations" title="Permanent link">&para;</a></h3>
 <p>The node-collector scan-job will run on every node. In case the node has been tainted, it is possible to add toleration to the scan job for it to be scheduled on the tainted node. for more details <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">see k8s docs</a></p>
 <ul>
-<li><code>--tolerations  key1=value1:NoExecute,key2=value2:NoSchedule</code> this flag wil enable node-collector to be schedule on tainted Node</li>
+<li><code>--tolerations  key1=value1:NoExecute,key2=value2:NoSchedule</code> this flag will enable node-collector to be schedule on tainted Node</li>
 </ul>
 <p>Example:</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>k8s<span class="w"> </span>--report<span class="w"> </span>summary<span class="w"> </span>--tolerations<span class="w">  </span><span class="nv">key1</span><span class="o">=</span>value1:NoExecute,key2<span class="o">=</span>value2:NoSchedule

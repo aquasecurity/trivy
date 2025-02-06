@@ -8286,7 +8286,7 @@ correct and do not reference incorrect properties/values.</p>
 <h4 id="customservice">custom.service<a class="headerlink" href="#customservice" title="Permanent link">&para;</a></h4>
 <p>Services are defined within a provider. For instance, RDS is a service and AWS is a provider. This should be the same as the service name in one of the provider directories. (<a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers">Link</a>), e.g. <code>aws/rds</code>.</p>
 <h4 id="custominput">custom.input<a class="headerlink" href="#custominput" title="Permanent link">&para;</a></h4>
-<p>The <code>input</code> tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the <code>selector</code> input, and should always use the <code>type</code> selector with <code>cloud</code>. Check targeting Kubernetes yaml can use <code>kubenetes</code>, RBAC can use <code>rbac</code>, and so on.</p>
+<p>The <code>input</code> tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the <code>selector</code> input, and should always use the <code>type</code> selector with <code>cloud</code>. Check targeting Kubernetes yaml can use <code>kubernetes</code>, RBAC can use <code>rbac</code>, and so on.</p>
 <h4 id="subtypes-in-the-custom-data">Subtypes in the custom data<a class="headerlink" href="#subtypes-in-the-custom-data" title="Permanent link">&para;</a></h4>
 <p>Subtypes currently only need to be defined for cloud providers <a href="selectors/#enabling-selectors-and-subtypes">as detailed in the documentation.</a></p>
 <h4 id="scan-result">Scan Result<a class="headerlink" href="#scan-result" title="Permanent link">&para;</a></h4>

@@ -8341,7 +8341,7 @@ deny<span class="o">[</span>res<span class="o">]</span><span class="w"> </span><
 <span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubelet.conf file permissions</span>
 <span class="w">  </span><span class="nt">nodeType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
 <span class="w">  </span><span class="nt">audit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stat -c %a $kubelet.kubeconfig</span>
-<span class="w">  </span><span class="nt">platfroms</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">platforms</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">k8s</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aks</span>
 </code></pre></div>
@@ -8351,7 +8351,7 @@ deny<span class="o">[</span>res<span class="o">]</span><span class="w"> </span><
 </code></pre></div>
 <h4 id="command-key">Command Key<a class="headerlink" href="#command-key" title="Permanent link">&para;</a></h4>
 <ul>
-<li>Re-use an existing key or specifiy a new one (make sure key name has no spaces)</li>
+<li>Re-use an existing key or specify a new one (make sure key name has no spaces)</li>
 </ul>
 <p>Note: The key value should match the key name evaluated by the Rego check.</p>
 <h3 id="command-title">Command Title<a class="headerlink" href="#command-title" title="Permanent link">&para;</a></h3>
@@ -8363,7 +8363,7 @@ deny<span class="o">[</span>res<span class="o">]</span><span class="w"> </span><
 <li>master</li>
 </ul>
 <h3 id="command-audit">Command Audit<a class="headerlink" href="#command-audit" title="Permanent link">&para;</a></h3>
-<p>Specify here the shell command to be used please make sure to add error supression (2&gt;/dev/null)</p>
+<p>Specify here the shell command to be used please make sure to add error suppression (2&gt;/dev/null)</p>
 <h3 id="command-platforms">Command Platforms<a class="headerlink" href="#command-platforms" title="Permanent link">&para;</a></h3>
 <p>The list of platforms that support this command. Name should be taken from this list <a href="#compliance-platform">Platforms</a></p>
 <h3 id="command-config-files">Command Config Files<a class="headerlink" href="#command-config-files" title="Permanent link">&para;</a></h3>
