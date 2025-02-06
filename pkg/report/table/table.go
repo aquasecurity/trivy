@@ -30,6 +30,19 @@ var (
 
 // Writer implements Writer and output in tabular form
 type Writer struct {
+	// Use one buffer for all renderers
+	buf *bytes.Buffer
+
+	vulnerabilityRenderer Renderer
+	misconfigRenderer     Renderer
+	secretRenderer        Renderer
+	pkgLicenseRenderer    Renderer
+	fileLicenseRenderer   Renderer
+
+	options Options
+}
+
+type Options struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
@@ -46,42 +59,27 @@ type Writer struct {
 	// For licenses
 	LicenseRiskThreshold int
 	IgnoredLicenses      []string
+}
 
-	// We need to use the same renderers for all results, for the correct operation of logs, once functions, etc.
-	renderers
+func NewWriter(options Options) *Writer {
+	buf := bytes.NewBuffer([]byte{})
+	return &Writer{
+		buf:                   buf,
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, IsOutputToTerminal(options.Output), options.Tree, options.ShowSuppressed, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, IsOutputToTerminal(options.Output)),
+		secretRenderer:        NewSecretRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		options:               options,
+	}
 }
 
 type Renderer interface {
 	Render(result types.Result)
 }
 
-type renderers struct {
-	// Use one buffer for all renderers
-	buf *bytes.Buffer
-
-	vulnerabilityRenderer Renderer
-	misconfigRenderer     Renderer
-	secretRenderer        Renderer
-	pkgLicenseRenderer    Renderer
-	fileLicenseRenderer   Renderer
-}
-
-func (tw *Writer) initRenderers() {
-	buf := bytes.NewBuffer([]byte{})
-	tw.renderers = renderers{
-		buf:                   buf,
-		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, tw.isOutputToTerminal(), tw.Tree, tw.ShowSuppressed, tw.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(buf, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal()),
-		secretRenderer:        NewSecretRenderer(buf, tw.isOutputToTerminal(), tw.Severities),
-		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, tw.isOutputToTerminal(), tw.Severities),
-		fileLicenseRenderer:   NewFileLicenseRenderer(buf, tw.isOutputToTerminal(), tw.Severities),
-	}
-}
-
 // Write writes the result on standard output
 func (tw *Writer) Write(_ context.Context, report types.Report) error {
-	tw.initRenderers()
-
 	for _, result := range report.Results {
 		// Not display a table of custom resources
 		if result.Class == types.ClassCustom {
@@ -95,7 +93,7 @@ func (tw *Writer) Write(_ context.Context, report types.Report) error {
 }
 
 func (tw *Writer) flush() {
-	_, _ = fmt.Fprint(tw.Output, tw.buf.String())
+	_, _ = fmt.Fprint(tw.options.Output, tw.buf.String())
 }
 
 func (tw *Writer) render(result types.Result) {
@@ -122,10 +120,6 @@ func (tw *Writer) render(result types.Result) {
 	default:
 		return
 	}
-}
-
-func (tw *Writer) isOutputToTerminal() bool {
-	return IsOutputToTerminal(tw.Output)
 }
 
 func newTableWriter(output io.Writer, isTerminal bool) *table.Table {
