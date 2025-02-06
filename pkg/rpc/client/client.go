@@ -97,6 +97,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 				PkgRelationships:  xstrings.ToStringSlice(opts.PkgRelationships),
 				Scanners:          xstrings.ToStringSlice(opts.Scanners),
 				LicenseCategories: licenseCategories,
+				LicenseFull:       opts.LicenseFull,
 				IncludeDevDeps:    opts.IncludeDevDeps,
 				Distro:            distro,
 			},
