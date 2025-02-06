@@ -149,7 +149,7 @@ Services are defined within a provider. For instance, RDS is a service and AWS i
 
 #### custom.input
 
-The `input` tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the `selector` input, and should always use the `type` selector with `cloud`. Check targeting Kubernetes yaml can use `kubenetes`, RBAC can use `rbac`, and so on.
+The `input` tells Trivy what inputs this check should be applied to. Cloud provider checks should always use the `selector` input, and should always use the `type` selector with `cloud`. Check targeting Kubernetes yaml can use `kubernetes`, RBAC can use `rbac`, and so on.
 
 #### Subtypes in the custom data
 
