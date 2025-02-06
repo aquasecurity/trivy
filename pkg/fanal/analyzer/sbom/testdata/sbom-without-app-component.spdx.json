@@ -1,0 +1,111 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "launcher",
+  "documentNamespace": "https://anchore.com/syft/file/launcher-268e7779-ba66-4422-a5b0-d4d83f7b5d8c",
+  "creationInfo": {
+    "licenseListVersion": "3.25",
+    "creators": [
+      "Organization: Anchore, Inc",
+      "Tool: syft-1.13.0"
+    ],
+    "created": "2024-09-25T21:11:50Z"
+  },
+  "packages": [
+    {
+      "name": "co.elastic.apm:apm-agent",
+      "SPDXID": "SPDXRef-Package-f0db45781e6813a1",
+      "versionInfo": "1.36.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/co.elastic.apm/apm-agent@1.36.0"
+        }
+      ],
+      "filesAnalyzed": false
+    },
+    {
+      "name": "github.com/buildpacks/lifecycle",
+      "SPDXID": "SPDXRef-Package-go-module-github.com-buildpacks-lifecycle-89c3bd8d4c2e75b7",
+      "versionInfo": "v0.20.2",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "sourceInfo": "acquired package info from go module information: /launcher",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:buildpacks:lifecycle:v0.20.2:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/buildpacks/lifecycle@v0.20.2"
+        }
+      ]
+    },
+    {
+      "name": "launcher",
+      "SPDXID": "SPDXRef-DocumentRoot-File-launcher",
+      "versionInfo": "sha256:716665ae98fb4b4675d5184f80884547597d47be1395d1049dc9e16035f32cc1",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "716665ae98fb4b4675d5184f80884547597d47be1395d1049dc9e16035f32cc1"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "primaryPackagePurpose": "FILE"
+    }
+  ],
+  "files": [
+    {
+      "fileName": "/launcher",
+      "SPDXID": "SPDXRef-File-launcher-361242815a383bec",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0000000000000000000000000000000000000000"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": ""
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-go-module-github.com-buildpacks-lifecycle-89c3bd8d4c2e75b7",
+      "relatedSpdxElement": "SPDXRef-File-launcher-361242815a383bec",
+      "relationshipType": "OTHER",
+      "comment": "evident-by: indicates the package's existence is evident by the given file"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-File-launcher",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-buildpacks-lifecycle-89c3bd8d4c2e75b7",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-File-launcher",
+      "relationshipType": "DESCRIBES"
+    }
+  ]
+}
