@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.59.1](https://github.com/aquasecurity/trivy/compare/v0.59.0...v0.59.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* **misconf:** do not log scanners when misconfig scanning is disabled ([#8345](https://github.com/aquasecurity/trivy/issues/8345)) ([5695eb2](https://github.com/aquasecurity/trivy/commit/5695eb22dfed672eafacb64a71da8e9bdfbaab87))
+* **misconf:** ecs include enhanced for container insights ([#8326](https://github.com/aquasecurity/trivy/issues/8326)) ([39789ff](https://github.com/aquasecurity/trivy/commit/39789fff438d11bc6eccd254b3b890beb68c240b))
+* **python:** add `poetry` v2 support ([#8323](https://github.com/aquasecurity/trivy/issues/8323)) ([10cd98c](https://github.com/aquasecurity/trivy/commit/10cd98cf55263749cb2583063a2e9e9953c7371a))
+* **report:** remove html escaping for `shortDescription` and `fullDescription` fields for sarif reports ([#8344](https://github.com/aquasecurity/trivy/issues/8344)) ([3eb0b03](https://github.com/aquasecurity/trivy/commit/3eb0b03f7c9ee462daccfacb291b2c463d848ff5))
+* **sbom:** preserve OS packages from multiple SBOMs ([#8325](https://github.com/aquasecurity/trivy/issues/8325)) ([bd5baaf](https://github.com/aquasecurity/trivy/commit/bd5baaf93054d71223e0721c7547a0567dea3b02))
+
 ## [0.59.0](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.59.0) (2025-01-30)
 
 
