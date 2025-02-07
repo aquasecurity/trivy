@@ -145,9 +145,43 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 			continue
 		}
 
-		return strings.Fields(setting.Value)
+		flags, err := splitLDFlags(setting.Value)
+		if err != nil {
+			p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
+			return nil
+		}
+
+		return flags
 	}
 	return nil
+}
+
+// splitLDFlags separates flags with spaces.
+// If a flag contains nested flags - the nested flags will be stored as a single element
+func splitLDFlags(flags string) ([]string, error) {
+	var allFlags []string
+
+	if strings.Count(flags, "'")%2 != 0 {
+		return nil, xerrors.Errorf("unable to parse ldflgs. No closed quotes : %s", flags)
+	}
+
+	var nestedFlags []string
+	for _, flag := range strings.Fields(flags) {
+		if (!strings.HasPrefix(flag, "'") && len(nestedFlags) == 0) || // non-nested flag. e.g. `-extldflags` or `-X='github.com/aquasecurity/trivy/cmd/Any.Ver=0.50.0'`
+			(strings.HasPrefix(flag, "'") && strings.HasSuffix(flag, "'")) { // nested flag contains only one flag. e.g. `'-static'`
+			allFlags = append(allFlags, flag)
+			continue
+		}
+
+		nestedFlags = append(nestedFlags, flag)
+
+		if strings.HasSuffix(flag, "'") {
+			allFlags = append(allFlags, strings.Join(nestedFlags, " "))
+			nestedFlags = nil
+		}
+
+	}
+	return allFlags, nil
 }
 
 // ParseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
