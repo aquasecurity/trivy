@@ -428,7 +428,7 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 			},
 			expected: `ARG TAG=latest
 ENV TAG=latest
-ENTRYPOINT ["/bin/sh" "-c" "echo test"]
+
 `,
 		},
 	}
