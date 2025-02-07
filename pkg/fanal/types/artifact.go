@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 )
 
 type OS struct {
@@ -122,12 +123,8 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer information
-	Digest        string   `json:",omitempty"`
-	DiffID        string   `json:",omitempty"`
-	CreatedBy     string   `json:",omitempty"`
-	OpaqueDirs    []string `json:",omitempty"`
-	WhiteoutFiles []string `json:",omitempty"`
+	// Layer(s) information
+	LayersMetadata LayersMetadata
 
 	// Analysis result
 	OS                OS                 `json:",omitempty"`
@@ -148,6 +145,40 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
+func (b BlobInfo) Layer() LayerMetadata {
+	layerMetadata := LayerMetadata{}
+	if len(b.LayersMetadata) > 0 {
+		layerMetadata = b.LayersMetadata[0]
+	}
+	return layerMetadata
+}
+
+type LayersMetadata []LayerMetadata
+
+type LayerMetadata struct {
+	Size          int64    `json:"size"`
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
+}
+
+func (lm LayersMetadata) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
+	}
+	return totalSize
+}
+
+func (lm LayersMetadata) LayerSize() (int64, error) {
+	if len(lm) > 1 {
+		return 0, xerrors.Errorf("this is not layer BlobInfo") // OR "this is image layer"
+	}
+	return lm[0].Size, nil
+}
+
 // ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
 	OS                OS                 `json:",omitempty"`
@@ -164,6 +195,8 @@ type ArtifactDetail struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+
+	LayersMetadata LayersMetadata `json:",omitempty"`
 }
 
 // ImageConfigDetail has information from container image config

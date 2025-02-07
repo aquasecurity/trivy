@@ -420,12 +420,16 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:     types.BlobJSONSchemaVersion,
-		Digest:            layerDigest,
-		DiffID:            layerInfo.DiffID,
-		CreatedBy:         layerInfo.CreatedBy,
-		OpaqueDirs:        opqDirs,
-		WhiteoutFiles:     whFiles,
+		SchemaVersion: types.BlobJSONSchemaVersion,
+		LayersMetadata: []types.LayerMetadata{
+			{
+				Digest:        layerDigest,
+				DiffID:        layerInfo.DiffID,
+				CreatedBy:     layerInfo.CreatedBy,
+				OpaqueDirs:    opqDirs,
+				WhiteoutFiles: whFiles,
+			},
+		},
 		OS:                result.OS,
 		Repository:        result.Repository,
 		PackageInfos:      result.PackageInfos,

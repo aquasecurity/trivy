@@ -47,7 +47,7 @@ func lookupOriginLayerForPkg(pkg ftypes.Package, layers []ftypes.BlobInfo) (stri
 	for i, layer := range layers {
 		for _, info := range layer.PackageInfos {
 			if p := findPackage(pkg, info.Packages); p != nil {
-				return layer.Digest, layer.DiffID, p.InstalledFiles, lookupBuildInfo(i, layers)
+				return layer.Layer().Digest, layer.Layer().DiffID, p.InstalledFiles, lookupBuildInfo(i, layers)
 			}
 		}
 	}
@@ -86,7 +86,7 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 				continue
 			}
 			if findPackage(lib, layerApp.Packages) != nil {
-				return layer.Digest, layer.DiffID
+				return layer.Layer().Digest, layer.Layer().DiffID
 			}
 		}
 	}
@@ -102,11 +102,11 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	var mergedLayer ftypes.ArtifactDetail
 
 	for _, layer := range layers {
-		for _, opqDir := range layer.OpaqueDirs {
+		for _, opqDir := range layer.Layer().OpaqueDirs {
 			opqDir = strings.TrimSuffix(opqDir, sep)  // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
 			_ = nestedMap.DeleteByString(opqDir, sep) // nolint
 		}
-		for _, whFile := range layer.WhiteoutFiles {
+		for _, whFile := range layer.Layer().WhiteoutFiles {
 			_ = nestedMap.DeleteByString(whFile, sep) // nolint
 		}
 
@@ -131,8 +131,8 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		// Apply misconfigurations
 		for _, config := range layer.Misconfigurations {
 			config.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
+				Digest: layer.Layer().Digest,
+				DiffID: layer.Layer().DiffID,
 			}
 			key := fmt.Sprintf("%s/type:config", config.FilePath)
 			nestedMap.SetByString(key, sep, config)
@@ -141,9 +141,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		// Apply secrets
 		for _, secret := range layer.Secrets {
 			l := ftypes.Layer{
-				Digest:    layer.Digest,
-				DiffID:    layer.DiffID,
-				CreatedBy: layer.CreatedBy,
+				Digest:    layer.Layer().Digest,
+				DiffID:    layer.Layer().DiffID,
+				CreatedBy: layer.Layer().CreatedBy,
 			}
 			secretsMap = mergeSecrets(secretsMap, secret, l)
 		}
@@ -151,8 +151,8 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		// Apply license files
 		for _, license := range layer.Licenses {
 			license.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
+				Digest: layer.Layer().Digest,
+				DiffID: layer.Layer().DiffID,
 			}
 			key := fmt.Sprintf("%s/type:license,%s", license.FilePath, license.Type)
 			nestedMap.SetByString(key, sep, license)
@@ -162,8 +162,8 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
 			customResource.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
+				Digest: layer.Layer().Digest,
+				DiffID: layer.Layer().DiffID,
 			}
 			nestedMap.SetByString(key, sep, customResource)
 		}

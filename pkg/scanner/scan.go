@@ -140,7 +140,7 @@ type Scanner struct {
 // Driver defines operations of scanner
 type Driver interface {
 	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
-		results types.Results, osFound ftypes.OS, err error)
+		results types.Results, osFound ftypes.OS, layersMetadata ftypes.LayersMetadata, err error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -163,8 +163,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 				log.String("artifact", artifactInfo.Name), log.Err(err))
 		}
 	}()
-
-	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, layersMetadata, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
@@ -187,11 +186,13 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			OS: ptros,
 
 			// Container image
-			ImageID:     artifactInfo.ImageMetadata.ID,
-			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
-			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
-			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
-			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
+			ImageID:        artifactInfo.ImageMetadata.ID,
+			DiffIDs:        artifactInfo.ImageMetadata.DiffIDs,
+			RepoTags:       artifactInfo.ImageMetadata.RepoTags,
+			RepoDigests:    artifactInfo.ImageMetadata.RepoDigests,
+			ImageConfig:    artifactInfo.ImageMetadata.ConfigFile,
+			Size:           layersMetadata.TotalSize(),
+			LayersMetadata: layersMetadata,
 		},
 		Results: results,
 		BOM:     artifactInfo.BOM,

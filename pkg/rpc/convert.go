@@ -800,16 +800,21 @@ func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.Arti
 // ConvertFromRPCPutBlobRequest returns ftypes.BlobInfo
 func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 	return ftypes.BlobInfo{
-		SchemaVersion:     int(req.BlobInfo.SchemaVersion),
-		Digest:            req.BlobInfo.Digest,
-		DiffID:            req.BlobInfo.DiffId,
+		SchemaVersion: int(req.BlobInfo.SchemaVersion),
+		// TODO update RPC!!!
+		LayersMetadata: []ftypes.LayerMetadata{
+			{
+				Digest:        req.BlobInfo.Digest,
+				DiffID:        req.BlobInfo.DiffId,
+				OpaqueDirs:    req.BlobInfo.OpaqueDirs,
+				WhiteoutFiles: req.BlobInfo.WhiteoutFiles,
+			},
+		},
 		OS:                ConvertFromRPCOS(req.BlobInfo.Os),
 		Repository:        ConvertFromRPCRepository(req.BlobInfo.Repository),
 		PackageInfos:      ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
 		Applications:      ConvertFromRPCApplications(req.BlobInfo.Applications),
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
-		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
-		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 		Licenses:          ConvertFromRPCLicenseFiles(req.BlobInfo.Licenses),
@@ -910,16 +915,17 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	return &cache.PutBlobRequest{
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
+			// TODO update RPC!!!
 			SchemaVersion:     ftypes.BlobJSONSchemaVersion,
-			Digest:            blobInfo.Digest,
-			DiffId:            blobInfo.DiffID,
+			Digest:            blobInfo.Layer().Digest,
+			DiffId:            blobInfo.Layer().DiffID,
 			Os:                ConvertToRPCOS(blobInfo.OS),
 			Repository:        ConvertToRPCRepository(blobInfo.Repository),
 			PackageInfos:      packageInfos,
 			Applications:      applications,
 			Misconfigurations: misconfigurations,
-			OpaqueDirs:        blobInfo.OpaqueDirs,
-			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			OpaqueDirs:        blobInfo.Layer().OpaqueDirs,
+			WhiteoutFiles:     blobInfo.Layer().WhiteoutFiles,
 			CustomResources:   customResources,
 			Secrets:           ConvertToRPCSecrets(blobInfo.Secrets),
 			Licenses:          ConvertToRPCLicenseFiles(blobInfo.Licenses),
