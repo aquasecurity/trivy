@@ -8,7 +8,7 @@ import (
 	"github.com/open-policy-agent/opa/version"
 )
 
-func addRuntimeValues() *ast.Term {
+func initRuntimeValues() *ast.Term {
 	env := ast.NewObject()
 	for _, pair := range os.Environ() {
 		parts := strings.SplitN(pair, "=", 2)

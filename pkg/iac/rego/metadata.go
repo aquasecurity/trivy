@@ -308,8 +308,8 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 	}
 
 	// otherwise, try to read metadata from the rego module itself - we used to do this before annotations were a thing
-	namespace := getModuleNamespace(module)
-	metadataQuery := fmt.Sprintf("data.%s.__rego_metadata__", namespace)
+	moduleNamespace := getModuleNamespace(module)
+	metadataQuery := fmt.Sprintf("data.%s.__rego_metadata__", moduleNamespace)
 
 	options := []func(*rego.Rego){
 		rego.Query(metadataQuery),

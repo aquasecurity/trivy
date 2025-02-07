@@ -121,7 +121,7 @@ func parseLineNumber(raw any) int {
 	return n
 }
 
-func (s *Scanner) convertResults(resultSet rego.ResultSet, input Input, namespace, rule string, traces []string) scan.Results {
+func convertResults(resultSet rego.ResultSet, input Input, namespace, rule string, traces []string) scan.Results {
 	var results scan.Results
 
 	offset := 0
@@ -158,10 +158,5 @@ func (s *Scanner) convertResults(resultSet rego.ResultSet, input Input, namespac
 			}
 		}
 	}
-	return results
-}
-
-func (s *Scanner) embellishResultsWithRuleMetadata(results scan.Results, metadata StaticMetadata) scan.Results {
-	results.SetRule(metadata.ToRule())
 	return results
 }
