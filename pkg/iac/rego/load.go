@@ -74,9 +74,7 @@ func (s *Scanner) loadEmbedded() error {
 
 func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 
-	if s.policies == nil {
-		s.policies = make(map[string]*ast.Module)
-	}
+	modules := make(map[string]*ast.Module)
 
 	if s.policyFS != nil {
 		s.logger.Debug("Overriding filesystem for checks")
@@ -88,11 +86,11 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 	}
 
 	if s.includeEmbeddedPolicies {
-		s.policies = lo.Assign(s.policies, s.embeddedChecks)
+		modules = lo.Assign(modules, s.embeddedChecks)
 	}
 
 	if s.includeEmbeddedLibraries {
-		s.policies = lo.Assign(s.policies, s.embeddedLibs)
+		modules = lo.Assign(modules, s.embeddedLibs)
 	}
 
 	var err error
@@ -102,7 +100,7 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 			return fmt.Errorf("failed to load rego checks from %s: %w", s.policyDirs, err)
 		}
 		for name, policy := range loaded {
-			s.policies[name] = policy
+			modules[name] = policy
 		}
 		s.logger.Debug("Checks from disk are loaded", log.Int("count", len(loaded)))
 	}
@@ -113,14 +111,14 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 			return fmt.Errorf("failed to load rego checks from reader(s): %w", err)
 		}
 		for name, policy := range loaded {
-			s.policies[name] = policy
+			modules[name] = policy
 		}
 		s.logger.Debug("Checks from readers are loaded", log.Int("count", len(loaded)))
 	}
 
 	// gather namespaces
 	uniq := set.New[string]()
-	for _, module := range s.policies {
+	for _, module := range modules {
 		namespace := getModuleNamespace(module)
 		uniq.Append(namespace)
 	}
@@ -135,12 +133,27 @@ func (s *Scanner) LoadPolicies(srcFS fs.FS) error {
 	if err != nil {
 		return fmt.Errorf("unable to load data: %w", err)
 	}
-	s.store = store
 
-	return s.compilePolicies(srcFS, s.policyDirs)
+	compiler, filtered, err := s.compilePolicies(srcFS, s.policyDirs, modules)
+	if err != nil {
+		return fmt.Errorf("compile modules: %w", err)
+	}
+
+	s.runners = append(s.runners, &ChecksRunner{
+		logger:         log.WithPrefix("check runner"),
+		namespaces:     s.namespaces,
+		modules:        filtered,
+		runtimeValues:  initRuntimeValues(),
+		store:          store,
+		compiler:       compiler,
+		retriever:      NewMetadataRetriever(compiler),
+		traceWriter:    s.traceWriter,
+		tracePerResult: s.tracePerResult,
+	})
+	return nil
 }
 
-func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
+func (s *Scanner) fallbackChecks(compiler *ast.Compiler, modules map[string]*ast.Module) {
 
 	var excludedFiles []string
 
@@ -155,7 +168,7 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 			continue
 		}
 
-		badPolicy, exists := s.policies[loc]
+		badPolicy, exists := modules[loc]
 		if !exists || badPolicy == nil {
 			continue
 		}
@@ -177,8 +190,8 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 		}
 
 		s.logger.Debug("Found embedded check", log.FilePath(embedded.Package.Location.File))
-		delete(s.policies, loc) // remove bad check
-		s.policies[embedded.Package.Location.File] = embedded
+		delete(modules, loc) // remove bad check
+		modules[embedded.Package.Location.File] = embedded
 		delete(s.embeddedChecks, embedded.Package.Location.File) // avoid infinite loop if embedded check contains ref error
 		excludedFiles = append(excludedFiles, e.Location.File)
 	}
@@ -212,7 +225,7 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 	return nil
 }
 
-func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
+func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler, modules map[string]*ast.Module) error {
 	if len(compiler.Errors) > s.regoErrorLimit {
 		s.logger.Error("Error(s) occurred while loading checks")
 		return compiler.Errors
@@ -226,16 +239,18 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 			"Error occurred while parsing",
 			log.FilePath(e.Location.File), log.Err(e),
 		)
-		delete(s.policies, e.Location.File)
+		delete(modules, e.Location.File)
 	}
 	return nil
 }
 
-func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
+func (s *Scanner) compilePolicies(
+	srcFS fs.FS, paths []string, modules map[string]*ast.Module,
+) (*ast.Compiler, map[string]*ast.Module, error) {
 
-	schemaSet, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS, s.customSchemas)
+	schemaSet, err := BuildSchemaSetFromPolicies(modules, paths, srcFS, s.customSchemas)
 	if err != nil {
-		return err
+		return nil, nil, fmt.Errorf("build schema set: %w", err)
 	}
 
 	compiler := ast.NewCompiler().
@@ -243,31 +258,34 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		WithCapabilities(ast.CapabilitiesForThisVersion()).
 		WithSchemas(schemaSet)
 
-	compiler.Compile(s.policies)
+	compiler.Compile(modules)
 	if compiler.Failed() {
-		s.fallbackChecks(compiler)
-		if err := s.prunePoliciesWithError(compiler); err != nil {
-			return err
+		s.fallbackChecks(compiler, modules)
+		if err := s.prunePoliciesWithError(compiler, modules); err != nil {
+			return nil, nil, err
 		}
-		return s.compilePolicies(srcFS, paths)
+		return s.compilePolicies(srcFS, paths, modules)
 	}
-	retriever := NewMetadataRetriever(compiler)
 
-	if err := s.filterModules(retriever); err != nil {
-		return err
+	filtered, err := s.filterModules(compiler, modules)
+	if err != nil {
+		return nil, nil, fmt.Errorf("filter modules: %w", err)
 	}
-	s.compiler = compiler
-	s.retriever = retriever
-	return nil
+
+	return compiler, filtered, nil
 }
 
-func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
-
+func (s *Scanner) filterModules(compiler *ast.Compiler, modules map[string]*ast.Module) (map[string]*ast.Module, error) {
+	retriever := NewMetadataRetriever(compiler)
 	filtered := make(map[string]*ast.Module)
-	for name, module := range s.policies {
+	for name, module := range modules {
 		meta, err := retriever.RetrieveMetadata(context.TODO(), module)
 		if err != nil {
-			return err
+			return nil, err
+		}
+
+		if !s.includeDeprecatedChecks && meta.Deprecated {
+			continue
 		}
 
 		if !meta.hasAnyFramework(s.frameworks) {
@@ -288,13 +306,10 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 					log.String("module", name),
 				)
 			}
-			filtered[name] = module
-			continue
 		}
 
 		filtered[name] = module
 	}
 
-	s.policies = filtered
-	return nil
+	return filtered, nil
 }
