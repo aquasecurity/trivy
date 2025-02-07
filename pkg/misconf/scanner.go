@@ -103,6 +103,13 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		return nil, err
 	}
 
+	rs := rego.NewScanner(opts...)
+	if err := rs.LoadPolicies(nil); err != nil {
+		return nil, xerrors.Errorf("load checks: %w", err)
+	}
+
+	opts = append(opts, rego.WithRegoScanner(rs))
+
 	var scanner scanners.FSScanner
 	switch t {
 	case detection.FileTypeAzureARM:
