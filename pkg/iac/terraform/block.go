@@ -484,6 +484,10 @@ func (b *Block) FullName() string {
 	return b.LocalName()
 }
 
+func (b *Block) ModuleBlock() *Block {
+	return b.moduleBlock
+}
+
 func (b *Block) ModuleKey() string {
 	name := b.Reference().NameLabel()
 	if b.moduleBlock == nil {
