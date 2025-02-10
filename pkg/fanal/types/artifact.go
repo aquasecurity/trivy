@@ -1,10 +1,11 @@
 package types
 
 import (
+	"sync"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 )
 
 type OS struct {
@@ -126,6 +127,15 @@ type BlobInfo struct {
 	// Layer(s) information
 	LayersMetadata LayersMetadata
 
+	// Fields for backward compatibility
+	// TODO remove these fields after ???
+	Size          int64    `json:"size"`
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
+
 	// Analysis result
 	OS                OS                 `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`
@@ -145,15 +155,32 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
-func (b BlobInfo) Layer() LayerMetadata {
-	layerMetadata := LayerMetadata{}
-	if len(b.LayersMetadata) > 0 {
-		layerMetadata = b.LayersMetadata[0]
-	}
-	return layerMetadata
-}
+var oldBlobInfoFormatWarn = sync.OnceFunc(func() {
+	log.WithPrefix("cache").Warn("Your scan cache uses old schema for layers info. Please run `trivy clean --scan-cache` to clean cache.")
+})
 
-type LayersMetadata []LayerMetadata
+func (b BlobInfo) Layer() LayerMetadata {
+	switch len(b.LayersMetadata) {
+	case 0: // old layer info format
+		layerMetadata := LayerMetadata{
+			Size:          b.Size,
+			Digest:        b.Digest,
+			DiffID:        b.DiffID,
+			CreatedBy:     b.CreatedBy,
+			OpaqueDirs:    b.OpaqueDirs,
+			WhiteoutFiles: b.WhiteoutFiles,
+		}
+		if layerMetadata.Empty() {
+			oldBlobInfoFormatWarn()
+		}
+		return layerMetadata
+	case 1:
+		return b.LayersMetadata[0]
+	default:
+		log.Warnf("Unable to get layer metadata. This is BlobInfo for image.")
+		return LayerMetadata{}
+	}
+}
 
 type LayerMetadata struct {
 	Size          int64    `json:"size"`
@@ -164,20 +191,27 @@ type LayerMetadata struct {
 	WhiteoutFiles []string `json:",omitempty"`
 }
 
-func (lm LayersMetadata) TotalSize() int64 {
-	var totalSize int64
-	for _, layer := range lm {
-		totalSize += layer.Size
-	}
-	return totalSize
+func (lm LayerMetadata) Empty() bool {
+	return lm.Size == 0 && lm.Digest == "" && lm.DiffID == "" && lm.CreatedBy == "" &&
+		len(lm.OpaqueDirs) == 0 && len(lm.WhiteoutFiles) == 0
 }
 
-func (lm LayersMetadata) LayerSize() (int64, error) {
-	if len(lm) > 1 {
-		return 0, xerrors.Errorf("this is not layer BlobInfo") // OR "this is image layer"
-	}
-	return lm[0].Size, nil
-}
+type LayersMetadata []LayerMetadata
+
+//func (lm LayersMetadata) TotalSize() int64 {
+//	var totalSize int64
+//	for _, layer := range lm {
+//		totalSize += layer.Size
+//	}
+//	return totalSize
+//}
+//
+//func (lm LayersMetadata) LayerSize() (int64, error) {
+//	if len(lm) > 1 {
+//		return 0, xerrors.Errorf("this is not layer BlobInfo") // OR "this is image layer"
+//	}
+//	return lm[0].Size, nil
+//}
 
 // ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {

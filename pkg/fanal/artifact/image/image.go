@@ -421,6 +421,15 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
+
+		// For backward compatibility
+		// TODO do we need that? Looks like it is required only when server uses old format, but client uses new format.
+		Digest:        layerDigest,
+		DiffID:        layerInfo.DiffID,
+		CreatedBy:     layerInfo.CreatedBy,
+		OpaqueDirs:    opqDirs,
+		WhiteoutFiles: whFiles,
+
 		LayersMetadata: []types.LayerMetadata{
 			{
 				Digest:        layerDigest,
