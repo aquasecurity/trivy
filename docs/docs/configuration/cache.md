@@ -96,8 +96,8 @@ $ trivy server --cache-backend redis://localhost:6379 \
   --redis-key /path/to/key.pem
 ```
 
-[trivy-db]: ./db.md#vulnerability-database
-[trivy-java-db]: ./db.md#java-index-database
+[trivy-db]: ./db.md
+[trivy-java-db]: ./db.md
 [misconf-checks]: ../scanner/misconfiguration/check/builtin.md
 [boltdb]: https://github.com/etcd-io/bbolt
 [parallel-run]: https://trivy.dev/v0.52/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run
