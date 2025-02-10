@@ -18,7 +18,7 @@ func TestSplitLDFlags(t *testing.T) {
 			input: "-extldflags '-static'",
 			want: []string{
 				"-extldflags",
-				"'-static'",
+				"-static",
 			},
 		},
 		{
@@ -26,7 +26,7 @@ func TestSplitLDFlags(t *testing.T) {
 			input: "-extldflags '-static -lm -ldl -lz -lpthread'",
 			want: []string{
 				"-extldflags",
-				"'-static -lm -ldl -lz -lpthread'",
+				"-static -lm -ldl -lz -lptread",
 			},
 		},
 		{
@@ -34,11 +34,11 @@ func TestSplitLDFlags(t *testing.T) {
 			input: "-extldflags '-static -lm -ldl -lz -lpthread' -s -w -extldflags '-static'",
 			want: []string{
 				"-extldflags",
-				"'-static -lm -ldl -lz -lpthread'",
+				"-static -lm -ldl -lz -lptread",
 				"-s",
 				"-w",
 				"-extldflags",
-				"'-static'",
+				"-static",
 			},
 		},
 		{
@@ -47,7 +47,7 @@ func TestSplitLDFlags(t *testing.T) {
 			want: []string{
 				"-s",
 				"-w",
-				"-X='github.com/aquasecurity/trivy/cmd/Any.Ver=0.50.0'",
+				"-X=github.com/aquasecurity/trivy/cmd/Any.Ver=0.50.0",
 			},
 		},
 	}

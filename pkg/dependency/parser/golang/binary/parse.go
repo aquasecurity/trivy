@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/google/shlex"
 	"github.com/samber/lo"
 	"github.com/spf13/pflag"
 	"golang.org/x/mod/semver"
@@ -159,28 +160,17 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 // splitLDFlags separates flags with spaces.
 // If a flag contains nested flags - the nested flags will be stored as a single element
 func splitLDFlags(flags string) ([]string, error) {
-	var allFlags []string
-
-	if strings.Count(flags, "'")%2 != 0 {
-		return nil, xerrors.Errorf("unable to parse ldflgs. No closed quotes : %s", flags)
+	allFlags, err := shlex.Split(flags)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to split flags: %w", err)
 	}
 
-	var nestedFlags []string
-	for _, flag := range strings.Fields(flags) {
-		if (!strings.HasPrefix(flag, "'") && len(nestedFlags) == 0) || // non-nested flag. e.g. `-extldflags` or `-X='github.com/aquasecurity/trivy/cmd/Any.Ver=0.50.0'`
-			(strings.HasPrefix(flag, "'") && strings.HasSuffix(flag, "'")) { // nested flag contains only one flag. e.g. `'-static'`
-			allFlags = append(allFlags, flag)
-			continue
-		}
-
-		nestedFlags = append(nestedFlags, flag)
-
-		if strings.HasSuffix(flag, "'") {
-			allFlags = append(allFlags, strings.Join(nestedFlags, " "))
-			nestedFlags = nil
-		}
-
+	for i, flag := range allFlags {
+		ss := strings.Split(flag, "=")
+		ss[0] = strings.ReplaceAll(ss[0], "h", "") // remove `h` from flags to avoid help flag error.
+		allFlags[i] = strings.Join(ss, "=")
 	}
+
 	return allFlags, nil
 }
 

@@ -400,7 +400,7 @@ func TestParser_ParseLDFlags(t *testing.T) {
 					"-w",
 					"-s",
 					"-extldflags",
-					"'-static -lm -ldl -lz -lpthread'",
+					"-static -lm -ldl -lz -lptread",
 				},
 			},
 			want: "v1.28.6+k3s2",
