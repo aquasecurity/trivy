@@ -198,14 +198,14 @@ func (lm LayerMetadata) Empty() bool {
 
 type LayersMetadata []LayerMetadata
 
-//func (lm LayersMetadata) TotalSize() int64 {
-//	var totalSize int64
-//	for _, layer := range lm {
-//		totalSize += layer.Size
-//	}
-//	return totalSize
-//}
-//
+func (lm LayersMetadata) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
+	}
+	return totalSize
+}
+
 //func (lm LayersMetadata) LayerSize() (int64, error) {
 //	if len(lm) > 1 {
 //		return 0, xerrors.Errorf("this is not layer BlobInfo") // OR "this is image layer"
