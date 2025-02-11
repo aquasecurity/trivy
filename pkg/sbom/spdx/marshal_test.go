@@ -884,7 +884,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "pom.xml",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/pom.xml-3ff14136-e09f-4df9-80ea-000000000004",
+				DocumentNamespace: "http://trivy.dev/filesystem/pom.xml-3ff14136-e09f-4df9-80ea-000000000004",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
