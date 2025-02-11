@@ -6,6 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/open-policy-agent/opa/v1/ast"
 )
 
 func WithPolicyReader(readers ...io.Reader) options.ScannerOption {
@@ -127,6 +128,17 @@ func WithFrameworks(frameworks ...framework.Framework) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if ss, ok := s.(*Scanner); ok {
 			ss.frameworks = frameworks
+		}
+	}
+}
+
+type CheckFilter func(module *ast.Module, inputs ...Input) bool
+
+// WithCheckFilter registers a filter function that determines whether a check should be applied to the given inputs.
+func WithCheckFilter(f CheckFilter) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if ss, ok := s.(*Scanner); ok {
+			ss.checkFilters = append(ss.checkFilters, f)
 		}
 	}
 }
