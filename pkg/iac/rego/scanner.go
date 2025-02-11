@@ -16,7 +16,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
-	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -56,8 +55,6 @@ type Scanner struct {
 	dataFS                   fs.FS
 	dataDirs                 []string
 	frameworks               []framework.Framework
-	inputSchema              any // unmarshalled into this from a json schema document
-	sourceType               types.Source
 	includeDeprecatedChecks  bool
 	includeEmbeddedPolicies  bool
 	includeEmbeddedLibraries bool
@@ -88,17 +85,11 @@ type DynamicMetadata struct {
 	EndLine   int
 }
 
-func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
+func NewScanner(opts ...options.ScannerOption) *Scanner {
 	LoadAndRegister()
-
-	schema, ok := schemas.SchemaMap[source]
-	if !ok {
-		schema = schemas.Anything
-	}
 
 	s := &Scanner{
 		regoErrorLimit:   ast.CompileErrorLimitDefault,
-		sourceType:       source,
 		ruleNamespaces:   builtinNamespaces.Clone(),
 		runtimeValues:    addRuntimeValues(),
 		logger:           log.WithPrefix("rego"),
@@ -108,12 +99,6 @@ func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 
 	for _, opt := range opts {
 		opt(s)
-	}
-	if schema != schemas.None {
-		err := json.Unmarshal([]byte(schema), &s.inputSchema)
-		if err != nil {
-			panic(err)
-		}
 	}
 	return s
 }
@@ -128,12 +113,6 @@ func (s *Scanner) runQuery(ctx context.Context, query string, input ast.Value, d
 		rego.Store(s.store),
 		rego.Runtime(s.runtimeValues),
 		rego.Trace(trace),
-	}
-
-	if s.inputSchema != nil {
-		schemaSet := ast.NewSchemaSet()
-		schemaSet.Put(ast.MustParseRef("schema.input"), s.inputSchema)
-		regoOptions = append(regoOptions, rego.Schemas(schemaSet))
 	}
 
 	if input != nil {
@@ -176,7 +155,7 @@ func GetInputsContents(inputs []Input) []any {
 	return results
 }
 
-func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results, error) {
+func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs ...Input) (scan.Results, error) {
 
 	s.logger.Debug("Scanning inputs", "count", len(inputs))
 
@@ -210,11 +189,9 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			continue // skip deprecated checks
 		}
 
-		if isPolicyWithSubtype(s.sourceType) {
-			// skip if check isn't relevant to what is being scanned
-			if !isPolicyApplicable(staticMeta, inputs...) {
-				continue
-			}
+		// skip if check isn't relevant to what is being scanned
+		if !isPolicyApplicable(sourceType, staticMeta, inputs...) {
+			continue
 		}
 
 		if len(inputs) == 0 {
@@ -279,16 +256,26 @@ func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 	return false
 }
 
-func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
+func isPolicyApplicable(sourceType types.Source, staticMetadata *StaticMetadata, inputs ...Input) bool {
+	if len(staticMetadata.InputOptions.Selectors) == 0 { // check always applies if no selectors
+		return true
+	}
+
+	for _, selector := range staticMetadata.InputOptions.Selectors {
+		if selector.Type != string(sourceType) {
+			return false
+		}
+	}
+
+	if !isPolicyWithSubtype(sourceType) {
+		return true
+	}
+
 	for _, input := range inputs {
 		if ii, ok := input.Contents.(map[string]any); ok {
 			for provider := range ii {
 				if !supportedProviders.Contains(provider) {
 					continue
-				}
-
-				if len(staticMetadata.InputOptions.Selectors) == 0 { // check always applies if no selectors
-					return true
 				}
 
 				// check metadata for subtype

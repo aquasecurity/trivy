@@ -233,12 +233,9 @@ func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 
 func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 
-	schemaSet, custom, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS, s.customSchemas)
+	schemaSet, err := BuildSchemaSetFromPolicies(s.policies, paths, srcFS, s.customSchemas)
 	if err != nil {
 		return err
-	}
-	if custom {
-		s.inputSchema = nil // discard auto detected input schema in favor of check defined schema
 	}
 
 	compiler := ast.NewCompiler().
@@ -258,18 +255,6 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 
 	if err := s.filterModules(retriever); err != nil {
 		return err
-	}
-	if s.inputSchema != nil {
-		schemaSet := ast.NewSchemaSet()
-		schemaSet.Put(ast.MustParseRef("schema.input"), s.inputSchema)
-		compiler.WithSchemas(schemaSet)
-		compiler.Compile(s.policies)
-		if compiler.Failed() {
-			if err := s.prunePoliciesWithError(compiler); err != nil {
-				return err
-			}
-			return s.compilePolicies(srcFS, paths)
-		}
 	}
 	s.compiler = compiler
 	s.retriever = retriever
@@ -307,12 +292,7 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 			continue
 		}
 
-		for _, selector := range meta.InputOptions.Selectors {
-			if selector.Type == string(s.sourceType) {
-				filtered[name] = module
-				break
-			}
-		}
+		filtered[name] = module
 	}
 
 	s.policies = filtered
