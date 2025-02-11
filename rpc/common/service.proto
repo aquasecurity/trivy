@@ -155,6 +155,15 @@ message Layer {
   string created_by = 3;
 }
 
+message LayerMetadata {
+  int64           size           = 1;
+  string          digest         = 2;
+  string          diff_id        = 3;
+  string          created_by     = 4;
+  repeated string opaque_dirs    = 5;
+  repeated string whiteout_files = 6;
+}
+
 message CauseMetadata {
   string resource   = 1;
   string provider   = 2;

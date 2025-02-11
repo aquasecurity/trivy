@@ -45,12 +45,12 @@ func teeError(err error) error {
 // Scan scans and return response
 func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
 	options := s.ToOptions(in.Options)
-	results, os, _, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
+	results, os, layersMetadata, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
 		return nil, teeError(xerrors.Errorf("failed scan, %s: %w", in.Target, err))
 	}
 
-	return rpc.ConvertToRPCScanResponse(results, os), nil
+	return rpc.ConvertToRPCScanResponse(results, os, layersMetadata), nil
 }
 
 func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {

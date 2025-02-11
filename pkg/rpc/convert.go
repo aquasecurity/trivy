@@ -956,7 +956,7 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 }
 
 // ConvertToRPCScanResponse converts types.Result to ScanResponse
-func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.ScanResponse {
+func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS, layersMetadata ftypes.LayersMetadata) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		secretFindings := lo.Map(result.Secrets, func(s types.DetectedSecret, _ int) ftypes.SecretFinding {
@@ -976,9 +976,25 @@ func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.Sca
 	}
 
 	return &scanner.ScanResponse{
-		Os:      ConvertToRPCOS(fos),
-		Results: rpcResults,
+		Os:             ConvertToRPCOS(fos),
+		LayersMetadata: ConvertToRPCLayersMetadata(layersMetadata),
+		Results:        rpcResults,
 	}
+}
+
+func ConvertToRPCLayersMetadata(layersMetadata ftypes.LayersMetadata) []*common.LayerMetadata {
+	var rpcLayerMetadata []*common.LayerMetadata
+	for _, layerMetadata := range layersMetadata {
+		rpcLayerMetadata = append(rpcLayerMetadata, &common.LayerMetadata{
+			Size:          layerMetadata.Size,
+			Digest:        layerMetadata.Digest,
+			DiffId:        layerMetadata.DiffID,
+			CreatedBy:     layerMetadata.CreatedBy,
+			OpaqueDirs:    layerMetadata.OpaqueDirs,
+			WhiteoutFiles: layerMetadata.WhiteoutFiles,
+		})
+	}
+	return rpcLayerMetadata
 }
 
 func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLicense {
