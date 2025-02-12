@@ -23,6 +23,9 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
       - name: Generate image list digest
         if: github.ref_name == 'main'
         id: image-digest

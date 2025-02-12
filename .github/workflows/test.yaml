@@ -56,6 +56,9 @@ jobs:
           aqua_version: v1.25.0
           aqua_opts: ""
 
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
       - name: Check if CLI references are up-to-date
         run: |
           mage docs:generate
@@ -81,10 +84,8 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
-        with:
-          aqua_version: v1.25.0
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Generate image list digest
         id: image-digest
@@ -118,10 +119,8 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
-        with:
-          aqua_version: v1.25.0
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Run k8s integration tests
         run: mage test:k8s
@@ -139,10 +138,8 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
-        with:
-          aqua_version: v1.25.0
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Generate image list digest
         id: image-digest
@@ -178,10 +175,8 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
-        with:
-          aqua_version: v1.25.0
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Generate image list digest
         id: image-digest

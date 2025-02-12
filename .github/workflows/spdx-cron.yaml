@@ -12,11 +12,13 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4.1.6
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@v3.1.1
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          aqua_version: v1.25.0
-          aqua_opts: ""
+          go-version-file: go.mod
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Check if SPDX exceptions are up-to-date
         run: |
