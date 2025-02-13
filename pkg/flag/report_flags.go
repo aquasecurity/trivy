@@ -109,6 +109,13 @@ var (
 		ConfigName: "scan.show-suppressed",
 		Usage:      "[EXPERIMENTAL] show suppressed vulnerabilities",
 	}
+	ColorFlag = Flag[string]{
+		Name:       "color",
+		ConfigName: "color",
+		Default:    "auto",
+		Values:     []string{"true", "false", "auto"},
+		Usage:      "enable or disable color output (true, false, auto)",
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -128,6 +135,7 @@ type ReportFlagGroup struct {
 	Severity        *Flag[[]string]
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
+	Color           *Flag[string]
 }
 
 type ReportOptions struct {
@@ -145,13 +153,14 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
+	Color            string
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
 	return &ReportFlagGroup{
 		Format:          FormatFlag.Clone(),
 		ReportFormat:    ReportFormatFlag.Clone(),
-		Template:        TemplateFlag.Clone(),
+			Template:        TemplateFlag.Clone(),
 		DependencyTree:  DependencyTreeFlag.Clone(),
 		ListAllPkgs:     ListAllPkgsFlag.Clone(),
 		IgnoreFile:      IgnoreFileFlag.Clone(),
@@ -163,6 +172,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Severity:        SeverityFlag.Clone(),
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
+		Color:           ColorFlag.Clone(),
 	}
 }
 
@@ -186,6 +196,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Severity,
 		f.Compliance,
 		f.ShowSuppressed,
+		f.Color,
 	}
 }
 
@@ -259,6 +270,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Severities:       toSeverity(f.Severity.Value()),
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
+		Color:            f.Color.Value(),
 	}, nil
 }
 
