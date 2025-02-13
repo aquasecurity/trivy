@@ -18,7 +18,7 @@ func BaseURL(ver string) *url.URL {
 	return &url.URL{
 		Scheme: "https",
 		Host:   "trivy.dev",
-		Path:   (ver),
+		Path:   ver,
 	}
 }
 
