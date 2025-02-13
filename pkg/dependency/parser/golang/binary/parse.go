@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/google/shlex"
+	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
 	"github.com/spf13/pflag"
 	"golang.org/x/mod/semver"
@@ -146,7 +146,7 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 			continue
 		}
 
-		flags, err := splitLDFlags(setting.Value)
+		flags, err := shellwords.Parse(setting.Value)
 		if err != nil {
 			p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
 			return nil
@@ -155,23 +155,6 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 		return flags
 	}
 	return nil
-}
-
-// splitLDFlags separates flags with spaces.
-// If a flag contains nested flags - the nested flags will be stored as a single element
-func splitLDFlags(flags string) ([]string, error) {
-	allFlags, err := shlex.Split(flags)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to split flags: %w", err)
-	}
-
-	for i, flag := range allFlags {
-		ss := strings.Split(flag, "=")
-		ss[0] = strings.ReplaceAll(ss[0], "h", "") // remove `h` from flags to avoid help flag error.
-		allFlags[i] = strings.Join(ss, "=")
-	}
-
-	return allFlags, nil
 }
 
 // ParseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
@@ -187,6 +170,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	// to handle that edge case.
 	var x map[string]string
 	fset.StringToStringVarP(&x, "", "X", nil, "")
+	fset.BoolP("help", "h", false, "just to disable the built-in help flag")
 	if err := fset.Parse(flags); err != nil {
 		p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
 		return ""
