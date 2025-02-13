@@ -170,6 +170,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	// to handle that edge case.
 	var x map[string]string
 	fset.StringToStringVarP(&x, "", "X", nil, "")
+	// Init `help` flag to avoid error in flags with `h` (e.g. `-lpthread`)
 	fset.BoolP("help", "h", false, "just to disable the built-in help flag")
 	if err := fset.Parse(flags); err != nil {
 		p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
