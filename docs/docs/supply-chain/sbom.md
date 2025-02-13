@@ -447,8 +447,7 @@ $ trivy image --format spdx --output result.spdx alpine:3.15
 <details>
 <summary>Result</summary>
 
-```bash
-$ cat result.spdx
+```spdx
 SPDXVersion: SPDX-2.3
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
