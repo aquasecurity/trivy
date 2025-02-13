@@ -41,7 +41,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	defer func() {
 		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://aquasecurity.github.io/trivy/latest/docs/configuration
+			// e.g. https://trivy.dev/latest/docs/configuration
 			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
 		}
 	}()
