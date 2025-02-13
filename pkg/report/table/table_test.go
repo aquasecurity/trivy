@@ -16,16 +16,30 @@ import (
 func TestWriter_Write(t *testing.T) {
 	testCases := []struct {
 		name               string
+		scanners           types.Scanners
+		noSummaryTable     bool
 		results            types.Results
-		expectedOutput     string
+		wantOutput         string
+		wantError          string
 		includeNonFailures bool
 	}{
 		{
 			name: "vulnerability and custom resource",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
 			results: types.Results{
 				{
 					Target: "test",
+					Type:   ftypes.Jar,
 					Class:  types.ClassLangPkg,
+					Packages: []ftypes.Package{
+						{
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
+						},
+					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -33,6 +47,7 @@ func TestWriter_Write(t *testing.T) {
 							InstalledVersion: "1.2.3",
 							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 							Status:           dbTypes.StatusWillNotFix,
+							PkgPath:          "test.jar",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "foobar",
 								Description: "baz",
@@ -48,28 +63,96 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `
-test ()
-=======
+			wantOutput: `
+Report Summary
+
+┌──────────┬──────┬─────────────────┐
+│  Target  │ Type │ Vulnerabilities │
+├──────────┼──────┼─────────────────┤
+│ test.jar │ jar  │        1        │
+└──────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+test (jar)
+==========
 Total: 1 (MEDIUM: 0, HIGH: 1)
 
-┌─────────┬───────────────┬──────────┬──────────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
-│ Library │ Vulnerability │ Severity │    Status    │ Installed Version │ Fixed Version │                   Title                   │
-├─────────┼───────────────┼──────────┼──────────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
-│ foo     │ CVE-2020-0001 │ HIGH     │ will_not_fix │ 1.2.3             │               │ foobar                                    │
-│         │               │          │              │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
-└─────────┴───────────────┴──────────┴──────────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
+┌────────────────┬───────────────┬──────────┬──────────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│    Library     │ Vulnerability │ Severity │    Status    │ Installed Version │ Fixed Version │                   Title                   │
+├────────────────┼───────────────┼──────────┼──────────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo (test.jar) │ CVE-2020-0001 │ HIGH     │ will_not_fix │ 1.2.3             │               │ foobar                                    │
+│                │               │          │              │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
+└────────────────┴───────────────┴──────────┴──────────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
 `,
 		},
 		{
 			name: "no vulns",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
 			results: types.Results{
 				{
 					Target: "test",
 					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
+					Packages: []ftypes.Package{
+						{
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
+						},
+					},
 				},
 			},
-			expectedOutput: ``,
+			wantOutput: `
+Report Summary
+
+┌──────────┬──────┬─────────────────┐
+│  Target  │ Type │ Vulnerabilities │
+├──────────┼──────┼─────────────────┤
+│ test.jar │ jar  │        0        │
+└──────────┴──────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+`,
+		},
+		{
+			name: "no summary",
+			scanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
+			noSummaryTable: true,
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
+					Packages: []ftypes.Package{
+						{
+							Name:     "foo",
+							Version:  "1.2.3",
+							FilePath: "test.jar",
+						},
+					},
+				},
+			},
+			wantOutput: ``,
+		},
+		{
+			name: "no scanners",
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Jar,
+				},
+			},
+			wantError: "unable to find scanners",
 		},
 	}
 
@@ -85,10 +168,17 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityMedium,
 				},
+				Scanners:       tc.scanners,
+				NoSummaryTable: tc.noSummaryTable,
 			}
 			err := writer.Write(nil, types.Report{Results: tc.results})
+			if tc.wantError != "" {
+				require.Error(t, err)
+				return
+			}
+
 			require.NoError(t, err)
-			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
+			assert.Equal(t, tc.wantOutput, tableWritten.String(), tc.name)
 		})
 	}
 }
