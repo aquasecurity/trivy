@@ -152,7 +152,7 @@ func (Tool) Mockery() error {
 	if exists(filepath.Join(GOBIN, "mockery")) {
 		return nil
 	}
-	return sh.Run("go", "install", "github.com/knqyf263/mockery/cmd/mockery@latest")
+	return sh.Run("go", "install", "github.com/vektra/mockery/v2@v2.52.2")
 }
 
 // Wire generates the wire_gen.go file for each package
@@ -165,10 +165,10 @@ func Wire() error {
 func Mock(dir string) error {
 	mg.Deps(Tool{}.Mockery)
 	mockeryArgs := []string{
-		"-all",
-		"-inpkg",
-		"-case=snake",
-		"-dir",
+		"--all",
+		"--inpackage",
+		"--case=snake",
+		"--dir",
 		dir,
 	}
 	return sh.RunV("mockery", mockeryArgs...)
