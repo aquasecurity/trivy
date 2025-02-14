@@ -33,9 +33,9 @@ type ErrorCacheOptions struct {
 	PutBlob      bool
 }
 
-func NewErrorCache(c *cache.MemoryCache, opts ErrorCacheOptions) *ErrorCache {
+func NewErrorCache(opts ErrorCacheOptions) *ErrorCache {
 	return &ErrorCache{
-		MemoryCache: c,
+		MemoryCache: cache.NewMemoryCache(),
 		opts:        opts,
 	}
 }
@@ -70,7 +70,7 @@ func NewCache(t *testing.T, setupCache func(t *testing.T) cache.Cache) cache.Cac
 
 func AssertArtifact(t *testing.T, c cache.Cache, wantArtifact WantArtifact) {
 	gotArtifact, err := c.GetArtifact(wantArtifact.ID)
-	require.NoError(t, err)
+	require.NoError(t, err, "artifact not found")
 	assert.Equal(t, wantArtifact.ArtifactInfo, gotArtifact, wantArtifact.ID)
 }
 
@@ -87,7 +87,7 @@ func AssertBlobs(t *testing.T, c cache.Cache, wantBlobs []WantBlob) {
 
 	for _, want := range wantBlobs {
 		got, err := c.GetBlob(want.ID)
-		require.NoError(t, err)
+		require.NoError(t, err, "blob not found")
 
 		for i := range got.Misconfigurations {
 			// suppress misconfiguration code block
