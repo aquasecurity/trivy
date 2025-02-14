@@ -130,7 +130,6 @@ type BlobInfo struct {
 
 	// Fields for backward compatibility
 	// TODO remove these fields after ???
-	Size          int64    `json:"size"`
 	Digest        string   `json:",omitempty"`
 	DiffID        string   `json:",omitempty"`
 	CreatedBy     string   `json:",omitempty"`
@@ -164,7 +163,6 @@ func (b BlobInfo) Layer() LayerMetadata {
 	switch len(b.LayersMetadata) {
 	case 0: // old layer info format
 		layerMetadata := LayerMetadata{
-			Size:          b.Size,
 			Digest:        b.Digest,
 			DiffID:        b.DiffID,
 			CreatedBy:     b.CreatedBy,
@@ -184,7 +182,7 @@ func (b BlobInfo) Layer() LayerMetadata {
 }
 
 type LayerMetadata struct {
-	Size          int64    `json:"size"`
+	Size          int64    `json:",omitempty"`
 	Digest        string   `json:",omitempty"`
 	DiffID        string   `json:",omitempty"`
 	CreatedBy     string   `json:",omitempty"`

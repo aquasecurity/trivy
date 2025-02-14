@@ -71,7 +71,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
+						BlobID: "sha256:e146a835492a1c965b38cce4cab4b250d86b0ba74d0981a315ce37a555b14623",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							OS: types.OS{
@@ -121,9 +121,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: artifact.Reference{
 				Name: "test/image:10",
 				Type: artifact.TypeCycloneDX,
-				ID:   "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
+				ID:   "sha256:e146a835492a1c965b38cce4cab4b250d86b0ba74d0981a315ce37a555b14623",
 				BlobIDs: []string{
-					"sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
+					"sha256:e146a835492a1c965b38cce4cab4b250d86b0ba74d0981a315ce37a555b14623",
 				},
 			},
 		},
@@ -227,7 +227,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",
+						BlobID: "sha256:666fbf65fc3b197f7589afd13acef901bd6b7ae018e8524a6e2004effc87a2ed",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Applications: []types.Application{
@@ -272,9 +272,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			want: artifact.Reference{
 				Name: registry + "/test/image:10",
 				Type: artifact.TypeCycloneDX,
-				ID:   "sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",
+				ID:   "sha256:666fbf65fc3b197f7589afd13acef901bd6b7ae018e8524a6e2004effc87a2ed",
 				BlobIDs: []string{
-					"sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",
+					"sha256:666fbf65fc3b197f7589afd13acef901bd6b7ae018e8524a6e2004effc87a2ed",
 				},
 			},
 		},
