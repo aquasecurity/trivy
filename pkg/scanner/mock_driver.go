@@ -17,7 +17,7 @@ type MockDriver struct {
 }
 
 // Scan provides a mock function with given fields: ctx, target, artifactKey, blobKeys, options
-func (_m *MockDriver) Scan(ctx context.Context, target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, fanaltypes.OS, error) {
+func (_m *MockDriver) Scan(ctx context.Context, target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, fanaltypes.OS, fanaltypes.LayersMetadata, error) {
 	ret := _m.Called(ctx, target, artifactKey, blobKeys, options)
 
 	if len(ret) == 0 {
@@ -26,8 +26,9 @@ func (_m *MockDriver) Scan(ctx context.Context, target string, artifactKey strin
 
 	var r0 types.Results
 	var r1 fanaltypes.OS
-	var r2 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, []string, types.ScanOptions) (types.Results, fanaltypes.OS, error)); ok {
+	var r2 fanaltypes.LayersMetadata
+	var r3 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, []string, types.ScanOptions) (types.Results, fanaltypes.OS, fanaltypes.LayersMetadata, error)); ok {
 		return rf(ctx, target, artifactKey, blobKeys, options)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, string, string, []string, types.ScanOptions) types.Results); ok {
@@ -44,13 +45,21 @@ func (_m *MockDriver) Scan(ctx context.Context, target string, artifactKey strin
 		r1 = ret.Get(1).(fanaltypes.OS)
 	}
 
-	if rf, ok := ret.Get(2).(func(context.Context, string, string, []string, types.ScanOptions) error); ok {
+	if rf, ok := ret.Get(2).(func(context.Context, string, string, []string, types.ScanOptions) fanaltypes.LayersMetadata); ok {
 		r2 = rf(ctx, target, artifactKey, blobKeys, options)
 	} else {
-		r2 = ret.Error(2)
+		if ret.Get(2) != nil {
+			r2 = ret.Get(2).(fanaltypes.LayersMetadata)
+		}
 	}
 
-	return r0, r1, r2
+	if rf, ok := ret.Get(3).(func(context.Context, string, string, []string, types.ScanOptions) error); ok {
+		r3 = rf(ctx, target, artifactKey, blobKeys, options)
+	} else {
+		r3 = ret.Error(3)
+	}
+
+	return r0, r1, r2, r3
 }
 
 // NewMockDriver creates a new instance of MockDriver. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
