@@ -124,7 +124,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				dir: "./testdata/alpine",
 			},
 			setupCache: func(t *testing.T) cache.Cache {
-				return cachetest.NewErrorCache(cache.NewMemoryCache(), cachetest.ErrorCacheOptions{
+				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
 					PutBlob: true,
 				})
 			},
