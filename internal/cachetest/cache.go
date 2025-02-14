@@ -77,9 +77,9 @@ func (c *ErrorCache) GetBlob(blobID string) (types.BlobInfo, error) {
 	return c.MemoryCache.GetBlob(blobID)
 }
 
-func NewCache(t *testing.T, setupCache func(t *testing.T) cache.Cache) cache.Cache {
-	if setupCache != nil {
-		return setupCache(t)
+func NewCache(t *testing.T, setUpCache func(t *testing.T) cache.Cache) cache.Cache {
+	if setUpCache != nil {
+		return setUpCache(t)
 	}
 	return cache.NewMemoryCache()
 }
