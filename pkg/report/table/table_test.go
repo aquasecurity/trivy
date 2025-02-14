@@ -2,6 +2,7 @@ package table_test
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -86,7 +87,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 					dbTypes.SeverityMedium,
 				},
 			}
-			err := writer.Write(nil, types.Report{Results: tc.results})
+			err := writer.Write(context.TODO(), types.Report{Results: tc.results})
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})

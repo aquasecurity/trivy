@@ -23,7 +23,8 @@
               "CauseMetadata": {
                 "Code": {
                   "Lines": null
-                }
+                },
+                "RenderedCause": {}
               }
             }
           ]
@@ -46,7 +47,8 @@
               "CauseMetadata": {
                 "Code": {
                   "Lines": null
-                }
+                },
+                "RenderedCause": {}
               }
             }
           ]
