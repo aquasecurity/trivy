@@ -100,7 +100,7 @@ func (c *MemoryCache) Clear() error {
 // BlobIDs returns all the blob IDs in the memory cache for testing
 func (c *MemoryCache) BlobIDs() ([]string, error) {
 	var blobIDs []string
-	c.blobs.Range(func(key, value interface{}) bool {
+	c.blobs.Range(func(key, value any) bool {
 		blobID, ok := key.(string)
 		if !ok {
 			return false
