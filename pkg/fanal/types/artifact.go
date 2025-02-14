@@ -4,8 +4,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type OS struct {

@@ -550,7 +550,7 @@ func ConvertFromRPCLicenseFiles(rpcLicenses []*common.LicenseFile) []ftypes.Lice
 	return licenses
 }
 
-func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata, digest, diffID string, opaqueDirs, whiteoutFiles []string) ftypes.LayersMetadata {
+func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata, layerDigest, diffID string, opaqueDirs, whiteoutFiles []string) ftypes.LayersMetadata {
 	var layersMetadata ftypes.LayersMetadata
 
 	for _, rpcLayerMetadata := range rpcLayersMetadata {
@@ -567,7 +567,7 @@ func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata, dig
 	// For backward compatibility
 	if len(layersMetadata) == 0 {
 		layersMetadata = append(layersMetadata, ftypes.LayerMetadata{
-			Digest:        digest,
+			Digest:        layerDigest,
 			DiffID:        diffID,
 			OpaqueDirs:    opaqueDirs,
 			WhiteoutFiles: whiteoutFiles,

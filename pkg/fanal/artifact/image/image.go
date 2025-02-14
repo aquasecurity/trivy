@@ -12,7 +12,6 @@ import (
 	"strings"
 	"sync"
 
-	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
@@ -29,6 +28,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 type Artifact struct {
