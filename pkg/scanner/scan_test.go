@@ -193,11 +193,16 @@ func TestScanner_ScanArtifact(t *testing.T) {
 	for _, tt := range tests {
 		ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 		t.Run(tt.name, func(t *testing.T) {
-			d := new(MockDriver)
+			d := NewMockDriver(t)
 			d.ApplyScanExpectation(tt.scanExpectation)
 
-			mockArtifact := new(artifact.MockArtifact)
+			mockArtifact := artifact.NewMockArtifact(t)
 			mockArtifact.ApplyInspectExpectation(tt.inspectExpectation)
+			mockArtifact.ApplyCleanExpectation(artifact.ArtifactCleanExpectation{
+				Args: artifact.ArtifactCleanArgs{
+					ReferenceAnything: true,
+				},
+			})
 
 			s := NewScanner(d, mockArtifact)
 			got, err := s.ScanArtifact(ctx, tt.args.options)

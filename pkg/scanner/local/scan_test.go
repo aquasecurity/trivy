@@ -1193,7 +1193,7 @@ func TestScanner_Scan(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			applier := new(MockApplier)
+			applier := NewMockApplier(t)
 			applier.ApplyApplyLayersExpectation(tt.applyLayersExpectation)
 
 			s := NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))

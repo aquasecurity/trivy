@@ -1049,7 +1049,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := new(cache.MockLocalArtifactCache)
+			c := cache.NewMockLocalArtifactCache(t)
 			c.ApplyGetBlobExpectations(tt.getLayerExpectations)
 			c.ApplyGetArtifactExpectations(tt.getArtifactExpectations)
 
