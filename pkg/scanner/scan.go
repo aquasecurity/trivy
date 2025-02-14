@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/wire"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -192,7 +193,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			RepoDigests:    artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig:    artifactInfo.ImageMetadata.ConfigFile,
 			Size:           layersMetadata.TotalSize(),
-			LayersMetadata: layersMetadata,
+			LayersMetadata: lo.Ternary(!layersMetadata.Empty(), layersMetadata, nil),
 		},
 		Results: results,
 		BOM:     artifactInfo.BOM,

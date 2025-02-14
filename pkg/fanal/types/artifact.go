@@ -206,12 +206,15 @@ func (lm LayersMetadata) TotalSize() int64 {
 	return totalSize
 }
 
-//func (lm LayersMetadata) LayerSize() (int64, error) {
-//	if len(lm) > 1 {
-//		return 0, xerrors.Errorf("this is not layer BlobInfo") // OR "this is image layer"
-//	}
-//	return lm[0].Size, nil
-//}
+func (lm LayersMetadata) Empty() bool {
+	if len(lm) == 0 {
+		return true
+	} else if len(lm) > 1 {
+		return false
+	}
+
+	return lm[0].Empty()
+}
 
 // ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
