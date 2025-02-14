@@ -352,9 +352,6 @@ func TestArtifact_Inspect(t *testing.T) {
 				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
 				ImageOption:          types.ImageOptions{MaxImageSize: units.GB},
 			},
-			setupCache: func(t *testing.T) cache.Cache {
-				return cache.NewMemoryCache()
-			},
 			wantBlobs: []cachetest.WantBlob{
 				{
 					ID: "sha256:24a7af33784fabfedf01999d9e0dc456e8e1c1943f7d4421f7c05164026788a4",
@@ -2011,7 +2008,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := tt.setupCache(t)
+			c := cachetest.NewCache(t, tt.setupCache)
 
 			img, err := image.NewArchiveImage(tt.imagePath)
 			require.NoError(t, err)
@@ -2029,17 +2026,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 
-			// Check if the artifact is cached
-			gotArtifact, err := c.GetArtifact(tt.wantArtifact.ID)
-			require.NoError(t, err)
-			assert.Equal(t, tt.wantArtifact.ArtifactInfo, gotArtifact, tt.wantArtifact.ID)
-
-			// Check if the blobs are cached
-			for _, wantBlob := range tt.wantBlobs {
-				gotBlob, err := c.GetBlob(wantBlob.ID)
-				require.NoError(t, err)
-				assert.Equal(t, wantBlob.BlobInfo, gotBlob, wantBlob.ID)
-			}
+			cachetest.AssertArtifact(t, c, tt.wantArtifact)
+			cachetest.AssertBlobs(t, c, tt.wantBlobs)
 		})
 	}
 }

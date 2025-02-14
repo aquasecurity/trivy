@@ -2,6 +2,11 @@ package cachetest
 
 import (
 	"errors"
+	"testing"
+
+	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -54,4 +59,49 @@ func (c *ErrorCache) PutBlob(artifactID string, blobInfo types.BlobInfo) error {
 		return errors.New("PutBlob failed")
 	}
 	return c.MemoryCache.PutBlob(artifactID, blobInfo)
+}
+
+func NewCache(t *testing.T, setupCache func(t *testing.T) cache.Cache) cache.Cache {
+	if setupCache != nil {
+		return setupCache(t)
+	}
+	return cache.NewMemoryCache()
+}
+
+func AssertArtifact(t *testing.T, c cache.Cache, wantArtifact WantArtifact) {
+	gotArtifact, err := c.GetArtifact(wantArtifact.ID)
+	require.NoError(t, err)
+	assert.Equal(t, wantArtifact.ArtifactInfo, gotArtifact, wantArtifact.ID)
+}
+
+func AssertBlobs(t *testing.T, c cache.Cache, wantBlobs []WantBlob) {
+	if m, ok := c.(*cache.MemoryCache); ok {
+		blobIDs, err := m.BlobIDs()
+		require.NoError(t, err)
+
+		wantBlobIDs := lo.Map(wantBlobs, func(want WantBlob, _ int) string {
+			return want.ID
+		})
+		require.ElementsMatch(t, wantBlobIDs, blobIDs, "blob IDs mismatch")
+	}
+
+	for _, want := range wantBlobs {
+		got, err := c.GetBlob(want.ID)
+		require.NoError(t, err)
+
+		for i := range got.Misconfigurations {
+			// suppress misconfiguration code block
+			for j := range got.Misconfigurations[i].Failures {
+				got.Misconfigurations[i].Failures[j].Code = types.Code{}
+			}
+			for j := range got.Misconfigurations[i].Successes {
+				got.Misconfigurations[i].Successes[j].Code = types.Code{}
+			}
+			for j := range got.Misconfigurations[i].Warnings {
+				got.Misconfigurations[i].Warnings[j].Code = types.Code{}
+			}
+		}
+
+		assert.Equal(t, want.BlobInfo, got, want.ID)
+	}
 }
