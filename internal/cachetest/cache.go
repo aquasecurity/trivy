@@ -31,6 +31,8 @@ type ErrorCacheOptions struct {
 	MissingBlobs bool
 	PutArtifact  bool
 	PutBlob      bool
+	GetArtifact  bool
+	GetBlob      bool
 }
 
 func NewErrorCache(opts ErrorCacheOptions) *ErrorCache {
@@ -59,6 +61,20 @@ func (c *ErrorCache) PutBlob(artifactID string, blobInfo types.BlobInfo) error {
 		return errors.New("PutBlob failed")
 	}
 	return c.MemoryCache.PutBlob(artifactID, blobInfo)
+}
+
+func (c *ErrorCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
+	if c.opts.GetArtifact {
+		return types.ArtifactInfo{}, errors.New("GetArtifact failed")
+	}
+	return c.MemoryCache.GetArtifact(artifactID)
+}
+
+func (c *ErrorCache) GetBlob(blobID string) (types.BlobInfo, error) {
+	if c.opts.GetBlob {
+		return types.BlobInfo{}, errors.New("GetBlob failed")
+	}
+	return c.MemoryCache.GetBlob(blobID)
 }
 
 func NewCache(t *testing.T, setupCache func(t *testing.T) cache.Cache) cache.Cache {
