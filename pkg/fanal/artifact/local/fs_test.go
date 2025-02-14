@@ -331,6 +331,28 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 1,
 											EndLine:   3,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      1,
+														Content:     "resource \"aws_s3_bucket\" \"one\" {",
+														IsCause:     true,
+														Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"aws_s3_bucket\"\x1b[0m \x1b[38;5;37m\"one\"\x1b[0m {",
+														FirstCause:  true,
+													},
+													{
+														Number:  2,
+														IsCause: true,
+													},
+													{
+														Number:      3,
+														Content:     "}",
+														IsCause:     true,
+														Highlighted: "}",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 									{
@@ -344,6 +366,28 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 5,
 											EndLine:   7,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      5,
+														Content:     "resource \"aws_s3_bucket\" \"two\" {",
+														IsCause:     true,
+														Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"aws_s3_bucket\"\x1b[0m \x1b[38;5;37m\"two\"\x1b[0m {",
+														FirstCause:  true,
+													},
+													{
+														Number:  6,
+														IsCause: true,
+													},
+													{
+														Number:      7,
+														Content:     "}",
+														IsCause:     true,
+														Highlighted: "}",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 								},
@@ -467,6 +511,28 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 1,
 											EndLine:   3,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      1,
+														Content:     "resource \"aws_s3_bucket\" \"one\" {",
+														IsCause:     true,
+														Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"aws_s3_bucket\"\x1b[0m \x1b[38;5;37m\"one\"\x1b[0m {",
+														FirstCause:  true,
+													},
+													{
+														Number:  2,
+														IsCause: true,
+													},
+													{
+														Number:      3,
+														Content:     " }",
+														IsCause:     true,
+														Highlighted: " }",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 									{
@@ -567,6 +633,28 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 1,
 											EndLine:   3,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      1,
+														Content:     "resource \"aws_s3_bucket\" \"three\" {",
+														IsCause:     true,
+														Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"aws_s3_bucket\"\x1b[0m \x1b[38;5;37m\"three\"\x1b[0m {",
+														FirstCause:  true,
+													},
+													{
+														Number:  2,
+														IsCause: true,
+													},
+													{
+														Number:      3,
+														Content:     "}",
+														IsCause:     true,
+														Highlighted: "}",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 								},
@@ -586,6 +674,28 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 1,
 											EndLine:   3,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      1,
+														Content:     "resource \"aws_s3_bucket\" \"one\" {",
+														IsCause:     true,
+														Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"aws_s3_bucket\"\x1b[0m \x1b[38;5;37m\"one\"\x1b[0m {",
+														FirstCause:  true,
+													},
+													{
+														Number:  2,
+														IsCause: true,
+													},
+													{
+														Number:      3,
+														Content:     "}",
+														IsCause:     true,
+														Highlighted: "}",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 								},
@@ -771,6 +881,28 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 10,
 											EndLine:   12,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      10,
+														Content:     "resource \"aws_s3_bucket\" \"one\" {",
+														IsCause:     true,
+														Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"aws_s3_bucket\"\x1b[0m \x1b[38;5;37m\"one\"\x1b[0m {",
+														FirstCause:  true,
+													},
+													{
+														Number:  11,
+														IsCause: true,
+													},
+													{
+														Number:      12,
+														Content:     "}",
+														IsCause:     true,
+														Highlighted: "}",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 									{
@@ -784,6 +916,28 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 14,
 											EndLine:   16,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      14,
+														Content:     "resource \"aws_s3_bucket\" \"two\" {",
+														IsCause:     true,
+														Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"aws_s3_bucket\"\x1b[0m \x1b[38;5;37m\"two\"\x1b[0m {",
+														FirstCause:  true,
+													},
+													{
+														Number:  15,
+														IsCause: true,
+													},
+													{
+														Number:      16,
+														Content:     "}",
+														IsCause:     true,
+														Highlighted: "}",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 								},
@@ -1012,6 +1166,36 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 2,
 											EndLine:   5,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      2,
+														Content:     "  S3BucketOne:",
+														IsCause:     true,
+														Highlighted: "  \x1b[38;5;33mS3BucketOne\x1b[0m:",
+														FirstCause:  true,
+													},
+													{
+														Number:      3,
+														Content:     "    Type: 'AWS::S3::Bucket'",
+														IsCause:     true,
+														Highlighted: "    \x1b[38;5;33mType\x1b[0m: \x1b[38;5;37m'AWS::S3::Bucket'",
+													},
+													{
+														Number:      4,
+														Content:     "    Properties:",
+														IsCause:     true,
+														Highlighted: "\x1b[0m    \x1b[38;5;33mProperties\x1b[0m:",
+													},
+													{
+														Number:      5,
+														Content:     "      BucketName: bucket-one",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33mBucketName\x1b[0m: bucket-one",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 									{
@@ -1554,6 +1738,30 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 7,
 											EndLine:   9,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      7,
+														Content:     "    - command: [ \"sh\", \"-c\", \"echo 'Hello' && sleep 1h\" ]",
+														IsCause:     true,
+														Highlighted: "    - \x1b[38;5;33mcommand\x1b[0m: [ \x1b[38;5;37m\"sh\"\x1b[0m, \x1b[38;5;37m\"-c\"\x1b[0m, \x1b[38;5;37m\"echo 'Hello' && sleep 1h\"\x1b[0m ]",
+														FirstCause:  true,
+													},
+													{
+														Number:      8,
+														Content:     "      image: evil",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33mimage\x1b[0m: evil",
+													},
+													{
+														Number:      9,
+														Content:     "      name: evil1",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33mname\x1b[0m: evil1",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 									{
@@ -1811,6 +2019,71 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 30,
 											EndLine:   40,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      30,
+														Content:     "    {",
+														IsCause:     true,
+														Highlighted: "    {",
+														FirstCause:  true,
+													},
+													{
+														Number:      31,
+														Content:     "      \"type\": \"Microsoft.Storage/storageAccounts\",",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33m\"type\"\x1b[0m: \x1b[38;5;37m\"Microsoft.Storage/storageAccounts\"\x1b[0m,",
+													},
+													{
+														Number:      32,
+														Content:     "      \"name\": \"[variables('storageAccountName')]\",",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33m\"name\"\x1b[0m: \x1b[38;5;37m\"[variables('storageAccountName')]\"\x1b[0m,",
+													},
+													{
+														Number:      33,
+														Content:     "      \"location\": \"[parameters('location')]\",",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33m\"location\"\x1b[0m: \x1b[38;5;37m\"[parameters('location')]\"\x1b[0m,",
+													},
+													{
+														Number:      34,
+														Content:     "      \"apiVersion\": \"2018-07-01\",",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33m\"apiVersion\"\x1b[0m: \x1b[38;5;37m\"2018-07-01\"\x1b[0m,",
+													},
+													{
+														Number:      35,
+														Content:     "      \"sku\": {",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33m\"sku\"\x1b[0m: {",
+													},
+													{
+														Number:      36,
+														Content:     "        \"name\": \"[parameters('storageAccountType')]\"",
+														IsCause:     true,
+														Highlighted: "        \x1b[38;5;33m\"name\"\x1b[0m: \x1b[38;5;37m\"[parameters('storageAccountType')]\"",
+													},
+													{
+														Number:      37,
+														Content:     "      },",
+														IsCause:     true,
+														Highlighted: "\x1b[0m      },",
+													},
+													{
+														Number:      38,
+														Content:     "      \"kind\": \"StorageV2\",",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33m\"kind\"\x1b[0m: \x1b[38;5;37m\"StorageV2\"\x1b[0m,",
+														LastCause:   true,
+													},
+													{
+														Number:    39,
+														IsCause:   false,
+														Truncated: true,
+													},
+												},
+											},
 										},
 									},
 									{
@@ -2007,6 +2280,36 @@ func TestMixedConfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 3,
 											EndLine:   6,
+											Code: types.Code{
+												Lines: []types.Line{
+													{
+														Number:      3,
+														Content:     "  S3Bucket:",
+														IsCause:     true,
+														Highlighted: "  \x1b[38;5;33mS3Bucket\x1b[0m:",
+														FirstCause:  true,
+													},
+													{
+														Number:      4,
+														Content:     "    Type: 'AWS::S3::Bucket'",
+														IsCause:     true,
+														Highlighted: "    \x1b[38;5;33mType\x1b[0m: \x1b[38;5;37m'AWS::S3::Bucket'",
+													},
+													{
+														Number:      5,
+														Content:     "    Properties:",
+														IsCause:     true,
+														Highlighted: "\x1b[0m    \x1b[38;5;33mProperties\x1b[0m:",
+													},
+													{
+														Number:      6,
+														Content:     "      BucketName: public-bucket",
+														IsCause:     true,
+														Highlighted: "      \x1b[38;5;33mBucketName\x1b[0m: public-bucket",
+														LastCause:   true,
+													},
+												},
+											},
 										},
 									},
 								},

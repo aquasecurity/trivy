@@ -163,7 +163,7 @@ func TestScanServer_Scan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDriver := new(scanner.MockDriver)
+			mockDriver := scanner.NewMockDriver(t)
 			mockDriver.ApplyScanExpectation(tt.scanExpectation)
 
 			s := NewScanServer(mockDriver)
