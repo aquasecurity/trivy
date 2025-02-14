@@ -1197,7 +1197,7 @@ func TestScanner_Scan(t *testing.T) {
 			applier.ApplyApplyLayersExpectation(tt.applyLayersExpectation)
 
 			s := NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
-			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, _, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
