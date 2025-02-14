@@ -564,6 +564,7 @@ func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata, dig
 		})
 	}
 
+	// For backward compatibility
 	if len(layersMetadata) == 0 {
 		layersMetadata = append(layersMetadata, ftypes.LayerMetadata{
 			Digest:        digest,
