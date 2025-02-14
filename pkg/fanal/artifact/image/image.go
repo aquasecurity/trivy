@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 	"github.com/docker/go-units"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
@@ -282,7 +283,7 @@ func (a Artifact) checkCompressedLayerSizes(diffIDs []string) error {
 
 func (a Artifact) uncompressedLayerSizes(ctx context.Context, diffIDs []string) (map[string]int64, error) {
 	var totalSize int64
-	layerSizes := make(map[string]int64)
+	layerSizes := xsync.Map[string, int64]{}
 
 	p := parallel.NewPipeline(a.artifactOption.Parallel, false, diffIDs,
 		func(_ context.Context, diffID string) (int64, error) {
@@ -290,7 +291,7 @@ func (a Artifact) uncompressedLayerSizes(ctx context.Context, diffIDs []string) 
 			if err != nil {
 				return -1, xerrors.Errorf("failed to save layer: %w", err)
 			}
-			layerSizes[diffID] = layerSize
+			layerSizes.Store(diffID, layerSize)
 			return layerSize, nil
 		},
 		func(layerSize int64) error {
@@ -310,7 +311,7 @@ func (a Artifact) uncompressedLayerSizes(ctx context.Context, diffIDs []string) 
 		return nil, xerrors.Errorf("pipeline error: %w", err)
 	}
 
-	return layerSizes, nil
+	return layerSizes.ToUnsafeMap(), nil
 }
 
 func (a Artifact) saveLayer(diffID string) (int64, error) {
