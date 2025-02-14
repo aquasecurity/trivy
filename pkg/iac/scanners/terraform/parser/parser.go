@@ -83,6 +83,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.logger = log.WithPrefix("terraform parser").With("module", moduleName)
 	mp.projectRoot = p.projectRoot
 	mp.skipPaths = p.skipPaths
+	mp.options = p.options
 	p.children = append(p.children, mp)
 	for _, option := range p.options {
 		option(mp)

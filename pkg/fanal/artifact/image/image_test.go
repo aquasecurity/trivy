@@ -2344,7 +2344,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(cache.MockArtifactCache)
+			mockCache := cache.NewMockArtifactCache(t)
 			mockCache.ApplyMissingBlobsExpectation(tt.missingBlobsExpectation)
 			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
 			mockCache.ApplyPutArtifactExpectations(tt.putArtifactExpectations)
@@ -2373,7 +2373,7 @@ func TestArtifact_InspectWithMaxImageSize(t *testing.T) {
 	require.NoError(t, err)
 
 	img := &fakeImage{Image: randomImage}
-	mockCache := new(cache.MockArtifactCache)
+	mockCache := cache.NewMockArtifactCache(t)
 
 	tests := []struct {
 		name        string

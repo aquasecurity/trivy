@@ -151,7 +151,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			// Set the testing URL
 			tt.artifactOpt.RekorURL = ts.URL()
 
-			mockCache := new(cache.MockArtifactCache)
+			mockCache := cache.NewMockArtifactCache(t)
 			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
 
 			fi := &fakei.FakeImage{}
@@ -295,7 +295,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(cache.MockArtifactCache)
+			mockCache := cache.NewMockArtifactCache(t)
 			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
 
 			fi := &fakei.FakeImage{}

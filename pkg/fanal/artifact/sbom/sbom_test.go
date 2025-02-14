@@ -400,7 +400,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := new(cache.MockArtifactCache)
+			c := cache.NewMockArtifactCache(t)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
 			a, err := sbom.NewArtifact(tt.filePath, c, artifact.Option{})
