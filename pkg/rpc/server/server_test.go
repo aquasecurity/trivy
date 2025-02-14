@@ -24,11 +24,6 @@ import (
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-type mockCache struct {
-	cache.MockArtifactCache
-	cache.MockLocalArtifactCache
-}
-
 func TestScanServer_Scan(t *testing.T) {
 	type args struct {
 		in *rpcScanner.ScanRequest
@@ -190,7 +185,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		putImage cache.ArtifactCachePutArtifactExpectation
+		putImage cache.CachePutArtifactExpectation
 		want     *emptypb.Empty
 		wantErr  string
 	}{
@@ -212,8 +207,8 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			putImage: cache.ArtifactCachePutArtifactExpectation{
-				Args: cache.ArtifactCachePutArtifactArgs{
+			putImage: cache.CachePutArtifactExpectation{
+				Args: cache.CachePutArtifactArgs{
 					ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					ArtifactInfo: ftypes.ArtifactInfo{
 						SchemaVersion: 1,
@@ -241,15 +236,15 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			putImage: cache.ArtifactCachePutArtifactExpectation{
-				Args: cache.ArtifactCachePutArtifactArgs{
+			putImage: cache.CachePutArtifactExpectation{
+				Args: cache.CachePutArtifactArgs{
 					ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					ArtifactInfo: ftypes.ArtifactInfo{
 						SchemaVersion: 1,
 						Created:       time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
 					},
 				},
-				Returns: cache.ArtifactCachePutArtifactReturns{
+				Returns: cache.CachePutArtifactReturns{
 					Err: xerrors.New("error"),
 				},
 			},
@@ -265,7 +260,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
+			mockCache := cache.NewMockCache(t)
 			mockCache.ApplyPutArtifactExpectation(tt.putImage)
 
 			s := NewCacheServer(mockCache)
@@ -290,7 +285,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		putLayer cache.ArtifactCachePutBlobExpectation
+		putLayer cache.CachePutBlobExpectation
 		want     *emptypb.Empty
 		wantErr  string
 	}{
@@ -301,8 +296,6 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					BlobInfo: &rpcCache.BlobInfo{
 						SchemaVersion: 1,
-						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-						DiffId:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						Os: &common.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -372,18 +365,22 @@ func TestCacheServer_PutBlob(t *testing.T) {
 								},
 							},
 						},
-						OpaqueDirs:    []string{"etc/"},
-						WhiteoutFiles: []string{"etc/hostname"},
+						LayersMetadata: []*common.LayerMetadata{
+							{
+								Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffId:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+								OpaqueDirs:    []string{"etc/"},
+								WhiteoutFiles: []string{"etc/hostname"},
+							},
+						},
 					},
 				},
 			},
-			putLayer: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
+			putLayer: cache.CachePutBlobExpectation{
+				Args: cache.CachePutBlobArgs{
 					BlobID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					BlobInfo: ftypes.BlobInfo{
 						SchemaVersion: 1,
-						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-						DiffID:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -453,8 +450,14 @@ func TestCacheServer_PutBlob(t *testing.T) {
 								},
 							},
 						},
-						OpaqueDirs:    []string{"etc/"},
-						WhiteoutFiles: []string{"etc/hostname"},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffID:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+								OpaqueDirs:    []string{"etc/"},
+								WhiteoutFiles: []string{"etc/hostname"},
+							},
+						},
 					},
 				},
 			},
@@ -469,12 +472,12 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					},
 				},
 			},
-			putLayer: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
+			putLayer: cache.CachePutBlobExpectation{
+				Args: cache.CachePutBlobArgs{
 					BlobIDAnything:   true,
 					BlobInfoAnything: true,
 				},
-				Returns: cache.ArtifactCachePutBlobReturns{
+				Returns: cache.CachePutBlobReturns{
 					Err: xerrors.New("error"),
 				},
 			},
@@ -485,12 +488,12 @@ func TestCacheServer_PutBlob(t *testing.T) {
 			args: args{
 				in: &rpcCache.PutBlobRequest{},
 			},
-			putLayer: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
+			putLayer: cache.CachePutBlobExpectation{
+				Args: cache.CachePutBlobArgs{
 					BlobIDAnything:   true,
 					BlobInfoAnything: true,
 				},
-				Returns: cache.ArtifactCachePutBlobReturns{
+				Returns: cache.CachePutBlobReturns{
 					Err: xerrors.New("error"),
 				},
 			},
@@ -499,7 +502,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
+			mockCache := cache.NewMockCache(t)
 			mockCache.ApplyPutBlobExpectation(tt.putLayer)
 
 			s := NewCacheServer(mockCache)
@@ -525,7 +528,7 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 	tests := []struct {
 		name                                     string
 		args                                     args
-		getArtifactCacheMissingBlobsExpectations []cache.ArtifactCacheMissingBlobsExpectation
+		getArtifactCacheMissingBlobsExpectations []cache.CacheMissingBlobsExpectation
 		want                                     *rpcCache.MissingBlobsResponse
 		wantErr                                  string
 	}{
@@ -540,16 +543,16 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 					},
 				},
 			},
-			getArtifactCacheMissingBlobsExpectations: []cache.ArtifactCacheMissingBlobsExpectation{
+			getArtifactCacheMissingBlobsExpectations: []cache.CacheMissingBlobsExpectation{
 				{
-					Args: cache.ArtifactCacheMissingBlobsArgs{
+					Args: cache.CacheMissingBlobsArgs{
 						ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 						BlobIDs: []string{
 							"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 						},
 					},
-					Returns: cache.ArtifactCacheMissingBlobsReturns{
+					Returns: cache.CacheMissingBlobsReturns{
 						MissingArtifact: false,
 						MissingBlobIDs:  []string{"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"},
 						Err:             nil,
@@ -564,7 +567,7 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
+			mockCache := cache.NewMockCache(t)
 			mockCache.ApplyMissingBlobsExpectations(tt.getArtifactCacheMissingBlobsExpectations)
 
 			s := NewCacheServer(mockCache)
@@ -577,7 +580,6 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.want, got)
-			mockCache.MockArtifactCache.AssertExpectations(t)
 		})
 	}
 }

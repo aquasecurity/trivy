@@ -198,7 +198,7 @@ func TestScanner_Scan(t *testing.T) {
 
 			s := NewScanner(ScannerOption{CustomHeaders: tt.customHeaders}, WithRPCClient(client))
 
-			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, _, err := s.Scan(context.Background(), tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
 
 			if tt.wantErr != "" {
 				require.Error(t, err, tt.name)
@@ -242,7 +242,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 				},
 			})
 			s := NewScanner(ScannerOption{Insecure: tt.insecure}, WithRPCClient(c))
-			_, _, err := s.Scan(context.Background(), "dummy", "", nil, types.ScanOptions{})
+			_, _, _, err := s.Scan(context.Background(), "dummy", "", nil, types.ScanOptions{})
 
 			if tt.wantErr != "" {
 				require.Error(t, err)

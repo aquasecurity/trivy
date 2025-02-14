@@ -550,6 +550,33 @@ func ConvertFromRPCLicenseFiles(rpcLicenses []*common.LicenseFile) []ftypes.Lice
 	return licenses
 }
 
+func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata, layerDigest, diffID string, opaqueDirs, whiteoutFiles []string) ftypes.LayersMetadata {
+	var layersMetadata ftypes.LayersMetadata
+
+	for _, rpcLayerMetadata := range rpcLayersMetadata {
+		layersMetadata = append(layersMetadata, ftypes.LayerMetadata{
+			Size:          rpcLayerMetadata.Size,
+			Digest:        rpcLayerMetadata.Digest,
+			DiffID:        rpcLayerMetadata.DiffId,
+			CreatedBy:     rpcLayerMetadata.CreatedBy,
+			OpaqueDirs:    rpcLayerMetadata.OpaqueDirs,
+			WhiteoutFiles: rpcLayerMetadata.WhiteoutFiles,
+		})
+	}
+
+	// For backward compatibility
+	if len(layersMetadata) == 0 {
+		layersMetadata = append(layersMetadata, ftypes.LayerMetadata{
+			Digest:        layerDigest,
+			DiffID:        diffID,
+			OpaqueDirs:    opaqueDirs,
+			WhiteoutFiles: whiteoutFiles,
+		})
+	}
+
+	return layersMetadata
+}
+
 func ConvertFromRPCLicenseFindings(rpcFindings []*common.LicenseFinding) ftypes.LicenseFindings {
 	var findings ftypes.LicenseFindings
 
@@ -801,18 +828,16 @@ func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.Arti
 func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 	return ftypes.BlobInfo{
 		SchemaVersion:     int(req.BlobInfo.SchemaVersion),
-		Digest:            req.BlobInfo.Digest,
-		DiffID:            req.BlobInfo.DiffId,
 		OS:                ConvertFromRPCOS(req.BlobInfo.Os),
 		Repository:        ConvertFromRPCRepository(req.BlobInfo.Repository),
 		PackageInfos:      ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
 		Applications:      ConvertFromRPCApplications(req.BlobInfo.Applications),
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
-		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
-		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 		Licenses:          ConvertFromRPCLicenseFiles(req.BlobInfo.Licenses),
+		LayersMetadata: ConvertFromRPCLayersMetadata(req.BlobInfo.LayersMetadata,
+			req.BlobInfo.Digest, req.BlobInfo.DiffId, req.BlobInfo.OpaqueDirs, req.BlobInfo.WhiteoutFiles),
 	}
 }
 
@@ -911,18 +936,21 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
 			SchemaVersion:     ftypes.BlobJSONSchemaVersion,
-			Digest:            blobInfo.Digest,
-			DiffId:            blobInfo.DiffID,
 			Os:                ConvertToRPCOS(blobInfo.OS),
 			Repository:        ConvertToRPCRepository(blobInfo.Repository),
 			PackageInfos:      packageInfos,
 			Applications:      applications,
 			Misconfigurations: misconfigurations,
-			OpaqueDirs:        blobInfo.OpaqueDirs,
-			WhiteoutFiles:     blobInfo.WhiteoutFiles,
 			CustomResources:   customResources,
 			Secrets:           ConvertToRPCSecrets(blobInfo.Secrets),
 			Licenses:          ConvertToRPCLicenseFiles(blobInfo.Licenses),
+
+			LayersMetadata: ConvertToRPCLayersMetadata(blobInfo.LayersMetadata),
+			// For backward compatibility
+			Digest:        blobInfo.Layer().Digest,
+			DiffId:        blobInfo.Layer().DiffID,
+			OpaqueDirs:    blobInfo.Layer().OpaqueDirs,
+			WhiteoutFiles: blobInfo.Layer().WhiteoutFiles,
 		},
 	}
 }
@@ -950,7 +978,7 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 }
 
 // ConvertToRPCScanResponse converts types.Result to ScanResponse
-func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.ScanResponse {
+func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS, layersMetadata ftypes.LayersMetadata) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		secretFindings := lo.Map(result.Secrets, func(s types.DetectedSecret, _ int) ftypes.SecretFinding {
@@ -970,9 +998,25 @@ func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.Sca
 	}
 
 	return &scanner.ScanResponse{
-		Os:      ConvertToRPCOS(fos),
-		Results: rpcResults,
+		Os:             ConvertToRPCOS(fos),
+		LayersMetadata: ConvertToRPCLayersMetadata(layersMetadata),
+		Results:        rpcResults,
 	}
+}
+
+func ConvertToRPCLayersMetadata(layersMetadata ftypes.LayersMetadata) []*common.LayerMetadata {
+	var rpcLayerMetadata []*common.LayerMetadata
+	for _, layerMetadata := range layersMetadata {
+		rpcLayerMetadata = append(rpcLayerMetadata, &common.LayerMetadata{
+			Size:          layerMetadata.Size,
+			Digest:        layerMetadata.Digest,
+			DiffId:        layerMetadata.DiffID,
+			CreatedBy:     layerMetadata.CreatedBy,
+			OpaqueDirs:    layerMetadata.OpaqueDirs,
+			WhiteoutFiles: layerMetadata.WhiteoutFiles,
+		})
+	}
+	return rpcLayerMetadata
 }
 
 func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLicense {

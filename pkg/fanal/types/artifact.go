@@ -1,9 +1,12 @@
 package types
 
 import (
+	"sync"
 	"time"
 
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type OS struct {
@@ -122,7 +125,11 @@ type ArtifactInfo struct {
 type BlobInfo struct {
 	SchemaVersion int
 
-	// Layer information
+	// Layer(s) information
+	LayersMetadata LayersMetadata
+
+	// Fields for backward compatibility
+	// TODO remove these fields after ???
 	Digest        string   `json:",omitempty"`
 	DiffID        string   `json:",omitempty"`
 	CreatedBy     string   `json:",omitempty"`
@@ -148,6 +155,66 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
+var oldBlobInfoFormatWarn = sync.OnceFunc(func() {
+	log.WithPrefix("cache").Warn("Your scan cache uses old schema for layers info. Please run `trivy clean --scan-cache` to clean cache.")
+})
+
+func (b BlobInfo) Layer() LayerMetadata {
+	switch len(b.LayersMetadata) {
+	case 0: // old layer info format
+		layerMetadata := LayerMetadata{
+			Digest:        b.Digest,
+			DiffID:        b.DiffID,
+			CreatedBy:     b.CreatedBy,
+			OpaqueDirs:    b.OpaqueDirs,
+			WhiteoutFiles: b.WhiteoutFiles,
+		}
+		if layerMetadata.Empty() {
+			oldBlobInfoFormatWarn()
+		}
+		return layerMetadata
+	case 1:
+		return b.LayersMetadata[0]
+	default:
+		log.Warnf("Unable to get layer metadata. This is BlobInfo for image.")
+		return LayerMetadata{}
+	}
+}
+
+type LayerMetadata struct {
+	Size          int64    `json:",omitempty"`
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
+}
+
+func (lm LayerMetadata) Empty() bool {
+	return lm.Size == 0 && lm.Digest == "" && lm.DiffID == "" && lm.CreatedBy == "" &&
+		len(lm.OpaqueDirs) == 0 && len(lm.WhiteoutFiles) == 0
+}
+
+type LayersMetadata []LayerMetadata
+
+func (lm LayersMetadata) TotalSize() int64 {
+	var totalSize int64
+	for _, layer := range lm {
+		totalSize += layer.Size
+	}
+	return totalSize
+}
+
+func (lm LayersMetadata) Empty() bool {
+	if len(lm) == 0 {
+		return true
+	} else if len(lm) > 1 {
+		return false
+	}
+
+	return lm[0].Empty()
+}
+
 // ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
 	OS                OS                 `json:",omitempty"`
@@ -164,6 +231,8 @@ type ArtifactDetail struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+
+	LayersMetadata LayersMetadata `json:",omitempty"`
 }
 
 // ImageConfigDetail has information from container image config

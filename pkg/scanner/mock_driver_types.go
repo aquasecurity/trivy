@@ -23,9 +23,10 @@ type DriverScanArgs struct {
 }
 
 type DriverScanReturns struct {
-	Results types.Results
-	OsFound ftypes.OS
-	Err     error
+	Results        types.Results
+	OsFound        ftypes.OS
+	LayersMetadata ftypes.LayersMetadata
+	Err            error
 }
 
 type DriverScanExpectation struct {
@@ -60,7 +61,7 @@ func (_m *MockDriver) ApplyScanExpectation(e DriverScanExpectation) {
 	} else {
 		args = append(args, e.Args.Options)
 	}
-	_m.On("Scan", args...).Return(e.Returns.Results, e.Returns.OsFound, e.Returns.Err).Maybe()
+	_m.On("Scan", args...).Return(e.Returns.Results, e.Returns.OsFound, e.Returns.LayersMetadata, e.Returns.Err).Maybe()
 }
 
 func (_m *MockDriver) ApplyScanExpectations(expectations []DriverScanExpectation) {
