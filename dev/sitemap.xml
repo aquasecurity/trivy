@@ -2,702 +2,702 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/commercial/compare/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/commercial/contact/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/principles/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/contribute/discussion/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/contribute/issue/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/contribute/pr/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/contribute/checks/overview/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/contribute/checks/service-support/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/maintainer/backporting/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/maintainer/help-wanted/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/maintainer/release-flow/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/maintainer/triage/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/air-gap/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/modules/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/self-hosting/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/embed-in-dockerfile/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/unpacked-filesystem/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/private-registries/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/private-registries/acr/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/private-registries/docker-hub/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/private-registries/ecr/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/private-registries/gcr/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/private-registries/self/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/compliance/compliance/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/compliance/contrib-compliance/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/configuration/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/configuration/cache/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/configuration/db/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/configuration/filtering/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/configuration/others/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/configuration/reporting/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/configuration/skipping/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/kubernetes/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/iac/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/iac/azure-arm/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/iac/cloudformation/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/iac/docker/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/iac/helm/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/iac/kubernetes/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/iac/terraform/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/c/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/dart/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/dotnet/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/elixir/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/golang/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/java/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/julia/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/nodejs/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/php/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/python/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/ruby/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/rust/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/language/swift/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/alma/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/alpine/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/amazon/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/azure/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/centos/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/chainguard/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/debian/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/google-distroless/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/oracle/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/photon/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/rhel/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/rocky/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/suse/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/ubuntu/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/os/wolfi/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/others/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/others/bitnami/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/others/conda/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/coverage/others/rpm/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/plugin/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/plugin/developer-guide/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/plugin/user-guide/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/terminology/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/troubleshooting/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/config-file/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_clean/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_config/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_convert/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_filesystem/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_image/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_kubernetes/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_module/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_module_install/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_module_uninstall/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_info/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_install/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_list/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_run/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_search/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_uninstall/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_update/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_plugin_upgrade/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_registry/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_registry_login/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_registry_logout/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_repository/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_rootfs/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_sbom/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_server/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_version/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_vex/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_vex_repo/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_vex_repo_download/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_vex_repo_init/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_vex_repo_list/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/configuration/cli/trivy_vm/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/modes/client-server/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/modes/standalone/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/license/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/secret/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/vulnerability/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/check/builtin/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/combine/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/contribute-checks/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/data/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/debug/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/schema/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/selectors/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/testing/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/sbom/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/attestation/rekor/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/attestation/sbom/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/attestation/vuln/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/vex/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/vex/file/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/vex/oci/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/supply-chain/vex/repo/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/target/container_image/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/target/filesystem/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/target/kubernetes/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/target/repository/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/target/rootfs/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/target/sbom/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/target/vm/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/ecosystem/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/ecosystem/cicd/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/ecosystem/ide/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/ecosystem/prod/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/ecosystem/reporting/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/getting-started/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/getting-started/faq/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/getting-started/installation/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/getting-started/signature-verification/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/overview/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/additional-resources/cks/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/additional-resources/community/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/additional-resources/references/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/aws-codepipeline/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/aws-security-hub/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/azure-devops/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/bitbucket/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/circleci/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/github-actions/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/gitlab-ci/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/travis-ci/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/kubernetes/cluster-scanning/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/kubernetes/gitops/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/kubernetes/kyverno/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/misconfiguration/custom-checks/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/misconfiguration/terraform/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/shell/shell-completion/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/signing/vuln-attestation/</loc>
-         <lastmod>2025-02-06</lastmod>
+         <lastmod>2025-02-14</lastmod>
     </url>
 </urlset>
