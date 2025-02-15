@@ -31,6 +31,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "mageia",
+			inputFile: "testdata/mageia",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Mageia,
+					Name:   "9",
+				},
+			},
+		},
+		{
 			name:      "openSUSE-leap 15.2.1",
 			inputFile: "testdata/opensuseleap-15.2.1",
 			want: &analyzer.AnalysisResult{

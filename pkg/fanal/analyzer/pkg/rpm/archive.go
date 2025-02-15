@@ -131,6 +131,8 @@ func (a *rpmArchiveAnalyzer) generatePURL(pkg *types.Package) *packageurl.Packag
 		ns = "redhat"
 	case strings.Contains(vendor, "fedora"):
 		ns = "fedora"
+	case strings.Contains(vendor, "mageia"):
+		ns = "mageia"
 	case strings.Contains(vendor, "opensuse"):
 		ns = "opensuse"
 	case strings.Contains(vendor, "suse"):

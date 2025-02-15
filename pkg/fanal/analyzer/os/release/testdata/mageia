@@ -1,0 +1,11 @@
+NAME="Mageia"
+VERSION="9"
+ID=mageia
+VERSION_ID=9
+ID_LIKE="mandriva fedora"
+PRETTY_NAME="Mageia 9"
+ANSI_COLOR="1;36"
+HOME_URL="https://www.mageia.org/"
+SUPPORT_URL="https://www.mageia.org/support/"
+BUG_REPORT_URL="https://bugs.mageia.org/"
+PRIVACY_POLICY_URL="https://wiki.mageia.org/en/Privacy_policy"

@@ -30,6 +30,7 @@ const (
 	Chainguard         OSType = "chainguard"
 	Debian             OSType = "debian"
 	Fedora             OSType = "fedora"
+	Mageia             OSType = "mageia"
 	OpenSUSE           OSType = "opensuse"
 	OpenSUSELeap       OSType = "opensuse-leap"
 	OpenSUSETumbleweed OSType = "opensuse-tumbleweed"
@@ -108,6 +109,7 @@ var (
 		Chainguard,
 		Debian,
 		Fedora,
+		Mageia,
 		OpenSUSE,
 		OpenSUSELeap,
 		OpenSUSETumbleweed,

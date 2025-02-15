@@ -21,6 +21,7 @@ const (
 	TypeRocky      Type = "rocky"
 	TypeAlma       Type = "alma"
 	TypeFedora     Type = "fedora"
+	TypeMageia     Type = "mageia"
 	TypeOracle     Type = "oracle"
 	TypeRedHatBase Type = "redhat"
 	TypeSUSE       Type = "suse"
@@ -160,6 +161,7 @@ var (
 		TypeRocky,
 		TypeAlma,
 		TypeFedora,
+		TypeMageia,
 		TypeOracle,
 		TypeRedHatBase,
 		TypeSUSE,

@@ -49,6 +49,7 @@ var osVendors = []string{
 	"Amazon.com",            // Amazon Linux 2
 	"CentOS",                // CentOS
 	"Fedora Project",        // Fedora
+	"Mageia.Org",            // Mageia
 	"Oracle America",        // Oracle Linux
 	"Red Hat",               // Red Hat
 	"AlmaLinux",             // AlmaLinux
