@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/debian-stretch.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 105582080,
     "OS": {
       "Family": "debian",
       "Name": "9.9"
@@ -45,7 +46,15 @@
         "Image": "sha256:2ce0e924e5d43d66387e476478ce3c857b1eaae74b5c74693ed47b3502bbdc3e",
         "ArgsEscaped": true
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 105582080,
+        "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
+        "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307",
+        "CreatedBy": "ADD file:b9b24bd862a79bf6c6e79daf6babca27245063eb52a2f72ffc4fc3494ddd3d48 in / "
+      }
+    ]
   },
   "Results": [
     {

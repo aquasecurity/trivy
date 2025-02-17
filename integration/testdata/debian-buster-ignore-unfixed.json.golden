@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 119199744,
     "OS": {
       "Family": "debian",
       "Name": "10.1"
@@ -45,7 +46,15 @@
         "Image": "sha256:5519bb349f72eef81944da56843c995b1b81ed67c8e7e48ac29dd6c543c1dd2d",
         "ArgsEscaped": true
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 119199744,
+        "Digest": "sha256:4a56a430b2bac33260d6449e162017e2b23076c6411a17b46db67f5b84dde2bd",
+        "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "CreatedBy": "ADD file:770e381defc5e4a0ba5df52265a96494b9f5d94309234cb3f7bc6b00e1d18f9a in / "
+      }
+    ]
   },
   "Results": [
     {

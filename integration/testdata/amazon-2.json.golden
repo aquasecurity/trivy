@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/amazon-2.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 168852480,
     "OS": {
       "Family": "amazon",
       "Name": "2 (Karoo)"
@@ -45,7 +46,15 @@
         "Image": "sha256:648b8b37f8b5087423bec7f4331271253f8aff63154761a67c22cd0c3ba2661b",
         "ArgsEscaped": true
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 168852480,
+        "Digest": "sha256:72d97abdfae3b3c933ff41e39779cc72853d7bd9dc1e4800c5294d6715257799",
+        "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6",
+        "CreatedBy": "ADD file:3cf811fe5073384ff1d5f405992ef7e5e452ad6d4a4cb873eee65007382f3a4a in / "
+      }
+    ]
   },
   "Results": [
     {

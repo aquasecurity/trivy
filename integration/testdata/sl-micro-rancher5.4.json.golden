@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/sle-micro-rancher-5.4_ndb.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 709748736,
     "OS": {
       "Family": "slem",
       "Name": "5.4"
@@ -57,7 +58,15 @@
           "org.suse.reference": "registry.suse.com/suse/sle-micro-rancher/5.4:%PKG_VERSION%-%RELEASE"
         }
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 709748736,
+        "Digest": "sha256:832d9b8a90d142f11cf1b5d3f0b5d6c099be9b7af791b426138a4205b6ee78de",
+        "DiffID": "sha256:7cdd3aec849d122d63dc83a5e1e2fb89b341c67b03e25979131ca335a463bb57",
+        "CreatedBy": "KIWI 9.24.43"
+      }
+    ]
   },
   "Results": [
     {

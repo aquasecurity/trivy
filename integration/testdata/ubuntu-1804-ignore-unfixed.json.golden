@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/ubuntu-1804.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 66571264,
     "OS": {
       "Family": "ubuntu",
       "Name": "18.04"
@@ -63,7 +64,33 @@
         "Image": "sha256:bcbe079849fdbb50b3eb04798547e046bdbc82020b8b780d767cf29f7e60b396",
         "ArgsEscaped": true
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 65561088,
+        "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
+        "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f",
+        "CreatedBy": "ADD file:c477cb0e95c56b51e0b7353f3805165393689902b82a41bbe77dbef4b31667e1 in / "
+      },
+      {
+        "Size": 991232,
+        "Digest": "sha256:251f5509d51d9e4119d4ffb70d4820f8e2d7dc72ad15df3ebd7cd755539e40fd",
+        "DiffID": "sha256:f7eae43028b334123c3a1d778f7bdf9783bbe651c8b15371df0120fd13ec35c5",
+        "CreatedBy": "[ -z \"$(apt-get indextargets)\" ]"
+      },
+      {
+        "Size": 15872,
+        "Digest": "sha256:8e829fe70a46e3ac4334823560e98b257234c23629f19f05460e21a453091e6d",
+        "DiffID": "sha256:7beb13bce073c21c9ee608acb13c7e851845245dc76ce81b418fdf580c45076b",
+        "CreatedBy": "set -xe \t\t\u0026\u0026 echo '#!/bin/sh' \u003e /usr/sbin/policy-rc.d \t\u0026\u0026 echo 'exit 101' \u003e\u003e /usr/sbin/policy-rc.d \t\u0026\u0026 chmod +x /usr/sbin/policy-rc.d \t\t\u0026\u0026 dpkg-divert --local --rename --add /sbin/initctl \t\u0026\u0026 cp -a /usr/sbin/policy-rc.d /sbin/initctl \t\u0026\u0026 sed -i 's/^exit.*/exit 0/' /sbin/initctl \t\t\u0026\u0026 echo 'force-unsafe-io' \u003e /etc/dpkg/dpkg.cfg.d/docker-apt-speedup \t\t\u0026\u0026 echo 'DPkg::Post-Invoke { \"rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true\"; };' \u003e /etc/apt/apt.conf.d/docker-clean \t\u0026\u0026 echo 'APT::Update::Post-Invoke { \"rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true\"; };' \u003e\u003e /etc/apt/apt.conf.d/docker-clean \t\u0026\u0026 echo 'Dir::Cache::pkgcache \"\"; Dir::Cache::srcpkgcache \"\";' \u003e\u003e /etc/apt/apt.conf.d/docker-clean \t\t\u0026\u0026 echo 'Acquire::Languages \"none\";' \u003e /etc/apt/apt.conf.d/docker-no-languages \t\t\u0026\u0026 echo 'Acquire::GzipIndexes \"true\"; Acquire::CompressionTypes::Order:: \"gz\";' \u003e /etc/apt/apt.conf.d/docker-gzip-indexes \t\t\u0026\u0026 echo 'Apt::AutoRemove::SuggestsImportant \"false\";' \u003e /etc/apt/apt.conf.d/docker-autoremove-suggests"
+      },
+      {
+        "Size": 3072,
+        "Digest": "sha256:6001e1789921cf851f6fb2e5fe05be70f482fe9c2286f66892fe5a3bc404569c",
+        "DiffID": "sha256:122be11ab4a29e554786b4a1ec4764dd55656b59d6228a0a3de78eaf5c1f226c",
+        "CreatedBy": "mkdir -p /run/systemd \u0026\u0026 echo 'docker' \u003e /run/systemd/container"
+      }
+    ]
   },
   "Results": [
     {

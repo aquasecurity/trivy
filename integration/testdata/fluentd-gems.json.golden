@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 157340160,
     "OS": {
       "Family": "debian",
       "Name": "10.2"
@@ -98,7 +99,97 @@
           "80/tcp": {}
         }
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 72479232,
+        "Digest": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c",
+        "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f",
+        "CreatedBy": "ADD file:bc8179c87c8dbb3d962bed1801f99e7c860ff03797cde6ad19b107d43b973ada in / "
+      },
+      {
+        "Size": 3584,
+        "Digest": "sha256:aa8e216680f366acbe83d055382ae12208c341300fefd996fbebae49c59a14a5",
+        "DiffID": "sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e",
+        "CreatedBy": "COPY file:4e7fdb1bc31a0f689d88f6af28d4f0352e89a2ac598c523e9637da3de75bfada in /tmp/install.sh "
+      },
+      {
+        "Size": 2048,
+        "Digest": "sha256:2b92c5265c693f3aa71c011dabcfca1da81b3e5aef0530c2192fe9237a0725ed",
+        "DiffID": "sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0",
+        "CreatedBy": "COPY file:c03560fcb4f0aff4cecd93039c348ba4992564740c77e3d6049a44fe79ca44ab in /Gemfile "
+      },
+      {
+        "Size": 84848640,
+        "Digest": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602",
+        "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9",
+        "CreatedBy": "|1 DEBIAN_FRONTEND=noninteractive /bin/sh -c chmod +x /tmp/install.sh \u0026\u0026     /bin/bash -l -c /tmp/install.sh \u0026\u0026     rm /tmp/*",
+        "OpaqueDirs": [
+          "etc/ca-certificates/",
+          "etc/ssl/",
+          "root/.gem/",
+          "usr/lib/ruby/",
+          "usr/lib/ssl/",
+          "usr/lib/x86_64-linux-gnu/engines-1.1/",
+          "usr/lib/x86_64-linux-gnu/ruby/",
+          "usr/local/share/ca-certificates/",
+          "usr/share/ca-certificates/",
+          "usr/share/doc/ca-certificates/",
+          "usr/share/doc/libgdbm-compat4/",
+          "usr/share/doc/libgdbm6/",
+          "usr/share/doc/libjemalloc2/",
+          "usr/share/doc/libreadline7/",
+          "usr/share/doc/libruby2.5/",
+          "usr/share/doc/libssl1.1/",
+          "usr/share/doc/libyaml-0-2/",
+          "usr/share/doc/openssl/",
+          "usr/share/doc/rake/",
+          "usr/share/doc/readline-common/",
+          "usr/share/doc/ruby/",
+          "usr/share/doc/ruby-did-you-mean/",
+          "usr/share/doc/ruby-minitest/",
+          "usr/share/doc/ruby-net-telnet/",
+          "usr/share/doc/ruby-power-assert/",
+          "usr/share/doc/ruby-test-unit/",
+          "usr/share/doc/ruby-xmlrpc/",
+          "usr/share/doc/ruby2.5/",
+          "usr/share/doc/rubygems-integration/",
+          "usr/share/readline/",
+          "usr/share/rubygems-integration/",
+          "usr/share/systemtap/",
+          "var/cache/apt/archives/",
+          "var/lib/gems/"
+        ],
+        "WhiteoutFiles": [
+          "tmp/install.sh",
+          "var/cache/debconf/config.dat",
+          "var/cache/debconf/config.dat-old",
+          "var/cache/debconf/passwords.dat",
+          "var/cache/debconf/templates.dat",
+          "var/cache/debconf/templates.dat-old",
+          "var/log/apt",
+          "var/log/btmp",
+          "var/log/faillog",
+          "var/log/lastlog",
+          "var/log/wtmp"
+        ]
+      },
+      {
+        "Size": 3584,
+        "Digest": "sha256:8c669d8f22e42bdc70ab962cd36f36c44d5299a04fbf8de62654eaf1aa70a01a",
+        "DiffID": "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89",
+        "CreatedBy": "COPY file:f742fdea941d5baccbf9a9c45ccc9cd943377f3c3e07da787a8d8d9f92a8b3d3 in /etc/fluent/fluent.conf ",
+        "OpaqueDirs": [
+          "etc/fluent/"
+        ]
+      },
+      {
+        "Size": 3072,
+        "Digest": "sha256:de335f1b3d0014660d2c8617930e431e23ee369075e14597c3fcad6903a81255",
+        "DiffID": "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065",
+        "CreatedBy": "COPY file:a9ce963551c165ec55bb4d982d96336caa97e8c70011eb4ca58927956bd08e2a in /run.sh "
+      }
+    ]
   },
   "Results": [
     {

@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/distroless-base.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 18503680,
     "OS": {
       "Family": "debian",
       "Name": "9.9"
@@ -43,7 +44,21 @@
           "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"
         ]
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 3061760,
+        "Digest": "sha256:e8d8785a314f385d3675a017f4e2df1707c528c06e7a7989663fdab4900bd8ff",
+        "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+        "CreatedBy": "bazel build ..."
+      },
+      {
+        "Size": 15441920,
+        "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
+        "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "CreatedBy": "bazel build ..."
+      }
+    ]
   },
   "Results": [
     {

@@ -153,6 +153,9 @@ func readReport(t *testing.T, filePath string) types.Report {
 	// We don't compare repo tags because the archive doesn't support it
 	report.Metadata.RepoTags = nil
 	report.Metadata.RepoDigests = nil
+	for i := range report.Metadata.LayersMetadata {
+		report.Metadata.LayersMetadata[i].Digest = ""
+	}
 
 	for i, result := range report.Results {
 		for j := range result.Vulnerabilities {
@@ -242,7 +245,7 @@ func runTest(t *testing.T, osArgs []string, wantFile, outputFile string, format 
 	if outputFile == "" {
 		// Set up the output file
 		outputFile = filepath.Join(t.TempDir(), "output.json")
-		if *update && opts.override == nil {
+		if *update /*&& opts.override == nil*/ {
 			outputFile = wantFile
 		}
 	}

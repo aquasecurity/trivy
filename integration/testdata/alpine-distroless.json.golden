@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/alpine-distroless.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 35812864,
     "OS": {
       "Family": "alpine",
       "Name": "3.16"
@@ -41,7 +42,15 @@
         ],
         "User": "65532"
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 35812864,
+        "Digest": "sha256:6c6f69aa25501b090c54c62a9c17e978064c2f1328f67a7ef88c81ce5f2d7983",
+        "DiffID": "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92",
+        "CreatedBy": "apko"
+      }
+    ]
   },
   "Results": [
     {

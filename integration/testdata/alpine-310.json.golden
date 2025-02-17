@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/alpine-310.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 5843968,
     "OS": {
       "Family": "alpine",
       "Name": "3.10.2",
@@ -46,7 +47,15 @@
         "Image": "sha256:06f4121dff4d0123ce11bd2e44f48da9ba9ddcd23ae376ea1f363f63ea0849b5",
         "ArgsEscaped": true
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 5843968,
+        "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
+        "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
+        "CreatedBy": "ADD file:fe64057fbb83dccb960efabbf1cd8777920ef279a7fa8dbca0a8801c651bdf7c in / "
+      }
+    ]
   },
   "Results": [
     {
