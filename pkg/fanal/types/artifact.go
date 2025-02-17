@@ -264,6 +264,7 @@ func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
 		Secrets:           a.Secrets,
 		Licenses:          a.Licenses,
 		CustomResources:   a.CustomResources,
+		LayersMetadata:    a.LayersMetadata,
 	}
 }
 
