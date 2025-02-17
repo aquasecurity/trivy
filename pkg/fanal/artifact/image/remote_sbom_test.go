@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -53,12 +53,12 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 		repoDigests []string
 	}
 	tests := []struct {
-		name                string
-		fields              fields
-		artifactOpt         artifact.Option
-		putBlobExpectations []cache.ArtifactCachePutBlobExpectation
-		want                artifact.Reference
-		wantErr             string
+		name        string
+		fields      fields
+		artifactOpt artifact.Option
+		wantBlobs   []cachetest.WantBlob
+		want        artifact.Reference
+		wantErr     string
 	}{
 		{
 			name: "happy path",
@@ -68,55 +68,52 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 					"test/image@sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
 				},
 			},
-			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
+			artifactOpt: artifact.Option{
+				SBOMSources: []string{"rekor"},
+			},
+			wantBlobs: []cachetest.WantBlob{
 				{
-					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:e146a835492a1c965b38cce4cab4b250d86b0ba74d0981a315ce37a555b14623",
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: types.BlobJSONSchemaVersion,
-							OS: types.OS{
-								Family: "alpine",
-								Name:   "3.16.2",
-							},
-							PackageInfos: []types.PackageInfo{
-								{
-									Packages: types.Packages{
-										{
-											ID:      "musl@1.2.3-r0",
-											Name:    "musl",
-											Version: "1.2.3-r0",
-											Identifier: types.PkgIdentifier{
-												PURL: &packageurl.PackageURL{
-													Type:      packageurl.TypeApk,
-													Namespace: "alpine",
-													Name:      "musl",
-													Version:   "1.2.3-r0",
-													Qualifiers: packageurl.Qualifiers{
-														{
-															Key:   "distro",
-															Value: "3.16.2",
-														},
+					ID: "sha256:e146a835492a1c965b38cce4cab4b250d86b0ba74d0981a315ce37a555b14623",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						OS: types.OS{
+							Family: "alpine",
+							Name:   "3.16.2",
+						},
+						PackageInfos: []types.PackageInfo{
+							{
+								Packages: types.Packages{
+									{
+										ID:      "musl@1.2.3-r0",
+										Name:    "musl",
+										Version: "1.2.3-r0",
+										Identifier: types.PkgIdentifier{
+											PURL: &packageurl.PackageURL{
+												Type:      packageurl.TypeApk,
+												Namespace: "alpine",
+												Name:      "musl",
+												Version:   "1.2.3-r0",
+												Qualifiers: packageurl.Qualifiers{
+													{
+														Key:   "distro",
+														Value: "3.16.2",
 													},
 												},
-												BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
 											},
-											SrcName:    "musl",
-											SrcVersion: "1.2.3-r0",
-											Licenses:   []string{"MIT"},
-											Layer: types.Layer{
-												DiffID: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
-											},
+											BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
+										},
+										SrcName:    "musl",
+										SrcVersion: "1.2.3-r0",
+										Licenses:   []string{"MIT"},
+										Layer: types.Layer{
+											DiffID: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
 										},
 									},
 								},
 							},
 						},
 					},
-					Returns: cache.ArtifactCachePutBlobReturns{},
 				},
-			},
-			artifactOpt: artifact.Option{
-				SBOMSources: []string{"rekor"},
 			},
 			want: artifact.Reference{
 				Name: "test/image:10",
@@ -151,8 +148,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			// Set the testing URL
 			tt.artifactOpt.RekorURL = ts.URL()
 
-			mockCache := cache.NewMockArtifactCache(t)
-			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
+			c := cachetest.NewCache(t, nil)
 
 			fi := &fakei.FakeImage{}
 			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
@@ -162,7 +158,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 				repoDigests: tt.fields.repoDigests,
 				Image:       fi,
 			}
-			a, err := image2.NewArtifact(img, mockCache, tt.artifactOpt)
+			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -175,6 +171,8 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			got.BOM = nil
 			assert.Equal(t, tt.want, got)
+
+			cachetest.AssertBlobs(t, c, tt.wantBlobs)
 		})
 	}
 }
@@ -206,12 +204,12 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 	}
 
 	tests := []struct {
-		name                string
-		fields              fields
-		artifactOpt         artifact.Option
-		putBlobExpectations []cache.ArtifactCachePutBlobExpectation
-		want                artifact.Reference
-		wantErr             string
+		name        string
+		fields      fields
+		artifactOpt artifact.Option
+		wantBlobs   []cachetest.WantBlob
+		want        artifact.Reference
+		wantErr     string
 	}{
 		{
 			name: "happy path",
@@ -224,43 +222,41 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			artifactOpt: artifact.Option{
 				SBOMSources: []string{"oci"},
 			},
-			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
+			wantBlobs: []cachetest.WantBlob{
 				{
-					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:666fbf65fc3b197f7589afd13acef901bd6b7ae018e8524a6e2004effc87a2ed",
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: types.BlobJSONSchemaVersion,
-							Applications: []types.Application{
-								{
-									Type: types.GoBinary,
-									Packages: types.Packages{
-										{
-											ID:      "github.com/opencontainers/go-digest@v1.0.0",
-											Name:    "github.com/opencontainers/go-digest",
-											Version: "v1.0.0",
-											Identifier: types.PkgIdentifier{
-												PURL: &packageurl.PackageURL{
-													Type:      packageurl.TypeGolang,
-													Namespace: "github.com/opencontainers",
-													Name:      "go-digest",
-													Version:   "v1.0.0",
-												},
-												BOMRef: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+					ID: "sha256:666fbf65fc3b197f7589afd13acef901bd6b7ae018e8524a6e2004effc87a2ed",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						Applications: []types.Application{
+							{
+								Type: types.GoBinary,
+								Packages: types.Packages{
+									{
+										ID:      "github.com/opencontainers/go-digest@v1.0.0",
+										Name:    "github.com/opencontainers/go-digest",
+										Version: "v1.0.0",
+										Identifier: types.PkgIdentifier{
+											PURL: &packageurl.PackageURL{
+												Type:      packageurl.TypeGolang,
+												Namespace: "github.com/opencontainers",
+												Name:      "go-digest",
+												Version:   "v1.0.0",
 											},
+											BOMRef: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
 										},
-										{
-											ID:      "golang.org/x/sync@v0.1.0",
-											Name:    "golang.org/x/sync",
-											Version: "v0.1.0",
-											Identifier: types.PkgIdentifier{
-												PURL: &packageurl.PackageURL{
-													Type:      packageurl.TypeGolang,
-													Namespace: "golang.org/x",
-													Name:      "sync",
-													Version:   "v0.1.0",
-												},
-												BOMRef: "pkg:golang/golang.org/x/sync@v0.1.0",
+									},
+									{
+										ID:      "golang.org/x/sync@v0.1.0",
+										Name:    "golang.org/x/sync",
+										Version: "v0.1.0",
+										Identifier: types.PkgIdentifier{
+											PURL: &packageurl.PackageURL{
+												Type:      packageurl.TypeGolang,
+												Namespace: "golang.org/x",
+												Name:      "sync",
+												Version:   "v0.1.0",
 											},
+											BOMRef: "pkg:golang/golang.org/x/sync@v0.1.0",
 										},
 									},
 								},
@@ -295,8 +291,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := cache.NewMockArtifactCache(t)
-			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
+			c := cachetest.NewCache(t, nil)
 
 			fi := &fakei.FakeImage{}
 			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
@@ -306,7 +301,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 				repoDigests: tt.fields.repoDigests,
 				Image:       fi,
 			}
-			a, err := image2.NewArtifact(img, mockCache, tt.artifactOpt)
+			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -319,6 +314,8 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			got.BOM = nil
 			assert.Equal(t, tt.want, got)
+
+			cachetest.AssertBlobs(t, c, tt.wantBlobs)
 		})
 	}
 }

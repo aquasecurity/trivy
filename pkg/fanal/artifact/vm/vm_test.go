@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
@@ -102,38 +102,25 @@ func TestNewArtifact(t *testing.T) {
 
 func TestArtifact_Inspect(t *testing.T) {
 	tests := []struct {
-		name                    string
-		target                  string
-		rootDir                 string
-		artifactOpt             artifact.Option
-		scannerOpt              misconf.ScannerOption
-		disabledAnalyzers       []analyzer.Type
-		disabledHandlers        []types.HandlerType
-		missingBlobsExpectation cache.ArtifactCacheMissingBlobsExpectation
-		putBlobExpectation      cache.ArtifactCachePutBlobExpectation
-		putArtifactExpectations []cache.ArtifactCachePutArtifactExpectation
-		want                    artifact.Reference
-		wantErr                 string
+		name              string
+		target            string
+		rootDir           string
+		artifactOpt       artifact.Option
+		scannerOpt        misconf.ScannerOption
+		disabledAnalyzers []analyzer.Type
+		disabledHandlers  []types.HandlerType
+		wantBlobs         []cachetest.WantBlob
+		want              artifact.Reference
+		wantErr           string
 	}{
 		{
 			name:    "happy path for raw image",
 			target:  "testdata/mock.img",
 			rootDir: "testdata/alpine",
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID:   "sha256:a061631708aaa94682df3e2f7cb5bc7f63803c4e7d53006c0129f36fdf213d96",
-					BlobInfo: expectedBlobInfo,
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
+			wantBlobs: []cachetest.WantBlob{
 				{
-					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:a061631708aaa94682df3e2f7cb5bc7f63803c4e7d53006c0129f36fdf213d96",
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: types.ArtifactJSONSchemaVersion,
-						},
-					},
+					ID:       "sha256:a061631708aaa94682df3e2f7cb5bc7f63803c4e7d53006c0129f36fdf213d96",
+					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
@@ -149,27 +136,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			name:    "happy path for ebs",
 			target:  "ebs:ebs-012345",
 			rootDir: "testdata/alpine",
-			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
-				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
-					BlobIDs:    []string{"sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID:   "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
-					BlobInfo: expectedBlobInfo,
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
+			wantBlobs: []cachetest.WantBlob{
 				{
-					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: types.ArtifactJSONSchemaVersion,
-						},
-					},
+					ID:       "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
+					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
@@ -184,13 +154,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewMockArtifactCache(t)
-			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
-			c.ApplyMissingBlobsExpectation(tt.missingBlobsExpectation)
-			c.ApplyPutArtifactExpectations(tt.putArtifactExpectations)
-			c.ApplyDeleteBlobsExpectation(cache.ArtifactCacheDeleteBlobsExpectation{
-				Args: cache.ArtifactCacheDeleteBlobsArgs{BlobIDsAnything: true},
-			})
+			c := cachetest.NewCache(t, nil)
 
 			m := &mockWalker{root: tt.rootDir}
 
@@ -205,13 +169,13 @@ func TestArtifact_Inspect(t *testing.T) {
 			got, err := a.Inspect(context.Background())
 			defer a.Clean(got)
 			if tt.wantErr != "" {
-				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			tt.want.Name = trimPrefix(tt.target)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+			cachetest.AssertBlobs(t, c, tt.wantBlobs)
 		})
 	}
 }
