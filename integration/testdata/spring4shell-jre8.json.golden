@@ -4,6 +4,7 @@
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "Size": 236810240,
     "OS": {
       "Family": "debian",
       "Name": "11.3"
@@ -181,7 +182,102 @@
           "8080/tcp": {}
         }
       }
-    }
+    },
+    "LayersMetadata": [
+      {
+        "Size": 83895296,
+        "Digest": "sha256:c229119241af7b23b121052a1cae4c03e0a477a72ea6a7f463ad7623ff8f274b",
+        "DiffID": "sha256:608f3a074261105f129d707e4d9ad3d41b5baa94887f092b7c2857f7274a2fce",
+        "CreatedBy": "ADD file:966d3669b40f5fbaecee1ecbeb58debe19001076da5d94717080d55efbc25971 in / "
+      },
+      {
+        "Size": 5177344,
+        "Digest": "sha256:2f1dc05f270bad654ee17f1143c48586c188a72929a128d61fd8ae15905d7b00",
+        "DiffID": "sha256:1f6e409d1c59c8e06608a024b82d50490313abc3b2ff93730e43135d5be0cd72",
+        "CreatedBy": "set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tca-certificates p11-kit \t; \trm -rf /var/lib/apt/lists/*",
+        "OpaqueDirs": [
+          "etc/ca-certificates/",
+          "etc/ssl/",
+          "usr/lib/ssl/",
+          "usr/lib/x86_64-linux-gnu/pkcs11/",
+          "usr/libexec/p11-kit/",
+          "usr/local/share/ca-certificates/",
+          "usr/share/ca-certificates/",
+          "usr/share/doc/ca-certificates/",
+          "usr/share/doc/openssl/",
+          "usr/share/doc/p11-kit/",
+          "usr/share/p11-kit/",
+          "var/cache/apt/archives/"
+        ]
+      },
+      {
+        "Size": 3584,
+        "Digest": "sha256:69e68111de204b0c46a897b6ac5dd87c1e8aafae5aca100c679358a7a00513a8",
+        "DiffID": "sha256:0e78b1e5673e8cc7c102fdda9e6b830b7dee2b29b178f34d25d9be59387e6950",
+        "CreatedBy": "{ echo '#/bin/sh'; echo 'echo \"$JAVA_HOME\"'; } \u003e /usr/local/bin/docker-java-home \u0026\u0026 chmod +x /usr/local/bin/docker-java-home \u0026\u0026 [ \"$JAVA_HOME\" = \"$(docker-java-home)\" ] # backwards compatibility"
+      },
+      {
+        "Size": 109289984,
+        "Digest": "sha256:d7b564a873af313eb2dbcb1ed0d393c57543e3666bdedcbe5d75841d72b1f791",
+        "DiffID": "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1",
+        "CreatedBy": "set -eux; \t\tarch=\"$(dpkg --print-architecture)\"; \tcase \"$arch\" in \t\t'amd64') \t\t\tdownloadUrl='https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jre_x64_linux_8u322b06.tar.gz'; \t\t\t;; \t\t'arm64') \t\t\tdownloadUrl='https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jre_aarch64_linux_8u322b06.tar.gz'; \t\t\t;; \t\t*) echo \u003e\u00262 \"error: unsupported architecture: '$arch'\"; exit 1 ;; \tesac; \t\tsavedAptMark=\"$(apt-mark showmanual)\"; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tdirmngr \t\tgnupg \t\twget \t; \trm -rf /var/lib/apt/lists/*; \t\twget --progress=dot:giga -O openjdk.tgz \"$downloadUrl\"; \twget --progress=dot:giga -O openjdk.tgz.asc \"$downloadUrl.sign\"; \t\texport GNUPGHOME=\"$(mktemp -d)\"; \tgpg --batch --keyserver keyserver.ubuntu.com --recv-keys EAC843EBD3EFDB98CC772FADA5CD6035332FA671; \tgpg --batch --keyserver keyserver.ubuntu.com --keyserver-options no-self-sigs-only --recv-keys CA5F11C6CE22644D42C6AC4492EF8D39DC13168F; \tgpg --batch --list-sigs --keyid-format 0xLONG CA5F11C6CE22644D42C6AC4492EF8D39DC13168F \t\t| tee /dev/stderr \t\t| grep '0xA5CD6035332FA671' \t\t| grep 'Andrew Haley'; \tgpg --batch --verify openjdk.tgz.asc openjdk.tgz; \tgpgconf --kill all; \trm -rf \"$GNUPGHOME\"; \t\tmkdir -p \"$JAVA_HOME\"; \ttar --extract \t\t--file openjdk.tgz \t\t--directory \"$JAVA_HOME\" \t\t--strip-components 1 \t\t--no-same-owner \t; \trm openjdk.tgz*; \t\tapt-mark auto '.*' \u003e /dev/null; \t[ -z \"$savedAptMark\" ] || apt-mark manual $savedAptMark \u003e /dev/null; \tapt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \t\t{ \t\techo '#!/usr/bin/env bash'; \t\techo 'set -Eeuo pipefail'; \t\techo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth \"$JAVA_HOME/lib/security/cacerts\"'; \t} \u003e /etc/ca-certificates/update.d/docker-openjdk; \tchmod +x /etc/ca-certificates/update.d/docker-openjdk; \t/etc/ca-certificates/update.d/docker-openjdk; \t\tfind \"$JAVA_HOME/lib\" -name '*.so' -exec dirname '{}' ';' | sort -u \u003e /etc/ld.so.conf.d/docker-openjdk.conf; \tldconfig; \t\tjava -version",
+        "OpaqueDirs": [
+          "tmp/hsperfdata_root/",
+          "usr/local/openjdk-8/",
+          "var/lib/apt/lists/auxfiles/"
+        ]
+      },
+      {
+        "Size": 3072,
+        "Digest": "sha256:3a1b5fc9d258d3604588adb7cdea42ffb34c49f273d1e81dd7d94dab6dc3c1e9",
+        "DiffID": "sha256:053db4876c0df3df3294ee00e32e140b130ba33807d088750cb69b0e6fad158e",
+        "CreatedBy": "mkdir -p \"$CATALINA_HOME\"",
+        "OpaqueDirs": [
+          "usr/local/tomcat/"
+        ]
+      },
+      {
+        "Size": 18067968,
+        "Digest": "sha256:59c0978ccb117247fd40d936973c40df89195f60466118c5acc6a55f8ba29f06",
+        "DiffID": "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6",
+        "CreatedBy": "COPY dir:4b2b2ad5d081ef9a92d92841b7b643214ae6e21bbb961e3197c3615dd08813ab in /usr/local/tomcat ",
+        "OpaqueDirs": [
+          "usr/local/tomcat/bin/",
+          "usr/local/tomcat/conf/",
+          "usr/local/tomcat/lib/",
+          "usr/local/tomcat/logs/",
+          "usr/local/tomcat/native-jni-lib/",
+          "usr/local/tomcat/temp/",
+          "usr/local/tomcat/webapps/",
+          "usr/local/tomcat/webapps.dist/",
+          "usr/local/tomcat/work/"
+        ]
+      },
+      {
+        "Size": 1368576,
+        "Digest": "sha256:457ac2ac52ffcc6b352c6a8b314f7bc364bf1f407506e3337da06955597433cf",
+        "DiffID": "sha256:868d710aa4dc5fc4793508564fc45c991ed8d5f6ab3e4cf52bb856f29546f3d8",
+        "CreatedBy": "set -eux; \tapt-get update; \txargs -rt apt-get install -y --no-install-recommends \u003c \"$TOMCAT_NATIVE_LIBDIR/.dependencies.txt\"; \trm -rf /var/lib/apt/lists/*",
+        "OpaqueDirs": [
+          "usr/share/doc/libapr1/"
+        ],
+        "WhiteoutFiles": [
+          "var/lib/apt/lists/auxfiles"
+        ]
+      },
+      {
+        "Size": 2048,
+        "Digest": "sha256:c87852fd4f78fd9aa07b6dc3ca5e6292a466246036c517fa6abf1532da9be38f",
+        "DiffID": "sha256:77b2d158369254d5055183f5483f8b6661170857b61768d1d95d18c2ec1714b6",
+        "CreatedBy": "set -eux; \tnativeLines=\"$(catalina.sh configtest 2\u003e\u00261)\"; \tnativeLines=\"$(echo \"$nativeLines\" | grep 'Apache Tomcat Native')\"; \tnativeLines=\"$(echo \"$nativeLines\" | sort -u)\"; \tif ! echo \"$nativeLines\" | grep -E 'INFO: Loaded( APR based)? Apache Tomcat Native library' \u003e\u00262; then \t\techo \u003e\u00262 \"$nativeLines\"; \t\texit 1; \tfi"
+      },
+      {
+        "Size": 19002368,
+        "Digest": "sha256:cc44af318e91e6f9f9bf73793fa4f0639487613f46aa1f819b02b6e8fb5c6c07",
+        "DiffID": "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5",
+        "CreatedBy": "COPY file:4a1136b54136f8775efe918c4cd6af1ad1e507b36a49286d4f2c6bde722d33f4 in /usr/local/tomcat/webapps/ "
+      }
+    ]
   },
   "Results": [
     {
