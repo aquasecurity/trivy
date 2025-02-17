@@ -107,6 +107,5 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return nil, ftypes.OS{}, nil, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os),
-		r.ConvertFromRPCLayersMetadata(res.LayersMetadata, "", "", nil, nil), nil
+	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), r.ConvertFromRPCLayersMetadata(res.LayersMetadata), nil
 }

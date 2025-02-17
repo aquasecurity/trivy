@@ -550,7 +550,7 @@ func ConvertFromRPCLicenseFiles(rpcLicenses []*common.LicenseFile) []ftypes.Lice
 	return licenses
 }
 
-func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata, layerDigest, diffID string, opaqueDirs, whiteoutFiles []string) ftypes.LayersMetadata {
+func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata) ftypes.LayersMetadata {
 	var layersMetadata ftypes.LayersMetadata
 
 	for _, rpcLayerMetadata := range rpcLayersMetadata {
@@ -561,16 +561,6 @@ func ConvertFromRPCLayersMetadata(rpcLayersMetadata []*common.LayerMetadata, lay
 			CreatedBy:     rpcLayerMetadata.CreatedBy,
 			OpaqueDirs:    rpcLayerMetadata.OpaqueDirs,
 			WhiteoutFiles: rpcLayerMetadata.WhiteoutFiles,
-		})
-	}
-
-	// For backward compatibility
-	if len(layersMetadata) == 0 {
-		layersMetadata = append(layersMetadata, ftypes.LayerMetadata{
-			Digest:        layerDigest,
-			DiffID:        diffID,
-			OpaqueDirs:    opaqueDirs,
-			WhiteoutFiles: whiteoutFiles,
 		})
 	}
 
@@ -836,8 +826,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 		Licenses:          ConvertFromRPCLicenseFiles(req.BlobInfo.Licenses),
-		LayersMetadata: ConvertFromRPCLayersMetadata(req.BlobInfo.LayersMetadata,
-			req.BlobInfo.Digest, req.BlobInfo.DiffId, req.BlobInfo.OpaqueDirs, req.BlobInfo.WhiteoutFiles),
+		LayersMetadata:    ConvertFromRPCLayersMetadata(req.BlobInfo.LayersMetadata),
 	}
 }
 
