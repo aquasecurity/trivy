@@ -514,15 +514,13 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 			},
 			setUpCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				err := c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
+				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
 					SchemaVersion: ftypes.ArtifactJSONSchemaVersion,
-				})
-				require.NoError(t, err)
+				}))
 
-				err = c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", ftypes.BlobInfo{
+				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
-				})
-				require.NoError(t, err)
+				}))
 
 				return c
 			},

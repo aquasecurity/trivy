@@ -1829,9 +1829,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
-				c.PutArtifact("sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650", types.ArtifactInfo{
+				require.NoError(t, c.PutArtifact("sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650", types.ArtifactInfo{
 					SchemaVersion: types.ArtifactJSONSchemaVersion,
-				})
+				}))
 				return c
 			},
 			wantArtifact: cachetest.WantArtifact{
