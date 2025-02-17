@@ -114,6 +114,7 @@ func TestScanner_Scan(t *testing.T) {
 		applyLayersExpectation ApplierApplyLayersExpectation
 		wantResults            types.Results
 		wantOS                 ftypes.OS
+		wantLayersMetadata     ftypes.LayersMetadata
 		wantErr                string
 	}{
 		{
@@ -140,6 +141,12 @@ func TestScanner_Scan(t *testing.T) {
 						OS: ftypes.OS{
 							Family: ftypes.Alpine,
 							Name:   "3.11",
+						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
 						},
 						Packages: []ftypes.Package{
 							muslPkg,
@@ -220,6 +227,12 @@ func TestScanner_Scan(t *testing.T) {
 				Name:   "3.11",
 				Eosl:   true,
 			},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+				},
+			},
 		},
 		{
 			name: "happy path with OS rewriting",
@@ -249,6 +262,12 @@ func TestScanner_Scan(t *testing.T) {
 						OS: ftypes.OS{
 							Family: ftypes.Alpine,
 							Name:   "3.10",
+						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
 						},
 						Packages: []ftypes.Package{
 							muslPkg,
@@ -289,6 +308,12 @@ func TestScanner_Scan(t *testing.T) {
 				Name:   "3.11",
 				Eosl:   true,
 			},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+				},
+			},
 		},
 		{
 			name: "happy path license scanner",
@@ -310,6 +335,12 @@ func TestScanner_Scan(t *testing.T) {
 						OS: ftypes.OS{
 							Family: ftypes.Alpine,
 							Name:   "3.11",
+						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
 						},
 						Packages: []ftypes.Package{
 							muslPkg,
@@ -405,6 +436,12 @@ func TestScanner_Scan(t *testing.T) {
 				Name:   "3.11",
 				Eosl:   false,
 			},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+				},
+			},
 		},
 		{
 			name: "happy path with empty os",
@@ -428,6 +465,12 @@ func TestScanner_Scan(t *testing.T) {
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
 						OS: ftypes.OS{},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
+						},
 						Applications: []ftypes.Application{
 							{
 								Type:     ftypes.Bundler,
@@ -489,6 +532,12 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			wantOS: ftypes.OS{},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+				},
+			},
 		},
 		{
 			name: "happy path. Empty filePaths (e.g. Scanned SBOM)",
@@ -612,6 +661,12 @@ func TestScanner_Scan(t *testing.T) {
 							Family: "alpine",
 							Name:   "3.11",
 						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
+						},
 						Applications: []ftypes.Application{
 							{
 								Type:     "bundler",
@@ -668,6 +723,12 @@ func TestScanner_Scan(t *testing.T) {
 				Name:   "3.11",
 				Eosl:   true,
 			},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+				},
+			},
 		},
 		{
 			name: "happy path with unsupported os",
@@ -693,6 +754,12 @@ func TestScanner_Scan(t *testing.T) {
 						OS: ftypes.OS{
 							Family: "fedora",
 							Name:   "27",
+						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
 						},
 						Applications: []ftypes.Application{
 							{
@@ -740,6 +807,12 @@ func TestScanner_Scan(t *testing.T) {
 			wantOS: ftypes.OS{
 				Family: "fedora",
 				Name:   "27",
+			},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+				},
 			},
 		},
 		{
@@ -792,6 +865,12 @@ func TestScanner_Scan(t *testing.T) {
 						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
+						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
 						},
 						Packages: []ftypes.Package{
 							muslPkg,
@@ -856,6 +935,12 @@ func TestScanner_Scan(t *testing.T) {
 			wantOS: ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
+			},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+				},
 			},
 		},
 		{
@@ -1031,6 +1116,12 @@ func TestScanner_Scan(t *testing.T) {
 							Family: "alpine",
 							Name:   "3.11",
 						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
+						},
 						Packages: []ftypes.Package{
 							{
 								Name:    "musl",
@@ -1079,6 +1170,12 @@ func TestScanner_Scan(t *testing.T) {
 						OS: ftypes.OS{
 							Family: ftypes.Alpine,
 							Name:   "3.11",
+						},
+						LayersMetadata: ftypes.LayersMetadata{
+							{
+								Size:   1000,
+								DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							},
 						},
 						Misconfigurations: []ftypes.Misconfiguration{
 							{
@@ -1185,6 +1282,12 @@ func TestScanner_Scan(t *testing.T) {
 				Name:   "3.11",
 				Eosl:   false,
 			},
+			wantLayersMetadata: ftypes.LayersMetadata{
+				{
+					Size:   1000,
+					DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+				},
+			},
 		},
 	}
 
@@ -1197,7 +1300,7 @@ func TestScanner_Scan(t *testing.T) {
 			applier.ApplyApplyLayersExpectation(tt.applyLayersExpectation)
 
 			s := NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
-			gotResults, gotOS, _, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, gotLayersMetadata, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -1206,6 +1309,7 @@ func TestScanner_Scan(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.wantResults, gotResults)
 			assert.Equal(t, tt.wantOS, gotOS)
+			assert.Equal(t, tt.wantLayersMetadata, gotLayersMetadata)
 
 			applier.AssertExpectations(t)
 		})
