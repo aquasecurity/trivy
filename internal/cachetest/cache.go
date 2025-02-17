@@ -92,9 +92,7 @@ func AssertArtifact(t *testing.T, c cache.Cache, wantArtifact WantArtifact) {
 
 func AssertBlobs(t *testing.T, c cache.Cache, wantBlobs []WantBlob) {
 	if m, ok := c.(*cache.MemoryCache); ok {
-		blobIDs, err := m.BlobIDs()
-		require.NoError(t, err)
-
+		blobIDs := m.BlobIDs()
 		wantBlobIDs := lo.Map(wantBlobs, func(want WantBlob, _ int) string {
 			return want.ID
 		})
