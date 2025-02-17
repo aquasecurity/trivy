@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
@@ -29,6 +30,7 @@ var (
 
 // Writer implements Writer and output in tabular form
 type Writer struct {
+	Scanners   types.Scanners
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
@@ -37,6 +39,9 @@ type Writer struct {
 
 	// Show suppressed findings
 	ShowSuppressed bool
+
+	// Hide summary table
+	NoSummaryTable bool
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -53,6 +58,17 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw Writer) Write(_ context.Context, report types.Report) error {
+	if !tw.isOutputToTerminal() {
+		tml.DisableFormatting()
+	}
+
+	if !tw.NoSummaryTable {
+		renderer, err := NewSummaryRenderer(report, tw.isOutputToTerminal(), tw.Scanners)
+		if err != nil {
+			return xerrors.Errorf("failed to create summary renderer: %w", err)
+		}
+		_, _ = fmt.Fprint(tw.Output, renderer.Render())
+	}
 
 	for _, result := range report.Results {
 		// Not display a table of custom resources
