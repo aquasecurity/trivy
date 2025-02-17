@@ -8,13 +8,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -23,11 +23,6 @@ import (
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
-
-type mockCache struct {
-	cache.MockArtifactCache
-	cache.MockLocalArtifactCache
-}
 
 func TestScanServer_Scan(t *testing.T) {
 	type args struct {
@@ -188,11 +183,12 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 		in *rpcCache.PutArtifactRequest
 	}
 	tests := []struct {
-		name     string
-		args     args
-		putImage cache.ArtifactCachePutArtifactExpectation
-		want     *emptypb.Empty
-		wantErr  string
+		name         string
+		args         args
+		setUpCache   func(t *testing.T) cache.Cache
+		wantArtifact cachetest.WantArtifact
+		want         *emptypb.Empty
+		wantErr      string
 	}{
 		{
 			name: "happy path",
@@ -212,16 +208,14 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			putImage: cache.ArtifactCachePutArtifactExpectation{
-				Args: cache.ArtifactCachePutArtifactArgs{
-					ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					ArtifactInfo: ftypes.ArtifactInfo{
-						SchemaVersion: 1,
-						Architecture:  "amd64",
-						Created:       time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
-						DockerVersion: "18.09",
-						OS:            "linux",
-					},
+			wantArtifact: cachetest.WantArtifact{
+				ID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+				ArtifactInfo: ftypes.ArtifactInfo{
+					SchemaVersion: 1,
+					Architecture:  "amd64",
+					Created:       time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
+					DockerVersion: "18.09",
+					OS:            "linux",
 				},
 			},
 			want: &emptypb.Empty{},
@@ -241,17 +235,10 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 					},
 				},
 			},
-			putImage: cache.ArtifactCachePutArtifactExpectation{
-				Args: cache.ArtifactCachePutArtifactArgs{
-					ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					ArtifactInfo: ftypes.ArtifactInfo{
-						SchemaVersion: 1,
-						Created:       time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
-					},
-				},
-				Returns: cache.ArtifactCachePutArtifactReturns{
-					Err: xerrors.New("error"),
-				},
+			setUpCache: func(t *testing.T) cache.Cache {
+				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
+					PutArtifact: true,
+				})
 			},
 			wantErr: "unable to store image info in cache",
 		},
@@ -265,20 +252,18 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
-			mockCache.ApplyPutArtifactExpectation(tt.putImage)
+			c := cachetest.NewCache(t, tt.setUpCache)
 
-			s := NewCacheServer(mockCache)
+			s := NewCacheServer(c)
 			got, err := s.PutArtifact(context.Background(), tt.args.in)
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
-
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
+			cachetest.AssertArtifact(t, c, tt.wantArtifact)
 		})
 	}
 }
@@ -288,11 +273,12 @@ func TestCacheServer_PutBlob(t *testing.T) {
 		in *rpcCache.PutBlobRequest
 	}
 	tests := []struct {
-		name     string
-		args     args
-		putLayer cache.ArtifactCachePutBlobExpectation
-		want     *emptypb.Empty
-		wantErr  string
+		name       string
+		args       args
+		setUpCache func(t *testing.T) cache.Cache
+		wantBlobs  []cachetest.WantBlob
+		want       *emptypb.Empty
+		wantErr    string
 	}{
 		{
 			name: "happy path",
@@ -377,9 +363,9 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					},
 				},
 			},
-			putLayer: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+			wantBlobs: []cachetest.WantBlob{
+				{
+					ID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					BlobInfo: ftypes.BlobInfo{
 						SchemaVersion: 1,
 						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
@@ -469,14 +455,10 @@ func TestCacheServer_PutBlob(t *testing.T) {
 					},
 				},
 			},
-			putLayer: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything:   true,
-					BlobInfoAnything: true,
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{
-					Err: xerrors.New("error"),
-				},
+			setUpCache: func(t *testing.T) cache.Cache {
+				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
+					PutBlob: true,
+				})
 			},
 			wantErr: "unable to store layer info in cache",
 		},
@@ -485,34 +467,24 @@ func TestCacheServer_PutBlob(t *testing.T) {
 			args: args{
 				in: &rpcCache.PutBlobRequest{},
 			},
-			putLayer: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything:   true,
-					BlobInfoAnything: true,
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{
-					Err: xerrors.New("error"),
-				},
-			},
 			wantErr: "empty layer info",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
-			mockCache.ApplyPutBlobExpectation(tt.putLayer)
+			c := cachetest.NewCache(t, tt.setUpCache)
 
-			s := NewCacheServer(mockCache)
+			s := NewCacheServer(c)
 			got, err := s.PutBlob(context.Background(), tt.args.in)
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
 
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
+			cachetest.AssertBlobs(t, c, tt.wantBlobs)
 		})
 	}
 }
@@ -523,11 +495,11 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 		in  *rpcCache.MissingBlobsRequest
 	}
 	tests := []struct {
-		name                                     string
-		args                                     args
-		getArtifactCacheMissingBlobsExpectations []cache.ArtifactCacheMissingBlobsExpectation
-		want                                     *rpcCache.MissingBlobsResponse
-		wantErr                                  string
+		name       string
+		args       args
+		setUpCache func(t *testing.T) cache.Cache
+		want       *rpcCache.MissingBlobsResponse
+		wantErr    string
 	}{
 		{
 			name: "happy path",
@@ -540,21 +512,17 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 					},
 				},
 			},
-			getArtifactCacheMissingBlobsExpectations: []cache.ArtifactCacheMissingBlobsExpectation{
-				{
-					Args: cache.ArtifactCacheMissingBlobsArgs{
-						ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-						BlobIDs: []string{
-							"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-						},
-					},
-					Returns: cache.ArtifactCacheMissingBlobsReturns{
-						MissingArtifact: false,
-						MissingBlobIDs:  []string{"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"},
-						Err:             nil,
-					},
-				},
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
+					SchemaVersion: ftypes.ArtifactJSONSchemaVersion,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+				}))
+
+				return c
 			},
 			want: &rpcCache.MissingBlobsResponse{
 				MissingArtifact: false,
@@ -564,20 +532,16 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
-			mockCache.ApplyMissingBlobsExpectations(tt.getArtifactCacheMissingBlobsExpectations)
+			c := cachetest.NewCache(t, tt.setUpCache)
 
-			s := NewCacheServer(mockCache)
+			s := NewCacheServer(c)
 			got, err := s.MissingBlobs(tt.args.ctx, tt.args.in)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
-
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
-			mockCache.MockArtifactCache.AssertExpectations(t)
 		})
 	}
 }
