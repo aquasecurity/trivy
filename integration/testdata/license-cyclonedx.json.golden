@@ -21,10 +21,6 @@
       "Class": "license"
     },
     {
-      "Target": "pom.xml",
-      "Class": "license"
-    },
-    {
       "Target": "Java",
       "Class": "license",
       "Licenses": [
@@ -34,6 +30,7 @@
           "PkgName": "org.eclipse.sisu:org.eclipse.sisu.plexus",
           "FilePath": "",
           "Name": "EPL-1.0",
+          "Text": "",
           "Confidence": 1,
           "Link": ""
         },
@@ -43,6 +40,7 @@
           "PkgName": "org.ow2.asm:asm",
           "FilePath": "",
           "Name": "BSD-3-Clause",
+          "Text": "",
           "Confidence": 1,
           "Link": ""
         },
@@ -52,10 +50,15 @@
           "PkgName": "org.slf4j:slf4j-api",
           "FilePath": "",
           "Name": "MIT License",
+          "Text": "",
           "Confidence": 1,
           "Link": ""
         }
       ]
+    },
+    {
+      "Target": "pom.xml",
+      "Class": "license"
     },
     {
       "Target": "Loose File License(s)",
