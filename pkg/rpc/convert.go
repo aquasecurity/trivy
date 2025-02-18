@@ -794,6 +794,7 @@ func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.Arti
 		DockerVersion:   req.ArtifactInfo.DockerVersion,
 		OS:              req.ArtifactInfo.Os,
 		HistoryPackages: ConvertFromRPCPkgs(req.ArtifactInfo.HistoryPackages),
+		Secret:          ConvertFromRPCSecret(req.ArtifactInfo.Secret),
 	}
 }
 
@@ -854,6 +855,7 @@ func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *ca
 			DockerVersion:   imageInfo.DockerVersion,
 			Os:              imageInfo.OS,
 			HistoryPackages: ConvertToRPCPkgs(imageInfo.HistoryPackages),
+			Secret:          ConvertToRPCSecret(imageInfo.Secret),
 		},
 	}
 }
@@ -1014,4 +1016,26 @@ func ConvertFromDeleteBlobsRequest(deleteBlobsRequest *cache.DeleteBlobsRequest)
 		return []string{}
 	}
 	return deleteBlobsRequest.GetBlobIds()
+}
+
+// ConvertFromRPCSecret converts common.Secret to fanal.Secret
+func ConvertFromRPCSecret(rpcSecret *common.Secret) *ftypes.Secret {
+	if rpcSecret == nil {
+		return nil
+	}
+	return &ftypes.Secret{
+		FilePath: rpcSecret.Filepath,
+		Findings: ConvertFromRPCSecretFindings(rpcSecret.Findings),
+	}
+}
+
+// ConvertFromRPCSecret converts fanal.Secret to common.Secret
+func ConvertToRPCSecret(secret *ftypes.Secret) *common.Secret {
+	if secret == nil {
+		return nil
+	}
+	return &common.Secret{
+		Filepath: secret.FilePath,
+		Findings: ConvertToRPCSecretFindings(secret.Findings),
+	}
 }
