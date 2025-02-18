@@ -18,8 +18,11 @@ import (
 // Max cache memory size 64 MB
 const storageEBSCacheSize = 128
 
+const schemaVersionEBS = 0
+
 // EBS represents an artifact for AWS EBS snapshots
 type EBS struct {
+	schemaVersion int
 	Storage
 	logger     *log.Logger
 	snapshotID string
@@ -33,10 +36,11 @@ func newEBS(snapshotID string, vm Storage, region, endpoint string) (*EBS, error
 	}
 
 	return &EBS{
-		Storage:    vm,
-		logger:     log.WithPrefix("ebs"),
-		snapshotID: snapshotID,
-		ebs:        ebs,
+		schemaVersion: schemaVersionEBS,
+		Storage:       vm,
+		logger:        log.WithPrefix("ebs"),
+		snapshotID:    snapshotID,
+		ebs:           ebs,
 	}, nil
 }
 
@@ -99,7 +103,7 @@ func (a *EBS) SetEBS(ebs ebsfile.EBSAPI) {
 }
 
 func (a *EBS) calcCacheKey(key string) (string, error) {
-	s, err := cache.CalcKey(key, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	s, err := cache.CalcKey(key, a.schemaVersion, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
 	if err != nil {
 		return "", xerrors.Errorf("failed to calculate cache key: %w", err)
 	}

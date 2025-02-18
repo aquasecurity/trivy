@@ -31,7 +31,11 @@ import (
 	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
+const schemaVersion = 1
+
 type Artifact struct {
+	schemaVersion int
+
 	logger         *log.Logger
 	image          types.Image
 	cache          cache.ArtifactCache
@@ -68,6 +72,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
+		schemaVersion:  schemaVersion,
 		logger:         log.WithPrefix("image"),
 		image:          img,
 		cache:          c,
@@ -164,7 +169,7 @@ func (a Artifact) Clean(_ artifact.Reference) error {
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
+	imageKey, err := cache.CalcKey(imageID, a.schemaVersion, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
 		return "", nil, err
 	}
@@ -172,7 +177,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
 	for _, diffID := range diffIDs {
-		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
+		blobKey, err := cache.CalcKey(diffID, a.schemaVersion, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
 		if err != nil {
 			return "", nil, err
 		}
