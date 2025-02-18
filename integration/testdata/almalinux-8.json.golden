@@ -46,12 +46,11 @@
         "Image": "sha256:d38d2eac03bc19e080df596d6148863a0f8293f3a277a7524f378da79a1feb0f"
       }
     },
-    "LayersMetadata": [
+    "Layers": [
       {
         "Size": 204637184,
         "Digest": "sha256:a1f18d9dc5496c63197eb9a4f1d4bf5cc88c6a34f64f0fe11ea233070392ce48",
-        "DiffID": "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d",
-        "CreatedBy": "ADD file:2e002305ccb9d8a4dcef52509c4c50b9a15e76c9c49ca6abda3e0d7091c63fa7 in / "
+        "DiffID": "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d"
       }
     ]
   },

@@ -32,7 +32,7 @@
       },
       "config": {}
     },
-    "LayersMetadata": [
+    "Layers": [
       {
         "Size": 177582080,
         "Digest": "sha256:3df36548ffbf2fa7319966e038058a3d2a922880009e535202546a6b250b9d57",

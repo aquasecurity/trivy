@@ -69,9 +69,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					},
 					Layers: ftypes.LayersMetadata{
 						{
-							Size:      5861888,
-							DiffID:    "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-							CreatedBy: "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
+							Size:   5861888,
+							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 						},
 					},
 					ImageConfig: v1.ConfigFile{

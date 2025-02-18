@@ -47,12 +47,11 @@
         "ArgsEscaped": true
       }
     },
-    "LayersMetadata": [
+    "Layers": [
       {
         "Size": 119199744,
         "Digest": "sha256:4a56a430b2bac33260d6449e162017e2b23076c6411a17b46db67f5b84dde2bd",
-        "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
-        "CreatedBy": "ADD file:770e381defc5e4a0ba5df52265a96494b9f5d94309234cb3f7bc6b00e1d18f9a in / "
+        "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
       }
     ]
   },

@@ -47,18 +47,16 @@
         "Image": "sha256:2fb6fc2d97e10c79983aa10e013824cc7fc8bae50630e32159821197dda95fe3"
       }
     },
-    "LayersMetadata": [
+    "Layers": [
       {
         "Size": 1459200,
         "Digest": "sha256:554879bb300427c7301c1cbdf266a7eba24a85b10d19f270b3d348b9eb9ca7df",
-        "DiffID": "sha256:797ac4999b67d8c38a596919efa5b7b6a4a8fd5814cb8564efa482c5d8403e6d",
-        "CreatedBy": "ADD file:39f6523fbc03f554a59461a34850d68c31cd5822e5a6fddf2d0ea198ed9a11c4 in / "
+        "DiffID": "sha256:797ac4999b67d8c38a596919efa5b7b6a4a8fd5814cb8564efa482c5d8403e6d"
       },
       {
         "Size": 32256,
         "Digest": "sha256:fd2e3bc9bccc9c677572a542d020998389de94f127ca2c252ae627fc7c241cee",
-        "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f",
-        "CreatedBy": "COPY file:343df0159abcc51b06b4e56bfd4c06d2003b88947ed93b0cec6214ae5985669e in . "
+        "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
       }
     ]
   },

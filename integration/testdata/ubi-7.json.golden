@@ -70,7 +70,7 @@
         "ArgsEscaped": true
       }
     },
-    "LayersMetadata": [
+    "Layers": [
       {
         "Size": 215142400,
         "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",

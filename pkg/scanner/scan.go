@@ -177,6 +177,13 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ptros = nil
 	}
 
+	// We don't need to include this info into Report
+	for i := range scanResponse.LayersMetadata {
+		scanResponse.LayersMetadata[i].CreatedBy = ""
+		scanResponse.LayersMetadata[i].OpaqueDirs = nil
+		scanResponse.LayersMetadata[i].WhiteoutFiles = nil
+	}
+
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
 		CreatedAt:     clock.Now(ctx),
