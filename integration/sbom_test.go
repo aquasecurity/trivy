@@ -50,7 +50,7 @@ func TestSBOM(t *testing.T) {
 
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
-				want.Metadata.LayersMetadata = nil
+				want.Metadata.Layers = nil
 			},
 		},
 		{
@@ -103,7 +103,7 @@ func TestSBOM(t *testing.T) {
 
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
-				want.Metadata.LayersMetadata = nil
+				want.Metadata.Layers = nil
 			},
 		},
 		{
@@ -123,7 +123,7 @@ func TestSBOM(t *testing.T) {
 
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
-				want.Metadata.LayersMetadata = nil
+				want.Metadata.Layers = nil
 			},
 		},
 		{
@@ -143,7 +143,7 @@ func TestSBOM(t *testing.T) {
 
 				// SBOM file doesn't contain info about layers
 				want.Metadata.Size = 0
-				want.Metadata.LayersMetadata = nil
+				want.Metadata.Layers = nil
 			},
 		},
 		{
