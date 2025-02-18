@@ -123,3 +123,10 @@ type ScanOptions struct {
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
 }
+
+// ScanResponse contains result of `Scan` function of `Driver` interface
+type ScanResponse struct {
+	Results        Results
+	OS             types.OS
+	LayersMetadata types.LayersMetadata
+}

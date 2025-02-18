@@ -973,9 +973,9 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 }
 
 // ConvertToRPCScanResponse converts types.Result to ScanResponse
-func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS, layersMetadata ftypes.LayersMetadata) *scanner.ScanResponse {
+func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
-	for _, result := range results {
+	for _, result := range response.Results {
 		secretFindings := lo.Map(result.Secrets, func(s types.DetectedSecret, _ int) ftypes.SecretFinding {
 			return ftypes.SecretFinding(s)
 		})
@@ -993,8 +993,8 @@ func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS, layersMetada
 	}
 
 	return &scanner.ScanResponse{
-		Os:             ConvertToRPCOS(fos),
-		LayersMetadata: ConvertToRPCLayersMetadata(layersMetadata),
+		Os:             ConvertToRPCOS(response.OS),
+		LayersMetadata: ConvertToRPCLayersMetadata(response.LayersMetadata),
 		Results:        rpcResults,
 	}
 }

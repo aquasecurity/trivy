@@ -9,7 +9,6 @@ import (
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
@@ -68,7 +67,7 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, ftypes.LayersMetadata, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.ScanResponse, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
@@ -104,8 +103,12 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return err
 	})
 	if err != nil {
-		return nil, ftypes.OS{}, nil, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return types.ScanResponse{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), r.ConvertFromRPCLayersMetadata(res.LayersMetadata), nil
+	return types.ScanResponse{
+		Results:        r.ConvertFromRPCResults(res.Results),
+		OS:             r.ConvertFromRPCOS(res.Os),
+		LayersMetadata: r.ConvertFromRPCLayersMetadata(res.LayersMetadata),
+	}, nil
 }
