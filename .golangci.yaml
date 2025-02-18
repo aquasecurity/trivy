@@ -126,7 +126,6 @@ run:
 
 issues:
   exclude-files:
-    - "mock_*.go$"
     - "examples/*"
   exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions

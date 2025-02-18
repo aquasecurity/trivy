@@ -147,31 +147,10 @@ func (Tool) Goyacc() error {
 	return sh.Run("go", "install", "golang.org/x/tools/cmd/goyacc@v0.7.0")
 }
 
-// Mockery installs mockery
-func (Tool) Mockery() error {
-	if exists(filepath.Join(GOBIN, "mockery")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/vektra/mockery/v2@v2.52.2")
-}
-
 // Wire generates the wire_gen.go file for each package
 func Wire() error {
 	mg.Deps(Tool{}.Wire)
 	return sh.RunV("wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
-}
-
-// Mock generates mocks
-func Mock(dir string) error {
-	mg.Deps(Tool{}.Mockery)
-	mockeryArgs := []string{
-		"--all",
-		"--inpackage",
-		"--case=snake",
-		"--dir",
-		dir,
-	}
-	return sh.RunV("mockery", mockeryArgs...)
 }
 
 // Protoc parses PROTO_FILES and generates the Go code for client/server mode
