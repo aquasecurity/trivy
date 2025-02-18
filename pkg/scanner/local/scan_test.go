@@ -96,15 +96,6 @@ var (
 		},
 		Licenses: []string{"MIT"},
 	}
-	python39min = ftypes.Package{
-		Name:     "python3.9-minimal",
-		Version:  "3.9.1",
-		FilePath: "/usr/lib/python/site-packages/python3.9-minimal/METADATA",
-		Layer: ftypes.Layer{
-			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
-		},
-		Licenses: []string{"text://Redistribution and use in source and binary forms, with or without"},
-	}
 	menuinstPkg = ftypes.Package{
 		Name:     "menuinst",
 		Version:  "2.0.2",
@@ -365,11 +356,9 @@ func TestScanner_Scan(t *testing.T) {
 					PackageInfos: []ftypes.PackageInfo{
 						{
 							FilePath: "lib/apk/db/installed",
-							Packages: []ftypes.Package{muslPkg},
-						},
-						{
-							FilePath: "usr/lib/python/site-packages/urllib3-3.2.1/METADATA",
-							Packages: []ftypes.Package{urllib3Pkg},
+							Packages: []ftypes.Package{
+								muslPkg,
+							},
 						},
 					},
 					Applications: []ftypes.Application{
@@ -401,13 +390,6 @@ func TestScanner_Scan(t *testing.T) {
 							Severity:   "UNKNOWN",
 							Category:   "unknown",
 							PkgName:    muslPkg.Name,
-							Name:       "MIT",
-							Confidence: 1,
-						},
-						{
-							Severity:   "UNKNOWN",
-							Category:   "unknown",
-							PkgName:    urllib3Pkg.Name,
 							Name:       "MIT",
 							Confidence: 1,
 						},
