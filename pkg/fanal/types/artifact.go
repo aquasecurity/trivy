@@ -129,12 +129,11 @@ type BlobInfo struct {
 	LayersMetadata LayersMetadata
 
 	// Fields for backward compatibility
-	// TODO remove these fields after ???
-	Digest        string   `json:",omitempty"`
-	DiffID        string   `json:",omitempty"`
-	CreatedBy     string   `json:",omitempty"`
-	OpaqueDirs    []string `json:",omitempty"`
-	WhiteoutFiles []string `json:",omitempty"`
+	Digest        string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	DiffID        string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	CreatedBy     string   `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	OpaqueDirs    []string `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
+	WhiteoutFiles []string `json:",omitempty"` // Deprecated: Use LayersMetadata. Kept for backward compatibility.
 
 	// Analysis result
 	OS                OS                 `json:",omitempty"`
