@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -11,14 +10,17 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy-db/pkg/utils"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/cachetest"
+	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner"
+	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
+	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
@@ -29,11 +31,12 @@ func TestScanServer_Scan(t *testing.T) {
 		in *rpcScanner.ScanRequest
 	}
 	tests := []struct {
-		name            string
-		args            args
-		scanExpectation scanner.DriverScanExpectation
-		want            *rpcScanner.ScanResponse
-		wantErr         string
+		name       string
+		args       args
+		fixtures   []string
+		setUpCache func(t *testing.T) cache.Cache
+		want       *rpcScanner.ScanResponse
+		wantErr    string
 	}{
 		{
 			name: "happy path",
@@ -41,138 +44,179 @@ func TestScanServer_Scan(t *testing.T) {
 				in: &rpcScanner.ScanRequest{
 					Target:     "alpine:3.11",
 					ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					BlobIds:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-					Options:    &rpcScanner.ScanOptions{},
+					BlobIds:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+					Options: &rpcScanner.ScanOptions{
+						PkgTypes:         []string{types.PkgTypeOS},
+						Scanners:         []string{string(types.VulnerabilityScanner)},
+						PkgRelationships: []string{ftypes.RelationshipUnknown.String()},
+					},
 				},
 			},
-			scanExpectation: scanner.DriverScanExpectation{
-				Args: scanner.DriverScanArgs{
-					CtxAnything:     true,
-					Target:          "alpine:3.11",
-					ImageID:         "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					LayerIDs:        []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-					OptionsAnything: true,
-				},
-				Returns: scanner.DriverScanReturns{
-					Results: types.Results{
+			fixtures: []string{"../..//scanner/local/testdata/fixtures/happy.yaml"},
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
+					SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203", ftypes.BlobInfo{
+					SchemaVersion: 1,
+					DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+					LayersMetadata: ftypes.LayersMetadata{
 						{
-							Target: "alpine:3.11 (alpine 3.11)",
-							Vulnerabilities: []types.DetectedVulnerability{
-								{
-									VulnerabilityID:  "CVE-2019-0001",
-									PkgName:          "musl",
-									InstalledVersion: "1.2.3",
-									FixedVersion:     "1.2.4",
-									SeveritySource:   "nvd",
-									Vulnerability: dbTypes.Vulnerability{
-										Title:       "dos",
-										Description: "dos vulnerability",
-										Severity:    "MEDIUM",
-										VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
-											vulnerability.NVD: dbTypes.SeverityMedium,
-										},
-										References:       []string{"http://example.com"},
-										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
-										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
-									},
-									PrimaryURL: "https://avd.aquasec.com/nvd/cve-2019-0001",
-									DataSource: &dbTypes.DataSource{
-										Name: "DOS vulnerabilities",
-										URL:  "https://vuld-db-example.com/",
-									},
-								},
-							},
-							Type: "alpine",
+							Size:   1000,
+							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 						},
 					},
-					OsFound: ftypes.OS{
+					OS: ftypes.OS{
 						Family: "alpine",
-						Name:   "3.11",
-						Eosl:   true,
+						Name:   "3.11.5",
 					},
-				},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: ftypes.Packages{
+								{
+									Name:       "musl",
+									Version:    "1.1.24-r2",
+									SrcName:    "musl",
+									SrcVersion: "1.1.24-r2",
+								},
+							},
+						},
+					},
+				}))
+
+				return c
 			},
 			want: &rpcScanner.ScanResponse{
 				Os: &common.OS{
 					Family: "alpine",
-					Name:   "3.11",
+					Name:   "3.11.5",
 					Eosl:   true,
 				},
 				Results: []*rpcScanner.Result{
 					{
-						Target: "alpine:3.11 (alpine 3.11)",
+						Target: "alpine:3.11 (alpine 3.11.5)",
 						Vulnerabilities: []*common.Vulnerability{
 							{
-								VulnerabilityId:  "CVE-2019-0001",
+								VulnerabilityId:  "CVE-2020-9999",
 								PkgName:          "musl",
-								InstalledVersion: "1.2.3",
+								InstalledVersion: "1.1.24-r2",
 								FixedVersion:     "1.2.4",
-								Severity:         common.Severity_MEDIUM,
-								SeveritySource:   "nvd",
-								Layer:            &common.Layer{},
-								Cvss:             make(map[string]*common.CVSS),
-								VendorSeverity: map[string]common.Severity{
-									string(vulnerability.NVD): common.Severity_MEDIUM,
+								Severity:         common.Severity_HIGH,
+								Layer: &common.Layer{
+									DiffId: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 								},
-								PrimaryUrl:  "https://avd.aquasec.com/nvd/cve-2019-0001",
+								PrimaryUrl:  "https://avd.aquasec.com/nvd/cve-2020-9999",
 								Title:       "dos",
 								Description: "dos vulnerability",
-								References:  []string{"http://example.com"},
-								LastModifiedDate: &timestamppb.Timestamp{
-									Seconds: 1577840460,
+								Status:      3,
+								PkgIdentifier: &common.PkgIdentifier{
+									Purl: "pkg:apk/alpine/musl@1.1.24-r2?distro=3.11.5",
+									Uid:  "852936e86971b22e",
 								},
-								PublishedDate: &timestamppb.Timestamp{
-									Seconds: 978310860,
+								Cvss:           make(map[string]*common.CVSS),
+								VendorSeverity: make(map[string]common.Severity),
+							},
+						},
+						Type:  "alpine",
+						Class: "os-pkgs",
+						Packages: []*common.Package{
+							{
+								Name:       "musl",
+								Version:    "1.1.24-r2",
+								SrcName:    "musl",
+								SrcVersion: "1.1.24-r2",
+								Layer: &common.Layer{
+									DiffId: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 								},
-								DataSource: &common.DataSource{
-									Name: "DOS vulnerabilities",
-									Url:  "https://vuld-db-example.com/",
+								Identifier: &common.PkgIdentifier{
+									Purl: "pkg:apk/alpine/musl@1.1.24-r2?distro=3.11.5",
+									Uid:  "852936e86971b22e",
 								},
 							},
 						},
-						Type: "alpine",
+					},
+				},
+				LayersMetadata: []*common.LayerMetadata{
+					{
+						Size:   1000,
+						DiffId: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 					},
 				},
 			},
 		},
 		{
-			name: "sad path: Scan returns an error",
+			name: "sad path: broken database",
 			args: args{
 				in: &rpcScanner.ScanRequest{
 					Target:     "alpine:3.11",
 					ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					BlobIds:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-					Options:    &rpcScanner.ScanOptions{},
+					BlobIds:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+					Options: &rpcScanner.ScanOptions{
+						PkgTypes:         []string{types.PkgTypeOS},
+						Scanners:         []string{string(types.VulnerabilityScanner)},
+						PkgRelationships: []string{ftypes.RelationshipUnknown.String()},
+					},
 				},
 			},
-			scanExpectation: scanner.DriverScanExpectation{
-				Args: scanner.DriverScanArgs{
-					CtxAnything:     true,
-					Target:          "alpine:3.11",
-					ImageID:         "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					LayerIDs:        []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-					OptionsAnything: true,
-				},
-				Returns: scanner.DriverScanReturns{
-					Err: errors.New("error"),
-				},
+			fixtures: []string{"../../scanner/local/testdata/fixtures/sad.yaml"},
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutArtifact("sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a", ftypes.ArtifactInfo{
+					SchemaVersion: 1,
+				}))
+
+				require.NoError(t, c.PutBlob("sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203", ftypes.BlobInfo{
+					SchemaVersion: 1,
+					Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+					DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+					OS: ftypes.OS{
+						Family: "alpine",
+						Name:   "3.11.5",
+					},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: ftypes.Packages{
+								{
+									Name:       "musl",
+									Version:    "1.1.24-r2",
+									SrcName:    "musl",
+									SrcVersion: "1.1.24-r2",
+								},
+							},
+						},
+					},
+				}))
+
+				return c
 			},
-			wantErr: "failed scan, alpine:3.11",
+			wantErr: "failed to detect vulnerabilities",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDriver := scanner.NewMockDriver(t)
-			mockDriver.ApplyScanExpectation(tt.scanExpectation)
+			// Initialize DB
+			_ = dbtest.InitDB(t, tt.fixtures)
+			defer db.Close()
 
-			s := NewScanServer(mockDriver)
+			// Create artifact
+			c := cachetest.NewCache(t, tt.setUpCache)
+
+			// Create scanner
+			applier := applier.NewApplier(c)
+			scanner := local.NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
+			s := NewScanServer(scanner)
+
 			got, err := s.Scan(context.Background(), tt.args.in)
 			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-			require.NoError(t, err, tt.name)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

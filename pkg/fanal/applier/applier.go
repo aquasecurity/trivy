@@ -29,7 +29,9 @@ func (a *applier) ApplyLayers(imageID string, layerKeys []string) (ftypes.Artifa
 		if blob.SchemaVersion == 0 {
 			return ftypes.ArtifactDetail{}, xerrors.Errorf("layer cache missing: %s", key)
 		}
-		layersMetadata = append(layersMetadata, blob.Layer())
+		if l := blob.Layer(); !l.Empty() {
+			layersMetadata = append(layersMetadata, blob.Layer())
+		}
 		layers = append(layers, blob)
 	}
 
