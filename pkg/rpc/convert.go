@@ -826,6 +826,10 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 		Licenses:          ConvertFromRPCLicenseFiles(req.BlobInfo.Licenses),
+		Digest:            req.BlobInfo.Digest,
+		DiffID:            req.BlobInfo.DiffId,
+		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
+		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
 		LayersMetadata:    ConvertFromRPCLayersMetadata(req.BlobInfo.LayersMetadata),
 	}
 }
