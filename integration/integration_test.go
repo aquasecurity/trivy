@@ -245,7 +245,7 @@ func runTest(t *testing.T, osArgs []string, wantFile, outputFile string, format 
 	if outputFile == "" {
 		// Set up the output file
 		outputFile = filepath.Join(t.TempDir(), "output.json")
-		if *update /*&& opts.override == nil*/ {
+		if *update && opts.override == nil {
 			outputFile = wantFile
 		}
 	}

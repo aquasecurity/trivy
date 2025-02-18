@@ -185,7 +185,7 @@ func (a Artifact) fillLayersMetadata(diffIDs, layerKeys []string, layerSizes map
 	// Parse histories and extract a list of "created_by"
 	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
 
-	// Fill layer uncompressed size
+	// Fill layers uncompressed sizes
 	for layerKey, layerMetadata := range layerKeyMap {
 		layerMetadata.Size = layerSizes[layerMetadata.DiffID]
 		layerKeyMap[layerKey] = layerMetadata
@@ -441,7 +441,6 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo types.LayerMetadat
 		SchemaVersion: types.BlobJSONSchemaVersion,
 
 		// For backward compatibility
-		// TODO do we need that? Looks like it is required only when server uses old format, but client uses new format.
 		Digest:        layerInfo.Digest,
 		DiffID:        layerInfo.DiffID,
 		CreatedBy:     layerInfo.CreatedBy,
