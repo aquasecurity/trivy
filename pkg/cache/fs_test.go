@@ -176,6 +176,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 				diffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				layerInfo: types.BlobInfo{
 					SchemaVersion: 1,
+					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+					OpaqueDirs:    []string{"php-app/"},
+					WhiteoutFiles: []string{"etc/foobar"},
 					LayersMetadata: types.LayersMetadata{
 						{
 							Size:          1000,
