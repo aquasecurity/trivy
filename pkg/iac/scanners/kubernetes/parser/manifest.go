@@ -44,9 +44,9 @@ func ManifestFromJSON(path string, data []byte) (*Manifest, error) {
 	}
 
 	if err := json.Unmarshal(data, root, json.WithUnmarshalers(
-		json.UnmarshalFuncV2(func(dec *jsontext.Decoder, node *ManifestNode, opts json.Options) error {
+		json.UnmarshalFromFunc(func(dec *jsontext.Decoder, node *ManifestNode, opts json.Options) error {
 			startOffset := dec.InputOffset()
-			if err := unmarshalManifestNode(dec, node, opts); err != nil {
+			if err := unmarshalManifestNode(dec, node); err != nil {
 				return err
 			}
 			endOffset := dec.InputOffset()
@@ -65,7 +65,7 @@ func ManifestFromJSON(path string, data []byte) (*Manifest, error) {
 	}, nil
 }
 
-func unmarshalManifestNode(dec *jsontext.Decoder, node *ManifestNode, opts json.Options) error {
+func unmarshalManifestNode(dec *jsontext.Decoder, node *ManifestNode) error {
 	var valPtr any
 	var nodeType TagType
 	switch k := dec.PeekKind(); k {
@@ -90,7 +90,7 @@ func unmarshalManifestNode(dec *jsontext.Decoder, node *ManifestNode, opts json.
 		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())
 	}
 
-	if err := json.UnmarshalDecode(dec, valPtr, opts); err != nil {
+	if err := json.UnmarshalDecode(dec, valPtr); err != nil {
 		return err
 	}
 
