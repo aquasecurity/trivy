@@ -204,7 +204,7 @@ See https://google.com/search?q=bad%20config
 			input: types.Result{
 				Target: "terraform-aws-modules/security-group/aws/main.tf",
 				Class:  types.ClassConfig,
-				Type:   "terraform",
+				Type:   ftypes.Terraform,
 				MisconfSummary: &types.MisconfSummary{
 					Successes: 5,
 					Failures:  1,
@@ -332,6 +332,100 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
  202 │       join(",", var.ingress_cidr_blocks),
  203 └     ),
  ...   
+────────────────────────────────────────
+
+
+`,
+		},
+		{
+			name: "with rendered cause",
+			input: types.Result{
+				Target:         "main.tf",
+				Class:          types.ClassConfig,
+				Type:           ftypes.Terraform,
+				MisconfSummary: &types.MisconfSummary{Failures: 1},
+				Misconfigurations: []types.DetectedMisconfiguration{
+					{
+						Type:        "Terraform Security Check",
+						ID:          "AVD-AWS-0320",
+						AVDID:       "AVD-AWS-0320",
+						Title:       "S3 DNS Compliant Bucket Names",
+						Description: "Ensures that S3 buckets have DNS complaint bucket names.",
+						Message:     "S3 bucket name is not compliant with DNS naming requirements",
+						Namespace:   "builtin.aws.s3.aws0320",
+						Query:       "data.builtin.aws.s3.aws0320.deny",
+						Resolution:  "Recreate S3 bucket to use - instead of . in S3 bucket names",
+						Severity:    "MEDIUM",
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-aws-0320",
+						References: []string{
+							"https://docs.aws.amazon.com/AmazonS3/latest./dev/transfer-acceleration.html",
+							"https://avd.aquasec.com/misconfig/avd-aws-0320",
+						},
+						Status: "FAIL",
+						CauseMetadata: ftypes.CauseMetadata{
+							Resource:  "aws_s3_bucket.this",
+							Provider:  "AWS",
+							Service:   "s3",
+							StartLine: 6,
+							EndLine:   6,
+							Code: ftypes.Code{
+								Lines: []ftypes.Line{
+									{
+										Number:  5,
+										Content: "resource \"aws_s3_bucket\" \"this\" {",
+									},
+									{
+										Number:  6,
+										Content: "    bucket = local.bucket",
+										IsCause: true,
+									},
+									{
+										Number:  7,
+										Content: "}",
+									},
+								},
+							},
+							Occurrences: []ftypes.Occurrence{
+								{
+									Resource: "aws_s3_bucket.this",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 5,
+										EndLine:   7,
+									},
+								},
+							},
+							RenderedCause: ftypes.RenderedCause{
+								Raw: "resource \"aws_s3_bucket\" \"this\" {\n  bucket = \"foo.bar\"\n}",
+							},
+						},
+					},
+				},
+			},
+			want: `
+main.tf (terraform)
+===================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 1 (LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+AVD-AWS-0320 (MEDIUM): S3 bucket name is not compliant with DNS naming requirements
+════════════════════════════════════════
+Ensures that S3 buckets have DNS complaint bucket names.
+
+See https://avd.aquasec.com/misconfig/avd-aws-0320
+────────────────────────────────────────
+ main.tf:6
+   via main.tf:5-7 (aws_s3_bucket.this)
+────────────────────────────────────────
+   5   resource "aws_s3_bucket" "this" {
+   6 │     bucket = local.bucket
+   7   }
+────────────────────────────────────────
+Rendered cause:
+────────────────────────────────────────
+resource "aws_s3_bucket" "this" {
+  bucket = "foo.bar"
+}
 ────────────────────────────────────────
 
 

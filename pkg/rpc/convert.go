@@ -393,6 +393,10 @@ func ConvertToRPCCauseMetadata(cause ftypes.CauseMetadata) *common.CauseMetadata
 		StartLine: int32(cause.StartLine),
 		EndLine:   int32(cause.EndLine),
 		Code:      ConvertToRPCCode(cause.Code),
+		RenderedCause: &common.RenderedCause{
+			Raw:         cause.RenderedCause.Raw,
+			Highlighted: cause.RenderedCause.Highlighted,
+		},
 	}
 }
 
@@ -679,12 +683,23 @@ func ConvertFromRPCCauseMetadata(rpcCause *common.CauseMetadata) ftypes.CauseMet
 		return ftypes.CauseMetadata{}
 	}
 	return ftypes.CauseMetadata{
-		Resource:  rpcCause.Resource,
-		Provider:  rpcCause.Provider,
-		Service:   rpcCause.Service,
-		StartLine: int(rpcCause.StartLine),
-		EndLine:   int(rpcCause.EndLine),
-		Code:      ConvertFromRPCCode(rpcCause.Code),
+		Resource:      rpcCause.Resource,
+		Provider:      rpcCause.Provider,
+		Service:       rpcCause.Service,
+		StartLine:     int(rpcCause.StartLine),
+		EndLine:       int(rpcCause.EndLine),
+		Code:          ConvertFromRPCCode(rpcCause.Code),
+		RenderedCause: ConvertFromRPCRenderedCause(rpcCause.RenderedCause),
+	}
+}
+
+func ConvertFromRPCRenderedCause(rendered *common.RenderedCause) ftypes.RenderedCause {
+	if rendered == nil {
+		return ftypes.RenderedCause{}
+	}
+	return ftypes.RenderedCause{
+		Raw:         rendered.Raw,
+		Highlighted: rendered.Highlighted,
 	}
 }
 
