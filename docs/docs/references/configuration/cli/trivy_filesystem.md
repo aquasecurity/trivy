@@ -84,6 +84,7 @@ trivy filesystem [flags] PATH
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+      --severity-src strings              order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
       --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-check-update                 skip fetching rego check updates
       --skip-db-update                    skip updating vulnerability database
