@@ -290,6 +290,17 @@ func (b *BOM) Root() *Component {
 	return root
 }
 
+func (b *BOM) Component(id uuid.UUID) *Component {
+	c, ok := b.components[id]
+	if !ok {
+		return nil
+	}
+	if b.opts.GenerateBOMRef && c.PkgIdentifier.BOMRef == "" {
+		c.PkgIdentifier.BOMRef = b.bomRef(c)
+	}
+	return c
+}
+
 func (b *BOM) Components() map[uuid.UUID]*Component {
 	// Fill in BOMRefs for components
 	if b.opts.GenerateBOMRef {
