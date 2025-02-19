@@ -125,22 +125,6 @@ $ trivy image -f json -o results.json alpine:latest
 ```
 
 <details>
-<summary>Result</summary>
-
-```
-2024-12-26T22:01:18+05:30	INFO	[vuln] Vulnerability scanning is enabled
-2024-12-26T22:01:18+05:30	INFO	[secret] Secret scanning is enabled
-2024-12-26T22:01:18+05:30	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
-2024-12-26T22:01:18+05:30	INFO	[secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
-2024-12-26T22:01:18+05:30	INFO	Detected OS	family="alpine" version="3.20.3"
-2024-12-26T22:01:18+05:30	INFO	[alpine] Detecting vulnerabilities...	os_version="3.20" repository="3.20" pkg_num=14
-2024-12-26T22:01:18+05:30	INFO	Number of language-specific files	num=0
-2024-12-26T22:01:18+05:30	WARN	Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.58/docs/scanner/vulnerability#severity-selection for details.
-```
-
-</details>
-
-<details>
 <summary>JSON</summary>
 
 ```

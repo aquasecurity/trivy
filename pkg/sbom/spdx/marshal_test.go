@@ -170,7 +170,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "rails:latest",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/container_image/rails:latest-3ff14136-e09f-4df9-80ea-000000000009",
+				DocumentNamespace: "http://trivy.dev/container_image/rails:latest-3ff14136-e09f-4df9-80ea-000000000009",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -492,7 +492,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "centos:latest",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000006",
+				DocumentNamespace: "http://trivy.dev/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000006",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -725,7 +725,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "masahiro331/CVE-2021-41098",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000006",
+				DocumentNamespace: "http://trivy.dev/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000006",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -884,7 +884,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "pom.xml",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/pom.xml-3ff14136-e09f-4df9-80ea-000000000004",
+				DocumentNamespace: "http://trivy.dev/filesystem/pom.xml-3ff14136-e09f-4df9-80ea-000000000004",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -1026,7 +1026,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "log4j-core-2.17.0.jar",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/log4j-core-2.17.0.jar-3ff14136-e09f-4df9-80ea-000000000003",
+				DocumentNamespace: "http://trivy.dev/filesystem/log4j-core-2.17.0.jar-3ff14136-e09f-4df9-80ea-000000000003",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -1128,7 +1128,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "http://test-aggregate",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000003",
+				DocumentNamespace: "http://trivy.dev/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000003",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -1222,7 +1222,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "empty/path",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/empty/path-3ff14136-e09f-4df9-80ea-000000000002",
+				DocumentNamespace: "http://trivy.dev/filesystem/empty/path-3ff14136-e09f-4df9-80ea-000000000002",
 
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
@@ -1285,7 +1285,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "secret",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/secret-3ff14136-e09f-4df9-80ea-000000000002",
+				DocumentNamespace: "http://trivy.dev/filesystem/secret-3ff14136-e09f-4df9-80ea-000000000002",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -1357,7 +1357,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "go-artifact",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/go-artifact-3ff14136-e09f-4df9-80ea-000000000005",
+				DocumentNamespace: "http://trivy.dev/filesystem/go-artifact-3ff14136-e09f-4df9-80ea-000000000005",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{

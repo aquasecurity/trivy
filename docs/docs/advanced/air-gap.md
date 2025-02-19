@@ -10,7 +10,7 @@ External Resource | Feature | Details
 Vulnerability Database | Vulnerability scanning | [Trivy DB](../scanner/vulnerability.md)
 Java Vulnerability Database | Java vulnerability scanning | [Trivy Java DB](../coverage/language/java.md)
 Checks Bundle | Misconfigurations scanning | [Trivy Checks](../scanner/misconfiguration/check/builtin.md)
-VEX Hub | VEX Hub | [VEX Hub](../supply-chain/vex/repo/#vex-hub)
+VEX Hub | VEX Hub | [VEX Hub](../supply-chain/vex/repo.md)
 Maven Central / Remote Repositories | Java vulnerability scanning | [Java Scanner/Remote Repositories](../coverage/language/java.md#remote-repositories)
 
 !!! note

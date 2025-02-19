@@ -30,7 +30,7 @@ import (
 
 const (
 	DocumentSPDXIdentifier = "DOCUMENT"
-	DocumentNamespace      = "http://aquasecurity.github.io/trivy"
+	DocumentNamespace      = "http://trivy.dev"
 	CreatorOrganization    = "aquasecurity"
 	CreatorTool            = "trivy"
 	noneField              = "NONE"
