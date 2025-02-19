@@ -46,6 +46,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					PkgTypes:         []string{"os"},
 					Scanners:         tTypes.Scanners{tTypes.VulnerabilityScanner},
 					PkgRelationships: ftypes.Relationships,
+					SeveritySrc:      []string{"auto"},
 				},
 			},
 			imagePath: "../fanal/test/testdata/alpine-311.tar.gz",
