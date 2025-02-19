@@ -2,7 +2,6 @@ package analyzer_test
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"sync"
 	"testing"
@@ -522,8 +521,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 				DisabledAnalyzers: tt.args.disabledAnalyzers,
 			})
 			if err != nil && tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
@@ -549,8 +547,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 
 			wg.Wait()
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
@@ -688,7 +685,6 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			})
 			require.NoError(t, err)
 			got := a.AnalyzerVersions()
-			fmt.Printf("%v\n", got)
 			assert.Equal(t, tt.want, got)
 		})
 	}

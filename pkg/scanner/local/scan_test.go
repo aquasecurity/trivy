@@ -2,10 +2,10 @@ package local
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -13,7 +13,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/dbtest"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
@@ -31,6 +32,21 @@ var (
 		Layer: ftypes.Layer{
 			DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 		},
+		Identifier: ftypes.PkgIdentifier{
+			UID: "d9a73c7459d27809",
+			PURL: &packageurl.PackageURL{
+				Type:      "apk",
+				Namespace: "alpine",
+				Name:      "musl",
+				Version:   "1.2.3",
+				Qualifiers: packageurl.Qualifiers{
+					packageurl.Qualifier{
+						Key:   "distro",
+						Value: "3.11",
+					},
+				},
+			},
+		},
 	}
 	railsPkg = ftypes.Package{
 		Name:    "rails",
@@ -38,12 +54,28 @@ var (
 		Layer: ftypes.Layer{
 			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 		},
+		Identifier: ftypes.PkgIdentifier{
+			UID: "49be2edc1596dd5d",
+			PURL: &packageurl.PackageURL{
+				Type:    "gem",
+				Name:    "rails",
+				Version: "4.0.2",
+			},
+		},
 	}
 	innocentPkg = ftypes.Package{
 		Name:    "innocent",
 		Version: "1.2.3",
 		Layer: ftypes.Layer{
 			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+		},
+		Identifier: ftypes.PkgIdentifier{
+			UID: "50b49e415e6a2f59",
+			PURL: &packageurl.PackageURL{
+				Type:    "gem",
+				Name:    "innocent",
+				Version: "1.2.3",
+			},
 		},
 	}
 	uuidPkg = ftypes.Package{
@@ -64,15 +96,6 @@ var (
 		},
 		Licenses: []string{"MIT"},
 	}
-	python39min = ftypes.Package{
-		Name:     "python3.9-minimal",
-		Version:  "3.9.1",
-		FilePath: "/usr/lib/python/site-packages/python3.9-minimal/METADATA",
-		Layer: ftypes.Layer{
-			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
-		},
-		Licenses: []string{"text://Redistribution and use in source and binary forms, with or without"},
-	}
 	menuinstPkg = ftypes.Package{
 		Name:     "menuinst",
 		Version:  "2.0.2",
@@ -90,6 +113,15 @@ var (
 		Layer: ftypes.Layer{
 			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 		},
+		Identifier: ftypes.PkgIdentifier{
+			UID: "ba565db6c74968e3",
+			PURL: &packageurl.PackageURL{
+				Type:      "composer",
+				Namespace: "laravel",
+				Name:      "framework",
+				Version:   "6.0.0",
+			},
+		},
 	}
 	guzzlePkg = ftypes.Package{
 		Name:         "guzzlehttp/guzzle",
@@ -97,6 +129,15 @@ var (
 		Relationship: ftypes.RelationshipIndirect,
 		Layer: ftypes.Layer{
 			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+		},
+		Identifier: ftypes.PkgIdentifier{
+			UID: "791b71e6f31e53a5",
+			PURL: &packageurl.PackageURL{
+				Type:      "composer",
+				Namespace: "guzzlehttp",
+				Name:      "guzzle",
+				Version:   "7.9.2",
+			},
 		},
 	}
 )
@@ -108,13 +149,13 @@ func TestScanner_Scan(t *testing.T) {
 		options  types.ScanOptions
 	}
 	tests := []struct {
-		name                   string
-		args                   args
-		fixtures               []string
-		applyLayersExpectation ApplierApplyLayersExpectation
-		wantResults            types.Results
-		wantOS                 ftypes.OS
-		wantErr                string
+		name        string
+		args        args
+		fixtures    []string
+		setupCache  func(t *testing.T) cache.Cache
+		wantResults types.Results
+		wantOS      ftypes.OS
+		wantErr     string
 	}{
 		{
 			name: "happy path",
@@ -132,30 +173,29 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: ftypes.Alpine,
-							Name:   "3.11",
-						},
-						Packages: []ftypes.Package{
-							muslPkg,
-						},
-						Applications: []ftypes.Application{
-							{
-								Type:     ftypes.Bundler,
-								FilePath: "/app/Gemfile.lock",
-								Packages: []ftypes.Package{
-									railsPkg,
-								},
-							},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.11",
+					},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []ftypes.Package{muslPkg},
 						},
 					},
-				},
+					Applications: []ftypes.Application{
+						{
+							Type:     ftypes.Bundler,
+							FilePath: "/app/Gemfile.lock",
+							Packages: []ftypes.Package{railsPkg},
+						},
+					},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -169,6 +209,7 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							VulnerabilityID:  "CVE-2020-9999",
 							PkgName:          muslPkg.Name,
+							PkgIdentifier:    muslPkg.Identifier,
 							InstalledVersion: muslPkg.Version,
 							FixedVersion:     "1.2.4",
 							Status:           dbTypes.StatusFixed,
@@ -195,6 +236,7 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							VulnerabilityID:  "CVE-2014-0081",
 							PkgName:          railsPkg.Name,
+							PkgIdentifier:    railsPkg.Identifier,
 							InstalledVersion: railsPkg.Version,
 							FixedVersion:     "4.0.3, 3.2.17",
 							Status:           dbTypes.StatusFixed,
@@ -242,21 +284,22 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: ftypes.Alpine,
-							Name:   "3.10",
-						},
-						Packages: []ftypes.Package{
-							muslPkg,
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.11",
+					},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []ftypes.Package{muslPkg},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -270,6 +313,7 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							VulnerabilityID:  "CVE-2020-9999",
 							PkgName:          muslPkg.Name,
+							PkgIdentifier:    muslPkg.Identifier,
 							InstalledVersion: muslPkg.Version,
 							FixedVersion:     "1.2.4",
 							Status:           dbTypes.StatusFixed,
@@ -303,39 +347,41 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: ftypes.Alpine,
-							Name:   "3.11",
-						},
-						Packages: []ftypes.Package{
-							muslPkg,
-							python39min,
-						},
-						Applications: []ftypes.Application{
-							{
-								Type:     ftypes.GoModule,
-								FilePath: "/app/go.mod",
-								Packages: []ftypes.Package{
-									uuidPkg,
-								},
-							},
-							{
-								Type:     ftypes.PythonPkg,
-								FilePath: "",
-								Packages: []ftypes.Package{
-									urllib3Pkg,
-									menuinstPkg,
-								},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.11",
+					},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []ftypes.Package{
+								muslPkg,
 							},
 						},
 					},
-				},
+					Applications: []ftypes.Application{
+						{
+							Type:     ftypes.GoModule,
+							FilePath: "/app/go.mod",
+							Packages: []ftypes.Package{
+								uuidPkg,
+							},
+						},
+						{
+							Type:     ftypes.PythonPkg,
+							FilePath: "",
+							Packages: []ftypes.Package{
+								urllib3Pkg,
+								menuinstPkg,
+							},
+						},
+					},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -347,14 +393,6 @@ func TestScanner_Scan(t *testing.T) {
 							Category:   "unknown",
 							PkgName:    muslPkg.Name,
 							Name:       "MIT",
-							Confidence: 1,
-						},
-						{
-							Severity:   "UNKNOWN",
-							Category:   "unknown",
-							PkgName:    python39min.Name,
-							Name:       "CUSTOM License: Redistribution and use...",
-							Text:       "Redistribution and use in source and binary forms, with or without",
 							Confidence: 1,
 						},
 					},
@@ -424,31 +462,28 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{},
-						Applications: []ftypes.Application{
-							{
-								Type:     ftypes.Bundler,
-								FilePath: "/app1/Gemfile.lock",
-								Packages: []ftypes.Package{
-									innocentPkg, // no vulnerability
-								},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Applications: []ftypes.Application{
+						{
+							Type:     ftypes.Bundler,
+							FilePath: "/app1/Gemfile.lock",
+							Packages: []ftypes.Package{
+								innocentPkg, // no vulnerability
 							},
-							{
-								Type:     ftypes.Bundler,
-								FilePath: "/app2/Gemfile.lock",
-								Packages: []ftypes.Package{
-									railsPkg, // one vulnerability
-								},
+						},
+						{
+							Type:     ftypes.Bundler,
+							FilePath: "/app2/Gemfile.lock",
+							Packages: []ftypes.Package{
+								railsPkg, // one vulnerability
 							},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -470,6 +505,7 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							VulnerabilityID:  "CVE-2014-0081",
 							PkgName:          railsPkg.Name,
+							PkgIdentifier:    railsPkg.Identifier,
 							InstalledVersion: railsPkg.Version,
 							FixedVersion:     "4.0.3, 3.2.17",
 							Status:           dbTypes.StatusFixed,
@@ -494,7 +530,7 @@ func TestScanner_Scan(t *testing.T) {
 			wantOS: ftypes.OS{},
 		},
 		{
-			name: "happy path. Empty filePaths (e.g. Scanned SBOM)",
+			name: "happy path, empty file paths (e.g. Scanned SBOM)",
 			args: args{
 				target:   "./result.cdx",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -506,36 +542,28 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						Applications: []ftypes.Application{
-							{
-								Type:     "bundler",
-								FilePath: "",
-								Packages: []ftypes.Package{
-									{
-										Name:    "rails",
-										Version: "4.0.2",
-									},
-								},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Applications: []ftypes.Application{
+						{
+							Type:     ftypes.Bundler,
+							FilePath: "",
+							Packages: []ftypes.Package{
+								railsPkg,
 							},
-							{
-								Type:     "composer",
-								FilePath: "",
-								Packages: []ftypes.Package{
-									{
-										Name:    "laravel/framework",
-										Version: "6.0.0",
-									},
-								},
+						},
+						{
+							Type:     ftypes.Composer,
+							FilePath: "",
+							Packages: []ftypes.Package{
+								laravelPkg,
 							},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -544,18 +572,26 @@ func TestScanner_Scan(t *testing.T) {
 					Type:   ftypes.Bundler,
 					Packages: []ftypes.Package{
 						{
-							Name:    "rails",
-							Version: "4.0.2",
+							Name:       railsPkg.Name,
+							Version:    railsPkg.Version,
+							Identifier: railsPkg.Identifier,
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
 						},
 					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2014-0081",
-							PkgName:          "rails",
-							InstalledVersion: "4.0.2",
+							PkgName:          railsPkg.Name,
+							PkgIdentifier:    railsPkg.Identifier,
+							InstalledVersion: railsPkg.Version,
 							FixedVersion:     "4.0.3, 3.2.17",
 							Status:           dbTypes.StatusFixed,
-							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2014-0081",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
+							PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "xss",
 								Description: "xss vulnerability",
@@ -575,17 +611,26 @@ func TestScanner_Scan(t *testing.T) {
 					Type:   ftypes.Composer,
 					Packages: []ftypes.Package{
 						{
-							Name:    "laravel/framework",
-							Version: "6.0.0",
+							Name:         laravelPkg.Name,
+							Version:      laravelPkg.Version,
+							Identifier:   laravelPkg.Identifier,
+							Relationship: ftypes.RelationshipDirect,
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
 						},
 					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2021-21263",
-							PkgName:          "laravel/framework",
-							InstalledVersion: "6.0.0",
+							PkgName:          laravelPkg.Name,
+							PkgIdentifier:    laravelPkg.Identifier,
+							InstalledVersion: laravelPkg.Version,
 							FixedVersion:     "8.22.1, 7.30.3, 6.20.12",
 							Status:           dbTypes.StatusFixed,
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
 						},
 					},
 				},
@@ -607,28 +652,25 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: "alpine",
-							Name:   "3.11",
-						},
-						Applications: []ftypes.Application{
-							{
-								Type:     "bundler",
-								FilePath: "/app/Gemfile.lock",
-								Packages: []ftypes.Package{
-									railsPkg,
-								},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: "alpine",
+						Name:   "3.11",
+					},
+					Applications: []ftypes.Application{
+						{
+							Type:     "bundler",
+							FilePath: "/app/Gemfile.lock",
+							Packages: []ftypes.Package{
+								railsPkg,
 							},
 						},
 					},
-					Err: analyzer.ErrNoPkgsDetected,
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -647,7 +689,8 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							VulnerabilityID:  "CVE-2014-0081",
 							PkgName:          "rails",
-							InstalledVersion: "4.0.2",
+							PkgIdentifier:    railsPkg.Identifier,
+							InstalledVersion: railsPkg.Version,
 							FixedVersion:     "4.0.3, 3.2.17",
 							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
@@ -690,27 +733,25 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: "fedora",
-							Name:   "27",
-						},
-						Applications: []ftypes.Application{
-							{
-								Type:     ftypes.Bundler,
-								FilePath: "/app/Gemfile.lock",
-								Packages: []ftypes.Package{
-									railsPkg,
-								},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: "fedora",
+						Name:   "27",
+					},
+					Applications: []ftypes.Application{
+						{
+							Type:     ftypes.Bundler,
+							FilePath: "/app/Gemfile.lock",
+							Packages: []ftypes.Package{
+								railsPkg,
 							},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -722,6 +763,7 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							VulnerabilityID:  "CVE-2014-0081",
 							PkgName:          railsPkg.Name,
+							PkgIdentifier:    railsPkg.Identifier,
 							InstalledVersion: railsPkg.Version,
 							FixedVersion:     "4.0.3, 3.2.17",
 							Status:           dbTypes.StatusFixed,
@@ -763,13 +805,13 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Err: analyzer.ErrUnknownOS,
-				},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS:            ftypes.OS{},
+				}))
+				return c
 			},
 			wantResults: nil,
 		},
@@ -790,38 +832,39 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: "alpine",
-							Name:   "3.11",
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: "alpine",
+						Name:   "3.11",
+					},
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []ftypes.Package{muslPkg},
 						},
-						Packages: []ftypes.Package{
-							muslPkg,
-						},
-						Applications: []ftypes.Application{
-							{
-								Type:     "bundler",
-								FilePath: "/app/Gemfile.lock",
-								Packages: []ftypes.Package{
-									railsPkg,
-								},
+					},
+					Applications: []ftypes.Application{
+						{
+							Type:     "bundler",
+							FilePath: "/app/Gemfile.lock",
+							Packages: []ftypes.Package{
+								railsPkg,
 							},
-							{
-								Type:     "composer",
-								FilePath: "/app/composer-lock.json",
-								Packages: []ftypes.Package{
-									laravelPkg, // will be excluded
-									guzzlePkg,
-								},
+						},
+						{
+							Type:     "composer",
+							FilePath: "/app/composer-lock.json",
+							Packages: []ftypes.Package{
+								laravelPkg, // will be excluded
+								guzzlePkg,
 							},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -833,6 +876,7 @@ func TestScanner_Scan(t *testing.T) {
 						{
 							VulnerabilityID:  "CVE-2014-0081",
 							PkgName:          railsPkg.Name,
+							PkgIdentifier:    railsPkg.Identifier,
 							InstalledVersion: railsPkg.Version,
 							FixedVersion:     "4.0.3, 3.2.17",
 							Status:           dbTypes.StatusFixed,
@@ -875,64 +919,61 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						Misconfigurations: []ftypes.Misconfiguration{
-							{
-								FileType: ftypes.Kubernetes,
-								FilePath: "/app/configs/pod.yaml",
-								Warnings: []ftypes.MisconfResult{
-									{
-										Namespace: "main.kubernetes.id300",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID300",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "DUMMY",
-										},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					DiffID:        "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+					OS: ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.11",
+					},
+					Misconfigurations: []ftypes.Misconfiguration{
+						{
+							FileType: ftypes.Kubernetes,
+							FilePath: "/app/configs/pod.yaml",
+							Warnings: []ftypes.MisconfResult{
+								{
+									Namespace: "main.kubernetes.id300",
+									PolicyMetadata: ftypes.PolicyMetadata{
+										ID:       "ID300",
+										Type:     "Kubernetes Security Check",
+										Title:    "Bad Deployment",
+										Severity: "DUMMY",
 									},
-								},
-								Layer: ftypes.Layer{
-									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 								},
 							},
-							{
-								FileType: ftypes.Kubernetes,
-								FilePath: "/app/configs/deployment.yaml",
-								Successes: []ftypes.MisconfResult{
-									{
-										Namespace: "builtin.kubernetes.id200",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID200",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "MEDIUM",
-										},
+						},
+						{
+							FileType: ftypes.Kubernetes,
+							FilePath: "/app/configs/deployment.yaml",
+							Successes: []ftypes.MisconfResult{
+								{
+									Namespace: "builtin.kubernetes.id200",
+									PolicyMetadata: ftypes.PolicyMetadata{
+										ID:       "ID200",
+										Type:     "Kubernetes Security Check",
+										Title:    "Bad Deployment",
+										Severity: "MEDIUM",
 									},
 								},
-								Failures: ftypes.MisconfResults{
-									{
-										Namespace: "main.kubernetes.id100",
-										Message:   "something bad",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID100",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "HIGH",
-										},
+							},
+							Failures: ftypes.MisconfResults{
+								{
+									Namespace: "main.kubernetes.id100",
+									Message:   "something bad",
+									PolicyMetadata: ftypes.PolicyMetadata{
+										ID:       "ID100",
+										Type:     "Kubernetes Security Check",
+										Title:    "Bad Deployment",
+										Severity: "HIGH",
 									},
-								},
-								Layer: ftypes.Layer{
-									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 								},
 							},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -951,6 +992,11 @@ func TestScanner_Scan(t *testing.T) {
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
+							CauseMetadata: ftypes.CauseMetadata{
+								Provider: "",
+								Service:  "",
+								Code:     ftypes.Code{},
+							},
 						},
 						{
 							Type:       "Kubernetes Security Check",
@@ -966,6 +1012,11 @@ func TestScanner_Scan(t *testing.T) {
 							Status: types.MisconfStatusPassed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+							},
+							CauseMetadata: ftypes.CauseMetadata{
+								Provider: "",
+								Service:  "",
+								Code:     ftypes.Code{},
 							},
 						},
 					},
@@ -990,6 +1041,11 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
+			wantOS: ftypes.OS{
+				Family: "alpine",
+				Name:   "3.11",
+				Eosl:   false,
+			},
 		},
 		{
 			name: "sad path: ApplyLayers returns an error",
@@ -1006,13 +1062,12 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Err: errors.New("error"),
-				},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: 0,
+				}))
+				return c
 			},
 			wantErr: "failed to apply layers",
 		},
@@ -1028,42 +1083,31 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/sad.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: "alpine",
-							Name:   "3.11",
-						},
-						Packages: []ftypes.Package{
-							{
-								Name:    "musl",
-								Version: "1.2.3",
-								Layer: ftypes.Layer{
-									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
-								},
-							},
-						},
-						Applications: []ftypes.Application{
-							{
-								Type:     "bundler",
-								FilePath: "/app/Gemfile.lock",
-								Packages: []ftypes.Package{
-									{
-										Name:    "rails",
-										Version: "6.0",
-										Layer: ftypes.Layer{
-											DiffID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
-										},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: "alpine",
+						Name:   "3.11",
+					},
+					Applications: []ftypes.Application{
+						{
+							Type:     ftypes.Bundler,
+							FilePath: "/app/Gemfile.lock",
+							Packages: []ftypes.Package{
+								{
+									Name:    "rails",
+									Version: "6.0",
+									Layer: ftypes.Layer{
+										DiffID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
 									},
 								},
 							},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantErr: "failed to scan application libraries",
 		},
@@ -1077,66 +1121,64 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: ftypes.OS{
-							Family: ftypes.Alpine,
-							Name:   "3.11",
-						},
-						Misconfigurations: []ftypes.Misconfiguration{
-							{
-								FileType: ftypes.Dockerfile,
-								FilePath: "Dockerfile",
-								Successes: ftypes.MisconfResults{
-									{
-										Namespace: "builtin.dockerfile.DS001",
-										Query:     "data.builtin.dockerfile.DS001.deny",
-										Message:   "",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:                 "DS001",
-											AVDID:              "AVD-DS-0001",
-											Type:               "Dockerfile Security Check",
-											Title:              "':latest' tag used",
-											Description:        "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Add a tag to the image in the 'FROM' statement",
-										},
-										CauseMetadata: ftypes.CauseMetadata{
-											Provider: "Dockerfile",
-											Service:  "general",
-											Code:     ftypes.Code{},
-										},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob("sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					OS: ftypes.OS{
+						Family: ftypes.Alpine,
+						Name:   "3.11",
+					},
+					Misconfigurations: []ftypes.Misconfiguration{
+						{
+							FileType: ftypes.Dockerfile,
+							FilePath: "Dockerfile",
+							Successes: ftypes.MisconfResults{
+								{
+									Namespace: "builtin.dockerfile.DS001",
+									Query:     "data.builtin.dockerfile.DS001.deny",
+									Message:   "",
+									PolicyMetadata: ftypes.PolicyMetadata{
+										ID:                 "DS001",
+										AVDID:              "AVD-DS-0001",
+										Type:               "Dockerfile Security Check",
+										Title:              "':latest' tag used",
+										Description:        "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
+										Severity:           "MEDIUM",
+										RecommendedActions: "Add a tag to the image in the 'FROM' statement",
+									},
+									CauseMetadata: ftypes.CauseMetadata{
+										Provider: "Dockerfile",
+										Service:  "general",
+										Code:     ftypes.Code{},
 									},
 								},
-								Failures: ftypes.MisconfResults{
-									{
-										Namespace: "builtin.dockerfile.DS002",
-										Query:     "data.builtin.dockerfile.DS002.deny",
-										Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:                 "DS002",
-											AVDID:              "AVD-DS-0002",
-											Type:               "Dockerfile Security Check",
-											Title:              "Image user should not be 'root'",
-											Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
-											Severity:           "HIGH",
-											RecommendedActions: "Add 'USER <non root user name>' line to the Dockerfile",
-										},
-										CauseMetadata: ftypes.CauseMetadata{
-											Provider: "Dockerfile",
-											Service:  "general",
-											Code:     ftypes.Code{},
-										},
+							},
+							Failures: ftypes.MisconfResults{
+								{
+									Namespace: "builtin.dockerfile.DS002",
+									Query:     "data.builtin.dockerfile.DS002.deny",
+									Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
+									PolicyMetadata: ftypes.PolicyMetadata{
+										ID:                 "DS002",
+										AVDID:              "AVD-DS-0002",
+										Type:               "Dockerfile Security Check",
+										Title:              "Image user should not be 'root'",
+										Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+										Severity:           "HIGH",
+										RecommendedActions: "Add 'USER <non root user name>' line to the Dockerfile",
+									},
+									CauseMetadata: ftypes.CauseMetadata{
+										Provider: "Dockerfile",
+										Service:  "general",
+										Code:     ftypes.Code{},
 									},
 								},
 							},
 						},
 					},
-				},
+				}))
+				return c
 			},
 			wantResults: types.Results{
 				{
@@ -1200,10 +1242,10 @@ func TestScanner_Scan(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			applier := new(MockApplier)
-			applier.ApplyApplyLayersExpectation(tt.applyLayersExpectation)
+			c := tt.setupCache(t)
+			a := applier.NewApplier(c)
+			s := NewScanner(a, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 
-			s := NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
@@ -1213,8 +1255,6 @@ func TestScanner_Scan(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.wantResults, gotResults)
 			assert.Equal(t, tt.wantOS, gotOS)
-
-			applier.AssertExpectations(t)
 		})
 	}
 }

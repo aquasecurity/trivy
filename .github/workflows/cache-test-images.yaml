@@ -19,7 +19,7 @@ jobs:
           cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.1
         with:
           aqua_version: v1.25.0
 
@@ -60,7 +60,7 @@ jobs:
           cache: false
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.1
         with:
           aqua_version: v1.25.0
 

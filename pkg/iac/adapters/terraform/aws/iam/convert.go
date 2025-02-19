@@ -3,8 +3,7 @@ package iam
 import (
 	"strings"
 
-	"github.com/liamg/iamgo"
-
+	"github.com/aquasecurity/iamgo"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"

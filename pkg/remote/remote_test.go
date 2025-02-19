@@ -94,6 +94,81 @@ func TestGet(t *testing.T) {
 			},
 		},
 		{
+			name: "mirror",
+			args: args{
+				imageName: "foo.bar.io/library/alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"foo.bar.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "mirror for dockerhub",
+			args: args{
+				imageName: "alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"index.docker.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "non-existent mirror image - use image from host",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							"wrong.repository",
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "wrong mirror",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							"wrong.repository:tag@digest",
+						},
+					},
+					Insecure: true,
+				},
+			},
+			wantErr: "could not parse reference: wrong.repository:tag@digest/library/alpine:3.10",
+		},
+		{
 			name: "multiple credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
@@ -181,6 +256,28 @@ func TestGet(t *testing.T) {
 				},
 			},
 			wantErr: "invalid username/password",
+		},
+		{
+			name: "bad credential for multiple mirrors",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "foo",
+							Password: "bar",
+						},
+					},
+					Insecure: true,
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							serverAddr,
+							serverAddr,
+						},
+					},
+				},
+			},
+			wantErr: "6 errors occurred:", // 2 errors for each repository (for 2 mirrors and the original repository)
 		},
 		{
 			name: "bad keychain",

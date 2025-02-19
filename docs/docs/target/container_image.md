@@ -144,7 +144,7 @@ See https://avd.aquasec.com/misconfig/ds005
 
 LOW: Add HEALTHCHECK instruction in your Dockerfile
 ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-You shoud add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.
+You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.
 
 See https://avd.aquasec.com/misconfig/ds026
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -463,6 +463,12 @@ trivy image --compliance docker-cis-1.6.0 [YOUR_IMAGE_NAME]
 ## Authentication
 Please reference [this page](../advanced/private-registries/index.md).
 
+## Scan Cache
+When scanning container images, it stores analysis results in the cache, using the image ID and the layer IDs as the key.
+This approach enables faster scans of the same container image or different images that share layers.
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
+
 ## Options
 ### Scan Image on a specific Architecture and OS
 By default, Trivy loads an image on a "linux/amd64" machine.
@@ -518,3 +524,30 @@ You can configure Podman daemon socket with `--podman-host`.
 ```shell
 $ trivy image --podman-host /run/user/1000/podman/podman.sock YOUR_IMAGE
 ```
+
+### Prevent scanning oversized container images
+Use the `--max-image-size` flag to avoid scanning images that exceed a specified size. The size is specified in a human-readable format[^1] (e.g., `100MB`, `10GB`).
+
+An error is returned in the following cases:
+
+- if the compressed image size exceeds the limit,
+- if the accumulated size of the uncompressed layers exceeds the limit during their pulling.
+
+The layers are pulled into a temporary folder during their pulling and are always cleaned up, even after a successful scan.
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+
+Example Usage:
+```bash
+# Limit uncompressed image size to 10GB
+$ trivy image --max-image-size=10GB myapp:latest
+```
+
+Error Output:
+```bash
+Error: uncompressed image size (15GB) exceeds maximum allowed size (10GB)
+```
+
+[^1]: Trivy uses decimal (SI) prefixes (based on 1000) for size.

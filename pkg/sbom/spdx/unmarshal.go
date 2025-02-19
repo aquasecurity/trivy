@@ -53,9 +53,6 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 	if s.BOM == nil {
 		s.BOM = core.NewBOM(core.Options{})
 	}
-	if s.pkgFilePaths == nil {
-		s.pkgFilePaths = make(map[common.ElementID]string)
-	}
 
 	spdxDocument, err := json.Read(bytes.NewReader(b))
 	if err != nil {
@@ -70,6 +67,10 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 
 func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	s.trivySBOM = s.isTrivySBOM(spdxDocument)
+
+	if s.pkgFilePaths == nil {
+		s.pkgFilePaths = make(map[common.ElementID]string)
+	}
 
 	// Parse files and find file paths for packages
 	s.parseFiles(spdxDocument)

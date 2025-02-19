@@ -91,3 +91,13 @@ $ trivy fs --scanners license /path/to/project
 ## SBOM generation
 Trivy can generate SBOM for local projects.
 See [here](../supply-chain/sbom.md) for the detail.
+
+## Scan Cache
+When scanning local projects, it doesn't use the cache by default.
+However, when the local project is a git repository with clean status and the cache backend other than the memory one is enabled, it stores analysis results, using the latest commit hash as the key.
+
+```shell
+$ trivy fs --cache-backend fs /path/to/git/repo
+```
+
+More details are available in the [cache documentation](../configuration/cache.md#scan-cache-backend).
