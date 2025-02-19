@@ -190,7 +190,7 @@ func (b BlobInfo) Layer() LayerMetadata {
 			OpaqueDirs:    b.OpaqueDirs,
 			WhiteoutFiles: b.WhiteoutFiles,
 		}
-		if layerMetadata.Empty() {
+		if !layerMetadata.Empty() {
 			oldBlobInfoFormatWarn()
 		}
 		return layerMetadata
