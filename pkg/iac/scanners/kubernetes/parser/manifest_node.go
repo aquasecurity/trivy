@@ -49,7 +49,7 @@ func (r *ManifestNode) ToRego() any {
 		return t.Format(time.RFC3339)
 	case TagSlice:
 		var output []any
-		for _, node := range r.Value.([]ManifestNode) {
+		for _, node := range r.Value.([]*ManifestNode) {
 			output = append(output, node.ToRego())
 		}
 		return output
@@ -61,7 +61,7 @@ func (r *ManifestNode) ToRego() any {
 			"filepath":  r.Path,
 			"offset":    r.Offset,
 		}
-		for key, node := range r.Value.(map[string]ManifestNode) {
+		for key, node := range r.Value.(map[string]*ManifestNode) {
 			output[key] = node.ToRego()
 		}
 		return output
@@ -122,7 +122,7 @@ func (r *ManifestNode) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func (r *ManifestNode) handleSliceTag(node *yaml.Node) error {
-	var nodes []ManifestNode
+	var nodes []*ManifestNode
 	maxLine := node.Line
 	for _, contentNode := range node.Content {
 		newNode := new(ManifestNode)
@@ -133,7 +133,7 @@ func (r *ManifestNode) handleSliceTag(node *yaml.Node) error {
 		if newNode.EndLine > maxLine {
 			maxLine = newNode.EndLine
 		}
-		nodes = append(nodes, *newNode)
+		nodes = append(nodes, newNode)
 	}
 	r.EndLine = maxLine
 	r.Value = nodes
@@ -141,7 +141,7 @@ func (r *ManifestNode) handleSliceTag(node *yaml.Node) error {
 }
 
 func (r *ManifestNode) handleMapTag(node *yaml.Node) error {
-	output := make(map[string]ManifestNode)
+	output := make(map[string]*ManifestNode)
 	var key string
 	maxLine := node.Line
 	for i, contentNode := range node.Content {
@@ -153,7 +153,7 @@ func (r *ManifestNode) handleMapTag(node *yaml.Node) error {
 			if err := contentNode.Decode(newNode); err != nil {
 				return err
 			}
-			output[key] = *newNode
+			output[key] = newNode
 			if newNode.EndLine > maxLine {
 				maxLine = newNode.EndLine
 			}

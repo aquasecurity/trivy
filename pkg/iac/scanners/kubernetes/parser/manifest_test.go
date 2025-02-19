@@ -10,6 +10,79 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 )
 
+func TestJsonManifestToRego(t *testing.T) {
+	content := `{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "hello-cpu-limit"
+  },
+  "spec": {
+    "containers": [
+      {
+        "command": [
+          "sh",
+          "-c",
+          "echo 'Hello' && sleep 1h"
+        ],
+        "image": "busybox",
+        "name": "hello"
+      }
+    ]
+  }
+}`
+
+	const filePath = "pod.json"
+	manifest, err := parser.ManifestFromJSON(filePath, []byte(content))
+	require.NoError(t, err)
+
+	expected := map[string]any{
+		"__defsec_metadata": map[string]any{
+			"filepath":  filePath,
+			"offset":    0,
+			"startline": 1,
+			"endline":   20,
+		},
+		"apiVersion": "v1",
+		"kind":       "Pod",
+		"metadata": map[string]any{
+			"__defsec_metadata": map[string]any{
+				"filepath":  filePath,
+				"offset":    0,
+				"startline": 4,
+				"endline":   6,
+			},
+			"name": "hello-cpu-limit",
+		},
+		"spec": map[string]any{
+			"__defsec_metadata": map[string]any{
+				"filepath":  filePath,
+				"offset":    0,
+				"startline": 7,
+				"endline":   19,
+			},
+			"containers": []any{
+				map[string]any{
+					"__defsec_metadata": map[string]any{
+						"filepath":  filePath,
+						"offset":    0,
+						"startline": 8,
+						"endline":   17,
+					},
+					"command": []any{
+						"sh",
+						"-c",
+						"echo 'Hello' && sleep 1h",
+					},
+					"image": "busybox",
+					"name":  "hello",
+				},
+			},
+		},
+	}
+	assert.Equal(t, expected, manifest.ToRego())
+}
+
 func TestManifestToRego(t *testing.T) {
 	tests := []struct {
 		name     string
