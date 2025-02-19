@@ -21,7 +21,7 @@ message ArtifactInfo {
   string                    docker_version = 4;
   string                    os             = 5;
   repeated common.Package history_packages = 6;
-  common.Secret secret                     = 7;
+  common.Secret           secret           = 7;
 }
 
 message PutArtifactRequest {

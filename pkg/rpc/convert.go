@@ -146,10 +146,7 @@ func ConvertToRPCCode(code ftypes.Code) *common.Code {
 func ConvertToRPCSecrets(secrets []ftypes.Secret) []*common.Secret {
 	var rpcSecrets []*common.Secret
 	for _, s := range secrets {
-		rpcSecrets = append(rpcSecrets, &common.Secret{
-			Filepath: s.FilePath,
-			Findings: ConvertToRPCSecretFindings(s.Findings),
-		})
+		rpcSecrets = append(rpcSecrets, ConvertToRPCSecret(&s))
 	}
 	return rpcSecrets
 }
@@ -525,11 +522,8 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 
 func ConvertFromRPCSecrets(recSecrets []*common.Secret) []ftypes.Secret {
 	var secrets []ftypes.Secret
-	for _, secret := range recSecrets {
-		secrets = append(secrets, ftypes.Secret{
-			FilePath: secret.Filepath,
-			Findings: ConvertFromRPCSecretFindings(secret.Findings),
-		})
+	for _, recSecret := range recSecrets {
+		secrets = append(secrets, *ConvertFromRPCSecret(recSecret))
 	}
 	return secrets
 }
@@ -1029,7 +1023,7 @@ func ConvertFromRPCSecret(rpcSecret *common.Secret) *ftypes.Secret {
 	}
 }
 
-// ConvertFromRPCSecret converts fanal.Secret to common.Secret
+// ConvertToRPCSecret converts fanal.Secret to common.Secret
 func ConvertToRPCSecret(secret *ftypes.Secret) *common.Secret {
 	if secret == nil {
 		return nil
