@@ -1,6 +1,6 @@
 # METADATA
 # schemas:
-# - input: schema["input"]
+# - input: schema["dockerfile"]
 package defsec.test_invalid
 
 deny {
