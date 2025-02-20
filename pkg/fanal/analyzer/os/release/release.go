@@ -70,6 +70,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			family = types.Azure
 		case "mariner":
 			family = types.CBLMariner
+		case "mageia":
+			family = types.Mageia
 		}
 
 		if family != "" && versionID != "" {
