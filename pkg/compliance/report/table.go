@@ -29,10 +29,10 @@ const (
 func (tw TableWriter) Write(ctx context.Context, report *ComplianceReport) error {
 	switch tw.Report {
 	case allReport:
-		t := pkgReport.Writer{
+		t := pkgReport.NewWriter(pkgReport.Options{
 			Output:     tw.Output,
 			Severities: tw.Severities,
-		}
+		})
 		for _, cr := range report.Results {
 			r := types.Report{Results: cr.Results}
 			err := t.Write(ctx, r)

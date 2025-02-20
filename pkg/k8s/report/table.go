@@ -51,10 +51,10 @@ func InfraColumns() []string {
 func (tw TableWriter) Write(ctx context.Context, report Report) error {
 	switch tw.Report {
 	case AllReport:
-		t := pkgReport.Writer{
+		t := pkgReport.NewWriter(pkgReport.Options{
 			Output:     tw.Output,
 			Severities: tw.Severities,
-		}
+		})
 		for i, r := range report.Resources {
 			if r.Report.Results.Failed() {
 				updateTargetContext(&report.Resources[i])
