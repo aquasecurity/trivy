@@ -94,6 +94,52 @@ linters-settings:
     strconcat: false
   revive:
     ignore-generated-header: true
+    min-confidence: 0.8
+    rules:
+      - name: blank-imports
+        disabled: true
+      - name: context-as-argument
+        disabled: true
+        arguments:
+          - allowTypesBefore: "*testing.T"
+      - name: context-keys-type
+      - name: dot-imports
+      - name: early-return
+        disabled: true
+        arguments:
+          - "preserveScope"
+      - name: empty-block
+        disabled: true
+      - name: error-naming
+        disabled: true
+      - name: error-return
+      - name: error-strings
+      - name: errorf
+      - name: increment-decrement
+        disabled: true
+      - name: indent-error-flow
+        disabled: true
+        arguments:
+          - "preserveScope"
+      - name: range
+      - name: receiver-naming
+        disabled: true
+      - name: redefines-builtin-id
+      - name: superfluous-else
+        disabled: true
+        arguments:
+          - "preserveScope"
+      - name: time-naming
+      - name: unexported-return
+        disabled: true
+      - name: unreachable-code
+      - name: unused-parameter
+        disabled: true
+      - name: use-any
+      - name: var-declaration
+        disabled: true
+      - name: var-naming
+        disabled: true
   testifylint:
     enable-all: true
 linters:
