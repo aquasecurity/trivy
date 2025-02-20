@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -31,12 +32,16 @@ func init() {
 }
 
 type dpkgAnalyzer struct {
-	logger *log.Logger
+	logger                    *log.Logger
+	licenseFull               bool
+	classifierConfidenceLevel float64
 }
 
-func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newDpkgAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &dpkgAnalyzer{
-		logger: log.WithPrefix("dpkg"),
+		logger:                    log.WithPrefix("dpkg"),
+		licenseFull:               opt.LicenseScannerOption.Full,
+		classifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
 	}, nil
 }
 
@@ -106,9 +111,42 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		}
 	}
 
+	dpkgAnalizer := dpkgLicenseAnalyzer{
+		classifierConfidenceLevel: a.classifierConfidenceLevel,
+		licenseFull:               a.licenseFull,
+	}
+
+	// This code fix empty licenses for filesystem scan
+	// as both archive/tar and filepath.WalkDir skip symlinks
+	// As we know exact file path /usr/share/doc/{pkg.Name}/copyright
+	// we can read symlinks safe if we have a single filesystem layer and have access to it
+	var licenses []types.LicenseFile
+	if input.LocalFS != nil {
+		for _, pkgInfo := range packageInfos {
+			for _, pkg := range pkgInfo.Packages {
+				copyrightPath := filepath.Join("usr/share/doc", pkg.Name, "copyright")
+				f, err := (*input.LocalFS).Open(copyrightPath)
+				if err != nil {
+					continue
+				}
+				defer f.Close()
+				rr, err := xio.NewReadSeekerAt(f)
+				if err != nil {
+					continue
+				}
+				license, err := dpkgAnalizer.AnalyzeCopyright(rr, copyrightPath)
+				if err != nil || license == nil {
+					continue
+				}
+				licenses = append(licenses, *license)
+			}
+		}
+	}
+
 	return &analyzer.AnalysisResult{
 		PackageInfos:         packageInfos,
 		SystemInstalledFiles: systemInstalledFiles,
+		Licenses:             licenses,
 	}, nil
 
 }

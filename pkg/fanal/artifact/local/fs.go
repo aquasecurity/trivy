@@ -200,8 +200,9 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	// Wait for all the goroutine to finish.
 	wg.Wait()
 
+	localFS := os.DirFS(a.rootPath)
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, &localFS, composite, result, opts); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 

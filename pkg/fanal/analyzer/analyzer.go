@@ -143,6 +143,7 @@ type AnalysisInput struct {
 
 type PostAnalysisInput struct {
 	FS      fs.FS
+	LocalFS *fs.FS
 	Options AnalysisOptions
 }
 
@@ -472,7 +473,7 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // and passes it to the respective post-analyzer.
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
-func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult, opts AnalysisOptions) error {
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, localFS *fs.FS, compositeFS *CompositeFS, result *AnalysisResult, opts AnalysisOptions) error {
 	for _, a := range ag.postAnalyzers {
 		fsys, ok := compositeFS.Get(a.Type())
 		if !ok {
@@ -504,6 +505,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 
 		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
 			FS:      filteredFS,
+			LocalFS: localFS,
 			Options: opts,
 		})
 		if err != nil {
