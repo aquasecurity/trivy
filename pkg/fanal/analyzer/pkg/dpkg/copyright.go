@@ -37,18 +37,35 @@ type dpkgLicenseAnalyzer struct {
 
 // Analyze parses /usr/share/doc/*/copyright files
 func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	findings, err := a.parseCopyright(input.Content)
+
+	licenses, err := a.AnalyzeCopyright(input.Content, input.FilePath)
 	if err != nil {
-		return nil, xerrors.Errorf("parse copyright %s: %w", input.FilePath, err)
+		return nil, err
+	}
+	if licenses == nil {
+		return nil, nil
+	}
+
+	return &analyzer.AnalysisResult{
+		Licenses: []types.LicenseFile{
+			*licenses,
+		},
+	}, nil
+}
+
+func (a *dpkgLicenseAnalyzer) AnalyzeCopyright(content xio.ReadSeekerAt, filePath string) (*types.LicenseFile, error) {
+	findings, err := a.parseCopyright(content)
+	if err != nil {
+		return nil, xerrors.Errorf("parse copyright %s: %w", filePath, err)
 	}
 
 	// If licenses are not found, fallback to the classifier
 	if len(findings) == 0 && a.licenseFull {
 		// Rewind the reader to the beginning of the stream after saving
-		if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
+		if _, err = content.Seek(0, io.SeekStart); err != nil {
 			return nil, xerrors.Errorf("seek error: %w", err)
 		}
-		licenseFile, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
+		licenseFile, err := licensing.Classify(filePath, content, a.classifierConfidenceLevel)
 		if err != nil {
 			return nil, xerrors.Errorf("license classification error: %w", err)
 		}
@@ -60,17 +77,13 @@ func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 	}
 
 	// e.g. "usr/share/doc/zlib1g/copyright" => "zlib1g"
-	pkgName := strings.Split(input.FilePath, "/")[3]
+	pkgName := strings.Split(filePath, "/")[3]
 
-	return &analyzer.AnalysisResult{
-		Licenses: []types.LicenseFile{
-			{
-				Type:     types.LicenseTypeDpkg,
-				FilePath: input.FilePath,
-				Findings: findings,
-				PkgName:  pkgName,
-			},
-		},
+	return &types.LicenseFile{
+		Type:     types.LicenseTypeDpkg,
+		FilePath: filePath,
+		Findings: findings,
+		PkgName:  pkgName,
 	}, nil
 }
 

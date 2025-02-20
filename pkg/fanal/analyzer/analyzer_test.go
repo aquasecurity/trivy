@@ -627,7 +627,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			ctx := context.Background()
 			got := new(analyzer.AnalysisResult)
-			err = a.PostAnalyze(ctx, composite, got, analyzer.AnalysisOptions{})
+			err = a.PostAnalyze(ctx, nil, composite, got, analyzer.AnalysisOptions{})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

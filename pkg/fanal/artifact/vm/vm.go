@@ -142,7 +142,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	}
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, nil, composite, result, opts); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 

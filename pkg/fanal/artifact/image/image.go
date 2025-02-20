@@ -412,7 +412,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	wg.Wait()
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, nil, composite, result, opts); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
