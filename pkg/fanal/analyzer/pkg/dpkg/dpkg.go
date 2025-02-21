@@ -372,3 +372,7 @@ func (a dpkgAnalyzer) Type() analyzer.Type {
 func (a dpkgAnalyzer) Version() int {
 	return analyzerVersion
 }
+
+func (a dpkgAnalyzer) SupportSymlinks() bool {
+	return false
+}

@@ -434,6 +434,10 @@ func (m *wasmModule) Version() int {
 	return m.version
 }
 
+func (a *wasmModule) SupportSymlinks() bool {
+	return false
+}
+
 func (m *wasmModule) Required(filePath string, _ os.FileInfo) bool {
 	for _, r := range m.requiredFiles {
 		if r.MatchString(filePath) {

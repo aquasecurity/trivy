@@ -101,6 +101,10 @@ func (a cargoAnalyzer) Version() int {
 	return version
 }
 
+func (a cargoAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 func (a cargoAnalyzer) parseCargoLock(filePath string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Cargo, filePath, r, a.lockParser)
 }

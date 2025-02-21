@@ -96,3 +96,7 @@ func (a *javaLibraryAnalyzer) Type() analyzer.Type {
 func (a *javaLibraryAnalyzer) Version() int {
 	return version
 }
+
+func (a *javaLibraryAnalyzer) SupportSymlinks() bool {
+	return false
+}

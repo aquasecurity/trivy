@@ -45,3 +45,7 @@ func (a depsLibraryAnalyzer) Type() analyzer.Type {
 func (a depsLibraryAnalyzer) Version() int {
 	return version
 }
+
+func (a depsLibraryAnalyzer) SupportSymlinks() bool {
+	return false
+}

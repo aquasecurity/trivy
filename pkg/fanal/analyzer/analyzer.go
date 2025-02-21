@@ -74,6 +74,7 @@ type analyzer interface {
 	Version() int
 	Analyze(ctx context.Context, input AnalysisInput) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
+	SupportSymlinks() bool
 }
 
 type PostAnalyzer interface {
@@ -81,6 +82,7 @@ type PostAnalyzer interface {
 	Version() int
 	PostAnalyze(ctx context.Context, input PostAnalysisInput) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
+	SupportSymlinks() bool
 }
 
 ////////////////////
@@ -401,8 +403,11 @@ func (ag AnalyzerGroup) AnalyzerVersions() Versions {
 // and passes only those files to the analyzer for analysis.
 // This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
-	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
+	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions, supportSymlinsk bool) error {
 	if info.IsDir() {
+		return nil
+	}
+	if info.Mode()&os.ModeSymlink == os.ModeSymlink && !supportSymlinsk {
 		return nil
 	}
 
@@ -410,6 +415,10 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 	cleanPath := strings.TrimLeft(filePath, "/")
 
 	for _, a := range ag.analyzers {
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink && !a.SupportSymlinks() {
+			continue
+		}
+
 		// Skip disabled analyzers
 		if slices.Contains(disabled, a.Type()) {
 			continue
@@ -455,12 +464,18 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 }
 
 // RequiredPostAnalyzers returns a list of analyzer types that require the given file.
-func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo) []Type {
+func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo, supportSymlinsk bool) []Type {
 	if info.IsDir() {
+		return nil
+	}
+	if info.Mode()&os.ModeSymlink == os.ModeSymlink && !supportSymlinsk {
 		return nil
 	}
 	var postAnalyzerTypes []Type
 	for _, a := range ag.postAnalyzers {
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink && !a.SupportSymlinks() {
+			continue
+		}
 		if ag.filePatternMatch(a.Type(), filePath) || a.Required(filePath, info) {
 			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
 		}

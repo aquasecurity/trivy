@@ -62,3 +62,7 @@ func (a *Analyzer) Type() analyzer.Type {
 func (a *Analyzer) Version() int {
 	return a.version
 }
+
+func (a Analyzer) SupportSymlinks() bool {
+	return false
+}

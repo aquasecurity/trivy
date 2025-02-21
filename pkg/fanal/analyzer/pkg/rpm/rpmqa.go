@@ -92,3 +92,7 @@ func (a rpmqaPkgAnalyzer) Type() analyzer.Type {
 func (a rpmqaPkgAnalyzer) Version() int {
 	return versionRpmqa
 }
+
+func (a rpmqaPkgAnalyzer) SupportSymlinks() bool {
+	return false
+}

@@ -59,6 +59,10 @@ func (a ubuntuESMAnalyzer) Version() int {
 	return ESMAnalyzerVersion
 }
 
+func (a ubuntuESMAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 // structs to parse ESM status
 type status struct {
 	Services []service `json:"services"`

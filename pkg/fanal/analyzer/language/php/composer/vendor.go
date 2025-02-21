@@ -37,3 +37,7 @@ func (a composerVendorAnalyzer) Type() analyzer.Type {
 func (a composerVendorAnalyzer) Version() int {
 	return composerInstalledAnalyzerVersion
 }
+
+func (a composerVendorAnalyzer) SupportSymlinks() bool {
+	return false
+}

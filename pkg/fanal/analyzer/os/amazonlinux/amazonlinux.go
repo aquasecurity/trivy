@@ -73,3 +73,7 @@ func (a amazonlinuxOSAnalyzer) Type() analyzer.Type {
 func (a amazonlinuxOSAnalyzer) Version() int {
 	return version
 }
+
+func (a amazonlinuxOSAnalyzer) SupportSymlinks() bool {
+	return false
+}

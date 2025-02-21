@@ -158,6 +158,10 @@ func (a yarnAnalyzer) Version() int {
 	return version
 }
 
+func (a yarnAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
 func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application, patterns map[string][]string) error {

@@ -67,7 +67,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 				skippedDirs = append(skippedDirs, filePath)
 				continue
 			}
-		case tar.TypeReg:
+		case tar.TypeReg, tar.TypeSymlink:
 			if utils.SkipPath(filePath, w.skipFiles) {
 				continue
 			}
@@ -80,9 +80,16 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 			continue
 		}
 
-		// A regular file will reach here.
-		if err = w.processFile(filePath, tr, hdr.FileInfo(), analyzeFn); err != nil {
-			return nil, nil, xerrors.Errorf("failed to process the file: %w", err)
+		if hdr.Typeflag == tar.TypeSymlink {
+			rr := strings.NewReader(hdr.Linkname)
+			if err = w.processSymlink(filePath, rr, hdr.FileInfo(), analyzeFn); err != nil {
+				return nil, nil, xerrors.Errorf("failed to process the file: %w", err)
+			}
+		} else {
+			// A regular file will reach here.
+			if err = w.processFile(filePath, tr, hdr.FileInfo(), analyzeFn); err != nil {
+				return nil, nil, xerrors.Errorf("failed to process the file: %w", err)
+			}
 		}
 	}
 	return opqDirs, whFiles, nil
@@ -90,6 +97,20 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 
 func (w LayerTar) processFile(filePath string, tr *tar.Reader, fi fs.FileInfo, analyzeFn WalkFunc) error {
 	cf := newCachedFile(fi.Size(), tr)
+	defer func() {
+		// nolint
+		_ = cf.Clean()
+	}()
+
+	if err := analyzeFn(filePath, fi, cf.Open); err != nil {
+		return xerrors.Errorf("failed to analyze file: %w", err)
+	}
+
+	return nil
+}
+
+func (w LayerTar) processSymlink(filePath string, rr io.Reader, fi fs.FileInfo, analyzeFn WalkFunc) error {
+	cf := newCachedFile(fi.Size(), rr)
 	defer func() {
 		// nolint
 		_ = cf.Clean()

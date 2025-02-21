@@ -43,3 +43,7 @@ func (a cocoaPodsLockAnalyzer) Type() analyzer.Type {
 func (a cocoaPodsLockAnalyzer) Version() int {
 	return version
 }
+
+func (a cocoaPodsLockAnalyzer) SupportSymlinks() bool {
+	return false
+}

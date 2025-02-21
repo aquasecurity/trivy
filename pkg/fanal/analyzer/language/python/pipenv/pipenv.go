@@ -44,3 +44,7 @@ func (a pipenvLibraryAnalyzer) Type() analyzer.Type {
 func (a pipenvLibraryAnalyzer) Version() int {
 	return version
 }
+
+func (a pipenvLibraryAnalyzer) SupportSymlinks() bool {
+	return false
+}

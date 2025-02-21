@@ -47,3 +47,7 @@ func (a mixLockAnalyzer) Type() analyzer.Type {
 func (a mixLockAnalyzer) Version() int {
 	return version
 }
+
+func (a mixLockAnalyzer) SupportSymlinks() bool {
+	return false
+}

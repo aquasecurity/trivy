@@ -166,3 +166,7 @@ func (a *rpmArchiveAnalyzer) Type() analyzer.Type {
 func (a *rpmArchiveAnalyzer) Version() int {
 	return archiveVersion
 }
+
+func (a *rpmArchiveAnalyzer) SupportSymlinks() bool {
+	return false
+}

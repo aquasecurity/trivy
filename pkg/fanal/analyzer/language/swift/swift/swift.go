@@ -44,3 +44,7 @@ func (a swiftLockAnalyzer) Type() analyzer.Type {
 func (a swiftLockAnalyzer) Version() int {
 	return version
 }
+
+func (a swiftLockAnalyzer) SupportSymlinks() bool {
+	return false
+}

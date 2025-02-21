@@ -108,6 +108,10 @@ func (a pnpmAnalyzer) Version() int {
 	return version
 }
 
+func (a pnpmAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 func (a pnpmAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string][]string, error) {
 	dir := path.Dir(lockPath)
 	root := path.Join(dir, "node_modules")

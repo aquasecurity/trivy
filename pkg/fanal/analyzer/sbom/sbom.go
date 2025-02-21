@@ -89,6 +89,10 @@ func (a sbomAnalyzer) Version() int {
 	return version
 }
 
+func (a sbomAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 func handleBitnamiImages(componentPath string, bom types.SBOM) {
 	for i, app := range bom.Applications {
 		if app.Type == ftypes.Bitnami {

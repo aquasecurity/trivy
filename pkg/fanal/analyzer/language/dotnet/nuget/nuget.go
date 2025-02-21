@@ -122,3 +122,7 @@ func (a *nugetLibraryAnalyzer) Type() analyzer.Type {
 func (a *nugetLibraryAnalyzer) Version() int {
 	return version
 }
+
+func (a *nugetLibraryAnalyzer) SupportSymlinks() bool {
+	return false
+}

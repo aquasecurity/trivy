@@ -108,6 +108,10 @@ func (a npmLibraryAnalyzer) Version() int {
 	return version
 }
 
+func (a npmLibraryAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types.Application, error) {
 	f, err := fsys.Open(filePath)
 	if err != nil {

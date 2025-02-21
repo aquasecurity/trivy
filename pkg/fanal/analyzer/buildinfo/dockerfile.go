@@ -106,6 +106,10 @@ func (a dockerfileAnalyzer) Version() int {
 	return dockerfileAnalyzerVersion
 }
 
+func (a dockerfileAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 // parseVersion parses version from a file name
 func parseVersion(nvr string) string {
 	releaseIndex := strings.LastIndex(nvr, "-")

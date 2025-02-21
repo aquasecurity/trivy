@@ -176,12 +176,12 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 			dir, filePath = path.Split(a.rootPath)
 		}
 
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts, false); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 
 		// Skip post analysis if the file is not required
-		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info, false)
 		if len(analyzerTypes) == 0 {
 			return nil
 		}

@@ -38,3 +38,7 @@ func (a gemspecLibraryAnalyzer) Type() analyzer.Type {
 func (a gemspecLibraryAnalyzer) Version() int {
 	return version
 }
+
+func (a gemspecLibraryAnalyzer) SupportSymlinks() bool {
+	return false
+}

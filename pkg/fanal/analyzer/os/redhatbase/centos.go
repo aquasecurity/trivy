@@ -60,3 +60,7 @@ func (a centOSAnalyzer) Type() analyzer.Type {
 func (a centOSAnalyzer) Version() int {
 	return centosAnalyzerVersion
 }
+
+func (a centOSAnalyzer) SupportSymlinks() bool {
+	return false
+}

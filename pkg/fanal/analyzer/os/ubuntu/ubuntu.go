@@ -62,3 +62,7 @@ func (a ubuntuOSAnalyzer) Type() analyzer.Type {
 func (a ubuntuOSAnalyzer) Version() int {
 	return version
 }
+
+func (a ubuntuOSAnalyzer) SupportSymlinks() bool {
+	return false
+}

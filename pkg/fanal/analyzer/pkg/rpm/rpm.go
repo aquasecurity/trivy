@@ -208,6 +208,10 @@ func (a rpmPkgAnalyzer) Version() int {
 	return version
 }
 
+func (a rpmPkgAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 // splitFileName returns a name, version, release, epoch, arch:
 //
 //	e.g.

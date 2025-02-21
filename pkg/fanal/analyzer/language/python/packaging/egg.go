@@ -124,3 +124,7 @@ func (a *eggAnalyzer) Type() analyzer.Type {
 func (a *eggAnalyzer) Version() int {
 	return eggAnalyzerVersion
 }
+
+func (a *eggAnalyzer) SupportSymlinks() bool {
+	return false
+}
