@@ -1821,6 +1821,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Misconfigurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disabled-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabled checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -8088,6 +8105,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Misconfigurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disabled-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabled checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -8504,7 +8538,29 @@ See https://avd.aquasec.com/misconfig/ds026
 <p class="admonition-title">Tip</p>
 <p>You can see how each layer is created with <code>docker history</code>.</p>
 </div>
-<p>The <a href="https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/">AVD-DS-0016</a> check is disabled for this scan type, see <a href="https://github.com/aquasecurity/trivy/issues/7368">issue</a> for details.</p>
+<h4 id="disabled-checks">Disabled checks<a class="headerlink" href="#disabled-checks" title="Permanent link">&para;</a></h4>
+<p>The following checks are disabled for this scan type due to known issues. See the linked issues for more details.</p>
+<table>
+<thead>
+<tr>
+<th>Check ID</th>
+<th>Reason</th>
+<th>Issue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0007/">AVD-DS-0007</a></td>
+<td>This check detects multiple <code>ENTRYPOINT</code> instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type.</td>
+<td><a href="https://github.com/aquasecurity/trivy/issues/8364">#8364</a></td>
+</tr>
+<tr>
+<td><a href="https://avd.aquasec.com/misconfig/dockerfile/general/avd-ds-0016/">AVD-DS-0016</a></td>
+<td>This check detects multiple <code>CMD</code> instructions in a stage, but since image history analysis does not identify stages, this check is not relevant for this scan type.</td>
+<td><a href="https://github.com/aquasecurity/trivy/issues/7368">#7368</a></td>
+</tr>
+</tbody>
+</table>
 <h3 id="secrets_1">Secrets<a class="headerlink" href="#secrets_1" title="Permanent link">&para;</a></h3>
 <p>Trivy detects secrets on the configuration of container images.
 The image config is converted into JSON and Trivy scans the file for secrets.
