@@ -42,7 +42,7 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 	infra := adapter.Adapt(modules)
 	e.logger.Debug("Adapted module(s) into state data.", log.Int("count", len(modules)))
 
-	results, err := e.regoScanner.ScanInput(ctx, rego.Input{
+	results, err := e.regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
 		Contents: infra.ToRego(),
 		Path:     basePath,
 	})
