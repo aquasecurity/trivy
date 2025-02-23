@@ -1,7 +1,6 @@
 package binary
 
 import (
-	"cmp"
 	"debug/buildinfo"
 	"fmt"
 	"runtime/debug"
@@ -104,7 +103,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		// set via `go build -ldflags='-X main.version=<semver>'`, so we fallback to this as.
 		// as a secondary source.
 		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
-		version := cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.ParseLDFlags(info.Main.Path, ldflags))
+		version := p.checkVersion(info.Main.Path, info.Main.Version)
+		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
+
+		if version != "" {
+			// If version is a fake v0.0.0 kind of version, use the ldflags version first.
+			if strings.HasPrefix(version, "v0.0.0") && ldflagsVersion != "" {
+				version = ldflagsVersion
+			}
+		} else {
+			// If no version was found in the go buildinfo, fallback to the ldfags version
+			version = ldflagsVersion
+		}
+
 		root := ftypes.Package{
 			ID:           dependency.ID(ftypes.GoBinary, info.Main.Path, version),
 			Name:         info.Main.Path,

@@ -169,6 +169,32 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "with -ldflags=\"-X main.version=v1.0.0\" go v1.24",
+			inputFile: "testdata/main-version-via-ldflags-go-1-24.elf",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:           "github.com/aquasecurity/test@v1.0.0",
+					Name:         "github.com/aquasecurity/test",
+					Version:      "v1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "stdlib@v1.24.0",
+					Name:         "stdlib",
+					Version:      "v1.24.0",
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "github.com/aquasecurity/test@v1.0.0",
+					DependsOn: []string{
+						"stdlib@v1.24.0",
+					},
+				},
+			},
+		},
+		{
 			name:      "goexperiment",
 			inputFile: "testdata/goexperiment",
 			wantPkgs: []ftypes.Package{
