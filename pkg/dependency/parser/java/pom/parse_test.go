@@ -137,14 +137,14 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
+					ID:           "51a71cb41ff37895",
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
+					ID:           "b80d1889cd7ec6f3",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -157,7 +157,7 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
+					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
 					Name:         "org.example:example-runtime",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipDirect,
@@ -171,10 +171,10 @@ func TestPom_Parse(t *testing.T) {
 			},
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "3ff14136-e09f-4df9-80ea-000000000001",
+					ID: "51a71cb41ff37895",
 					DependsOn: []string{
 						"3ff14136-e09f-4df9-80ea-000000000002",
-						"3ff14136-e09f-4df9-80ea-000000000003",
+						"b80d1889cd7ec6f3",
 					},
 				},
 			},
@@ -1280,32 +1280,32 @@ func TestPom_Parse(t *testing.T) {
 			local:     true,
 			want: []ftypes.Package{
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000001",
+					ID:           "af5c1bca8a964540",
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000002",
+					ID:           "9f9255f9043d446f",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000004",
+					ID:           "84ab73e1b93aa7f5",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
 				},
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000003",
+					ID:           "b80d1889cd7ec6f3",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
-					ID:           "3ff14136-e09f-4df9-80ea-000000000005",
+					ID:           "b80d1889cd7ec6f3",
 					Name:         "org.example:example-api",
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
@@ -1330,22 +1330,131 @@ func TestPom_Parse(t *testing.T) {
 			//[INFO] ------------------------------------------------------------------------
 			wantDeps: []ftypes.Dependency{
 				{
-					ID: "3ff14136-e09f-4df9-80ea-000000000001",
+					ID: "af5c1bca8a964540",
 					DependsOn: []string{
-						"3ff14136-e09f-4df9-80ea-000000000002",
-						"3ff14136-e09f-4df9-80ea-000000000004",
+						"9f9255f9043d446f",
+						"84ab73e1b93aa7f5",
 					},
 				},
 				{
-					ID: "3ff14136-e09f-4df9-80ea-000000000002",
+					ID: "9f9255f9043d446f",
 					DependsOn: []string{
-						"3ff14136-e09f-4df9-80ea-000000000003",
+						"b80d1889cd7ec6f3",
 					},
 				},
 				{
-					ID: "3ff14136-e09f-4df9-80ea-000000000004",
+					ID: "84ab73e1b93aa7f5",
 					DependsOn: []string{
-						"3ff14136-e09f-4df9-80ea-000000000005",
+						"b80d1889cd7ec6f3",
+					},
+				},
+			},
+		},
+		{
+			name:      "multi module with similar deps, but different children",
+			inputFile: filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav-with-props", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "af5c1bca8a964540",
+					Name:         "com.example:root",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "1c8d2e652e50cfcf",
+					Name:         "com.example:module1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+				},
+				{
+					ID:           "bbc7734e78f26979",
+					Name:         "com.example:module2",
+					Version:      "2.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+				},
+				{
+					ID:           "b8bf69bea1855d36",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.5",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "9b8caa828f0d4a32",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.5",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "b80d1889cd7ec6f3",
+					Name:         "org.example:example-api",
+					Version:      "1.7.30",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipIndirect,
+				},
+				{
+					ID:           "fda861a0a2dc688a",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			//[INFO] --------------------------------[ jar ]---------------------------------
+			//[INFO]
+			//[INFO] --- dependency:3.7.0:tree (default-cli) @ module1 ---
+			//[INFO] com.example:module1:jar:1.0.0
+			//[INFO] \- org.example:example-dependency:jar:1.2.5:compile
+			//[INFO]    \- org.example:example-api:jar:1.7.30:compile
+			//[INFO]
+			//[INFO] ------------------------< com.example:module2 >-------------------------
+			//[INFO] Building module2 2.0.0                                             [2/3]
+			//[INFO]   from module2/pom.xml
+			//[INFO] --------------------------------[ jar ]---------------------------------
+			//[INFO]
+			//[INFO] --- dependency:3.7.0:tree (default-cli) @ module2 ---
+			//[INFO] com.example:module2:jar:2.0.0
+			//[INFO] \- org.example:example-dependency:jar:1.2.5:compile
+			//[INFO]    \- org.example:example-api:jar:2.0.0:compile
+			//[INFO]
+			//[INFO] --------------------------< com.example:root >--------------------------
+			//[INFO] Building root 1.0.0                                                [3/3]
+			//[INFO]   from pom.xml
+			//[INFO] --------------------------------[ pom ]---------------------------------
+			//[INFO]
+			//[INFO] --- dependency:3.7.0:tree (default-cli) @ root ---
+			//[INFO] com.example:root:pom:1.0.0
+			//[INFO] ------------------------------------------------------------------------
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "1c8d2e652e50cfcf",
+					DependsOn: []string{
+						"b8bf69bea1855d36",
+					},
+				},
+				{
+					ID: "9b8caa828f0d4a32",
+					DependsOn: []string{
+						"fda861a0a2dc688a",
+					},
+				},
+				{
+					ID: "af5c1bca8a964540",
+					DependsOn: []string{
+						"1c8d2e652e50cfcf",
+						"bbc7734e78f26979",
+					},
+				},
+				{
+					ID: "b8bf69bea1855d36",
+					DependsOn: []string{
+						"b80d1889cd7ec6f3",
+					},
+				},
+				{
+					ID: "bbc7734e78f26979",
+					DependsOn: []string{
+						"9b8caa828f0d4a32",
 					},
 				},
 			},

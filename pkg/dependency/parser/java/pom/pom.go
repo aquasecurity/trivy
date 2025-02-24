@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -306,6 +307,9 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	}
 
 	return artifact{
+		// Use UUID for dependencies.
+		// We will replace it with pom.xml hash later if we can find pom.xml file.
+		ID:           uuid.New().String(),
 		GroupID:      d.GroupID,
 		ArtifactID:   d.ArtifactID,
 		Version:      newVersion(d.Version),

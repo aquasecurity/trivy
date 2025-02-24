@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"cmp"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -22,7 +23,6 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/uuid"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -119,11 +119,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 	rootArt := root.artifact()
 	rootArt.Relationship = ftypes.RelationshipRoot
 
-	return p.parseRoot(rootArt, make(map[string]uuid.UUID))
+	return p.parseRoot(rootArt, make(map[string]string))
 }
 
 // nolint: gocyclo
-func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) parseRoot(root artifact, uniqModules map[string]string) ([]ftypes.Package, []ftypes.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
@@ -136,7 +136,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]f
 		deps              ftypes.Dependencies
 		rootDepManagement []pomDependency
 		uniqArtifacts     = make(map[string]artifact)
-		uniqDeps          = make(map[uuid.UUID][]string)
+		uniqDeps          = make(map[string][]string)
 	)
 
 	// Iterate direct and transitive dependencies
@@ -149,7 +149,6 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]f
 			if _, ok := uniqModules[art.String()]; ok {
 				continue
 			}
-			art.ID = uuid.New()
 			uniqModules[art.String()] = art.ID
 
 			modulePkgs, moduleDeps, err := p.parseRoot(art, uniqModules)
@@ -215,13 +214,11 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]f
 
 		// Offline mode may be missing some fields.
 		if !art.IsEmpty() {
-			// Modules already have uuid
-			if art.ID == uuid.Nil {
-				art.ID = uuid.New()
-			}
 			// Override the version
 			newArt := artifact{
-				ID:           art.ID,
+				// Take ID from resolved artifact (hash).
+				// If pom.xml file didn't find - use ID from dependency (UUID)
+				ID:           cmp.Or(result.artifact.ID, art.ID),
 				Version:      art.Version,
 				Licenses:     result.artifact.Licenses,
 				Relationship: art.Relationship,
@@ -234,14 +231,16 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]f
 			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
 				return a.Name()
 			})
-			uniqDeps[newArt.ID] = dependsOn
+			if len(dependsOn) > 0 {
+				uniqDeps[newArt.ID] = dependsOn
+			}
 		}
 	}
 
 	// Convert to []ftypes.Package and []ftypes.Dependency
 	for name, art := range uniqArtifacts {
 		pkg := ftypes.Package{
-			ID:           art.ID.String(),
+			ID:           art.ID,
 			Name:         name,
 			Version:      art.Version.String(),
 			Licenses:     art.Licenses,
@@ -256,13 +255,10 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]f
 			return id, id != ""
 		})
 
-		// `mvn` shows modules separately from the root package and does not show module nesting.
+		// `mvn` shows modules separately from the root package and doesn't show module nesting.
 		// So we can add all modules as dependencies of root package.
 		if art.Relationship == ftypes.RelationshipRoot {
-			uuids := lo.Map(lo.Values(uniqModules), func(id uuid.UUID, _ int) string {
-				return id.String()
-			})
-			dependsOn = append(dependsOn, uuids...)
+			dependsOn = append(dependsOn, lo.Values(uniqModules)...)
 		}
 
 		sort.Strings(dependsOn)
@@ -283,7 +279,7 @@ func (p *Parser) parseRoot(root artifact, uniqModules map[string]uuid.UUID) ([]f
 // depID finds dependency in uniqArtifacts and return its ID
 func depID(depName string, uniqArtifacts map[string]artifact) string {
 	if art, ok := uniqArtifacts[depName]; ok {
-		return art.ID.String()
+		return art.ID
 	}
 	return ""
 }
@@ -301,6 +297,7 @@ func (p *Parser) parseModule(currentPath, relativePath string) (artifact, error)
 	}
 
 	moduleArtifact := module.artifact()
+	moduleArtifact.ID = result.artifact.ID // add hash of artifact as ID
 	moduleArtifact.Module = true
 	moduleArtifact.Relationship = ftypes.RelationshipWorkspace
 
@@ -378,9 +375,14 @@ func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	deps := p.parseDependencies(pom.content.Dependencies.Dependency, props, depManagement, opts)
 	deps = p.filterDependencies(deps, opts.exclusions)
 
+	art := pom.artifact()
+	// Use hash of all resolved fields.
+	// cf. https://github.com/aquasecurity/trivy/issues/7824
+	art.ID = art.Hash(deps, depManagement, props, pom.content.Modules.Module)
+
 	return analysisResult{
 		filePath:             pom.filePath,
-		artifact:             pom.artifact(),
+		artifact:             art,
 		dependencies:         deps,
 		dependencyManagement: depManagement,
 		properties:           props,
