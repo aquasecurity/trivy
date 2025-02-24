@@ -245,6 +245,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		resolveDpkgLicensesWithSymlinks(&dpkgLicensesMap, &layer)
 		// Apply license files
 		for _, license := range layer.Licenses {
+			if len(license.Findings) == 0 {
+				continue
+			}
 			license.Layer = ftypes.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
