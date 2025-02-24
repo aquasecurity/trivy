@@ -174,6 +174,7 @@ func deleteDpkgLicensesByString(key, sep string, dpkgLicensesMap *map[string]*Ma
 				result, ok := (*dpkgLicensesMap)[v.FilePath]
 				if ok {
 					for _, dep := range result.Deps {
+						_ = nestedMap.DeleteByString(dep.FilePath, sep) // nolint
 						delete(*dpkgLicensesMap, dep.FilePath)
 					}
 					delete(*dpkgLicensesMap, v.FilePath)
