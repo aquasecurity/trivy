@@ -93,49 +93,91 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 	return "", ""
 }
 
-// Fix dpkg symlink problem (symlink source can be on lower layer, so can be resolved only when we have all layers)
-// Expected dpkg behaviour:
-// 1) original file or directory can't be deleted without symlink deletion
-// 2) dpkg don't delete file by symlink path
-// If expectation 2 is wrong - OpaqueDirs and WhiteoutFiles also works incorrect.
-// If expectation 1 is wrong - more complex logic must be implemented to cover this case
-func resolveDpkgLicensesWithSymlinks(dpkgLicensesMap *map[string]*ftypes.LicenseFile, layer *ftypes.BlobInfo) {
+type MapLicenseInfo struct {
+	Source *ftypes.LicenseFile
+	Deps   []*ftypes.LicenseFile
+}
+
+// We expect nobody delete file by symlink path, only by original path
+// If not - OpaqueDirs and WhiteoutFiles also should handle this case and check all symlinks
+func resolveDpkgLicensesWithSymlinks(dpkgLicensesMap *map[string]*MapLicenseInfo, layer *ftypes.BlobInfo) {
+	var unresolvedLicenses []*ftypes.LicenseFile
 	for j := range layer.Licenses {
 		license := &layer.Licenses[j]
-		if license.Type == ftypes.LicenseTypeDpkg && len(license.OriginalPath) == 0 {
-			(*dpkgLicensesMap)[license.FilePath] = license
+		if license.Type != ftypes.LicenseTypeDpkg {
+			continue
+		}
+		if len(license.OriginalPath) == 0 {
+			(*dpkgLicensesMap)[license.FilePath] = &MapLicenseInfo{
+				Source: license,
+				Deps:   []*ftypes.LicenseFile{},
+			}
+		} else {
+			unresolvedLicenses = append(unresolvedLicenses, license)
 		}
 	}
 
-	// loop to resolve symlink to symlink case
+	if len(unresolvedLicenses) == 0 || len(*dpkgLicensesMap) == 0 {
+		return
+	}
+
+	resolvedPathMap := make(map[string]string)
+	var nextUnresolvedLicinses []*ftypes.LicenseFile
+	for _, license := range unresolvedLicenses {
+		result, ok := (*dpkgLicensesMap)[license.OriginalPath]
+		if ok {
+			license.Findings = result.Source.Findings
+			result.Deps = append(result.Deps, license)
+			resolvedPathMap[license.FilePath] = license.OriginalPath
+		} else {
+			nextUnresolvedLicinses = append(nextUnresolvedLicinses, license)
+		}
+	}
+
+	if len(nextUnresolvedLicinses) == 0 || len(resolvedPathMap) == 0 {
+		return
+	}
+	unresolvedLicenses = nextUnresolvedLicinses
+	nextUnresolvedLicinses = nextUnresolvedLicinses[0:0]
+
+	// loop to resolve symlink to symlinks
 	for {
 		count := 0
-		for j := range layer.Licenses {
-			license := &layer.Licenses[j]
-			if license.Type != ftypes.LicenseTypeDpkg || len(license.OriginalPath) == 0 {
-				continue
-			}
-			result, ok := (*dpkgLicensesMap)[license.OriginalPath]
+		for _, license := range unresolvedLicenses {
+			result, ok := resolvedPathMap[license.OriginalPath]
 			if ok {
-				license.Findings = result.Findings
-				license.OriginalPath = ""
-				(*dpkgLicensesMap)[license.FilePath] = license
-				count++
+				sourseResult, sourceOk := (*dpkgLicensesMap)[result]
+				if sourceOk {
+					license.Findings = sourseResult.Source.Findings
+					sourseResult.Deps = append(sourseResult.Deps, license)
+					resolvedPathMap[license.FilePath] = result
+					count++
+				}
+			} else {
+				nextUnresolvedLicinses = append(nextUnresolvedLicinses, license)
 			}
 		}
-		if count == 0 {
+		if count == 0 || len(nextUnresolvedLicinses) == 0 {
 			break
 		}
+		unresolvedLicenses = nextUnresolvedLicinses
+		nextUnresolvedLicinses = nextUnresolvedLicinses[0:0]
 	}
 
 }
 
-func deleteDpkgLicensesByString(key, sep string, dpkgLicensesMap *map[string]*ftypes.LicenseFile, nestedMap *nested.Nested) {
+func deleteDpkgLicensesByString(key, sep string, dpkgLicensesMap *map[string]*MapLicenseInfo, nestedMap *nested.Nested) {
 	_ = nestedMap.WalkByString(key, sep, func(keys []string, value any) error {
 		switch v := value.(type) {
 		case ftypes.LicenseFile:
 			if v.Type == ftypes.LicenseTypeDpkg {
-				delete(*dpkgLicensesMap, v.FilePath)
+				result, ok := (*dpkgLicensesMap)[v.FilePath]
+				if ok {
+					for _, dep := range result.Deps {
+						delete(*dpkgLicensesMap, dep.FilePath)
+					}
+					delete(*dpkgLicensesMap, v.FilePath)
+				}
 			}
 		}
 		return nil
@@ -150,7 +192,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	secretsMap := make(map[string]ftypes.Secret)
 	var mergedLayer ftypes.ArtifactDetail
 
-	dpkgLicensesMap := make(map[string]*ftypes.LicenseFile)
+	dpkgLicensesMap := make(map[string]*MapLicenseInfo)
 	for _, layer := range layers {
 		for _, opqDir := range layer.OpaqueDirs {
 			opqDir = strings.TrimSuffix(opqDir, sep) // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
