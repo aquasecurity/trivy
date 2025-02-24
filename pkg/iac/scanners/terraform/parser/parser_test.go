@@ -3,10 +3,12 @@ package parser
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"testing"
 	"testing/fstest"
@@ -1714,6 +1716,20 @@ func TestNestedModulesOptions(t *testing.T) {
 	var buf bytes.Buffer
 	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
 
+	// Folder structure
+	// ./
+	// ├── main.tf
+	// └── modules
+	//     ├── city
+	//     │   └── main.tf
+	//     ├── queens
+	//     │   └── main.tf
+	//     └── brooklyn
+	//         └── main.tf
+	//
+	// Modules referenced
+	// main -> city ├─> brooklyn
+	//				└─> queens
 	files := map[string]string{
 		"main.tf": `
 module "city" {
@@ -1769,6 +1785,247 @@ module "invalid" {
 	}
 
 	require.NotContains(t, buf.String(), "failed to download")
+
+	// Verify module parents are set correctly.
+	expectedParents := map[string]string{
+		".":                     "",
+		"modules/city":          ".",
+		"modules/city/brooklyn": "modules/city",
+		"modules/city/queens":   "modules/city",
+	}
+
+	for _, mod := range modules {
+		expected, exists := expectedParents[mod.ModulePath()]
+		require.Truef(t, exists, "module %s does not exist in assertion", mod.ModulePath())
+		if expected == "" {
+			require.Nil(t, mod.Parent())
+		} else {
+			require.Equal(t, expected, mod.Parent().ModulePath(), "parent of module %q", mod.ModulePath())
+		}
+	}
+}
+
+func TestModuleParents(t *testing.T) {
+	files := make(map[string]string)
+
+	// module inits a new module that outputs its own name
+	module := func(name string) string {
+		files[fmt.Sprintf("modules/%s/main.tf", name)] = fmt.Sprintf(`
+			output "name" {
+				value = "%s"
+			}
+		`, name)
+		return name
+	}
+
+	// Include will add a module reference to the child module in the
+	// parent module. If a prefix is provided, it will be added to the
+	// module reference. Prefixes allow duplicates of the same module
+	// to be included in the parent module.
+	include := func(parent string, child string, prefix string) {
+		existing, ok := files[fmt.Sprintf("modules/%s/main.tf", parent)]
+		require.True(t, ok, "parent module %s does not exist", parent)
+
+		files[fmt.Sprintf("modules/%s/main.tf", parent)] = existing + fmt.Sprintf(`
+			module "%[1]s%[2]s" {
+				source = "../%[2]s"
+			}
+
+			output "%[1]s%[2]s" {
+				value = module.%[1]s%[2]s.name
+			}
+			`, prefix, child)
+	}
+
+	// The setup is a list of continents, some countries, some cities, etc.
+	//
+	// north-america
+	// ├── denmark (greenland)
+	// ├── united-states
+	// │   ├── wilmington (north-carolina)
+	// │   ├── wilmington (delaware)
+	// │   ├── springfield (illinois)
+	// │   ├── springfield (idaho)
+	// │   ├── springfield (massachusetts)
+	// │   └── new-york-city
+	// │       └── manhattan
+	// └── canada
+	//     └── springfield (ontario)
+	//
+	// europe
+	// ├── germany
+	// │   └── berlin
+	// ├── denmark
+	// └── russia
+	//     └── moscow
+	//
+	// asia
+	// └── russia
+	//     └── moscow
+
+	// Continents
+	na := module("north-america")
+	eu := module("europe")
+	asia := module("asia")
+
+	// Countries
+	germany := module("germany")
+	russia := module("russia")
+	denmark := module("denmark")
+	us := module("united-states")
+	can := module("canada")
+
+	// Cities (skipping states to get conflicting names)
+	wilmington := module("wilmington")
+	springfield := module("springfield")
+	berlin := module("berlin")
+	moscow := module("moscow")
+	nyc := module("new-york-city")
+
+	// Neighborhoods
+	manhattan := module("manhattan")
+
+	// hierarchies
+	// Continent -> Country
+	include(eu, germany, "")
+
+	include(eu, denmark, "")
+	include(na, denmark, "greenland") // Greenland!
+
+	include(eu, russia, "")
+	include(asia, russia, "")
+
+	include(na, us, "")
+	include(na, can, "")
+
+	// Country -> City
+	include(us, wilmington, "north-carolina")
+	include(us, wilmington, "delaware")
+
+	// There are a lot of springfields
+	include(us, springfield, "illinois")
+	include(us, springfield, "idaho")
+	include(us, springfield, "massachusetts")
+	include(us, nyc, "")
+
+	include(can, springfield, "ontario")
+
+	include(germany, berlin, "")
+	include(russia, moscow, "")
+
+	// Neighborhoods
+	include(nyc, manhattan, "")
+
+	files["main.tf"] = `
+		module "north-america" {
+			source = "./modules/north-america"
+		}
+		module "europe" {
+			source = "./modules/europe"
+		}
+		module "asia" {
+			source = "./modules/asia"		
+		}
+
+		output "all" {
+			value = [
+				module.north-america,
+				module.europe,
+				module.asia,
+			]
+		}
+	`
+
+	modules := parse(t, files, OptionWithDownloads(false))
+	// modules only have 'parent'. They do not have children, so create
+	// a structure that allows traversal from the root to the leafs.
+	modChildren := make(map[*terraform.Module][]*terraform.Module)
+	modList := make(map[*terraform.Module]struct{}, 0)
+	var root *terraform.Module
+	for _, mod := range modules {
+		mod := mod
+		modChildren[mod] = make([]*terraform.Module, 0)
+		modList[mod] = struct{}{}
+
+		if mod.Parent() == nil {
+			require.Nil(t, root, "root module already set")
+			root = mod
+		}
+		modChildren[mod.Parent()] = append(modChildren[mod.Parent()], mod)
+	}
+
+	type node struct {
+		modulePath string
+		children   []node
+	}
+
+	// expectedTree is the full module tree structure.
+	expectedTree := node{
+		modulePath: ".",
+		children: []node{
+			{
+				modulePath: na,
+				children: []node{
+					{
+						modulePath: us,
+						children: []node{
+							{modulePath: wilmington},
+							{modulePath: wilmington},
+							{modulePath: springfield},
+							{modulePath: springfield},
+							{modulePath: springfield},
+							{modulePath: nyc, children: []node{{modulePath: manhattan}}},
+						},
+					},
+					{
+						modulePath: can,
+						children: []node{
+							{modulePath: springfield},
+						},
+					},
+					{modulePath: denmark, children: []node{}},
+				},
+			},
+			{
+				modulePath: eu,
+				children: []node{
+					{modulePath: germany, children: []node{{modulePath: berlin}}},
+					{modulePath: russia, children: []node{{modulePath: moscow}}},
+					{modulePath: denmark, children: []node{}},
+				},
+			},
+			{
+				modulePath: asia,
+				children: []node{
+					{modulePath: russia, children: []node{{modulePath: moscow}}},
+				},
+			},
+		},
+	}
+
+	var assertChild func(t *testing.T, n node, mod *terraform.Module, children []*terraform.Module)
+	assertChild = func(t *testing.T, n node, mod *terraform.Module, children []*terraform.Module) {
+		defer delete(modList, mod)
+		t.Run(n.modulePath, func(t *testing.T) {
+			if !assert.Equal(t, len(n.children), len(children), "modChildren count for %s", n.modulePath) {
+				return
+			}
+			for _, child := range children {
+				idx := slices.IndexFunc(n.children, func(node node) bool {
+					return "modules/"+node.modulePath == child.ModulePath()
+				})
+				if !assert.NotEqualf(t, -1, idx, "module %s not found in %s", child.ModulePath(), n.modulePath) {
+					continue
+				}
+
+				assertChild(t, n.children[idx], child, modChildren[child])
+			}
+		})
+
+	}
+
+	assertChild(t, expectedTree, root, modChildren[root])
+	require.Len(t, modList, 0, "all modules asserted")
 }
 
 func TestCyclicModules(t *testing.T) {
