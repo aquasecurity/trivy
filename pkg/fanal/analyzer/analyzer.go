@@ -427,6 +427,11 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		if !ag.filePatternMatch(a.Type(), cleanPath) && !a.Required(cleanPath, info) {
 			continue
 		}
+
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
+			continue
+		}
+
 		rc, err := opener()
 		if errors.Is(err, fs.ErrPermission) {
 			ag.logger.Debug("Permission error", log.FilePath(filePath))
