@@ -16,6 +16,7 @@ import (
 
 // TestRepository tests `trivy repo` with the local code repositories
 func TestRepository(t *testing.T) {
+	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	type args struct {
 		scanner        types.Scanner
 		ignoreIDs      []string
@@ -157,6 +158,15 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/poetry",
 			},
 			golden: "testdata/poetry.json.golden",
+		},
+		{
+			name: "uv",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/uv",
+			},
+			golden: "testdata/uv.json.golden",
 		},
 		{
 			name: "pom",

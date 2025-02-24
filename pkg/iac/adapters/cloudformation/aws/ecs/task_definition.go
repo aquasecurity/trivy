@@ -36,8 +36,8 @@ func getContainerDefinitions(r *parser.Resource) ([]ecs.ContainerDefinition, err
 		if envVarsList.IsNotNil() && envVarsList.IsList() {
 			for _, envVar := range envVarsList.AsList() {
 				envVars = append(envVars, ecs.EnvVar{
-					Name:  envVar.GetStringProperty("Name").Value(),
-					Value: envVar.GetStringProperty("Value").Value(),
+					Name:  envVar.GetStringProperty("Name"),
+					Value: envVar.GetStringProperty("Value"),
 				})
 			}
 		}

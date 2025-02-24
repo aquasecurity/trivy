@@ -25,11 +25,11 @@ Resources:
       ClusterSettings:
         - Name: containerInsights
           Value: enabled
-  taskdefinition: 
+  taskdefinition:
     Type: AWS::ECS::TaskDefinition
-    Properties: 
-      ContainerDefinitions: 
-        - 
+    Properties:
+      ContainerDefinitions:
+        -
           Name: "busybox"
           Image: "busybox"
           Cpu: "256"
@@ -39,9 +39,9 @@ Resources:
           Environment:
             - Name: entryPoint
               Value: 'sh, -c'
-      Volumes: 
-        - 
-          Host: 
+      Volumes:
+        -
+          Host:
             SourcePath: "/var/lib/docker/vfs/dir/"
           Name: "my-vol"
           EFSVolumeConfiguration:
@@ -74,11 +74,33 @@ Resources:
 								Privileged: types.BoolTest(true),
 								Environment: []ecs.EnvVar{
 									{
-										Name:  "entryPoint",
-										Value: "sh, -c",
+										Name:  types.StringTest("entryPoint"),
+										Value: types.StringTest("sh, -c"),
 									},
 								},
 							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "ecs Cluster Enhanced Container Insights",
+			source: `AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  ECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: MyFargateCluster
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enhanced
+`,
+			expected: ecs.ECS{
+				Clusters: []ecs.Cluster{
+					{
+						Settings: ecs.ClusterSettings{
+							ContainerInsightsEnabled: types.BoolTest(true),
 						},
 					},
 				},
@@ -90,7 +112,7 @@ Resources:
 Resources:
   ECSCluster:
     Type: 'AWS::ECS::Cluster'
-  taskdefinition: 
+  taskdefinition:
     Type: AWS::ECS::TaskDefinition
   `,
 			expected: ecs.ECS{

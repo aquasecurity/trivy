@@ -356,7 +356,22 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
-		return viper.SafeWriteConfigAs("trivy-default.yaml")
+
+		hiddenFlags := flag.HiddenFlags()
+		// Viper does not have the ability to remove flags.
+		// So we only save the necessary flags and set these flags after viper.Reset
+		v := viper.New()
+		for _, k := range viper.AllKeys() {
+			// Skip the `GenerateDefaultConfigFlag` flags to avoid errors with default config file.
+			// Users often use "normal" formats instead of compliance. So we'll skip ComplianceFlag
+			// Also don't keep removed or deprecated flags to avoid confusing users.
+			if k == flag.GenerateDefaultConfigFlag.ConfigName || k == flag.ComplianceFlag.ConfigName || slices.Contains(hiddenFlags, k) {
+				continue
+			}
+			v.Set(k, viper.Get(k))
+		}
+
+		return v.SafeWriteConfigAs("trivy-default.yaml")
 	}
 
 	r, err := NewRunner(ctx, opts)
@@ -403,7 +418,6 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// Specified analyzers to be disabled depending on scanning modes
 	// e.g. The 'image' subcommand should disable the lock file scanning.
 	analyzers := opts.DisabledAnalyzers
-
 	// It doesn't analyze apk commands by default.
 	if !opts.ScanRemovedPkgs {
 		analyzers = append(analyzers, analyzer.TypeApkCommand)
@@ -419,18 +433,16 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
-	// Filter only enabled misconfiguration scanners
-	ma, err := filterMisconfigAnalyzers(opts.MisconfigScanners, analyzer.TypeConfigFiles)
-	if err != nil {
-		log.Error("Invalid misconfiguration scanners specified, defaulting to use all misconfig scanners",
-			log.Any("scanners", opts.MisconfigScanners))
-	} else {
-		analyzers = append(analyzers, ma...)
-	}
-
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+	} else {
+		// Filter only enabled misconfiguration scanners
+		ma := disabledMisconfigAnalyzers(opts.MisconfigScanners)
+		analyzers = append(analyzers, ma...)
+
+		log.Debug("Enabling misconfiguration scanners",
+			log.Any("scanners", lo.Without(analyzer.TypeConfigFiles, ma...)))
 	}
 
 	// Scanning file headers and license files is expensive.
@@ -467,14 +479,17 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	return analyzers
 }
 
-func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, error) {
-	_, missing := lo.Difference(all, included)
+func disabledMisconfigAnalyzers(included []analyzer.Type) []analyzer.Type {
+	_, missing := lo.Difference(analyzer.TypeConfigFiles, included)
 	if len(missing) > 0 {
-		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
+		log.Error(
+			"Invalid misconfiguration scanners provided, using default scanners",
+			log.Any("invalid_scanners", missing), log.Any("default_scanners", analyzer.TypeConfigFiles),
+		)
+		return nil
 	}
 
-	log.Debug("Enabling misconfiguration scanners", log.Any("scanners", included))
-	return lo.Without(all, included...), nil
+	return lo.Without(analyzer.TypeConfigFiles, included...)
 }
 
 func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (ScannerConfig, types.ScanOptions, error) {
@@ -483,16 +498,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 		target = opts.Input
 	}
 
-	scanOptions := types.ScanOptions{
-		PkgTypes:            opts.PkgTypes,
-		PkgRelationships:    opts.PkgRelationships,
-		Scanners:            opts.Scanners,
-		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
-		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		LicenseCategories:   opts.LicenseCategories,
-		FilePatterns:        opts.FilePatterns,
-		IncludeDevDeps:      opts.IncludeDevDeps,
-	}
+	scanOptions := opts.ScanOpts()
 
 	if len(opts.ImageConfigScanners) != 0 {
 		log.WithPrefix(log.PrefixContainerImage).Info("Container image config scanners", log.Any("scanners", opts.ImageConfigScanners))
@@ -581,6 +587,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 					Host: opts.PodmanHost,
 				},
 				ImageSources: opts.ImageSources,
+				MaxImageSize: opts.MaxImageSize,
 			},
 
 			// For misconfiguration scanning

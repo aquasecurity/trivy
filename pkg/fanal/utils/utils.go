@@ -32,15 +32,6 @@ func CacheDir() string {
 	return cacheDir
 }
 
-func StringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
 func IsCommandAvailable(name string) bool {
 	if _, err := exec.LookPath(name); err != nil {
 		return false
@@ -54,14 +45,6 @@ func IsGzip(f *bufio.Reader) bool {
 		return false
 	}
 	return buf[0] == 0x1F && buf[1] == 0x8B && buf[2] == 0x8
-}
-
-func Keys(m map[string]struct{}) []string {
-	var keys []string
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }
 
 func IsExecutable(fileInfo os.FileInfo) bool {

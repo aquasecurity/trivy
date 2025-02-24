@@ -6,7 +6,7 @@ on:
     branches:
       - main
 env:
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.23'
 jobs:
   deploy:
     name: Auto-update labels
@@ -23,7 +23,7 @@ jobs:
           cache: false
 
       - name: Install aqua tools
-        uses: aquaproj/aqua-installer@v3.0.1
+        uses: aquaproj/aqua-installer@v3.1.1
         with:
           aqua_version: v1.25.0
 

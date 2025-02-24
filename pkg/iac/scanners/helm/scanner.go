@@ -12,6 +12,7 @@ import (
 	"github.com/liamg/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
@@ -125,12 +126,13 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 		file := file
 		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
 
+		ignoreRules := ignore.Parse(file.ManifestContent, file.TemplateFilePath, "")
 		manifests, err := kparser.Parse(ctx, strings.NewReader(file.ManifestContent), file.TemplateFilePath)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
 		for _, manifest := range manifests {
-			fileResults, err := s.regoScanner.ScanInput(ctx, rego.Input{
+			fileResults, err := s.regoScanner.ScanInput(ctx, types.SourceKubernetes, rego.Input{
 				Path:     file.TemplateFilePath,
 				Contents: manifest,
 				FS:       target,
@@ -150,6 +152,7 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 					return nil, err
 				}
 				fileResults.SetSourceAndFilesystem(helmParser.ChartSource, renderedFS, detection.IsArchive(helmParser.ChartSource))
+				fileResults.Ignore(ignoreRules, nil)
 			}
 
 			results = append(results, fileResults...)
@@ -165,7 +168,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 	if s.regoScanner != nil {
 		return nil
 	}
-	regoScanner := rego.NewScanner(types.SourceKubernetes, s.options...)
+	regoScanner := rego.NewScanner(s.options...)
 	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return err
 	}

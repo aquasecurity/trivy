@@ -1648,9 +1648,10 @@ func TestNestedDynamicBlock(t *testing.T) {
 	assert.Len(t, nested, 4)
 }
 
-func parse(t *testing.T, files map[string]string) terraform.Modules {
+func parse(t *testing.T, files map[string]string, opts ...Option) terraform.Modules {
 	fs := testutil.CreateFS(t, files)
-	parser := New(fs, "", OptionStopOnHCLError(true))
+	opts = append(opts, OptionStopOnHCLError(true))
+	parser := New(fs, "", opts...)
 	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
 	modules, _, err := parser.EvaluateAll(context.TODO())
@@ -1700,6 +1701,74 @@ resource "test_resource" "this" {
 	require.NotNil(t, attr)
 
 	assert.Equal(t, "test_value", attr.GetRawValue())
+}
+
+// TestNestedModulesOptions ensures parser options are carried to the nested
+// submodule evaluators.
+// The test will include an invalid module that will fail to download
+// if it is attempted.
+func TestNestedModulesOptions(t *testing.T) {
+	// reset the previous default logger
+	prevLog := slog.Default()
+	defer slog.SetDefault(prevLog)
+	var buf bytes.Buffer
+	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
+
+	files := map[string]string{
+		"main.tf": `
+module "city" {
+	source = "./modules/city"
+}
+
+resource "city" "neighborhoods" {
+	names = module.city.neighborhoods
+}
+`,
+		"modules/city/main.tf": `
+module "brooklyn" {
+	source = "./brooklyn"
+}
+
+module "queens" {
+	source = "./queens"
+}
+
+output "neighborhoods" {
+	value = [module.brooklyn.name, module.queens.name]
+}
+`,
+		"modules/city/brooklyn/main.tf": `
+output "name" {
+	value = "Brooklyn"
+}
+`,
+		"modules/city/queens/main.tf": `
+output "name" {
+	value = "Queens"
+}
+
+module "invalid" {
+	source         = "https://example.invaliddomain"
+}
+`,
+	}
+
+	// Using the OptionWithDownloads(false) option will prevent the invalid
+	// module from being downloaded. If the log exists "failed to download"
+	// then the submodule evaluator attempted to download, which was disallowed.
+	modules := parse(t, files, OptionWithDownloads(false))
+	require.Len(t, modules, 4)
+
+	resources := modules.GetResourcesByType("city")
+	require.Len(t, resources, 1)
+
+	for _, res := range resources {
+		attr, _ := res.GetNestedAttribute("names")
+		require.NotNil(t, attr, res.FullName())
+		assert.Equal(t, []string{"Brooklyn", "Queens"}, attr.GetRawValue())
+	}
+
+	require.NotContains(t, buf.String(), "failed to download")
 }
 
 func TestCyclicModules(t *testing.T) {
@@ -2160,4 +2229,30 @@ resource "foo" "this" {
 			assert.Equal(t, int64(2), val)
 		})
 	}
+}
+
+func TestAttrRefToNullVariable(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`variable "name" {
+  type    = string
+  default = null
+}
+
+resource "aws_s3_bucket" "example" {
+  bucket = var.name
+}`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	_, err := parser.Load(context.TODO())
+	require.NoError(t, err)
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	val := modules.GetResourcesByType("aws_s3_bucket")[0].GetAttribute("bucket").GetRawValue()
+	assert.Nil(t, val)
 }

@@ -140,6 +140,60 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "different fixed versions for different arches",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rsyslog",
+						Version:    "8.24.0",
+						Release:    "57.0.0.el7",
+						Arch:       "x86_64",
+						SrcName:    "rsyslog",
+						SrcVersion: "8.24.0",
+						SrcRelease: "57.0.0.el7",
+					},
+					{
+						Name:       "rsyslog",
+						Version:    "8.24.0",
+						Release:    "57.0.0.el7",
+						Arch:       "aarch64",
+						SrcName:    "rsyslog",
+						SrcVersion: "8.24.0",
+						SrcRelease: "57.0.0.el7",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2022-24903",
+					PkgName:          "rsyslog",
+					InstalledVersion: "8.24.0-57.0.0.el7",
+					FixedVersion:     "8.24.0-57.0.1.el7_9.3",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2022-24903",
+					PkgName:          "rsyslog",
+					InstalledVersion: "8.24.0-57.0.0.el7",
+					FixedVersion:     "8.24.0-57.0.4.el7_9.3",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+			},
+		},
+		{
 			name: "without ksplice",
 			fixtures: []string{
 				"testdata/fixtures/oracle7.yaml",
@@ -289,8 +343,7 @@ func TestScanner_Detect(t *testing.T) {
 			s := NewScanner()
 			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			} else {
 				require.NoError(t, err)

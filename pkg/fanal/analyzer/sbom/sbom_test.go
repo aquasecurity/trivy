@@ -28,7 +28,34 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type: types.Jar,
+						Type:     types.Bitnami,
+						FilePath: "opt/bitnami/elasticsearch",
+						Packages: types.Packages{
+							{
+								ID:       "elasticsearch@8.9.1",
+								Name:     "elasticsearch",
+								Version:  "8.9.1",
+								Arch:     "arm64",
+								Licenses: []string{"Elastic-2.0"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "elasticsearch",
+										Version: "8.9.1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						Type:     types.Jar,
+						FilePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
 						Packages: types.Packages{
 							{
 								ID:       "co.elastic.apm:apm-agent:1.36.0",
@@ -88,32 +115,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							},
 						},
 					},
-					{
-						Type:     types.Bitnami,
-						FilePath: "opt/bitnami/elasticsearch",
-						Packages: types.Packages{
-							{
-								ID:       "elasticsearch@8.9.1",
-								Name:     "elasticsearch",
-								Version:  "8.9.1",
-								Arch:     "arm64",
-								Licenses: []string{"Elastic-2.0"},
-								Identifier: types.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeBitnami,
-										Name:    "elasticsearch",
-										Version: "8.9.1",
-										Qualifiers: packageurl.Qualifiers{
-											{
-												Key:   "arch",
-												Value: "arm64",
-											},
-										},
-									},
-								},
-							},
-						},
-					},
 				},
 			},
 			wantErr: require.NoError,
@@ -125,7 +126,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type: types.Jar,
+						Type:     types.Jar,
+						FilePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.cdx",
 						Packages: types.Packages{
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
@@ -227,6 +229,42 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Type:    packageurl.TypeBitnami,
 										Name:    "proj",
 										Version: "6.3.2",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
+		},
+		{
+			name:     "valid ca-certificates spdx file",
+			file:     "testdata/ca-certificates.spdx.json",
+			filePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
+			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "opt/bitnami/ca-certificates/.spdx-ca-certificates.spdx",
+						Packages: types.Packages{
+							{
+								ID:         "ca-certificates@20230311",
+								Name:       "ca-certificates",
+								Version:    "20230311",
+								Arch:       "all",
+								SrcName:    "ca-certificates",
+								SrcVersion: "20230311",
+								Licenses:   []string{"GPL-2.0-or-later AND GPL-2.0-only AND MPL-2.0"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeDebian,
+										Namespace: "debian",
+										Name:      "ca-certificates",
+										Version:   "20230311",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "arch", Value: "all"},
+											{Key: "distro", Value: "debian-12.9"},
+										},
 									},
 								},
 							},

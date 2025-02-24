@@ -407,7 +407,7 @@ If the schema is specified in the check metadata and is in the directory specifi
     If a user specifies the `--config-file-schemas` flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.
 
 !!! tip
-    It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma seperated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
+    It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
 
 
 ### Passing custom data
@@ -449,9 +449,9 @@ From the Terraform [docs](https://developer.hashicorp.com/terraform/cli/config/c
 If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.
 
 
-### Skipping resources by inline comments
+### Skipping detected misconfigurations by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.
+Trivy supports ignoring detected misconfigurations by inline comments for Terraform, CloudFormation (YAML), Helm and Dockerfile configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
 
@@ -501,6 +501,29 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: test-bucket
+```
+
+!!!note
+    Ignore rules for Helm files should be placed before the YAML object, since only it contains the location data needed for ignoring.
+    
+Example for Helm:
+```yaml
+      serviceAccountName: "testchart.serviceAccountName"
+      containers:
+        # trivy:ignore:KSV018
+        - name: "testchart"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 3000
+          image: "your-repository/your-image:your-tag"
+          imagePullPolicy: "Always"
+```
+
+Example for Dockerfile:
+```Dockerfile
+FROM scratch
+# trivy:ignore:AVD-DS-0022
+MAINTAINER moby@example.com
 ```
 
 #### Expiration Date

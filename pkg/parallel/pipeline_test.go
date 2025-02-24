@@ -2,7 +2,7 @@ package parallel_test
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -78,7 +78,7 @@ func TestPipeline_Do(t *testing.T) {
 					3,
 				},
 				onItem: func(_ context.Context, _ int) (int, error) {
-					return 0, fmt.Errorf("error")
+					return 0, errors.New("error")
 				},
 			},
 			wantErr: require.Error,
@@ -92,7 +92,7 @@ func TestPipeline_Do(t *testing.T) {
 					2,
 				},
 				onItem: func(_ context.Context, _ int) (int, error) {
-					return 0, fmt.Errorf("error")
+					return 0, errors.New("error")
 				},
 			},
 			wantErr: require.Error,

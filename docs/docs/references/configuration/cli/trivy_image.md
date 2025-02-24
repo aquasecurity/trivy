@@ -49,6 +49,7 @@ trivy image [flags] IMAGE_NAME
                                             - "precise": Prioritizes precise by minimizing false positives.
                                             - "comprehensive": Aims to detect more security findings at the cost of potential false positives.
                                            (precise,comprehensive) (default "precise")
+      --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --docker-host string                unix domain socket path to use for docker scanning
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
@@ -78,6 +79,7 @@ trivy image [flags] IMAGE_NAME
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability
+      --max-image-size string             [EXPERIMENTAL] maximum image size to process, specified in a human-readable format (e.g., '44kB', '17MB'); an error will be returned if the image exceeds this size
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress                       suppress progress bar

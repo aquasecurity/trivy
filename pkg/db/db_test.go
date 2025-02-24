@@ -127,8 +127,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 
 			switch {
 			case tt.wantErr != "":
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.ErrorContains(t, err, tt.wantErr, tt.name)
 			default:
 				require.NoError(t, err, tt.name)
 			}

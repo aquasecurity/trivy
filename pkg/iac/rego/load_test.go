@@ -15,7 +15,6 @@ import (
 
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -30,7 +29,6 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		var debugBuf bytes.Buffer
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
-			types.SourceDockerfile,
 			rego.WithRegoErrorLimits(0),
 			rego.WithPolicyDirs("."),
 		)
@@ -44,7 +42,6 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		var debugBuf bytes.Buffer
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
-			types.SourceDockerfile,
 			rego.WithRegoErrorLimits(1),
 			rego.WithPolicyDirs("."),
 		)
@@ -65,7 +62,6 @@ deny {
     input.evil == "foo bar"
 }`
 		scanner := rego.NewScanner(
-			types.SourceJSON,
 			rego.WithPolicyDirs("."),
 			rego.WithPolicyReader(strings.NewReader(check)),
 		)
@@ -84,7 +80,6 @@ deny {
     input.evil == "foo bar"
 }`
 		scanner := rego.NewScanner(
-			types.SourceJSON,
 			rego.WithPolicyDirs("."),
 			rego.WithPolicyReader(strings.NewReader(check)),
 		)
@@ -106,14 +101,12 @@ deny {
     input.evil == "foo bar"
 }`
 		scanner := rego.NewScanner(
-			types.SourceJSON,
 			rego.WithPolicyDirs("."),
 			rego.WithPolicyReader(strings.NewReader(check)),
 		)
 		err := scanner.LoadPolicies(fstest.MapFS{})
 		require.NoError(t, err)
 	})
-
 }
 
 func Test_FallbackToEmbedded(t *testing.T) {
@@ -195,7 +188,6 @@ deny {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			scanner := rego.NewScanner(
-				types.SourceDockerfile,
 				rego.WithRegoErrorLimits(0),
 				rego.WithEmbeddedPolicies(false),
 				rego.WithPolicyDirs("."),
@@ -255,7 +247,6 @@ deny {
 	}
 
 	scanner := rego.NewScanner(
-		types.SourceDockerfile,
 		rego.WithEmbeddedPolicies(false),
 		rego.WithPolicyDirs("."),
 	)

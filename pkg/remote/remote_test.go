@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/testdocker/registry"
 	"github.com/aquasecurity/testdocker/tarfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
 
@@ -91,6 +92,81 @@ func TestGet(t *testing.T) {
 					Insecure: true,
 				},
 			},
+		},
+		{
+			name: "mirror",
+			args: args{
+				imageName: "foo.bar.io/library/alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"foo.bar.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "mirror for dockerhub",
+			args: args{
+				imageName: "alpine:3.10",
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						"index.docker.io": {
+							serverAddr,
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "non-existent mirror image - use image from host",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							"wrong.repository",
+						},
+					},
+					Insecure: true,
+				},
+			},
+		},
+		{
+			name: "wrong mirror",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							"wrong.repository:tag@digest",
+						},
+					},
+					Insecure: true,
+				},
+			},
+			wantErr: "could not parse reference: wrong.repository:tag@digest/library/alpine:3.10",
 		},
 		{
 			name: "multiple credential",
@@ -182,6 +258,28 @@ func TestGet(t *testing.T) {
 			wantErr: "invalid username/password",
 		},
 		{
+			name: "bad credential for multiple mirrors",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "foo",
+							Password: "bar",
+						},
+					},
+					Insecure: true,
+					RegistryMirrors: map[string][]string{
+						serverAddr: {
+							serverAddr,
+							serverAddr,
+						},
+					},
+				},
+			},
+			wantErr: "6 errors occurred:", // 2 errors for each repository (for 2 mirrors and the original repository)
+		},
+		{
 			name: "bad keychain",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
@@ -216,13 +314,13 @@ type userAgentsTrackingHandler struct {
 	hr http.Handler
 
 	mu     sync.Mutex
-	agents map[string]struct{}
+	agents set.Set[string]
 }
 
 func newUserAgentsTrackingHandler(hr http.Handler) *userAgentsTrackingHandler {
 	return &userAgentsTrackingHandler{
 		hr:     hr,
-		agents: make(map[string]struct{}),
+		agents: set.New[string](),
 	}
 }
 
@@ -230,7 +328,7 @@ func (uh *userAgentsTrackingHandler) ServeHTTP(rw http.ResponseWriter, r *http.R
 	for _, agent := range r.Header["User-Agent"] {
 		// Skip test framework user agent
 		if agent != "Go-http-client/1.1" {
-			uh.agents[agent] = struct{}{}
+			uh.agents.Append(agent)
 		}
 	}
 	uh.hr.ServeHTTP(rw, r)
@@ -271,7 +369,7 @@ func TestUserAgents(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Len(t, tracker.agents, 1)
-	_, ok := tracker.agents[fmt.Sprintf("trivy/%s go-containerregistry", app.Version())]
+	ok := tracker.agents.Contains(fmt.Sprintf("trivy/%s go-containerregistry", app.Version()))
 	require.True(t, ok, `user-agent header equals to "trivy/dev go-containerregistry"`)
 }
 

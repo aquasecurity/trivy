@@ -476,7 +476,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	repoFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
 	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
-	repoFlags.CacheFlagGroup.CacheBackend.Default = string(cache.TypeMemory) // Use memory cache by default
+	repoFlags.ScanFlagGroup.DistroFlag = nil // `repo` subcommand doesn't support scanning OS packages, so we can disable `--distro`
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] (REPO_PATH | REPO_URL)",

@@ -1,22 +1,28 @@
 package parser
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strconv"
+	"time"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type TagType string
 
 const (
-	TagBool   TagType = "!!bool"
-	TagInt    TagType = "!!int"
-	TagFloat  TagType = "!!float"
-	TagStr    TagType = "!!str"
-	TagString TagType = "!!string"
-	TagSlice  TagType = "!!seq"
-	TagMap    TagType = "!!map"
+	TagBool      TagType = "!!bool"
+	TagInt       TagType = "!!int"
+	TagFloat     TagType = "!!float"
+	TagStr       TagType = "!!str"
+	TagString    TagType = "!!string"
+	TagSlice     TagType = "!!seq"
+	TagMap       TagType = "!!map"
+	TagTimestamp TagType = "!!timestamp"
+	TagBinary    TagType = "!!binary"
 )
 
 type ManifestNode struct {
@@ -33,8 +39,14 @@ func (r *ManifestNode) ToRego() any {
 		return nil
 	}
 	switch r.Type {
-	case TagBool, TagInt, TagString, TagStr:
+	case TagBool, TagInt, TagFloat, TagString, TagStr, TagBinary:
 		return r.Value
+	case TagTimestamp:
+		t, ok := r.Value.(time.Time)
+		if !ok {
+			return nil
+		}
+		return t.Format(time.RFC3339)
 	case TagSlice:
 		var output []any
 		for _, node := range r.Value.([]ManifestNode) {
@@ -58,40 +70,53 @@ func (r *ManifestNode) ToRego() any {
 }
 
 func (r *ManifestNode) UnmarshalYAML(node *yaml.Node) error {
-
 	r.StartLine = node.Line
 	r.EndLine = node.Line
 	r.Type = TagType(node.Tag)
 
 	switch TagType(node.Tag) {
 	case TagString, TagStr:
-
 		r.Value = node.Value
 	case TagInt:
 		val, err := strconv.Atoi(node.Value)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse int: %w", err)
 		}
 		r.Value = val
 	case TagFloat:
 		val, err := strconv.ParseFloat(node.Value, 64)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse float: %w", err)
 		}
 		r.Value = val
 	case TagBool:
 		val, err := strconv.ParseBool(node.Value)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse bool: %w", err)
+		}
+		r.Value = val
+	case TagTimestamp:
+		var val time.Time
+		if err := node.Decode(&val); err != nil {
+			return fmt.Errorf("failed to decode timestamp: %w", err)
+		}
+		r.Value = val
+	case TagBinary:
+		val, err := base64.StdEncoding.DecodeString(node.Value)
+		if err != nil {
+			return fmt.Errorf("failed to decode binary data: %w", err)
 		}
 		r.Value = val
 	case TagMap:
 		return r.handleMapTag(node)
 	case TagSlice:
 		return r.handleSliceTag(node)
-
 	default:
-		return fmt.Errorf("node tag is not supported %s", node.Tag)
+		log.WithPrefix("k8s").Debug("Skipping unsupported node tag",
+			log.String("tag", node.Tag),
+			log.FilePath(r.Path),
+			log.Int("line", node.Line),
+		)
 	}
 	return nil
 }

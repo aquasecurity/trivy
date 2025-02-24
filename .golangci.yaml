@@ -81,6 +81,17 @@ linters-settings:
       - licence
       - optimise
       - simmilar
+  perfsprint:
+    # Optimizes even if it requires an int or uint type cast.
+    int-conversion: true
+    # Optimizes into `err.Error()` even if it is only equivalent for non-nil errors.
+    err-error: true
+    # Optimizes `fmt.Errorf`.
+    errorf: true
+    # Optimizes `fmt.Sprintf` with only one argument.
+    sprintf1: false
+    # Optimizes into strings concatenation.
+    strconcat: false
   revive:
     ignore-generated-header: true
   testifylint:
@@ -100,6 +111,7 @@ linters:
     - govet
     - ineffassign
     - misspell
+    - perfsprint
     - revive
     - tenv
     - testifylint
@@ -109,12 +121,11 @@ linters:
     - usestdlibvars
 
 run:
-  go: '1.22'
+  go: '1.23'
   timeout: 30m
 
 issues:
   exclude-files:
-    - "mock_*.go$"
     - "examples/*"
   exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
@@ -140,5 +151,8 @@ issues:
       linters:
         - gocritic
       text: "importShadow:"
+    - linters:
+        - perfsprint
+      text: "fmt.Sprint"
   exclude-use-default: false
   max-same-issues: 0

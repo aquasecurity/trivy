@@ -14,7 +14,7 @@ on:
 
 env:
   GH_USER: "aqua-bot"
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.23'
 
 jobs:
   release:

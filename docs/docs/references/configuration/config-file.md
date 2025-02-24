@@ -137,6 +137,9 @@ image:
   # Same as '--input'
   input: ""
 
+  # Same as '--max-image-size'
+  max-size: ""
+
   # Same as '--platform'
   platform: ""
 
@@ -461,6 +464,8 @@ pkg:
 
 ```yaml
 registry:
+  mirrors:
+
   # Same as '--password'
   password: []
 
@@ -569,6 +574,9 @@ repository:
 scan:
   # Same as '--detection-priority'
   detection-priority: "precise"
+
+  # Same as '--distro'
+  distro: ""
 
   # Same as '--file-patterns'
   file-patterns: []

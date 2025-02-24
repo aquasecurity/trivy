@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -350,13 +351,16 @@ type analysisResult struct {
 }
 
 type analysisOptions struct {
-	exclusions    map[string]struct{}
+	exclusions    set.Set[string]
 	depManagement []pomDependency // from the root POM
 }
 
 func (p *Parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
 	if pom.nil() {
 		return analysisResult{}, nil
+	}
+	if opts.exclusions == nil {
+		opts.exclusions = set.New[string]()
 	}
 	// Update remoteRepositories
 	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
@@ -418,16 +422,16 @@ func (p *Parser) resolveParent(pom *pom) error {
 }
 
 func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) []pomDependency {
-	uniq := make(map[string]struct{})
+	uniq := set.New[string]()
 	var depManagement []pomDependency
 	// The preceding argument takes precedence.
 	for _, dm := range depManagements {
 		for _, dep := range dm {
-			if _, ok := uniq[dep.Name()]; ok {
+			if uniq.Contains(dep.Name()) {
 				continue
 			}
 			depManagement = append(depManagement, dep)
-			uniq[dep.Name()] = struct{}{}
+			uniq.Append(dep.Name())
 		}
 	}
 	return depManagement
@@ -502,19 +506,19 @@ func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependenc
 	})
 }
 
-func (p *Parser) filterDependencies(artifacts []artifact, exclusions map[string]struct{}) []artifact {
+func (p *Parser) filterDependencies(artifacts []artifact, exclusions set.Set[string]) []artifact {
 	return lo.Filter(artifacts, func(art artifact, _ int) bool {
 		return !excludeDep(exclusions, art)
 	})
 }
 
-func excludeDep(exclusions map[string]struct{}, art artifact) bool {
-	if _, ok := exclusions[art.Name()]; ok {
+func excludeDep(exclusions set.Set[string], art artifact) bool {
+	if exclusions.Contains(art.Name()) {
 		return true
 	}
 	// Maven can use "*" in GroupID and ArtifactID fields to exclude dependencies
 	// https://maven.apache.org/pom.html#exclusions
-	for exlusion := range exclusions {
+	for exlusion := range exclusions.Iter() {
 		// exclusion format - "<groupID>:<artifactID>"
 		e := strings.Split(exlusion, ":")
 		if (e[0] == art.GroupID || e[0] == "*") && (e[1] == art.ArtifactID || e[1] == "*") {

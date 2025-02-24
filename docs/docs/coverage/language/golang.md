@@ -100,7 +100,7 @@ $ trivy rootfs ./your_binary
     It doesn't work with UPX-compressed binaries.
 
 ### Main Module
-Go binaries installed using the `go install` command contains correct (semver) version for the main module and therefor are detected by Trivy.
+Go binaries installed using the `go install` command contains correct (semver) version for the main module and therefore are detected by Trivy.
 In other cases, Go uses the `(devel)` version[^2].
 In this case, Trivy will attempt to parse any `-ldflags` as it's a common practice to pass versions this way.
 If unsuccessful, the version will be empty[^3].

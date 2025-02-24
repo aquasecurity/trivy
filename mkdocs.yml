@@ -221,7 +221,9 @@ nav:
           - Backporting: community/maintainer/backporting.md
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
-
+  - Enterprise:
+      - Comparison: commercial/compare.md
+      - Contact Us: commercial/contact.md
 theme:
   name: material
   custom_dir: docs/overrides
@@ -266,12 +268,15 @@ extra:
     provider: mike
     default: latest
   social:
-    - icon: fontawesome/brands/twitter
+    - icon: fontawesome/brands/x-twitter
       link: https://twitter.com/AquaTrivy
     - icon: fontawesome/brands/github
       link: https://github.com/aquasecurity/trivy
     - icon: fontawesome/brands/slack
       link: https://github.com/aquasecurity/trivy
+  analytics:
+    provider: google
+    property: G-V9LJGFH7GX
 
 plugins:
   - search

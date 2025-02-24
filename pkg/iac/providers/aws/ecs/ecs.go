@@ -69,10 +69,15 @@ func (j containerDefinitionJSON) convert(metadata iacTypes.Metadata) ContainerDe
 			HostPort:      iacTypes.Int(jMapping.HostPort, metadata),
 		})
 	}
+
 	var envVars []EnvVar
 	for _, env := range j.EnvVars {
-		envVars = append(envVars, EnvVar(env))
+		envVars = append(envVars, EnvVar{
+			Name:  iacTypes.String(env.Name, metadata),
+			Value: iacTypes.String(env.Value, metadata),
+		})
 	}
+
 	return ContainerDefinition{
 		Metadata:     metadata,
 		Name:         iacTypes.String(j.Name, metadata),
@@ -99,8 +104,8 @@ type ContainerDefinition struct {
 }
 
 type EnvVar struct {
-	Name  string
-	Value string
+	Name  iacTypes.StringValue
+	Value iacTypes.StringValue
 }
 
 type PortMapping struct {

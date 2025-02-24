@@ -12,8 +12,10 @@ import (
 	"sync"
 
 	"github.com/BurntSushi/toml"
+	"github.com/samber/lo"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
@@ -117,12 +119,21 @@ func (s *GenericScanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (sc
 	}
 
 	s.logger.Debug("Scanning files...", log.Int("count", len(inputs)))
-	results, err := regoScanner.ScanInput(ctx, inputs...)
+	results, err := regoScanner.ScanInput(ctx, s.source, inputs...)
 	if err != nil {
 		return nil, err
 	}
 	results.SetSourceAndFilesystem("", fsys, false)
+
+	if err := s.applyIgnoreRules(fsys, results); err != nil {
+		return nil, err
+	}
+
 	return results, nil
+}
+
+func (s *GenericScanner) supportsIgnoreRules() bool {
+	return s.source == types.SourceDockerfile
 }
 
 func (s *GenericScanner) parseFS(ctx context.Context, fsys fs.FS, path string) (map[string]any, error) {
@@ -165,12 +176,33 @@ func (s *GenericScanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
-	regoScanner := rego.NewScanner(s.source, s.options...)
+	regoScanner := rego.NewScanner(s.options...)
 	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return nil, err
 	}
 	s.regoScanner = regoScanner
 	return regoScanner, nil
+}
+
+func (s *GenericScanner) applyIgnoreRules(fsys fs.FS, results scan.Results) error {
+	if !s.supportsIgnoreRules() {
+		return nil
+	}
+
+	uniqueFiles := lo.Uniq(lo.Map(results.GetFailed(), func(res scan.Result, _ int) string {
+		return res.Metadata().Range().GetFilename()
+	}))
+
+	for _, filename := range uniqueFiles {
+		content, err := fs.ReadFile(fsys, filename)
+		if err != nil {
+			return err
+		}
+
+		ignoreRules := ignore.Parse(string(content), filename, "")
+		results.Ignore(ignoreRules, nil)
+	}
+	return nil
 }
 
 func parseJson(ctx context.Context, r io.Reader, _ string) (any, error) {

@@ -5,6 +5,13 @@ import (
 	"slices"
 )
 
+var (
+	TokenIdent = Token{token: IDENT, literal: "IDENT"}
+	TokenAnd   = Token{token: AND, literal: "AND"}
+	TokenOR    = Token{token: OR, literal: "OR"}
+	TokenWith  = Token{token: WITH, literal: "WITH"}
+)
+
 type Expression interface {
 	String() string
 }
@@ -39,6 +46,22 @@ type CompoundExpr struct {
 	left        Expression
 	conjunction Token
 	right       Expression
+}
+
+func NewCompoundExpr(left Expression, conjunction Token, right Expression) CompoundExpr {
+	return CompoundExpr{left: left, conjunction: conjunction, right: right}
+}
+
+func (c CompoundExpr) Conjunction() Token {
+	return c.conjunction
+}
+
+func (c CompoundExpr) Left() Expression {
+	return c.left
+}
+
+func (c CompoundExpr) Right() Expression {
+	return c.right
 }
 
 func (c CompoundExpr) String() string {

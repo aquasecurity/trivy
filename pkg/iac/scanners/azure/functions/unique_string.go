@@ -2,7 +2,7 @@ package functions
 
 import (
 	"crypto/sha256"
-	"fmt"
+	"encoding/hex"
 	"strings"
 )
 
@@ -17,5 +17,5 @@ func UniqueString(args ...any) any {
 	}
 
 	hash := sha256.New().Sum([]byte(strings.Join(hashParts, "")))
-	return fmt.Sprintf("%x", hash)[:13]
+	return hex.EncodeToString(hash)[:13]
 }

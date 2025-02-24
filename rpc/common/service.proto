@@ -173,10 +173,10 @@ enum Severity {
 }
 
 message CVSS {
-  string v2_vector = 1;
-  string v3_vector = 2;
-  double v2_score  = 3;
-  double v3_score  = 4;
+  string v2_vector  = 1;
+  string v3_vector  = 2;
+  double v2_score   = 3;
+  double v3_score   = 4;
   string v40_vector = 5;
   double v40_score  = 6;
 }

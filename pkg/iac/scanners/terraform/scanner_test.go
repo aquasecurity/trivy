@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -950,4 +951,47 @@ resource "aws_s3_bucket" "test" {}
 
 		assert.Len(t, results, 2)
 	})
+}
+
+func TestUseRandomProvider(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`resource "random_id" "suffix" {}
+
+locals {
+  bucket = "test-${random_id.suffix.hex}"
+}
+
+resource "aws_s3_bucket" "test" {
+  bucket = local.bucket
+}
+
+resource "aws_s3_bucket_versioning" "test" {
+  bucket = local.bucket
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+`)},
+	}
+
+	check := `package test
+import rego.v1
+
+deny contains res if {
+  some bucket in input.aws.s3.buckets
+  bucket.versioning.enabled.value
+  res := result.new("Bucket versioning is enabled", bucket)
+}
+`
+
+	scanner := New(
+		ScannerWithAllDirectories(true),
+		rego.WithPolicyReader(strings.NewReader(check)),
+		rego.WithPolicyNamespaces("test"),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+	require.NoError(t, err)
+
+	assert.Len(t, results.GetFailed(), 1)
 }

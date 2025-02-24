@@ -9,14 +9,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/liamg/jfather"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/jfather"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -43,6 +44,7 @@ type Package struct {
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
+	PeerDependencies     map[string]string `json:"peerDependencies"`
 	Resolved             string            `json:"resolved"`
 	Dev                  bool              `json:"dev"`
 	Link                 bool              `json:"link"`
@@ -90,8 +92,8 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-lock-json#packages
 	p.resolveLinks(packages)
 
-	directDeps := make(map[string]struct{})
-	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies) {
+	directDeps := set.New[string]()
+	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies, packages[""].PeerDependencies) {
 		pkgPath := joinPaths(nodeModulesDir, name)
 		if _, ok := packages[pkgPath]; !ok {
 			p.logger.Debug("Unable to find the direct dependency",
@@ -100,7 +102,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		}
 		// Store the package paths of direct dependencies
 		// e.g. node_modules/body-parser
-		directDeps[pkgPath] = struct{}{}
+		directDeps.Append(pkgPath)
 	}
 
 	for pkgPath, pkg := range packages {
@@ -165,7 +167,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		// └─┬ watchpack@1.7.5
 		// ├─┬ chokidar@3.5.3 - optional dependency
 		// │ └── glob-parent@5.1.
-		dependencies := lo.Assign(pkg.Dependencies, pkg.OptionalDependencies)
+		dependencies := lo.Assign(pkg.Dependencies, pkg.OptionalDependencies, pkg.PeerDependencies)
 		dependsOn := make([]string, 0, len(dependencies))
 		for depName, depVersion := range dependencies {
 			depID, err := findDependsOn(pkgPath, depName, packages)
@@ -365,13 +367,13 @@ func (p *Parser) pkgNameFromPath(pkgPath string) string {
 
 func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {
 	var uniqDeps ftypes.Dependencies
-	unique := make(map[string]struct{})
+	unique := set.New[string]()
 
 	for _, dep := range deps {
 		sort.Strings(dep.DependsOn)
 		depKey := fmt.Sprintf("%s:%s", dep.ID, strings.Join(dep.DependsOn, ","))
-		if _, ok := unique[depKey]; !ok {
-			unique[depKey] = struct{}{}
+		if !unique.Contains(depKey) {
+			unique.Append(depKey)
 			uniqDeps = append(uniqDeps, dep)
 		}
 	}
@@ -380,11 +382,11 @@ func uniqueDeps(deps []ftypes.Dependency) []ftypes.Dependency {
 	return uniqDeps
 }
 
-func isIndirectPkg(pkgPath string, directDeps map[string]struct{}) bool {
+func isIndirectPkg(pkgPath string, directDeps set.Set[string]) bool {
 	// A project can contain 2 different versions of the same dependency.
 	// e.g. `node_modules/string-width/node_modules/strip-ansi` and `node_modules/string-ansi`
 	// direct dependencies always have root path (`node_modules/<pkg_name>`)
-	if _, ok := directDeps[pkgPath]; ok {
+	if directDeps.Contains(pkgPath) {
 		return false
 	}
 	return true

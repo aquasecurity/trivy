@@ -540,6 +540,65 @@
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path",
       "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3321",
+        "name": "GO-2024-3321",
+        "description": "Misuse of ServerConfig.PublicKeyCallback may cause authorization bypass in golang.org/x/crypto",
+        "aliases": [
+          "CVE-2024-45337",
+          "GHSA-v778-237x-gjrc"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/crypto",
+              "identifiers": {
+                "purl": "pkg:golang/golang.org/x/crypto"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2024-3333",
+        "name": "GO-2024-3333",
+        "description": "Non-linear parsing of case-insensitive content in golang.org/x/net/html",
+        "aliases": [
+          "CVE-2024-45338"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/github.com/aquasecurity/trivy",
+          "identifiers": {
+            "purl": "pkg:golang/github.com/aquasecurity/trivy"
+          },
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/net",
+              "identifiers": {
+                "purl": "pkg:golang/golang.org/x/net"
+              }
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
     }
   ]
 }

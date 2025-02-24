@@ -1568,6 +1568,52 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "overwrite artifact version from dependencyManagement in the root POM when dependency uses `project.*` props",
+			inputFile: filepath.Join("testdata", "root-pom-dep-management-for-deps-with-project-props", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:root-pom-dep-management-for-deps-with-project-props:1.0.0",
+					Name:         "com.example:root-pom-dep-management-for-deps-with-project-props",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "org.example:example-dependency:1.7.30",
+					Name:         "org.example:example-dependency",
+					Version:      "1.7.30",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: ftypes.Locations{
+						{
+							StartLine: 21,
+							EndLine:   25,
+						},
+					},
+				},
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					Licenses:     []string{"The Apache Software License, Version 2.0"},
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "com.example:root-pom-dep-management-for-deps-with-project-props:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:1.7.30",
+					},
+				},
+				{
+					ID: "org.example:example-dependency:1.7.30",
+					DependsOn: []string{
+						"org.example:example-api:2.0.0",
+					},
+				},
+			},
+		},
+		{
 			name:      "transitive dependencyManagement should not be inherited",
 			inputFile: filepath.Join("testdata", "transitive-dependency-management", "pom.xml"),
 			local:     true,
@@ -2221,8 +2267,7 @@ func TestPom_Parse(t *testing.T) {
 
 			gotPkgs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

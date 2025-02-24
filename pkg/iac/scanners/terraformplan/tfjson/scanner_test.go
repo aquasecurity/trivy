@@ -73,7 +73,7 @@ func Test_TerraformScanner(t *testing.T) {
 # description: Bad buckets are bad because they are not good.
 # scope: package
 # schemas:
-#   - input: schema["input"]
+#   - input: schema["cloud"]
 # custom:
 #   avd_id: AVD-TEST-0123
 #   severity: CRITICAL

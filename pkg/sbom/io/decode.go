@@ -330,15 +330,7 @@ func (m *Decoder) parseSrcVersion(ctx context.Context, pkg *ftypes.Package, ver 
 
 // addOSPkgs traverses relationships and adds OS packages
 func (m *Decoder) addOSPkgs(sbom *types.SBOM) {
-	var pkgs []ftypes.Package
-	for _, rel := range m.bom.Relationships()[m.osID] {
-		pkg, ok := m.pkgs[rel.Dependency]
-		if !ok {
-			continue
-		}
-		pkgs = append(pkgs, *pkg)
-		delete(m.pkgs, rel.Dependency) // Delete the added package
-	}
+	pkgs := m.traverseDependencies(m.osID)
 	if len(pkgs) == 0 {
 		return
 	}
@@ -348,16 +340,31 @@ func (m *Decoder) addOSPkgs(sbom *types.SBOM) {
 // addLangPkgs traverses relationships and adds language-specific packages
 func (m *Decoder) addLangPkgs(sbom *types.SBOM) {
 	for id, app := range m.apps {
-		for _, rel := range m.bom.Relationships()[id] {
-			pkg, ok := m.pkgs[rel.Dependency]
-			if !ok {
-				continue
-			}
-			app.Packages = append(app.Packages, *pkg)
-			delete(m.pkgs, rel.Dependency) // Delete the added package
-		}
+		app.Packages = append(app.Packages, m.traverseDependencies(id)...)
 		sbom.Applications = append(sbom.Applications, *app)
 	}
+}
+
+// traverseDependencies recursively retrieves all packages that the specified component depends on.
+// It starts from the given component ID and traverses the dependency tree, collecting all
+// dependent packages. The collected packages are removed from m.pkgs to prevent duplicate
+// processing. This ensures that all dependencies, including transitive ones, are properly
+// captured and associated with their parent component.
+func (m *Decoder) traverseDependencies(id uuid.UUID) ftypes.Packages {
+	var pkgs ftypes.Packages
+	for _, rel := range m.bom.Relationships()[id] {
+		pkg, ok := m.pkgs[rel.Dependency]
+		if !ok {
+			continue
+		}
+		// Add the current package
+		pkgs = append(pkgs, *pkg)
+		delete(m.pkgs, rel.Dependency) // Delete the added package
+
+		// Add the nested packages
+		pkgs = append(pkgs, m.traverseDependencies(rel.Dependency)...)
+	}
+	return pkgs
 }
 
 // addOrphanPkgs adds orphan packages.

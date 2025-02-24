@@ -1,0 +1,39 @@
+name: SPDX licenses cron
+on:
+  schedule:
+    - cron: '0 0 * * 0' # every Sunday at 00:00
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Check if SPDX exceptions
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.6
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.1.1
+        with:
+          aqua_version: v1.25.0
+          aqua_opts: ""
+
+      - name: Check if SPDX exceptions are up-to-date
+        run: |
+          mage spdx:updateLicenseExceptions
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage spdx:updateLicenseExceptions' and push it"
+            exit 1
+          fi        
+
+      - name: Microsoft Teams Notification
+        ## Until the PR with the fix for the AdaptivCard version is merged yet
+        ## https://github.com/Skitionek/notify-microsoft-teams/pull/96
+        ## Use the aquasecurity fork
+        uses: aquasecurity/notify-microsoft-teams@master
+        if: failure()
+        with:
+          webhook_url: ${{ secrets.TRIVY_MSTEAMS_WEBHOOK }}
+          needs: ${{ toJson(needs) }}
+          job: ${{ toJson(job) }}
+          steps: ${{ toJson(steps) }}

@@ -17,8 +17,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -31,7 +31,7 @@ type Scanner struct {
 	options      []options.ScannerOption
 	parserOpt    []parser.Option
 	executorOpt  []executor.Option
-	dirs         map[string]struct{}
+	dirs         set.Set[string]
 	forceAllDirs bool
 	regoScanner  *rego.Scanner
 	execLock     sync.RWMutex
@@ -55,7 +55,7 @@ func (s *Scanner) AddExecutorOptions(opts ...executor.Option) {
 
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
-		dirs:    make(map[string]struct{}),
+		dirs:    set.New[string](),
 		options: opts,
 		logger:  log.WithPrefix("terraform scanner"),
 	}
@@ -71,7 +71,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
-	regoScanner := rego.NewScanner(types.SourceCloud, s.options...)
+	regoScanner := rego.NewScanner(s.options...)
 	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return nil, err
 	}

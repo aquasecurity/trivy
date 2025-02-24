@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 
@@ -90,10 +91,16 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
+	if !lo.IsEmpty(options.Distro) && !lo.IsEmpty(detail.OS) {
+		log.Info("Overriding detected OS with provided distro", log.String("detected", detail.OS.String()),
+			log.String("provided", options.Distro.String()))
+		detail.OS = options.Distro
+	}
+
 	target := types.ScanTarget{
 		Name:              targetName,
 		OS:                detail.OS,
-		Repository:        detail.Repository,
+		Repository:        lo.Ternary(lo.IsEmpty(options.Distro), detail.Repository, nil),
 		Packages:          mergePkgs(detail.Packages, detail.ImageConfig.Packages, options),
 		Applications:      detail.Applications,
 		Misconfigurations: mergeMisconfigurations(targetName, detail),
@@ -452,12 +459,12 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package, options types.ScanOption
 	}
 
 	// pkg has priority over pkgsFromCommands
-	uniqPkgs := make(map[string]struct{})
+	uniqPkgs := set.New[string]()
 	for _, pkg := range pkgs {
-		uniqPkgs[pkg.Name] = struct{}{}
+		uniqPkgs.Append(pkg.Name)
 	}
 	for _, pkg := range pkgsFromCommands {
-		if _, ok := uniqPkgs[pkg.Name]; ok {
+		if uniqPkgs.Contains(pkg.Name) {
 			continue
 		}
 		pkgs = append(pkgs, pkg)

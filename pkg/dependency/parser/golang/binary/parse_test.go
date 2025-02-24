@@ -391,6 +391,21 @@ func TestParser_ParseLDFlags(t *testing.T) {
 			want: "",
 		},
 		{
+			name: "flag with nested flags",
+			args: args{
+				name: "github.com/k3s-io/k3s",
+				flags: []string{
+					"-X",
+					"github.com/k3s-io/k3s/version.Version=v1.28.6+k3s2",
+					"-w",
+					"-s",
+					"-extldflags",
+					"-static -lm -ldl -lz -lpthread",
+				},
+			},
+			want: "v1.28.6+k3s2",
+		},
+		{
 			name: "with no flags",
 			args: args{
 				name:  "github.com/aquasecurity/test",
