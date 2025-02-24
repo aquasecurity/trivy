@@ -154,7 +154,9 @@ func (f *Flag[T]) cast(val any) any {
 	case bool:
 		return cast.ToBool(val)
 	case string:
-		return cast.ToString(val)
+		// Viper doesn't resolve ENVs from config file.
+		// cf. https://github.com/spf13/viper/issues/315
+		return os.ExpandEnv(cast.ToString(val))
 	case int:
 		return cast.ToInt(val)
 	case float64, float32:
@@ -171,7 +173,13 @@ func (f *Flag[T]) cast(val any) any {
 			// https://github.com/spf13/cast/blob/48ddde5701366ade1d3aba346e09bb58430d37c6/caste.go#L1296-L1297
 			val = strings.Split(s, ",")
 		}
-		return cast.ToStringSlice(val)
+		ss := cast.ToStringSlice(val)
+		for i := range ss {
+			// Viper doesn't resolve ENVs from config file.
+			// cf. https://github.com/spf13/viper/issues/315
+			ss[i] = os.ExpandEnv(ss[i])
+		}
+		return ss
 	}
 	return val
 }
