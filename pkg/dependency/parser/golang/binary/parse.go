@@ -106,13 +106,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		version := p.checkVersion(info.Main.Path, info.Main.Version)
 		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
 
-		if version != "" {
-			// If version is a fake v0.0.0 kind of version, use the ldflags version first.
-			if strings.HasPrefix(version, "v0.0.0") && ldflagsVersion != "" {
-				version = ldflagsVersion
-			}
-		} else {
-			// If no version was found in the go buildinfo, fallback to the ldfags version
+		if version == "" || (strings.HasPrefix(version, "v0.0.0") && ldflagsVersion != "") {
 			version = ldflagsVersion
 		}
 
