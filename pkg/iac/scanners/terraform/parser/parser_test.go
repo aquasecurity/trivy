@@ -1729,7 +1729,7 @@ func TestNestedModulesOptions(t *testing.T) {
 	//
 	// Modules referenced
 	// main -> city ├─> brooklyn
-	//	            └─> queens
+	//              └─> queens
 	files := map[string]string{
 		"main.tf": `
 module "city" {
