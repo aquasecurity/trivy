@@ -49,7 +49,7 @@ func TestScanServer_Scan(t *testing.T) {
 						PkgTypes:         []string{types.PkgTypeOS},
 						Scanners:         []string{string(types.VulnerabilityScanner)},
 						PkgRelationships: []string{ftypes.RelationshipUnknown.String()},
-						SeveritySrc:      []string{"auto"},
+						VulnSeveritySrc:  []string{"auto"},
 					},
 				},
 			},

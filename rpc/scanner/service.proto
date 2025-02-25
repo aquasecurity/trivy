@@ -29,7 +29,7 @@ message ScanOptions {
   bool                  include_dev_deps   = 5;
   repeated string       pkg_relationships  = 6;
   common.OS             distro             = 7;
-  repeated string       severity_src       = 8;
+  repeated string       vuln_severity_src  = 8;
 
   reserved 3;  // deleted 'list_all_packages'
 }

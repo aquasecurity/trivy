@@ -18,24 +18,24 @@ import (
 func TestRepository(t *testing.T) {
 	t.Setenv("NUGET_PACKAGES", t.TempDir())
 	type args struct {
-		scanner        types.Scanner
-		ignoreIDs      []string
-		policyPaths    []string
-		namespaces     []string
-		listAllPkgs    bool
-		input          string
-		secretConfig   string
-		filePatterns   []string
-		helmSet        []string
-		helmValuesFile []string
-		skipFiles      []string
-		skipDirs       []string
-		command        string
-		format         types.Format
-		includeDevDeps bool
-		parallel       int
-		vex            string
-		severitySrc    []string
+		scanner         types.Scanner
+		ignoreIDs       []string
+		policyPaths     []string
+		namespaces      []string
+		listAllPkgs     bool
+		input           string
+		secretConfig    string
+		filePatterns    []string
+		helmSet         []string
+		helmValuesFile  []string
+		skipFiles       []string
+		skipDirs        []string
+		command         string
+		format          types.Format
+		includeDevDeps  bool
+		parallel        int
+		vex             string
+		vulnSeveritySrc []string
 	}
 	tests := []struct {
 		name     string
@@ -110,7 +110,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanner: types.VulnerabilityScanner,
 				input:   "testdata/fixtures/repo/npm",
-				severitySrc: []string{
+				vulnSeveritySrc: []string{
 					"alpine",
 					"ubuntu",
 				},
@@ -551,9 +551,9 @@ func TestRepository(t *testing.T) {
 				}
 			}
 
-			if len(tt.args.severitySrc) != 0 {
+			if len(tt.args.vulnSeveritySrc) != 0 {
 				osArgs = append(osArgs,
-					"--severity-src", strings.Join(tt.args.severitySrc, ","),
+					"--vuln-severity-src", strings.Join(tt.args.vulnSeveritySrc, ","),
 				)
 			}
 

@@ -37,7 +37,7 @@ type csArgs struct {
 	Target            string
 	secretConfig      string
 	Distro            string
-	SeveritySrc       []string
+	VulnSeveritySrc   []string
 }
 
 func TestClientServer(t *testing.T) {
@@ -287,7 +287,7 @@ func TestClientServer(t *testing.T) {
 				Command:          "repo",
 				RemoteAddrOption: "--server",
 				Target:           "testdata/fixtures/repo/npm/",
-				SeveritySrc: []string{
+				VulnSeveritySrc: []string{
 					"alpine",
 					"ubuntu",
 				},
@@ -691,9 +691,9 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string 
 		)
 	}
 
-	if len(c.SeveritySrc) != 0 {
+	if len(c.VulnSeveritySrc) != 0 {
 		osArgs = append(osArgs,
-			"--severity-src", strings.Join(c.SeveritySrc, ","),
+			"--vuln-severity-src", strings.Join(c.VulnSeveritySrc, ","),
 		)
 	}
 
