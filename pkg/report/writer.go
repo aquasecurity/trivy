@@ -51,6 +51,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			ShowSuppressed:       option.ShowSuppressed,
 			IncludeNonFailures:   option.IncludeNonFailures,
 			Trace:                option.Trace,
+			RenderCause:          option.RenderCause,
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
 		}

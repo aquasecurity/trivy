@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -41,6 +42,7 @@ type Writer struct {
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
+	RenderCause        []ftypes.ConfigType
 
 	// For licenses
 	LicenseRiskThreshold int
@@ -76,7 +78,7 @@ func (tw Writer) write(result types.Result) {
 		renderer = NewVulnerabilityRenderer(result, tw.isOutputToTerminal(), tw.Tree, tw.ShowSuppressed, tw.Severities)
 	// misconfiguration
 	case result.Class == types.ClassConfig:
-		renderer = NewMisconfigRenderer(result, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal())
+		renderer = NewMisconfigRenderer(result, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal(), tw.RenderCause)
 	// secret
 	case result.Class == types.ClassSecret:
 		renderer = NewSecretRenderer(result.Target, result.Secrets, tw.isOutputToTerminal(), tw.Severities)

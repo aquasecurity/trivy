@@ -14,11 +14,16 @@ import (
 
 func TestMisconfigRenderer(t *testing.T) {
 
-	tests := []struct {
-		name               string
-		input              types.Result
+	type args struct {
 		includeNonFailures bool
-		want               string
+		renderCause        []ftypes.ConfigType
+	}
+
+	tests := []struct {
+		name  string
+		input types.Result
+		args  args
+		want  string
 	}{
 		{
 			name: "single result",
@@ -38,7 +43,9 @@ func TestMisconfigRenderer(t *testing.T) {
 					},
 				},
 			},
-			includeNonFailures: false,
+			args: args{
+				includeNonFailures: false,
+			},
 			want: `
 my-file ()
 ==========
@@ -97,7 +104,9 @@ See https://google.com/search?q=bad%20config
 					},
 				},
 			},
-			includeNonFailures: false,
+			args: args{
+				includeNonFailures: false,
+			},
 			want: `
 my-file ()
 ==========
@@ -168,7 +177,9 @@ See https://google.com/search?q=bad%20config
 					},
 				},
 			},
-			includeNonFailures: true,
+			args: args{
+				includeNonFailures: true,
+			},
 			want: `
 my-file ()
 ==========
@@ -302,6 +313,9 @@ See https://google.com/search?q=bad%20config
 									},
 								},
 							},
+							RenderedCause: ftypes.RenderedCause{
+								Raw: "resource \"aws_security_group_rule\" \"ingress_with_cidr_blocks\" {\n  cidr_blocks = [ \"0.0.0.0/0\" ]\n}",
+							},
 						},
 					},
 				},
@@ -339,6 +353,9 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
 		},
 		{
 			name: "with rendered cause",
+			args: args{
+				renderCause: []ftypes.ConfigType{ftypes.Terraform},
+			},
 			input: types.Result{
 				Target:         "main.tf",
 				Class:          types.ClassConfig,
@@ -437,7 +454,7 @@ resource "aws_s3_bucket" "this" {
 		t.Run(test.name, func(t *testing.T) {
 			severities := []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
 				dbTypes.SeverityCritical}
-			renderer := table.NewMisconfigRenderer(test.input, severities, false, test.includeNonFailures, false)
+			renderer := table.NewMisconfigRenderer(test.input, severities, false, test.args.includeNonFailures, false, test.args.renderCause)
 			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
 		})
 	}

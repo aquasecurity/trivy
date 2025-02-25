@@ -3,6 +3,7 @@ package table
 import (
 	"bytes"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -11,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -29,9 +31,10 @@ type misconfigRenderer struct {
 	includeNonFailures bool
 	width              int
 	ansi               bool
+	renderCause        []ftypes.ConfigType
 }
 
-func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool) *misconfigRenderer {
+func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool, renderCause []ftypes.ConfigType) *misconfigRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -39,6 +42,7 @@ func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, tr
 	if !ansi {
 		tml.DisableFormatting()
 	}
+
 	return &misconfigRenderer{
 		w:                  bytes.NewBuffer([]byte{}),
 		result:             result,
@@ -47,6 +51,7 @@ func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, tr
 		includeNonFailures: includeNonFailures,
 		width:              width,
 		ansi:               ansi,
+		renderCause:        renderCause,
 	}
 }
 
@@ -108,7 +113,7 @@ func (r *misconfigRenderer) printSingleDivider() {
 func (r *misconfigRenderer) renderSingle(misconf types.DetectedMisconfiguration) {
 	r.renderSummary(misconf)
 	r.renderCode(misconf)
-	r.renderCause(misconf)
+	r.renderMisconfCause(misconf)
 	r.printf("\r\n\r\n")
 }
 
@@ -213,7 +218,11 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 	}
 }
 
-func (r *misconfigRenderer) renderCause(misconf types.DetectedMisconfiguration) {
+func (r *misconfigRenderer) renderMisconfCause(misconf types.DetectedMisconfiguration) {
+	if !slices.Contains(r.renderCause, r.result.Type) {
+		return
+	}
+
 	cause := misconf.CauseMetadata.RenderedCause
 	if cause.Raw == "" {
 		return
