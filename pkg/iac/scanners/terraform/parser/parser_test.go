@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func Test_BasicParsing(t *testing.T) {
@@ -1950,12 +1951,12 @@ func TestModuleParents(t *testing.T) {
 	// a structure that allows traversal from the root to the leafs.
 	modChildren := make(map[*terraform.Module][]*terraform.Module)
 	// Keep track of every module that exists
-	modList := make(map[*terraform.Module]struct{})
+	modSet := set.New[*terraform.Module]()
 	var root *terraform.Module
 	for _, mod := range modules {
 		mod := mod
 		modChildren[mod] = make([]*terraform.Module, 0)
-		modList[mod] = struct{}{}
+		modSet.Append(mod)
 
 		if mod.Parent() == nil {
 			// Only 1 root should exist
@@ -2017,7 +2018,7 @@ func TestModuleParents(t *testing.T) {
 
 	var assertChild func(t *testing.T, n node, mod *terraform.Module)
 	assertChild = func(t *testing.T, n node, mod *terraform.Module) {
-		defer delete(modList, mod)
+		modSet.Remove(mod)
 		children := modChildren[mod]
 
 		t.Run(n.modulePath, func(t *testing.T) {
@@ -2059,7 +2060,7 @@ func TestModuleParents(t *testing.T) {
 	assertChild(t, expectedTree, root)
 	// If any module was not asserted, the test will fail. This ensures the
 	// entire module tree is checked.
-	require.Len(t, modList, 0, "all modules asserted")
+	require.Equal(t, 0, modSet.Size(), "all modules asserted")
 }
 
 func TestCyclicModules(t *testing.T) {
