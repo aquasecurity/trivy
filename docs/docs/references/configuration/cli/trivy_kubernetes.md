@@ -99,7 +99,6 @@ trivy kubernetes [flags] [CONTEXT]
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,rbac) (default [vuln,misconfig,secret,rbac])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --severity-src strings              order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
       --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-check-update                 skip fetching rego check updates
       --skip-db-update                    skip updating vulnerability database
@@ -114,6 +113,7 @@ trivy kubernetes [flags] [CONTEXT]
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
+      --vuln-severity-src strings         order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
 ```
 
 ### Options inherited from parent commands

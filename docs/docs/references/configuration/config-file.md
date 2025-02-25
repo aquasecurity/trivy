@@ -616,10 +616,6 @@ secret:
 ## Vulnerability options
 
 ```yaml
-# Same as '--severity-src'
-severity-src:
- - auto
-
 vulnerability:
   # Same as '--ignore-status'
   ignore-status: []
@@ -632,6 +628,10 @@ vulnerability:
 
   # Same as '--vex'
   vex: []
+
+  # Same as '--vuln-severity-src'
+  vuln-severity-src:
+   - auto
 
 ```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
