@@ -1805,14 +1805,21 @@ module "invalid" {
 	}
 }
 
+// TestModuleParents sets up a nested module structure and verifies the
+// parent-child relationships are correctly set.
 func TestModuleParents(t *testing.T) {
 	files := make(map[string]string)
 
 	// module inits a new module that outputs its own name
 	module := func(name string) string {
 		files[fmt.Sprintf("modules/%s/main.tf", name)] = fmt.Sprintf(`
+			variable "prefix" {
+				type = string
+				default = ""
+			}
+		
 			output "name" {
-				value = "%s"
+				value = "${var.prefix}%s"
 			}
 		`, name)
 		return name
@@ -1829,6 +1836,7 @@ func TestModuleParents(t *testing.T) {
 		files[fmt.Sprintf("modules/%s/main.tf", parent)] = existing + fmt.Sprintf(`
 			module "%[1]s%[2]s" {
 				source = "../%[2]s"
+				prefix = "%[1]s"
 			}
 
 			output "%[1]s%[2]s" {
@@ -1916,6 +1924,7 @@ func TestModuleParents(t *testing.T) {
 	// Neighborhoods
 	include(nyc, manhattan, "")
 
+	// The main terraform file to tie it all together
 	files["main.tf"] = `
 		module "north-america" {
 			source = "./modules/north-america"
@@ -1940,7 +1949,8 @@ func TestModuleParents(t *testing.T) {
 	// modules only have 'parent'. They do not have children, so create
 	// a structure that allows traversal from the root to the leafs.
 	modChildren := make(map[*terraform.Module][]*terraform.Module)
-	modList := make(map[*terraform.Module]struct{}, 0)
+	// Keep track of every module that exists
+	modList := make(map[*terraform.Module]struct{})
 	var root *terraform.Module
 	for _, mod := range modules {
 		mod := mod
@@ -1948,6 +1958,7 @@ func TestModuleParents(t *testing.T) {
 		modList[mod] = struct{}{}
 
 		if mod.Parent() == nil {
+			// Only 1 root should exist
 			require.Nil(t, root, "root module already set")
 			root = mod
 		}
@@ -1955,6 +1966,7 @@ func TestModuleParents(t *testing.T) {
 	}
 
 	type node struct {
+		prefix     string
 		modulePath string
 		children   []node
 	}
@@ -1969,21 +1981,21 @@ func TestModuleParents(t *testing.T) {
 					{
 						modulePath: us,
 						children: []node{
-							{modulePath: wilmington},
-							{modulePath: wilmington},
-							{modulePath: springfield},
-							{modulePath: springfield},
-							{modulePath: springfield},
+							{modulePath: wilmington, prefix: "north-carolina"},
+							{modulePath: wilmington, prefix: "delaware"},
+							{modulePath: springfield, prefix: "illinois"},
+							{modulePath: springfield, prefix: "idaho"},
+							{modulePath: springfield, prefix: "massachusetts"},
 							{modulePath: nyc, children: []node{{modulePath: manhattan}}},
 						},
 					},
 					{
 						modulePath: can,
 						children: []node{
-							{modulePath: springfield},
+							{modulePath: springfield, prefix: "ontario"},
 						},
 					},
-					{modulePath: denmark, children: []node{}},
+					{modulePath: denmark, prefix: "greenland", children: []node{}},
 				},
 			},
 			{
@@ -2003,28 +2015,50 @@ func TestModuleParents(t *testing.T) {
 		},
 	}
 
-	var assertChild func(t *testing.T, n node, mod *terraform.Module, children []*terraform.Module)
-	assertChild = func(t *testing.T, n node, mod *terraform.Module, children []*terraform.Module) {
+	var assertChild func(t *testing.T, n node, mod *terraform.Module)
+	assertChild = func(t *testing.T, n node, mod *terraform.Module) {
 		defer delete(modList, mod)
+		children := modChildren[mod]
+
 		t.Run(n.modulePath, func(t *testing.T) {
 			if !assert.Equal(t, len(n.children), len(children), "modChildren count for %s", n.modulePath) {
 				return
 			}
 			for _, child := range children {
+				// Find the child module that we are expecting.
 				idx := slices.IndexFunc(n.children, func(node node) bool {
+					outputBlocks := child.GetBlocks().OfType("output")
+					outIdx := slices.IndexFunc(outputBlocks, func(outputBlock *terraform.Block) bool {
+						return outputBlock.Labels()[0] == "name"
+					})
+					if outIdx == -1 {
+						return false
+					}
+
+					output := outputBlocks[outIdx]
+					outVal := output.GetAttribute("value").Value()
+					if !outVal.Type().Equals(cty.String) {
+						return false
+					}
+
+					if outVal.AsString() != node.prefix+node.modulePath {
+						return false
+					}
 					return "modules/"+node.modulePath == child.ModulePath()
 				})
-				if !assert.NotEqualf(t, -1, idx, "module %s not found in %s", child.ModulePath(), n.modulePath) {
+				if !assert.NotEqualf(t, -1, idx, "module prefix=%s path=%s not found in %s", n.prefix, child.ModulePath(), n.modulePath) {
 					continue
 				}
 
-				assertChild(t, n.children[idx], child, modChildren[child])
+				assertChild(t, n.children[idx], child)
 			}
 		})
 
 	}
 
-	assertChild(t, expectedTree, root, modChildren[root])
+	assertChild(t, expectedTree, root)
+	// If any module was not asserted, the test will fail. This ensures the
+	// entire module tree is checked.
 	require.Len(t, modList, 0, "all modules asserted")
 }
 
