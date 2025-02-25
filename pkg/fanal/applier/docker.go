@@ -167,6 +167,7 @@ func resolveDpkgLicensesWithSymlinks(dpkgLicensesMap *map[string]*MapLicenseInfo
 }
 
 func deleteDpkgLicensesByString(key, sep string, dpkgLicensesMap *map[string]*MapLicenseInfo, nestedMap *nested.Nested) {
+	var pathToDelete []string
 	_ = nestedMap.WalkByString(key, sep, func(keys []string, value any) error {
 		switch v := value.(type) {
 		case ftypes.LicenseFile:
@@ -174,7 +175,7 @@ func deleteDpkgLicensesByString(key, sep string, dpkgLicensesMap *map[string]*Ma
 				result, ok := (*dpkgLicensesMap)[v.FilePath]
 				if ok {
 					for _, dep := range result.Deps {
-						_ = nestedMap.DeleteByString(dep.FilePath, sep) // nolint
+						pathToDelete = append(pathToDelete, dep.FilePath)
 					}
 					delete(*dpkgLicensesMap, v.FilePath)
 				}
@@ -182,6 +183,9 @@ func deleteDpkgLicensesByString(key, sep string, dpkgLicensesMap *map[string]*Ma
 		}
 		return nil
 	})
+	for _, path := range pathToDelete {
+		_ = nestedMap.DeleteByString(path, sep) // nolint
+	}
 }
 
 // ApplyLayers returns the merged layer
