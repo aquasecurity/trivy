@@ -3,6 +3,7 @@ package types
 import (
 	"slices"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -122,5 +123,5 @@ type ScanOptions struct {
 	FilePatterns        []string
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
-	VulnSeveritySrc     []string
+	VulnSeveritySrc     []dbTypes.SourceID
 }
