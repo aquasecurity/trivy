@@ -8,7 +8,7 @@
 		]
 	},
 	"dataLicense": "CC0-1.0",
-	"documentNamespace": "http://aquasecurity.github.io/trivy/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-2906855d-5098-4a22-9a72-4f7099ea3d66",
+	"documentNamespace": "http://trivy.dev/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-2906855d-5098-4a22-9a72-4f7099ea3d66",
 	"name": "integration/testdata/fixtures/images/centos-7.tar.gz",
 	"packages": [
 		{

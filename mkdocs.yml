@@ -1,5 +1,5 @@
 site_name: Trivy
-site_url: https://aquasecurity.github.io/trivy/
+site_url: https://trivy.dev/
 site_description: Trivy - All-in-one open source security scanner
 docs_dir: docs/
 repo_name: GitHub
