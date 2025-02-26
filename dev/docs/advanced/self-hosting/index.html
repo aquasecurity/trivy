@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/advanced/self-hosting/">
+        <link rel="canonical" href="https://trivy.dev/dev/docs/advanced/self-hosting/">
       
       
         <link rel="prev" href="../air-gap/">
@@ -77,8 +77,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Trivy - Self-Hosting Trivy's Databases" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/docs/advanced/self-hosting/" />
-<meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
+<meta property="og:url" content="https://trivy.dev/dev/docs/advanced/self-hosting/" />
+<meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
@@ -8120,12 +8120,12 @@ cp<span class="w"> </span>/path/to/trivy.db<span class="w"> </span>/path/to/meta
 <h3 id="configure-trivy_1">Configure Trivy<a class="headerlink" href="#configure-trivy_1" title="Permanent link">&para;</a></h3>
 <p>To configure Trivy to use the local VEX Repository:</p>
 <ol>
-<li>Locate your <a href="../supply-chain/vex/repo/#configuration-file">Trivy VEX configuration file</a> by running <code>trivy vex repo init</code>. Make the following changes to the file.</li>
+<li>Locate your <a href="../../supply-chain/vex/repo/#configuration-file">Trivy VEX configuration file</a> by running <code>trivy vex repo init</code>. Make the following changes to the file.</li>
 <li>Disable the default VEX Hub repo (<code>enabled: false</code>)</li>
-<li>Add your internal VEX Hub repository as a <a href="../supply-chain/vex/repo/#custom-repositories">custom repository</a> with the URL pointing to your local server (e.g <code>url: https://server.local</code>).</li>
+<li>Add your internal VEX Hub repository as a <a href="../../supply-chain/vex/repo/#custom-repositories">custom repository</a> with the URL pointing to your local server (e.g <code>url: https://server.local</code>).</li>
 </ol>
 <h3 id="authentication_1">Authentication<a class="headerlink" href="#authentication_1" title="Permanent link">&para;</a></h3>
-<p>If your server requires authentication, you can configure it as described in the <a href="../supply-chain/vex/repo/#authentication">VEX Repository Authentication document</a>.</p>
+<p>If your server requires authentication, you can configure it as described in the <a href="../../supply-chain/vex/repo/#authentication">VEX Repository Authentication document</a>.</p>
 
 
 

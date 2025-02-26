@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/tutorials/misconfiguration/custom-checks/">
+        <link rel="canonical" href="https://trivy.dev/dev/tutorials/misconfiguration/custom-checks/">
       
       
         <link rel="prev" href="../terraform/">
@@ -77,8 +77,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Trivy - Custom Checks with Rego" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/tutorials/misconfiguration/custom-checks/" />
-<meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
+<meta property="og:url" content="https://trivy.dev/dev/tutorials/misconfiguration/custom-checks/" />
+<meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
@@ -7811,7 +7811,7 @@ You're not viewing the latest version of the documentation.
 
 
 <h1 id="custom-checks-with-rego">Custom Checks with Rego<a class="headerlink" href="#custom-checks-with-rego" title="Permanent link">&para;</a></h1>
-<p>Trivy can scan configuration files for common security issues (a.k.a IaC misconfiguration scanning). In addition to a comprehensive built in database of checks, you can add your own custom checks. Checks are written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> language and the full documentation for checks and customizing them is available <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/">here</a>. </p>
+<p>Trivy can scan configuration files for common security issues (a.k.a IaC misconfiguration scanning). In addition to a comprehensive built in database of checks, you can add your own custom checks. Checks are written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> language and the full documentation for checks and customizing them is available <a href="https://trivy.dev/latest/docs/scanner/misconfiguration/custom/">here</a>. </p>
 <p>This tutorial will walk you through writing a custom check in Rego that checks for an issue in a Dockerfile.</p>
 <p>When you are writing a check, it's important to understand the input to the check. This will be the IaC file that you are scanning; for example, a Kubernetes YAML resource definition, or an AWS JSON CloudFormation, or in our case a Dockerfile.</p>
 <p>Since Rego is primarily tailored to query JSON objects, all incoming configuration files needs to be first converted to structured objects, which is available to the Rego code as the input variable. This is nothing that users have to do manually in Trivy. Instead, Rego makes it possible to pass in custom Schemas that detail how files are converted. Once Rego has access to a custom Schema, it will know in which format to access configuration files such as a Dockerfile. </p>
@@ -7836,7 +7836,7 @@ This tutorial will make use of the <a href="https://github.com/aquasecurity/triv
 #     - type: dockerfile
 </code></pre></div>
 <p>Important: The <code>METADATA</code> has to be defined on top of the file.</p>
-<p>More information on the different fields in the metadata can be found in the <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/">Trivy documentation.</a></p>
+<p>More information on the different fields in the metadata can be found in the <a href="https://trivy.dev/latest/docs/scanner/misconfiguration/custom/">Trivy documentation.</a></p>
 <h2 id="package-and-imports">Package and imports<a class="headerlink" href="#package-and-imports" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>package custom.dockerfile.ID001
 

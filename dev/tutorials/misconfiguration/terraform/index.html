@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/tutorials/misconfiguration/terraform/">
+        <link rel="canonical" href="https://trivy.dev/dev/tutorials/misconfiguration/terraform/">
       
       
         <link rel="prev" href="../../kubernetes/gitops/">
@@ -77,8 +77,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Trivy - Terraform scanning" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/tutorials/misconfiguration/terraform/" />
-<meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
+<meta property="og:url" content="https://trivy.dev/dev/tutorials/misconfiguration/terraform/" />
+<meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
@@ -7950,7 +7950,7 @@ You're not viewing the latest version of the documentation.
 <p><strong>A note to tfsec users</strong> 
 We have been consolidating all of our scanning-related efforts in one place, and that is Trivy. You can read more on the decision in the <a href="https://github.com/aquasecurity/tfsec/discussions/1994">tfsec discussions.</a></p>
 <h2 id="trivy-config-command">Trivy Config Command<a class="headerlink" href="#trivy-config-command" title="Permanent link">&para;</a></h2>
-<p>Terraform configuration scanning is available as part of the <code>trivy config</code> command. This command scans all configuration files for misconfiguration issues. You can find the details within <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/">misconfiguration scans in the Trivy documentation.</a> </p>
+<p>Terraform configuration scanning is available as part of the <code>trivy config</code> command. This command scans all configuration files for misconfiguration issues. You can find the details within <a href="https://trivy.dev/latest/docs/scanner/misconfiguration/">misconfiguration scans in the Trivy documentation.</a> </p>
 <p>Command structure: 
 <div class="highlight"><pre><span></span><code>trivy config &lt;any flags you want to use&gt; &lt;file or directory that you would like to scan&gt; 
 </code></pre></div></p>
@@ -7961,7 +7961,7 @@ We have been consolidating all of our scanning-related efforts in one place, and
 <li>If the configuration that has been defined does not follow best practices, the check will fail.  </li>
 </ul>
 <h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
-<p>Install Trivy on your local machines. The documentation provides several <a href="https://aquasecurity.github.io/trivy/latest/getting-started/installation/">different installation options.</a> 
+<p>Install Trivy on your local machines. The documentation provides several <a href="https://trivy.dev/latest/getting-started/installation/">different installation options.</a> 
 This tutorial will use this example <a href="https://github.com/Cloud-Native-Security/trivy-demo/tree/main/bad_iac/terraform">Terraform tutorial</a> for terraform misconfiguration scanning with Trivy. </p>
 <p>Git clone the tutorial and cd into the directory: 
 <div class="highlight"><pre><span></span><code>git clone git@github.com:Cloud-Native-Security/trivy-demo.git
@@ -7997,21 +7997,21 @@ In this case, the folder only contains Terraform configuration files. However, y
 <div class="highlight"><pre><span></span><code>trivy config --severity CRITICAL, MEDIUM terraform-infra 
 </code></pre></div>
 <h3 id="passing-tftfvars-files-into-trivy-config-scans">Passing tf.tfvars files into <code>trivy config</code> scans<a class="headerlink" href="#passing-tftfvars-files-into-trivy-config-scans" title="Permanent link">&para;</a></h3>
-<p>You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided <a href="https://aquasecurity.github.io/trivy/latest/docs/coverage/iac/terraform/#value-overrides">in the documentation.</a> </p>
+<p>You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided <a href="https://trivy.dev/latest/docs/coverage/iac/terraform/#value-overrides">in the documentation.</a> </p>
 <div class="highlight"><pre><span></span><code>trivy config --tf-vars terraform.tfvars ./
 </code></pre></div>
 <h3 id="custom-checks">Custom Checks<a class="headerlink" href="#custom-checks" title="Permanent link">&para;</a></h3>
-<p>We have lots of examples in the <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego checks into terraform misconfiguration scans. </p>
+<p>We have lots of examples in the <a href="https://trivy.dev/latest/docs/scanner/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego checks into terraform misconfiguration scans. </p>
 <h2 id="secret-and-vulnerability-scans">Secret and vulnerability scans<a class="headerlink" href="#secret-and-vulnerability-scans" title="Permanent link">&para;</a></h2>
 <p>The <code>trivy config</code> command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your <code>trivy fs</code> scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: </p>
 <div class="highlight"><pre><span></span><code>trivy fs --scanners secret,misconfig ./
 </code></pre></div>
-<p>The <code>trivy config</code> command is a sub-command of the <code>trivy fs</code> command. You can learn more about this command in the <a href="https://aquasecurity.github.io/trivy/latest/docs/target/filesystem/">documentation.</a> </p>
+<p>The <code>trivy config</code> command is a sub-command of the <code>trivy fs</code> command. You can learn more about this command in the <a href="https://trivy.dev/latest/docs/target/filesystem/">documentation.</a> </p>
 <h2 id="scanning-terraform-plan-files">Scanning Terraform Plan files<a class="headerlink" href="#scanning-terraform-plan-files" title="Permanent link">&para;</a></h2>
-<p>Instead of scanning your different Terraform resources individually, you could also scan your Terraform Plan file before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. <a href="https://aquasecurity.github.io/trivy/latest/docs/coverage/iac/terraform/#terraform">Here</a> is the link to the documentation.</p>
+<p>Instead of scanning your different Terraform resources individually, you could also scan your Terraform Plan file before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. <a href="https://trivy.dev/latest/docs/coverage/iac/terraform/#terraform">Here</a> is the link to the documentation.</p>
 <p>Note that you need to be able to create a terraform init and plan without any errors. </p>
 <h2 id="using-trivy-in-your-cicd-pipeline">Using Trivy in your CI/CD pipeline<a class="headerlink" href="#using-trivy-in-your-cicd-pipeline" title="Permanent link">&para;</a></h2>
-<p>Similar to tfsec, Trivy can be used either on local developer machines or integrated into your CI/CD pipeline. There are several steps available for different pipelines, including GitHub Actions, Circle CI, GitLab, Travis and more in the tutorials section of the documentation: <a href="https://aquasecurity.github.io/trivy/latest/tutorials/integrations/">https://aquasecurity.github.io/trivy/latest/tutorials/integrations/</a> </p>
+<p>Similar to tfsec, Trivy can be used either on local developer machines or integrated into your CI/CD pipeline. There are several steps available for different pipelines, including GitHub Actions, Circle CI, GitLab, Travis and more in the tutorials section of the documentation: <a href="https://trivy.dev/latest/tutorials/integrations/">https://trivy.dev/latest/tutorials/integrations/</a> </p>
 
 
 

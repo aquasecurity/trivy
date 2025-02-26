@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/configuration/filtering/">
+        <link rel="canonical" href="https://trivy.dev/dev/docs/configuration/filtering/">
       
       
         <link rel="prev" href="../">
@@ -77,8 +77,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Trivy - Filtering" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/docs/configuration/filtering/" />
-<meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
+<meta property="og:url" content="https://trivy.dev/dev/docs/configuration/filtering/" />
+<meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
@@ -8420,7 +8420,7 @@ Once this functionality is stable, the YAML file will be loaded automatically.</
 <div class="highlight"><pre><span></span><code><span class="m">2023</span>-08-31T11:10:27.155+0600<span class="w">    </span>INFO<span class="w">    </span>Vulnerability<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
 <span class="m">2023</span>-08-31T11:10:27.155+0600<span class="w">    </span>INFO<span class="w">    </span>Secret<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
 <span class="m">2023</span>-08-31T11:10:27.155+0600<span class="w">    </span>INFO<span class="w">    </span>If<span class="w"> </span>your<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>slow,<span class="w"> </span>please<span class="w"> </span>try<span class="w"> </span><span class="s1">&#39;--scanners vuln&#39;</span><span class="w"> </span>to<span class="w"> </span>disable<span class="w"> </span>secret<span class="w"> </span>scanning
-<span class="m">2023</span>-08-31T11:10:27.155+0600<span class="w">    </span>INFO<span class="w">    </span>Please<span class="w"> </span>see<span class="w"> </span>also<span class="w"> </span>https://aquasecurity.github.io/trivy/dev/docs/scanner/secret/#recommendation<span class="w"> </span><span class="k">for</span><span class="w"> </span>faster<span class="w"> </span>secret<span class="w"> </span>detection
+<span class="m">2023</span>-08-31T11:10:27.155+0600<span class="w">    </span>INFO<span class="w">    </span>Please<span class="w"> </span>see<span class="w"> </span>also<span class="w"> </span>https://trivy.dev/dev/docs/scanner/secret/#recommendation<span class="w"> </span><span class="k">for</span><span class="w"> </span>faster<span class="w"> </span>secret<span class="w"> </span>detection
 <span class="m">2023</span>-08-31T11:10:29.164+0600<span class="w">    </span>INFO<span class="w">    </span>Detected<span class="w"> </span>OS:<span class="w"> </span>alpine
 <span class="m">2023</span>-08-31T11:10:29.164+0600<span class="w">    </span>INFO<span class="w">    </span>Detecting<span class="w"> </span>Alpine<span class="w"> </span>vulnerabilities...
 <span class="m">2023</span>-08-31T11:10:29.169+0600<span class="w">    </span>INFO<span class="w">    </span>Number<span class="w"> </span>of<span class="w"> </span>language-specific<span class="w"> </span>files:<span class="w"> </span><span class="m">1</span>
@@ -8513,8 +8513,8 @@ ignore {
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--ignore-policy<span class="w"> </span>examples/ignore-policies/basic.rego<span class="w"> </span>centos:7
 </code></pre></div>
 <p>For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>.
-More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-31-gecc01bb3f/pkg/result/module.go">here</a>.</p>
-<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-31-gecc01bb3f/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-31-gecc01bb3f/examples/ignore-policies">here</a>.</p>
+More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-35-g49456ba84/pkg/result/module.go">here</a>.</p>
+<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-35-g49456ba84/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-35-g49456ba84/examples/ignore-policies">here</a>.</p>
 <h3 id="by-vulnerability-exploitability-exchange-vex">By Vulnerability Exploitability Exchange (VEX)<a class="headerlink" href="#by-vulnerability-exploitability-exchange-vex" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

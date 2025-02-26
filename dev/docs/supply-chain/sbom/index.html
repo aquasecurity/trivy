@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/supply-chain/sbom/">
+        <link rel="canonical" href="https://trivy.dev/dev/docs/supply-chain/sbom/">
       
       
         <link rel="prev" href="../../configuration/others/">
@@ -77,8 +77,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Trivy - SBOM" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/docs/supply-chain/sbom/" />
-<meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
+<meta property="og:url" content="https://trivy.dev/dev/docs/supply-chain/sbom/" />
+<meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
@@ -8361,286 +8361,1288 @@ Note that XML format is not supported at the moment.</p>
 </code></pre></div>
 <h4 id="spdx">SPDX<a class="headerlink" href="#spdx" title="Permanent link">&para;</a></h4>
 <p>Trivy can generate SBOM in the <a href="https://spdx.github.io/spdx-spec/v2.2.2/">SPDX</a> format.</p>
-<p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>spdx</code> with the <code>--format</code> option.</p>
+<p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>spdx</code> or <code>spdx-json</code> with the <code>--format</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format spdx --output result.spdx alpine:3.15
 </code></pre></div>
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>$ cat result.spdx
-SPDXVersion: SPDX-2.2
+<div class="highlight"><pre><span></span><code>SPDXVersion: SPDX-2.3
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: alpine:3.15
-DocumentNamespace: https://aquasecurity.github.io/trivy/container_image/alpine:3.15-bebf6b19-a94c-4e2c-af44-065f63923f48
+DocumentNamespace: http://trivy.dev/container_image/alpine:3.15-12db86e1-4aa4-40ec-900b-5aaa5d82461b
 Creator: Organization: aquasecurity
-Creator: Tool: trivy-0.38.1
-Created: 2022-04-28T07:32:57.142806Z
+Creator: Tool: trivy-0.58.0
+Created: 2025-02-11T07:43:38Z
 
-##### Package: zlib
+##### Package: alpine:3.15
 
-PackageName: zlib
-SPDXID: SPDXRef-12bc938ac028a5e1
-PackageVersion: 1.2.12-r0
+PackageName: alpine:3.15
+SPDXID: SPDXRef-ContainerImage-d8b2a386253047e7
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: CONTAINER
 FilesAnalyzed: false
-PackageLicenseConcluded: Zlib
-PackageLicenseDeclared: Zlib
+ExternalRef: PACKAGE-MANAGER purl pkg:oci/alpine@sha256%3A19b4bcc4f60e99dd5ebdca0cbce22c503bbcff197549d7e19dab4f22254dc864?arch=amd64&amp;repository_url=index.docker.io%2Flibrary%2Falpine
 
-##### Package: apk-tools
+##### Package: alpine
 
-PackageName: apk-tools
-SPDXID: SPDXRef-26c274652190d87f
-PackageVersion: 2.12.7-r3
+PackageName: alpine
+SPDXID: SPDXRef-OperatingSystem-c24750c3b737d897
+PackageVersion: 3.15.11
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: OPERATING-SYSTEM
 FilesAnalyzed: false
-PackageLicenseConcluded: GPL-2.0-only
-PackageLicenseDeclared: GPL-2.0-only
 
 ##### Package: libretls
 
 PackageName: libretls
-SPDXID: SPDXRef-2b021966d19a8211
+SPDXID: SPDXRef-Package-343391d704e00fbd
 PackageVersion: 3.3.4-r3
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
 FilesAnalyzed: false
-PackageLicenseConcluded: ISC AND (BSD-3-Clause OR MIT)
-PackageLicenseDeclared: ISC AND (BSD-3-Clause OR MIT)
-
-##### Package: busybox
-
-PackageName: busybox
-SPDXID: SPDXRef-317ce3476703f20d
-PackageVersion: 1.34.1-r5
-FilesAnalyzed: false
-PackageLicenseConcluded: GPL-2.0-only
-PackageLicenseDeclared: GPL-2.0-only
-
-##### Package: libcrypto1.1
-
-PackageName: libcrypto1.1
-SPDXID: SPDXRef-34f407fb4dbd67f4
-PackageVersion: 1.1.1n-r0
-FilesAnalyzed: false
-PackageLicenseConcluded: OpenSSL
-PackageLicenseDeclared: OpenSSL
+PackageChecksum: SHA1: 67dfefe5456c45192b60d76ade98c501b0ae814f
+PackageSourceInfo: built package from: libretls 3.3.4-r3
+PackageLicenseConcluded: ISC AND BSD-3-Clause AND MIT
+PackageLicenseDeclared: ISC AND BSD-3-Clause AND MIT
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/libretls@3.3.4-r3?arch=x86_64&amp;distro=3.15.11
 
 ##### Package: libc-utils
 
 PackageName: libc-utils
-SPDXID: SPDXRef-4bbc1cb449d54083
+SPDXID: SPDXRef-Package-43343abe5c1a0439
 PackageVersion: 0.7.2-r3
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
 FilesAnalyzed: false
+PackageChecksum: SHA1: 798de3ebb57f3e28f408080746935f213a099722
+PackageSourceInfo: built package from: libc-dev 0.7.2-r3
 PackageLicenseConcluded: BSD-2-Clause AND BSD-3-Clause
 PackageLicenseDeclared: BSD-2-Clause AND BSD-3-Clause
-
-##### Package: alpine-keys
-
-PackageName: alpine-keys
-SPDXID: SPDXRef-a3bdd174be1456b6
-PackageVersion: 2.4-r1
-FilesAnalyzed: false
-PackageLicenseConcluded: MIT
-PackageLicenseDeclared: MIT
-
-##### Package: ca-certificates-bundle
-
-PackageName: ca-certificates-bundle
-SPDXID: SPDXRef-ac6472ba26fb991c
-PackageVersion: 20211220-r0
-FilesAnalyzed: false
-PackageLicenseConcluded: MPL-2.0 AND MIT
-PackageLicenseDeclared: MPL-2.0 AND MIT
-
-##### Package: libssl1.1
-
-PackageName: libssl1.1
-SPDXID: SPDXRef-b2d1b1d70fe90f7d
-PackageVersion: 1.1.1n-r0
-FilesAnalyzed: false
-PackageLicenseConcluded: OpenSSL
-PackageLicenseDeclared: OpenSSL
-
-##### Package: scanelf
-
-PackageName: scanelf
-SPDXID: SPDXRef-c617077ba6649520
-PackageVersion: 1.3.3-r0
-FilesAnalyzed: false
-PackageLicenseConcluded: GPL-2.0-only
-PackageLicenseDeclared: GPL-2.0-only
-
-##### Package: musl
-
-PackageName: musl
-SPDXID: SPDXRef-ca80b810029cde0e
-PackageVersion: 1.2.2-r7
-FilesAnalyzed: false
-PackageLicenseConcluded: MIT
-PackageLicenseDeclared: MIT
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/libc-utils@0.7.2-r3?arch=x86_64&amp;distro=3.15.11
 
 ##### Package: alpine-baselayout
 
 PackageName: alpine-baselayout
-SPDXID: SPDXRef-d782e64751ba9faa
+SPDXID: SPDXRef-Package-64b7e662458dcd5f
 PackageVersion: 3.2.0-r18
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
 FilesAnalyzed: false
+PackageChecksum: SHA1: 132992eab020986b3b5d886a77212889680467a0
+PackageSourceInfo: built package from: alpine-baselayout 3.2.0-r18
 PackageLicenseConcluded: GPL-2.0-only
 PackageLicenseDeclared: GPL-2.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/alpine-baselayout@3.2.0-r18?arch=x86_64&amp;distro=3.15.11
+
+##### Package: busybox
+
+PackageName: busybox
+SPDXID: SPDXRef-Package-6c7c9dac75e301b7
+PackageVersion: 1.34.1-r7
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: 21f9265e7a34c795fba4e99c8ae37b57f31cd1a2
+PackageSourceInfo: built package from: busybox 1.34.1-r7
+PackageLicenseConcluded: GPL-2.0-only
+PackageLicenseDeclared: GPL-2.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/busybox@1.34.1-r7?arch=x86_64&amp;distro=3.15.11
+
+##### Package: ca-certificates-bundle
+
+PackageName: ca-certificates-bundle
+SPDXID: SPDXRef-Package-702c9bf0cfddb42e
+PackageVersion: 20230506-r0
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: 99894c0b834a3f5955e6e5d5f0d804943f05ff52
+PackageSourceInfo: built package from: ca-certificates 20230506-r0
+PackageLicenseConcluded: MPL-2.0 AND MIT
+PackageLicenseDeclared: MPL-2.0 AND MIT
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/ca-certificates-bundle@20230506-r0?arch=x86_64&amp;distro=3.15.11
 
 ##### Package: musl-utils
 
 PackageName: musl-utils
-SPDXID: SPDXRef-e5e8a237f6162e22
-PackageVersion: 1.2.2-r7
+SPDXID: SPDXRef-Package-92eb9ab29b057905
+PackageVersion: 1.2.2-r9
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
 FilesAnalyzed: false
-PackageLicenseConcluded: MIT BSD GPL2+
-PackageLicenseDeclared: MIT BSD GPL2+
+PackageChecksum: SHA1: f69aa6d6a57c90358005ce61ccb4ad96cdc303f4
+PackageSourceInfo: built package from: musl 1.2.2-r9
+PackageLicenseConcluded: MIT AND BSD-3-Clause AND GPL-2.0-or-later
+PackageLicenseDeclared: MIT AND BSD-3-Clause AND GPL-2.0-or-later
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/musl-utils@1.2.2-r9?arch=x86_64&amp;distro=3.15.11
+
+##### Package: scanelf
+
+PackageName: scanelf
+SPDXID: SPDXRef-Package-988bca2f70cf58f6
+PackageVersion: 1.3.3-r0
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: d7f7590e450870a4f79671c2369b31b5bb07349a
+PackageSourceInfo: built package from: pax-utils 1.3.3-r0
+PackageLicenseConcluded: GPL-2.0-only
+PackageLicenseDeclared: GPL-2.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/scanelf@1.3.3-r0?arch=x86_64&amp;distro=3.15.11
+
+##### Package: apk-tools
+
+PackageName: apk-tools
+SPDXID: SPDXRef-Package-aa2e51a695e95cb9
+PackageVersion: 2.12.7-r3
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: ddf3ddf8545768bc323649559feaae1560f29273
+PackageSourceInfo: built package from: apk-tools 2.12.7-r3
+PackageLicenseConcluded: GPL-2.0-only
+PackageLicenseDeclared: GPL-2.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/apk-tools@2.12.7-r3?arch=x86_64&amp;distro=3.15.11
+
+##### Package: libcrypto1.1
+
+PackageName: libcrypto1.1
+SPDXID: SPDXRef-Package-ba5f079c5c32fc8
+PackageVersion: 1.1.1w-r1
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: e378634f5c8af32ca75ac56f41ecf4e8d49584a0
+PackageSourceInfo: built package from: openssl 1.1.1w-r1
+PackageLicenseConcluded: OpenSSL
+PackageLicenseDeclared: OpenSSL
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/libcrypto1.1@1.1.1w-r1?arch=x86_64&amp;distro=3.15.11
+
+##### Package: alpine-keys
+
+PackageName: alpine-keys
+SPDXID: SPDXRef-Package-be18726b6be779d1
+PackageVersion: 2.4-r1
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: 903176b2d2a8ddefd1ba6940f19ad17c2c1d4aff
+PackageSourceInfo: built package from: alpine-keys 2.4-r1
+PackageLicenseConcluded: MIT
+PackageLicenseDeclared: MIT
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/alpine-keys@2.4-r1?arch=x86_64&amp;distro=3.15.11
 
 ##### Package: ssl_client
 
 PackageName: ssl_client
-SPDXID: SPDXRef-fdf0ce84f6337be4
-PackageVersion: 1.34.1-r5
+SPDXID: SPDXRef-Package-d9ad92ed9413c93b
+PackageVersion: 1.34.1-r7
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
 FilesAnalyzed: false
+PackageChecksum: SHA1: dddfa62dd51bd8807ee1d8660e860574a9dd78ed
+PackageSourceInfo: built package from: busybox 1.34.1-r7
 PackageLicenseConcluded: GPL-2.0-only
 PackageLicenseDeclared: GPL-2.0-only
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/ssl_client@1.34.1-r7?arch=x86_64&amp;distro=3.15.11
+
+##### Package: musl
+
+PackageName: musl
+SPDXID: SPDXRef-Package-ee9b5186331e7a76
+PackageVersion: 1.2.2-r9
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: 7ebdef6cf7f9b58c0e213b333db946d22b00b777
+PackageSourceInfo: built package from: musl 1.2.2-r9
+PackageLicenseConcluded: MIT
+PackageLicenseDeclared: MIT
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/musl@1.2.2-r9?arch=x86_64&amp;distro=3.15.11
+
+##### Package: libssl1.1
+
+PackageName: libssl1.1
+SPDXID: SPDXRef-Package-f00669065070476c
+PackageVersion: 1.1.1w-r1
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: 9306ed15b3bdfc7553d5c14c472d87a41fef8541
+PackageSourceInfo: built package from: openssl 1.1.1w-r1
+PackageLicenseConcluded: OpenSSL
+PackageLicenseDeclared: OpenSSL
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/libssl1.1@1.1.1w-r1?arch=x86_64&amp;distro=3.15.11
+
+##### Package: zlib
+
+PackageName: zlib
+SPDXID: SPDXRef-Package-fcb106f21773cad3
+PackageVersion: 1.2.12-r3
+PackageSupplier: NOASSERTION
+PackageDownloadLocation: NONE
+PrimaryPackagePurpose: LIBRARY
+FilesAnalyzed: false
+PackageChecksum: SHA1: ab98d0416bf1dcd245c7b0800f99cbceacfa48b3
+PackageSourceInfo: built package from: zlib 1.2.12-r3
+PackageLicenseConcluded: Zlib
+PackageLicenseDeclared: Zlib
+ExternalRef: PACKAGE-MANAGER purl pkg:apk/alpine/zlib@1.2.12-r3?arch=x86_64&amp;distro=3.15.11
+
+##### Relationships
+
+Relationship: SPDXRef-ContainerImage-d8b2a386253047e7 CONTAINS SPDXRef-OperatingSystem-c24750c3b737d897
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-ContainerImage-d8b2a386253047e7
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-343391d704e00fbd
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-43343abe5c1a0439
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-64b7e662458dcd5f
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-6c7c9dac75e301b7
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-702c9bf0cfddb42e
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-92eb9ab29b057905
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-988bca2f70cf58f6
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-aa2e51a695e95cb9
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-ba5f079c5c32fc8
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-be18726b6be779d1
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-d9ad92ed9413c93b
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-f00669065070476c
+Relationship: SPDXRef-OperatingSystem-c24750c3b737d897 CONTAINS SPDXRef-Package-fcb106f21773cad3
+Relationship: SPDXRef-Package-343391d704e00fbd DEPENDS_ON SPDXRef-Package-702c9bf0cfddb42e
+Relationship: SPDXRef-Package-343391d704e00fbd DEPENDS_ON SPDXRef-Package-ba5f079c5c32fc8
+Relationship: SPDXRef-Package-343391d704e00fbd DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-343391d704e00fbd DEPENDS_ON SPDXRef-Package-f00669065070476c
+Relationship: SPDXRef-Package-43343abe5c1a0439 DEPENDS_ON SPDXRef-Package-92eb9ab29b057905
+Relationship: SPDXRef-Package-64b7e662458dcd5f DEPENDS_ON SPDXRef-Package-6c7c9dac75e301b7
+Relationship: SPDXRef-Package-64b7e662458dcd5f DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-6c7c9dac75e301b7 DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-92eb9ab29b057905 DEPENDS_ON SPDXRef-Package-988bca2f70cf58f6
+Relationship: SPDXRef-Package-92eb9ab29b057905 DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-988bca2f70cf58f6 DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-aa2e51a695e95cb9 DEPENDS_ON SPDXRef-Package-702c9bf0cfddb42e
+Relationship: SPDXRef-Package-aa2e51a695e95cb9 DEPENDS_ON SPDXRef-Package-ba5f079c5c32fc8
+Relationship: SPDXRef-Package-aa2e51a695e95cb9 DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-aa2e51a695e95cb9 DEPENDS_ON SPDXRef-Package-f00669065070476c
+Relationship: SPDXRef-Package-aa2e51a695e95cb9 DEPENDS_ON SPDXRef-Package-fcb106f21773cad3
+Relationship: SPDXRef-Package-ba5f079c5c32fc8 DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-d9ad92ed9413c93b DEPENDS_ON SPDXRef-Package-343391d704e00fbd
+Relationship: SPDXRef-Package-d9ad92ed9413c93b DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-f00669065070476c DEPENDS_ON SPDXRef-Package-ba5f079c5c32fc8
+Relationship: SPDXRef-Package-f00669065070476c DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
+Relationship: SPDXRef-Package-fcb106f21773cad3 DEPENDS_ON SPDXRef-Package-ee9b5186331e7a76
 </code></pre></div>
 
 </details>
 
-<p>SPDX-JSON format is also supported by using <code>spdx-json</code> with the <code>--format</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format spdx-json --output result.spdx.json alpine:3.15
+<div class="highlight"><pre><span></span><code>$ trivy image --format spdx-json --output result.spdx alpine:3.15
 </code></pre></div>
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>$ cat result.spdx.json | jq .
-{
-    &quot;SPDXID&quot;: &quot;SPDXRef-DOCUMENT&quot;,
-    &quot;creationInfo&quot;: {
-        &quot;created&quot;: &quot;2022-04-28T08:16:55.328255Z&quot;,
-        &quot;creators&quot;: [
-            &quot;Tool: trivy-0.38.1&quot;,
-            &quot;Organization: aquasecurity&quot;
-        ]
-    },
-    &quot;dataLicense&quot;: &quot;CC0-1.0&quot;,
-    &quot;documentNamespace&quot;: &quot;http://aquasecurity.github.io/trivy/container_image/alpine:3.15-d9549e3a-a4c5-4ee3-8bde-8c78d451fbe7&quot;,
-    &quot;name&quot;: &quot;alpine:3.15&quot;,
-    &quot;packages&quot;: [
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-12bc938ac028a5e1&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;Zlib&quot;,
-            &quot;licenseDeclared&quot;: &quot;Zlib&quot;,
-            &quot;name&quot;: &quot;zlib&quot;,
-            &quot;versionInfo&quot;: &quot;1.2.12-r0&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-26c274652190d87f&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;licenseDeclared&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;name&quot;: &quot;apk-tools&quot;,
-            &quot;versionInfo&quot;: &quot;2.12.7-r3&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-2b021966d19a8211&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;ISC AND (BSD-3-Clause OR MIT)&quot;,
-            &quot;licenseDeclared&quot;: &quot;ISC AND (BSD-3-Clause OR MIT)&quot;,
-            &quot;name&quot;: &quot;libretls&quot;,
-            &quot;versionInfo&quot;: &quot;3.3.4-r3&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-317ce3476703f20d&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;licenseDeclared&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;name&quot;: &quot;busybox&quot;,
-            &quot;versionInfo&quot;: &quot;1.34.1-r5&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-34f407fb4dbd67f4&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;OpenSSL&quot;,
-            &quot;licenseDeclared&quot;: &quot;OpenSSL&quot;,
-            &quot;name&quot;: &quot;libcrypto1.1&quot;,
-            &quot;versionInfo&quot;: &quot;1.1.1n-r0&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-4bbc1cb449d54083&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;BSD-2-Clause AND BSD-3-Clause&quot;,
-            &quot;licenseDeclared&quot;: &quot;BSD-2-Clause AND BSD-3-Clause&quot;,
-            &quot;name&quot;: &quot;libc-utils&quot;,
-            &quot;versionInfo&quot;: &quot;0.7.2-r3&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-a3bdd174be1456b6&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;MIT&quot;,
-            &quot;licenseDeclared&quot;: &quot;MIT&quot;,
-            &quot;name&quot;: &quot;alpine-keys&quot;,
-            &quot;versionInfo&quot;: &quot;2.4-r1&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-ac6472ba26fb991c&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;MPL-2.0 AND MIT&quot;,
-            &quot;licenseDeclared&quot;: &quot;MPL-2.0 AND MIT&quot;,
-            &quot;name&quot;: &quot;ca-certificates-bundle&quot;,
-            &quot;versionInfo&quot;: &quot;20211220-r0&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-b2d1b1d70fe90f7d&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;OpenSSL&quot;,
-            &quot;licenseDeclared&quot;: &quot;OpenSSL&quot;,
-            &quot;name&quot;: &quot;libssl1.1&quot;,
-            &quot;versionInfo&quot;: &quot;1.1.1n-r0&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-c617077ba6649520&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;licenseDeclared&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;name&quot;: &quot;scanelf&quot;,
-            &quot;versionInfo&quot;: &quot;1.3.3-r0&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-ca80b810029cde0e&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;MIT&quot;,
-            &quot;licenseDeclared&quot;: &quot;MIT&quot;,
-            &quot;name&quot;: &quot;musl&quot;,
-            &quot;versionInfo&quot;: &quot;1.2.2-r7&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-d782e64751ba9faa&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;licenseDeclared&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;name&quot;: &quot;alpine-baselayout&quot;,
-            &quot;versionInfo&quot;: &quot;3.2.0-r18&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-e5e8a237f6162e22&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;MIT BSD GPL2+&quot;,
-            &quot;licenseDeclared&quot;: &quot;MIT BSD GPL2+&quot;,
-            &quot;name&quot;: &quot;musl-utils&quot;,
-            &quot;versionInfo&quot;: &quot;1.2.2-r7&quot;
-        },
-        {
-            &quot;SPDXID&quot;: &quot;SPDXRef-fdf0ce84f6337be4&quot;,
-            &quot;filesAnalyzed&quot;: false,
-            &quot;licenseConcluded&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;licenseDeclared&quot;: &quot;GPL-2.0-only&quot;,
-            &quot;name&quot;: &quot;ssl_client&quot;,
-            &quot;versionInfo&quot;: &quot;1.34.1-r5&quot;
-        }
-    ],
-    &quot;spdxVersion&quot;: &quot;SPDX-2.2&quot;
-}
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;spdxVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDX-2.3&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;dataLicense&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CC0-1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-DOCUMENT&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine:3.15&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;documentNamespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://trivy.dev/container_image/alpine:3.15-bbe0096f-0ed0-47b4-bbea-82121a9201f1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;creationInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;creators&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;Organization: aquasecurity&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;packages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine:3.15&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-ContainerImage-d8b2a386253047e7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:oci/alpine@sha256%3A19b4bcc4f60e99dd5ebdca0cbce22c503bbcff197549d7e19dab4f22254dc864?arch=amd64\u0026repository_url=index.docker.io%2Flibrary%2Falpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINER&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageID: sha256:32b91e3161c8fc2e3baf2732a594305ca5093c82ff4e0c9f6ebbd2a879468e1d&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RepoDigest: alpine@sha256:19b4bcc4f60e99dd5ebdca0cbce22c503bbcff197549d7e19dab4f22254dc864&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RepoTag: alpine:3.15&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SchemaVersion: 2&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine-baselayout&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-64b7e662458dcd5f&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.2.0-r18&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;132992eab020986b3b5d886a77212889680467a0&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: alpine-baselayout 3.2.0-r18&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/alpine-baselayout@3.2.0-r18?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: alpine-baselayout@3.2.0-r18&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine-keys&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-be18726b6be779d1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.4-r1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;903176b2d2a8ddefd1ba6940f19ad17c2c1d4aff&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: alpine-keys 2.4-r1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/alpine-keys@2.4-r1?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: alpine-keys@2.4-r1&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;apk-tools&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-aa2e51a695e95cb9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.12.7-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ddf3ddf8545768bc323649559feaae1560f29273&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: apk-tools 2.12.7-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/apk-tools@2.12.7-r3?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: apk-tools@2.12.7-r3&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;busybox&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-6c7c9dac75e301b7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.34.1-r7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;21f9265e7a34c795fba4e99c8ae37b57f31cd1a2&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: busybox 1.34.1-r7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/busybox@1.34.1-r7?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: busybox@1.34.1-r7&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ca-certificates-bundle&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-702c9bf0cfddb42e&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;20230506-r0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;99894c0b834a3f5955e6e5d5f0d804943f05ff52&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: ca-certificates 20230506-r0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MPL-2.0 AND MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MPL-2.0 AND MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/ca-certificates-bundle@20230506-r0?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: ca-certificates-bundle@20230506-r0&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;libc-utils&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-43343abe5c1a0439&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.7.2-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;798de3ebb57f3e28f408080746935f213a099722&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: libc-dev 0.7.2-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BSD-2-Clause AND BSD-3-Clause&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BSD-2-Clause AND BSD-3-Clause&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/libc-utils@0.7.2-r3?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: libc-utils@0.7.2-r3&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;libcrypto1.1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ba5f079c5c32fc8&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.1.1w-r1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e378634f5c8af32ca75ac56f41ecf4e8d49584a0&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: openssl 1.1.1w-r1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OpenSSL&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OpenSSL&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/libcrypto1.1@1.1.1w-r1?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: libcrypto1.1@1.1.1w-r1&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;libretls&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-343391d704e00fbd&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.3.4-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;67dfefe5456c45192b60d76ade98c501b0ae814f&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: libretls 3.3.4-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISC AND BSD-3-Clause AND MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISC AND BSD-3-Clause AND MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/libretls@3.3.4-r3?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: libretls@3.3.4-r3&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;libssl1.1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-f00669065070476c&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.1.1w-r1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;9306ed15b3bdfc7553d5c14c472d87a41fef8541&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: openssl 1.1.1w-r1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OpenSSL&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OpenSSL&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/libssl1.1@1.1.1w-r1?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: libssl1.1@1.1.1w-r1&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;musl&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.2.2-r9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;7ebdef6cf7f9b58c0e213b333db946d22b00b777&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: musl 1.2.2-r9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/musl@1.2.2-r9?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: musl@1.2.2-r9&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;musl-utils&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-92eb9ab29b057905&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.2.2-r9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;f69aa6d6a57c90358005ce61ccb4ad96cdc303f4&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: musl 1.2.2-r9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIT AND BSD-3-Clause AND GPL-2.0-or-later&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIT AND BSD-3-Clause AND GPL-2.0-or-later&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/musl-utils@1.2.2-r9?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: musl-utils@1.2.2-r9&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scanelf&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-988bca2f70cf58f6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.3-r0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d7f7590e450870a4f79671c2369b31b5bb07349a&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: pax-utils 1.3.3-r0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/scanelf@1.3.3-r0?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: scanelf@1.3.3-r0&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ssl_client&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-d9ad92ed9413c93b&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.34.1-r7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dddfa62dd51bd8807ee1d8660e860574a9dd78ed&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: busybox 1.34.1-r7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPL-2.0-only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/ssl_client@1.34.1-r7?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: ssl_client@1.34.1-r7&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;zlib&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-fcb106f21773cad3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.2.12-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supplier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOASSERTION&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;checksums&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;checksumValue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ab98d0416bf1dcd245c7b0800f99cbceacfa48b3&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;sourceInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;built package from: zlib 1.2.12-r3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseConcluded&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Zlib&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;licenseDeclared&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Zlib&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;externalRefs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;referenceCategory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PACKAGE-MANAGER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;purl&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;referenceLocator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:apk/alpine/zlib@1.2.12-r3?arch=x86_64\u0026distro=3.15.11&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDiffID: sha256:2879a4821959ab702528e28a1c59cd26c4956112497f6d1dbfd86c8d88003983&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LayerDigest: sha256:d078792c4f9122259f14b539315bd92cbd9490ed73e08255a08689122b143108&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgID: zlib@1.2.12-r3&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PkgType: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;SPDXID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;versionInfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.15.11&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;downloadLocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;filesAnalyzed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;primaryPackagePurpose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OPERATING-SYSTEM&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Class: os-pkgs&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;annotator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tool: trivy-0.58.0&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-02-13T12:22:22Z&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;annotationType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type: alpine&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;relationships&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-ContainerImage-d8b2a386253047e7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-DOCUMENT&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-ContainerImage-d8b2a386253047e7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DESCRIBES&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-343391d704e00fbd&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-43343abe5c1a0439&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-64b7e662458dcd5f&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-6c7c9dac75e301b7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-702c9bf0cfddb42e&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-92eb9ab29b057905&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-988bca2f70cf58f6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-aa2e51a695e95cb9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ba5f079c5c32fc8&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-be18726b6be779d1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-d9ad92ed9413c93b&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-f00669065070476c&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-OperatingSystem-c24750c3b737d897&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-fcb106f21773cad3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CONTAINS&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-343391d704e00fbd&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-702c9bf0cfddb42e&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-343391d704e00fbd&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ba5f079c5c32fc8&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-343391d704e00fbd&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-343391d704e00fbd&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-f00669065070476c&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-43343abe5c1a0439&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-92eb9ab29b057905&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-64b7e662458dcd5f&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-6c7c9dac75e301b7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-64b7e662458dcd5f&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-6c7c9dac75e301b7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-92eb9ab29b057905&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-988bca2f70cf58f6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-92eb9ab29b057905&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-988bca2f70cf58f6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-aa2e51a695e95cb9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-702c9bf0cfddb42e&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-aa2e51a695e95cb9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ba5f079c5c32fc8&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-aa2e51a695e95cb9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-aa2e51a695e95cb9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-f00669065070476c&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-aa2e51a695e95cb9&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-fcb106f21773cad3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ba5f079c5c32fc8&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-d9ad92ed9413c93b&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-343391d704e00fbd&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-d9ad92ed9413c93b&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-f00669065070476c&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ba5f079c5c32fc8&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-f00669065070476c&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;spdxElementId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-fcb106f21773cad3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relatedSpdxElement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SPDXRef-Package-ee9b5186331e7a76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;relationshipType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEPENDS_ON&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 </details>

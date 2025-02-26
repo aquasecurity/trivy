@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/configuration/cache/">
+        <link rel="canonical" href="https://trivy.dev/dev/docs/configuration/cache/">
       
       
         <link rel="prev" href="../reporting/">
@@ -77,8 +77,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Trivy - Cache" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/docs/configuration/cache/" />
-<meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
+<meta property="og:url" content="https://trivy.dev/dev/docs/configuration/cache/" />
+<meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
@@ -7835,8 +7835,8 @@ You're not viewing the latest version of the documentation.
 <p>The cache directory includes </p>
 <ul>
 <li>Cache of previous scans (Scan cache).</li>
-<li><a href="../db/#vulnerability-database">Vulnerability Database</a><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
-<li><a href="../db/#java-index-database">Java Index Database</a><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+<li><a href="../db/">Vulnerability Database</a><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li><a href="../db/">Java Index Database</a><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
 <li><a href="../../scanner/misconfiguration/check/builtin/">Misconfiguration Checks</a><sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
 <li><a href="../../supply-chain/vex/repo/">VEX Repositories</a></li>
 </ul>
@@ -7885,7 +7885,7 @@ It supports three types of backends for this cache: </p>
 <p class="admonition-title">Note</p>
 <p>Internally, this backend uses <a href="https://github.com/etcd-io/bbolt">BoltDB</a>, which has an important limitation: only one process can access the cache at a time.
 Subsequent processes attempting to access the cache will be locked.
-For more details on this limitation, refer to the <a href="https://aquasecurity.github.io/trivy/v0.52/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run">troubleshooting guide</a>.</p>
+For more details on this limitation, refer to the <a href="https://trivy.dev/v0.59.0-35-g49456ba84/docs/references/troubleshooting/#running-in-parallel-takes-same-time-as-series-run">troubleshooting guide</a>.</p>
 </div>
 <h3 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">&para;</a></h3>
 <p>The memory backend stores analysis results in memory, which means the cache is discarded when the process ends.

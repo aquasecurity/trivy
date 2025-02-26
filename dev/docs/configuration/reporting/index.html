@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/configuration/reporting/">
+        <link rel="canonical" href="https://trivy.dev/dev/docs/configuration/reporting/">
       
       
         <link rel="prev" href="../skipping/">
@@ -77,8 +77,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Trivy - Reporting" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://aquasecurity.github.io/trivy/dev/docs/configuration/reporting/" />
-<meta property="og:image" content="https://aquasecurity.github.io/trivy/devassets/images/illustrations/banner.png" />
+<meta property="og:url" content="https://trivy.dev/dev/docs/configuration/reporting/" />
+<meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
 <meta property="og:image:height" content="568" />
@@ -8371,21 +8371,6 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </table>
 <div class="highlight"><pre><span></span><code>$ trivy image -f json -o results.json alpine:latest
 </code></pre></div>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code>2024-12-26T22:01:18+05:30   INFO    [vuln] Vulnerability scanning is enabled
-2024-12-26T22:01:18+05:30   INFO    [secret] Secret scanning is enabled
-2024-12-26T22:01:18+05:30   INFO    [secret] If your scanning is slow, please try &#39;--scanners vuln&#39; to disable secret scanning
-2024-12-26T22:01:18+05:30   INFO    [secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
-2024-12-26T22:01:18+05:30   INFO    Detected OS family=&quot;alpine&quot; version=&quot;3.20.3&quot;
-2024-12-26T22:01:18+05:30   INFO    [alpine] Detecting vulnerabilities...   os_version=&quot;3.20&quot; repository=&quot;3.20&quot; pkg_num=14
-2024-12-26T22:01:18+05:30   INFO    Number of language-specific files   num=0
-2024-12-26T22:01:18+05:30   WARN    Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.58/docs/scanner/vulnerability#severity-selection for details.
-</code></pre></div>
-
-</details>
-
 <details>
 <summary>JSON</summary>
 
