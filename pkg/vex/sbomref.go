@@ -2,7 +2,7 @@ package vex
 
 import (
 	"bytes"
-	"fmt"
+	"context"
 	"io"
 	"net/http"
 	"net/url"
@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/samber/lo"
 )
 
 type SBOMReferenceSet struct {
@@ -20,15 +21,17 @@ type SBOMReferenceSet struct {
 }
 
 func NewSBOMReferenceSet(report *types.Report) (*SBOMReferenceSet, error) {
-
 	if report.ArtifactType != artifact.TypeCycloneDX {
 		return nil, xerrors.Errorf("externalReferences can only be used when scanning CycloneDX SBOMs: %w", report.ArtifactType)
 	}
 
-	var externalRefs = report.BOM.ExternalReferences()
+	ctx := log.WithContextPrefix(context.Background(), "vex")
+	ctx = log.WithContextAttrs(ctx, log.String("type", "sbom_reference"))
+
+	externalRefs := report.BOM.ExternalReferences()
 	urls := parseToURLs(externalRefs)
 
-	v, err := retrieveExternalVEXDocuments(urls, report)
+	v, err := retrieveExternalVEXDocuments(ctx, urls, report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to fetch external VEX documents: %w", err)
 	} else if v == nil {
@@ -38,48 +41,41 @@ func NewSBOMReferenceSet(report *types.Report) (*SBOMReferenceSet, error) {
 	return &SBOMReferenceSet{VEXes: v}, nil
 }
 
-func parseToURLs(refs []core.ExternalReference) []url.URL {
-	var urls []url.URL
-	for _, ref := range refs {
-		if ref.Type == core.ExternalReferenceVEX {
-			val, err := url.Parse(ref.URL)
-			// do not concern ourselves with relative URLs at this point
-			if err != nil || (val.Scheme != "https" && val.Scheme != "http") {
-				continue
-			}
-			urls = append(urls, *val)
+func parseToURLs(refs []core.ExternalReference) []*url.URL {
+	return lo.FilterMap(refs, func(ref core.ExternalReference, _ int) (*url.URL, bool) {
+		if ref.Type != core.ExternalReferenceVEX {
+			return nil, false
 		}
-	}
-	return urls
+		val, err := url.Parse(ref.URL)
+		if err != nil || (val.Scheme != "https" && val.Scheme != "http") {
+			// do not concern ourselves with relative URLs at this point
+			return nil, false
+		}
+		return val, true
+	})
 }
 
-func retrieveExternalVEXDocuments(refs []url.URL, report *types.Report) ([]VEX, error) {
-
-	logger := log.WithPrefix("vex").With(log.String("type", "external_reference"))
-
+func retrieveExternalVEXDocuments(ctx context.Context, refs []*url.URL, report *types.Report) ([]VEX, error) {
 	var docs []VEX
 	for _, ref := range refs {
-		doc, err := retrieveExternalVEXDocument(ref, report)
+		doc, err := retrieveExternalVEXDocument(ctx, ref, report)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to retrieve external VEX document: %w", err)
 		}
 		docs = append(docs, doc)
 	}
-	logger.Debug("Retrieved external VEX documents", "count", len(docs))
+	log.DebugContext(ctx, "Retrieved external VEX documents", log.Int("count", len(docs)))
 
 	if len(docs) == 0 {
-		logger.Info("No external VEX documents found")
+		log.DebugContext(ctx, "No external VEX documents found")
 		return nil, nil
 	}
 	return docs, nil
 
 }
 
-func retrieveExternalVEXDocument(vexUrl url.URL, report *types.Report) (VEX, error) {
-
-	logger := log.WithPrefix("vex").With(log.String("type", "external_reference"))
-
-	logger.Info(fmt.Sprintf("Retrieving external VEX document from host %s", vexUrl.Host))
+func retrieveExternalVEXDocument(ctx context.Context, vexUrl *url.URL, report *types.Report) (VEX, error) {
+	log.DebugContext(ctx, "Retrieving external VEX document", log.String("url", vexUrl.String()))
 
 	res, err := http.Get(vexUrl.String())
 	if err != nil {
@@ -96,15 +92,14 @@ func retrieveExternalVEXDocument(vexUrl url.URL, report *types.Report) (VEX, err
 		return nil, xerrors.Errorf("unable to read response into memory: %w", err)
 	}
 
-	if v, err := decodeVEX(bytes.NewReader(val), vexUrl.String(), report); err != nil {
+	v, err := decodeVEX(bytes.NewReader(val), vexUrl.String(), report)
+	if err != nil {
 		return nil, xerrors.Errorf("unable to load VEX from external reference: %w", err)
-	} else {
-		return v, nil
 	}
+	return v, nil
 }
 
 func (set *SBOMReferenceSet) NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool) {
-
 	for _, vex := range set.VEXes {
 		if m, notAffected := vex.NotAffected(vuln, product, subComponent); notAffected {
 			return m, notAffected
