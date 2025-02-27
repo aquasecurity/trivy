@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	TypeFile       SourceType = "file"
-	TypeRepository SourceType = "repo"
-	TypeOCI        SourceType = "oci"
+	TypeFile          SourceType = "file"
+	TypeRepository    SourceType = "repo"
+	TypeOCI           SourceType = "oci"
+	TypeSBOMReference SourceType = "sbom-ref"
 )
 
 // VEX represents Vulnerability Exploitability eXchange. It abstracts multiple VEX formats.
@@ -49,6 +50,8 @@ func NewSource(src string) Source {
 		return Source{Type: TypeRepository}
 	case "oci":
 		return Source{Type: TypeOCI}
+	case "sbom-ref":
+		return Source{Type: TypeSBOMReference}
 	default:
 		return Source{
 			Type:     TypeFile,
@@ -108,6 +111,13 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 			v, err = NewOCI(report)
 			if err != nil {
 				return nil, xerrors.Errorf("VEX OCI error: %w", err)
+			} else if v == nil {
+				continue
+			}
+		case TypeSBOMReference:
+			v, err = NewSBOMReferenceSet(report)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to create set of external VEX documents: %w", err)
 			} else if v == nil {
 				continue
 			}
