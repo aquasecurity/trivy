@@ -623,15 +623,15 @@ vulnerability:
   # Same as '--ignore-unfixed'
   ignore-unfixed: false
 
+  # Same as '--vuln-severity-src'
+  severity-src:
+   - auto
+
   # Same as '--skip-vex-repo-update'
   skip-vex-repo-update: false
 
   # Same as '--vex'
   vex: []
-
-  # Same as '--vuln-severity-src'
-  vuln-severity-src:
-   - auto
 
 ```
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml
