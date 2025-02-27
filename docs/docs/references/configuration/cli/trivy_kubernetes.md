@@ -111,6 +111,7 @@ trivy kubernetes [flags] [CONTEXT]
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries
+      --use-actual-config                 use the actual resource configuration instead of the last-applied-configuration.
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
 ```

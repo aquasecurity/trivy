@@ -80,6 +80,19 @@ If `node collector` is enabled (default: enabled), Trivy needs a cluster role wi
   verbs: ["create"]
 ```
 
+### Use actual config
+By default, Trivy uses data from annotation `"kubectl.kubernetes.io/last-applied-configuration"` to scan Kubernetes resources.
+
+This approach is necessary because some Kubernetes engines automatically convert API versions from applied YAML configuration files that contain deprecated APIs. 
+More details can be found here: [Changing the API](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api_changes.md#operational-overview).
+
+However, in some cases, it is necessary to scan the actual state of resources in the Kubernetes cluster.
+
+For this purpose, `--use-actual-config` flag is available, allowing the system to ignore values from the annotation.
+```sh
+$ trivy k8s --scanners vuln --report all --use-actual-config
+```
+
 ### Skip-images
 
 By default, all cluster resource images will be downloaded and scanned.

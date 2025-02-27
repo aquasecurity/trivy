@@ -209,6 +209,9 @@ kubernetes:
   # Same as '--tolerations'
   tolerations: []
 
+  # Same as '--use-actual-config'
+  useActualConfig: false
+
 ```
 ## License options
 
