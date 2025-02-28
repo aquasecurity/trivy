@@ -50,6 +50,8 @@ var OSTypeAliases = map[OSType]OSType{
 	"opensuse.tumbleweed":          OpenSUSETumbleweed,
 	"suse linux enterprise micro":  SLEMicro,
 	"suse linux enterprise server": SLES,
+	"amazon linux":                 Amazon,
+	"debian gnu/linux":             Debian,
 }
 
 // Programming language dependencies
