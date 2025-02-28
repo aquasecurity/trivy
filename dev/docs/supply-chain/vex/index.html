@@ -7780,11 +7780,12 @@ You're not viewing the latest version of the documentation.
 <p>Trivy supports filtering detected vulnerabilities using the <a href="https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf">Vulnerability Exploitability eXchange (VEX)</a>, a standardized format for sharing and exchanging information about vulnerabilities.
 By providing VEX during scanning, it is possible to filter vulnerabilities based on their status.</p>
 <h2 id="vex-usage-methods">VEX Usage Methods<a class="headerlink" href="#vex-usage-methods" title="Permanent link">&para;</a></h2>
-<p>Trivy currently supports two methods for utilizing VEX:</p>
+<p>Trivy currently supports four methods for utilizing VEX:</p>
 <ol>
 <li><a href="repo/">VEX Repository</a></li>
 <li><a href="file/">Local VEX Files</a></li>
 <li><a href="oci/">VEX Attestation</a></li>
+<li><a href="sbom-ref/">SBOM Reference</a></li>
 </ol>
 <h3 id="enabling-vex">Enabling VEX<a class="headerlink" href="#enabling-vex" title="Permanent link">&para;</a></h3>
 <p>To enable VEX, use the <code>--vex</code> option.
@@ -7793,6 +7794,7 @@ You can specify the method to use:</p>
 <li>To enable the VEX Repository: <code>--vex repo</code></li>
 <li>To use a local VEX file: <code>--vex /path/to/vex-document.json</code></li>
 <li>To enable VEX attestation discovery in OCI registry: <code>--vex oci</code></li>
+<li>To use remote VEX files referenced in SBOMs: <code>--vex sbom-ref</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>ghcr.io/aquasecurity/trivy:0.52.0<span class="w"> </span>--vex<span class="w"> </span>repo
 </code></pre></div>
