@@ -3,6 +3,7 @@ package table
 import (
 	"bytes"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -11,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -28,9 +30,10 @@ type misconfigRenderer struct {
 	includeNonFailures bool
 	width              int
 	ansi               bool
+	renderCause        []ftypes.ConfigType
 }
 
-func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool) *misconfigRenderer {
+func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool, renderCause []ftypes.ConfigType) *misconfigRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -38,6 +41,7 @@ func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trac
 	if !ansi {
 		tml.DisableFormatting()
 	}
+
 	return &misconfigRenderer{
 		w:                  buf,
 		severities:         severities,
@@ -45,6 +49,7 @@ func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trac
 		includeNonFailures: includeNonFailures,
 		width:              width,
 		ansi:               ansi,
+		renderCause:        renderCause,
 	}
 }
 
@@ -65,7 +70,7 @@ func (r *misconfigRenderer) Render(result types.Result) {
 	r.printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	for _, m := range result.Misconfigurations {
-		r.renderSingle(result.Target, m)
+		r.renderSingle(result.Target, result.Type, m)
 	}
 
 	// For debugging
@@ -103,9 +108,10 @@ func (r *misconfigRenderer) printSingleDivider() {
 	r.printf("<dim>%s\r\n", strings.Repeat("─", r.width))
 }
 
-func (r *misconfigRenderer) renderSingle(target string, misconf types.DetectedMisconfiguration) {
+func (r *misconfigRenderer) renderSingle(target string, typ ftypes.TargetType, misconf types.DetectedMisconfiguration) {
 	r.renderSummary(misconf)
 	r.renderCode(target, misconf)
+	r.renderMisconfCause(typ, misconf)
 	r.printf("\r\n\r\n")
 }
 
@@ -208,6 +214,27 @@ func (r *misconfigRenderer) renderCode(target string, misconf types.DetectedMisc
 		}
 		r.printSingleDivider()
 	}
+}
+
+func (r *misconfigRenderer) renderMisconfCause(typ ftypes.TargetType, misconf types.DetectedMisconfiguration) {
+	if !slices.Contains(r.renderCause, typ) {
+		return
+	}
+
+	cause := misconf.CauseMetadata.RenderedCause
+	if cause.Raw == "" {
+		return
+	}
+
+	content := cause.Raw
+	if cause.Highlighted != "" {
+		content = cause.Highlighted
+	}
+
+	r.printf("<dim>%s\r\n", "Rendered cause:")
+	r.printSingleDivider()
+	r.println(content)
+	r.printSingleDivider()
 }
 
 func (r *misconfigRenderer) outputTrace(target string, misconfigs []types.DetectedMisconfiguration) {

@@ -407,7 +407,7 @@ If the schema is specified in the check metadata and is in the directory specifi
     If a user specifies the `--config-file-schemas` flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.
 
 !!! tip
-    It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma seperated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
+    It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
 
 
 ### Passing custom data

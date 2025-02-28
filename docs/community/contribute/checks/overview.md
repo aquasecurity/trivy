@@ -80,7 +80,7 @@ The package name should be in the format `builtin.PROVIDER.SERVICE.ID`, e.g. `bu
 
 ## Generating an ID
 
-Every check has a custom ID that is referenced throughout the metadata of the check to uniquely identify the check. If you plan to contribue your check back into the [trivy-checks](https://github.com/aquasecurity/trivy-checks) repository, it will require a valid ID. 
+Every check has a custom ID that is referenced throughout the metadata of the check to uniquely identify the check. If you plan to contribute your check back into the [trivy-checks](https://github.com/aquasecurity/trivy-checks) repository, it will require a valid ID. 
 
 Running `make id` in the root of the trivy-checks repository will provide you with the next available _ID_ for your rule. 
 

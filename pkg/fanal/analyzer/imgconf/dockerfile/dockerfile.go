@@ -15,12 +15,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
 )
 
 var disabledChecks = []misconf.DisabledCheck{
 	{
+		ID: "DS007", Scanner: string(analyzer.TypeHistoryDockerfile),
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
+	},
+	{
 		ID: "DS016", Scanner: string(analyzer.TypeHistoryDockerfile),
-		Reason: "See https://github.com/aquasecurity/trivy/issues/7368",
+		Reason: "See " + doc.URL("docs/target/container_image", "disabled-checks"),
 	},
 }
 
@@ -101,9 +106,10 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
 		default:
 			for _, prefix := range []string{"ARG", "ENV", "ENTRYPOINT"} {
-				strings.HasPrefix(h.CreatedBy, prefix)
-				createdBy = h.CreatedBy
-				break
+				if strings.HasPrefix(h.CreatedBy, prefix) {
+					createdBy = h.CreatedBy
+					break
+				}
 			}
 		}
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")

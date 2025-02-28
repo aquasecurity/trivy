@@ -261,6 +261,8 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	// Aggregate python/ruby/node.js packages and JAR files
 	aggregate(&mergedLayer)
 
+	mergedLayer.Sort()
+
 	return mergedLayer
 }
 

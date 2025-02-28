@@ -232,8 +232,9 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 
 	k8sScanner := k8s.NewKubernetesScanner()
 	scanOptions := types.ScanOptions{
-		Scanners: s.opts.Scanners,
-		PkgTypes: s.opts.PkgTypes,
+		Scanners:         s.opts.Scanners,
+		PkgTypes:         s.opts.PkgTypes,
+		PkgRelationships: s.opts.PackageOptions.PkgRelationships,
 	}
 	for _, artifact := range artifactsData {
 		switch artifact.Kind {

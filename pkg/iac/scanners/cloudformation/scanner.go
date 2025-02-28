@@ -80,7 +80,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}
-	regoScanner := rego.NewScanner(types.SourceCloud, s.options...)
+	regoScanner := rego.NewScanner(s.options...)
 	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 		return nil, nil
 	}
 
-	results, err := regoScanner.ScanInput(ctx, rego.Input{
+	results, err := regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
 		Path:     cfCtx.Metadata().Range().GetFilename(),
 		FS:       fsys,
 		Contents: state.ToRego(),

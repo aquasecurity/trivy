@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -55,6 +56,7 @@ type Options struct {
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
+	RenderCause        []ftypes.ConfigType
 
 	// For licenses
 	LicenseRiskThreshold int
@@ -66,7 +68,7 @@ func NewWriter(options Options) *Writer {
 	return &Writer{
 		buf:                   buf,
 		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, IsOutputToTerminal(options.Output), options.Tree, options.ShowSuppressed, options.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, IsOutputToTerminal(options.Output)),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, IsOutputToTerminal(options.Output), options.RenderCause),
 		secretRenderer:        NewSecretRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
 		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
 		fileLicenseRenderer:   NewFileLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),

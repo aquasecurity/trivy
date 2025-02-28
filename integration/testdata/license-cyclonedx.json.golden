@@ -21,10 +21,6 @@
       "Class": "license"
     },
     {
-      "Target": "pom.xml",
-      "Class": "license"
-    },
-    {
       "Target": "Java",
       "Class": "license",
       "Licenses": [
@@ -56,6 +52,10 @@
           "Link": ""
         }
       ]
+    },
+    {
+      "Target": "pom.xml",
+      "Class": "license"
     },
     {
       "Target": "Loose File License(s)",

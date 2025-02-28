@@ -49,7 +49,7 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 	if s.regoScanner != nil {
 		return nil
 	}
-	regoScanner := rego.NewScanner(types.SourceCloud, s.scannerOptions...)
+	regoScanner := rego.NewScanner(s.scannerOptions...)
 	if err := regoScanner.LoadPolicies(srcFS); err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (s *Scanner) scanDeployments(ctx context.Context, deployments []azure.Deplo
 func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deployment, fsys fs.FS) (scan.Results, error) {
 	deploymentState := s.adaptDeployment(ctx, deployment)
 
-	results, err := s.regoScanner.ScanInput(ctx, rego.Input{
+	results, err := s.regoScanner.ScanInput(ctx, types.SourceCloud, rego.Input{
 		Path:     deployment.Metadata.Range().GetFilename(),
 		FS:       fsys,
 		Contents: deploymentState.ToRego(),
