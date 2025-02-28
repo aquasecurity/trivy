@@ -209,7 +209,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to get SUSE advisories",
+			wantErr: "failed to get SUSE advisory",
 		},
 	}
 	for _, tt := range tests {

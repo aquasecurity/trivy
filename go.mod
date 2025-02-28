@@ -25,7 +25,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.6.1
-	github.com/aquasecurity/trivy-db v0.0.0-20241209111357-8c398f13db0e
+	github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.7.0
 	github.com/aws/aws-sdk-go-v2 v1.34.0
@@ -80,7 +80,7 @@ require (
 	github.com/masahiro331/go-disk v0.0.0-20240625071113-56c933208fee
 	github.com/masahiro331/go-ebs-file v0.0.0-20240917043618-e6d2bea5c32e
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20240620024024-ca14e6327bbd
-	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
+	github.com/masahiro331/go-mvn-version v0.0.0-20250131095131-f4974fa13b8a
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20231205045356-1b22259a6c44
 	github.com/mattn/go-shellwords v1.0.12
@@ -437,4 +437,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.24.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.10 // indirect
+	github.com/oklog/ulid/v2 v2.1.0 // indirect
+	github.com/samber/oops v1.15.0 // indirect
 )
+
+replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20250225102547-67e9b4dfc612
