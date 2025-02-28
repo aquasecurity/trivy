@@ -21,8 +21,8 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 79,
-        "Failures": 15
+        "Successes": 78,
+        "Failures": 16
       },
       "Misconfigurations": [
         {
@@ -91,7 +91,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -160,7 +161,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -229,7 +231,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -298,7 +301,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -367,7 +371,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -436,7 +441,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -505,7 +511,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -574,7 +581,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -643,7 +651,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -712,7 +721,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -781,7 +791,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -850,7 +861,8 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -919,7 +931,68 @@
                   "LastCause": true
                 }
               ]
-            }
+            },
+            "RenderedCause": {}
+          }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV110",
+          "AVDID": "AVD-KSV-0110",
+          "Title": "Workloads in the default namespace",
+          "Description": "Checks whether a workload is running in the default namespace.",
+          "Message": "deployment nginx-deployment in default namespace should set metadata.namespace to a non-default namespace",
+          "Namespace": "builtin.kubernetes.KSV110",
+          "Query": "data.builtin.kubernetes.KSV110.deny",
+          "Resolution": "Set 'metadata.namespace' to a non-default namespace.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv110",
+          "References": [
+            "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+            "https://avd.aquasec.com/misconfig/ksv110"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 5,
+            "EndLine": 7,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 5,
+                  "Content": "  name: nginx-deployment",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mname\u001b[0m: nginx-deployment",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 6,
+                  "Content": "  labels:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mlabels\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 7,
+                  "Content": "    app: nginx",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mapp\u001b[0m: nginx",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -946,7 +1019,8 @@
             "Service": "general",
             "Code": {
               "Lines": null
-            }
+            },
+            "RenderedCause": {}
           }
         },
         {
@@ -972,7 +1046,8 @@
             "Service": "general",
             "Code": {
               "Lines": null
-            }
+            },
+            "RenderedCause": {}
           }
         }
       ]
