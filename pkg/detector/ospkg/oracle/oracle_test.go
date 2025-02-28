@@ -331,7 +331,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to unmarshal advisory JSON",
+			wantErr: "failed to get Oracle Linux advisory",
 		},
 	}
 

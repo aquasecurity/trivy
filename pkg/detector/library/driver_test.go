@@ -155,7 +155,7 @@ func TestDriver_Detect(t *testing.T) {
 				pkgName: "symfony/symfony",
 				pkgVer:  "5.1.5",
 			},
-			wantErr: "failed to unmarshal advisory JSON",
+			wantErr: "json unmarshal error",
 		},
 		{
 			name: "duplicated version in advisory",
