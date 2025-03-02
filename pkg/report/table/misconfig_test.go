@@ -1,6 +1,7 @@
 package table_test
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -13,12 +14,10 @@ import (
 )
 
 func TestMisconfigRenderer(t *testing.T) {
-
 	type args struct {
 		includeNonFailures bool
 		renderCause        []ftypes.ConfigType
 	}
-
 	tests := []struct {
 		name  string
 		input types.Result
@@ -450,12 +449,16 @@ resource "aws_s3_bucket" "this" {
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			severities := []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
-				dbTypes.SeverityCritical}
-			renderer := table.NewMisconfigRenderer(test.input, severities, false, test.args.includeNonFailures, false, test.args.renderCause)
-			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			severities := []dbTypes.Severity{
+				dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
+				dbTypes.SeverityCritical,
+			}
+			buf := bytes.NewBuffer([]byte{})
+			renderer := table.NewMisconfigRenderer(buf, severities, false, tt.args.includeNonFailures, false, tt.args.renderCause)
+			renderer.Render(tt.input)
+			assert.Equal(t, tt.want, strings.ReplaceAll(buf.String(), "\r\n", "\n"))
 		})
 	}
 }

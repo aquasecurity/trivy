@@ -1,6 +1,7 @@
 package table
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -30,6 +31,19 @@ var (
 
 // Writer implements Writer and output in tabular form
 type Writer struct {
+	// Use one buffer for all renderers
+	buf *bytes.Buffer
+
+	vulnerabilityRenderer Renderer
+	misconfigRenderer     Renderer
+	secretRenderer        Renderer
+	pkgLicenseRenderer    Renderer
+	fileLicenseRenderer   Renderer
+
+	options Options
+}
+
+type Options struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
@@ -49,54 +63,65 @@ type Writer struct {
 	IgnoredLicenses      []string
 }
 
+func NewWriter(options Options) *Writer {
+	buf := bytes.NewBuffer([]byte{})
+	return &Writer{
+		buf:                   buf,
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, IsOutputToTerminal(options.Output), options.Tree, options.ShowSuppressed, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, IsOutputToTerminal(options.Output), options.RenderCause),
+		secretRenderer:        NewSecretRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		options:               options,
+	}
+}
+
 type Renderer interface {
-	Render() string
+	Render(result types.Result)
 }
 
 // Write writes the result on standard output
-func (tw Writer) Write(_ context.Context, report types.Report) error {
-
+func (tw *Writer) Write(_ context.Context, report types.Report) error {
 	for _, result := range report.Results {
 		// Not display a table of custom resources
 		if result.Class == types.ClassCustom {
 			continue
 		}
-		tw.write(result)
+		tw.render(result)
 	}
+
+	tw.flush()
 	return nil
 }
 
-func (tw Writer) write(result types.Result) {
+func (tw *Writer) flush() {
+	_, _ = fmt.Fprint(tw.options.Output, tw.buf.String())
+}
+
+func (tw *Writer) render(result types.Result) {
 	if result.IsEmpty() && result.Class != types.ClassOSPkg {
 		return
 	}
 
-	var renderer Renderer
 	switch {
 	// vulnerability
 	case result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg:
-		renderer = NewVulnerabilityRenderer(result, tw.isOutputToTerminal(), tw.Tree, tw.ShowSuppressed, tw.Severities)
+		tw.vulnerabilityRenderer.Render(result)
 	// misconfiguration
 	case result.Class == types.ClassConfig:
-		renderer = NewMisconfigRenderer(result, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal(), tw.RenderCause)
+		tw.misconfigRenderer.Render(result)
 	// secret
 	case result.Class == types.ClassSecret:
-		renderer = NewSecretRenderer(result.Target, result.Secrets, tw.isOutputToTerminal(), tw.Severities)
+		tw.secretRenderer.Render(result)
 	// package license
 	case result.Class == types.ClassLicense:
-		renderer = NewPkgLicenseRenderer(result, tw.isOutputToTerminal(), tw.Severities)
+		tw.pkgLicenseRenderer.Render(result)
 	// file license
 	case result.Class == types.ClassLicenseFile:
-		renderer = NewFileLicenseRenderer(result, tw.isOutputToTerminal(), tw.Severities)
+		tw.fileLicenseRenderer.Render(result)
 	default:
 		return
 	}
-
-	_, _ = fmt.Fprint(tw.Output, renderer.Render())
-}
-
-func (tw Writer) isOutputToTerminal() bool {
-	return IsOutputToTerminal(tw.Output)
 }
 
 func newTableWriter(output io.Writer, isTerminal bool) *table.Table {

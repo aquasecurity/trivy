@@ -2,7 +2,6 @@ package table_test
 
 import (
 	"bytes"
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -78,7 +77,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
-			writer := table.Writer{
+			writer := table.NewWriter(table.Options{
 				Output:             &tableWritten,
 				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
@@ -86,8 +85,8 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityMedium,
 				},
-			}
-			err := writer.Write(context.TODO(), types.Report{Results: tc.results})
+			})
+			err := writer.Write(nil, types.Report{Results: tc.results})
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
