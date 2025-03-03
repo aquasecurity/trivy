@@ -409,6 +409,9 @@ misconfiguration:
   # Same as '--include-non-failures'
   include-non-failures: false
 
+  # Same as '--render-cause'
+  render-cause: []
+
   # Same as '--misconfig-scanners'
   scanners:
    - azure-arm

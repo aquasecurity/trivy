@@ -35,7 +35,6 @@ For the list of built-in compliance reports, please see the relevant section:
 
 - [Docker compliance](../target/container_image.md#compliance)
 - [Kubernetes compliance](../target/kubernetes.md#compliance)
-- [AWS compliance](../target/aws.md#compliance)
 
 ## Contribute a Built-in Compliance Report
 
