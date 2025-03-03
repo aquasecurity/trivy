@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/samber/lo"
 )
 
 type SBOMReferenceSet struct {

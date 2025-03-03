@@ -27,18 +27,24 @@ func setUpServer(t *testing.T) *httptest.Server {
 		switch r.URL.Path {
 		case vexExternalRef:
 			f, err := os.Open("testdata/" + vexExternalRef + ".json")
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("failed to open testdata: %s", err)
+			}
 			defer f.Close()
 
-			_, err = io.Copy(w, f)
-			require.NoError(t, err)
+			if _, err = io.Copy(w, f); err != nil {
+				t.Fatalf("failed to copy testdata: %s", err)
+			}
 		case vexUnknown:
 			f, err := os.Open("testdata/" + vexUnknown + ".json")
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("failed to open testdata: %s", err)
+			}
 			defer f.Close()
 
-			_, err = io.Copy(w, f)
-			require.NoError(t, err)
+			if _, err = io.Copy(w, f); err != nil {
+				t.Fatalf("failed to copy testdata: %s", err)
+			}
 		default:
 			http.NotFound(w, r)
 		}
