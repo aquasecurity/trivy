@@ -43,10 +43,10 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			name: "happy path",
 			args: args{
 				options: tTypes.ScanOptions{
-					PkgTypes:         []string{"os"},
-					Scanners:         tTypes.Scanners{tTypes.VulnerabilityScanner},
-					PkgRelationships: ftypes.Relationships,
-					VulnSeveritySrc:  []dbTypes.SourceID{"auto"},
+					PkgTypes:            []string{"os"},
+					Scanners:            tTypes.Scanners{tTypes.VulnerabilityScanner},
+					PkgRelationships:    ftypes.Relationships,
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
 				},
 			},
 			imagePath: "../fanal/test/testdata/alpine-311.tar.gz",

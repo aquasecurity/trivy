@@ -22,22 +22,22 @@ import (
 )
 
 type csArgs struct {
-	Command           string
-	RemoteAddrOption  string
-	Format            types.Format
-	TemplatePath      string
-	IgnoreUnfixed     bool
-	Severity          []string
-	IgnoreIDs         []string
-	Input             string
-	ClientToken       string
-	ClientTokenHeader string
-	PathPrefix        string
-	ListAllPackages   bool
-	Target            string
-	secretConfig      string
-	Distro            string
-	VulnSeveritySrc   []string
+	Command             string
+	RemoteAddrOption    string
+	Format              types.Format
+	TemplatePath        string
+	IgnoreUnfixed       bool
+	Severity            []string
+	IgnoreIDs           []string
+	Input               string
+	ClientToken         string
+	ClientTokenHeader   string
+	PathPrefix          string
+	ListAllPackages     bool
+	Target              string
+	secretConfig        string
+	Distro              string
+	VulnSeveritySources []string
 }
 
 func TestClientServer(t *testing.T) {
@@ -287,7 +287,7 @@ func TestClientServer(t *testing.T) {
 				Command:          "repo",
 				RemoteAddrOption: "--server",
 				Target:           "testdata/fixtures/repo/npm/",
-				VulnSeveritySrc: []string{
+				VulnSeveritySources: []string{
 					"alpine",
 					"ubuntu",
 				},
@@ -691,9 +691,9 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string 
 		)
 	}
 
-	if len(c.VulnSeveritySrc) != 0 {
+	if len(c.VulnSeveritySources) != 0 {
 		osArgs = append(osArgs,
-			"--vuln-severity-src", strings.Join(c.VulnSeveritySrc, ","),
+			"--vuln-severity-source", strings.Join(c.VulnSeveritySources, ","),
 		)
 	}
 

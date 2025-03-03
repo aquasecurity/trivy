@@ -83,21 +83,21 @@ func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
 		distro.Name = in.Distro.Name
 	}
 
-	vulnSeveritySrc := xstrings.ToTSlice[dbTypes.SourceID](in.VulnSeveritySrc)
-	if len(vulnSeveritySrc) == 0 {
-		vulnSeveritySrc = []dbTypes.SourceID{
+	vulnSeveritySources := xstrings.ToTSlice[dbTypes.SourceID](in.VulnSeveritySources)
+	if len(vulnSeveritySources) == 0 {
+		vulnSeveritySources = []dbTypes.SourceID{
 			"auto", // For backward compatibility
 		}
 	}
 
 	return types.ScanOptions{
-		PkgTypes:          in.PkgTypes,
-		PkgRelationships:  pkgRelationships,
-		Scanners:          scanners,
-		IncludeDevDeps:    in.IncludeDevDeps,
-		LicenseCategories: licenseCategories,
-		Distro:            distro,
-		VulnSeveritySrc:   vulnSeveritySrc,
+		PkgTypes:            in.PkgTypes,
+		PkgRelationships:    pkgRelationships,
+		Scanners:            scanners,
+		IncludeDevDeps:      in.IncludeDevDeps,
+		LicenseCategories:   licenseCategories,
+		Distro:              distro,
+		VulnSeveritySources: vulnSeveritySources,
 	}
 }
 

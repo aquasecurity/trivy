@@ -123,5 +123,5 @@ type ScanOptions struct {
 	FilePatterns        []string
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
-	VulnSeveritySrc     []dbTypes.SourceID
+	VulnSeveritySources []dbTypes.SourceID
 }

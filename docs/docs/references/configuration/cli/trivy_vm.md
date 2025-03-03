@@ -86,7 +86,7 @@ trivy vm [flags] VM_IMAGE
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
-      --vuln-severity-src strings         order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
+      --vuln-severity-source strings      order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
 ```
 
 ### Options inherited from parent commands
