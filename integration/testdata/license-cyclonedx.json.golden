@@ -51,10 +51,6 @@
           "Link": ""
         }
       ]
-    },
-    {
-      "Target": "pom.xml",
-      "Class": "license"
     }
   ]
 }

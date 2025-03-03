@@ -315,11 +315,15 @@ func (s Scanner) scanApplicationLicenses(apps []ftypes.Application, scanner lice
 			// When the file path is empty, we will overwrite it with the pre-defined value.
 			targetName = t
 		}
-		results = append(results, types.Result{
-			Target:   targetName,
-			Class:    types.ClassLicense,
-			Licenses: langLicenses,
-		})
+
+		if len(langLicenses) != 0 {
+			results = append(results, types.Result{
+				Target:   targetName,
+				Class:    types.ClassLicense,
+				Licenses: langLicenses,
+			})
+		}
+
 	}
 
 	return results
