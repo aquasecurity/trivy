@@ -146,7 +146,7 @@ func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scann
 
 func (r *summaryRenderer) Render(report types.Report) {
 	if len(r.scanners) == 0 {
-		log.WithPrefix("report").Info("No enabled scanners found. Summary table will not be displayed.")
+		log.WithPrefix("report").Warn("No enabled scanners found. Summary table will not be displayed.")
 		return
 	}
 

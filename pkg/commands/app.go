@@ -520,6 +520,13 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ReportFlagGroup: flag.NewReportFlagGroup(),
 	}
 
+	// To display the summary table, we need to enable scanners (to build columns).
+	// We can't get scanner information from the report (we don't include empty licenses and secrets in the report).
+	// So we need to ask the user to configure scanners (if needed).
+	convertFlags.ScanFlagGroup.Scanners = flag.ScannersFlag.Clone()
+	convertFlags.ScanFlagGroup.Scanners.Default = nil // disable default scanners
+	convertFlags.ScanFlagGroup.Scanners.Usage = "List of scanners included when generating the json report. Used only for rendering the summary table."
+
 	cmd := &cobra.Command{
 		Use:     "convert [flags] RESULT_JSON",
 		Aliases: []string{"conv"},
@@ -977,6 +984,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'
+	reportFlagGroup.NoSummaryTable = nil    //disable '--no-summary'
 
 	formatFlag := flag.FormatFlag.Clone()
 	formatFlag.Values = xstrings.ToStringSlice([]types.Format{

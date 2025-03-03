@@ -548,6 +548,10 @@ $ trivy convert --format cyclonedx --output result.cdx result.json
     Please note that if you want to convert to a format that requires a list of packages, 
     such as SBOM, you need to add the `--list-all-pkgs` flag when outputting in JSON.
 
+!!! warning
+    JSON reports from "trivy k8s" are not yet supported.
+
+### Filtering
 [Filtering options](./filtering.md) such as `--severity` are also available with `convert`.
 
 ```shell
@@ -558,8 +562,8 @@ $ trivy image --format json -o result.json --list-all-pkgs debian:11
 $ trivy convert --format table --severity CRITICAL result.json
 ```
 
-!!! note
-    JSON reports from "trivy k8s" are not yet supported.
+### Table format
+To display the [summary table](#summary-table), you need to [enable the scanners](./others.md#enabledisable-scanners) that were used to generate the [json report](#converting).
 
 [cargo-auditable]: https://github.com/rust-secure-code/cargo-auditable/
 [action]: https://github.com/aquasecurity/trivy-action

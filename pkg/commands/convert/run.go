@@ -18,6 +18,7 @@ import (
 )
 
 func Run(ctx context.Context, opts flag.Options) (err error) {
+	logger := log.WithPrefix("convert")
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
@@ -42,7 +43,12 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("unable to filter results: %w", err)
 	}
 
-	log.Debug("Writing report to output...")
+	if len(opts.Scanners) == 0 && opts.Format == types.FormatTable && !opts.NoSummaryTable {
+		logger.Info("To display the summary table, enable the scanners used to generate the json report")
+		opts.NoSummaryTable = true
+	}
+
+	logger.Debug("Writing report to output...")
 	if err = report.Write(ctx, r, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}

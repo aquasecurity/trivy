@@ -31,6 +31,7 @@ trivy convert [flags] RESULT_JSON
   -o, --output string              output file name
       --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
       --report string              specify a report format for the output (all,summary) (default "all")
+      --scanners strings           List of scanners included when generating the json report. Used only for rendering the summary table. (vuln,misconfig,secret,license) (default [vuln,secret])
   -s, --severity strings           severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-suppressed            [EXPERIMENTAL] show suppressed vulnerabilities
   -t, --template string            output template
