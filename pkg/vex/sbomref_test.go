@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -22,37 +23,32 @@ const (
 )
 
 func setUpServer(t *testing.T) *httptest.Server {
-	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		println(r.URL.Path)
-		if r.URL.Path == vexExternalRef {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case vexExternalRef:
 			f, err := os.Open("testdata/" + vexExternalRef + ".json")
 			if err != nil {
-				t.Error(err)
+				t.Fatalf("failed to open testdata: %s", err)
 			}
-
 			defer f.Close()
 
-			_, err = io.Copy(w, f)
-			if err != nil {
-				t.Error(err)
+			if _, err = io.Copy(w, f); err != nil {
+				t.Fatalf("failed to copy testdata: %s", err)
 			}
-		} else if r.URL.Path == vexUnknown {
+		case vexUnknown:
 			f, err := os.Open("testdata/" + vexUnknown + ".json")
 			if err != nil {
-				t.Error(err)
+				t.Fatalf("failed to open testdata: %s", err)
 			}
 			defer f.Close()
 
-			_, err = io.Copy(w, f)
-			if err != nil {
-				t.Error(err)
+			if _, err = io.Copy(w, f); err != nil {
+				t.Fatalf("failed to copy testdata: %s", err)
 			}
+		default:
+			http.NotFound(w, r)
 		}
-
-		http.NotFound(w, r)
-		return
 	}))
-	return s
 }
 
 func setupTestReport(s *httptest.Server, path string) *types.Report {
@@ -80,25 +76,45 @@ func TestRetrieveExternalVEXDocuments(t *testing.T) {
 	s := setUpServer(t)
 	t.Cleanup(s.Close)
 
-	t.Run("external vex retrieval", func(t *testing.T) {
-		set, err := vex.NewSBOMReferenceSet(setupTestReport(s, vexExternalRef))
-		require.NoError(t, err)
-		require.Len(t, set.VEXes, 1)
-	})
+	tests := []struct {
+		name      string
+		input     *types.Report
+		wantVEXes int
+		wantErr   bool
+	}{
+		{
+			name:      "external vex retrieval",
+			input:     setupTestReport(s, vexExternalRef),
+			wantVEXes: 1,
+			wantErr:   false,
+		},
+		{
+			name:    "incompatible external vex",
+			input:   setupTestReport(s, vexUnknown),
+			wantErr: true,
+		},
+		{
+			name:    "vex not found",
+			input:   setupTestReport(s, vexNotFound),
+			wantErr: true,
+		},
+		{
+			name:      "no external reference",
+			input:     setupEmptyTestReport(),
+			wantVEXes: 0,
+			wantErr:   false,
+		},
+	}
 
-	t.Run("incompatible external vex", func(t *testing.T) {
-		_, err := vex.NewSBOMReferenceSet(setupTestReport(s, vexUnknown))
-		require.Error(t, err)
-	})
-
-	t.Run("vex not found", func(t *testing.T) {
-		_, err := vex.NewSBOMReferenceSet(setupTestReport(s, vexNotFound))
-		require.Error(t, err)
-	})
-
-	t.Run("no external reference", func(t *testing.T) {
-		set, err := vex.NewSBOMReferenceSet(setupEmptyTestReport())
-		require.NoError(t, err)
-		require.Nil(t, set)
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := vex.NewSBOMReferenceSet(tt.input)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			require.Len(t, lo.FromPtr(got).VEXes, tt.wantVEXes)
+		})
+	}
 }
