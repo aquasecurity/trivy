@@ -1,9 +1,11 @@
 package rego
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -57,7 +59,7 @@ func NewStaticMetadata(pkgPath string, inputOpt InputOptions) *StaticMetadata {
 	}
 }
 
-func (sm *StaticMetadata) update(meta map[string]any) error {
+func (sm *StaticMetadata) populate(meta map[string]any) error {
 	if sm.Frameworks == nil {
 		sm.Frameworks = make(map[framework.Framework][]string)
 	}
@@ -171,6 +173,17 @@ func (sm *StaticMetadata) updateAliases(meta map[string]any) {
 	}
 }
 
+func (m *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
+	if len(frameworks) == 0 {
+		frameworks = []framework.Framework{framework.Default}
+	}
+
+	return slices.ContainsFunc(frameworks, func(fw framework.Framework) bool {
+		_, exists := m.Frameworks[fw]
+		return exists
+	})
+}
+
 func (sm *StaticMetadata) FromAnnotations(annotations *ast.Annotations) error {
 	sm.Title = annotations.Title
 	sm.Description = annotations.Description
@@ -181,7 +194,7 @@ func (sm *StaticMetadata) FromAnnotations(annotations *ast.Annotations) error {
 		sm.References = append(sm.References, resource.Ref.String())
 	}
 	if custom := annotations.Custom; custom != nil {
-		if err := sm.update(custom); err != nil {
+		if err := sm.populate(custom); err != nil {
 			return err
 		}
 	}
@@ -242,17 +255,13 @@ type SubType struct {
 	Provider  string // only for cloud
 }
 
-func (m StaticMetadata) ToRule() scan.Rule {
+func (m *StaticMetadata) ToRule() scan.Rule {
 
 	provider := "generic"
 	if m.Provider != "" {
 		provider = m.Provider
 	} else if len(m.InputOptions.Selectors) > 0 {
 		provider = m.InputOptions.Selectors[0].Type
-	}
-	service := "general"
-	if m.Service != "" {
-		service = m.Service
 	}
 
 	return scan.Rule{
@@ -265,7 +274,7 @@ func (m StaticMetadata) ToRule() scan.Rule {
 		Impact:         "",
 		Resolution:     m.RecommendedActions,
 		Provider:       providers.Provider(provider),
-		Service:        service,
+		Service:        cmp.Or(m.Service, "general"),
 		Links:          m.References,
 		Severity:       severity.Severity(m.Severity),
 		RegoPackage:    m.Package,
@@ -274,6 +283,38 @@ func (m StaticMetadata) ToRule() scan.Rule {
 		Terraform:      m.Terraform,
 		Examples:       m.Examples,
 	}
+}
+
+func MetadataFromAnnotations(module *ast.Module) (*StaticMetadata, error) {
+	input, err := inputFromAnnotations(module)
+	if err != nil {
+		return nil, fmt.Errorf("retrieve input from annotations: %w", err)
+	}
+	metadata := NewStaticMetadata(module.Package.Path.String(), input)
+	if annotations := findPackageAnnotations(module); annotations != nil {
+		if err := metadata.FromAnnotations(annotations); err != nil {
+			return nil, err
+		}
+		return metadata, nil
+	}
+	return nil, nil
+}
+
+func inputFromAnnotations(module *ast.Module) (InputOptions, error) {
+	annotation := findPackageAnnotations(module)
+	if annotation == nil || annotation.Custom == nil {
+		return InputOptions{}, nil
+	}
+	input, ok := annotation.Custom["input"]
+	if !ok {
+		return InputOptions{}, nil
+	}
+
+	rawInput, ok := input.(map[string]any)
+	if !ok {
+		return InputOptions{}, fmt.Errorf("input is not an object, got %T", input)
+	}
+	return parseMetadataInput(rawInput)
 }
 
 type MetadataRetriever struct {
@@ -286,33 +327,24 @@ func NewMetadataRetriever(compiler *ast.Compiler) *MetadataRetriever {
 	}
 }
 
-func (m *MetadataRetriever) findPackageAnnotations(module *ast.Module) *ast.Annotations {
-	return lo.FindOrElse(module.Annotations, nil, func(a *ast.Annotations) bool {
-		return a.Scope == annotationScopePackage
-	})
-}
-
 func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Module, contents ...any) (*StaticMetadata, error) {
-
-	metadata := NewStaticMetadata(
-		module.Package.Path.String(),
-		m.queryInputOptions(ctx, module),
-	)
-
 	// read metadata from official rego annotations if possible
-	if annotations := m.findPackageAnnotations(module); annotations != nil {
-		if err := metadata.FromAnnotations(annotations); err != nil {
-			return nil, err
-		}
+	if metadata, err := MetadataFromAnnotations(module); err != nil {
+		return nil, fmt.Errorf("retrieve metadata from annotations: %w", err)
+	} else if metadata != nil {
 		return metadata, nil
 	}
 
-	// otherwise, try to read metadata from the rego module itself - we used to do this before annotations were a thing
-	namespace := getModuleNamespace(module)
-	metadataQuery := fmt.Sprintf("data.%s.__rego_metadata__", namespace)
+	input, err := m.inputFromRule(ctx, module)
+	if err != nil {
+		return nil, fmt.Errorf("retrieve input from rule: %w", err)
+	}
+	metadata := NewStaticMetadata(module.Package.Path.String(), input)
 
+	// otherwise, try to read metadata from the rego module itself
+	// - we used to do this before annotations were a thing
 	options := []func(*rego.Rego){
-		rego.Query(metadataQuery),
+		rego.Query(ruleQuery(module, "__rego_metadata__")),
 		rego.Compiler(m.compiler),
 		rego.Capabilities(nil),
 	}
@@ -321,8 +353,7 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 		options = append(options, rego.Input(in))
 	}
 
-	instance := rego.New(options...)
-	set, err := instance.Eval(ctx)
+	set, err := rego.New(options...).Eval(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -344,117 +375,89 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 		return nil, errors.New("failed to parse metadata: not an object")
 	}
 
-	if err := metadata.update(meta); err != nil {
+	if err := metadata.populate(meta); err != nil {
 		return nil, err
 	}
 
 	return metadata, nil
 }
 
-// nolint: gocyclo
-func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.Module) InputOptions {
-
-	options := InputOptions{
-		Selectors: nil,
+func (m *MetadataRetriever) inputFromRule(ctx context.Context, module *ast.Module) (InputOptions, error) {
+	instance := rego.New(
+		rego.Query(ruleQuery(module, "__rego_input__")),
+		rego.Compiler(m.compiler),
+		rego.Capabilities(nil),
+	)
+	resultSet, err := instance.Eval(ctx)
+	if err != nil {
+		return InputOptions{}, fmt.Errorf("evaluate input: %w", err)
 	}
 
-	var metadata map[string]any
+	if len(resultSet) != 1 || len(resultSet[0].Expressions) != 1 {
+		return InputOptions{}, nil
+	}
 
-	// read metadata from official rego annotations if possible
-	if annotation := m.findPackageAnnotations(module); annotation != nil && annotation.Custom != nil {
-		if input, ok := annotation.Custom["input"]; ok {
-			if mapped, ok := input.(map[string]any); ok {
-				metadata = mapped
+	expression := resultSet[0].Expressions[0]
+	metadata, ok := expression.Value.(map[string]any)
+	if !ok {
+		return InputOptions{}, fmt.Errorf("result is not an object, got %T", expression.Value)
+	}
+	return parseMetadataInput(metadata)
+}
+
+func parseMetadataInput(input map[string]any) (InputOptions, error) {
+	raw, ok := input["selector"]
+	if !ok {
+		return InputOptions{}, nil
+	}
+
+	each, ok := raw.([]any)
+	if !ok {
+		return InputOptions{}, fmt.Errorf("selector is not an array, got %T", raw)
+	}
+
+	var selectors []Selector
+	for _, rawSelector := range each {
+		if selectorMap, ok := rawSelector.(map[string]any); ok {
+			selector, err := parseSelectorItem(selectorMap)
+			if err != nil {
+				return InputOptions{}, fmt.Errorf("parse selector item %v: %w", selectorMap, err)
 			}
+			selectors = append(selectors, selector)
 		}
 	}
+	return InputOptions{Selectors: selectors}, nil
+}
 
-	if metadata == nil {
-
-		namespace := getModuleNamespace(module)
-		inputOptionQuery := fmt.Sprintf("data.%s.__rego_input__", namespace)
-		instance := rego.New(
-			rego.Query(inputOptionQuery),
-			rego.Compiler(m.compiler),
-			rego.Capabilities(nil),
-		)
-		set, err := instance.Eval(ctx)
-		if err != nil {
-			return options
+func parseSelectorItem(raw map[string]any) (Selector, error) {
+	var selector Selector
+	if rawType, ok := raw["type"]; ok {
+		selector.Type = fmt.Sprintf("%s", rawType)
+		// handle backward compatibility for "defsec" source type which is now "cloud"
+		if selector.Type == string(iacTypes.SourceDefsec) {
+			selector.Type = string(iacTypes.SourceCloud)
 		}
-
-		if len(set) != 1 {
-			return options
-		}
-		if len(set[0].Expressions) != 1 {
-			return options
-		}
-		expression := set[0].Expressions[0]
-		meta, ok := expression.Value.(map[string]any)
-		if !ok {
-			return options
-		}
-		metadata = meta
 	}
-
-	if raw, ok := metadata["selector"]; ok {
-		if each, ok := raw.([]any); ok {
-			for _, rawSelector := range each {
-				var selector Selector
-				if selectorMap, ok := rawSelector.(map[string]any); ok {
-					if rawType, ok := selectorMap["type"]; ok {
-						selector.Type = fmt.Sprintf("%s", rawType)
-						// handle backward compatibility for "defsec" source type which is now "cloud"
-						if selector.Type == string(iacTypes.SourceDefsec) {
-							selector.Type = string(iacTypes.SourceCloud)
-						}
-					}
-					if subType, ok := selectorMap["subtypes"].([]any); ok {
-						for _, subT := range subType {
-							if st, ok := subT.(map[string]any); ok {
-								s := SubType{}
-								_ = mapstructure.Decode(st, &s)
-								selector.Subtypes = append(selector.Subtypes, s)
-							}
-						}
-					}
+	if subType, ok := raw["subtypes"].([]any); ok {
+		for _, subT := range subType {
+			if st, ok := subT.(map[string]any); ok {
+				var s SubType
+				if err := mapstructure.Decode(st, &s); err != nil {
+					return Selector{}, fmt.Errorf("decode subtype: %w", err)
 				}
-				options.Selectors = append(options.Selectors, selector)
+				selector.Subtypes = append(selector.Subtypes, s)
 			}
 		}
 	}
-
-	return options
-
+	return selector, nil
 }
 
-func getModuleNamespace(module *ast.Module) string {
-	return strings.TrimPrefix(module.Package.Path.String(), "data.")
+func ruleQuery(module *ast.Module, rule string) string {
+	return module.Package.Path.String() + "." + rule
 }
 
-func metadataFromRegoModule(module *ast.Module) (*StaticMetadata, error) {
-	meta := new(StaticMetadata)
-	for _, annotation := range module.Annotations {
-		if annotation.Scope == "package" {
-			if err := meta.FromAnnotations(annotation); err != nil {
-				return nil, err
-			}
-			break
-		}
-	}
-	return meta, nil
-}
-
-func (m *StaticMetadata) hasAnyFramework(frameworks []framework.Framework) bool {
-	if len(frameworks) == 0 {
-		frameworks = []framework.Framework{framework.Default}
-	}
-
-	for _, fr := range frameworks {
-		if _, exists := m.Frameworks[fr]; exists {
-			return true
-		}
-	}
-
-	return false
+func findPackageAnnotations(module *ast.Module) *ast.Annotations {
+	return lo.FindOrElse(module.Annotations, nil, func(a *ast.Annotations) bool {
+		return a.Scope == annotationScopePackage
+	})
 }

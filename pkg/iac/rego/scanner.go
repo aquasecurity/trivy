@@ -23,7 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-var checkTypesWithSubtype = set.New[types.Source](types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
+var checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
 
 var supportedProviders = makeSupportedProviders()
 
@@ -41,6 +41,7 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 type Scanner struct {
 	ruleNamespaces           set.Set[string]
 	policies                 map[string]*ast.Module
+	moduleMetadata           map[string]*StaticMetadata
 	store                    storage.Store
 	runtimeValues            *ast.Term
 	compiler                 *ast.Compiler
@@ -95,6 +96,7 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 		logger:           log.WithPrefix("rego"),
 		customSchemas:    make(map[string][]byte),
 		disabledCheckIDs: set.New[string](),
+		moduleMetadata:   make(map[string]*StaticMetadata),
 	}
 
 	for _, opt := range opts {
@@ -161,8 +163,7 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 
 	var results scan.Results
 
-	for _, module := range s.policies {
-
+	for path, module := range s.policies {
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
@@ -175,7 +176,7 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 			continue
 		}
 
-		staticMeta, err := s.retriever.RetrieveMetadata(ctx, module, GetInputsContents(inputs)...)
+		staticMeta, err := s.metadataForModule(ctx, path, module, inputs)
 		if err != nil {
 			s.logger.Error(
 				"Error occurred while retrieving metadata from check",
@@ -225,6 +226,20 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 	}
 
 	return results, nil
+}
+
+func (s *Scanner) metadataForModule(
+	ctx context.Context, path string, module *ast.Module, inputs []Input,
+) (*StaticMetadata, error) {
+	if metadata, exists := s.moduleMetadata[path]; exists {
+		return metadata, nil
+	}
+
+	metadata, err := s.retriever.RetrieveMetadata(ctx, module, GetInputsContents(inputs)...)
+	if err != nil {
+		return nil, err
+	}
+	return metadata, nil
 }
 
 func isPolicyWithSubtype(sourceType types.Source) bool {
