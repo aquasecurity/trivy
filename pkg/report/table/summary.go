@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"slices"
 	"sort"
-	"strings"
 
 	"github.com/fatih/color"
 	"github.com/samber/lo"
@@ -16,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/types"
-	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 type Scanner interface {
@@ -121,6 +119,7 @@ type summaryRenderer struct {
 	w          *bytes.Buffer
 	isTerminal bool
 	scanners   []Scanner
+	logger     *log.Logger
 }
 
 func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scanners) *summaryRenderer {
@@ -141,12 +140,13 @@ func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scann
 		w:          buf,
 		isTerminal: isTerminal,
 		scanners:   ss,
+		logger:     log.WithPrefix("report"),
 	}
 }
 
 func (r *summaryRenderer) Render(report types.Report) {
 	if len(r.scanners) == 0 {
-		log.WithPrefix("report").Warn("No enabled scanners found. Summary table will not be displayed.")
+		r.logger.Warn("No enabled scanners found. Summary table will not be displayed.")
 		return
 	}
 
@@ -221,17 +221,12 @@ func (r *summaryRenderer) showEmptyResultsWarning() {
 		NewScanner(types.LicenseScanner),
 	}
 
-	var warnStrings []string
 	if scanners := lo.Intersect(resultByFiles, r.scanners); len(scanners) > 0 {
-		warnStrings = append(warnStrings, fmt.Sprintf("Supported files for %s scanner(s) not found.",
-			strings.Join(xstrings.ToStringSlice(scanners), "/")))
+		r.logger.Warn("Supported files for scanner(s) not found.", log.Any("scanners", scanners))
 	}
 	if scanners := lo.Intersect(resultByFindings, r.scanners); len(scanners) > 0 {
-		warnStrings = append(warnStrings, fmt.Sprintf("No results found for %s scanner(s).",
-			strings.Join(xstrings.ToStringSlice(scanners), "/")))
+		r.logger.Warn("No issues detected with scanner(s).", log.Any("scanners", scanners))
 	}
-
-	log.WithPrefix("report").Info(strings.Join(warnStrings, " "))
 }
 
 // splitAggregatedPackages splits aggregated packages into different results with path as target.
