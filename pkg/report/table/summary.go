@@ -9,7 +9,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
@@ -120,12 +119,15 @@ func (s LicenseScanner) String() string {
 
 type summaryRenderer struct {
 	w          *bytes.Buffer
-	report     types.Report
 	isTerminal bool
 	scanners   []Scanner
 }
 
-func NewSummaryRenderer(report types.Report, isTerminal bool, scanners types.Scanners) (*summaryRenderer, error) {
+func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scanners) *summaryRenderer {
+	if !isTerminal {
+		tml.DisableFormatting()
+	}
+
 	var ss []Scanner
 	for _, scanner := range scanners {
 		s := NewScanner(scanner)
@@ -135,36 +137,19 @@ func NewSummaryRenderer(report types.Report, isTerminal bool, scanners types.Sca
 		ss = append(ss, s)
 	}
 
-	// It should be an impossible case.
-	// But it is possible when Trivy is used as a library.
-	if len(scanners) == 0 {
-		return nil, xerrors.Errorf("unable to find scanners")
-	}
-
-	buf := bytes.NewBuffer([]byte{})
-	if !isTerminal {
-		tml.DisableFormatting()
-	}
 	return &summaryRenderer{
 		w:          buf,
-		report:     report,
 		isTerminal: isTerminal,
 		scanners:   ss,
-	}, nil
+	}
 }
 
-func (r *summaryRenderer) Render() string {
-	r.renderSummary()
+func (r *summaryRenderer) Render(report types.Report) {
+	if len(r.scanners) == 0 {
+		log.WithPrefix("report").Info("No enabled scanners found. Summary table will not be displayed.")
+		return
+	}
 
-	return r.w.String()
-}
-
-func (r *summaryRenderer) printf(format string, args ...any) {
-	// nolint
-	_ = tml.Fprintf(r.w, format, args...)
-}
-
-func (r *summaryRenderer) renderSummary() {
 	r.printf("\n<underline><bold>Report Summary</bold></underline>\n\n")
 
 	t := newTableWriter(r.w, r.isTerminal)
@@ -186,7 +171,7 @@ func (r *summaryRenderer) renderSummary() {
 	t.SetHeaders(headers...)
 	t.SetAlignment(alignments...)
 
-	for _, result := range splitAggregatedPackages(r.report.Results) {
+	for _, result := range splitAggregatedPackages(report.Results) {
 		resultType := string(result.Type)
 		if result.Class == types.ClassSecret {
 			resultType = "text"
@@ -203,7 +188,7 @@ func (r *summaryRenderer) renderSummary() {
 		t.AddRows(rows)
 	}
 
-	if len(r.report.Results) == 0 {
+	if len(report.Results) == 0 {
 		r.showEmptyResultsWarning()
 		t.AddRows(slices.Repeat([]string{"-"}, len(r.scanners)+2))
 	}
@@ -216,6 +201,11 @@ func (r *summaryRenderer) renderSummary() {
 		"- '0': Clean (no security findings detected)\n\n")
 
 	return
+}
+
+func (r *summaryRenderer) printf(format string, args ...any) {
+	// nolint
+	_ = tml.Fprintf(r.w, format, args...)
 }
 
 // showEmptyResultsWarning shows WARN why the results array is empty based on the enabled scanners.
@@ -239,10 +229,6 @@ func (r *summaryRenderer) showEmptyResultsWarning() {
 	if scanners := lo.Intersect(resultByFindings, r.scanners); len(scanners) > 0 {
 		warnStrings = append(warnStrings, fmt.Sprintf("No results found for %s scanner(s).",
 			strings.Join(xstrings.ToStringSlice(scanners), "/")))
-	}
-
-	if len(warnStrings) == 0 {
-		warnStrings = append(warnStrings, "Scanners are not enabled.")
 	}
 
 	log.WithPrefix("report").Info(strings.Join(warnStrings, " "))

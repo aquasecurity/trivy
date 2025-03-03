@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
@@ -35,7 +34,7 @@ type Writer struct {
 	// Use one buffer for all renderers
 	buf *bytes.Buffer
 
-	summaryRenderer       Renderer
+	summaryRenderer       *summaryRenderer
 	vulnerabilityRenderer Renderer
 	misconfigRenderer     Renderer
 	secretRenderer        Renderer
@@ -71,14 +70,16 @@ type Options struct {
 
 func NewWriter(options Options) *Writer {
 	buf := bytes.NewBuffer([]byte{})
+	isTerminal := IsOutputToTerminal(options.Output)
 	return &Writer{
 		buf: buf,
 
-		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, IsOutputToTerminal(options.Output), options.Tree, options.ShowSuppressed, options.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, IsOutputToTerminal(options.Output), options.RenderCause),
-		secretRenderer:        NewSecretRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
-		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
-		fileLicenseRenderer:   NewFileLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.Scanners),
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
+		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.Severities),
 		options:               options,
 	}
 }
@@ -89,16 +90,8 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw *Writer) Write(_ context.Context, report types.Report) error {
-	if !IsOutputToTerminal(tw.options.Output) {
-		tml.DisableFormatting()
-	}
-
 	if !tw.options.NoSummaryTable {
-		renderer, err := NewSummaryRenderer(report, IsOutputToTerminal(tw.options.Output), tw.options.Scanners)
-		if err != nil {
-			return xerrors.Errorf("failed to create summary renderer: %w", err)
-		}
-		_, _ = fmt.Fprint(tw.options.Output, renderer.Render())
+		tw.summaryRenderer.Render(report)
 	}
 
 	for _, result := range report.Results {

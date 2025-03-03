@@ -1,6 +1,7 @@
 package table_test
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -332,9 +333,10 @@ Legend:
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r, err := table.NewSummaryRenderer(tt.report, false, tt.scanners)
-			require.NoError(t, err)
-			require.Equal(t, tt.want, r.Render(), tt.name)
+			buf := bytes.NewBuffer([]byte{})
+			r := table.NewSummaryRenderer(buf, false, tt.scanners)
+			r.Render(tt.report)
+			require.Equal(t, tt.want, buf.String())
 		})
 	}
 }
