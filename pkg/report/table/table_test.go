@@ -160,7 +160,7 @@ Legend:
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
-			writer := table.Writer{
+			writer := table.NewWriter(table.Options{
 				Output:             &tableWritten,
 				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
@@ -170,7 +170,7 @@ Legend:
 				},
 				Scanners:       tc.scanners,
 				NoSummaryTable: tc.noSummaryTable,
-			}
+			})
 			err := writer.Write(nil, types.Report{Results: tc.results})
 			if tc.wantError != "" {
 				require.Error(t, err)

@@ -2,7 +2,6 @@ package analyzer_test
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"sync"
 	"testing"
@@ -686,7 +685,6 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			})
 			require.NoError(t, err)
 			got := a.AnalyzerVersions()
-			fmt.Printf("%v\n", got)
 			assert.Equal(t, tt.want, got)
 		})
 	}

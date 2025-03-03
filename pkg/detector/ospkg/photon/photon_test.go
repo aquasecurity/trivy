@@ -86,7 +86,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to get Photon advisories",
+			wantErr: "failed to get Photon Linux advisory",
 		},
 	}
 	for _, tt := range tests {

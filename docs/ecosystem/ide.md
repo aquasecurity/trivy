@@ -58,7 +58,7 @@ Web application that allows to load a Trivy report in json format and displays t
 
 ## Trivy pre-commit (Community)
 
-A trivy pre-commit hook that runs a `trivy fs` in your git repo before commiting, preventing you from commiting secrets in the first place.
+A trivy pre-commit hook that runs a `trivy fs` in your git repo before committing, preventing you from committing secrets in the first place.
 
 👉 Get it at: <https://github.com/mxab/pre-commit-trivy>
 

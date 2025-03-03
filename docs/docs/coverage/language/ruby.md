@@ -1,7 +1,7 @@
 # Ruby
 
 Trivy supports [Bundler][bundler] and [RubyGems][rubygems].
-The following scanners are supported for Cargo.
+The following scanners are supported for Bundler and RubyGems.
 
 | Package manager | SBOM | Vulnerability | License |
 |-----------------|:----:|:-------------:|:-------:|

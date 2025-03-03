@@ -2,7 +2,6 @@ package sbom_test
 
 import (
 	"context"
-	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -11,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
@@ -19,18 +19,19 @@ import (
 
 func TestArtifact_Inspect(t *testing.T) {
 	tests := []struct {
-		name               string
-		filePath           string
-		putBlobExpectation cache.ArtifactCachePutBlobExpectation
-		want               artifact.Reference
-		wantErr            []string
+		name       string
+		filePath   string
+		setUpCache func(t *testing.T) cache.Cache
+		wantBlobs  []cachetest.WantBlob
+		want       artifact.Reference
+		wantErr    []string
 	}{
 		{
 			name:     "happy path",
 			filePath: filepath.Join("testdata", "bom.json"),
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+			wantBlobs: []cachetest.WantBlob{
+				{
+					ID: "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -186,7 +187,6 @@ func TestArtifact_Inspect(t *testing.T) {
 						},
 					},
 				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "bom.json"),
@@ -200,9 +200,9 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:     "happy path for sbom attestation",
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+			wantBlobs: []cachetest.WantBlob{
+				{
+					ID: "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -358,7 +358,6 @@ func TestArtifact_Inspect(t *testing.T) {
 						},
 					},
 				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
@@ -380,28 +379,17 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:     "sad path PutBlob returns an error",
 			filePath: filepath.Join("testdata", "os-only-bom.json"),
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:911a6c875617315c51971dddf19fa2d47d6132cd14e9c6a87deb074afaf07818",
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: types.OS{
-							Family: "alpine",
-							Name:   "3.16.0",
-						},
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{
-					Err: errors.New("error"),
-				},
+			setUpCache: func(t *testing.T) cache.Cache {
+				return cachetest.NewErrorCache(cachetest.ErrorCacheOptions{
+					PutBlob: true,
+				})
 			},
 			wantErr: []string{"failed to store blob"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := new(cache.MockArtifactCache)
-			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
+			c := cachetest.NewCache(t, tt.setUpCache)
 
 			a, err := sbom.NewArtifact(tt.filePath, c, artifact.Option{})
 			require.NoError(t, err)
@@ -425,6 +413,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+			cachetest.AssertBlobs(t, c, tt.wantBlobs)
 		})
 	}
 }

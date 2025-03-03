@@ -1,7 +1,6 @@
 package binary
 
 import (
-	"cmp"
 	"debug/buildinfo"
 	"fmt"
 	"runtime/debug"
@@ -9,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
 	"github.com/spf13/pflag"
 	"golang.org/x/mod/semver"
@@ -103,7 +103,13 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		// set via `go build -ldflags='-X main.version=<semver>'`, so we fallback to this as.
 		// as a secondary source.
 		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
-		version := cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.ParseLDFlags(info.Main.Path, ldflags))
+		version := p.checkVersion(info.Main.Path, info.Main.Version)
+		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
+
+		if version == "" || (strings.HasPrefix(version, "v0.0.0") && ldflagsVersion != "") {
+			version = ldflagsVersion
+		}
+
 		root := ftypes.Package{
 			ID:           dependency.ID(ftypes.GoBinary, info.Main.Path, version),
 			Name:         info.Main.Path,
@@ -145,7 +151,13 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 			continue
 		}
 
-		return strings.Fields(setting.Value)
+		flags, err := shellwords.Parse(setting.Value)
+		if err != nil {
+			p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
+			return nil
+		}
+
+		return flags
 	}
 	return nil
 }
@@ -163,6 +175,8 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	// to handle that edge case.
 	var x map[string]string
 	fset.StringToStringVarP(&x, "", "X", nil, "")
+	// Init `help` flag to avoid error in flags with `h` (e.g. `-lpthread`)
+	fset.BoolP("help", "h", false, "just to disable the built-in help flag")
 	if err := fset.Parse(flags); err != nil {
 		p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
 		return ""

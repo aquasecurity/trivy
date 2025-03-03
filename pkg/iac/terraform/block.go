@@ -123,6 +123,10 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	return &b
 }
 
+func (b *Block) HCLBlock() *hcl.Block {
+	return b.hclBlock
+}
+
 func (b *Block) ID() string {
 	return b.id
 }
@@ -478,6 +482,10 @@ func (b *Block) FullName() string {
 	}
 
 	return b.LocalName()
+}
+
+func (b *Block) ModuleBlock() *Block {
+	return b.moduleBlock
 }
 
 func (b *Block) ModuleKey() string {

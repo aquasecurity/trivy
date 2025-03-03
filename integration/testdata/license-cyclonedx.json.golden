@@ -17,10 +17,6 @@
   },
   "Results": [
     {
-      "Target": "pom.xml",
-      "Class": "license"
-    },
-    {
       "Target": "Java",
       "Class": "license",
       "Licenses": [
@@ -55,6 +51,10 @@
           "Link": ""
         }
       ]
+    },
+    {
+      "Target": "pom.xml",
+      "Class": "license"
     }
   ]
 }

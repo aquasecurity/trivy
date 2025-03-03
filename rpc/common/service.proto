@@ -156,12 +156,13 @@ message Layer {
 }
 
 message CauseMetadata {
-  string resource   = 1;
-  string provider   = 2;
-  string service    = 3;
-  int32  start_line = 4;
-  int32  end_line   = 5;
-  Code   code       = 6;
+  string        resource       = 1;
+  string        provider       = 2;
+  string        service        = 3;
+  int32         start_line     = 4;
+  int32         end_line       = 5;
+  Code          code           = 6;
+  RenderedCause rendered_cause = 7;
 }
 
 enum Severity {
@@ -201,6 +202,11 @@ message Line {
 
 message Code {
   repeated Line lines = 1;
+}
+
+message RenderedCause {
+  string raw         = 1;
+  string highlighted = 2;
 }
 
 message SecretFinding {

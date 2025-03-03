@@ -123,10 +123,10 @@ To make a copy of VEX Hub in a location that is accessible to Trivy.
 
 To configure Trivy to use the local VEX Repository:
 
-1. Locate your [Trivy VEX configuration file](../supply-chain/vex/repo/#configuration-file) by running `trivy vex repo init`. Make the following changes to the file.
+1. Locate your [Trivy VEX configuration file](../supply-chain/vex/repo.md#configuration-file) by running `trivy vex repo init`. Make the following changes to the file.
 1. Disable the default VEX Hub repo (`enabled: false`)
-1. Add your internal VEX Hub repository as a [custom repository](../supply-chain/vex/repo/#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
+1. Add your internal VEX Hub repository as a [custom repository](../supply-chain/vex/repo.md#custom-repositories) with the URL pointing to your local server (e.g `url: https://server.local`).
 
 ### Authentication
 
-If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](../supply-chain/vex/repo/#authentication).
+If your server requires authentication, you can configure it as described in the [VEX Repository Authentication document](../supply-chain/vex/repo.md#authentication).

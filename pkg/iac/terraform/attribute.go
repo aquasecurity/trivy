@@ -61,6 +61,10 @@ func NewAttribute(attr *hcl.Attribute, ctx *context.Context, module string, pare
 	}
 }
 
+func (a *Attribute) HCLAttribute() *hcl.Attribute {
+	return a.hclAttribute
+}
+
 func (a *Attribute) GetMetadata() iacTypes.Metadata {
 	return a.metadata
 }

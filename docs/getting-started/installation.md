@@ -167,7 +167,7 @@ See their respective documentation for more information of how to install them a
 - [asdf](https://asdf-vm.com/guide/getting-started.html)
 - [mise](https://mise.jdx.dev/getting-started.html)
 
-The plugin used by both tools is developped [here](https://github.com/zufardhiyaulhaq/asdf-trivy)
+The plugin used by both tools is developed [here](https://github.com/zufardhiyaulhaq/asdf-trivy)
 
 
 === "asdf"

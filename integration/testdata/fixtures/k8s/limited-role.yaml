@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: limited-role
+  namespace: limitedns
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["list"]
+- apiGroups: ["apps", "batch", "networking.k8s.io","rbac.authorization.k8s.io"]
+  resources: ["*"]
+  verbs: ["list"]
