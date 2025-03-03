@@ -22,21 +22,22 @@ import (
 )
 
 type csArgs struct {
-	Command           string
-	RemoteAddrOption  string
-	Format            types.Format
-	TemplatePath      string
-	IgnoreUnfixed     bool
-	Severity          []string
-	IgnoreIDs         []string
-	Input             string
-	ClientToken       string
-	ClientTokenHeader string
-	PathPrefix        string
-	ListAllPackages   bool
-	Target            string
-	secretConfig      string
-	Distro            string
+	Command             string
+	RemoteAddrOption    string
+	Format              types.Format
+	TemplatePath        string
+	IgnoreUnfixed       bool
+	Severity            []string
+	IgnoreIDs           []string
+	Input               string
+	ClientToken         string
+	ClientTokenHeader   string
+	PathPrefix          string
+	ListAllPackages     bool
+	Target              string
+	secretConfig        string
+	Distro              string
+	VulnSeveritySources []string
 }
 
 func TestClientServer(t *testing.T) {
@@ -279,6 +280,19 @@ func TestClientServer(t *testing.T) {
 				ListAllPackages:  true,
 			},
 			golden: "testdata/npm.json.golden",
+		},
+		{
+			name: "scan package-lock.json with severity from `ubuntu` in client/server mode",
+			args: csArgs{
+				Command:          "repo",
+				RemoteAddrOption: "--server",
+				Target:           "testdata/fixtures/repo/npm/",
+				VulnSeveritySources: []string{
+					"alpine",
+					"ubuntu",
+				},
+			},
+			golden: "testdata/npm-ubuntu-severity.json.golden",
 		},
 		{
 			name: "scan sample.pem with repo command in client/server mode",
@@ -674,6 +688,12 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string) []string 
 	if len(c.Severity) != 0 {
 		osArgs = append(osArgs,
 			"--severity", strings.Join(c.Severity, ","),
+		)
+	}
+
+	if len(c.VulnSeveritySources) != 0 {
+		osArgs = append(osArgs,
+			"--vuln-severity-source", strings.Join(c.VulnSeveritySources, ","),
 		)
 	}
 

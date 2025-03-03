@@ -626,6 +626,10 @@ vulnerability:
   # Same as '--ignore-unfixed'
   ignore-unfixed: false
 
+  # Same as '--vuln-severity-source'
+  severity-source:
+   - auto
+
   # Same as '--skip-vex-repo-update'
   skip-vex-repo-update: false
 
