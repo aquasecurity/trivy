@@ -225,7 +225,7 @@ func (r *summaryRenderer) showEmptyResultsWarning() {
 		r.logger.Warn("Supported files for scanner(s) not found.", log.Any("scanners", scanners))
 	}
 	if scanners := lo.Intersect(resultByFindings, r.scanners); len(scanners) > 0 {
-		r.logger.Warn("No issues detected with scanner(s).", log.Any("scanners", scanners))
+		r.logger.Info("No issues detected with scanner(s).", log.Any("scanners", scanners))
 	}
 }
 
