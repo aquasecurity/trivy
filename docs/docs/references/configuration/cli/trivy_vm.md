@@ -58,7 +58,6 @@ trivy vm [flags] VM_IMAGE
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress                       suppress progress bar
-      --no-summary-table                  hide summary table
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
@@ -82,6 +81,7 @@ trivy vm [flags] VM_IMAGE
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
       --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
+      --table-mode strings                [EXPERIMENTAL] tables that will be displayed in 'table' format (summary,detailed) (default [summary,detailed])
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode

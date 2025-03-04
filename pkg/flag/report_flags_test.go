@@ -13,6 +13,7 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
@@ -32,7 +33,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		compliance       string
 		debug            bool
 		pkgTypes         string
-		noSummaryTable   bool
+		tableModes       []string
 	}
 	tests := []struct {
 		name     string
@@ -163,12 +164,12 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid option combination: --no-summary-table with --format json",
+			name: "invalid option combination: --table-modes with --format json",
 			fields: fields{
-				format:         "json",
-				noSummaryTable: true,
+				format:     "json",
+				tableModes: xstrings.ToStringSlice(types.SupportedTableModes),
 			},
-			wantErr: `"--no-summary-table" can be used only with "--format table".`,
+			wantErr: `"--table-mode" can be used only with "--format table".`,
 		},
 	}
 	for _, tt := range tests {
@@ -194,7 +195,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
 			setValue(flag.SeverityFlag.ConfigName, tt.fields.severities)
 			setValue(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
-			setValue(flag.NoSummaryTableFlag.ConfigName, tt.fields.noSummaryTable)
+			setSliceValue(flag.TableModeFlag.ConfigName, tt.fields.tableModes)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
@@ -210,7 +211,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				OutputPluginArg: flag.OutputPluginArgFlag.Clone(),
 				Severity:        flag.SeverityFlag.Clone(),
 				Compliance:      flag.ComplianceFlag.Clone(),
-				NoSummaryTable:  flag.NoSummaryTableFlag.Clone(),
+				TableMode:       flag.TableModeFlag.Clone(),
 			}
 
 			got, err := f.ToOptions()

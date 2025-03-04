@@ -20,7 +20,7 @@ Trivy supports the following formats:
 |     License      |     ✓     |
 
 ```bash
-$ trivy image -f table golang:1.22.11-alpine3.21
+$ trivy image -f table golang:1.22.11-alpine3.20
 ```
 
 <details>
@@ -29,35 +29,95 @@ $ trivy image -f table golang:1.22.11-alpine3.21
 ```
 ...
 
-
 Report Summary
 
 ┌─────────────────────────────────────────────┬──────────┬─────────────────┬─────────┐
 │                   Target                    │   Type   │ Vulnerabilities │ Secrets │
 ├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
-│ golang:1.22.11-alpine3.21 (alpine 3.21.2)   │  alpine  │        0        │    -    │
+│ golang:1.22.11-alpine3.20 (alpine 3.20.5)   │  alpine  │        6        │    -    │
 ├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
-│ Node.js                                     │ node-pkg │        0        │    -    │
-├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
-│ usr/local/go/bin/go                         │ gobinary │        0        │    -    │
-├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
-│ usr/local/go/bin/gofmt                      │ gobinary │        0        │    -    │
+│ usr/local/go/bin/go                         │ gobinary │        1        │    -    │
 ├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
 ...
 ├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
-│ usr/local/go/pkg/tool/linux_amd64/vet       │ gobinary │        0        │    -    │
+│ usr/local/go/pkg/tool/linux_amd64/vet       │ gobinary │        1        │    -    │
 └─────────────────────────────────────────────┴──────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
 
-golang:1.22.11-alpine3.21 (alpine 3.21.2)
 
-Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+golang:1.22.11-alpine3.20 (alpine 3.20.5)
 
+Total: 6 (UNKNOWN: 2, LOW: 0, MEDIUM: 2, HIGH: 2, CRITICAL: 0)
+
+┌────────────┬────────────────┬──────────┬────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Status │ Installed Version │ Fixed Version │                            Title                            │
+├────────────┼────────────────┼──────────┼────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ libcrypto3 │ CVE-2024-12797 │ HIGH     │ fixed  │ 3.3.2-r1          │ 3.3.3-r0      │ openssl: RFC7250 handshakes with unauthenticated servers    │
+│            │                │          │        │                   │               │ don't abort as expected                                     │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-12797                  │
+│            ├────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-13176 │ MEDIUM   │        │                   │ 3.3.2-r2      │ openssl: Timing side-channel in ECDSA signature computation │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
+├────────────┼────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│ libssl3    │ CVE-2024-12797 │ HIGH     │        │                   │ 3.3.3-r0      │ openssl: RFC7250 handshakes with unauthenticated servers    │
+│            │                │          │        │                   │               │ don't abort as expected                                     │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-12797                  │
+│            ├────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-13176 │ MEDIUM   │        │                   │ 3.3.2-r2      │ openssl: Timing side-channel in ECDSA signature computation │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2025-26519 │ UNKNOWN  │        │ 1.2.5-r0          │ 1.2.5-r1      │ musl libc 0.9.13 through 1.2.5 before 1.2.6 has an          │
+│            │                │          │        │                   │               │ out-of-bounds write ......                                  │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2025-26519                  │
+├────────────┤                │          │        │                   │               │                                                             │
+│ musl-utils │                │          │        │                   │               │                                                             │
+│            │                │          │        │                   │               │                                                             │
+│            │                │          │        │                   │               │                                                             │
+└────────────┴────────────────┴──────────┴────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
+usr/local/go/bin/go (gobinary)
+
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+┌─────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│ Library │ Vulnerability  │ Severity │ Status │ Installed Version │        Fixed Version         │                            Title                             │
+├─────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ stdlib  │ CVE-2025-22866 │ MEDIUM   │ fixed  │ v1.22.11          │ 1.22.12, 1.23.6, 1.24.0-rc.3 │ crypto/internal/nistec: golang: Timing sidechannel for P-256 │
+│         │                │          │        │                   │                              │ on ppc64le in crypto/internal/nistec                         │
+│         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-22866                   │
+└─────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────┘
+
+...
 ```
 
 </details>
 
-#### Summary table
-Before result tables Trivy shows summary table.
+#### Table mode
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Trivy supports the following modes for `table` format:
+
+|             Mode             | Enable by default |
+|:----------------------------:|:-----------------:|
+|  [summary](#summary-table)   |       ✓[^1]       |
+| [detailed](#detailed-tables) |         ✓         |
+
+!!! note
+    Use `--table-mode` flag to enable/disable table mode(s). 
+
+
+##### Summary table
+Summary table contains general information about the scan performed.
+
+Nuances of table contents:
+
+- Table includes columns for enabled [scanners](../references/terminology.md#scanner) only. Use `--scanners` flag to enable/disable scanners.
+- Table includes separate lines for the same targets but different scanners.
+    - `-` means that the scanner didn't scan this target.
+    - `0` means that the scanner scanned this target, but found no security issues.
 
 <details>
 <summary>Report Summary</summary>
@@ -84,15 +144,28 @@ Before result tables Trivy shows summary table.
 
 </details>
 
-This table:
+##### Detailed tables
+Detailed tables contains information about found security issues for each target with more detailed information (CVE-id, severity, version, etc.).
 
-- Includes columns for enabled [scanners](../references/terminology.md#scanner) only.
-- Contains separate lines for the same targets but different scanners.
-    - `-` means that the scanner didn't scan this target.
-    - `0` means that the scanner scanned this target, but found no security issues.
+<details>
+<summary>Detailed tables</summary>
 
-!!! note 
-    Use `--no-summary-table` flag to hide summary table.
+```
+
+usr/local/go/bin/go (gobinary)
+
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+┌─────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│ Library │ Vulnerability  │ Severity │ Status │ Installed Version │        Fixed Version         │                            Title                             │
+├─────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ stdlib  │ CVE-2025-22866 │ MEDIUM   │ fixed  │ v1.22.11          │ 1.22.12, 1.23.6, 1.24.0-rc.3 │ crypto/internal/nistec: golang: Timing sidechannel for P-256 │
+│         │                │          │        │                   │                              │ on ppc64le in crypto/internal/nistec                         │
+│         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-22866                   │
+└─────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────┘
+
+```
+</details>
 
 #### Show origins of vulnerable dependencies
 
@@ -545,13 +618,9 @@ $ trivy convert --format cyclonedx --output result.cdx result.json
 ```
 
 !!! note
-    Please note that if you want to convert to a format that requires a list of packages, 
+    Please note that if you want to convert to a format that requires a list of packages,
     such as SBOM, you need to add the `--list-all-pkgs` flag when outputting in JSON.
 
-!!! warning
-    JSON reports from "trivy k8s" are not yet supported.
-
-### Filtering
 [Filtering options](./filtering.md) such as `--severity` are also available with `convert`.
 
 ```shell
@@ -562,8 +631,8 @@ $ trivy image --format json -o result.json --list-all-pkgs debian:11
 $ trivy convert --format table --severity CRITICAL result.json
 ```
 
-### Table format
-To display the [summary table](#summary-table), you need to [enable the scanners](./others.md#enabledisable-scanners) that were used to generate the [json report](#converting).
+!!! note
+    JSON reports from "trivy k8s" are not yet supported.
 
 [cargo-auditable]: https://github.com/rust-secure-code/cargo-auditable/
 [action]: https://github.com/aquasecurity/trivy-action
@@ -593,3 +662,5 @@ To display the [summary table](#summary-table), you need to [enable the scanners
 [sbt-lockfile]: ../coverage/language/java.md#sbt
 [pubspec-lock]: ../coverage/language/dart.md#dart
 [cargo-binaries]: ../coverage/language/rust.md#binaries
+
+[^1]: To show summary table in `convert` mode - you need to enable the scanners used during JSON report generation.

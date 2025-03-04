@@ -45,7 +45,6 @@ trivy sbom [flags] SBOM_PATH
       --java-db-repository strings     OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --list-all-pkgs                  output all packages in the JSON report regardless of vulnerability
       --no-progress                    suppress progress bar
-      --no-summary-table               hide summary table
       --offline-scan                   do not issue API requests to identify dependencies
   -o, --output string                  output file name
       --output-plugin-arg string       [EXPERIMENTAL] output plugin arguments
@@ -69,6 +68,7 @@ trivy sbom [flags] SBOM_PATH
       --skip-files strings             specify the files or glob patterns to skip
       --skip-java-db-update            skip updating Java index database
       --skip-vex-repo-update           [EXPERIMENTAL] Skip VEX Repository update
+      --table-mode strings             [EXPERIMENTAL] tables that will be displayed in 'table' format (summary,detailed) (default [summary,detailed])
   -t, --template string                output template
       --token string                   for authentication in client/server mode
       --token-header string            specify a header name for token in client/server mode (default "Trivy-Token")

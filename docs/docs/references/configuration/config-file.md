@@ -529,9 +529,6 @@ ignorefile: ".trivyignore"
 # Same as '--list-all-pkgs'
 list-all-pkgs: false
 
-# Same as '--no-summary-table'
-no-summary-table: false
-
 # Same as '--output'
 output: ""
 
@@ -555,6 +552,11 @@ severity:
  - MEDIUM
  - HIGH
  - CRITICAL
+
+# Same as '--table-mode'
+table-mode:
+ - summary
+ - detailed
 
 # Same as '--template'
 template: ""

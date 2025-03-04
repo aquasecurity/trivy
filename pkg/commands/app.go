@@ -984,7 +984,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'
-	reportFlagGroup.NoSummaryTable = nil    // disable '--no-summary-table'
+	reportFlagGroup.TableMode = nil         // disable '--table-mode'
 
 	formatFlag := flag.FormatFlag.Clone()
 	formatFlag.Values = xstrings.ToStringSlice([]types.Format{

@@ -55,8 +55,8 @@ type Options struct {
 	// Show suppressed findings
 	ShowSuppressed bool
 
-	// Hide summary table
-	NoSummaryTable bool
+	// Show/hide summary/detailed tables
+	TableModes []types.TableMode
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -90,16 +90,18 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw *Writer) Write(_ context.Context, report types.Report) error {
-	if !tw.options.NoSummaryTable {
+	if slices.Contains(tw.options.TableModes, types.Summary) {
 		tw.summaryRenderer.Render(report)
 	}
 
-	for _, result := range report.Results {
-		// Not display a table of custom resources
-		if result.Class == types.ClassCustom {
-			continue
+	if slices.Contains(tw.options.TableModes, types.Detailed) {
+		for _, result := range report.Results {
+			// Not display a table of custom resources
+			if result.Class == types.ClassCustom {
+				continue
+			}
+			tw.render(result)
 		}
-		tw.render(result)
 	}
 
 	tw.flush()

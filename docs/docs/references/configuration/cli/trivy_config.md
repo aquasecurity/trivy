@@ -36,7 +36,6 @@ trivy config [flags] DIR
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
-      --no-summary-table                  hide summary table
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
@@ -52,6 +51,7 @@ trivy config [flags] DIR
       --skip-check-update                 skip fetching rego check updates
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
+      --table-mode strings                [EXPERIMENTAL] tables that will be displayed in 'table' format (summary,detailed) (default [summary,detailed])
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
