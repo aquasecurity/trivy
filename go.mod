@@ -24,17 +24,17 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20240730042311-4642e94c7fc8
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-checks v1.6.1
+	github.com/aquasecurity/trivy-checks v1.7.1
 	github.com/aquasecurity/trivy-db v0.0.0-20250227071930-8bd8a9b89e2d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.7.0
-	github.com/aws/aws-sdk-go-v2 v1.34.0
-	github.com/aws/aws-sdk-go-v2/config v1.29.2
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.55
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.201.1
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.38.7
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.74.1
-	github.com/aws/smithy-go v1.22.2
+	github.com/aws/aws-sdk-go-v2 v1.36.3
+	github.com/aws/aws-sdk-go-v2/config v1.29.8
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.61
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.206.0
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.42.0
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.78.0
+	github.com/aws/smithy-go v1.22.3
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
 	github.com/bmatcuk/doublestar/v4 v4.8.1
 	github.com/cenkalti/backoff/v4 v4.3.0
@@ -94,7 +94,7 @@ require (
 	github.com/openvex/discovery v0.1.1-0.20240802171711-7c54efc57553
 	github.com/openvex/go-vex v0.2.5
 	github.com/owenrumney/go-sarif/v2 v2.3.3
-	github.com/owenrumney/squealer v1.2.10
+	github.com/owenrumney/squealer v1.2.11
 	github.com/package-url/packageurl-go v0.1.3
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/rust-secure-code/go-rustaudit v0.0.0-20250226111315-e20ec32e963c
@@ -427,16 +427,16 @@ require (
 
 require (
 	github.com/aws/aws-sdk-go v1.55.6 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.25 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.29 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.29 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.2 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ebs v1.22.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.24.12 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.33.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.25.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.29.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.33.16 // indirect
 	github.com/oklog/ulid/v2 v2.1.0 // indirect
 	github.com/samber/oops v1.15.0 // indirect
 )

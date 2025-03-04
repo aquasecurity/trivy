@@ -145,7 +145,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 	for i := range results {
 		// Fill vulnerability details
-		s.vulnClient.FillInfo(results[i].Vulnerabilities)
+		s.vulnClient.FillInfo(results[i].Vulnerabilities, options.VulnSeveritySources)
 	}
 
 	// Post scanning
