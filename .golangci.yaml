@@ -73,7 +73,8 @@ linters-settings:
       - G304
       - G402
   govet:
-    check-shadowing: false
+    disable:
+      - shadow
   misspell:
     locale: US
     ignore-words:
