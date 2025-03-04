@@ -2396,3 +2396,111 @@ func TestYAMLConfigScan(t *testing.T) {
 		})
 	}
 }
+
+// recordingWalker wraps an existing walker and records which paths were walked
+type recordingWalker struct {
+	base        Walker
+	walkedRoots []string
+}
+
+func newRecordingWalker(base Walker) *recordingWalker {
+	return &recordingWalker{
+		base: base,
+	}
+}
+
+func (w *recordingWalker) Walk(root string, option walker.Option, walkFn walker.WalkFunc) error {
+	w.walkedRoots = append(w.walkedRoots, root)
+	// Call the original walker
+	return w.base.Walk(root, option, walkFn)
+}
+
+// TestArtifact_AnalysisStrategy tests the different analysis strategies
+func TestArtifact_AnalysisStrategy(t *testing.T) {
+	// Use testdata/alpine directly
+	testDir := "testdata/alpine"
+
+	tests := []struct {
+		name              string
+		disabledAnalyzers []analyzer.Type
+		wantRoots         []string
+	}{
+		{
+			name:              "static paths",
+			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeSecret),
+			wantRoots: []string{
+				"testdata/alpine/etc/alpine-release",
+				"testdata/alpine/lib/apk/db/installed",
+			},
+		},
+		{
+			name: "traversing root dir",
+			wantRoots: []string{
+				testDir, // only the root directory is walked
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new artifact with the recording walker
+			baseWalker := walker.NewFS()
+			rw := newRecordingWalker(baseWalker)
+
+			// Create artifact with recording walker
+			a, err := NewArtifact(testDir, cache.NewMemoryCache(), rw, artifact.Option{
+				DisabledAnalyzers: tt.disabledAnalyzers,
+			})
+			require.NoError(t, err)
+
+			// Run the inspection
+			_, err = a.Inspect(context.Background())
+			require.NoError(t, err)
+
+			// Check if the walked roots match the expected roots
+			assert.ElementsMatch(t, tt.wantRoots, rw.walkedRoots)
+		})
+	}
+}
+
+// TestAnalyzerGroup_StaticPaths tests the StaticPaths method of AnalyzerGroup
+func TestAnalyzerGroup_StaticPaths(t *testing.T) {
+	tests := []struct {
+		name              string
+		disabledAnalyzers []analyzer.Type
+		want              []string
+		wantAllStatic     bool
+	}{
+		{
+			name:              "all analyzers implement StaticPathAnalyzer",
+			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeSecret),
+			want: []string{
+				"lib/apk/db/installed",
+				"etc/alpine-release",
+			},
+			wantAllStatic: true,
+		},
+		{
+			name:          "disable one analyzer",
+			want:          []string{},
+			wantAllStatic: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new analyzer group
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
+			require.NoError(t, err)
+
+			// Get static paths
+			gotPaths, gotAllStatic := a.StaticPaths(tt.disabledAnalyzers)
+
+			// Check if all analyzers implement StaticPathAnalyzer
+			assert.Equal(t, tt.wantAllStatic, gotAllStatic)
+
+			// Check paths
+			assert.ElementsMatch(t, tt.want, gotPaths)
+		})
+	}
+}
