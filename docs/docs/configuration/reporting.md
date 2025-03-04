@@ -105,8 +105,7 @@ Trivy supports the following modes for `table` format:
 |  [summary](#summary-table)   |       ✓[^1]       |
 | [detailed](#detailed-tables) |         ✓         |
 
-!!! note
-    Use `--table-mode` flag to enable/disable table mode(s). 
+You can use `--table-mode` flag to enable/disable table mode(s). 
 
 
 ##### Summary table
