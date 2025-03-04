@@ -8115,7 +8115,7 @@ You're not viewing the latest version of the documentation.
 <h1 id="config-file">Config file<a class="headerlink" href="#config-file" title="Permanent link">&para;</a></h1>
 <p>Trivy can be customized by tweaking a <code>trivy.yaml</code> file.
 The config path can be overridden by the <code>--config</code> flag.</p>
-<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-46-gd46480732/examples/trivy-conf/trivy.yaml">here</a>.</p>
+<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.59.0-50-gdd54f80d3/examples/trivy-conf/trivy.yaml">here</a>.</p>
 <p>These samples contain default values for flags.</p>
 <h2 id="global-options">Global options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nt">cache</span><span class="p">:</span>
@@ -8622,6 +8622,11 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MEDIUM</span>
 <span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HIGH</span>
 <span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CRITICAL</span>
+
+<span class="c1"># Same as &#39;--table-mode&#39;</span>
+<span class="nt">table-mode</span><span class="p">:</span>
+<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">summary</span>
+<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detailed</span>
 
 <span class="c1"># Same as &#39;--template&#39;</span>
 <span class="nt">template</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>

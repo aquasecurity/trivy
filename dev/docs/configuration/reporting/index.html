@@ -4135,6 +4135,45 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#table-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Table mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#summary-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detailed-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#show-origins-of-vulnerable-dependencies" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7942,6 +7981,45 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#table-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Table mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#summary-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detailed-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#show-origins-of-vulnerable-dependencies" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8208,8 +8286,157 @@ You're not viewing the latest version of the documentation.
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><code>$ trivy image -f table golang:1.12-alpine
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>-f<span class="w"> </span>table<span class="w"> </span>golang:1.22.11-alpine3.20
 </code></pre></div>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code>...
+
+Report Summary
+
+┌─────────────────────────────────────────────┬──────────┬─────────────────┬─────────┐
+│                   Target                    │   Type   │ Vulnerabilities │ Secrets │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ golang:1.22.11-alpine3.20 (alpine 3.20.5)   │  alpine  │        6        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ usr/local/go/bin/go                         │ gobinary │        1        │    -    │
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+...
+├─────────────────────────────────────────────┼──────────┼─────────────────┼─────────┤
+│ usr/local/go/pkg/tool/linux_amd64/vet       │ gobinary │        1        │    -    │
+└─────────────────────────────────────────────┴──────────┴─────────────────┴─────────┘
+Legend:
+- &#39;-&#39;: Not scanned
+- &#39;0&#39;: Clean (no security findings detected)
+
+
+golang:1.22.11-alpine3.20 (alpine 3.20.5)
+
+Total: 6 (UNKNOWN: 2, LOW: 0, MEDIUM: 2, HIGH: 2, CRITICAL: 0)
+
+┌────────────┬────────────────┬──────────┬────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Status │ Installed Version │ Fixed Version │                            Title                            │
+├────────────┼────────────────┼──────────┼────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ libcrypto3 │ CVE-2024-12797 │ HIGH     │ fixed  │ 3.3.2-r1          │ 3.3.3-r0      │ openssl: RFC7250 handshakes with unauthenticated servers    │
+│            │                │          │        │                   │               │ don&#39;t abort as expected                                     │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-12797                  │
+│            ├────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-13176 │ MEDIUM   │        │                   │ 3.3.2-r2      │ openssl: Timing side-channel in ECDSA signature computation │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
+├────────────┼────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│ libssl3    │ CVE-2024-12797 │ HIGH     │        │                   │ 3.3.3-r0      │ openssl: RFC7250 handshakes with unauthenticated servers    │
+│            │                │          │        │                   │               │ don&#39;t abort as expected                                     │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-12797                  │
+│            ├────────────────┼──────────┤        │                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│            │ CVE-2024-13176 │ MEDIUM   │        │                   │ 3.3.2-r2      │ openssl: Timing side-channel in ECDSA signature computation │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2024-13176                  │
+├────────────┼────────────────┼──────────┤        ├───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2025-26519 │ UNKNOWN  │        │ 1.2.5-r0          │ 1.2.5-r1      │ musl libc 0.9.13 through 1.2.5 before 1.2.6 has an          │
+│            │                │          │        │                   │               │ out-of-bounds write ......                                  │
+│            │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2025-26519                  │
+├────────────┤                │          │        │                   │               │                                                             │
+│ musl-utils │                │          │        │                   │               │                                                             │
+│            │                │          │        │                   │               │                                                             │
+│            │                │          │        │                   │               │                                                             │
+└────────────┴────────────────┴──────────┴────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
+usr/local/go/bin/go (gobinary)
+
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+┌─────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│ Library │ Vulnerability  │ Severity │ Status │ Installed Version │        Fixed Version         │                            Title                             │
+├─────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ stdlib  │ CVE-2025-22866 │ MEDIUM   │ fixed  │ v1.22.11          │ 1.22.12, 1.23.6, 1.24.0-rc.3 │ crypto/internal/nistec: golang: Timing sidechannel for P-256 │
+│         │                │          │        │                   │                              │ on ppc64le in crypto/internal/nistec                         │
+│         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-22866                   │
+└─────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────┘
+
+...
+</code></pre></div>
+
+</details>
+
+<h4 id="table-mode">Table mode<a class="headerlink" href="#table-mode" title="Permanent link">&para;</a></h4>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<p>Trivy supports the following modes for <code>table</code> format:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Mode</th>
+<th style="text-align: center;">Enabled by default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="#summary-table">summary</a></td>
+<td style="text-align: center;">✓<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="#detailed-tables">detailed</a></td>
+<td style="text-align: center;">✓</td>
+</tr>
+</tbody>
+</table>
+<p>You can use <code>--table-mode</code> flag to enable/disable table mode(s). </p>
+<h5 id="summary-table">Summary table<a class="headerlink" href="#summary-table" title="Permanent link">&para;</a></h5>
+<p>Summary table contains general information about the scan performed.</p>
+<p>Nuances of table contents:</p>
+<ul>
+<li>Table includes columns for enabled <a href="../../references/terminology/#scanner">scanners</a> only. Use <code>--scanners</code> flag to enable/disable scanners.</li>
+<li>Table includes separate lines for the same targets but different scanners.<ul>
+<li><code>-</code> means that the scanner didn't scan this target.</li>
+<li><code>0</code> means that the scanner scanned this target, but found no security issues.</li>
+</ul>
+</li>
+</ul>
+<details>
+<summary>Report Summary</summary>
+
+<div class="highlight"><pre><span></span><code>┌───────────────────────┬────────────┬─────────────────┬───────────────────┬─────────┬──────────┐
+│        Target         │    Type    │ Vulnerabilities │ Misconfigurations │ Secrets │ Licenses │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ test (alpine 3.20.3)  │   alpine   │        2        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ Java                  │    jar     │        2        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ app/Dockerfile        │ dockerfile │        -        │         2         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ requirements.txt      │    text    │        0        │         -         │    -    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ requirements.txt      │    text    │        -        │         -         │    1    │    -     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ OS Packages           │     -      │        -        │         -         │    -    │    1     │
+├───────────────────────┼────────────┼─────────────────┼───────────────────┼─────────┼──────────┤
+│ Java                  │     -      │        -        │         -         │    -    │    0     │
+└───────────────────────┴────────────┴─────────────────┴───────────────────┴─────────┴──────────┘
+</code></pre></div>
+
+</details>
+
+<h5 id="detailed-tables">Detailed tables<a class="headerlink" href="#detailed-tables" title="Permanent link">&para;</a></h5>
+<p>Detailed tables contain information about found security issues for each target with more detailed information (CVE-ID, severity, version, etc.).</p>
+<details>
+<summary>Detailed tables</summary>
+
+<div class="highlight"><pre><span></span><code>usr/local/go/bin/go (gobinary)
+
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+┌─────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│ Library │ Vulnerability  │ Severity │ Status │ Installed Version │        Fixed Version         │                            Title                             │
+├─────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ stdlib  │ CVE-2025-22866 │ MEDIUM   │ fixed  │ v1.22.11          │ 1.22.12, 1.23.6, 1.24.0-rc.3 │ crypto/internal/nistec: golang: Timing sidechannel for P-256 │
+│         │                │          │        │                   │                              │ on ppc64le in crypto/internal/nistec                         │
+│         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-22866                   │
+└─────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────┘
+</code></pre></div>
+</details>
+
 <h4 id="show-origins-of-vulnerable-dependencies">Show origins of vulnerable dependencies<a class="headerlink" href="#show-origins-of-vulnerable-dependencies" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
@@ -8796,7 +9023,7 @@ $<span class="w"> </span>trivy<span class="w"> </span>convert<span class="w"> </
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Please note that if you want to convert to a format that requires a list of packages, 
+<p>Please note that if you want to convert to a format that requires a list of packages,
 such as SBOM, you need to add the <code>--list-all-pkgs</code> flag when outputting in JSON.</p>
 </div>
 <p><a href="../filtering/">Filtering options</a> such as <code>--severity</code> are also available with <code>convert</code>.</p>
@@ -8809,6 +9036,14 @@ $<span class="w"> </span>trivy<span class="w"> </span>convert<span class="w"> </
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>JSON reports from "trivy k8s" are not yet supported.</p>
+</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>To show summary table in <code>convert</code> mode - you need to enable the scanners used during JSON report generation.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
 </div>
 
 
