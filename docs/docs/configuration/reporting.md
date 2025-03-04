@@ -100,7 +100,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 Trivy supports the following modes for `table` format:
 
-|             Mode             | Enable by default |
+|             Mode             | Enabled by default |
 |:----------------------------:|:-----------------:|
 |  [summary](#summary-table)   |       ✓[^1]       |
 | [detailed](#detailed-tables) |         ✓         |
