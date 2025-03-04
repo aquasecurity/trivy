@@ -190,6 +190,8 @@ func (r *summaryRenderer) Render(report types.Report) {
 
 	if len(report.Results) == 0 {
 		r.showEmptyResultsWarning()
+		alignments[0] = table.AlignCenter
+		t.SetAlignment(alignments...)
 		t.AddRows(slices.Repeat([]string{"-"}, len(r.scanners)+2))
 	}
 
