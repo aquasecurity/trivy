@@ -68,6 +68,7 @@ trivy sbom [flags] SBOM_PATH
       --skip-files strings             specify the files or glob patterns to skip
       --skip-java-db-update            skip updating Java index database
       --skip-vex-repo-update           [EXPERIMENTAL] Skip VEX Repository update
+      --table-mode strings             [EXPERIMENTAL] tables that will be displayed in 'table' format (summary,detailed) (default [summary,detailed])
   -t, --template string                output template
       --token string                   for authentication in client/server mode
       --token-header string            specify a header name for token in client/server mode (default "Trivy-Token")

@@ -109,6 +109,13 @@ var (
 		ConfigName: "scan.show-suppressed",
 		Usage:      "[EXPERIMENTAL] show suppressed vulnerabilities",
 	}
+	TableModeFlag = Flag[[]string]{
+		Name:       "table-mode",
+		ConfigName: "table-mode",
+		Default:    xstrings.ToStringSlice(types.SupportedTableModes),
+		Values:     xstrings.ToStringSlice(types.SupportedTableModes),
+		Usage:      "[EXPERIMENTAL] tables that will be displayed in 'table' format",
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -128,6 +135,7 @@ type ReportFlagGroup struct {
 	Severity        *Flag[[]string]
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
+	TableMode       *Flag[[]string]
 }
 
 type ReportOptions struct {
@@ -145,6 +153,7 @@ type ReportOptions struct {
 	Severities       []dbTypes.Severity
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
+	TableModes       []types.TableMode
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -163,6 +172,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Severity:        SeverityFlag.Clone(),
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
+		TableMode:       TableModeFlag.Clone(),
 	}
 }
 
@@ -186,6 +196,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Severity,
 		f.Compliance,
 		f.ShowSuppressed,
+		f.TableMode,
 	}
 }
 
@@ -198,6 +209,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	template := f.Template.Value()
 	dependencyTree := f.DependencyTree.Value()
 	listAllPkgs := f.ListAllPkgs.Value()
+	tableModes := f.TableMode.Value()
 
 	if template != "" {
 		if format == "" {
@@ -225,6 +237,11 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		if format != types.FormatTable {
 			log.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
+	}
+
+	// "--table-mode" option is available only with "--format table".
+	if viper.IsSet(TableModeFlag.ConfigName) && format != types.FormatTable {
+		return ReportOptions{}, xerrors.New(`"--table-mode" can be used only with "--format table".`)
 	}
 
 	cs, err := loadComplianceTypes(f.Compliance.Value())
@@ -259,6 +276,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		Severities:       toSeverity(f.Severity.Value()),
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
+		TableModes:       xstrings.ToTSlice[types.TableMode](tableModes),
 	}, nil
 }
 

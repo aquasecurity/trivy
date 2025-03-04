@@ -553,6 +553,11 @@ severity:
  - HIGH
  - CRITICAL
 
+# Same as '--table-mode'
+table-mode:
+ - summary
+ - detailed
+
 # Same as '--template'
 template: ""
 

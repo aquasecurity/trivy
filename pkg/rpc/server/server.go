@@ -96,6 +96,7 @@ func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
 		Scanners:            scanners,
 		IncludeDevDeps:      in.IncludeDevDeps,
 		LicenseCategories:   licenseCategories,
+		LicenseFull:         in.LicenseFull,
 		Distro:              distro,
 		VulnSeveritySources: vulnSeveritySources,
 	}

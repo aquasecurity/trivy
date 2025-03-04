@@ -45,6 +45,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	switch option.Format {
 	case types.FormatTable:
 		writer = table.NewWriter(table.Options{
+			Scanners:             option.Scanners,
 			Output:               output,
 			Severities:           option.Severities,
 			Tree:                 option.DependencyTree,
@@ -54,6 +55,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			RenderCause:          option.RenderCause,
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
+			TableModes:           option.TableModes,
 		})
 	case types.FormatJSON:
 		writer = &JSONWriter{

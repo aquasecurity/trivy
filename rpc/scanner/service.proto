@@ -30,6 +30,7 @@ message ScanOptions {
   repeated string       pkg_relationships     = 6;
   common.OS             distro                = 7;
   repeated string       vuln_severity_sources = 8;
+  bool                  license_full          = 9;
 
   reserved 3;  // deleted 'list_all_packages'
 }

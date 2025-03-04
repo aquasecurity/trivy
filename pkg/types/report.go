@@ -105,6 +105,18 @@ var (
 	}
 )
 
+type TableMode string
+
+const (
+	Summary  TableMode = "summary"
+	Detailed TableMode = "detailed"
+)
+
+var SupportedTableModes = []TableMode{
+	Summary,
+	Detailed,
+}
+
 // Result holds a target and detected vulnerabilities
 type Result struct {
 	Target            string                     `json:"Target"`

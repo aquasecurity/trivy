@@ -34,6 +34,7 @@ type Writer struct {
 	// Use one buffer for all renderers
 	buf *bytes.Buffer
 
+	summaryRenderer       *summaryRenderer
 	vulnerabilityRenderer Renderer
 	misconfigRenderer     Renderer
 	secretRenderer        Renderer
@@ -44,6 +45,7 @@ type Writer struct {
 }
 
 type Options struct {
+	Scanners   types.Scanners
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
@@ -52,6 +54,9 @@ type Options struct {
 
 	// Show suppressed findings
 	ShowSuppressed bool
+
+	// Show/hide summary/detailed tables
+	TableModes []types.TableMode
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -65,13 +70,16 @@ type Options struct {
 
 func NewWriter(options Options) *Writer {
 	buf := bytes.NewBuffer([]byte{})
+	isTerminal := IsOutputToTerminal(options.Output)
 	return &Writer{
-		buf:                   buf,
-		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, IsOutputToTerminal(options.Output), options.Tree, options.ShowSuppressed, options.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, IsOutputToTerminal(options.Output), options.RenderCause),
-		secretRenderer:        NewSecretRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
-		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
-		fileLicenseRenderer:   NewFileLicenseRenderer(buf, IsOutputToTerminal(options.Output), options.Severities),
+		buf: buf,
+
+		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.Scanners),
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
+		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.Severities),
 		options:               options,
 	}
 }
@@ -82,12 +90,18 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw *Writer) Write(_ context.Context, report types.Report) error {
-	for _, result := range report.Results {
-		// Not display a table of custom resources
-		if result.Class == types.ClassCustom {
-			continue
+	if slices.Contains(tw.options.TableModes, types.Summary) {
+		tw.summaryRenderer.Render(report)
+	}
+
+	if slices.Contains(tw.options.TableModes, types.Detailed) {
+		for _, result := range report.Results {
+			// Not display a table of custom resources
+			if result.Class == types.ClassCustom {
+				continue
+			}
+			tw.render(result)
 		}
-		tw.render(result)
 	}
 
 	tw.flush()
