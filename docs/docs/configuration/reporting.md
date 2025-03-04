@@ -144,7 +144,7 @@ Nuances of table contents:
 </details>
 
 ##### Detailed tables
-Detailed tables contains information about found security issues for each target with more detailed information (CVE-id, severity, version, etc.).
+Detailed tables contain information about found security issues for each target with more detailed information (CVE-ID, severity, version, etc.).
 
 <details>
 <summary>Detailed tables</summary>
