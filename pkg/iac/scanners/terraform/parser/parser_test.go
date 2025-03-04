@@ -3,7 +3,6 @@ package parser
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -1809,144 +1808,17 @@ module "invalid" {
 // TestModuleParents sets up a nested module structure and verifies the
 // parent-child relationships are correctly set.
 func TestModuleParents(t *testing.T) {
-	files := make(map[string]string)
-
-	// module inits a new module that outputs its own name
-	module := func(name string) string {
-		files[fmt.Sprintf("modules/%s/main.tf", name)] = fmt.Sprintf(`
-			variable "prefix" {
-				type = string
-				default = ""
-			}
-		
-			output "name" {
-				value = "${var.prefix}%s"
-			}
-		`, name)
-		return name
-	}
-
-	// Include will add a module reference to the child module in the
-	// parent module. If a prefix is provided, it will be added to the
-	// module reference. Prefixes allow duplicates of the same module
-	// to be included in the parent module.
-	include := func(parent string, child string, prefix string) {
-		existing, ok := files[fmt.Sprintf("modules/%s/main.tf", parent)]
-		require.True(t, ok, "parent module %s does not exist", parent)
-
-		files[fmt.Sprintf("modules/%s/main.tf", parent)] = existing + fmt.Sprintf(`
-			module "%[1]s%[2]s" {
-				source = "../%[2]s"
-				prefix = "%[1]s"
-			}
-
-			output "%[1]s%[2]s" {
-				value = module.%[1]s%[2]s.name
-			}
-			`, prefix, child)
-	}
-
 	// The setup is a list of continents, some countries, some cities, etc.
-	//
-	// north-america
-	// ├── denmark (greenland)
-	// ├── united-states
-	// │   ├── wilmington (north-carolina)
-	// │   ├── wilmington (delaware)
-	// │   ├── springfield (illinois)
-	// │   ├── springfield (idaho)
-	// │   ├── springfield (massachusetts)
-	// │   └── new-york-city
-	// │       └── manhattan
-	// └── canada
-	//     └── springfield (ontario)
-	//
-	// europe
-	// ├── germany
-	// │   └── berlin
-	// ├── denmark
-	// └── russia
-	//     └── moscow
-	//
-	// asia
-	// └── russia
-	//     └── moscow
+	dirfs := os.DirFS("./testdata/nested")
+	parser := New(dirfs, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
 
-	// Continents
-	na := module("north-america")
-	eu := module("europe")
-	asia := module("asia")
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
 
-	// Countries
-	germany := module("germany")
-	russia := module("russia")
-	denmark := module("denmark")
-	us := module("united-states")
-	can := module("canada")
-
-	// Cities (skipping states to get conflicting names)
-	wilmington := module("wilmington")
-	springfield := module("springfield")
-	berlin := module("berlin")
-	moscow := module("moscow")
-	nyc := module("new-york-city")
-
-	// Neighborhoods
-	manhattan := module("manhattan")
-
-	// hierarchies
-	// Continent -> Country
-	include(eu, germany, "")
-
-	include(eu, denmark, "")
-	include(na, denmark, "greenland") // Greenland!
-
-	include(eu, russia, "")
-	include(asia, russia, "")
-
-	include(na, us, "")
-	include(na, can, "")
-
-	// Country -> City
-	include(us, wilmington, "north-carolina")
-	include(us, wilmington, "delaware")
-
-	// There are a lot of springfields
-	include(us, springfield, "illinois")
-	include(us, springfield, "idaho")
-	include(us, springfield, "massachusetts")
-	include(us, nyc, "")
-
-	include(can, springfield, "ontario")
-
-	include(germany, berlin, "")
-	include(russia, moscow, "")
-
-	// Neighborhoods
-	include(nyc, manhattan, "")
-
-	// The main terraform file to tie it all together
-	files["main.tf"] = `
-		module "north-america" {
-			source = "./modules/north-america"
-		}
-		module "europe" {
-			source = "./modules/europe"
-		}
-		module "asia" {
-			source = "./modules/asia"		
-		}
-
-		output "all" {
-			value = [
-				module.north-america,
-				module.europe,
-				module.asia,
-			]
-		}
-	`
-
-	modules := parse(t, files, OptionWithDownloads(false))
 	// modules only have 'parent'. They do not have children, so create
 	// a structure that allows traversal from the root to the leafs.
 	modChildren := make(map[*terraform.Module][]*terraform.Module)
@@ -1977,40 +1849,24 @@ func TestModuleParents(t *testing.T) {
 		modulePath: ".",
 		children: []node{
 			{
-				modulePath: na,
+				modulePath: "north-america",
 				children: []node{
 					{
-						modulePath: us,
+						modulePath: "north-america/united-states",
 						children: []node{
-							{modulePath: wilmington, prefix: "north-carolina"},
-							{modulePath: wilmington, prefix: "delaware"},
-							{modulePath: springfield, prefix: "illinois"},
-							{modulePath: springfield, prefix: "idaho"},
-							{modulePath: springfield, prefix: "massachusetts"},
-							{modulePath: nyc, children: []node{{modulePath: manhattan}}},
+							{modulePath: "north-america/united-states/springfield", prefix: "illinois-"},
+							{modulePath: "north-america/united-states/springfield", prefix: "idaho-"},
+							{modulePath: "north-america/united-states/new-york", children: []node{
+								{modulePath: "north-america/united-states/new-york/new-york-city"},
+							}},
 						},
 					},
 					{
-						modulePath: can,
+						modulePath: "north-america/canada",
 						children: []node{
-							{modulePath: springfield, prefix: "ontario"},
+							{modulePath: "north-america/canada/springfield", prefix: "ontario-"},
 						},
 					},
-					{modulePath: denmark, prefix: "greenland", children: []node{}},
-				},
-			},
-			{
-				modulePath: eu,
-				children: []node{
-					{modulePath: germany, children: []node{{modulePath: berlin}}},
-					{modulePath: russia, children: []node{{modulePath: moscow}}},
-					{modulePath: denmark, children: []node{}},
-				},
-			},
-			{
-				modulePath: asia,
-				children: []node{
-					{modulePath: russia, children: []node{{modulePath: moscow}}},
 				},
 			},
 		},
@@ -2042,10 +1898,12 @@ func TestModuleParents(t *testing.T) {
 						return false
 					}
 
-					if outVal.AsString() != node.prefix+node.modulePath {
+					modName := filepath.Base(node.modulePath)
+					if outVal.AsString() != node.prefix+modName {
 						return false
 					}
-					return "modules/"+node.modulePath == child.ModulePath()
+
+					return node.modulePath == child.ModulePath()
 				})
 				if !assert.NotEqualf(t, -1, idx, "module prefix=%s path=%s not found in %s", n.prefix, child.ModulePath(), n.modulePath) {
 					continue
