@@ -412,6 +412,7 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	//           - Direct:
 	//             - Under Root or Workspace: false (it always has a parent)
 	//             - No parents: true (e.g., package-lock.json)
+	//             - There are parents, but they are not Root or Workspace: true (when indirect dependency was installed manually. cf. https://github.com/aquasecurity/trivy/issues/8488)
 	//           - Indirect: false (it always has a parent)
 	// Case 2: Relationship: unknown, DependsOn: unknown (e.g., conan lockfile v2)
 	//         All packages are included in the parent
@@ -420,7 +421,16 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
 	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
 	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
-	return len(parents[pkg.ID]) == 0
+	pkgParents := parents[pkg.ID]
+	if pkg.Relationship != ftypes.RelationshipDirect {
+		return len(pkgParents) == 0
+	}
+
+	_, found := lo.Find(pkgParents, func(pkg ftypes.Package) bool {
+		return pkg.Relationship == ftypes.RelationshipRoot || pkg.Relationship == ftypes.RelationshipWorkspace
+	})
+
+	return !found
 }
 
 func filterProperties(props []core.Property) []core.Property {
