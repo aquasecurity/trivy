@@ -84,6 +84,8 @@ func (t Tool) GolangciLint() error {
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
 	}
+	// TODO: use `go install tool`
+	// cf. https://golangci-lint.run/welcome/install/#install-from-sources
 	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, version)
 	return sh.Run("bash", "-c", command)
 }

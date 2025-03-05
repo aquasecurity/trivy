@@ -50,14 +50,14 @@ jobs:
           exit 1
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.1.1
         with:
-          aqua_version: v1.25.0
+          aqua_version: v2.45.0
           aqua_opts: ""
-
-      - name: Install Go tools
-        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Check if CLI references are up-to-date
         run: |
@@ -140,6 +140,12 @@ jobs:
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v3.1.1
+        with:
+          aqua_version: v2.45.0
+          aqua_opts: ""
 
       - name: Generate image list digest
         id: image-digest
