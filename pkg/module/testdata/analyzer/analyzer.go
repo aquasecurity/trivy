@@ -1,4 +1,4 @@
-//go:generate tinygo build -o analyzer.wasm -scheduler=none -target=wasi --no-debug analyzer.go
+//go:generate tinygo build -o analyzer.wasm -target=wasip1 --buildmode=c-shared analyzer.go
 //go:build tinygo.wasm
 
 package main
@@ -13,7 +13,7 @@ const (
 	moduleName    = "analyzer"
 )
 
-func main() {
+func init() {
 	wasm.RegisterModule(AnalyzerModule{})
 }
 
