@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.60.0](https://github.com/aquasecurity/trivy/compare/v0.59.0...v0.60.0) (2025-03-05)
+
+
+### Features
+
+* add `--vuln-severity-source` flag ([#8269](https://github.com/aquasecurity/trivy/issues/8269)) ([d464807](https://github.com/aquasecurity/trivy/commit/d4648073211e8451d66e4c0399e9441250b60a76))
+* add report summary table ([#8177](https://github.com/aquasecurity/trivy/issues/8177)) ([dd54f80](https://github.com/aquasecurity/trivy/commit/dd54f80d3fda7821dba13553480e9893ba8b4cb3))
+* **cyclonedx:** Add initial support for loading external VEX files from SBOM references ([#8254](https://github.com/aquasecurity/trivy/issues/8254)) ([4820eb7](https://github.com/aquasecurity/trivy/commit/4820eb70fc926a35d759c373112dbbdca890fd46))
+* **go:** fix parsing main module version for go &gt;= 1.24 ([#8433](https://github.com/aquasecurity/trivy/issues/8433)) ([e58dcfc](https://github.com/aquasecurity/trivy/commit/e58dcfcf9f102c12825d5343ebbcc12a2d6c05c5))
+* **misconf:** render causes for Terraform ([#8360](https://github.com/aquasecurity/trivy/issues/8360)) ([a99498c](https://github.com/aquasecurity/trivy/commit/a99498cdd9b7bdac000140af6654bfe30135242d))
+
+
+### Bug Fixes
+
+* **db:** fix case when 2 trivy-db were copied at the same time ([#8452](https://github.com/aquasecurity/trivy/issues/8452)) ([bb3cca6](https://github.com/aquasecurity/trivy/commit/bb3cca6018551e96fdd357563dc177215ca29bd4))
+* don't use `scope` for `trivy registry login` command ([#8393](https://github.com/aquasecurity/trivy/issues/8393)) ([8715e5d](https://github.com/aquasecurity/trivy/commit/8715e5d14a727667c2e62d6f7a4b5308a0323386))
+* **go:** merge nested flags into string for ldflags for Go binaries ([#8368](https://github.com/aquasecurity/trivy/issues/8368)) ([b675b06](https://github.com/aquasecurity/trivy/commit/b675b06e897aaf374e7b1262d4323060a8a62edb))
+* **image:** disable AVD-DS-0007 for history scanning ([#8366](https://github.com/aquasecurity/trivy/issues/8366)) ([a3cd693](https://github.com/aquasecurity/trivy/commit/a3cd693a5ea88def2f9057df6178b0c0e7a6bdb0))
+* **k8s:** add missed option `PkgRelationships` ([#8442](https://github.com/aquasecurity/trivy/issues/8442)) ([f987e41](https://github.com/aquasecurity/trivy/commit/f987e4157494434f6e4e4566fedfedda92167565))
+* **misconf:** do not log scanners when misconfig scanning is disabled ([#8345](https://github.com/aquasecurity/trivy/issues/8345)) ([5695eb2](https://github.com/aquasecurity/trivy/commit/5695eb22dfed672eafacb64a71da8e9bdfbaab87))
+* **misconf:** ecs include enhanced for container insights ([#8326](https://github.com/aquasecurity/trivy/issues/8326)) ([39789ff](https://github.com/aquasecurity/trivy/commit/39789fff438d11bc6eccd254b3b890beb68c240b))
+* **misconf:** fix incorrect k8s locations due to JSON to YAML conversion ([#8073](https://github.com/aquasecurity/trivy/issues/8073)) ([a994453](https://github.com/aquasecurity/trivy/commit/a994453a7d0f543fe30c4dc8adbc92ad0c21bcbc))
+* **os:** add mapping OS aliases ([#8466](https://github.com/aquasecurity/trivy/issues/8466)) ([6b4cebe](https://github.com/aquasecurity/trivy/commit/6b4cebe9592f3a06bd91aa58ba6d65869afebbee))
+* **python:** add `poetry` v2 support ([#8323](https://github.com/aquasecurity/trivy/issues/8323)) ([10cd98c](https://github.com/aquasecurity/trivy/commit/10cd98cf55263749cb2583063a2e9e9953c7371a))
+* **report:** remove html escaping for `shortDescription` and `fullDescription` fields for sarif reports ([#8344](https://github.com/aquasecurity/trivy/issues/8344)) ([3eb0b03](https://github.com/aquasecurity/trivy/commit/3eb0b03f7c9ee462daccfacb291b2c463d848ff5))
+* **sbom:** add SBOM file's filePath as Application FilePath if we can't detect its path ([#8346](https://github.com/aquasecurity/trivy/issues/8346)) ([ecc01bb](https://github.com/aquasecurity/trivy/commit/ecc01bb3fb876fd0cc503cb38efa23e4fb9484b4))
+* **sbom:** improve logic for binding direct dependency to parent component ([#8489](https://github.com/aquasecurity/trivy/issues/8489)) ([85cca8c](https://github.com/aquasecurity/trivy/commit/85cca8c07affee4ded5c232efb45b05dacf22242))
+* **sbom:** preserve OS packages from multiple SBOMs ([#8325](https://github.com/aquasecurity/trivy/issues/8325)) ([bd5baaf](https://github.com/aquasecurity/trivy/commit/bd5baaf93054d71223e0721c7547a0567dea3b02))
+* **server:** secrets inspectation for the config analyzer in client server mode ([#8418](https://github.com/aquasecurity/trivy/issues/8418)) ([a1c4bd7](https://github.com/aquasecurity/trivy/commit/a1c4bd746f5f901e2a8f09f48f58b973b9103165))
+* **spdx:** init `pkgFilePaths` map for all formats ([#8380](https://github.com/aquasecurity/trivy/issues/8380)) ([72ea4b0](https://github.com/aquasecurity/trivy/commit/72ea4b0632308bd6150aaf2f1549a3f10b60dc23))
+* **terraform:** apply parser options to submodule parsing ([#8377](https://github.com/aquasecurity/trivy/issues/8377)) ([398620b](https://github.com/aquasecurity/trivy/commit/398620b471c25e467018bc23df53a3a1c2aa661c))
+* update all documentation links ([#8045](https://github.com/aquasecurity/trivy/issues/8045)) ([49456ba](https://github.com/aquasecurity/trivy/commit/49456ba8410e0e4cc1756906ccea1fdd60006d2d))
+
 ## [0.59.0](https://github.com/aquasecurity/trivy/compare/v0.58.0...v0.59.0) (2025-01-30)
 
 
