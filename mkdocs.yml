@@ -202,6 +202,7 @@ nav:
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
           - Terminology: docs/references/terminology.md
+          - Abbreviations: docs/references/abbreviations.md
   - Ecosystem: 
     - Overview: ecosystem/index.md
     - CI/CD: ecosystem/cicd.md
