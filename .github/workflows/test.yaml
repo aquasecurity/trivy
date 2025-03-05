@@ -56,7 +56,7 @@ jobs:
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.1.1
         with:
-          aqua_version: v2.45.0
+          aqua_version: v1.25.0
           aqua_opts: ""
 
       - name: Check if CLI references are up-to-date
@@ -144,7 +144,7 @@ jobs:
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.1.1
         with:
-          aqua_version: v2.45.0
+          aqua_version: v1.25.0
           aqua_opts: ""
 
       - name: Generate image list digest
