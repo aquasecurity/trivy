@@ -147,6 +147,12 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.logger.Debug("Starting post-submodules evaluation...")
 	e.evaluateSteps()
 
+	// expand out any remaining blocks that might have dynamic elements from
+	// a submodule.
+	// TODO: Do we need to call EvaluateAll again? Repeat the entire process of
+	// this function?
+	e.blocks = e.expandBlocks(e.blocks)
+
 	e.logger.Debug("Module evaluation complete.")
 	return append(terraform.Modules{rootModule}, submodules...), fsMap
 }
@@ -405,6 +411,12 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 		countAttrVal := countAttr.Value()
 		if !countAttrVal.IsNull() && countAttrVal.IsKnown() && countAttrVal.Type() == cty.Number {
 			count = int(countAttr.AsNumber())
+		} else {
+			// TODO: It would be ideal to just handle unknown values here, and not
+			// have to infer from a 'IsNull'. Since 'countAttr.Value()' will return
+			// a cty.NilVal if the attribute is unknown, we can't distinguish between
+			// unknown and null.
+			continue // Do not expand
 		}
 
 		var clones []cty.Value
