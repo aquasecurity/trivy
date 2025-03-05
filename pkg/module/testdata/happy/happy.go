@@ -1,5 +1,5 @@
-//go:generate tinygo build -o happy.wasm -target=wasip1 --buildmode=c-shared happy.go
-//go:build tinygo.wasm
+//go:generate go build -o happy.wasm -buildmode=c-shared happy.go
+//go:build wasip1
 
 package main
 
@@ -13,6 +13,8 @@ const (
 	moduleVersion = 1
 	moduleName    = "happy"
 )
+
+func main() {}
 
 func init() {
 	wasm.RegisterModule(HappyModule{})

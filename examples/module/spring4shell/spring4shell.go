@@ -1,5 +1,5 @@
-//go:generate tinygo build -o spring4shell.wasm -target=wasip1 --buildmode=c-shared spring4shell.go
-//go:build tinygo.wasm
+//go:generate go build -o spring4shell.wasm -buildmode=c-shared spring4shell.go
+//go:build wasip1
 
 package main
 
@@ -28,6 +28,9 @@ const (
 var (
 	tomcatVersionRegex = regexp.MustCompile(`Apache Tomcat Version ([\d.]+)`)
 )
+
+// main is required for Go to compile the Wasm module
+func main() {}
 
 func init() {
 	wasm.RegisterModule(Spring4Shell{})

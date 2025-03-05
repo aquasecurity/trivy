@@ -274,8 +274,8 @@ type wasmModule struct {
 	// Exported functions
 	analyze  api.Function
 	postScan api.Function
-	malloc   api.Function // TinyGo specific
-	free     api.Function // TinyGo specific
+	malloc   api.Function // Exported by Trivy Wasm SDK
+	free     api.Function // Exported by Trivy Wasm SDK
 }
 
 func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []byte) (*wasmModule, error) {
@@ -313,14 +313,13 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 		return nil, xerrors.Errorf("module compile error: %w", err)
 	}
 
-	// InstantiateModule runs the "_start" function which is what TinyGo compiles "main" to.
+	// InstantiateModule runs the "_initialize" function
 	mod, err := r.InstantiateModule(ctx, compiled, config)
 	if err != nil {
 		return nil, xerrors.Errorf("module init error: %w", err)
 	}
 
-	// These are undocumented, but exported. See tinygo-org/tinygo#2788
-	// TODO: improve TinyGo specific code
+	// These functions are exported by Trivy Wasm SDK
 	malloc := mod.ExportedFunction("malloc")
 	free := mod.ExportedFunction("free")
 
