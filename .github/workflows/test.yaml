@@ -50,9 +50,6 @@ jobs:
           exit 1
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
-      - name: Install Go tools
-        run: go install tool # GOBIN is added to the PATH by the setup-go action
-
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.1.1
         with:
@@ -137,9 +134,6 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-
-      - name: Install Go tools
-        run: go install tool # GOBIN is added to the PATH by the setup-go action
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v3.1.1
