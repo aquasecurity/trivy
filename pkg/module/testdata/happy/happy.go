@@ -1,4 +1,4 @@
-//go:generate tinygo build -o happy.wasm -scheduler=none -target=wasi --no-debug happy.go
+//go:generate tinygo build -o happy.wasm -target=wasip1 --buildmode=c-shared happy.go
 //go:build tinygo.wasm
 
 package main
@@ -14,7 +14,7 @@ const (
 	moduleName    = "happy"
 )
 
-func main() {
+func init() {
 	wasm.RegisterModule(HappyModule{})
 }
 

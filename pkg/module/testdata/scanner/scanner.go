@@ -1,4 +1,4 @@
-//go:generate tinygo build -o scanner.wasm -scheduler=none -target=wasi --no-debug scanner.go
+//go:generate tinygo build -o scanner.wasm -target=wasip1 --buildmode=c-shared scanner.go
 //go:build tinygo.wasm
 
 package main
@@ -14,7 +14,7 @@ const (
 	moduleName    = "scanner"
 )
 
-func main() {
+func init() {
 	wasm.RegisterModule(PostScannerModule{})
 }
 
