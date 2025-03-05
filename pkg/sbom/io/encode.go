@@ -200,9 +200,16 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	components := make(map[string]*core.Component, len(result.Packages))
 	// PkgID => Package Component
 	dependencies := make(map[string]*core.Component, len(result.Packages))
+	var hasRoot bool
 	for i, pkg := range result.Packages {
 		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, pkg.Version), pkg.ID)
 		result.Packages[i].ID = pkgID
+
+		// Check if the project has a root dependency
+		// TODO: Ideally, all projects should have a root dependency.
+		if pkg.Relationship == ftypes.RelationshipRoot {
+			hasRoot = true
+		}
 
 		// Convert packages to components
 		c := e.component(result, pkg)
@@ -226,7 +233,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		c := components[pkg.Identifier.UID]
 
 		// Add a relationship between the parent and the package if needed
-		if e.belongToParent(pkg, parents) {
+		if e.belongToParent(pkg, parents, hasRoot) {
 			e.bom.AddRelationship(parent, c, core.RelationshipContains)
 		}
 
@@ -403,16 +410,15 @@ func (*Encoder) vulnerability(vuln types.DetectedVulnerability) core.Vulnerabili
 }
 
 // belongToParent determines if a package should be directly included in the parent based on its relationship and dependencies.
-func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Packages) bool {
+func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Packages, hasRoot bool) bool {
 	// Case 1: Relationship: known , DependsOn: known
 	//         Packages with no parent are included in the parent
 	//         - Relationship:
 	//           - Root: true (it doesn't have a parent)
 	//           - Workspace: false (it always has a parent)
 	//           - Direct:
-	//             - Under Root or Workspace: false (it always has a parent)
-	//             - No parents: true (e.g., package-lock.json)
-	//             - There are parents, but they are not Root or Workspace: true (when indirect dependency was installed manually. cf. https://github.com/aquasecurity/trivy/issues/8488)
+	//             - No root dependency in the project: true (e.g., poetry.lock)
+	//             - Otherwise: false (Direct dependencies should belong to the root/workspace)
 	//           - Indirect: false (it always has a parent)
 	// Case 2: Relationship: unknown, DependsOn: unknown (e.g., conan lockfile v2)
 	//         All packages are included in the parent
@@ -421,16 +427,11 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
 	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
 	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
-	pkgParents := parents[pkg.ID]
-	if pkg.Relationship != ftypes.RelationshipDirect {
-		return len(pkgParents) == 0
+	if pkg.Relationship == ftypes.RelationshipDirect {
+		return !hasRoot
 	}
 
-	_, found := lo.Find(pkgParents, func(pkg ftypes.Package) bool {
-		return pkg.Relationship == ftypes.RelationshipRoot || pkg.Relationship == ftypes.RelationshipWorkspace
-	})
-
-	return !found
+	return len(parents[pkg.ID]) == 0
 }
 
 func filterProperties(props []core.Property) []core.Property {
