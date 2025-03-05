@@ -1,5 +1,5 @@
-//go:generate tinygo build -o scanner.wasm -target=wasip1 --buildmode=c-shared scanner.go
-//go:build tinygo.wasm
+//go:generate go build -o scanner.wasm -buildmode=c-shared scanner.go
+//go:build wasip1
 
 package main
 
@@ -13,6 +13,8 @@ const (
 	moduleVersion = 2
 	moduleName    = "scanner"
 )
+
+func main() {}
 
 func init() {
 	wasm.RegisterModule(PostScannerModule{})
