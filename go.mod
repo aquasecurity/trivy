@@ -440,5 +440,3 @@ require (
 	github.com/oklog/ulid/v2 v2.1.0 // indirect
 	github.com/samber/oops v1.15.0 // indirect
 )
-
-replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20250225102547-67e9b4dfc612
