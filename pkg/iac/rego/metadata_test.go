@@ -29,7 +29,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 			Library:            false,
 		}
 
-		require.NoError(t, sm.update(
+		require.NoError(t, sm.populate(
 			map[string]any{
 				"id":                  "i_n",
 				"avd_id":              "a_n",
@@ -78,7 +78,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		sm := StaticMetadata{
 			References: []string{"r"},
 		}
-		require.NoError(t, sm.update(map[string]any{
+		require.NoError(t, sm.populate(map[string]any{
 			"related_resources": []map[string]any{
 				{
 					"ref": "r1_n",
@@ -103,7 +103,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		sm := StaticMetadata{
 			References: []string{"r"},
 		}
-		require.NoError(t, sm.update(map[string]any{
+		require.NoError(t, sm.populate(map[string]any{
 			"related_resources": []string{"r1_n", "r2_n"},
 		}))
 
@@ -121,7 +121,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 		sm := StaticMetadata{
 			Deprecated: false,
 		}
-		require.NoError(t, sm.update(map[string]any{
+		require.NoError(t, sm.populate(map[string]any{
 			"deprecated": true,
 		}))
 
@@ -137,7 +137,7 @@ func Test_UpdateStaticMetadata(t *testing.T) {
 
 	t.Run("frameworks is not initialized", func(t *testing.T) {
 		sm := StaticMetadata{}
-		err := sm.update(map[string]any{
+		err := sm.populate(map[string]any{
 			"frameworks": map[string]any{"all": []any{"a", "b", "c"}},
 		})
 		require.NoError(t, err)
