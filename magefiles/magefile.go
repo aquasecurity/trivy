@@ -61,22 +61,6 @@ func buildLdflags() (string, error) {
 
 type Tool mg.Namespace
 
-// Aqua installs aqua if not installed
-func (Tool) Aqua() error {
-	if exists(filepath.Join(GOBIN, "aqua")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/aquaproj/aqua/v2/cmd/aqua@v2.2.1")
-}
-
-// Wire installs wire if not installed
-func (Tool) Wire() error {
-	if installed("wire") {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/google/wire/cmd/wire@v0.5.0")
-}
-
 // Sass installs saas if not installed. npm is assumed to be available
 func (Tool) Sass() error {
 	if installed("sass") {
@@ -100,6 +84,8 @@ func (t Tool) GolangciLint() error {
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
 	}
+	// TODO: use `go install tool`
+	// cf. https://golangci-lint.run/welcome/install/#install-from-sources
 	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, version)
 	return sh.Run("bash", "-c", command)
 }
@@ -126,31 +112,15 @@ func (Tool) matchGolangciLintVersion(bin, version string) bool {
 	return true
 }
 
-// Labeler installs labeler
-func (Tool) Labeler() error {
-	if exists(filepath.Join(GOBIN, "labeler")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/knqyf263/labeler@latest")
-}
-
-// Kind installs kind cluster
-func (Tool) Kind() error {
-	return sh.RunWithV(ENV, "go", "install", "sigs.k8s.io/kind@v0.19.0")
-}
-
-// Goyacc installs goyacc
-func (Tool) Goyacc() error {
-	if exists(filepath.Join(GOBIN, "goyacc")) {
-		return nil
-	}
-	return sh.Run("go", "install", "golang.org/x/tools/cmd/goyacc@v0.7.0")
+func (Tool) Install() error {
+	log.Info("Installing tools, make sure you add $GOBIN to the $PATH")
+	return sh.Run("go", "install", "tool")
 }
 
 // Wire generates the wire_gen.go file for each package
 func Wire() error {
-	mg.Deps(Tool{}.Wire)
-	return sh.RunV("wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
+	mg.Deps(Tool{}.Install) // Install wire
+	return sh.RunV("go", "tool", "wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
 }
 
 // Protoc parses PROTO_FILES and generates the Go code for client/server mode
@@ -195,7 +165,7 @@ func Protoc() error {
 
 // Yacc generates parser
 func Yacc() error {
-	mg.Deps(Tool{}.Goyacc)
+	mg.Deps(Tool{}.Install) // Install yacc
 	return sh.Run("go", "generate", "./pkg/licensing/expression/...")
 }
 
@@ -279,8 +249,7 @@ func (t Test) Integration() error {
 
 // K8s runs k8s integration tests
 func (t Test) K8s() error {
-	mg.Deps(Tool{}.Kind)
-
+	mg.Deps(Tool{}.Install) // Install kind
 	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
 	if err != nil {
 		return err
@@ -472,7 +441,7 @@ func Clean() error {
 
 // Label updates labels
 func Label() error {
-	mg.Deps(Tool{}.Labeler)
+	mg.Deps(Tool{}.Install) // Install labeler
 	return sh.RunV("labeler", "apply", "misc/triage/labels.yaml", "-l", "5")
 }
 
