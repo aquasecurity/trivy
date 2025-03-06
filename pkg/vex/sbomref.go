@@ -10,7 +10,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -21,7 +21,7 @@ type SBOMReferenceSet struct {
 }
 
 func NewSBOMReferenceSet(report *types.Report) (*SBOMReferenceSet, error) {
-	if report.ArtifactType != artifact.TypeCycloneDX {
+	if report.ArtifactType != ftypes.TypeCycloneDX {
 		return nil, xerrors.Errorf("externalReferences can only be used when scanning CycloneDX SBOMs: %w", report.ArtifactType)
 	}
 

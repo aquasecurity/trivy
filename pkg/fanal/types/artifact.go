@@ -7,6 +7,19 @@ import (
 	"github.com/samber/lo"
 )
 
+// ArtifactType represents a type of artifact
+type ArtifactType string
+
+const (
+	TypeContainerImage ArtifactType = "container_image"
+	TypeFilesystem     ArtifactType = "filesystem"
+	TypeRepository     ArtifactType = "repository"
+	TypeCycloneDX      ArtifactType = "cyclonedx"
+	TypeSPDX           ArtifactType = "spdx"
+	TypeAWSAccount     ArtifactType = "aws_account"
+	TypeVM             ArtifactType = "vm"
+)
+
 type OS struct {
 	Family OSType
 	Name   string

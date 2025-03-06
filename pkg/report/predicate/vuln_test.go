@@ -12,7 +12,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/predicate"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -49,7 +49,7 @@ func TestWriter_Write(t *testing.T) {
 					Result: types.Report{
 						SchemaVersion: 2,
 						ArtifactName:  "alpine:3.14",
-						ArtifactType:  artifact.Type(""),
+						ArtifactType:  ftypes.ArtifactType(""),
 						Metadata:      types.Metadata{},
 						Results: types.Results{
 							{

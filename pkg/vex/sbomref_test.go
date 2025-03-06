@@ -10,7 +10,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
@@ -53,20 +53,22 @@ func setUpServer(t *testing.T) *httptest.Server {
 
 func setupTestReport(s *httptest.Server, path string) *types.Report {
 	r := types.Report{
-		ArtifactType: artifact.TypeCycloneDX,
+		ArtifactType: ftypes.TypeCycloneDX,
 		BOM:          &core.BOM{},
 	}
-	r.BOM.AddExternalReferences([]core.ExternalReference{{
-		URL:  s.URL + path,
-		Type: core.ExternalReferenceVEX,
-	}})
+	r.BOM.AddExternalReferences([]core.ExternalReference{
+		{
+			URL:  s.URL + path,
+			Type: core.ExternalReferenceVEX,
+		},
+	})
 
 	return &r
 }
 
 func setupEmptyTestReport() *types.Report {
 	r := types.Report{
-		ArtifactType: artifact.TypeCycloneDX,
+		ArtifactType: ftypes.TypeCycloneDX,
 		BOM:          &core.BOM{},
 	}
 	return &r

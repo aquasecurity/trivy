@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -31,7 +30,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,
@@ -595,7 +594,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "gobinary",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: []types.Result{
 					{
 						Target: "test",
@@ -843,7 +842,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "test",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: []types.Result{
 					{
 						Target: "poetry.lock",
@@ -1000,7 +999,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -1047,7 +1046,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -1094,7 +1093,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "pom.xml",
-				ArtifactType:  artifact.TypeFilesystem,
+				ArtifactType:  ftypes.TypeFilesystem,
 				Results: []types.Result{
 					{
 						Target: "pom.xml",
@@ -1454,7 +1453,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "report.cdx.json",
-				ArtifactType:  artifact.TypeCycloneDX,
+				ArtifactType:  ftypes.TypeCycloneDX,
 				Results: []types.Result{
 					{
 						Target: "Java",
@@ -1500,7 +1499,7 @@ func TestEncoder_Encode(t *testing.T) {
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "debian:12",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: ftypes.Debian,

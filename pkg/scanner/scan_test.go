@@ -55,7 +55,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				SchemaVersion: 2,
 				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
-				ArtifactType:  artifact.TypeContainerImage,
+				ArtifactType:  ftypes.TypeContainerImage,
 				Metadata: tTypes.Metadata{
 					OS: &ftypes.OS{
 						Family:   "alpine",
