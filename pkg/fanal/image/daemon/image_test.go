@@ -84,10 +84,7 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 	var dockerHostParam string
 
 	if runtime.GOOS != "windows" {
-		runtimeDir, err := os.MkdirTemp("", "daemon")
-		require.NoError(t, err)
-
-		dir := filepath.Join(runtimeDir, "image")
+		dir := filepath.Join(t.TempDir(), "image")
 		err = os.MkdirAll(dir, os.ModePerm)
 		require.NoError(t, err)
 
@@ -130,10 +127,7 @@ func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
 		},
 	}
 
-	runtimeDir, err := os.MkdirTemp("", "daemon")
-	require.NoError(t, err)
-
-	dir := filepath.Join(runtimeDir, "image")
+	dir := filepath.Join(t.TempDir(), "image")
 	err = os.MkdirAll(dir, os.ModePerm)
 	require.NoError(t, err)
 

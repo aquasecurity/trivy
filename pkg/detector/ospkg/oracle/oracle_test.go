@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -83,7 +82,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	for testName, tt := range tests {
 		s := NewScanner()
 		t.Run(testName, func(t *testing.T) {
-			ctx := clock.With(context.Background(), tt.now)
+			ctx := clock.With(t.Context(), tt.now)
 			actual := s.IsSupportedVersion(ctx, tt.osFamily, tt.osVersion)
 			if actual != tt.expected {
 				t.Errorf("[%s] got %v, want %v", testName, actual, tt.expected)

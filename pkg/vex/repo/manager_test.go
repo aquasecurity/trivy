@@ -2,7 +2,6 @@ package repo_test
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -70,7 +69,7 @@ func TestManager_Config(t *testing.T) {
 
 			tt.setup(t, tempDir)
 
-			got, err := m.Config(context.Background())
+			got, err := m.Config(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -121,7 +120,7 @@ func TestManager_Init(t *testing.T) {
 
 			tt.setup(t, tempDir)
 
-			err := m.Init(context.Background())
+			err := m.Init(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -228,7 +227,7 @@ func TestManager_DownloadRepositories(t *testing.T) {
 			manifest.Versions[0].Locations[0].URL = tt.location
 			testutil.MustWriteJSON(t, manifestPath, manifest)
 
-			err := m.DownloadRepositories(context.Background(), tt.names, repo.Options{})
+			err := m.DownloadRepositories(t.Context(), tt.names, repo.Options{})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -303,7 +302,7 @@ No repositories configured.
 			var buf bytes.Buffer
 			m := repo.NewManager(tempDir, repo.WithWriter(&buf))
 
-			err := m.List(context.Background())
+			err := m.List(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

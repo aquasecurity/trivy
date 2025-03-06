@@ -1,7 +1,6 @@
 package apk
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -150,7 +149,7 @@ https://dl-cdn.alpinelinux.org/alpine/v3.10/main
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			a := apkRepoAnalyzer{}
-			got, err := a.Analyze(context.Background(), test.input)
+			got, err := a.Analyze(t.Context(), test.input)
 
 			if test.wantErr != "" {
 				require.Error(t, err)

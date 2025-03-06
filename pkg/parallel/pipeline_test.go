@@ -105,7 +105,7 @@ func TestPipeline_Do(t *testing.T) {
 				got += f
 				return nil
 			})
-			err := p.Do(context.Background())
+			err := p.Do(t.Context())
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})

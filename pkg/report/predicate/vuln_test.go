@@ -2,7 +2,6 @@ package predicate_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -98,7 +97,7 @@ func TestWriter_Write(t *testing.T) {
 
 			output := bytes.NewBuffer(nil)
 
-			ctx := clock.With(context.Background(), time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
 			writer := predicate.NewVulnWriter(output, "dev")
 
 			err := writer.Write(ctx, inputResults)

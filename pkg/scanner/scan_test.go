@@ -1,7 +1,6 @@
 package scanner
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -220,7 +219,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			scanner := local.NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			s := NewScanner(scanner, artifact)
 
-			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			got, err := s.ScanArtifact(ctx, tt.args.options)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)

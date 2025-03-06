@@ -3,7 +3,6 @@
 package repo
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -278,7 +277,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			ref, err := art.Inspect(context.Background())
+			ref, err := art.Inspect(t.Context())
 			if tt.wantErr {
 				assert.Error(t, err)
 				return

@@ -31,7 +31,7 @@ func TestCopyFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			src := tt.args.src
 			if tt.args.src == "" {
-				s, err := os.CreateTemp("", "src")
+				s, err := os.CreateTemp(t.TempDir(), "src")
 				require.NoError(t, err, tt.name)
 				_, err = s.Write(tt.content)
 				require.NoError(t, err, tt.name)
@@ -40,7 +40,7 @@ func TestCopyFile(t *testing.T) {
 
 			dst := tt.args.dst
 			if tt.args.dst == "" {
-				d, err := os.CreateTemp("", "dst")
+				d, err := os.CreateTemp(t.TempDir(), "dst")
 				require.NoError(t, err, tt.name)
 				dst = d.Name()
 				require.NoError(t, d.Close(), tt.name)

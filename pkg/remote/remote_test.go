@@ -1,7 +1,6 @@
 package remote
 
 import (
-	"context"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -300,7 +299,7 @@ func TestGet(t *testing.T) {
 				setupDockerConfig(t, tt.args.config)
 			}
 
-			_, err = Get(context.Background(), n, tt.args.option)
+			_, err = Get(t.Context(), n, tt.args.option)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr, err)
 				return
@@ -357,7 +356,7 @@ func TestUserAgents(t *testing.T) {
 	n, err := name.ParseReference(fmt.Sprintf("%s/library/alpine:3.10", serverAddr))
 	require.NoError(t, err)
 
-	_, err = Get(context.Background(), n, types.RegistryOptions{
+	_, err = Get(t.Context(), n, types.RegistryOptions{
 		Credentials: []types.Credential{
 			{
 				Username: "test",

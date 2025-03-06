@@ -1,7 +1,6 @@
 package policy_test
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -259,7 +258,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			require.NoError(t, err)
 
 			// Assert results
-			got, err := c.NeedsUpdate(context.Background(), ftypes.RegistryOptions{})
+			got, err := c.NeedsUpdate(t.Context(), ftypes.RegistryOptions{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, got)
 		})
@@ -360,7 +359,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			c, err := policy.NewClient(tempDir, true, "", policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			err = c.DownloadBuiltinChecks(context.Background(), ftypes.RegistryOptions{})
+			err = c.DownloadBuiltinChecks(t.Context(), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -146,7 +145,7 @@ cause := bucket.name
 				rego.WithPolicyNamespaces(test.includedNamespaces...),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fs, "code")
+			results, err := scanner.ScanFS(t.Context(), fs, "code")
 			require.NoError(t, err)
 
 			var found bool
@@ -221,7 +220,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -304,7 +303,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -357,7 +356,7 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 
 	scanner := New()
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	failed := results.GetFailed()
@@ -420,7 +419,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 
 	scanner := New()
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	for _, result := range results.GetFailed() {
@@ -476,7 +475,7 @@ deny[res] {
 		rego.WithPolicyDirs("rules"),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -556,7 +555,7 @@ bucket_name = "test"
 		ScannerWithConfigsFileSystem(configsFS),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
@@ -590,7 +589,7 @@ bucket_name = "test"
 		ScannerWithConfigsFileSystem(fs),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
@@ -663,7 +662,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 2)
@@ -732,7 +731,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
@@ -800,7 +799,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results, 2)
@@ -865,7 +864,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results, 1)
@@ -905,7 +904,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -919,7 +918,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -933,7 +932,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 2)
@@ -946,7 +945,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 2)
@@ -990,7 +989,7 @@ deny contains res if {
 		rego.WithPolicyNamespaces("test"),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+	results, err := scanner.ScanFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -1109,7 +1108,7 @@ resource "aws_s3_bucket" "test" {
 				rego.WithPolicyNamespaces("user"),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), tt.fsys, ".")
+			results, err := scanner.ScanFS(t.Context(), tt.fsys, ".")
 			require.NoError(t, err)
 
 			failed := results.GetFailed()

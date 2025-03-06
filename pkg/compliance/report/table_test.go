@@ -2,7 +2,6 @@ package report_test
 
 import (
 	"bytes"
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -73,7 +72,7 @@ func TestTableWriter_Write(t *testing.T) {
 				Report: tt.reportType,
 				Output: buf,
 			}
-			err := tr.Write(context.Background(), tt.input)
+			err := tr.Write(t.Context(), tt.input)
 			require.NoError(t, err)
 
 			want, err := os.ReadFile(tt.want)
