@@ -706,7 +706,7 @@ func moduleRequiredFiles(ctx context.Context, mod api.Module, freeFn api.Functio
 	ptrSize := requiredFilesRes[0]
 	defer freePtr(ctx, freeFn, ptrSize)
 
-	var fileRegexps serialize.StringSlice
+	var fileRegexps []string
 	if err = unmarshal(mod.Memory(), ptrSize, &fileRegexps); err != nil {
 		return nil, xerrors.Errorf("invalid return value: %w", err)
 	}

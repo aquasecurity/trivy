@@ -1,6 +1,9 @@
 package api
 
-import "github.com/aquasecurity/trivy/pkg/module/serialize"
+import (
+	"github.com/aquasecurity/trivy/pkg/module/serialize"
+	"github.com/aquasecurity/trivy/pkg/types"
+)
 
 const (
 	Version = 1
@@ -22,5 +25,5 @@ type Analyzer interface {
 
 type PostScanner interface {
 	PostScanSpec() serialize.PostScanSpec
-	PostScan(serialize.Results) (serialize.Results, error)
+	PostScan(results types.Results) (types.Results, error)
 }

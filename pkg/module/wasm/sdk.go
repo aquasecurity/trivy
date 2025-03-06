@@ -8,7 +8,7 @@ import (
 	"unsafe"
 
 	"github.com/aquasecurity/trivy/pkg/module/api"
-	"github.com/aquasecurity/trivy/pkg/module/serialize"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // allocations holds byte slices keyed by their 32-bit pointers (offsets in WASM memory).
@@ -119,8 +119,7 @@ func _isAnalyzer() uint64 {
 //go:wasmexport required
 func _required() uint64 {
 	files := module.(api.Analyzer).RequiredFiles()
-	ss := serialize.StringSlice(files)
-	return marshal(ss)
+	return marshal(files)
 }
 
 //go:wasmexport analyze
@@ -149,7 +148,7 @@ func _post_scan_spec() uint64 {
 
 //go:wasmexport post_scan
 func _post_scan(ptr, size uint32) uint64 {
-	var results serialize.Results
+	var results types.Results
 	if err := unmarshal(ptr, size, &results); err != nil {
 		Error(fmt.Sprintf("post scan error: %s", err))
 		return 0

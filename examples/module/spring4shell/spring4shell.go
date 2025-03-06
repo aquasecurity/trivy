@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -224,7 +225,7 @@ func (Spring4Shell) PostScanSpec() serialize.PostScanSpec {
 //	}
 //
 // ]
-func (Spring4Shell) PostScan(results serialize.Results) (serialize.Results, error) {
+func (Spring4Shell) PostScan(results types.Results) (types.Results, error) {
 	var javaMajorVersion int
 	var tomcatVersion string
 	for _, result := range results {
