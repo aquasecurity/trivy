@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -44,6 +45,6 @@ func (HappyModule) PostScanSpec() serialize.PostScanSpec {
 	}
 }
 
-func (HappyModule) PostScan(_ serialize.Results) (serialize.Results, error) {
+func (HappyModule) PostScan(_ types.Results) (types.Results, error) {
 	return nil, nil
 }
