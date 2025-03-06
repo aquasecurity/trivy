@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
@@ -98,7 +99,7 @@ func (Spring4Shell) parseJavaRelease(f *os.File, filePath string) (*serialize.An
 	}
 
 	return &serialize.AnalysisResult{
-		CustomResources: []serialize.CustomResource{
+		CustomResources: []ftypes.CustomResource{
 			{
 				Type:     TypeJavaMajor,
 				FilePath: filePath,
@@ -120,7 +121,7 @@ func (Spring4Shell) parseTomcatReleaseNotes(f *os.File, filePath string) (*seria
 	}
 
 	return &serialize.AnalysisResult{
-		CustomResources: []serialize.CustomResource{
+		CustomResources: []ftypes.CustomResource{
 			{
 				Type:     TypeTomcatVersion,
 				FilePath: filePath,
