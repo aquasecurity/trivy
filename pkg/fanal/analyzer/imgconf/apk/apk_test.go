@@ -1,7 +1,6 @@
 package apk
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -1423,7 +1422,7 @@ func TestAnalyze(t *testing.T) {
 			t.Setenv(envApkIndexArchiveURL, v.apkIndexArchivePath)
 			a, err := newAlpineCmdAnalyzer(analyzer.ConfigAnalyzerOptions{})
 			require.NoError(t, err)
-			result, err := a.Analyze(context.Background(), analyzer.ConfigAnalysisInput{
+			result, err := a.Analyze(t.Context(), analyzer.ConfigAnalysisInput{
 				OS:     v.args.targetOS,
 				Config: v.args.config,
 			})

@@ -1,7 +1,6 @@
 package vex_test
 
 import (
-	"context"
 	"fmt"
 	"net/http/httptest"
 	"os"
@@ -567,7 +566,7 @@ repositories:
 			if tt.setup != nil {
 				tt.setup(t, tmpDir)
 			}
-			err := vex.Filter(context.Background(), tt.args.report, tt.args.opts)
+			err := vex.Filter(t.Context(), tt.args.report, tt.args.opts)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

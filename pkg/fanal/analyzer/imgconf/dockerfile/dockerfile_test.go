@@ -2,7 +2,6 @@ package dockerfile
 
 import (
 	"bytes"
-	"context"
 	"testing"
 	"time"
 
@@ -332,7 +331,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newHistoryAnalyzer(analyzer.ConfigAnalyzerOptions{})
 			require.NoError(t, err)
-			got, err := a.Analyze(context.Background(), tt.input)
+			got, err := a.Analyze(t.Context(), tt.input)
 			if tt.wantErr {
 				require.Error(t, err)
 				return

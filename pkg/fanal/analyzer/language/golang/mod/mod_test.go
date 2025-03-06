@@ -1,7 +1,6 @@
 package mod
 
 import (
-	"context"
 	"path/filepath"
 	"sort"
 	"testing"
@@ -302,7 +301,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 				}
 			}
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS: mfs,
 			})

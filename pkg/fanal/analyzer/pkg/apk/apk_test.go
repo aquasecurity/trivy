@@ -2,7 +2,6 @@ package apk
 
 import (
 	"bufio"
-	"context"
 	"os"
 	"testing"
 
@@ -443,7 +442,7 @@ func TestParseApkInfo(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 			scanner := bufio.NewScanner(f)
-			gotPkgs, gotFiles := a.parseApkInfo(context.Background(), scanner)
+			gotPkgs, gotFiles := a.parseApkInfo(t.Context(), scanner)
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantFiles, gotFiles)

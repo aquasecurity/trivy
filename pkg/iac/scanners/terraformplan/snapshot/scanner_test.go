@@ -1,7 +1,6 @@
 package snapshot
 
 import (
-	"context"
 	"os"
 	"path"
 	"path/filepath"
@@ -60,7 +59,7 @@ func TestScanner_Scan(t *testing.T) {
 			policyFS := os.DirFS(filepath.Join("testdata", tt.dir, "checks"))
 
 			s := initScanner(rego.WithPolicyFilesystem(policyFS))
-			result, err := s.Scan(context.TODO(), f)
+			result, err := s.Scan(t.Context(), f)
 			require.NoError(t, err)
 
 			failed := result.GetFailed()
@@ -117,7 +116,7 @@ func Test_ScanFS(t *testing.T) {
 				tfscanner.ScannerWithSkipCachedModules(true),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fs, path.Join(tc.dir, "tfplan"))
+			results, err := scanner.ScanFS(t.Context(), fs, path.Join(tc.dir, "tfplan"))
 			require.NoError(t, err)
 			require.Len(t, results, 1)
 

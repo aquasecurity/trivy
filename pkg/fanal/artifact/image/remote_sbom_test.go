@@ -1,7 +1,6 @@
 package image_test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -161,7 +160,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -304,7 +303,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

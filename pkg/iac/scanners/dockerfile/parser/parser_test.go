@@ -1,7 +1,6 @@
 package parser_test
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -19,7 +18,7 @@ RUN make /app
 CMD python /app/app.py
 `
 
-	res, err := parser.Parse(context.TODO(), strings.NewReader(input), "Dockerfile")
+	res, err := parser.Parse(t.Context(), strings.NewReader(input), "Dockerfile")
 	require.NoError(t, err)
 
 	df, ok := res.(*dockerfile.Dockerfile)
@@ -103,7 +102,7 @@ EOF`,
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			res, err := parser.Parse(context.TODO(), strings.NewReader(tt.src), "Dockerfile")
+			res, err := parser.Parse(t.Context(), strings.NewReader(tt.src), "Dockerfile")
 			require.NoError(t, err)
 
 			df, ok := res.(*dockerfile.Dockerfile)

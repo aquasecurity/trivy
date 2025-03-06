@@ -2,7 +2,6 @@ package dockerfile_test
 
 import (
 	"bytes"
-	"context"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -224,7 +223,7 @@ USER root
 
 	scanner := dockerfile.NewScanner(rego.WithPolicyDirs("rules"))
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -571,7 +570,7 @@ COPY --from=dep /binary /`
 				rego.WithRegoErrorLimits(0),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fsys, "code")
+			results, err := scanner.ScanFS(t.Context(), fsys, "code")
 			if tc.expectedError != "" && err != nil {
 				require.Equal(t, tc.expectedError, err.Error(), tc.name)
 			} else {
@@ -692,7 +691,7 @@ deny contains res if {
 				rego.WithEmbeddedLibraries(true),
 				rego.WithRegoErrorLimits(0),
 			)
-			results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+			results, err := scanner.ScanFS(t.Context(), fsys, ".")
 			require.NoError(t, err)
 			if tt.expected {
 				testutil.AssertRuleFound(t, "dockerfile-general-maintainer-deprecated", results, "")

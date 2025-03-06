@@ -1,7 +1,6 @@
 package debian_test
 
 import (
-	"context"
 	"sort"
 	"testing"
 	"time"
@@ -172,7 +171,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := clock.With(context.Background(), tt.now)
+			ctx := clock.With(t.Context(), tt.now)
 			s := debian.NewScanner()
 			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)

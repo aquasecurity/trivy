@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"context"
 	"path"
 	"testing"
 
@@ -69,7 +68,7 @@ module "this" {
 				return path.Dir(p)
 			})
 
-			got, err := parser.FindRootModules(context.TODO(), modules)
+			got, err := parser.FindRootModules(t.Context(), modules)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, got)
 		})

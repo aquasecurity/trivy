@@ -1,7 +1,6 @@
 package analyzer_test
 
 import (
-	"context"
 	"os"
 	"sync"
 	"testing"
@@ -529,7 +528,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			info, err := os.Stat(tt.args.testFilePath)
 			require.NoError(t, err)
 
-			ctx := context.Background()
+			ctx := t.Context()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
 					if tt.args.testFilePath == "testdata/error" {
@@ -625,7 +624,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 				javadb.Init("./language/java/jar/testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 			}
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got := new(analyzer.AnalysisResult)
 			err = a.PostAnalyze(ctx, composite, got, analyzer.AnalysisOptions{})
 			require.NoError(t, err)

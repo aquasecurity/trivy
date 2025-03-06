@@ -1,7 +1,6 @@
 package cyclonedx_test
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 	"testing"
@@ -845,7 +844,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 
 			var got types.SBOM
-			err = sbomio.NewDecoder(cdx.BOM).Decode(context.Background(), &got)
+			err = sbomio.NewDecoder(cdx.BOM).Decode(t.Context(), &got)
 			require.NoError(t, err)
 
 			got.BOM = nil

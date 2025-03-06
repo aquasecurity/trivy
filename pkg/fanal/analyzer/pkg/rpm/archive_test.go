@@ -1,7 +1,6 @@
 package rpm
 
 import (
-	"context"
 	"os"
 	"strings"
 	"testing"
@@ -79,7 +78,7 @@ func Test_rpmArchiveAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := newRPMArchiveAnalyzer()
-			got, err := a.Analyze(context.Background(), tt.input)
+			got, err := a.Analyze(t.Context(), tt.input)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})

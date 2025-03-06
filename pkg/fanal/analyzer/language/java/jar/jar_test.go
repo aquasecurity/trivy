@@ -1,7 +1,6 @@
 package jar
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -133,7 +132,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			javadb.Init("testdata", []name.Reference{repo}, true, false, types.RegistryOptions{Insecure: false})
 
 			a := javaLibraryAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 
 			mfs := mapfs.New()
 			err = mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
