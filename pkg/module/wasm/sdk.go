@@ -27,17 +27,19 @@ func allocate(size uint32) uint32 {
 	return ptr
 }
 
-// go:wasmexport malloc
 // malloc exposes a C-style malloc to the host.
 // It returns an offset in WASM linear memory where the requested size is allocated.
-func malloc(size uint32) uint32 {
+//
+//go:wasmexport malloc
+func _malloc(size uint32) uint32 {
 	return allocate(size)
 }
 
-// go:wasmexport free
 // free exposes a C-style free to the host.
 // It deletes the slice from the allocations map so the memory can be reclaimed by the GC.
-func free(ptr uint32, size uint32) {
+//
+//go:wasmexport free
+func _free(ptr uint32, size uint32) {
 	delete(allocations, ptr)
 }
 
