@@ -144,6 +144,9 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			if tt.dbFileExists {
 				err := db.Init(dbDir)
 				require.NoError(t, err)
+				t.Cleanup(func() {
+					require.NoError(t, db.Close())
+				})
 			}
 
 			// Set a fake time
@@ -200,7 +203,6 @@ func TestClient_Download(t *testing.T) {
 			client := db.NewClient(dbDir, true, db.WithOCIArtifact(art))
 			err := client.Download(ctx, dbDir, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
-				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
