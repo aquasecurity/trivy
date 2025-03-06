@@ -415,8 +415,7 @@ func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense
 func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherLicense) {
 	var otherLicenses = make(map[string]*spdx.OtherLicense) // licenseID -> OtherLicense
 
-	var licenseNames []string
-	for _, license := range licenses {
+	license := strings.Join(lo.Map(licenses, func(license string, index int) string {
 		// We need to save text licenses before normalization,
 		// because it is impossible to handle all cases possible in the text.
 		// as an example, parse a license with 2 consecutive tokens (see https://github.com/aquasecurity/trivy/issues/8465)
@@ -426,10 +425,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
 			license = otherLicense.LicenseIdentifier
 		}
-		licenseNames = append(licenseNames, license)
-	}
 
-	license := strings.Join(lo.Map(licenseNames, func(license string, index int) string {
 		// e.g. GPL-3.0-with-autoconf-exception
 		license = strings.ReplaceAll(license, "-with-", " WITH ")
 		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
