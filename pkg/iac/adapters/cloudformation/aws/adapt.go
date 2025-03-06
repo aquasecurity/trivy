@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/ami"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/apigateway"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/athena"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/cloudfront"
@@ -39,6 +40,7 @@ import (
 // Adapt adapts a Cloudformation AWS instance
 func Adapt(cfFile parser.FileContext) aws.AWS {
 	return aws.AWS{
+		AMI:           ami.Adapt(cfFile),
 		APIGateway:    apigateway.Adapt(cfFile),
 		Athena:        athena.Adapt(cfFile),
 		Cloudfront:    cloudfront.Adapt(cfFile),

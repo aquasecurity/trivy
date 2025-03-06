@@ -2,6 +2,7 @@ package aws
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/accessanalyzer"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ami"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/athena"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
@@ -39,6 +40,7 @@ import (
 
 type AWS struct {
 	Meta           Meta
+	AMI            ami.AMI
 	AccessAnalyzer accessanalyzer.AccessAnalyzer
 	APIGateway     apigateway.APIGateway
 	Athena         athena.Athena
