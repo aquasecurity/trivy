@@ -423,7 +423,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 			license = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
 			otherLicense := m.newOtherLicense(license, true)
 			otherLicenses[otherLicense.LicenseIdentifier] = otherLicense
-			license = otherLicense.LicenseIdentifier
+			return otherLicense.LicenseIdentifier
 		}
 
 		// e.g. GPL-3.0-with-autoconf-exception
