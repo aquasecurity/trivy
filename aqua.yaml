@@ -1,8 +1,0 @@
----
-# aqua - Declarative CLI Version Manager
-# https://aquaproj.github.io/
-registries:
-- type: standard
-  ref: v3.157.0 # renovate: depName=aquaproj/aqua-registry
-packages:
-- name: magefile/mage@v1.14.0
