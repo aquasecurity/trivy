@@ -100,11 +100,11 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 		{
 			name: "happy path with text of license",
 			input: []string{
-				"text://unknown-license",
+				"text://Redistribution and use in source and binary forms, with or without",
 				"AFL 2.0",
 				"unknown-license",
 			},
-			wantLicenseName: "LicenseRef-ffca10435cadded4 AND AFL-2.0 AND LicenseRef-a0bb0951a6dfbdbe",
+			wantLicenseName: "LicenseRef-b5b4cc09bc5f0e16 AND AFL-2.0 AND LicenseRef-a0bb0951a6dfbdbe",
 			wantOtherLicenses: []*spdx.OtherLicense{
 				{
 					LicenseIdentifier: "LicenseRef-a0bb0951a6dfbdbe",
@@ -112,9 +112,9 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 					ExtractedText:     `This component is licensed under "unknown-license"`,
 				},
 				{
-					LicenseIdentifier: "LicenseRef-ffca10435cadded4",
+					LicenseIdentifier: "LicenseRef-b5b4cc09bc5f0e16",
 					LicenseName:       "NOASSERTION",
-					ExtractedText:     "unknown-license",
+					ExtractedText:     "Redistribution and use in source and binary forms, with or without",
 					LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
 				},
 			},
