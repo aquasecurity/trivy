@@ -113,7 +113,7 @@ type Analyzer interface {
 
 type PostScanner interface {
     PostScanSpec() serialize.PostScanSpec
-    PostScan(serialize.Results) (serialize.Results, error)
+    PostScan(types.Results) (types.Results, error)
 }
 ```
 
@@ -203,7 +203,7 @@ func (WordpressModule) Analyze(filePath string) (*serialize.AnalysisResult, erro
     }
 	
     return &serialize.AnalysisResult{
-        CustomResources: []serialize.CustomResource{
+        CustomResources: []ftypes.CustomResource{
             {
                 Type:     typeWPVersion,
                 FilePath: filePath,
@@ -246,7 +246,7 @@ func (WordpressModule) PostScanSpec() serialize.PostScanSpec {
     }
 }
 
-func (WordpressModule) PostScan(results serialize.Results) (serialize.Results, error) {
+func (WordpressModule) PostScan(results types.Results) (types.Results, error) {
     // e.g. results
     // [
     //   {
@@ -288,7 +288,7 @@ func (WordpressModule) PostScan(results serialize.Results) (serialize.Results, e
 
     if vulnerable {
         // Add CVE-2020-36326
-        results = append(results, serialize.Result{
+        results = append(results, types.Result{
             Target: wpPath,
             Class:  types.ClassLangPkg,
 			Type:   "wordpress",
