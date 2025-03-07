@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -88,7 +88,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		}
 	case types.FormatSarif:
 		target := ""
-		if report.ArtifactType == artifact.TypeFilesystem {
+		if report.ArtifactType == ftypes.TypeFilesystem {
 			target = option.Target
 		}
 		writer = &SarifWriter{

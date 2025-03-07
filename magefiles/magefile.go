@@ -224,11 +224,11 @@ func compileWasmModules(pattern string) error {
 		} else if !updated {
 			continue
 		}
-		// Check if TinyGo is installed
-		if !installed("tinygo") {
-			return errors.New("need to install TinyGo, follow https://tinygo.org/getting-started/install/")
+		envs := map[string]string{
+			"GOOS":   "wasip1",
+			"GOARCH": "wasm",
 		}
-		if err = sh.Run("go", "generate", src); err != nil {
+		if err = sh.RunWith(envs, "go", "generate", src); err != nil {
 			return err
 		}
 	}

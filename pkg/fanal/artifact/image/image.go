@@ -149,7 +149,7 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 
 	return artifact.Reference{
 		Name:    a.image.Name(),
-		Type:    artifact.TypeContainerImage,
+		Type:    types.TypeContainerImage,
 		ID:      imageKey,
 		BlobIDs: layerKeys,
 		ImageMetadata: artifact.ImageMetadata{

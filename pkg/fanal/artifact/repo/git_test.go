@@ -180,7 +180,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rawurl: ts.URL + "/test-repo.git",
 			want: artifact.Reference{
 				Name: ts.URL + "/test-repo.git",
-				Type: artifact.TypeRepository,
+				Type: types.TypeRepository,
 				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c", // Calculated from commit hash
 				BlobIDs: []string{
 					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c", // Calculated from commit hash
@@ -195,7 +195,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rawurl: "../../../../internal/gittest/testdata/test-repo",
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
-				Type: artifact.TypeRepository,
+				Type: types.TypeRepository,
 				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c", // Calculated from commit hash
 				BlobIDs: []string{
 					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c", // Calculated from commit hash
@@ -216,7 +216,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
-				Type: artifact.TypeRepository,
+				Type: types.TypeRepository,
 				ID:   "sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
 				BlobIDs: []string{
 					"sha256:6f4672e139d4066fd00391df614cdf42bda5f7a3f005d39e1d8600be86157098",
@@ -244,7 +244,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
-				Type: artifact.TypeRepository,
+				Type: types.TypeRepository,
 				ID:   "sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",
 				BlobIDs: []string{
 					"sha256:dc7c6039424c9fce969d3c2972d261af442a33f13e7494464386dbe280612d4c",

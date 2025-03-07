@@ -1,5 +1,3 @@
-//go:build !tinygo.wasm
-
 package uuid
 
 import (

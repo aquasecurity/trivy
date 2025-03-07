@@ -36,6 +36,7 @@ func TestCopyFile(t *testing.T) {
 				_, err = s.Write(tt.content)
 				require.NoError(t, err, tt.name)
 				src = s.Name()
+				require.NoError(t, s.Close())
 			}
 
 			dst := tt.args.dst

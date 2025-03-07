@@ -10,7 +10,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -250,7 +249,7 @@ func TestFilter(t *testing.T) {
 			args: args{
 				report: types.Report{
 					ArtifactName: ".",
-					ArtifactType: artifact.TypeFilesystem,
+					ArtifactType: ftypes.TypeFilesystem,
 					Results: types.Results{
 						types.Result{
 							Target:   "gobinary",
@@ -275,7 +274,7 @@ func TestFilter(t *testing.T) {
 			},
 			want: types.Report{
 				ArtifactName: ".",
-				ArtifactType: artifact.TypeFilesystem,
+				ArtifactType: ftypes.TypeFilesystem,
 				Results: types.Results{
 					types.Result{
 						Target:   "gobinary",

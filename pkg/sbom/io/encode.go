@@ -11,7 +11,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -71,7 +70,7 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	}
 
 	switch r.ArtifactType {
-	case artifact.TypeContainerImage:
+	case ftypes.TypeContainerImage:
 		root.Type = core.TypeContainerImage
 		props = append(props, core.Property{
 			Name:  core.PropertyImageID,
@@ -95,13 +94,13 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 			root.PkgIdentifier.PURL = p.Unwrap()
 		}
 
-	case artifact.TypeVM:
+	case ftypes.TypeVM:
 		root.Type = core.TypeVM
-	case artifact.TypeFilesystem:
+	case ftypes.TypeFilesystem:
 		root.Type = core.TypeFilesystem
-	case artifact.TypeRepository:
+	case ftypes.TypeRepository:
 		root.Type = core.TypeRepository
-	case artifact.TypeCycloneDX, artifact.TypeSPDX:
+	case ftypes.TypeCycloneDX, ftypes.TypeSPDX:
 		// When we scan SBOM file
 		// If SBOM file doesn't contain root component - use filesystem
 		if r.BOM != nil && r.BOM.Root() != nil {
