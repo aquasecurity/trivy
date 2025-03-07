@@ -5013,15 +5013,15 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tinygo" class="md-nav__link">
+  <a href="#go" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TinyGo
+        Go
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="TinyGo">
+    <nav class="md-nav" aria-label="Go">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -7928,15 +7928,15 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tinygo" class="md-nav__link">
+  <a href="#go" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TinyGo
+        Go
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="TinyGo">
+    <nav class="md-nav" aria-label="Go">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -8064,7 +8064,7 @@ They provide a way to extend the core feature set of Trivy, but without updating
 <ul>
 <li>They can be added and removed from a Trivy installation without impacting the core Trivy tool.</li>
 <li>They can be written in any programming language supporting WebAssembly.</li>
-<li>It supports only <a href="https://tinygo.org/">TinyGo</a> at the moment.</li>
+<li>It supports only Go at the moment.</li>
 </ul>
 <p>You can write your own detection logic.</p>
 <ul>
@@ -8133,8 +8133,8 @@ Total:<span class="w"> </span><span class="m">9</span><span class="w"> </span><s
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>module<span class="w"> </span>uninstall<span class="w"> </span>ghcr.io/aquasecurity/trivy-module-spring4shell
 </code></pre></div>
 <h2 id="building-modules">Building Modules<a class="headerlink" href="#building-modules" title="Permanent link">&para;</a></h2>
-<p>It supports TinyGo only at the moment.</p>
-<h3 id="tinygo">TinyGo<a class="headerlink" href="#tinygo" title="Permanent link">&para;</a></h3>
+<p>It supports Go only at the moment.</p>
+<h3 id="go">Go<a class="headerlink" href="#go" title="Permanent link">&para;</a></h3>
 <p>Trivy provides Go SDK including three interfaces.
 Your own module needs to implement either or both <code>Analyzer</code> and <code>PostScanner</code> in addition to <code>Module</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">Module</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span>
@@ -8149,7 +8149,7 @@ Your own module needs to implement either or both <code>Analyzer</code> and <cod
 
 <span class="kd">type</span><span class="w"> </span><span class="nx">PostScanner</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nx">PostScanSpec</span><span class="p">()</span><span class="w"> </span><span class="nx">serialize</span><span class="p">.</span><span class="nx">PostScanSpec</span>
-<span class="w">    </span><span class="nx">PostScan</span><span class="p">(</span><span class="nx">serialize</span><span class="p">.</span><span class="nx">Results</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">serialize</span><span class="p">.</span><span class="nx">Results</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">PostScan</span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Results</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Results</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>In the following tutorial, it creates a WordPress module that detects a WordPress version and a critical vulnerability accordingly.</p>
@@ -8171,6 +8171,9 @@ See <a href="#examples">examples</a> for the detail.</p>
 <span class="w">    </span><span class="nx">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span>
 <span class="w">    </span><span class="nx">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;wordpress-module&quot;</span>
 <span class="p">)</span>
+
+<span class="c1">// main is required for Go to compile the Wasm module</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">  </span>
 
 <span class="kd">type</span><span class="w"> </span><span class="nx">WordpressModule</span><span class="w"> </span><span class="kd">struct</span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Cannot define fields as modules can&#39;t keep state.</span>
@@ -8230,7 +8233,7 @@ A file pattern must be a regular expression. The syntax detail is <a href="https
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">serialize</span><span class="p">.</span><span class="nx">AnalysisResult</span><span class="p">{</span>
-<span class="w">        </span><span class="nx">CustomResources</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">serialize</span><span class="p">.</span><span class="nx">CustomResource</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">CustomResources</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="nx">ftypes</span><span class="p">.</span><span class="nx">CustomResource</span><span class="p">{</span>
 <span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="nx">Type</span><span class="p">:</span><span class="w">     </span><span class="nx">typeWPVersion</span><span class="p">,</span>
 <span class="w">                </span><span class="nx">FilePath</span><span class="p">:</span><span class="w"> </span><span class="nx">filePath</span><span class="p">,</span>
@@ -8275,7 +8278,7 @@ Also, it includes <code>CustomResources</code> with the values your <code>Analyz
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">WordpressModule</span><span class="p">)</span><span class="w"> </span><span class="nx">PostScan</span><span class="p">(</span><span class="nx">results</span><span class="w"> </span><span class="nx">serialize</span><span class="p">.</span><span class="nx">Results</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">serialize</span><span class="p">.</span><span class="nx">Results</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">WordpressModule</span><span class="p">)</span><span class="w"> </span><span class="nx">PostScan</span><span class="p">(</span><span class="nx">results</span><span class="w"> </span><span class="nx">types</span><span class="p">.</span><span class="nx">Results</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">Results</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// e.g. results</span>
 <span class="w">    </span><span class="c1">// [</span>
 <span class="w">    </span><span class="c1">//   {</span>
@@ -8317,7 +8320,7 @@ Also, it includes <code>CustomResources</code> with the values your <code>Analyz
 
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">vulnerable</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// Add CVE-2020-36326</span>
-<span class="w">        </span><span class="nx">results</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">results</span><span class="p">,</span><span class="w"> </span><span class="nx">serialize</span><span class="p">.</span><span class="nx">Result</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">results</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">results</span><span class="p">,</span><span class="w"> </span><span class="nx">types</span><span class="p">.</span><span class="nx">Result</span><span class="p">{</span>
 <span class="w">            </span><span class="nx">Target</span><span class="p">:</span><span class="w"> </span><span class="nx">wpPath</span><span class="p">,</span>
 <span class="w">            </span><span class="nx">Class</span><span class="p">:</span><span class="w">  </span><span class="nx">types</span><span class="p">.</span><span class="nx">ClassLangPkg</span><span class="p">,</span>
 <span class="w">            </span><span class="nx">Type</span><span class="p">:</span><span class="w">   </span><span class="s">&quot;wordpress&quot;</span><span class="p">,</span>
@@ -8344,8 +8347,8 @@ If you are interested in <code>Update</code>, you can see an example of <a href=
 <p>In the <code>Delete</code> action, <code>PostScan</code> needs to return results you want to delete.
 If <code>PostScan</code> returns an empty, Trivy will not delete anything.</p>
 <h4 id="build">Build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h4>
-<p>Follow <a href="https://tinygo.org/getting-started/install/">the install guide</a> and install TinyGo.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>tinygo<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>wordpress.wasm<span class="w"> </span>-scheduler<span class="o">=</span>none<span class="w"> </span>-target<span class="o">=</span>wasi<span class="w"> </span>--no-debug<span class="w"> </span>wordpress.go
+<p>Follow <a href="https://go.dev/doc/install">the install guide</a> and install Go.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">GOOS</span><span class="o">=</span>wasip1<span class="w"> </span><span class="nv">GOARCH</span><span class="o">=</span>wasm<span class="w"> </span>go<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>wordpress.wasm<span class="w"> </span>-buildmode<span class="o">=</span>c-shared<span class="w"> </span>wordpress.go
 </code></pre></div>
 <p>Put the built binary to the module directory that is under the home directory by default.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.trivy/modules
