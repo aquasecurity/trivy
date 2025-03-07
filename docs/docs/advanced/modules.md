@@ -142,6 +142,9 @@ const (
     name = "wordpress-module"
 )
 
+// main is required for Go to compile the Wasm module
+func main() {}  
+
 type WordpressModule struct{
 	// Cannot define fields as modules can't keep state.
 }
