@@ -35,7 +35,7 @@ func TestParseIgnoreFile(t *testing.T) {
 	t.Run("empty YAML file passed", func(t *testing.T) {
 		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*.yaml")
 		require.NoError(t, err)
-		defer os.Remove(f.Name())
+		defer f.Close()
 
 		_, err = ParseIgnoreFile(t.Context(), f.Name())
 		require.NoError(t, err)
@@ -44,8 +44,10 @@ func TestParseIgnoreFile(t *testing.T) {
 	t.Run("invalid YAML file passed", func(t *testing.T) {
 		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*.yaml")
 		require.NoError(t, err)
-		defer os.Remove(f.Name())
-		_, _ = f.WriteString("this file is not a yaml file")
+		defer f.Close()
+
+		_, err = f.WriteString("this file is not a yaml file")
+		require.NoError(t, err)
 
 		got, err := ParseIgnoreFile(t.Context(), f.Name())
 		require.ErrorContains(t, err, "yaml decode error")
@@ -55,8 +57,10 @@ func TestParseIgnoreFile(t *testing.T) {
 	t.Run("invalid file passed", func(t *testing.T) {
 		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*")
 		require.NoError(t, err)
-		defer os.Remove(f.Name())
-		_, _ = f.WriteString("this file is not a valid trivyignore file")
+		defer f.Close()
+
+		_, err = f.WriteString("this file is not a valid trivyignore file")
+		require.NoError(t, err)
 
 		_, err = ParseIgnoreFile(t.Context(), f.Name())
 		require.NoError(t, err) // TODO(simar7): We don't verify correctness, should we?
