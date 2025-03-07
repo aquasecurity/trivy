@@ -1,7 +1,6 @@
 package vex_test
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -99,7 +98,7 @@ repositories:
 			err = os.WriteFile(configPath, []byte(tt.configContent), 0644)
 			require.NoError(t, err)
 
-			ctx := context.Background()
+			ctx := t.Context()
 			rs, err := vex.NewRepositorySet(ctx, tt.cacheDir)
 			require.NoError(t, err)
 

@@ -200,7 +200,7 @@ func TestScanServer_Scan(t *testing.T) {
 			scanner := local.NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
 			s := NewScanServer(scanner)
 
-			got, err := s.Scan(context.Background(), tt.args.in)
+			got, err := s.Scan(t.Context(), tt.args.in)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -288,7 +288,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 			c := cachetest.NewCache(t, tt.setUpCache)
 
 			s := NewCacheServer(c)
-			got, err := s.PutArtifact(context.Background(), tt.args.in)
+			got, err := s.PutArtifact(t.Context(), tt.args.in)
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
@@ -508,7 +508,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 			c := cachetest.NewCache(t, tt.setUpCache)
 
 			s := NewCacheServer(c)
-			got, err := s.PutBlob(context.Background(), tt.args.in)
+			got, err := s.PutBlob(t.Context(), tt.args.in)
 
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)

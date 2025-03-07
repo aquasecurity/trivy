@@ -1,7 +1,6 @@
 package pub
 
 import (
-	"context"
 	"os"
 	"runtime"
 	"testing"
@@ -133,7 +132,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 			a, err := newPubSpecLockAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
-			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
 

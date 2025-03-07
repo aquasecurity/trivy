@@ -2,7 +2,6 @@ package report_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -737,7 +736,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			w := report.SarifWriter{
 				Output: sarifWritten,
 			}
-			err := w.Write(context.TODO(), tt.input)
+			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
 
 			result := &sarif.Report{}

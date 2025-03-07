@@ -1,7 +1,6 @@
 package clean_test
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -130,7 +129,7 @@ func TestRun(t *testing.T) {
 				CleanOptions: tt.cleanOpts,
 			}
 
-			err := clean.Run(context.Background(), opts)
+			err := clean.Run(t.Context(), opts)
 
 			if tt.wantErr {
 				assert.Error(t, err)

@@ -1,7 +1,6 @@
 package spdx_test
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 	"sort"
@@ -358,7 +357,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			}
 
 			var got types.SBOM
-			err = sbomio.NewDecoder(v.BOM).Decode(context.Background(), &got)
+			err = sbomio.NewDecoder(v.BOM).Decode(t.Context(), &got)
 			require.NoError(t, err)
 
 			// Not compare BOM

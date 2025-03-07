@@ -1,7 +1,6 @@
 package local
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -228,7 +227,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -638,7 +637,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -892,7 +891,7 @@ func TestTerraformPlanSnapshotMisconfScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), opt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -1204,7 +1203,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -1432,7 +1431,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -1693,7 +1692,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -1946,7 +1945,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
@@ -2063,7 +2062,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			require.NotNil(t, got)
 
@@ -2225,7 +2224,7 @@ func TestJSONConfigScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			require.NotNil(t, got)
 
@@ -2387,7 +2386,7 @@ func TestYAMLConfigScan(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			require.NoError(t, err)
 			require.NotNil(t, got)
 

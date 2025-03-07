@@ -114,7 +114,7 @@ linters:
     - misspell
     - perfsprint
     - revive
-    - tenv
+    - usetesting
     - testifylint
     - typecheck
     - unconvert

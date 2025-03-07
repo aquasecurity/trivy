@@ -1,7 +1,6 @@
 package vm_test
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"io/fs"
@@ -166,7 +165,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				aa.SetEBS(ebs)
 			}
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			defer a.Clean(got)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

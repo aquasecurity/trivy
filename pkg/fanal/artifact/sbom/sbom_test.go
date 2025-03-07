@@ -1,7 +1,6 @@
 package sbom_test
 
 import (
-	"context"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -394,7 +393,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			a, err := sbom.NewArtifact(tt.filePath, c, artifact.Option{})
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if len(tt.wantErr) > 0 {
 				require.Error(t, err)
 				found := false

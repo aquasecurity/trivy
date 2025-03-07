@@ -1,7 +1,6 @@
 package spdx_test
 
 import (
-	"context"
 	"hash/fnv"
 	"testing"
 	"time"
@@ -1480,7 +1479,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return h.Sum64(), nil
 			}
 
-			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := tspdx.NewMarshaler("0.56.2", tspdx.WithHasher(hasher))

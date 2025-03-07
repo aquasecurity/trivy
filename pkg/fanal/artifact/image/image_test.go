@@ -1,7 +1,6 @@
 package image_test
 
 import (
-	"context"
 	"math/rand"
 	"testing"
 	"time"
@@ -2016,7 +2015,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			a, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			got, err := a.Inspect(t.Context())
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -2065,7 +2064,7 @@ func TestArtifact_InspectWithMaxImageSize(t *testing.T) {
 			artifact, err := image2.NewArtifact(img, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			_, err = artifact.Inspect(context.Background())
+			_, err = artifact.Inspect(t.Context())
 			require.ErrorContains(t, err, tt.wantErr)
 		})
 	}

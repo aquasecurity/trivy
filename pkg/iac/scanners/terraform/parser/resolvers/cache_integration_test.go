@@ -124,7 +124,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			tt.opts.CacheDir = t.TempDir()
 			tt.opts.Logger = log.WithPrefix("test")
 
-			fsys, _, dir, _, err := tt.firstResolver.Resolve(context.Background(), nil, tt.opts)
+			fsys, _, dir, _, err := tt.firstResolver.Resolve(t.Context(), nil, tt.opts)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expectedSubdir, dir)
 
@@ -132,7 +132,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			require.NoError(t, err)
 			assert.Equal(t, tt.expectedString, string(b))
 
-			_, _, dir, _, err = resolvers.Cache.Resolve(context.Background(), fsys, tt.opts)
+			_, _, dir, _, err = resolvers.Cache.Resolve(t.Context(), fsys, tt.opts)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expectedSubdir, dir)
 
@@ -151,7 +151,7 @@ func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
 	repoURL := gs.URL + "/" + repo + ".git"
 
 	fsys, _, dir, _, err := resolvers.Remote.Resolve(
-		context.Background(), nil,
+		t.Context(), nil,
 		testOptions(t, "git::"+repoURL+"//modules/object"),
 	)
 	require.NoError(t, err)
@@ -161,7 +161,7 @@ func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
 	assert.Equal(t, "# S3 bucket object", string(b))
 
 	fsys, _, dir, _, err = resolvers.Remote.Resolve(
-		context.Background(), nil,
+		t.Context(), nil,
 		testOptions(t, "git::"+repoURL+"//modules/notification"),
 	)
 	require.NoError(t, err)
