@@ -1,7 +1,6 @@
 package aws
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/ami"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/apigateway"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/athena"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/cloudfront"
@@ -44,7 +43,6 @@ func Adapt(modules terraform.Modules) aws.AWS {
 		Meta: aws.Meta{
 			TFProviders: provider.Adapt(modules),
 		},
-		AMI:           ami.Adapt(modules),
 		APIGateway:    apigateway.Adapt(modules),
 		Athena:        athena.Adapt(modules),
 		Cloudfront:    cloudfront.Adapt(modules),

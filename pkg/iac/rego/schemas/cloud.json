@@ -50,10 +50,6 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.accessanalyzer.AccessAnalyzer"
         },
-        "ami": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.ami.AMI"
-        },
         "apigateway": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.apigateway.APIGateway"
@@ -526,22 +522,6 @@
         "__defsec_metadata": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        }
-      }
-    },
-    "github.com.aquasecurity.trivy.pkg.iac.providers.aws.ami.AMI": {
-      "type": "object",
-      "properties": {
-        "__defsec_metadata": {
-          "type": "object",
-          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
-        },
-        "owners": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
-          }
         }
       }
     },
@@ -1401,6 +1381,22 @@
         }
       }
     },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.aws.ec2.AMI": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+          }
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.aws.ec2.BlockDevice": {
       "type": "object",
       "properties": {
@@ -1417,6 +1413,13 @@
     "github.com.aquasecurity.trivy.pkg.iac.providers.aws.ec2.EC2": {
       "type": "object",
       "properties": {
+        "amis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.ec2.AMI"
+          }
+        },
         "instances": {
           "type": "array",
           "items": {

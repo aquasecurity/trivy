@@ -9,4 +9,5 @@ type EC2 struct {
 	NetworkACLs          []NetworkACL
 	Subnets              []Subnet
 	Volumes              []Volume
+	AMIs                 []AMI
 }

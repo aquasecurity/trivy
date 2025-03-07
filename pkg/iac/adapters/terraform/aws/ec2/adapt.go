@@ -20,6 +20,7 @@ func Adapt(modules terraform.Modules) ec2.EC2 {
 		LaunchConfigurations: adaptLaunchConfigurations(modules),
 		LaunchTemplates:      adaptLaunchTemplates(modules),
 		Volumes:              adaptVolumes(modules),
+		AMIs:                 adaptAMIs(modules),
 	}
 }
 

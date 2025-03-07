@@ -1,4 +1,4 @@
-package ami
+package ec2
 
 import iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
