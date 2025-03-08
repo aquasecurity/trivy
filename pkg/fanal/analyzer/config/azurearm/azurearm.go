@@ -3,6 +3,7 @@ package azurearm
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
@@ -34,5 +35,8 @@ func newAzureARMConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnal
 
 // Required overrides config.Analyzer.Required() and check if the given file is JSON.
 func (a *azureARMConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return filepath.Ext(filePath) == ".json"
+	return filepath.Ext(filePath) == ".json" &&
+		// skip CreateUiDefinition
+		// https://learn.microsoft.com/en-us/azure/azure-resource-manager/managed-applications/create-uidefinition-overview
+		strings.ToLower(filepath.Base(filePath)) != "createuidefinition.json"
 }

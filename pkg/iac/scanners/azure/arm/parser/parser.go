@@ -50,8 +50,10 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) ([]azure.Deployment, e
 
 		deployment, err := p.parseFile(f, path)
 		if err != nil {
-			return err
+			p.logger.Error("Failed to parse file", log.FilePath(path), log.Err(err))
+			return nil
 		}
+
 		deployments = append(deployments, *deployment)
 		return nil
 	}); err != nil {

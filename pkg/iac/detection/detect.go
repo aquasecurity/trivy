@@ -142,6 +142,7 @@ func init() {
 
 		sniff := struct {
 			Schema     string         `json:"$schema"`
+			Handler    string         `json:"handler"`
 			Parameters map[string]any `json:"parameters"`
 			Resources  []any          `json:"resources"`
 		}{}
@@ -152,6 +153,12 @@ func init() {
 
 		// schema is required https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/syntax
 		if !strings.HasPrefix(sniff.Schema, "https://schema.management.azure.com/schemas") {
+			return false
+		}
+
+		// skip CreateUiDefinition
+		// https://learn.microsoft.com/en-us/azure/azure-resource-manager/managed-applications/create-uidefinition-overview
+		if sniff.Handler != "" {
 			return false
 		}
 
