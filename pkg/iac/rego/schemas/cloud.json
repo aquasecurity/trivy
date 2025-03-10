@@ -1425,6 +1425,13 @@
             "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.ec2.NetworkACL"
           }
         },
+        "requestedamis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.aws.ec2.RequestedAMI"
+          }
+        },
         "securitygroups": {
           "type": "array",
           "items": {
@@ -1630,6 +1637,22 @@
         "type": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.aws.ec2.RequestedAMI": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
+          }
         }
       }
     },
@@ -1933,10 +1956,12 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         },
         "value": {
-          "type": "string"
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }
       }
     },
