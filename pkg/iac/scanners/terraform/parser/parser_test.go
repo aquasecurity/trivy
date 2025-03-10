@@ -2393,7 +2393,6 @@ resource "aws_s3_bucket" "example" {
 	}
 
 	parser := New(fsys, "", OptionStopOnHCLError(true))
-
 	require.NoError(t, parser.ParseFS(t.Context(), "."))
 
 	_, err := parser.Load(t.Context())
@@ -2404,4 +2403,18 @@ resource "aws_s3_bucket" "example" {
 
 	val := modules.GetResourcesByType("aws_s3_bucket")[0].GetAttribute("bucket").GetRawValue()
 	assert.Nil(t, val)
+}
+
+func TestConfigWithEphemeralBlock(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`ephemeral "random_password" "password" {
+  length = 16
+}`)},
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
 }
