@@ -3,6 +3,7 @@ package rego
 import (
 	"testing"
 
+	"github.com/open-policy-agent/opa/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -228,6 +229,98 @@ Resources:
 			em, err := NewEngineMetadata(tc.schema, inputSchema)
 			require.NoError(t, err)
 			assert.Equal(t, tc.want, em)
+		})
+	}
+}
+
+func TestMetadataFromAnnotations(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected *StaticMetadata
+		wantErr  string
+	}{
+		{
+			name: "happy",
+			input: `# METADATA
+# title: test
+# custom:
+#   id: test-001
+#   avd_id: test-001
+#   severity: LOW
+#   input:
+#     selector:
+#     - type: yaml
+package user.test
+`,
+			expected: &StaticMetadata{
+				Title:    "test",
+				ID:       "test-001",
+				AVDID:    "test-001",
+				Severity: "LOW",
+				InputOptions: InputOptions{
+					Selectors: []Selector{
+						{
+							Type: "yaml",
+						},
+					},
+				},
+				Package: "data.user.test",
+				Frameworks: map[framework.Framework][]string{
+					"default": {},
+				},
+				Terraform:      &scan.EngineMetadata{},
+				CloudFormation: &scan.EngineMetadata{},
+			},
+		},
+		{
+			name: "without custom",
+			input: `# METADATA
+# title: test
+package user.test
+`,
+			expected: &StaticMetadata{
+				Title:    "test",
+				ID:       "N/A",
+				Severity: "UNKNOWN",
+				Package:  "data.user.test",
+				Frameworks: map[framework.Framework][]string{
+					"default": {},
+				},
+				Terraform:      &scan.EngineMetadata{},
+				CloudFormation: &scan.EngineMetadata{},
+			},
+		},
+		{
+			name:     "without annotations",
+			input:    `package user.test`,
+			expected: nil,
+		},
+		{
+			name: "invalid input field",
+			input: `# METADATA
+# custom:
+#  input: bad
+package user.test`,
+			wantErr: "input is not an object",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			module, err := ast.ParseModuleWithOpts("test.rego", tt.input, ast.ParserOptions{
+				ProcessAnnotation: true,
+			})
+			require.NoError(t, err)
+
+			metadata, err := MetadataFromAnnotations(module)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.expected, metadata)
 		})
 	}
 }

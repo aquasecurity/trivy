@@ -286,12 +286,12 @@ func (m *StaticMetadata) ToRule() scan.Rule {
 }
 
 func MetadataFromAnnotations(module *ast.Module) (*StaticMetadata, error) {
-	input, err := inputFromAnnotations(module)
-	if err != nil {
-		return nil, fmt.Errorf("retrieve input from annotations: %w", err)
-	}
-	metadata := NewStaticMetadata(module.Package.Path.String(), input)
 	if annotations := findPackageAnnotations(module); annotations != nil {
+		input, err := inputFromAnnotations(annotations)
+		if err != nil {
+			return nil, fmt.Errorf("retrieve input from annotations: %w", err)
+		}
+		metadata := NewStaticMetadata(module.Package.Path.String(), input)
 		if err := metadata.FromAnnotations(annotations); err != nil {
 			return nil, err
 		}
@@ -300,12 +300,11 @@ func MetadataFromAnnotations(module *ast.Module) (*StaticMetadata, error) {
 	return nil, nil
 }
 
-func inputFromAnnotations(module *ast.Module) (InputOptions, error) {
-	annotation := findPackageAnnotations(module)
-	if annotation == nil || annotation.Custom == nil {
+func inputFromAnnotations(annotations *ast.Annotations) (InputOptions, error) {
+	if annotations == nil || annotations.Custom == nil {
 		return InputOptions{}, nil
 	}
-	input, ok := annotation.Custom["input"]
+	input, ok := annotations.Custom["input"]
 	if !ok {
 		return InputOptions{}, nil
 	}
