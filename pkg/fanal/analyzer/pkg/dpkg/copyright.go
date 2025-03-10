@@ -37,6 +37,35 @@ type dpkgLicenseAnalyzer struct {
 
 // Analyze parses /usr/share/doc/*/copyright files
 func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	if input.Info.Mode()&os.ModeSymlink == os.ModeSymlink {
+		scanner := bufio.NewScanner(input.Content)
+		linkname := ""
+		for scanner.Scan() {
+			linkname = scanner.Text()
+			break
+		}
+		if len(linkname) == 0 {
+			return nil, nil
+		}
+		dir, pkgName := path.Split(input.FilePath)
+		linkPath := path.Join(dir, linkname)
+		linkPath = path.Clean(linkPath)
+		licPath := path.Join(input.FilePath, "copyright")
+		originalPath := path.Join(linkPath, "copyright")
+
+		var findings []types.LicenseFinding
+		return &analyzer.AnalysisResult{
+			Licenses: []types.LicenseFile{
+				{
+					Type:         types.LicenseTypeDpkg,
+					FilePath:     licPath,
+					Findings:     findings,
+					PkgName:      pkgName,
+					OriginalPath: originalPath,
+				},
+			},
+		}, nil
+	}
 	findings, err := a.parseCopyright(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("parse copyright %s: %w", input.FilePath, err)
@@ -121,9 +150,13 @@ func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 }
 
 func (a *dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	match, err := path.Match("usr/share/doc/*", filePath)
+	if err == nil && match {
+		return true
+	}
 	// To exclude files from subfolders
 	// e.g. usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright
-	match, err := path.Match("usr/share/doc/*/copyright", filePath)
+	match, err = path.Match("usr/share/doc/*/copyright", filePath)
 	if err != nil {
 		return false
 	}
@@ -136,6 +169,10 @@ func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {
 
 func (a *dpkgLicenseAnalyzer) Version() int {
 	return dpkgLicenseAnalyzerVersion
+}
+
+func (a *dpkgLicenseAnalyzer) SupportSymlinks() bool {
+	return true
 }
 
 // normalizeLicense returns a normalized license identifier in a heuristic way

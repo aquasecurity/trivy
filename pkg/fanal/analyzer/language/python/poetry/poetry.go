@@ -88,6 +88,10 @@ func (a poetryAnalyzer) Version() int {
 	return version
 }
 
+func (a poetryAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 func (a poetryAnalyzer) parsePoetryLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Poetry, path, r, a.lockParser)
 }

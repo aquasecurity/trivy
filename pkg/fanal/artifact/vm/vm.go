@@ -111,12 +111,12 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
 	err = a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts, false); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
 		}
 
 		// Skip post analysis if the file is not required
-		analyzerTypes := a.analyzer.RequiredPostAnalyzers(path, info)
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(path, info, false)
 		if len(analyzerTypes) == 0 {
 			return nil
 		}

@@ -51,3 +51,7 @@ func (a executableAnalyzer) Type() analyzer.Type {
 func (a executableAnalyzer) Version() int {
 	return version
 }
+
+func (a executableAnalyzer) SupportSymlinks() bool {
+	return false
+}

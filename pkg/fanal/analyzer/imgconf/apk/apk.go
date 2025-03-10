@@ -291,3 +291,7 @@ func (a alpineCmdAnalyzer) Type() analyzer.Type {
 func (a alpineCmdAnalyzer) Version() int {
 	return analyzerVersion
 }
+
+func (a alpineCmdAnalyzer) SupportSymlinks() bool {
+	return false
+}

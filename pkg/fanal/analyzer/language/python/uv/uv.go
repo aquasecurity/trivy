@@ -75,3 +75,7 @@ func (a *uvAnalyzer) Type() analyzer.Type {
 func (a *uvAnalyzer) Version() int {
 	return version
 }
+
+func (a *uvAnalyzer) SupportSymlinks() bool {
+	return false
+}

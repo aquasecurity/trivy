@@ -72,3 +72,7 @@ func (a *secretAnalyzer) Type() analyzer.Type {
 func (a *secretAnalyzer) Version() int {
 	return analyzerVersion
 }
+
+func (a *secretAnalyzer) SupportSymlinks() bool {
+	return false
+}

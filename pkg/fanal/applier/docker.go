@@ -93,6 +93,101 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 	return "", ""
 }
 
+type MapLicenseInfo struct {
+	Source *ftypes.LicenseFile
+	Deps   []*ftypes.LicenseFile
+}
+
+// We expect nobody delete file by symlink path, only by original path
+// If not - OpaqueDirs and WhiteoutFiles also should handle this case and check all symlinks
+func resolveDpkgLicensesWithSymlinks(dpkgLicensesMap *map[string]*MapLicenseInfo, layer *ftypes.BlobInfo) {
+	var unresolvedLicenses []*ftypes.LicenseFile
+	for j := range layer.Licenses {
+		license := &layer.Licenses[j]
+		if license.Type != ftypes.LicenseTypeDpkg {
+			continue
+		}
+		if len(license.OriginalPath) == 0 {
+			(*dpkgLicensesMap)[license.FilePath] = &MapLicenseInfo{
+				Source: license,
+				Deps:   []*ftypes.LicenseFile{},
+			}
+		} else {
+			unresolvedLicenses = append(unresolvedLicenses, license)
+		}
+	}
+
+	if len(unresolvedLicenses) == 0 || len(*dpkgLicensesMap) == 0 {
+		return
+	}
+
+	resolvedPathMap := make(map[string]string)
+	var nextUnresolvedLicinses []*ftypes.LicenseFile
+	for _, license := range unresolvedLicenses {
+		result, ok := (*dpkgLicensesMap)[license.OriginalPath]
+		if ok {
+			license.Findings = result.Source.Findings
+			result.Deps = append(result.Deps, license)
+			resolvedPathMap[license.FilePath] = license.OriginalPath
+		} else {
+			nextUnresolvedLicinses = append(nextUnresolvedLicinses, license)
+		}
+	}
+
+	if len(nextUnresolvedLicinses) == 0 || len(resolvedPathMap) == 0 {
+		return
+	}
+	unresolvedLicenses = nextUnresolvedLicinses
+	nextUnresolvedLicinses = nextUnresolvedLicinses[0:0]
+
+	// loop to resolve symlink to symlinks
+	for {
+		count := 0
+		for _, license := range unresolvedLicenses {
+			result, ok := resolvedPathMap[license.OriginalPath]
+			if ok {
+				sourseResult, sourceOk := (*dpkgLicensesMap)[result]
+				if sourceOk {
+					license.Findings = sourseResult.Source.Findings
+					sourseResult.Deps = append(sourseResult.Deps, license)
+					resolvedPathMap[license.FilePath] = result
+					count++
+				}
+			} else {
+				nextUnresolvedLicinses = append(nextUnresolvedLicinses, license)
+			}
+		}
+		if count == 0 || len(nextUnresolvedLicinses) == 0 {
+			break
+		}
+		unresolvedLicenses = nextUnresolvedLicinses
+		nextUnresolvedLicinses = nextUnresolvedLicinses[0:0]
+	}
+
+}
+
+func deleteDpkgLicensesByString(key, sep string, dpkgLicensesMap *map[string]*MapLicenseInfo, nestedMap *nested.Nested) {
+	var pathToDelete []string
+	_ = nestedMap.WalkByString(key, sep, func(keys []string, value any) error {
+		switch v := value.(type) {
+		case ftypes.LicenseFile:
+			if v.Type == ftypes.LicenseTypeDpkg {
+				result, ok := (*dpkgLicensesMap)[v.FilePath]
+				if ok {
+					for _, dep := range result.Deps {
+						pathToDelete = append(pathToDelete, dep.FilePath)
+					}
+					delete(*dpkgLicensesMap, v.FilePath)
+				}
+			}
+		}
+		return nil
+	})
+	for _, path := range pathToDelete {
+		_ = nestedMap.DeleteByString(path, sep) // nolint
+	}
+}
+
 // ApplyLayers returns the merged layer
 // nolint: gocyclo
 func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
@@ -101,12 +196,15 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	secretsMap := make(map[string]ftypes.Secret)
 	var mergedLayer ftypes.ArtifactDetail
 
+	dpkgLicensesMap := make(map[string]*MapLicenseInfo)
 	for _, layer := range layers {
 		for _, opqDir := range layer.OpaqueDirs {
-			opqDir = strings.TrimSuffix(opqDir, sep)  // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
+			opqDir = strings.TrimSuffix(opqDir, sep) // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
+			deleteDpkgLicensesByString(opqDir, sep, &dpkgLicensesMap, &nestedMap)
 			_ = nestedMap.DeleteByString(opqDir, sep) // nolint
 		}
 		for _, whFile := range layer.WhiteoutFiles {
+			deleteDpkgLicensesByString(whFile, sep, &dpkgLicensesMap, &nestedMap)
 			_ = nestedMap.DeleteByString(whFile, sep) // nolint
 		}
 
@@ -148,8 +246,12 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			secretsMap = mergeSecrets(secretsMap, secret, l)
 		}
 
+		resolveDpkgLicensesWithSymlinks(&dpkgLicensesMap, &layer)
 		// Apply license files
 		for _, license := range layer.Licenses {
+			if len(license.Findings) == 0 {
+				continue
+			}
 			license.Layer = ftypes.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,

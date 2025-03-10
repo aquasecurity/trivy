@@ -48,3 +48,7 @@ func (a debianOSAnalyzer) Type() analyzer.Type {
 func (a debianOSAnalyzer) Version() int {
 	return version
 }
+
+func (a debianOSAnalyzer) SupportSymlinks() bool {
+	return false
+}

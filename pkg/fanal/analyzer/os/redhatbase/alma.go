@@ -60,3 +60,7 @@ func (a almaOSAnalyzer) Type() analyzer.Type {
 func (a almaOSAnalyzer) Version() int {
 	return almaAnalyzerVersion
 }
+
+func (a almaOSAnalyzer) SupportSymlinks() bool {
+	return false
+}
