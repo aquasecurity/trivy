@@ -7,8 +7,8 @@ import (
 	"io/fs"
 	"strings"
 
-	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/bundle"
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/opa/v1/bundle"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -43,9 +43,7 @@ func (s *Scanner) loadPoliciesFromReaders(readers []io.Reader) (map[string]*ast.
 		if err != nil {
 			return nil, err
 		}
-		module, err := ast.ParseModuleWithOpts(moduleName, string(data), ast.ParserOptions{
-			ProcessAnnotation: true,
-		})
+		module, err := ParseRegoModule(moduleName, string(data))
 		if err != nil {
 			return nil, err
 		}
@@ -297,4 +295,11 @@ func (s *Scanner) filterModules(retriever *MetadataRetriever) error {
 
 	s.policies = filtered
 	return nil
+}
+
+func ParseRegoModule(name, input string) (*ast.Module, error) {
+	return ast.ParseModuleWithOpts(name, input, ast.ParserOptions{
+		ProcessAnnotation: true,
+		RegoVersion:       ast.RegoV0,
+	})
 }

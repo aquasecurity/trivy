@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
 
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -104,9 +104,7 @@ func LoadPoliciesFromDirs(target fs.FS, paths ...string) (map[string]*ast.Module
 			if err != nil {
 				return err
 			}
-			module, err := ast.ParseModuleWithOpts(path, string(data), ast.ParserOptions{
-				ProcessAnnotation: true,
-			})
+			module, err := ParseRegoModule(path, string(data))
 			if err != nil {
 				return fmt.Errorf("failed to parse Rego module: %w", err)
 			}
