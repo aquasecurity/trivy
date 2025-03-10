@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/loader"
 
 	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -77,20 +76,40 @@ func LoadEmbeddedLibraries() (map[string]*ast.Module, error) {
 }
 
 func LoadPoliciesFromDirs(target fs.FS, paths ...string) (map[string]*ast.Module, error) {
-	res, err := loader.NewFileLoader().
-		WithFS(target).
-		WithProcessAnnotation(true).
-		Filtered(paths, func(abspath string, info fs.FileInfo, _ int) bool {
-			return isNotRegoFile(info) || isOptionalChecks(abspath)
-		})
-	if err != nil {
-		return nil, fmt.Errorf("load modules: %w", err)
-	}
-	return res.ParsedModules(), nil
-}
+	modules := make(map[string]*ast.Module)
+	for _, path := range paths {
+		if err := fs.WalkDir(target, sanitisePath(path), func(path string, info fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return nil
+			}
 
-func isNotRegoFile(fi fs.FileInfo) bool {
-	return !fi.IsDir() && (!IsRegoFile(fi.Name()) || IsDotFile(fi.Name()))
+			if isOptionalChecks(path) {
+				return fs.SkipDir
+			}
+
+			if !IsRegoFile(info.Name()) || IsDotFile(info.Name()) {
+				return nil
+			}
+			data, err := fs.ReadFile(target, filepath.ToSlash(path))
+			if err != nil {
+				return err
+			}
+			module, err := ast.ParseModuleWithOpts(path, string(data), ast.ParserOptions{
+				ProcessAnnotation: true,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to parse Rego module: %w", err)
+			}
+			modules[path] = module
+			return nil
+		}); err != nil {
+			return nil, err
+		}
+	}
+	return modules, nil
 }
 
 func isOptionalChecks(path string) bool {
