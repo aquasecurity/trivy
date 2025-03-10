@@ -1,7 +1,6 @@
 package packaging
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -103,7 +102,7 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := &eggAnalyzer{}
-			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
+			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
 				Content:  f,
 				FilePath: tt.inputFile,
 				Info:     fileInfo,

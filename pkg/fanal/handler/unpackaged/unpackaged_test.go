@@ -1,7 +1,6 @@
 package unpackaged_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/package-url/packageurl-go"
@@ -89,7 +88,7 @@ func Test_unpackagedHook_Handle(t *testing.T) {
 			h, err := unpackaged.NewUnpackagedHandler(opt)
 			require.NoError(t, err)
 
-			err = h.Handle(context.Background(), tt.args.res, got)
+			err = h.Handle(t.Context(), tt.args.res, got)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

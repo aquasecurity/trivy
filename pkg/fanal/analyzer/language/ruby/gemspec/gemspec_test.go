@@ -1,7 +1,6 @@
 package gemspec
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -84,7 +83,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := gemspecLibraryAnalyzer{}
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,

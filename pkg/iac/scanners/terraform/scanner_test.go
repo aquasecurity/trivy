@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -146,7 +145,7 @@ cause := bucket.name
 				rego.WithPolicyNamespaces(test.includedNamespaces...),
 			)
 
-			results, err := scanner.ScanFS(context.TODO(), fs, "code")
+			results, err := scanner.ScanFS(t.Context(), fs, "code")
 			require.NoError(t, err)
 
 			var found bool
@@ -221,7 +220,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -304,7 +303,7 @@ deny[res] {
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -357,7 +356,7 @@ resource "aws_s3_bucket_public_access_block" "foo" {
 
 	scanner := New()
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	failed := results.GetFailed()
@@ -420,7 +419,7 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 
 	scanner := New()
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	for _, result := range results.GetFailed() {
@@ -476,7 +475,7 @@ deny[res] {
 		rego.WithPolicyDirs("rules"),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
@@ -556,7 +555,7 @@ bucket_name = "test"
 		ScannerWithConfigsFileSystem(configsFS),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
@@ -590,7 +589,7 @@ bucket_name = "test"
 		ScannerWithConfigsFileSystem(fs),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
@@ -663,7 +662,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 2)
@@ -732,7 +731,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
@@ -800,7 +799,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results, 2)
@@ -865,7 +864,7 @@ deny[res] {
 		ScannerWithAllDirectories(true),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	results, err := scanner.ScanFS(t.Context(), fs, "code")
 	require.NoError(t, err)
 
 	require.Len(t, results, 1)
@@ -905,7 +904,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -919,7 +918,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Empty(t, results)
@@ -933,7 +932,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 2)
@@ -946,7 +945,7 @@ resource "aws_s3_bucket" "test" {}
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(context.TODO(), fsys, "deployments")
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
 		require.NoError(t, err)
 
 		assert.Len(t, results, 2)
@@ -990,8 +989,133 @@ deny contains res if {
 		rego.WithPolicyNamespaces("test"),
 	)
 
-	results, err := scanner.ScanFS(context.TODO(), fsys, ".")
+	results, err := scanner.ScanFS(t.Context(), fsys, ".")
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
+}
+
+func TestRenderedCause(t *testing.T) {
+
+	check := `# METADATA
+# title: S3 Data should be versioned
+# custom:
+#   id: AVD-AWS-0090
+#   avd_id: AVD-AWS-0090
+package user.aws.s3.aws0090
+
+import rego.v1
+
+deny contains res if {
+	some bucket in input.aws.s3.buckets
+	not bucket.versioning.enabled.value
+	res := result.new(
+		"Bucket does not have versioning enabled",
+		bucket.versioning.enabled
+	)
+}
+`
+
+	tests := []struct {
+		name     string
+		fsys     fstest.MapFS
+		expected string
+	}{
+		{
+			name: "just misconfigured resource",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+locals {
+	versioning = false
+}
+
+resource "aws_s3_bucket" "test" {
+	bucket = "test"
+
+	versioning {
+		enabled = local.versioning
+	}
+}
+`)},
+			},
+			expected: `resource "aws_s3_bucket" "test" {
+  versioning {
+    enabled = false
+  }
+}`,
+		},
+		{
+			name: "misconfigured resource instance",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+locals {
+	versioning = false
+}
+
+resource "aws_s3_bucket" "test" {
+	count = 1
+	bucket = "test"
+
+	versioning {
+		enabled = local.versioning
+	}
+}
+`)},
+			},
+			expected: `resource "aws_s3_bucket" "test" {
+  versioning {
+    enabled = false
+  }
+}`,
+		},
+		{
+			name: "misconfigured resource instance in the module",
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+module "bucket" {
+	source = "../modules/bucket"
+}
+`),
+				},
+				"modules/bucket/main.tf": &fstest.MapFile{Data: []byte(`
+locals {
+  versioning = false
+}
+
+resource "aws_s3_bucket" "test" {
+  count = 1
+  bucket = "test"
+
+  versioning {
+    enabled = local.versioning
+  }
+}`)},
+			},
+			expected: `resource "aws_s3_bucket" "test" {
+  versioning {
+    enabled = false
+  }
+}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			scanner := New(
+				ScannerWithAllDirectories(true),
+				rego.WithEmbeddedLibraries(true),
+				rego.WithPolicyReader(strings.NewReader(check)),
+				rego.WithPolicyNamespaces("user"),
+			)
+
+			results, err := scanner.ScanFS(t.Context(), tt.fsys, ".")
+			require.NoError(t, err)
+
+			failed := results.GetFailed()
+
+			assert.Len(t, failed, 1)
+
+			assert.Equal(t, tt.expected, failed[0].Flatten().RenderedCause.Raw)
+		})
+	}
 }

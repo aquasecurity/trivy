@@ -1,7 +1,6 @@
 package dpkg
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -93,7 +92,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 			}
 			a := dpkgLicenseAnalyzer{}
 
-			license, err := a.Analyze(context.Background(), input)
+			license, err := a.Analyze(t.Context(), input)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, license)
 		})

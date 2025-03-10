@@ -448,7 +448,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			ruleID = result.Rule().Aliases[0]
 		}
 
-		cause := NewCauseWithCode(result)
+		cause := NewCauseWithCode(result, flattened)
 
 		misconfResult := types.MisconfResult{
 			Namespace: result.RegoNamespace(),
@@ -490,8 +490,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 	return types.ToMisconfigurations(misconfs)
 }
 
-func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
-	flat := underlying.Flatten()
+func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseMetadata {
 	cause := types.CauseMetadata{
 		Resource:  flat.Resource,
 		Provider:  flat.RuleProvider.DisplayName(),
@@ -514,6 +513,14 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 	// failures can happen either due to lack of
 	// OR misconfiguration of something
 	if underlying.Status() == scan.StatusFailed {
+		if flat.RenderedCause.Raw != "" {
+			highlighted, _ := scan.Highlight(flat.Location.Filename, flat.RenderedCause.Raw, scan.DarkTheme)
+			cause.RenderedCause = types.RenderedCause{
+				Raw:         flat.RenderedCause.Raw,
+				Highlighted: highlighted,
+			}
+		}
+
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
 				Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {

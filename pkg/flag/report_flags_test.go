@@ -13,6 +13,7 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
@@ -32,11 +33,13 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		compliance       string
 		debug            bool
 		pkgTypes         string
+		tableModes       []string
 	}
 	tests := []struct {
 		name     string
 		fields   fields
 		want     flag.ReportOptions
+		wantErr  string
 		wantLogs []string
 	}{
 		{
@@ -160,6 +163,14 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
 		},
+		{
+			name: "invalid option combination: --table-modes with --format json",
+			fields: fields{
+				format:     "json",
+				tableModes: xstrings.ToStringSlice(types.SupportedTableModes),
+			},
+			wantErr: `"--table-mode" can be used only with "--format table".`,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -184,6 +195,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
 			setValue(flag.SeverityFlag.ConfigName, tt.fields.severities)
 			setValue(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
+			setSliceValue(flag.TableModeFlag.ConfigName, tt.fields.tableModes)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
@@ -199,10 +211,15 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				OutputPluginArg: flag.OutputPluginArgFlag.Clone(),
 				Severity:        flag.SeverityFlag.Clone(),
 				Compliance:      flag.ComplianceFlag.Clone(),
+				TableMode:       flag.TableModeFlag.Clone(),
 			}
 
 			got, err := f.ToOptions()
-			require.NoError(t, err)
+			if tt.wantErr != "" {
+				require.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+
 			assert.EqualExportedValuesf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages

@@ -100,6 +100,7 @@ trivy image [flags] IMAGE_NAME
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --removed-pkgs                      detect vulnerabilities of removed packages (only for Alpine)
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (terraform)
       --report string                     specify a format for the compliance report. (all,summary) (default "summary")
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
@@ -113,6 +114,7 @@ trivy image [flags] IMAGE_NAME
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
       --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
+      --table-mode strings                [EXPERIMENTAL] tables that will be displayed in 'table' format (summary,detailed) (default [summary,detailed])
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
@@ -120,6 +122,7 @@ trivy image [flags] IMAGE_NAME
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
+      --vuln-severity-source strings      order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
 ```
 
 ### Options inherited from parent commands

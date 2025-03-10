@@ -94,6 +94,7 @@ trivy kubernetes [flags] [CONTEXT]
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
+      --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (terraform)
       --report string                     specify a report format for the output (all,summary) (default "all")
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,rbac) (default [vuln,misconfig,secret,rbac])
@@ -113,6 +114,7 @@ trivy kubernetes [flags] [CONTEXT]
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
       --vex strings                       [EXPERIMENTAL] VEX sources ("repo", "oci" or file path)
+      --vuln-severity-source strings      order of data sources for selecting vulnerability severity level (nvd,redhat,redhat-oval,debian,ubuntu,alpine,amazon,oracle-oval,suse-cvrf,photon,arch-linux,alma,rocky,cbl-mariner,azure,ruby-advisory-db,php-security-advisories,nodejs-security-wg,ghsa,glad,aqua,osv,k8s,wolfi,chainguard,bitnami,govulndb,auto) (default [auto])
 ```
 
 ### Options inherited from parent commands

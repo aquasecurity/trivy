@@ -66,8 +66,8 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
-	opt.Type = cmp.Or(opt.Type, artifact.TypeFilesystem)
-	prefix := lo.Ternary(opt.Type == artifact.TypeRepository, "repo", "fs")
+	opt.Type = cmp.Or(opt.Type, types.TypeFilesystem)
+	prefix := lo.Ternary(opt.Type == types.TypeRepository, "repo", "fs")
 
 	art := Artifact{
 		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),

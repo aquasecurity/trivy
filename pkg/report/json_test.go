@@ -2,7 +2,6 @@ package report_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -87,7 +86,7 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
-			err := jw.Write(context.Background(), inputResults)
+			err := jw.Write(t.Context(), inputResults)
 			require.NoError(t, err)
 
 			var got types.Report

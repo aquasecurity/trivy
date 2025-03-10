@@ -819,6 +819,7 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 								},
 							},
 						},
+						RenderedCause: &common.RenderedCause{},
 					},
 				},
 			},

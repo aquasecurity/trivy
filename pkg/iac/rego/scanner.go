@@ -13,6 +13,7 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage"
 	"github.com/open-policy-agent/opa/util"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
@@ -147,6 +148,9 @@ type Input struct {
 	Path     string `json:"path"`
 	FS       fs.FS  `json:"-"`
 	Contents any    `json:"contents"`
+
+	// parsed is the parsed input value for the rego query
+	parsed ast.Value
 }
 
 func GetInputsContents(inputs []Input) []any {
@@ -160,6 +164,21 @@ func GetInputsContents(inputs []Input) []any {
 func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs ...Input) (scan.Results, error) {
 
 	s.logger.Debug("Scanning inputs", "count", len(inputs))
+
+	if len(inputs) == 0 {
+		return nil, nil
+	}
+
+	inputs = lo.FilterMap(inputs, func(input Input, _ int) (Input, bool) {
+		s.trace("INPUT", input)
+		parsed, err := parseRawInput(input.Contents)
+		if err != nil {
+			s.logger.Error("Failed to parse input", log.FilePath(input.Path), log.Err(err))
+			return input, false
+		}
+		input.parsed = parsed
+		return input, true
+	})
 
 	var results scan.Results
 
@@ -192,10 +211,6 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 
 		// skip if check isn't relevant to what is being scanned
 		if !isPolicyApplicable(sourceType, staticMeta, inputs...) {
-			continue
-		}
-
-		if len(inputs) == 0 {
 			continue
 		}
 
@@ -317,14 +332,8 @@ func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs 
 	var results scan.Results
 	qualified := fmt.Sprintf("data.%s.%s", namespace, rule)
 	for _, input := range inputs {
-		s.trace("INPUT", input)
-		parsedInput, err := parseRawInput(input.Contents)
-		if err != nil {
-			s.logger.Error("Error occurred while parsing input", log.Err(err))
-			continue
-		}
 
-		resultSet, traces, err := s.runQuery(ctx, qualified, parsedInput, false)
+		resultSet, traces, err := s.runQuery(ctx, qualified, input.parsed, false)
 		if err != nil {
 			return nil, err
 		}

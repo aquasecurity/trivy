@@ -47,6 +47,10 @@ func (c *Module) ModulePath() string {
 	return c.modulePath
 }
 
+func (c *Module) Parent() *Module {
+	return c.parent
+}
+
 func (c *Module) Ignores() ignore.Rules {
 	return c.ignores
 }

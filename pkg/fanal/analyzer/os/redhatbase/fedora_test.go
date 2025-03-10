@@ -1,7 +1,6 @@
 package redhatbase
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -39,7 +38,7 @@ func Test_fedoraOSAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/fedora-release",
 				Content:  f,

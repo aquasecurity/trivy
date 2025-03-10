@@ -1,7 +1,6 @@
 package rpm
 
 import (
-	"context"
 	"errors"
 	"os"
 	"strings"
@@ -56,7 +55,7 @@ func Test_rpmPkgAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := rpmPkgAnalyzer{}
-			got, err := a.Analyze(context.Background(), tt.input)
+			got, err := a.Analyze(t.Context(), tt.input)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -273,7 +272,7 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 			}
 
 			a := newRPMPkgAnalyzer()
-			gotPkgs, gotFiles, err := a.listPkgs(context.Background(), m)
+			gotPkgs, gotFiles, err := a.listPkgs(t.Context(), m)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
