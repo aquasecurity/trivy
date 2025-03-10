@@ -7,7 +7,6 @@ import (
 	"io/fs"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/liamg/memoryfs"
 
@@ -27,18 +26,18 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	mu            sync.Mutex
+	*rego.RegoScannerProvider
 	logger        *log.Logger
 	options       []options.ScannerOption
 	parserOptions []parser.Option
-	regoScanner   *rego.Scanner
 }
 
 // New creates a new Scanner
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
-		options: opts,
-		logger:  log.WithPrefix("helm scanner"),
+		RegoScannerProvider: rego.NewRegoScannerProvider(opts...),
+		options:             opts,
+		logger:              log.WithPrefix("helm scanner"),
 	}
 
 	for _, option := range opts {
@@ -56,11 +55,6 @@ func (s *Scanner) Name() string {
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.Results, error) {
-
-	if err := s.initRegoScanner(target); err != nil {
-		return nil, fmt.Errorf("failed to init rego scanner: %w", err)
-	}
-
 	var results []scan.Result
 	if err := fs.WalkDir(target, path, func(path string, d fs.DirEntry, err error) error {
 		select {
@@ -122,6 +116,11 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 		return nil, nil
 	}
 
+	rs, err := s.InitRegoScanner(target, s.options)
+	if err != nil {
+		return nil, fmt.Errorf("init rego scanner: %w", err)
+	}
+
 	for _, file := range chartFiles {
 		file := file
 		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
@@ -132,7 +131,7 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
 		for _, manifest := range manifests {
-			fileResults, err := s.regoScanner.ScanInput(ctx, types.SourceKubernetes, rego.Input{
+			fileResults, err := rs.ScanInput(ctx, types.SourceKubernetes, rego.Input{
 				Path:     file.TemplateFilePath,
 				Contents: manifest,
 				FS:       target,
@@ -160,18 +159,4 @@ func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS)
 
 	}
 	return results, nil
-}
-
-func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if s.regoScanner != nil {
-		return nil
-	}
-	regoScanner := rego.NewScanner(s.options...)
-	if err := regoScanner.LoadPolicies(srcFS); err != nil {
-		return err
-	}
-	s.regoScanner = regoScanner
-	return nil
 }

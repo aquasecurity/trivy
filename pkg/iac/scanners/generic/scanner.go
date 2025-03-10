@@ -9,7 +9,6 @@ import (
 	"io/fs"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
@@ -41,12 +40,11 @@ type configParser interface {
 
 // GenericScanner is a scanner that scans a file as is without processing it
 type GenericScanner struct {
-	mu          sync.Mutex
-	name        string
-	source      types.Source
-	logger      *log.Logger
-	options     []options.ScannerOption
-	regoScanner *rego.Scanner
+	*rego.RegoScannerProvider
+	name    string
+	source  types.Source
+	logger  *log.Logger
+	options []options.ScannerOption
 
 	parser configParser
 }
@@ -59,11 +57,12 @@ func (f ParseFunc) Parse(ctx context.Context, r io.Reader, path string) (any, er
 
 func NewScanner(name string, source types.Source, parser configParser, opts ...options.ScannerOption) *GenericScanner {
 	s := &GenericScanner{
-		name:    name,
-		options: opts,
-		source:  source,
-		logger:  log.WithPrefix(fmt.Sprintf("%s scanner", source)),
-		parser:  parser,
+		RegoScannerProvider: rego.NewRegoScannerProvider(opts...),
+		name:                name,
+		options:             opts,
+		source:              source,
+		logger:              log.WithPrefix(fmt.Sprintf("%s scanner", source)),
+		parser:              parser,
 	}
 
 	for _, opt := range opts {
@@ -113,13 +112,13 @@ func (s *GenericScanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (sc
 		}
 	}
 
-	regoScanner, err := s.initRegoScanner(fsys)
+	rs, err := s.InitRegoScanner(fsys, s.options)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("init rego scanner: %w", err)
 	}
 
 	s.logger.Debug("Scanning files...", log.Int("count", len(inputs)))
-	results, err := regoScanner.ScanInput(ctx, s.source, inputs...)
+	results, err := rs.ScanInput(ctx, s.source, inputs...)
 	if err != nil {
 		return nil, err
 	}
@@ -168,20 +167,6 @@ func (s *GenericScanner) parseFS(ctx context.Context, fsys fs.FS, path string) (
 		return nil, err
 	}
 	return files, nil
-}
-
-func (s *GenericScanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if s.regoScanner != nil {
-		return s.regoScanner, nil
-	}
-	regoScanner := rego.NewScanner(s.options...)
-	if err := regoScanner.LoadPolicies(srcFS); err != nil {
-		return nil, err
-	}
-	s.regoScanner = regoScanner
-	return regoScanner, nil
 }
 
 func (s *GenericScanner) applyIgnoreRules(fsys fs.FS, results scan.Results) error {
