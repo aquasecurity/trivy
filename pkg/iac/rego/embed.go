@@ -53,10 +53,7 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 	for _, module := range modules {
 		metadata, err := retriever.RetrieveMetadata(ctx, module)
 		if err != nil {
-			log.Warn("Failed to retrieve metadata",
-				log.String("package", module.Package.String()), log.Err(err))
-			continue
-		} else if metadata == nil {
+			log.Warn("Failed to retrieve metadata", log.String("package", module.Package.String()), log.Err(err))
 			continue
 		}
 

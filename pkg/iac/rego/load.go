@@ -300,7 +300,7 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 	}
 }
 
-// moduleHasLegacyMetadataFormat checks if the module has an legacy metadata format.
+// moduleHasLegacyMetadataFormat checks if the module has a legacy metadata format.
 // Returns true if the metadata is represented as a “__rego_metadata__” rule,
 // which was used before annotations were introduced.
 func moduleHasLegacyMetadataFormat(module *ast.Module) bool {
@@ -309,7 +309,7 @@ func moduleHasLegacyMetadataFormat(module *ast.Module) bool {
 	})
 }
 
-// moduleHasLegacyInputFormat checks if the module has an legacy input format.
+// moduleHasLegacyInputFormat checks if the module has a legacy input format.
 // Returns true if the input is represented as a “__rego_input__” rule,
 // which was used before annotations were introduced.
 func moduleHasLegacyInputFormat(module *ast.Module) bool {
@@ -348,7 +348,7 @@ func (s *Scanner) isModuleApplicable(module *ast.Module, metadata *StaticMetadat
 
 	if len(metadata.InputOptions.Selectors) == 0 && !metadata.Library {
 		s.logger.Warn(
-			"Module has no input selectors - it will be loaded for all inputs!",
+			"Module has no input selectors - it will be loaded for all inputs",
 			log.FilePath(module.Package.Location.File),
 			log.String("module", name),
 		)
