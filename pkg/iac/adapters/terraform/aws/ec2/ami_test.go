@@ -22,7 +22,7 @@ data "aws_ami" "example" {
     owners = ["amazon"]
 }`,
 			expected: ec2.EC2{
-				AMIs: []ec2.AMI{
+				RequestedAMIs: []ec2.RequestedAMI{
 					{
 						Metadata: iacTypes.NewTestMetadata(),
 						Owners: iacTypes.StringValueList{
@@ -38,7 +38,7 @@ data "aws_ami" "example" {
     owners = ["amazon", "badguys"]
 }`,
 			expected: ec2.EC2{
-				AMIs: []ec2.AMI{
+				RequestedAMIs: []ec2.RequestedAMI{
 					{
 						Metadata: iacTypes.NewTestMetadata(),
 						Owners: iacTypes.StringValueList{
@@ -56,7 +56,7 @@ data "aws_ami" "example" {
     name = "test-ami"
 }`,
 			expected: ec2.EC2{
-				AMIs: []ec2.AMI{
+				RequestedAMIs: []ec2.RequestedAMI{
 					{
 						Metadata: iacTypes.NewTestMetadata(),
 					},

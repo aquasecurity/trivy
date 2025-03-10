@@ -5,17 +5,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
-func adaptAMIs(modules terraform.Modules) []ec2.AMI {
-	var res []ec2.AMI
+func adaptRequestedAMIs(modules terraform.Modules) []ec2.RequestedAMI {
+	var res []ec2.RequestedAMI
 
 	for _, block := range modules.GetDatasByType("aws_ami") {
-		res = append(res, adaptAMI(block))
+		res = append(res, adaptRequestedAMI(block))
 	}
 	return res
 }
 
-func adaptAMI(block *terraform.Block) ec2.AMI {
-	return ec2.AMI{
+func adaptRequestedAMI(block *terraform.Block) ec2.RequestedAMI {
+	return ec2.RequestedAMI{
 		Metadata: block.GetMetadata(),
 		Owners:   block.GetAttribute("owners").AsStringValues(),
 	}
