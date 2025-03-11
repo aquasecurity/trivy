@@ -3,7 +3,6 @@ package analyzer
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"regexp"
@@ -550,7 +549,6 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 		// If any analyzer doesn't implement StaticPathAnalyzer, return false
 		staticPathAnalyzer, ok := a.(StaticPathAnalyzer)
 		if !ok {
-			fmt.Println(a.Type())
 			return nil, false
 		}
 
