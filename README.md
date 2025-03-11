@@ -116,7 +116,6 @@ If you'd like to contact Aqua or request a demo, please use this form: <https://
 Trivy is an [Aqua Security][aquasec] open source project.  
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
-Join our [Slack community][slack] to stay up to date with community efforts.
 
 Please ensure to abide by our [Code of Conduct][code-of-conduct] during all interactions.
 
@@ -133,7 +132,6 @@ Please ensure to abide by our [Code of Conduct][code-of-conduct] during all inte
 [homepage]: https://trivy.dev
 [docs]: https://trivy.dev/trivy
 [pronunciation]: #how-to-pronounce-the-name-trivy
-[slack]: https://slack.aquasec.com
 [code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
 
 [Installation]:https://trivy.dev/latest/getting-started/installation/
