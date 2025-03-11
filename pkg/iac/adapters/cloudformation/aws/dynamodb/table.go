@@ -1,0 +1,24 @@
+package dynamodb
+
+import (
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/samber/lo"
+)
+
+func getTables(fctx parser.FileContext) []dynamodb.Table {
+	return lo.Map(fctx.GetResourcesByType("AWS::DynamoDB::Table"), func(
+		resource *parser.Resource, _ int,
+	) dynamodb.Table {
+		sseSpec := resource.GetProperty("SSESpecification")
+		return dynamodb.Table{
+			Metadata: resource.Metadata(),
+			ServerSideEncryption: dynamodb.ServerSideEncryption{
+				Metadata: sseSpec.Metadata(),
+				Enabled:  sseSpec.GetBoolProperty("SSEEnabled"),
+				KMSKeyID: sseSpec.GetStringProperty("KMSMasterKeyId", "alias/aws/dynamodb"),
+			},
+			PointInTimeRecovery: resource.GetBoolProperty("PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled"),
+		}
+	})
+}

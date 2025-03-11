@@ -23,6 +23,15 @@ Resources:
     Properties:
       SSESpecification:
         SSEEnabled: true
+  DDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      SSESpecification:
+        SSEEnabled: true
+        KMSMasterKeyId: "test"
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
 `,
 			expected: dynamodb.DynamoDB{
 				DAXClusters: []dynamodb.DAXCluster{
@@ -30,6 +39,15 @@ Resources:
 						ServerSideEncryption: dynamodb.ServerSideEncryption{
 							Enabled: types.BoolTest(true),
 						},
+					},
+				},
+				Tables: []dynamodb.Table{
+					{
+						ServerSideEncryption: dynamodb.ServerSideEncryption{
+							Enabled:  types.BoolTest(true),
+							KMSKeyID: types.StringTest("test"),
+						},
+						PointInTimeRecovery: types.BoolTest(true),
 					},
 				},
 			},
@@ -40,9 +58,18 @@ Resources:
 Resources:
   daxCluster:
     Type: AWS::DAX::Cluster
+  DDBTable:
+    Type: AWS::DynamoDB::Table
   `,
 			expected: dynamodb.DynamoDB{
 				DAXClusters: []dynamodb.DAXCluster{{}},
+				Tables: []dynamodb.Table{
+					{
+						ServerSideEncryption: dynamodb.ServerSideEncryption{
+							KMSKeyID: types.StringTest("alias/aws/dynamodb"),
+						},
+					},
+				},
 			},
 		},
 	}
