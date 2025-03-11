@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/open-policy-agent/opa/v1/loader"
@@ -15,22 +16,11 @@ import (
 func initStore(dataFS fs.FS, dataPaths, namespaces []string) (storage.Store, error) {
 	// FilteredPaths will recursively find all file paths that contain a valid document
 	// extension from the given list of data paths.
-	allDocumentPaths, _ := loader.FilteredPathsFS(dataFS, dataPaths, func(abspath string, info os.FileInfo, depth int) bool {
-		if info.IsDir() {
-			return false // filter in, include
-		}
-		ext := strings.ToLower(filepath.Ext(info.Name()))
-		for _, filter := range []string{
-			".yaml",
-			".yml",
-			".json",
-		} {
-			if filter == ext {
-				return false // filter in, include
-			}
-		}
-		return true // filter out, exclude
-	})
+	allDocumentPaths, _ := loader.FilteredPathsFS(dataFS, dataPaths,
+		func(abspath string, info os.FileInfo, depth int) bool {
+			return !isDataFile(info)
+		},
+	)
 
 	documents, err := loader.NewFileLoader().WithFS(dataFS).All(allDocumentPaths)
 	if err != nil {
@@ -45,4 +35,12 @@ func initStore(dataFS fs.FS, dataPaths, namespaces []string) (storage.Store, err
 		return nil, fmt.Errorf("get documents store: %w", err)
 	}
 	return store, nil
+}
+
+func isDataFile(fi fs.FileInfo) bool {
+	return !fi.IsDir() && slices.Contains([]string{
+		".yaml",
+		".yml",
+		".json",
+	}, strings.ToLower(filepath.Ext(fi.Name())))
 }
