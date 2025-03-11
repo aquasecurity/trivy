@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/open-policy-agent/opa/bundle"
+	"github.com/open-policy-agent/opa/v1/bundle"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 

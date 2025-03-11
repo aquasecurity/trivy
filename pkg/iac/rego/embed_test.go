@@ -4,7 +4,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -91,9 +91,7 @@ deny[res]{
 		t.Run(tc.name, func(t *testing.T) {
 			policies, err := rego.LoadPoliciesFromDirs(checks.EmbeddedLibraryFileSystem, ".")
 			require.NoError(t, err)
-			newRule, err := ast.ParseModuleWithOpts("/rules/newrule.rego", tc.inputPolicy, ast.ParserOptions{
-				ProcessAnnotation: true,
-			})
+			newRule, err := rego.ParseRegoModule("/rules/newrule.rego", tc.inputPolicy)
 			require.NoError(t, err)
 
 			policies["/rules/newrule.rego"] = newRule
@@ -189,9 +187,7 @@ deny[res]{
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			policies := make(map[string]*ast.Module)
-			newRule, err := ast.ParseModuleWithOpts("/rules/newrule.rego", tc.inputPolicy, ast.ParserOptions{
-				ProcessAnnotation: true,
-			})
+			newRule, err := rego.ParseRegoModule("/rules/newrule.rego", tc.inputPolicy)
 			require.NoError(t, err)
 
 			policies["/rules/newrule.rego"] = newRule
