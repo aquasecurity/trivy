@@ -17,6 +17,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
@@ -2125,6 +2126,80 @@ func TestTFVarsFileDoesNotExist(t *testing.T) {
 
 	_, _, err := parser.EvaluateAll(t.Context())
 	assert.ErrorContains(t, err, "file does not exist")
+}
+
+func Test_OptionsWithEvalHook(t *testing.T) {
+	fs := testutil.CreateFS(t, map[string]string{
+		"main.tf": `
+data "your_custom_data" "this" {
+  default = ["foo", "foh", "fum"]
+  unaffected = "bar"
+}
+
+// Testing the hook affects some value, which is used in another evaluateStep
+// action (expanding blocks)
+data "random_thing" "that" {
+  dynamic "repeated" {
+    for_each = data.your_custom_data.this.value
+	content {
+      value = repeated.value
+	}
+  }
+}
+
+locals {
+	referenced = data.your_custom_data.this.value
+	static_ref = data.your_custom_data.this.unaffected
+}
+`})
+
+	parser := New(fs, "", OptionWithEvalHook(
+		// A basic example of how to have a 'default' value for a data block.
+		// To see a more practical example, see how 'evaluateVariable' handles
+		// the 'default' value of a variable.
+		func(ctx *tfcontext.Context, blocks terraform.Blocks, inputVars map[string]cty.Value) {
+			dataBlocks := blocks.OfType("data")
+			for _, block := range dataBlocks {
+				if len(block.Labels()) >= 1 && block.Labels()[0] == "your_custom_data" {
+					def := block.GetAttribute("default")
+					ctx.Set(cty.ObjectVal(map[string]cty.Value{
+						"value": def.Value(),
+					}), "data", "your_custom_data", "this")
+				}
+			}
+
+		},
+	))
+
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+	assert.Len(t, modules, 1)
+
+	rootModule := modules[0]
+
+	// Check the default value of the data block
+	blocks := rootModule.GetDatasByType("your_custom_data")
+	assert.Len(t, blocks, 1)
+	expList := cty.TupleVal([]cty.Value{cty.StringVal("foo"), cty.StringVal("foh"), cty.StringVal("fum")})
+	assert.True(t, expList.Equals(blocks[0].GetAttribute("default").Value()).True(), "default value matched list")
+	assert.Equal(t, "bar", blocks[0].GetAttribute("unaffected").Value().AsString())
+
+	// Check the referenced 'data.your_custom_data.this.value' exists in the eval
+	// context, and it is the default value of the data block.
+	locals := rootModule.GetBlocks().OfType("locals")
+	assert.Len(t, locals, 1)
+	assert.True(t, expList.Equals(locals[0].GetAttribute("referenced").Value()).True(), "referenced value matched list")
+	assert.Equal(t, "bar", locals[0].GetAttribute("static_ref").Value().AsString())
+
+	// Check the dynamic block is expanded correctly
+	dynamicBlocks := rootModule.GetDatasByType("random_thing")
+	assert.Len(t, dynamicBlocks, 1)
+	assert.Len(t, dynamicBlocks[0].GetBlocks("repeated"), 3)
+	for i, repeat := range dynamicBlocks[0].GetBlocks("repeated") {
+		assert.Equal(t, expList.Index(cty.NumberIntVal(int64(i))), repeat.GetAttribute("value").Value())
+	}
 }
 
 func Test_OptionsWithTfVars(t *testing.T) {
