@@ -2410,7 +2410,7 @@ func newRecordingWalker(base Walker) *recordingWalker {
 }
 
 func (w *recordingWalker) Walk(root string, option walker.Option, walkFn walker.WalkFunc) error {
-	w.walkedRoots = append(w.walkedRoots, root)
+	w.walkedRoots = append(w.walkedRoots, filepath.ToSlash(root))
 	// Call the original walker
 	return w.base.Walk(root, option, walkFn)
 }
@@ -2503,4 +2503,3 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 			assert.ElementsMatch(t, tt.want, gotPaths)
 		})
 	}
-}
