@@ -13,7 +13,6 @@ import (
 	"sync"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -28,6 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 var (
