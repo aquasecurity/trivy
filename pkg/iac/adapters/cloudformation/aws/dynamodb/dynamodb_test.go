@@ -66,7 +66,7 @@ Resources:
 				Tables: []dynamodb.Table{
 					{
 						ServerSideEncryption: dynamodb.ServerSideEncryption{
-							KMSKeyID: types.StringTest("alias/aws/dynamodb"),
+							KMSKeyID: types.StringTest(dynamodb.DefaultKMSKeyID),
 						},
 					},
 				},

@@ -16,7 +16,7 @@ func getTables(fctx parser.FileContext) []dynamodb.Table {
 			ServerSideEncryption: dynamodb.ServerSideEncryption{
 				Metadata: sseSpec.Metadata(),
 				Enabled:  sseSpec.GetBoolProperty("SSEEnabled"),
-				KMSKeyID: sseSpec.GetStringProperty("KMSMasterKeyId", "alias/aws/dynamodb"),
+				KMSKeyID: sseSpec.GetStringProperty("KMSMasterKeyId", dynamodb.DefaultKMSKeyID),
 			},
 			PointInTimeRecovery: resource.GetBoolProperty("PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled"),
 		}
