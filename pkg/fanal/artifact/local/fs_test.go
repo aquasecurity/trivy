@@ -2454,7 +2454,7 @@ func TestArtifact_AnalysisStrategy(t *testing.T) {
 			require.NoError(t, err)
 
 			// Run the inspection
-			_, err = a.Inspect(context.Background())
+			_, err = a.Inspect(t.Context())
 			require.NoError(t, err)
 
 			// Check if the walked roots match the expected roots
