@@ -18,7 +18,7 @@ func initStore(dataFS fs.FS, dataPaths, namespaces []string) (storage.Store, err
 	// extension from the given list of data paths.
 	allDocumentPaths, _ := loader.FilteredPathsFS(dataFS, dataPaths,
 		func(abspath string, info os.FileInfo, depth int) bool {
-			return !isDataFile(info)
+			return !info.IsDir() && !isDataFile(info)
 		},
 	)
 
@@ -38,7 +38,7 @@ func initStore(dataFS fs.FS, dataPaths, namespaces []string) (storage.Store, err
 }
 
 func isDataFile(fi fs.FileInfo) bool {
-	return !fi.IsDir() && slices.Contains([]string{
+	return slices.Contains([]string{
 		".yaml",
 		".yml",
 		".json",
