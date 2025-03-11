@@ -2503,3 +2503,4 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 			assert.ElementsMatch(t, tt.want, gotPaths)
 		})
 	}
+}
