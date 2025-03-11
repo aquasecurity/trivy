@@ -200,6 +200,7 @@ nav:
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
+          - Misconfiguration: docs/references/misconfiguration.md
           - Troubleshooting: docs/references/troubleshooting.md
           - Terminology: docs/references/terminology.md
           - Abbreviations: docs/references/abbreviations.md
