@@ -2481,9 +2481,15 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 			wantAllStatic: true,
 		},
 		{
-			name:          "disable one analyzer",
+			name:          "some analyzers don't implement StaticPathAnalyzer",
 			want:          []string{},
 			wantAllStatic: false,
+		},
+		{
+			name:              "disable all analyzers",
+			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeApk, analyzer.TypeAlpine, analyzer.TypeSecret),
+			want:              []string{},
+			wantAllStatic:     true,
 		},
 	}
 
