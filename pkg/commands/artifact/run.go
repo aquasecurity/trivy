@@ -7,6 +7,7 @@ import (
 	"os"
 	"slices"
 
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"github.com/spf13/viper"
@@ -638,7 +639,12 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 	var downloadedPolicyPaths []string
 	var disableEmbedded bool
 
-	downloadedPolicyPaths, err := operation.InitBuiltinChecks(ctx, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	c, err := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
+	if err != nil {
+		return misconf.ScannerOption{}, xerrors.Errorf("check client error: %w", err)
+	}
+
+	downloadedPolicyPaths, err = operation.InitBuiltinChecks(ctx, c, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
 			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))

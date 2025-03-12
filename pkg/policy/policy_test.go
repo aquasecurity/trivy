@@ -58,7 +58,7 @@ func newBrokenLayer(t *testing.T) v1.Layer {
 	return brokenLayer{layer}
 }
 
-func TestClient_LoadBuiltinPolicies(t *testing.T) {
+func TestClient_LoadBuiltinChecks(t *testing.T) {
 	tests := []struct {
 		name     string
 		cacheDir string
@@ -69,28 +69,8 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			name:     "happy path",
 			cacheDir: "testdata/happy",
 			want: []string{
-				filepath.Join("testdata", "happy", "policy", "content", "kubernetes"),
-				filepath.Join("testdata", "happy", "policy", "content", "docker"),
+				filepath.Join("testdata", "happy", "policy", "content"),
 			},
-		},
-		{
-			name:     "empty roots",
-			cacheDir: "testdata/empty",
-			want: []string{
-				filepath.Join("testdata", "empty", "policy", "content"),
-			},
-		},
-		{
-			name:     "broken manifest",
-			cacheDir: "testdata/broken",
-			want:     []string{},
-			wantErr:  "json decode error",
-		},
-		{
-			name:     "no such file",
-			cacheDir: "testdata/unknown",
-			want:     []string{},
-			wantErr:  "manifest file open error",
 		},
 	}
 	for _, tt := range tests {
@@ -119,7 +99,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			c, err := policy.NewClient(tt.cacheDir, true, "", policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			got, err := c.LoadBuiltinChecks()
+			got := c.LoadBuiltinChecks()
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -265,7 +245,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 	}
 }
 
-func TestClient_DownloadBuiltinPolicies(t *testing.T) {
+func TestClient_DownloadBuiltinChecks(t *testing.T) {
 	type digestReturns struct {
 		h   v1.Hash
 		err error
