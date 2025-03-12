@@ -72,6 +72,24 @@ func Test_AdaptVPC(t *testing.T) {
 				  "4.5.6.7/32",
 				]
 			  }
+
+			resource "aws_default_security_group" "default" {
+				vpc_id = aws_vpc.main.id
+
+				ingress {
+					protocol  = -1
+					self      = true
+					from_port = 0
+					to_port   = 0
+				}
+
+				egress {
+					from_port   = 0
+					to_port     = 0
+					protocol    = "-1"
+					cidr_blocks = ["0.0.0.0/0"]
+				}
+			}
 `,
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
@@ -129,6 +147,24 @@ func Test_AdaptVPC(t *testing.T) {
 								},
 								FromPort: iacTypes.IntTest(-1),
 								ToPort:   iacTypes.IntTest(-1),
+							},
+						},
+					},
+					{
+						IsDefault: iacTypes.BoolTest(true),
+						IngressRules: []ec2.SecurityGroupRule{
+							{
+								Protocol: iacTypes.StringTest("-1"),
+								FromPort: iacTypes.IntTest(0),
+								ToPort:   iacTypes.IntTest(0),
+							},
+						},
+						EgressRules: []ec2.SecurityGroupRule{
+							{
+								Protocol: iacTypes.StringTest("-1"),
+								FromPort: iacTypes.IntTest(0),
+								ToPort:   iacTypes.IntTest(0),
+								CIDRs:    []iacTypes.StringValue{iacTypes.StringTest("0.0.0.0/0")},
 							},
 						},
 					},
