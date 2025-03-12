@@ -22,6 +22,24 @@
       "Type": "yarn",
       "Packages": [
         {
+          "ID": "integration@1.0.0",
+          "Name": "integration",
+          "Identifier": {
+            "PURL": "pkg:npm/integration@1.0.0",
+            "UID": "830dfbb17accac93"
+          },
+          "Version": "1.0.0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "root",
+          "DependsOn": [
+            "jquery@3.2.1",
+            "promise@8.0.3"
+          ],
+          "Layer": {}
+        },
+        {
           "ID": "jquery@3.2.1",
           "Name": "jquery",
           "Identifier": {
