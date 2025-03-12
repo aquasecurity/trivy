@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 
-	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"golang.org/x/xerrors"
 
@@ -71,8 +70,7 @@ func nodeCollectorOptions(ctx context.Context, opts flag.Options) []trivyk8s.Nod
 
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
 	c, _ := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
-	contentPath, err := operation.InitBuiltinChecks(ctx, c, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate,
-		opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	contentPath, err := operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
 	if err != nil {
 		log.Error("Falling back to embedded checks", log.Err(err))
 		nodeCollectorOptions = append(nodeCollectorOptions,

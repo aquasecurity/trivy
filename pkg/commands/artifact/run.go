@@ -644,7 +644,7 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		return misconf.ScannerOption{}, xerrors.Errorf("check client error: %w", err)
 	}
 
-	downloadedPolicyPaths, err = operation.InitBuiltinChecks(ctx, c, opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+	downloadedPolicyPaths, err = operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts())
 	if err != nil {
 		if !opts.SkipCheckUpdate {
 			log.ErrorContext(ctx, "Falling back to embedded checks", log.Err(err))
