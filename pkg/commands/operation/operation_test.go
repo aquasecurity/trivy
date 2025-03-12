@@ -1,7 +1,6 @@
 package operation
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -9,9 +8,6 @@ import (
 	"testing"
 	"time"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
@@ -20,6 +16,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"k8s.io/utils/clock"
 	fake "k8s.io/utils/clock/testing"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/policy"
 )
 
 type fakeLayer struct {
@@ -108,7 +108,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
+			ctx := t.Context()
 
 			// Set up a temporary directory
 			tmpDir := t.TempDir()

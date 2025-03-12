@@ -7,7 +7,6 @@ import (
 	"os"
 	"slices"
 
-	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"github.com/spf13/viper"
@@ -26,6 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"

@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 
-	"github.com/aquasecurity/trivy/pkg/policy"
 	"golang.org/x/xerrors"
 
 	trivy_checks "github.com/aquasecurity/trivy-checks"
@@ -13,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
