@@ -63,3 +63,7 @@ func (a contentManifestAnalyzer) Type() analyzer.Type {
 func (a contentManifestAnalyzer) Version() int {
 	return contentManifestAnalyzerVersion
 }
+
+func (a contentManifestAnalyzer) SupportSymlinks() bool {
+	return false
+}

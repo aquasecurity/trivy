@@ -209,6 +209,10 @@ func (a alpinePkgAnalyzer) Version() int {
 	return analyzerVersion
 }
 
+func (a alpinePkgAnalyzer) SupportSymlinks() bool {
+	return false
+}
+
 // decodeChecksumLine decodes checksum line
 func (a alpinePkgAnalyzer) decodeChecksumLine(ctx context.Context, line string) digest.Digest {
 	if len(line) < 2 {

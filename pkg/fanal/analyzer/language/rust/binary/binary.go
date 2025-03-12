@@ -43,3 +43,7 @@ func (a rustBinaryLibraryAnalyzer) Type() analyzer.Type {
 func (a rustBinaryLibraryAnalyzer) Version() int {
 	return version
 }
+
+func (a rustBinaryLibraryAnalyzer) SupportSymlinks() bool {
+	return false
+}

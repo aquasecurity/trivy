@@ -60,3 +60,7 @@ func (a rockyOSAnalyzer) Type() analyzer.Type {
 func (a rockyOSAnalyzer) Version() int {
 	return rockyAnalyzerVersion
 }
+
+func (a rockyOSAnalyzer) SupportSymlinks() bool {
+	return false
+}

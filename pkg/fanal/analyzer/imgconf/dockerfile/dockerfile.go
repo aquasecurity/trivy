@@ -161,3 +161,7 @@ func (a *historyAnalyzer) Type() analyzer.Type {
 func (a *historyAnalyzer) Version() int {
 	return analyzerVersion
 }
+
+func (a *historyAnalyzer) SupportSymlinks() bool {
+	return false
+}
