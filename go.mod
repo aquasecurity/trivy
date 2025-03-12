@@ -94,7 +94,7 @@ require (
 	github.com/openvex/discovery v0.1.1-0.20240802171711-7c54efc57553
 	github.com/openvex/go-vex v0.2.5
 	github.com/owenrumney/go-sarif/v2 v2.3.3
-	github.com/owenrumney/squealer v1.2.11
+	github.com/owenrumney/squealer v1.2.11 // indirect
 	github.com/package-url/packageurl-go v0.1.3
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/rust-secure-code/go-rustaudit v0.0.0-20250226111315-e20ec32e963c
