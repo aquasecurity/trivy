@@ -70,17 +70,21 @@ type Initializer interface {
 }
 
 type analyzer interface {
-	Type() Type
+	AnalyzerType
 	Version() int
 	Analyze(ctx context.Context, input AnalysisInput) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
 }
 
 type PostAnalyzer interface {
-	Type() Type
+	AnalyzerType
 	Version() int
 	PostAnalyze(ctx context.Context, input PostAnalysisInput) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
+}
+
+type AnalyzerType interface {
+	Type() Type
 }
 
 ////////////////////
@@ -540,9 +544,9 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 	var paths []string
 
-	for typ, a := range ag.groupAnalyzers() {
+	for _, a := range append(toAnalyzerType(ag.analyzers), toAnalyzerType(ag.postAnalyzers)...) {
 		// Skip disabled analyzers
-		if slices.Contains(disabled, typ) {
+		if slices.Contains(disabled, a.Type()) {
 			continue
 		}
 
@@ -560,13 +564,10 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 	return lo.Uniq(paths), true
 }
 
-func (ag AnalyzerGroup) groupAnalyzers() map[Type]any {
-	groupAnalyzers := lo.SliceToMap(ag.analyzers, func(a analyzer) (Type, any) {
-		return a.Type(), a
-	})
-	groupPostAnalyzers := lo.SliceToMap(ag.postAnalyzers, func(a PostAnalyzer) (Type, any) {
-		return a.Type(), a
-	})
-
-	return lo.Assign(groupAnalyzers, groupPostAnalyzers)
+func toAnalyzerType[T AnalyzerType](aa []T) []AnalyzerType {
+	var at []AnalyzerType
+	for _, a := range aa {
+		at = append(at, a)
+	}
+	return at
 }
