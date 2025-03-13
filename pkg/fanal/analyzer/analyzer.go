@@ -556,6 +556,14 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 		paths = append(paths, staticPathAnalyzer.StaticPaths()...)
 	}
 
+	// PostAnalyzers don't implement StaticPathAnalyzer.
+	// So if at least one postAnalyzer is enabled - we should not use StaticPath.
+	if allPostAnalyzersDisabled := lo.EveryBy(ag.postAnalyzers, func(a PostAnalyzer) bool {
+		return slices.Contains(disabled, a.Type())
+	}); !allPostAnalyzersDisabled {
+		return nil, false
+	}
+
 	// Remove duplicates
 	return lo.Uniq(paths), true
 }
