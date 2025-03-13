@@ -70,21 +70,17 @@ type Initializer interface {
 }
 
 type analyzer interface {
-	AnalyzerType
+	Type() Type
 	Version() int
 	Analyze(ctx context.Context, input AnalysisInput) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
 }
 
 type PostAnalyzer interface {
-	AnalyzerType
+	Type() Type
 	Version() int
 	PostAnalyze(ctx context.Context, input PostAnalysisInput) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
-}
-
-type AnalyzerType interface {
-	Type() Type
 }
 
 ////////////////////
@@ -544,7 +540,7 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 	var paths []string
 
-	for _, a := range append(toAnalyzerType(ag.analyzers), toAnalyzerType(ag.postAnalyzers)...) {
+	for _, a := range ag.analyzers {
 		// Skip disabled analyzers
 		if slices.Contains(disabled, a.Type()) {
 			continue
@@ -560,14 +556,14 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 		paths = append(paths, staticPathAnalyzer.StaticPaths()...)
 	}
 
+	// PostAnalyzers don't implement StaticPathAnalyzer.
+	// So if at least one postAnalyzer is enabled - we should not use StaticPath.
+	if allPostAnalyzersDisabled := lo.EveryBy(ag.postAnalyzers, func(a PostAnalyzer) bool {
+		return slices.Contains(disabled, a.Type())
+	}); !allPostAnalyzersDisabled {
+		return nil, false
+	}
+
 	// Remove duplicates
 	return lo.Uniq(paths), true
-}
-
-func toAnalyzerType[T AnalyzerType](aa []T) []AnalyzerType {
-	var at []AnalyzerType
-	for _, a := range aa {
-		at = append(at, a)
-	}
-	return at
 }
