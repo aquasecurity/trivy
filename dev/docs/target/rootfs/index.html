@@ -1745,6 +1745,23 @@ You're not viewing the latest version of the documentation.
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    Rootfs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1760,6 +1777,36 @@ You're not viewing the latest version of the documentation.
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Optimization
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -7674,6 +7721,25 @@ You're not viewing the latest version of the documentation.
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Optimization
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -7712,6 +7778,14 @@ You're not viewing the latest version of the documentation.
 You should use <code>trivy fs</code> to scan your local projects in CI/CD.
 See <a href="../../scanner/vulnerability/">here</a> for the differences.</p>
 </div>
+<h2 id="performance-optimization">Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
+<p>By default, Trivy traverses all files from the specified root directory to find target files for scanning.
+However, when you only need to scan specific files with absolute paths, you can avoid this traversal, which makes scanning faster.
+For example, when scanning only OS packages, no full traversal is performed:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>rootfs<span class="w"> </span>--pkg-types<span class="w"> </span>os<span class="w"> </span>--scanners<span class="w"> </span>vuln<span class="w"> </span>/
+</code></pre></div>
+<p>When scanning language-specific packages or secrets, traversal is necessary because the location of these files is unknown.
+If you want to exclude specific directories from scanning for better performance, you can use the <a href="../../configuration/skipping/">--skip-dirs</a> option.</p>
 
 
 
