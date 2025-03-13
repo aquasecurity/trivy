@@ -540,9 +540,9 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 	var paths []string
 
-	for _, a := range ag.analyzers {
+	for typ, a := range ag.groupAnalyzers() {
 		// Skip disabled analyzers
-		if slices.Contains(disabled, a.Type()) {
+		if slices.Contains(disabled, typ) {
 			continue
 		}
 
@@ -558,4 +558,15 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 
 	// Remove duplicates
 	return lo.Uniq(paths), true
+}
+
+func (ag AnalyzerGroup) groupAnalyzers() map[Type]any {
+	groupAnalyzers := lo.SliceToMap(ag.analyzers, func(a analyzer) (Type, any) {
+		return a.Type(), a
+	})
+	groupPostAnalyzers := lo.SliceToMap(ag.postAnalyzers, func(a PostAnalyzer) (Type, any) {
+		return a.Type(), a
+	})
+
+	return lo.Assign(groupAnalyzers, groupPostAnalyzers)
 }
