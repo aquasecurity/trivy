@@ -131,7 +131,7 @@ Please ensure to abide by our [Code of Conduct][code-of-conduct] during all inte
 [license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [homepage]: https://trivy.dev
-[docs]: https://trivy.dev/trivy
+[docs]: https://trivy.dev/latest/docs/
 [pronunciation]: #how-to-pronounce-the-name-trivy
 [slack]: https://slack.aquasec.com
 [code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
