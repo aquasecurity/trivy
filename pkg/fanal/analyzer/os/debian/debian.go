@@ -48,3 +48,8 @@ func (a debianOSAnalyzer) Type() analyzer.Type {
 func (a debianOSAnalyzer) Version() int {
 	return version
 }
+
+// StaticPaths returns the static paths of the debian analyzer
+func (a debianOSAnalyzer) StaticPaths() []string {
+	return requiredFiles
+}

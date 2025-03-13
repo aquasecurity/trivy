@@ -96,3 +96,8 @@ func (a osReleaseAnalyzer) Type() analyzer.Type {
 func (a osReleaseAnalyzer) Version() int {
 	return version
 }
+
+// StaticPaths returns the static paths of the os-release analyzer
+func (a osReleaseAnalyzer) StaticPaths() []string {
+	return requiredFiles
+}

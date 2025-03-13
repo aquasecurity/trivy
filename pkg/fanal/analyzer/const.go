@@ -178,6 +178,7 @@ var (
 		TypeGemSpec,
 		TypeCargo,
 		TypeComposer,
+		TypeComposerVendor,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
@@ -192,6 +193,7 @@ var (
 		TypeCondaPkg,
 		TypeCondaEnv,
 		TypePythonPkg,
+		TypePythonPkgEgg,
 		TypePip,
 		TypePipenv,
 		TypePoetry,
@@ -205,6 +207,7 @@ var (
 		TypePubSpecLock,
 		TypeMixLock,
 		TypeJulia,
+		TypeSBOM,
 	}
 
 	// TypeLockfiles has all lock file analyzers
