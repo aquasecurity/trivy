@@ -547,7 +547,11 @@ func (ag AnalyzerGroup) StaticPaths(disabled []Type) ([]string, bool) {
 			continue
 		}
 
-		// TODO - check filePatterns
+		// We can't be sure that the file pattern uses a static path.
+		// So we don't need to use `StaticPath` logic if any enabled analyzer has a file pattern.
+		if _, ok := ag.filePatterns[a.Type()]; ok {
+			return nil, false
+		}
 
 		// If any analyzer doesn't implement StaticPathAnalyzer, return false
 		staticPathAnalyzer, ok := a.(StaticPathAnalyzer)

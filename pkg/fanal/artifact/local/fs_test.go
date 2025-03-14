@@ -2469,6 +2469,7 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 	tests := []struct {
 		name              string
 		disabledAnalyzers []analyzer.Type
+		filePatterns      []string
 		want              []string
 		wantAllStatic     bool
 	}{
@@ -2480,6 +2481,15 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 				"etc/alpine-release",
 			},
 			wantAllStatic: true,
+		},
+		{
+			name:              "all analyzers implement StaticPathAnalyzer, but there is file pattern",
+			disabledAnalyzers: append(analyzer.TypeConfigFiles, analyzer.TypePip, analyzer.TypeSecret),
+			filePatterns: []string{
+				"alpine:etc/alpine-release-custom",
+			},
+			want:          []string{},
+			wantAllStatic: false,
 		},
 		{
 			name:          "some analyzers don't implement StaticPathAnalyzer",
@@ -2506,7 +2516,9 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create a new analyzer group
-			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				FilePatterns: tt.filePatterns,
+			})
 			require.NoError(t, err)
 
 			// Get static paths
