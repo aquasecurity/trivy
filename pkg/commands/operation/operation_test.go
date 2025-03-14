@@ -50,6 +50,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 	tests := []struct {
 		name          string
 		metadata      any
+		checkDir      string
 		skipUpdate    bool
 		wantErr       string
 		layersReturns layersReturns
@@ -65,7 +66,8 @@ func TestInitBuiltinChecks(t *testing.T) {
 					Hex:       "01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				},
 			},
-			clock: fake.NewFakeClock(time.Date(1992, 1, 1, 1, 0, 0, 0, time.UTC)),
+			checkDir: filepath.Join("policy"),
+			clock:    fake.NewFakeClock(time.Date(1992, 1, 1, 1, 0, 0, 0, time.UTC)),
 			metadata: policy.Metadata{
 				Digest:       `sha256:922e50f14ab484f11ae65540c3d2d76009020213f1027d4331d31141575e5414`,
 				DownloadedAt: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -73,9 +75,20 @@ func TestInitBuiltinChecks(t *testing.T) {
 			skipUpdate: false,
 		},
 		{
-			name:       "skip update flag set",
+			name:       "skip update flag set with no existing cache to fallback to",
 			skipUpdate: true,
-			wantErr:    "No downloadable checks were loaded as --skip-check-update is enabled",
+			checkDir:   filepath.Join("policy"),
+			wantErr:    "not found falling back to embedded checks...",
+		},
+		{
+			name:       "skip update flag set with existing cache to fallback to",
+			skipUpdate: true,
+			checkDir:   filepath.Join("policy", "content"),
+			clock:      fake.NewFakeClock(time.Date(1992, 1, 1, 1, 0, 0, 0, time.UTC)),
+			metadata: policy.Metadata{
+				Digest:       `sha256:922e50f14ab484f11ae65540c3d2d76009020213f1027d4331d31141575e5414`,
+				DownloadedAt: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
 		},
 		{
 			name: "needs update returns an error",
@@ -86,8 +99,9 @@ func TestInitBuiltinChecks(t *testing.T) {
 				Digest:       `sha256:922e50f14ab484f11ae65540c3d2d76009020213f1027d4331d31141575e5414`,
 				DownloadedAt: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 			},
-			clock:   fake.NewFakeClock(time.Date(3000, 1, 1, 1, 0, 0, 0, time.UTC)),
-			wantErr: "unable to check if built-in policies need to be updated",
+			checkDir: filepath.Join("policy"),
+			clock:    fake.NewFakeClock(time.Date(3000, 1, 1, 1, 0, 0, 0, time.UTC)),
+			wantErr:  "unable to check if built-in policies need to be updated",
 		},
 		{
 			name:  "sad: download builtin checks returns an error",
@@ -114,7 +128,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 			tmpDir := t.TempDir()
 
 			// Create a check directory
-			err := os.MkdirAll(filepath.Join(tmpDir, "policy"), os.ModePerm)
+			err := os.MkdirAll(filepath.Join(tmpDir, tt.checkDir), os.ModePerm)
 			require.NoError(t, err)
 
 			if tt.metadata != nil {

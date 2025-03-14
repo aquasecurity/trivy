@@ -2,8 +2,10 @@ package operation
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -83,16 +85,25 @@ func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bo
 	defer mu.Unlock()
 	var err error
 
-	needsUpdate := false
-	if !skipUpdate {
-		needsUpdate, err = client.NeedsUpdate(ctx, registryOpts)
-		if err != nil {
-			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
+	if skipUpdate {
+		log.Info("No downloadable checks were loaded as --skip-check-update is enabled, loading from existing cache...")
+
+		checkPaths := client.LoadBuiltinChecks()
+		for _, path := range checkPaths {
+			_, _, err := misconf.CheckPathExists(path)
+			if err != nil {
+				msg := fmt.Sprintf("Failed to load existing cache, err: %s falling back to embedded checks...", err.Error())
+				log.Error(msg)
+				return nil, xerrors.New(msg)
+			}
 		}
-	} else {
-		msg := "No downloadable checks were loaded as --skip-check-update is enabled"
-		log.Info(msg)
-		return nil, xerrors.Errorf(msg)
+		return checkPaths, nil
+	}
+
+	needsUpdate := false
+	needsUpdate, err = client.NeedsUpdate(ctx, registryOpts)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 	}
 
 	if needsUpdate {
