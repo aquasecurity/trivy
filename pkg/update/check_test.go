@@ -58,13 +58,13 @@ func TestNotifyUpdates(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// reset the updated flag
-			updated.Store(false)
+			responseRecieved.Store(false)
 			server := httptest.NewServer(http.HandlerFunc(createHandler(t, tt.latestVersion, tt.announcements)))
 			defer server.Close()
 			updatesApi = server.URL
 
 			CheckUpdate(t.Context(), tt.currentVersion, nil)
-			require.Eventually(t, updated.Load, time.Second*5, 500)
+			require.Eventually(t, responseRecieved.Load, time.Second*5, 500)
 
 			sb := bytes.NewBufferString("")
 			NotifyUpdates(sb)
@@ -102,14 +102,14 @@ func TestCheckUpdate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// reset the updated flag
-			updated.Store(false)
+			responseRecieved.Store(false)
 
 			server := httptest.NewServer(http.HandlerFunc(createHandler(t, tt.expectedVersion, tt.expectedAnnouncements)))
 			defer server.Close()
 			updatesApi = server.URL
 
 			CheckUpdate(t.Context(), tt.currentVersion, nil)
-			require.Eventually(t, updated.Load, time.Second*2, 500)
+			require.Eventually(t, responseRecieved.Load, time.Second*2, 500)
 			assert.Equal(t, tt.expectedVersion, latestVersion.Trivy.LatestVersion)
 			assert.ElementsMatch(t, tt.expectedAnnouncements, latestVersion.Announcements)
 

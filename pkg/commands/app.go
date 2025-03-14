@@ -243,11 +243,8 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 		},
 		PersistentPostRun: func(_ *cobra.Command, _ []string) {
-			if globalFlags.Quiet.Value() || globalFlags.NoNotices.Value() {
-				// don't show alerts during quiet mode
-				// or if the user has disabled notices
-				return
-			}
+			// if the check hasn't run then it will
+			// return immediately and won't print anything
 			update.NotifyUpdates(os.Stderr)
 		},
 	}

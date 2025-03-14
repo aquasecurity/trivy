@@ -32,10 +32,10 @@ type updateResponse struct {
 }
 
 var (
-	updatesApi     = "https://api.trivy.cloud/check"
-	updated        atomic.Bool
-	currentVersion string
-	latestVersion  updateResponse
+	updatesApi       = "https://api.trivy.cloud/check"
+	responseRecieved atomic.Bool
+	currentVersion   string
+	latestVersion    updateResponse
 )
 
 // CheckUpdate makes a best efforts request to determine the
@@ -73,7 +73,7 @@ func CheckUpdate(ctx context.Context, version string, args []string) {
 			log.Warnf("Failed to decode the response: %v", err)
 			return
 		}
-		updated.Store(true)
+		responseRecieved.Store(true)
 		log.Debug("[version] Details ready for printing")
 	}()
 }
@@ -81,11 +81,7 @@ func CheckUpdate(ctx context.Context, version string, args []string) {
 // NotifyUpdates prints any announcements or warnings
 // to the output writer, most likely stderr
 func NotifyUpdates(output io.Writer) {
-	if !updated.Load() {
-		// the update check didn't happen in time
-		// or it had an error but we don't want to make noise
-		// about it
-		log.Debug("[version] Update check failed or didn't happen in time, check logs for more details")
+	if !responseRecieved.Load() {
 		return
 	}
 
