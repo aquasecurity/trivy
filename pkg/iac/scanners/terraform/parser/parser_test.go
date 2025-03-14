@@ -1705,7 +1705,6 @@ resource "test_resource" "this" {
 }
 
 func TestCountArguments(t *testing.T) {
-	// reset the previous default logger
 	fsys := os.DirFS(filepath.Join("testdata", "countarguments"))
 
 	parser := New(
@@ -1719,20 +1718,22 @@ func TestCountArguments(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, modules, 1)
 
-	blocks := modules.GetDatasByType("null_data_source")
-	require.Len(t, blocks, 4)
+	for _, b := range modules.GetBlocks() {
+		if b.Type() != "data" {
+			continue
+		}
+		val := b.GetAttribute("value").Value()
+		ty := "?"
+		if !val.IsNull() {
+			ty = val.Type().FriendlyName()
+		}
+		if !assert.Truef(t, val.Type().Equals(cty.String),
+			"%q is not a string, type=%s", b.FullName(), ty) {
+			continue
+		}
 
-	idx := slices.IndexFunc(blocks, func(b *terraform.Block) bool {
-		return b.Reference().NameLabel() == "ref_list"
-	})
-
-	require.NotEqualf(t, -1, idx, "ref_list not found")
-
-	block := blocks[idx]
-	input := block.GetAttribute("inputs").Value()
-	fooVal := input.GetAttr("foo")
-	require.True(t, fooVal.Type().Equals(cty.String))
-	require.Equal(t, "Index 2", fooVal.AsString())
+		assert.Equal(t, "Index 0", val.AsString())
+	}
 }
 
 // TestNestedModulesOptions ensures parser options are carried to the nested
