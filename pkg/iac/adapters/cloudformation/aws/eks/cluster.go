@@ -15,7 +15,7 @@ func getClusters(ctx parser.FileContext) (clusters []eks.Cluster) {
 			Metadata:            r.Metadata(),
 			Logging:             getLogging(r),
 			Encryption:          getEncryptionConfig(r),
-			PublicAccessEnabled: r.GetBoolProperty("ResourcesVpcConfig.EndpointPublicAccess"),
+			PublicAccessEnabled: r.GetBoolProperty("ResourcesVpcConfig.EndpointPublicAccess", true),
 			PublicAccessCIDRs:   getPublicCIDRs(r),
 		}
 
@@ -33,6 +33,10 @@ func getPublicCIDRs(r *parser.Resource) []iacTypes.StringValue {
 	var cidrs []iacTypes.StringValue
 	for _, el := range publicAccessCidrs.AsList() {
 		cidrs = append(cidrs, el.AsStringValue())
+	}
+
+	if len(cidrs) == 0 {
+		return []iacTypes.StringValue{iacTypes.StringDefault("0.0.0.0/0", r.Metadata())}
 	}
 
 	return cidrs
